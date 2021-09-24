@@ -35,6 +35,7 @@ net.mqtts
 │       └── mqtts-gen                                 // 代码生成 [9202]
 │       └── mqtts-job                                 // 定时任务 [9203]
 │       └── mqtts-file                                // 文件服务 [9300]
+│       └── mqtts-broker                               // MQTTBroker服务 [9301]
 ├── mqtts-visual          // 图形化管理模块
 │       └── mqtts-visual-monitor                      // 监控中心 [9100]
 ├──pom.xml                // 公共依赖
