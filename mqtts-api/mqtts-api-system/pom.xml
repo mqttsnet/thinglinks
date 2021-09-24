@@ -17,9 +17,9 @@
 
     <dependencies>
 		
-        <!-- RuoYi Common Core-->
+        <!-- mqtts Common Core-->
         <dependency>
-            <groupId>com.mqtts</groupId>
+            <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-core</artifactId>
         </dependency>
         

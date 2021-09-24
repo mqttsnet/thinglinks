@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <modules>
-        <module>mqtts-visual</module>
+        <module>mqtts-visual-monitor</module>
     </modules>
 
     <artifactId>mqtts-visual</artifactId>
