@@ -16,13 +16,13 @@
 
     <dependencies>
     
-        <!-- RuoYi Api System -->
+        <!-- mqtts Api System -->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-api-system</artifactId>
         </dependency>
         
-        <!-- RuoYi Common Redis-->
+        <!-- mqtts Common Redis-->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-redis</artifactId>

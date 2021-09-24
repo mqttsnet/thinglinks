@@ -17,7 +17,7 @@
 
     <dependencies>
 		
-        <!-- RuoYi Common Security -->
+        <!-- mqtts Common Security -->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-security</artifactId>
