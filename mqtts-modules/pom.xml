@@ -9,10 +9,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <modules>
-        <module>mqtts-system</module>
-        <module>mqtts-gen</module>
-        <module>mqtts-job</module>
-        <module>mqtts-file</module>
+        <module>mqtts-modules-system</module>
+        <module>mqtts-modules-gen</module>
+        <module>mqtts-modules-job</module>
+        <module>mqtts-modules-file</module>
     </modules>
 
     <artifactId>mqtts-modules</artifactId>
