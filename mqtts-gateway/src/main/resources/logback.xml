@@ -58,7 +58,7 @@
     </appender>
 
     <!-- 系统模块日志级别控制  -->
-	<logger name="com.mqtts" level="info" />
+	<logger name="net.mqtts" level="info" />
 	<!-- Spring日志级别控制  -->
 	<logger name="org.springframework" level="warn" />
 

@@ -182,56 +182,56 @@
 
             <!-- 核心模块 -->
             <dependency>
-                <groupId>com.mqtts</groupId>
+                <groupId>net.mqtts</groupId>
                 <artifactId>mqtts-common-core</artifactId>
                 <version>${mqtts.version}</version>
             </dependency>
 
             <!-- 接口模块 -->
             <dependency>
-                <groupId>com.mqtts</groupId>
+                <groupId>net.mqtts</groupId>
                 <artifactId>mqtts-common-swagger</artifactId>
                 <version>${mqtts.version}</version>
             </dependency>
 
             <!-- 安全模块 -->
             <dependency>
-                <groupId>com.mqtts</groupId>
+                <groupId>net.mqtts</groupId>
                 <artifactId>mqtts-common-security</artifactId>
                 <version>${mqtts.version}</version>
             </dependency>
 
             <!-- 权限范围 -->
             <dependency>
-                <groupId>com.mqtts</groupId>
+                <groupId>net.mqtts</groupId>
                 <artifactId>mqtts-common-datascope</artifactId>
                 <version>${mqtts.version}</version>
             </dependency>
 
             <!-- 多数据源 -->
             <dependency>
-                <groupId>com.mqtts</groupId>
+                <groupId>net.mqtts</groupId>
                 <artifactId>mqtts-common-datasource</artifactId>
                 <version>${mqtts.version}</version>
             </dependency>
 
             <!-- 日志记录 -->
             <dependency>
-                <groupId>com.mqtts</groupId>
+                <groupId>net.mqtts</groupId>
                 <artifactId>mqtts-common-log</artifactId>
                 <version>${mqtts.version}</version>
             </dependency>
 
             <!-- 缓存服务 -->
             <dependency>
-                <groupId>com.mqtts</groupId>
+                <groupId>net.mqtts</groupId>
                 <artifactId>mqtts-common-redis</artifactId>
                 <version>${mqtts.version}</version>
             </dependency>
 
             <!-- 系统接口 -->
             <dependency>
-                <groupId>com.mqtts</groupId>
+                <groupId>net.mqtts</groupId>
                 <artifactId>mqtts-api-system</artifactId>
                 <version>${mqtts.version}</version>
             </dependency>
