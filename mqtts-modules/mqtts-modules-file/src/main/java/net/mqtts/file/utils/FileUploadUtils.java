@@ -2,20 +2,21 @@ package net.mqtts.file.utils;
 
 import java.io.File;
 import java.io.IOException;
+
+import net.mqtts.common.core.exception.file.FileNameLengthLimitExceededException;
+import net.mqtts.common.core.exception.file.FileSizeLimitExceededException;
+import net.mqtts.common.core.exception.file.InvalidExtensionException;
+import net.mqtts.common.core.utils.DateUtils;
+import net.mqtts.common.core.utils.IdUtils;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.core.utils.file.MimeTypeUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
-import com.ruoyi.common.core.exception.file.FileNameLengthLimitExceededException;
-import com.ruoyi.common.core.exception.file.FileSizeLimitExceededException;
-import com.ruoyi.common.core.exception.file.InvalidExtensionException;
-import com.ruoyi.common.core.utils.DateUtils;
-import com.ruoyi.common.core.utils.IdUtils;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.utils.file.MimeTypeUtils;
 
 /**
  * 文件上传工具类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class FileUploadUtils
 {

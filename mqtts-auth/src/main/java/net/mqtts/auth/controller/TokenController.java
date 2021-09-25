@@ -1,6 +1,11 @@
 package net.mqtts.auth.controller;
 
 import javax.servlet.http.HttpServletRequest;
+
+import net.mqtts.common.core.domain.R;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.security.service.TokenService;
+import net.mqtts.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,15 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import net.mqtts.auth.form.LoginBody;
 import net.mqtts.auth.form.RegisterBody;
 import net.mqtts.auth.service.SysLoginService;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.security.service.TokenService;
-import com.ruoyi.system.api.model.LoginUser;
 
 /**
  * token 控制
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @RestController
 public class TokenController

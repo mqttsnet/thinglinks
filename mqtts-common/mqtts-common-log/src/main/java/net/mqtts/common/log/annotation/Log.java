@@ -11,7 +11,7 @@ import net.mqtts.common.log.enums.OperatorType;
 /**
  * 自定义操作日志记录注解
  * 
- * @author ruoyi
+ * @author mqtts
  *
  */
 @Target({ ElementType.PARAMETER, ElementType.METHOD })

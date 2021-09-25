@@ -5,17 +5,18 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import net.mqtts.common.core.constant.UserConstants;
+import net.mqtts.common.core.exception.ServiceException;
+import net.mqtts.common.core.utils.SecurityUtils;
+import net.mqtts.common.core.utils.SpringUtils;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.datascope.annotation.DataScope;
+import net.mqtts.system.api.domain.SysRole;
+import net.mqtts.system.api.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.ruoyi.common.core.constant.UserConstants;
-import com.ruoyi.common.core.exception.ServiceException;
-import com.ruoyi.common.core.utils.SecurityUtils;
-import com.ruoyi.common.core.utils.SpringUtils;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.datascope.annotation.DataScope;
-import com.ruoyi.system.api.domain.SysRole;
-import com.ruoyi.system.api.domain.SysUser;
 import net.mqtts.system.domain.SysRoleDept;
 import net.mqtts.system.domain.SysRoleMenu;
 import net.mqtts.system.domain.SysUserRole;
@@ -28,7 +29,7 @@ import net.mqtts.system.service.ISysRoleService;
 /**
  * 角色 业务层处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class SysRoleServiceImpl implements ISysRoleService

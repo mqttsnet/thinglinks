@@ -2,18 +2,19 @@ package net.mqtts.common.security.feign;
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
+import net.mqtts.common.core.constant.SecurityConstants;
+import net.mqtts.common.core.utils.ServletUtils;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.core.utils.ip.IpUtils;
 import org.springframework.stereotype.Component;
-import com.ruoyi.common.core.constant.SecurityConstants;
-import com.ruoyi.common.core.utils.ServletUtils;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.utils.ip.IpUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 
 /**
  * feign 请求拦截器
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Component
 public class FeignRequestInterceptor implements RequestInterceptor

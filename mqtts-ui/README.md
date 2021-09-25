@@ -5,7 +5,7 @@
 git clone https://github.com/xiaonannet/mqtts.git
 
 # 进入项目目录
-cd ruoyi-ui
+cd mqtts-ui
 
 # 安装依赖
 npm install

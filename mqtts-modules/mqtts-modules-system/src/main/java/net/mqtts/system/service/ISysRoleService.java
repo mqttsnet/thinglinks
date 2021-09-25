@@ -2,13 +2,13 @@ package net.mqtts.system.service;
 
 import java.util.List;
 import java.util.Set;
-import com.ruoyi.system.api.domain.SysRole;
+import net.mqtts.system.api.domain.SysRole;
 import net.mqtts.system.domain.SysUserRole;
 
 /**
  * 角色业务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysRoleService
 {

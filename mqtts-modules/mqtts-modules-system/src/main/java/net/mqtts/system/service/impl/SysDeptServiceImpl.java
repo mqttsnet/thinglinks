@@ -5,27 +5,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.mqtts.common.core.constant.UserConstants;
+import net.mqtts.common.core.exception.ServiceException;
+import net.mqtts.common.core.text.Convert;
+import net.mqtts.common.core.utils.SecurityUtils;
+import net.mqtts.common.core.utils.SpringUtils;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.datascope.annotation.DataScope;
+import net.mqtts.system.api.domain.SysDept;
+import net.mqtts.system.api.domain.SysRole;
+import net.mqtts.system.api.domain.SysUser;
 import net.mqtts.system.mapper.SysRoleMapper;
 import net.mqtts.system.service.ISysDeptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.common.core.constant.UserConstants;
-import com.ruoyi.common.core.exception.ServiceException;
-import com.ruoyi.common.core.text.Convert;
-import com.ruoyi.common.core.utils.SecurityUtils;
-import com.ruoyi.common.core.utils.SpringUtils;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.datascope.annotation.DataScope;
-import com.ruoyi.system.api.domain.SysDept;
-import com.ruoyi.system.api.domain.SysRole;
-import com.ruoyi.system.api.domain.SysUser;
 import net.mqtts.system.domain.vo.TreeSelect;
 import net.mqtts.system.mapper.SysDeptMapper;
 
 /**
  * 部门管理 服务实现
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class SysDeptServiceImpl implements ISysDeptService

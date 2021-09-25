@@ -1,12 +1,13 @@
 package net.mqtts.system.service;
 
+import net.mqtts.system.api.domain.SysLogininfor;
+
 import java.util.List;
-import com.ruoyi.system.api.domain.SysLogininfor;
 
 /**
  * 系统访问日志情况信息 服务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysLogininforService
 {

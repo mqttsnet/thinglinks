@@ -1,6 +1,6 @@
 /**
 * v-dialogDrag 弹窗拖拽
-* Copyright (c) 2019 ruoyi
+* Copyright (c) 2019 mqtts
 */
 
 export default {

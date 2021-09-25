@@ -3,7 +3,7 @@ package net.mqtts.common.core.exception.base;
 /**
  * 基础异常
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class BaseException extends RuntimeException
 {

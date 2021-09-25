@@ -1,18 +1,18 @@
 package net.mqtts.job;
 
+import net.mqtts.common.security.annotation.EnableCustomConfig;
+import net.mqtts.common.security.annotation.EnableRyFeignClients;
+import net.mqtts.common.swagger.annotation.EnableCustomSwagger2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import com.ruoyi.common.security.annotation.EnableCustomConfig;
-import com.ruoyi.common.security.annotation.EnableRyFeignClients;
-import com.ruoyi.common.swagger.annotation.EnableCustomSwagger2;
 
 /**
  * 定时任务
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @EnableCustomConfig
-@EnableCustomSwagger2   
+@EnableCustomSwagger2
 @EnableRyFeignClients
 @SpringBootApplication
 public class MqttsJobApplication

@@ -3,7 +3,7 @@ package net.mqtts.common.core.enums;
 /**
  * 用户状态
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public enum UserStatus
 {

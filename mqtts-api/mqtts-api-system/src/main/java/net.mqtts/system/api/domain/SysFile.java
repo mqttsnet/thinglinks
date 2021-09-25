@@ -1,4 +1,4 @@
-package com.ruoyi.system.api.domain;
+package net.mqtts.system.api.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * 文件信息
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class SysFile
 {

@@ -2,23 +2,23 @@ package net.mqtts.system.domain;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import net.mqtts.common.core.annotation.Excel;
+import net.mqtts.common.core.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.common.core.annotation.Excel;
-import com.ruoyi.common.core.annotation.Excel.ColumnType;
-import com.ruoyi.common.core.web.domain.BaseEntity;
 
 /**
  * 岗位表 sys_post
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class SysPost extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** 岗位序号 */
-    @Excel(name = "岗位序号", cellType = ColumnType.NUMERIC)
+    @Excel(name = "岗位序号", cellType = Excel.ColumnType.NUMERIC)
     private Long postId;
 
     /** 岗位编码 */

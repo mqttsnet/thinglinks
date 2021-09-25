@@ -3,7 +3,7 @@ package net.mqtts.auth.form;
 /**
  * 用户登录对象
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class LoginBody
 {

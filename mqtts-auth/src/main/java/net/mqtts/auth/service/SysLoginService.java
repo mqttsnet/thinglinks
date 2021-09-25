@@ -1,27 +1,27 @@
 package net.mqtts.auth.service;
 
+import net.mqtts.common.core.constant.Constants;
+import net.mqtts.common.core.constant.SecurityConstants;
+import net.mqtts.common.core.constant.UserConstants;
+import net.mqtts.common.core.domain.R;
+import net.mqtts.common.core.enums.UserStatus;
+import net.mqtts.common.core.exception.ServiceException;
+import net.mqtts.common.core.utils.SecurityUtils;
+import net.mqtts.common.core.utils.ServletUtils;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.core.utils.ip.IpUtils;
+import net.mqtts.system.api.RemoteLogService;
+import net.mqtts.system.api.RemoteUserService;
+import net.mqtts.system.api.domain.SysLogininfor;
+import net.mqtts.system.api.domain.SysUser;
+import net.mqtts.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.ruoyi.common.core.constant.Constants;
-import com.ruoyi.common.core.constant.SecurityConstants;
-import com.ruoyi.common.core.constant.UserConstants;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.enums.UserStatus;
-import com.ruoyi.common.core.exception.ServiceException;
-import com.ruoyi.common.core.utils.SecurityUtils;
-import com.ruoyi.common.core.utils.ServletUtils;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.utils.ip.IpUtils;
-import com.ruoyi.system.api.RemoteLogService;
-import com.ruoyi.system.api.RemoteUserService;
-import com.ruoyi.system.api.domain.SysLogininfor;
-import com.ruoyi.system.api.domain.SysUser;
-import com.ruoyi.system.api.model.LoginUser;
 
 /**
  * 登录校验方法
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Component
 public class SysLoginService

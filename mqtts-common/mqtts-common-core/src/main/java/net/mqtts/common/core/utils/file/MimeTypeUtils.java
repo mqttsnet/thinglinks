@@ -3,7 +3,7 @@ package net.mqtts.common.core.utils.file;
 /**
  * 媒体类型工具类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class MimeTypeUtils
 {

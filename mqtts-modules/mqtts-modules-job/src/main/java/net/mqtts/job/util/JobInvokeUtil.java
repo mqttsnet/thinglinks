@@ -4,14 +4,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
-import com.ruoyi.common.core.utils.SpringUtils;
-import com.ruoyi.common.core.utils.StringUtils;
+
+import net.mqtts.common.core.utils.SpringUtils;
+import net.mqtts.common.core.utils.StringUtils;
 import net.mqtts.job.domain.SysJob;
 
 /**
  * 任务执行工具
  *
- * @author ruoyi
+ * @author mqtts
  */
 public class JobInvokeUtil
 {

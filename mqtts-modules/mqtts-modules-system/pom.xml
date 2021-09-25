@@ -58,24 +58,28 @@
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-datasource</artifactId>
+            <version>3.1.0</version>
         </dependency>
         
         <!-- mqtts Common DataScope -->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-datascope</artifactId>
+            <version>3.1.0</version>
         </dependency>
         
         <!-- mqtts Common Log -->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-log</artifactId>
+            <version>3.1.0</version>
         </dependency>
         
         <!-- mqtts Common Swagger -->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-swagger</artifactId>
+            <version>3.1.0</version>
         </dependency>
 
     </dependencies>
@@ -86,6 +90,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.5</version>
                 <executions>
                     <execution>
                         <goals>

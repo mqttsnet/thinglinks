@@ -2,23 +2,23 @@ package net.mqtts.system.domain;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import net.mqtts.common.core.annotation.Excel;
+import net.mqtts.common.core.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.common.core.annotation.Excel;
-import com.ruoyi.common.core.annotation.Excel.ColumnType;
-import com.ruoyi.common.core.web.domain.BaseEntity;
 
 /**
  * 参数配置表 sys_config
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class SysConfig extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** 参数主键 */
-    @Excel(name = "参数主键", cellType = ColumnType.NUMERIC)
+    @Excel(name = "参数主键", cellType = Excel.ColumnType.NUMERIC)
     private Long configId;
 
     /** 参数名称 */

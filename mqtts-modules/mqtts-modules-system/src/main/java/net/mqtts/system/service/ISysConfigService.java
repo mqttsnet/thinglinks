@@ -7,7 +7,7 @@ import net.mqtts.system.domain.SysConfig;
 /**
  * 参数配置 服务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysConfigService
 {

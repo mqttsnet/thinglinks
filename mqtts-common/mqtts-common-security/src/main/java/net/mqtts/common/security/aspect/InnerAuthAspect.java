@@ -1,20 +1,20 @@
 package net.mqtts.common.security.aspect;
 
+import net.mqtts.common.core.constant.SecurityConstants;
+import net.mqtts.common.core.exception.InnerAuthException;
+import net.mqtts.common.core.utils.ServletUtils;
+import net.mqtts.common.core.utils.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
-import com.ruoyi.common.core.constant.SecurityConstants;
-import com.ruoyi.common.core.exception.InnerAuthException;
-import com.ruoyi.common.core.utils.ServletUtils;
-import com.ruoyi.common.core.utils.StringUtils;
 import net.mqtts.common.security.annotation.InnerAuth;
 
 /**
  * 内部服务调用验证处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Aspect
 @Component

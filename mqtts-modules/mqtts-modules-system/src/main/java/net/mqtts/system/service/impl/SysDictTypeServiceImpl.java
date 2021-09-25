@@ -2,15 +2,16 @@ package net.mqtts.system.service.impl;
 
 import java.util.List;
 import javax.annotation.PostConstruct;
+
+import net.mqtts.common.core.constant.UserConstants;
+import net.mqtts.common.core.exception.ServiceException;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.security.utils.DictUtils;
+import net.mqtts.system.api.domain.SysDictData;
+import net.mqtts.system.api.domain.SysDictType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.ruoyi.common.core.constant.UserConstants;
-import com.ruoyi.common.core.exception.ServiceException;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.security.utils.DictUtils;
-import com.ruoyi.system.api.domain.SysDictData;
-import com.ruoyi.system.api.domain.SysDictType;
 import net.mqtts.system.mapper.SysDictDataMapper;
 import net.mqtts.system.mapper.SysDictTypeMapper;
 import net.mqtts.system.service.ISysDictTypeService;
@@ -18,7 +19,7 @@ import net.mqtts.system.service.ISysDictTypeService;
 /**
  * 字典 业务层处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class SysDictTypeServiceImpl implements ISysDictTypeService

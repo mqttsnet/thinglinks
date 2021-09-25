@@ -7,7 +7,7 @@ import java.lang.annotation.*;
  * 自定义feign注解
  * 添加basePackages路径
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -17,7 +17,7 @@ public @interface EnableRyFeignClients
 {
     String[] value() default {};
 
-    String[] basePackages() default { "com.ruoyi" };
+    String[] basePackages() default { "net.mqtts" };
 
     Class<?>[] basePackageClasses() default {};
 

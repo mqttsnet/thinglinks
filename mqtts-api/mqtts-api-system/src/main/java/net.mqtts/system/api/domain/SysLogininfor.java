@@ -1,22 +1,21 @@
-package com.ruoyi.system.api.domain;
+package net.mqtts.system.api.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.common.core.annotation.Excel;
-import com.ruoyi.common.core.annotation.Excel.ColumnType;
-import com.ruoyi.common.core.web.domain.BaseEntity;
+import net.mqtts.common.core.annotation.Excel;
+import net.mqtts.common.core.web.domain.BaseEntity;
 
 /**
  * 系统访问记录表 sys_logininfor
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class SysLogininfor extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** ID */
-    @Excel(name = "序号", cellType = ColumnType.NUMERIC)
+    @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC)
     private Long infoId;
 
     /** 用户账号 */

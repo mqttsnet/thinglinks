@@ -3,7 +3,7 @@ package net.mqtts.common.core.exception;
 /**
  * 全局异常
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class GlobalException extends RuntimeException
 {

@@ -2,13 +2,13 @@ package net.mqtts.system.service;
 
 import java.util.List;
 
-import com.ruoyi.system.api.domain.SysDept;
+import net.mqtts.system.api.domain.SysDept;
 import net.mqtts.system.domain.vo.TreeSelect;
 
 /**
  * 部门管理 服务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysDeptService
 {

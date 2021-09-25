@@ -7,14 +7,14 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 /**
  * 网关启动程序
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
-public class RuoYiGatewayApplication
+public class MqttsGatewayApplication
 {
     public static void main(String[] args)
     {
-        SpringApplication.run(RuoYiGatewayApplication.class, args);
+        SpringApplication.run(MqttsGatewayApplication.class, args);
         System.out.println("(♥◠‿◠)ﾉﾞ  若依网关启动成功   ლ(´ڡ`ლ)ﾞ  \n" +
                 " .-------.       ____     __        \n" +
                 " |  _ _   \\      \\   \\   /  /    \n" +

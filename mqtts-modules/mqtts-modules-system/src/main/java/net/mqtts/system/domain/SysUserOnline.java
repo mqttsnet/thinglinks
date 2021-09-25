@@ -3,7 +3,7 @@ package net.mqtts.system.domain;
 /**
  * 当前在线会话
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class SysUserOnline
 {

@@ -2,10 +2,10 @@ package net.mqtts.system.service.impl;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import net.mqtts.system.api.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.ruoyi.system.api.domain.SysUser;
 import net.mqtts.system.service.ISysMenuService;
 import net.mqtts.system.service.ISysPermissionService;
 import net.mqtts.system.service.ISysRoleService;

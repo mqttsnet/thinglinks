@@ -3,7 +3,7 @@ package net.mqtts.common.core.exception;
 /**
  * 检查异常
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class CheckedException extends RuntimeException
 {

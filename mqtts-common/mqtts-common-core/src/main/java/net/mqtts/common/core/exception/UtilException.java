@@ -3,7 +3,7 @@ package net.mqtts.common.core.exception;
 /**
  * 工具类异常
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class UtilException extends RuntimeException
 {

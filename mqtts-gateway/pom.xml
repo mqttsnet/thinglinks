@@ -64,10 +64,11 @@
             <artifactId>kaptcha</artifactId>
         </dependency>
 
-        <!-- mqtt Common Redis-->
+        <!-- mqtts Common Redis-->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-redis</artifactId>
+            <version>3.1.0</version>
         </dependency>
 
         <!-- Swagger -->
@@ -90,6 +91,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.5</version>
                 <executions>
                     <execution>
                         <goals>

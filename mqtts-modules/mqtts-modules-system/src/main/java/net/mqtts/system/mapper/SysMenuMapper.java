@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 /**
  * 菜单表 数据层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface SysMenuMapper
 {

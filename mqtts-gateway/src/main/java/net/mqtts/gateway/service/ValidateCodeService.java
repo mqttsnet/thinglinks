@@ -1,13 +1,14 @@
 package net.mqtts.gateway.service;
 
+import net.mqtts.common.core.exception.CaptchaException;
+import net.mqtts.common.core.web.domain.AjaxResult;
+
 import java.io.IOException;
-import com.ruoyi.common.core.exception.CaptchaException;
-import com.ruoyi.common.core.web.domain.AjaxResult;
 
 /**
  * 验证码处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ValidateCodeService
 {

@@ -1,24 +1,23 @@
-package com.ruoyi.system.api.domain;
+package net.mqtts.system.api.domain;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import net.mqtts.common.core.annotation.Excel;
+import net.mqtts.common.core.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.common.core.annotation.Excel;
-import com.ruoyi.common.core.annotation.Excel.ColumnType;
-import com.ruoyi.common.core.web.domain.BaseEntity;
-
 /**
  * 字典类型表 sys_dict_type
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class SysDictType extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** 字典主键 */
-    @Excel(name = "字典主键", cellType = ColumnType.NUMERIC)
+    @Excel(name = "字典主键", cellType = Excel.ColumnType.NUMERIC)
     private Long dictId;
 
     /** 字典名称 */

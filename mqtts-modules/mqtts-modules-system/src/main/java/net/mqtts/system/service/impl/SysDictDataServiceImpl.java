@@ -1,17 +1,18 @@
 package net.mqtts.system.service.impl;
 
 import java.util.List;
+
+import net.mqtts.common.security.utils.DictUtils;
+import net.mqtts.system.api.domain.SysDictData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.common.security.utils.DictUtils;
-import com.ruoyi.system.api.domain.SysDictData;
 import net.mqtts.system.mapper.SysDictDataMapper;
 import net.mqtts.system.service.ISysDictDataService;
 
 /**
  * 字典 业务层处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class SysDictDataServiceImpl implements ISysDictDataService

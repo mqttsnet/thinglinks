@@ -6,7 +6,7 @@ import net.mqtts.common.core.utils.StringUtils;
 /**
  * sql操作工具类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class SqlUtil
 {

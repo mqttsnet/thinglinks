@@ -1,5 +1,6 @@
 package net.mqtts.gateway.handler;
 
+import net.mqtts.common.core.utils.ServletUtils;
 import org.springframework.cloud.gateway.support.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,13 +10,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
-import com.ruoyi.common.core.utils.ServletUtils;
 import reactor.core.publisher.Mono;
 
 /**
  * 网关统一异常处理
  *
- * @author ruoyi
+ * @author mqtts
  */
 @Order(-1)
 @Configuration

@@ -6,6 +6,13 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
+import net.mqtts.common.core.text.Convert;
+import net.mqtts.common.core.web.controller.BaseController;
+import net.mqtts.common.core.web.domain.AjaxResult;
+import net.mqtts.common.core.web.page.TableDataInfo;
+import net.mqtts.common.log.annotation.Log;
+import net.mqtts.common.log.enums.BusinessType;
+import net.mqtts.common.security.annotation.PreAuthorize;
 import net.mqtts.gen.domain.GenTable;
 import net.mqtts.gen.domain.GenTableColumn;
 import net.mqtts.gen.service.IGenTableColumnService;
@@ -21,18 +28,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.core.text.Convert;
-import com.ruoyi.common.core.web.controller.BaseController;
-import com.ruoyi.common.core.web.domain.AjaxResult;
-import com.ruoyi.common.core.web.page.TableDataInfo;
-import com.ruoyi.common.log.annotation.Log;
-import com.ruoyi.common.log.enums.BusinessType;
-import com.ruoyi.common.security.annotation.PreAuthorize;
 
 /**
  * 代码生成 操作处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @RequestMapping("/gen")
 @RestController
@@ -204,7 +204,7 @@ public class GenController extends BaseController
     private void genCode(HttpServletResponse response, byte[] data) throws IOException
     {
         response.reset();
-        response.setHeader("Content-Disposition", "attachment; filename=\"ruoyi.zip\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"mqtts.zip\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
         IOUtils.write(data, response.getOutputStream());

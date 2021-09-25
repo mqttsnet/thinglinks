@@ -4,7 +4,7 @@ echo [信息] 使用Jar命令运行Modules-System工程。
 echo.
 
 cd %~dp0
-cd ../ruoyi-modules/mqtts-system/target
+cd ../mqtts-modules/mqtts-system/target
 
 set JAVA_OPTS=-Xms512m -Xmx1024m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m
 

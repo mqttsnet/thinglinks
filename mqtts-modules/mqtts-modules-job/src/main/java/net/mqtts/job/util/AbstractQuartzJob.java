@@ -2,6 +2,11 @@ package net.mqtts.job.util;
 
 import java.util.Date;
 
+import net.mqtts.common.core.constant.ScheduleConstants;
+import net.mqtts.common.core.utils.ExceptionUtil;
+import net.mqtts.common.core.utils.SpringUtils;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.core.utils.bean.BeanUtils;
 import net.mqtts.job.domain.SysJob;
 import net.mqtts.job.domain.SysJobLog;
 import net.mqtts.job.service.ISysJobLogService;
@@ -10,16 +15,11 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.ruoyi.common.core.constant.ScheduleConstants;
-import com.ruoyi.common.core.utils.ExceptionUtil;
-import com.ruoyi.common.core.utils.SpringUtils;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.utils.bean.BeanUtils;
 
 /**
  * 抽象quartz调用
  *
- * @author ruoyi
+ * @author mqtts
  */
 public abstract class AbstractQuartzJob implements Job
 {

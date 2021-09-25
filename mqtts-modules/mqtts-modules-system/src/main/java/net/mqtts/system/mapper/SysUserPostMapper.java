@@ -7,7 +7,7 @@ import net.mqtts.system.domain.SysUserPost;
 /**
  * 用户与岗位关联表 数据层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface SysUserPostMapper
 {

@@ -3,7 +3,7 @@ package net.mqtts.common.core.exception.user;
 /**
  * 验证码失效异常类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class CaptchaExpireException extends UserException
 {

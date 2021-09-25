@@ -3,7 +3,7 @@ package net.mqtts.common.core.exception;
 /**
  * 业务异常
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public final class ServiceException extends RuntimeException
 {

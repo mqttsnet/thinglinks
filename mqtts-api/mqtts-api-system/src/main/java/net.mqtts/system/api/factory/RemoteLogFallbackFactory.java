@@ -1,18 +1,18 @@
-package com.ruoyi.system.api.factory;
+package net.mqtts.system.api.factory;
 
+import net.mqtts.common.core.domain.R;
+import net.mqtts.system.api.RemoteLogService;
+import net.mqtts.system.api.domain.SysLogininfor;
+import net.mqtts.system.api.domain.SysOperLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.system.api.RemoteLogService;
-import com.ruoyi.system.api.domain.SysLogininfor;
-import com.ruoyi.system.api.domain.SysOperLog;
 
 /**
  * 日志服务降级处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Component
 public class RemoteLogFallbackFactory implements FallbackFactory<RemoteLogService>

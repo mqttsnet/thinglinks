@@ -5,7 +5,7 @@ import net.mqtts.common.core.text.UUID;
 /**
  * ID生成器工具类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class IdUtils
 {

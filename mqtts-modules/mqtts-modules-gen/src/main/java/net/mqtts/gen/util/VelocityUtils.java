@@ -3,18 +3,19 @@ package net.mqtts.gen.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import net.mqtts.common.core.constant.GenConstants;
+import net.mqtts.common.core.utils.DateUtils;
+import net.mqtts.common.core.utils.StringUtils;
 import org.apache.velocity.VelocityContext;
 import com.alibaba.fastjson.JSONObject;
-import com.ruoyi.common.core.constant.GenConstants;
-import com.ruoyi.common.core.utils.DateUtils;
-import com.ruoyi.common.core.utils.StringUtils;
 import net.mqtts.gen.domain.GenTable;
 import net.mqtts.gen.domain.GenTableColumn;
 
 /**
  * 模板工具类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class VelocityUtils
 {

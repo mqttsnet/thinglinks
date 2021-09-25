@@ -2,14 +2,14 @@ package net.mqtts.job.service;
 
 import java.util.List;
 
+import net.mqtts.common.core.exception.job.TaskException;
 import net.mqtts.job.domain.SysJob;
 import org.quartz.SchedulerException;
-import com.ruoyi.common.core.exception.job.TaskException;
 
 /**
  * 定时任务调度信息信息 服务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysJobService
 {

@@ -6,7 +6,7 @@ import net.mqtts.common.core.constant.Constants;
 /**
  * 响应信息主体
  *
- * @author ruoyi
+ * @author mqtts
  */
 public class R<T> implements Serializable
 {

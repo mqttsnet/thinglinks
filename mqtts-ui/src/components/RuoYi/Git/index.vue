@@ -6,10 +6,10 @@
 
 <script>
 export default {
-  name: 'RuoYiGit',
+  name: 'mqttsGit',
   data() {
     return {
-      url: 'https://gitee.com/y_project/RuoYi-Cloud'
+      url: 'https://gitee.com/xiaonnanet/mqtts'
     }
   },
   methods: {

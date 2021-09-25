@@ -1,6 +1,9 @@
 package net.mqtts.gateway.filter;
 
 import java.nio.charset.StandardCharsets;
+
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.core.utils.html.EscapeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -16,8 +19,6 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.utils.html.EscapeUtil;
 import net.mqtts.gateway.config.properties.XssProperties;
 import io.netty.buffer.ByteBufAllocator;
 import reactor.core.publisher.Flux;
@@ -26,7 +27,7 @@ import reactor.core.publisher.Mono;
 /**
  * 跨站脚本过滤器
  *
- * @author ruoyi
+ * @author mqtts
  */
 @Component
 @ConditionalOnProperty(value = "security.xss.enabled", havingValue = "true")

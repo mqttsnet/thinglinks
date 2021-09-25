@@ -1,11 +1,12 @@
 package net.mqtts.system.domain.vo;
 
-import com.ruoyi.common.core.utils.StringUtils;
+
+import net.mqtts.common.core.utils.StringUtils;
 
 /**
  * 路由显示信息
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class MetaVo
 {

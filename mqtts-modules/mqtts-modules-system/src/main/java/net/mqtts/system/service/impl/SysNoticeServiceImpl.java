@@ -12,7 +12,7 @@ import net.mqtts.system.service.ISysNoticeService;
 /**
  * 公告 服务层实现
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class SysNoticeServiceImpl implements ISysNoticeService

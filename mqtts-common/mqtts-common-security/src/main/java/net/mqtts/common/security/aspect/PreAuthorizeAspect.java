@@ -2,6 +2,10 @@ package net.mqtts.common.security.aspect;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+
+import net.mqtts.common.core.exception.PreAuthorizeException;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.system.api.model.LoginUser;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -11,16 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.PatternMatchUtils;
-import com.ruoyi.common.core.exception.PreAuthorizeException;
-import com.ruoyi.common.core.utils.StringUtils;
 import net.mqtts.common.security.annotation.PreAuthorize;
 import net.mqtts.common.security.service.TokenService;
-import com.ruoyi.system.api.model.LoginUser;
 
 /**
  * 自定义权限实现
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Aspect
 @Component
@@ -38,7 +39,7 @@ public class PreAuthorizeAspect
     /** 数组为0时 */
     private static final Integer ARRAY_EMPTY = 0;
 
-    @Around("@annotation(com.ruoyi.common.security.annotation.PreAuthorize)")
+    @Around("@annotation(net.mqtts.common.security.annotation.PreAuthorize)")
     public Object around(ProceedingJoinPoint point) throws Throwable
     {
         Signature signature = point.getSignature();

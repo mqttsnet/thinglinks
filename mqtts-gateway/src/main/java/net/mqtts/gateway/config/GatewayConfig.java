@@ -9,7 +9,7 @@ import net.mqtts.gateway.handler.SentinelFallbackHandler;
 /**
  * 网关限流配置
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Configuration
 public class GatewayConfig

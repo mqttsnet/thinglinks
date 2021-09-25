@@ -7,7 +7,7 @@ import net.mqtts.system.domain.SysPost;
 /**
  * 岗位信息 数据层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface SysPostMapper
 {

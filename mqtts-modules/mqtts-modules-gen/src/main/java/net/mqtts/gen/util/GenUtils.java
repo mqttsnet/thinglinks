@@ -1,9 +1,10 @@
 package net.mqtts.gen.util;
 
 import java.util.Arrays;
+
+import net.mqtts.common.core.constant.GenConstants;
+import net.mqtts.common.core.utils.StringUtils;
 import org.apache.commons.lang3.RegExUtils;
-import com.ruoyi.common.core.constant.GenConstants;
-import com.ruoyi.common.core.utils.StringUtils;
 import net.mqtts.gen.config.GenConfig;
 import net.mqtts.gen.domain.GenTable;
 import net.mqtts.gen.domain.GenTableColumn;
@@ -11,7 +12,7 @@ import net.mqtts.gen.domain.GenTableColumn;
 /**
  * 代码生成器 工具类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class GenUtils
 {

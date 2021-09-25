@@ -1,20 +1,19 @@
-package com.ruoyi.system.api;
+package net.mqtts.system.api;
 
+import net.mqtts.common.core.constant.SecurityConstants;
+import net.mqtts.common.core.constant.ServiceNameConstants;
+import net.mqtts.common.core.domain.R;
+import net.mqtts.system.api.domain.SysLogininfor;
+import net.mqtts.system.api.domain.SysOperLog;
+import net.mqtts.system.api.factory.RemoteLogFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import com.ruoyi.common.core.constant.SecurityConstants;
-import com.ruoyi.common.core.constant.ServiceNameConstants;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.system.api.domain.SysLogininfor;
-import com.ruoyi.system.api.domain.SysOperLog;
-import com.ruoyi.system.api.factory.RemoteLogFallbackFactory;
-
 /**
  * 日志服务
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @FeignClient(contextId = "remoteLogService", value = ServiceNameConstants.SYSTEM_SERVICE, fallbackFactory = RemoteLogFallbackFactory.class)
 public interface RemoteLogService

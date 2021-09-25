@@ -1,12 +1,13 @@
 package net.mqtts.system.service;
 
+import net.mqtts.system.api.domain.SysDictData;
+
 import java.util.List;
-import com.ruoyi.system.api.domain.SysDictData;
 
 /**
  * 字典 业务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysDictDataService
 {

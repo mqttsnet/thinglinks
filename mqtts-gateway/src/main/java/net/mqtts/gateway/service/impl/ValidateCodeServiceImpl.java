@@ -5,24 +5,25 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
+
+import net.mqtts.common.core.constant.Constants;
+import net.mqtts.common.core.exception.CaptchaException;
+import net.mqtts.common.core.utils.IdUtils;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.core.utils.sign.Base64;
+import net.mqtts.common.core.web.domain.AjaxResult;
+import net.mqtts.common.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FastByteArrayOutputStream;
 import com.google.code.kaptcha.Producer;
-import com.ruoyi.common.core.constant.Constants;
-import com.ruoyi.common.core.exception.CaptchaException;
-import com.ruoyi.common.core.utils.IdUtils;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.utils.sign.Base64;
-import com.ruoyi.common.core.web.domain.AjaxResult;
-import com.ruoyi.common.redis.service.RedisService;
 import net.mqtts.gateway.config.properties.CaptchaProperties;
 import net.mqtts.gateway.service.ValidateCodeService;
 
 /**
  * 验证码实现处理
  *
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class ValidateCodeServiceImpl implements ValidateCodeService

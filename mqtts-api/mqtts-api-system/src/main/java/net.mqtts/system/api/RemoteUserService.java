@@ -1,22 +1,22 @@
-package com.ruoyi.system.api;
+package net.mqtts.system.api;
 
+import net.mqtts.common.core.constant.SecurityConstants;
+import net.mqtts.common.core.constant.ServiceNameConstants;
+import net.mqtts.common.core.domain.R;
+import net.mqtts.system.api.domain.SysUser;
+import net.mqtts.system.api.factory.RemoteUserFallbackFactory;
+import net.mqtts.system.api.model.LoginUser;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import com.ruoyi.common.core.constant.SecurityConstants;
-import com.ruoyi.common.core.constant.ServiceNameConstants;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.system.api.domain.SysUser;
-import com.ruoyi.system.api.factory.RemoteUserFallbackFactory;
-import com.ruoyi.system.api.model.LoginUser;
 
 /**
  * 用户服务
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @FeignClient(contextId = "remoteUserService", value = ServiceNameConstants.SYSTEM_SERVICE, fallbackFactory = RemoteUserFallbackFactory.class)
 public interface RemoteUserService

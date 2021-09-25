@@ -3,7 +3,7 @@ package net.mqtts.common.core.constant;
 /**
  * 返回状态码
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class HttpStatus
 {

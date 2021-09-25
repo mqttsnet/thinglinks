@@ -3,7 +3,7 @@ package net.mqtts.common.core.constant;
 /**
  * 用户常量信息
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class UserConstants
 {

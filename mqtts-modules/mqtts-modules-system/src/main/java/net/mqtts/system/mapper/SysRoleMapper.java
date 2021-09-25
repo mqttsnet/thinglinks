@@ -1,13 +1,14 @@
 package net.mqtts.system.mapper;
 
+import net.mqtts.system.api.domain.SysRole;
+
 import java.util.List;
 
-import com.ruoyi.system.api.domain.SysRole;
 
 /**
  * 角色表 数据层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface SysRoleMapper
 {

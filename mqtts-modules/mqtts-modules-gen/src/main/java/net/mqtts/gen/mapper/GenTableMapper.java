@@ -6,7 +6,7 @@ import net.mqtts.gen.domain.GenTable;
 /**
  * 业务 数据层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface GenTableMapper
 {

@@ -1,16 +1,17 @@
 package net.mqtts.system.service.impl;
 
 import java.util.List;
+
+import net.mqtts.system.api.domain.SysLogininfor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.api.domain.SysLogininfor;
 import net.mqtts.system.mapper.SysLogininforMapper;
 import net.mqtts.system.service.ISysLogininforService;
 
 /**
  * 系统访问日志情况信息 服务层处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class SysLogininforServiceImpl implements ISysLogininforService

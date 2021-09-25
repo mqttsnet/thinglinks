@@ -4,29 +4,30 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import net.mqtts.common.core.constant.CacheConstants;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.core.web.controller.BaseController;
+import net.mqtts.common.core.web.domain.AjaxResult;
+import net.mqtts.common.core.web.page.TableDataInfo;
+import net.mqtts.common.log.annotation.Log;
+import net.mqtts.common.log.enums.BusinessType;
+import net.mqtts.common.redis.service.RedisService;
+import net.mqtts.common.security.annotation.PreAuthorize;
+import net.mqtts.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.core.constant.CacheConstants;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.web.controller.BaseController;
-import com.ruoyi.common.core.web.domain.AjaxResult;
-import com.ruoyi.common.core.web.page.TableDataInfo;
-import com.ruoyi.common.log.annotation.Log;
-import com.ruoyi.common.log.enums.BusinessType;
-import com.ruoyi.common.redis.service.RedisService;
-import com.ruoyi.common.security.annotation.PreAuthorize;
-import com.ruoyi.system.api.model.LoginUser;
 import net.mqtts.system.domain.SysUserOnline;
 import net.mqtts.system.service.ISysUserOnlineService;
 
 /**
  * 在线用户监控
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @RestController
 @RequestMapping("/online")

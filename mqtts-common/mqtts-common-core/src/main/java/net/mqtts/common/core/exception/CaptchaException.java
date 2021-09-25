@@ -3,7 +3,7 @@ package net.mqtts.common.core.exception;
 /**
  * 验证码错误异常类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class CaptchaException extends RuntimeException
 {

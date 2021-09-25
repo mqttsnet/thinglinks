@@ -4,22 +4,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
+
+import net.mqtts.common.core.constant.CacheConstants;
+import net.mqtts.common.core.constant.Constants;
+import net.mqtts.common.core.utils.IdUtils;
+import net.mqtts.common.core.utils.SecurityUtils;
+import net.mqtts.common.core.utils.ServletUtils;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.core.utils.ip.IpUtils;
+import net.mqtts.common.redis.service.RedisService;
+import net.mqtts.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.ruoyi.common.core.constant.CacheConstants;
-import com.ruoyi.common.core.constant.Constants;
-import com.ruoyi.common.core.utils.IdUtils;
-import com.ruoyi.common.core.utils.SecurityUtils;
-import com.ruoyi.common.core.utils.ServletUtils;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.utils.ip.IpUtils;
-import com.ruoyi.common.redis.service.RedisService;
-import com.ruoyi.system.api.model.LoginUser;
 
 /**
  * token验证处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Component
 public class TokenService

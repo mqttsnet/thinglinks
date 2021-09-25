@@ -7,7 +7,7 @@ import net.mqtts.gen.domain.GenTable;
 /**
  * 业务 服务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface IGenTableService
 {

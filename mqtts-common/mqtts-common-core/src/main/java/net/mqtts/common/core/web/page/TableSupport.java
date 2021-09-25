@@ -5,7 +5,7 @@ import net.mqtts.common.core.utils.ServletUtils;
 /**
  * 表格数据处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class TableSupport
 {

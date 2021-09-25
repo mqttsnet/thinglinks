@@ -1,13 +1,14 @@
 package net.mqtts.system.mapper;
 
 import java.util.List;
+
+import net.mqtts.system.api.domain.SysDictData;
 import org.apache.ibatis.annotations.Param;
-import com.ruoyi.system.api.domain.SysDictData;
 
 /**
  * 字典表 数据层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface SysDictDataMapper
 {

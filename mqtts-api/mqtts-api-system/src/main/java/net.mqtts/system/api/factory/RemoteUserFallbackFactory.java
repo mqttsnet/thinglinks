@@ -1,18 +1,17 @@
-package com.ruoyi.system.api.factory;
+package net.mqtts.system.api.factory;
 
+import net.mqtts.common.core.domain.R;
+import net.mqtts.system.api.RemoteUserService;
+import net.mqtts.system.api.model.LoginUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
-import com.ruoyi.common.core.domain.R;
-import com.ruoyi.system.api.RemoteUserService;
-import com.ruoyi.system.api.domain.SysUser;
-import com.ruoyi.system.api.model.LoginUser;
 
 /**
  * 用户服务降级处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Component
 public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserService>
@@ -32,7 +31,7 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
             }
 
             @Override
-            public R<Boolean> registerUserInfo(SysUser sysUser, String source)
+            public R<Boolean> registerUserInfo(net.mqtts.system.api.domain.SysUser sysUser, String source)
             {
                 return R.fail("注册用户失败:" + throwable.getMessage());
             }

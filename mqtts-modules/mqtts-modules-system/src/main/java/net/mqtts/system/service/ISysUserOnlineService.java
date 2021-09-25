@@ -1,12 +1,12 @@
 package net.mqtts.system.service;
 
-import com.ruoyi.system.api.model.LoginUser;
+import net.mqtts.system.api.model.LoginUser;
 import net.mqtts.system.domain.SysUserOnline;
 
 /**
  * 在线用户 服务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysUserOnlineService
 {

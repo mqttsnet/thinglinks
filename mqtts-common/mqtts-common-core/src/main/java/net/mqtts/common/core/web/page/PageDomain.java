@@ -5,7 +5,7 @@ import net.mqtts.common.core.utils.StringUtils;
 /**
  * 分页数据
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class PageDomain
 {

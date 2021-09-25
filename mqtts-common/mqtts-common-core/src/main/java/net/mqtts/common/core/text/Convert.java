@@ -11,7 +11,7 @@ import net.mqtts.common.core.utils.StringUtils;
 /**
  * 类型转换器
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class Convert
 {

@@ -2,16 +2,16 @@ package net.mqtts.gen.service;
 
 import java.util.List;
 
+import net.mqtts.common.core.text.Convert;
 import net.mqtts.gen.domain.GenTableColumn;
 import net.mqtts.gen.mapper.GenTableColumnMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.common.core.text.Convert;
 
 /**
  * 业务字段 服务层实现
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class GenTableColumnServiceImpl implements IGenTableColumnService 

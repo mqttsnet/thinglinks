@@ -6,7 +6,7 @@ import net.mqtts.gen.domain.GenTableColumn;
 /**
  * 业务字段 服务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface IGenTableColumnService
 {

@@ -3,14 +3,15 @@ package net.mqtts.system.service.impl;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
+
+import net.mqtts.common.core.constant.Constants;
+import net.mqtts.common.core.constant.UserConstants;
+import net.mqtts.common.core.exception.ServiceException;
+import net.mqtts.common.core.text.Convert;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.common.core.constant.Constants;
-import com.ruoyi.common.core.constant.UserConstants;
-import com.ruoyi.common.core.exception.ServiceException;
-import com.ruoyi.common.core.text.Convert;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.redis.service.RedisService;
 import net.mqtts.system.domain.SysConfig;
 import net.mqtts.system.mapper.SysConfigMapper;
 import net.mqtts.system.service.ISysConfigService;
@@ -18,7 +19,7 @@ import net.mqtts.system.service.ISysConfigService;
 /**
  * 参数配置 服务层实现
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class SysConfigServiceImpl implements ISysConfigService

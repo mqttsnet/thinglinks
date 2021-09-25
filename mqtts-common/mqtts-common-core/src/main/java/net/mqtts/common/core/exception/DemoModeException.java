@@ -3,7 +3,7 @@ package net.mqtts.common.core.exception;
 /**
  * 演示模式异常
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class DemoModeException extends RuntimeException
 {

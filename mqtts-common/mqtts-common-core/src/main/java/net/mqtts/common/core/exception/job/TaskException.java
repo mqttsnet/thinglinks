@@ -3,7 +3,7 @@ package net.mqtts.common.core.exception.job;
 /**
  * 计划策略异常
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class TaskException extends Exception
 {

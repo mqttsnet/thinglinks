@@ -2,7 +2,7 @@ package net.mqtts.gateway.handler;
 
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.GatewayCallbackManager;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
-import com.ruoyi.common.core.utils.ServletUtils;
+import net.mqtts.common.core.utils.ServletUtils;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebExceptionHandler;
@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 /**
  * 自定义限流异常处理
  *
- * @author ruoyi
+ * @author mqtts
  */
 public class SentinelFallbackHandler implements WebExceptionHandler
 {

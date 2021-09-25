@@ -2,14 +2,14 @@ package net.mqtts.system.mapper;
 
 import java.util.List;
 
+import net.mqtts.system.api.domain.SysDept;
 import org.apache.ibatis.annotations.Param;
 
-import com.ruoyi.system.api.domain.SysDept;
 
 /**
  * 部门管理 数据层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface SysDeptMapper
 {

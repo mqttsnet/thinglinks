@@ -2,16 +2,16 @@ package net.mqtts.common.security.utils;
 
 import java.util.Collection;
 import java.util.List;
-import com.ruoyi.common.core.constant.Constants;
-import com.ruoyi.common.core.utils.SpringUtils;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.redis.service.RedisService;
-import com.ruoyi.system.api.domain.SysDictData;
+import net.mqtts.common.core.constant.Constants;
+import net.mqtts.common.core.utils.SpringUtils;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.redis.service.RedisService;
+import net.mqtts.system.api.domain.SysDictData;
 
 /**
  * 字典工具类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class DictUtils
 {

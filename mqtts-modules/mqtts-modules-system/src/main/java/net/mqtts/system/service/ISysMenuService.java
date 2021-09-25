@@ -10,7 +10,7 @@ import net.mqtts.system.domain.vo.TreeSelect;
 /**
  * 菜单 业务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysMenuService
 {

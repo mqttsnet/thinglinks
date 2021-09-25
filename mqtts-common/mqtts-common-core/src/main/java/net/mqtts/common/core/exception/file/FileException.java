@@ -5,7 +5,7 @@ import net.mqtts.common.core.exception.base.BaseException;
 /**
  * 文件信息异常类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class FileException extends BaseException
 {

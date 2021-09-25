@@ -3,7 +3,7 @@ package net.mqtts.common.log.enums;
 /**
  * 业务操作类型
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public enum BusinessType
 {

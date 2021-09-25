@@ -3,7 +3,7 @@ package net.mqtts.common.log.enums;
 /**
  * 操作人类别
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public enum OperatorType
 {

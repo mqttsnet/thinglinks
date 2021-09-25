@@ -7,7 +7,7 @@ import net.mqtts.system.domain.SysNotice;
 /**
  * 公告 服务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysNoticeService
 {

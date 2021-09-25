@@ -6,7 +6,7 @@ server:
 spring: 
   application:
     # 应用名称
-    name: ruoyi-auth
+    name: mqtts-auth
   profiles:
     # 环境配置
     active: dev

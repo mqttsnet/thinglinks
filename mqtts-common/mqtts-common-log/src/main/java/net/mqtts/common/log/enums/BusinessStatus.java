@@ -3,7 +3,7 @@ package net.mqtts.common.log.enums;
 /**
  * 操作状态
  * 
- * @author ruoyi
+ * @author mqtts
  *
  */
 public enum BusinessStatus

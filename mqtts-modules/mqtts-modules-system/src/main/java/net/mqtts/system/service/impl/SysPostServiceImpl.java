@@ -2,12 +2,12 @@ package net.mqtts.system.service.impl;
 
 import java.util.List;
 
+import net.mqtts.common.core.constant.UserConstants;
+import net.mqtts.common.core.exception.ServiceException;
+import net.mqtts.common.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ruoyi.common.core.constant.UserConstants;
-import com.ruoyi.common.core.exception.ServiceException;
-import com.ruoyi.common.core.utils.StringUtils;
 import net.mqtts.system.domain.SysPost;
 import net.mqtts.system.mapper.SysPostMapper;
 import net.mqtts.system.mapper.SysUserPostMapper;
@@ -16,7 +16,7 @@ import net.mqtts.system.service.ISysPostService;
 /**
  * 岗位信息 服务层处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class SysPostServiceImpl implements ISysPostService

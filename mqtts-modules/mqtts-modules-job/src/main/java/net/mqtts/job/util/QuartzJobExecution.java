@@ -7,7 +7,7 @@ import net.mqtts.job.domain.SysJob;
 /**
  * 定时任务处理（允许并发执行）
  * 
- * @author ruoyi
+ * @author mqtts
  *
  */
 public class QuartzJobExecution extends AbstractQuartzJob

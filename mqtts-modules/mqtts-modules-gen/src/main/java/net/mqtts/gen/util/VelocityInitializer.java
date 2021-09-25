@@ -1,13 +1,14 @@
 package net.mqtts.gen.util;
 
 import java.util.Properties;
+
+import net.mqtts.common.core.constant.Constants;
 import org.apache.velocity.app.Velocity;
-import com.ruoyi.common.core.constant.Constants;
 
 /**
  * VelocityEngine工厂
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class VelocityInitializer
 {

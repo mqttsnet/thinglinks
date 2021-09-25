@@ -1,16 +1,17 @@
 package net.mqtts.system.service.impl;
 
 import java.util.List;
+
+import net.mqtts.system.api.domain.SysOperLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.api.domain.SysOperLog;
 import net.mqtts.system.mapper.SysOperLogMapper;
 import net.mqtts.system.service.ISysOperLogService;
 
 /**
  * 操作日志 服务层处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class SysOperLogServiceImpl implements ISysOperLogService

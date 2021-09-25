@@ -1,15 +1,15 @@
 package net.mqtts.system;
 
+import net.mqtts.common.security.annotation.EnableCustomConfig;
+import net.mqtts.common.security.annotation.EnableRyFeignClients;
+import net.mqtts.common.swagger.annotation.EnableCustomSwagger2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import com.ruoyi.common.security.annotation.EnableCustomConfig;
-import com.ruoyi.common.security.annotation.EnableRyFeignClients;
-import com.ruoyi.common.swagger.annotation.EnableCustomSwagger2;
 
 /**
  * 系统模块
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @EnableCustomConfig
 @EnableCustomSwagger2

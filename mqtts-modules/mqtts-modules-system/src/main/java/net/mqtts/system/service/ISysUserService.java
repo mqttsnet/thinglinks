@@ -1,12 +1,13 @@
 package net.mqtts.system.service;
 
+import net.mqtts.system.api.domain.SysUser;
+
 import java.util.List;
-import com.ruoyi.system.api.domain.SysUser;
 
 /**
  * 用户 业务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysUserService
 {

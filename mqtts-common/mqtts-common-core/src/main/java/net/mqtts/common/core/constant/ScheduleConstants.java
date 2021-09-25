@@ -3,7 +3,7 @@ package net.mqtts.common.core.constant;
 /**
  * 任务调度通用常量
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class ScheduleConstants
 {

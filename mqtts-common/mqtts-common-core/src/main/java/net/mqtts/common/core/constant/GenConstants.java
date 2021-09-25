@@ -3,7 +3,7 @@ package net.mqtts.common.core.constant;
 /**
  * 代码生成通用常量
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class GenConstants
 {

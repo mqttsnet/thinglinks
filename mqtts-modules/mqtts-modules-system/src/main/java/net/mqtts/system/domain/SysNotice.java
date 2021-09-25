@@ -2,15 +2,15 @@ package net.mqtts.system.domain;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import net.mqtts.common.core.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.ruoyi.common.core.web.domain.BaseEntity;
 
 /**
  * 通知公告表 sys_notice
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class SysNotice extends BaseEntity
 {

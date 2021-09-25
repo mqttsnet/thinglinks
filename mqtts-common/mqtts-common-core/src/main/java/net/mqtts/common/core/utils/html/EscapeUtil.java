@@ -5,7 +5,7 @@ import net.mqtts.common.core.utils.StringUtils;
 /**
  * 转义和反转义工具类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class EscapeUtil
 {

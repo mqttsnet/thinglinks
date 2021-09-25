@@ -3,7 +3,7 @@ package net.mqtts.common.core.utils.sign;
 /**
  * Base64工具类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public final class Base64
 {

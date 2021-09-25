@@ -8,7 +8,7 @@ import net.mqtts.common.core.utils.StringUtils;
 /**
  * 获取IP方法
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class IpUtils
 {

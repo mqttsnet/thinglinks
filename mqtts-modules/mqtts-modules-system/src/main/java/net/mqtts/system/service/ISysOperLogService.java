@@ -1,12 +1,13 @@
 package net.mqtts.system.service;
 
+import net.mqtts.system.api.domain.SysOperLog;
+
 import java.util.List;
-import com.ruoyi.system.api.domain.SysOperLog;
 
 /**
  * 操作日志 服务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysOperLogService
 {

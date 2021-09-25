@@ -6,7 +6,7 @@ import net.mqtts.job.domain.SysJobLog;
 /**
  * 定时任务调度日志信息信息 服务层
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public interface ISysJobLogService
 {

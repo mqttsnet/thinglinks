@@ -9,7 +9,7 @@ import net.mqtts.common.core.constant.SecurityConstants;
 /**
  * 权限获取工具类
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class SecurityUtils
 {

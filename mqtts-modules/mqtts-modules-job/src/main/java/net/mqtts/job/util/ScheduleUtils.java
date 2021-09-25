@@ -1,5 +1,7 @@
 package net.mqtts.job.util;
 
+import net.mqtts.common.core.constant.ScheduleConstants;
+import net.mqtts.common.core.exception.job.TaskException;
 import net.mqtts.job.domain.SysJob;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
@@ -11,14 +13,11 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
-import com.ruoyi.common.core.constant.ScheduleConstants;
-import com.ruoyi.common.core.exception.job.TaskException;
-import com.ruoyi.common.core.exception.job.TaskException.Code;
 
 /**
  * 定时任务工具类
  * 
- * @author ruoyi
+ * @author mqtts
  *
  */
 public class ScheduleUtils
@@ -107,7 +106,7 @@ public class ScheduleUtils
                 return cb.withMisfireHandlingInstructionDoNothing();
             default:
                 throw new TaskException("The task misfire policy '" + job.getMisfirePolicy()
-                        + "' cannot be used in cron schedule tasks", Code.CONFIG_ERROR);
+                        + "' cannot be used in cron schedule tasks", TaskException.Code.CONFIG_ERROR);
         }
     }
 }

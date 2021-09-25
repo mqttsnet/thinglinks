@@ -7,7 +7,7 @@ import de.codecentric.boot.admin.server.config.EnableAdminServer;
 /**
  * 监控中心
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @EnableAdminServer
 @SpringBootApplication

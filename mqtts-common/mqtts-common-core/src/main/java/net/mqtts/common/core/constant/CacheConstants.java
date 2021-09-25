@@ -3,7 +3,7 @@ package net.mqtts.common.core.constant;
 /**
  * 缓存的key 常量
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class CacheConstants
 {

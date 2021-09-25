@@ -3,7 +3,7 @@ import { Notification, MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
-import { tansParams } from "@/utils/ruoyi";
+import { tansParams } from "@/utils/mqtts";
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例

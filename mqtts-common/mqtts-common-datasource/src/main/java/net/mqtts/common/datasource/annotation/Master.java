@@ -10,7 +10,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 /**
  * 主库数据源
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

@@ -1,15 +1,15 @@
 package net.mqtts.system.service.impl;
 
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.system.api.model.LoginUser;
 import org.springframework.stereotype.Service;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.system.api.model.LoginUser;
 import net.mqtts.system.domain.SysUserOnline;
 import net.mqtts.system.service.ISysUserOnlineService;
 
 /**
  * 在线用户 服务层处理
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Service
 public class SysUserOnlineServiceImpl implements ISysUserOnlineService

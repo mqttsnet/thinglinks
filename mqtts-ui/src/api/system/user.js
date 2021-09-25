@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { praseStrEmpty } from "@/utils/ruoyi";
+import { praseStrEmpty } from "@/utils/mqtts";
 
 // 查询用户列表
 export function listUser(query) {

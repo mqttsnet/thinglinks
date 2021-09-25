@@ -2,6 +2,14 @@ package net.mqtts.system.controller;
 
 import java.util.List;
 
+import net.mqtts.common.core.constant.UserConstants;
+import net.mqtts.common.core.utils.SecurityUtils;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.core.web.controller.BaseController;
+import net.mqtts.common.core.web.domain.AjaxResult;
+import net.mqtts.common.log.annotation.Log;
+import net.mqtts.common.log.enums.BusinessType;
+import net.mqtts.common.security.annotation.PreAuthorize;
 import net.mqtts.system.service.ISysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -13,20 +21,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.core.constant.UserConstants;
-import com.ruoyi.common.core.utils.SecurityUtils;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.web.controller.BaseController;
-import com.ruoyi.common.core.web.domain.AjaxResult;
-import com.ruoyi.common.log.annotation.Log;
-import com.ruoyi.common.log.enums.BusinessType;
-import com.ruoyi.common.security.annotation.PreAuthorize;
 import net.mqtts.system.domain.SysMenu;
 
 /**
  * 菜单信息
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @RestController
 @RequestMapping("/menu")

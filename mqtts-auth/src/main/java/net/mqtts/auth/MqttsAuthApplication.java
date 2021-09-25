@@ -1,14 +1,14 @@
 package net.mqtts.auth;
 
+import net.mqtts.common.security.annotation.EnableRyFeignClients;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import com.ruoyi.common.security.annotation.EnableRyFeignClients;
 
 /**
  * 认证授权中心
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @EnableRyFeignClients
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })

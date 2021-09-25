@@ -20,12 +20,14 @@
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-api-system</artifactId>
+            <version>3.1.0</version>
         </dependency>
         
         <!-- mqtts Common Redis-->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-redis</artifactId>
+            <version>3.1.0</version>
         </dependency>
         
     </dependencies>

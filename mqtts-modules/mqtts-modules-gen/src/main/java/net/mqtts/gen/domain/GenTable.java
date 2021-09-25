@@ -3,15 +3,16 @@ package net.mqtts.gen.domain;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+
+import net.mqtts.common.core.constant.GenConstants;
+import net.mqtts.common.core.utils.StringUtils;
+import net.mqtts.common.core.web.domain.BaseEntity;
 import org.apache.commons.lang3.ArrayUtils;
-import com.ruoyi.common.core.constant.GenConstants;
-import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.web.domain.BaseEntity;
 
 /**
  * 业务表 gen_table
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class GenTable extends BaseEntity
 {

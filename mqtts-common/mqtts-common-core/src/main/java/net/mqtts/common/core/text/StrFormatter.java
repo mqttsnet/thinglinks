@@ -5,7 +5,7 @@ import net.mqtts.common.core.utils.StringUtils;
 /**
  * 字符串格式化
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class StrFormatter
 {

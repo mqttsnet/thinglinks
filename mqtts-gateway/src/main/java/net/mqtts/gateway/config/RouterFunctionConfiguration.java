@@ -12,7 +12,7 @@ import net.mqtts.gateway.handler.ValidateCodeHandler;
 /**
  * 路由配置信息
  * 
- * @author ruoyi
+ * @author mqtts
  */
 @Configuration
 public class RouterFunctionConfiguration

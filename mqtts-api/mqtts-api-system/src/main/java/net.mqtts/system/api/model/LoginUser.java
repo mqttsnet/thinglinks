@@ -1,13 +1,14 @@
-package com.ruoyi.system.api.model;
+package net.mqtts.system.api.model;
+
+import net.mqtts.system.api.domain.SysUser;
 
 import java.io.Serializable;
 import java.util.Set;
-import com.ruoyi.system.api.domain.SysUser;
 
 /**
  * 用户信息
  *
- * @author ruoyi
+ * @author mqtts
  */
 public class LoginUser implements Serializable
 {

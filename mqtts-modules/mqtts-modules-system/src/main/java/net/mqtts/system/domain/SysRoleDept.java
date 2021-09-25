@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * 角色和部门关联 sys_role_dept
  * 
- * @author ruoyi
+ * @author mqtts
  */
 public class SysRoleDept
 {
