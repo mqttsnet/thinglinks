@@ -22,11 +22,11 @@
           >
           <br />
           阿里云服务器折扣区
-          <el-link href="http://aly.mqtts.net" type="primary" target="_blank"
+          <el-link href="http://aly.ruoyi.vip" type="primary" target="_blank"
             >>☛☛点我进入☚☚</el-link
           >
           &nbsp;&nbsp;&nbsp; 腾讯云服务器秒杀区
-          <el-link href="http://txy.mqtts.net" type="primary" target="_blank"
+          <el-link href="http://txy.ruoyi.vip" type="primary" target="_blank"
             >>☛☛点我进入☚☚</el-link
           ><br />
           <h4 class="text-danger">
@@ -55,14 +55,14 @@
             size="mini"
             icon="el-icon-cloudy"
             plain
-            @click="goTarget('https://gitee.com/xiaonannet/mqtts')"
+            @click="goTarget('https://gitee.com/y_project/RuoYi-Cloud')"
             >访问码云</el-button
           >
           <el-button
             size="mini"
             icon="el-icon-s-home"
             plain
-            @click="goTarget('http://mqtts.net')"
+            @click="goTarget('http://ruoyi.vip')"
             >访问主页</el-button
           >
         </p>
@@ -112,9 +112,9 @@
           <div class="body">
             <p>
               <i class="el-icon-s-promotion"></i> 官网：<el-link
-                href="http://www.mqtts.net"
+                href="http://www.ruoyi.vip"
                 target="_blank"
-                >http://www.mqtts.net</el-link
+                >http://www.ruoyi.vip</el-link
               >
             </p>
             <p>

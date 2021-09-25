@@ -6,10 +6,10 @@
 
 <script>
 export default {
-  name: 'mqttsDoc',
+  name: 'RuoYiDoc',
   data() {
     return {
-      url: 'http://doc.mqtts.net/mqtts'
+      url: 'http://doc.ruoyi.vip/ruoyi-cloud'
     }
   },
   methods: {
