@@ -112,29 +112,15 @@
           <div class="body">
             <p>
               <i class="el-icon-s-promotion"></i> 官网：<el-link
-                href="http://www.ruoyi.vip"
+                href="http://www.mqtts.net"
                 target="_blank"
-                >http://www.ruoyi.vip</el-link
-              >
-            </p>
-            <p>
-              <i class="el-icon-user-solid"></i> QQ群：<s>满42799195</s>
-              <s>满170157040</s> <s>满130643120</s> <s>满225920371</s>
-              <a href="https://jq.qq.com/?_wv=1027&k=Kg9CdVdx" target="_blank">
-                201705537</a
+                >http://www.mqtts.net</el-link
               >
             </p>
             <p>
               <i class="el-icon-chat-dot-round"></i> 微信：<a
                 href="javascript:;"
-                >/ *MQTTS</a
-              >
-            </p>
-            <p>
-              <i class="el-icon-money"></i> 支付宝：<a
-                href="javascript:;"
-                class="支付宝信息"
-                >/ *MQTTS</a
+                >/ *xiaonannet</a
               >
             </p>
           </div>
@@ -531,23 +517,6 @@
               </ol>
             </el-collapse-item>
           </el-collapse>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="8">
-        <el-card class="update-log">
-          <div slot="header" class="clearfix">
-            <span>捐赠支持</span>
-          </div>
-          <div class="body">
-            <img
-              src="https://oscimg.oschina.net/oscnet/up-d6695f82666e5018f715c41cb7ee60d3b73.png"
-              alt="donate"
-              width="100%"
-            />
-            <span style="display: inline-block; height: 30px; line-height: 30px"
-              >你可以请作者喝杯咖啡表示鼓励</span
-            >
-          </div>
         </el-card>
       </el-col>
     </el-row>
