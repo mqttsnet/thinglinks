@@ -22,5 +22,6 @@ public class MqttsTdengineApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MqttsTdengineApplication.class, args);
+        System.out.println("(♥◠‿◠)ﾉﾞ  TDengine服务启动成功   ლ(´ڡ`ლ)ﾞ  ");
     }
 }
