@@ -13,7 +13,7 @@
 
 5、流量控制框架选型Sentinel，分布式事务选型Seata。
 
-6、时序数据库采用InfluxDB、处理物联网海量数据写入与负载查询。
+6、时序数据库采用TDengine开源、高效的物联网大数据平台、处理物联网海量数据写入与负载查询。
 
 
 ## 系统模块
@@ -37,8 +37,8 @@ net.mqtts
 │       └── mqtts-system                              // 系统模块 [9201]
 │       └── mqtts-gen                                 // 代码生成 [9202]
 │       └── mqtts-job                                 // 定时任务 [9203]
+│       └── mqtts-tdengine                            // TDengine服务 [9204]
 │       └── mqtts-file                                // 文件服务 [9300]
-│       └── mqtts-broker                               // MQTTBroker服务 [9301]
 ├── mqtts-visual          // 图形化管理模块
 │       └── mqtts-visual-monitor                      // 监控中心 [9100]
 ├──pom.xml                // 公共依赖
@@ -57,7 +57,7 @@ net.mqtts
 
 ## 开发计划
 
-1、MQTTbroker集成时序数据库
+1、MQTTbroker集成时序数据库TDengine
 
 2、客户端、主题列表
 
