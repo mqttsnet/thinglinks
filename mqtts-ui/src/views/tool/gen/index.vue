@@ -270,7 +270,7 @@ export default {
           this.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
         });
       } else {
-        downLoadZip("/code/gen/batchGenCode?tables=" + tableNames, "ruoyi");
+        downLoadZip("/code/gen/batchGenCode?tables=" + tableNames, "mqtts");
       }
     },
     /** 同步数据库操作 */

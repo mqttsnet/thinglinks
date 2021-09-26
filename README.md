@@ -3,15 +3,17 @@
 
 一款高性、高吞吐量、高扩展性的物联网mqttBroker！单机可以支持百万链接，同时支持自定义扩展功能多种协议交互，功能非常强大，采用netty作为通信层组件，支持插件化开发！
 
-1、采用前后端分离的模式，前端(基于 [RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue))。
+1、采用前后端分离的模式，前端框架(基于 [RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue))。
 
 2、后端采用Spring Boot、Spring Cloud & Alibaba。
 
-3、MqttBroker基于Netty、Reactor3、Reactor-netty。
+3、MqttBroker基于Netty、Reactor3、Reactor-netty(基于[mqtt-cluster](https://gitee.com/quickmsg/mqtt-cluster.git)))。
 
 4、注册中心、配置中心选型Nacos，权限认证使用Redis。
 
 5、流量控制框架选型Sentinel，分布式事务选型Seata。
+
+6、时序数据库采用InfluxDB、处理物联网海量数据写入与负载查询。
 
 
 ## 系统模块
@@ -46,8 +48,30 @@ net.mqtts
 
 待更新
 
+## 在线体验(暂未对外开放)
+
+- admin/admin123
+
+演示地址：http://mqtts.net
+文档地址：http://doc.mqtts.net
+
 ## 开发计划
+
 1、MQTTbroker集成时序数据库
 
-2、规则引擎
+2、客户端、主题列表
 
+3、规则引擎
+
+4、告警列表
+
+5、大屏展示（客户端、消息发布订阅、告警）
+
+## 演示图
+
+待更新
+
+
+##交流群
+
+待更新
