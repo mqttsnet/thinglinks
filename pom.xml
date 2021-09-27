@@ -350,8 +350,8 @@
     <scm>
         <tag>master</tag>
         <url>git@github.com:xiaonannet/mqtts.git</url>
-        <connection>scm:git:git@github.com:xiaonannet/mqtts.git</connection>
-        <developerConnection>scm:git:git@github.com:xiaonannet/mqtts.git</developerConnection>
+        <connection>scm:git@github.com:xiaonannet/mqtts.git</connection>
+        <developerConnection>scm:git@github.com:xiaonannet/mqtts.git</developerConnection>
     </scm>
     <developers>
         <developer>
