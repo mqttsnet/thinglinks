@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      title: 'MQTTS管理系统',
+      title: 'MQTTS物联网平台',
       logo: logoImg
     }
   }
