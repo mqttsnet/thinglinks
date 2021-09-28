@@ -71,6 +71,25 @@ net.mqtts
 
 待更新
 
+## 
+
+###启动命令（进入对应目录后逐一启动即可）
+1、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-gateway-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+
+2、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-auth-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+
+3、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-file-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+
+4、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-gen-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+
+5、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-job-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+
+6、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-system-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+
+7、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-tdengine-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+
+8、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-visual-monitor-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+
 
 ##交流群
 
