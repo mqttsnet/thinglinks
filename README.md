@@ -71,7 +71,7 @@ net.mqtts
 
 待更新
 
-## 
+## 配置使用
 
 ###启动命令（进入对应目录后逐一启动即可）
 1、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-gateway-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
