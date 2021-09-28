@@ -9,7 +9,7 @@ spring:
     name: mqtts-gateway
   profiles:
     # 环境配置
-    active: dev
+    active: test
   main:
     allow-bean-definition-overriding: true
   cloud:
@@ -18,12 +18,12 @@ spring:
         # 服务注册地址
         server-addr: 49.235.122.136:8848
         #命名空间
-        namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+        namespace: b72a3e14-0e00-47ff-b07e-a93cad98b0d4
       config:
         # 配置中心地址
         server-addr: 49.235.122.136:8848
         #命名空间
-        namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+        namespace: b72a3e14-0e00-47ff-b07e-a93cad98b0d4
         # 配置文件格式
         file-extension: yml
         # 共享配置
@@ -42,7 +42,7 @@ spring:
           nacos:
             server-addr: 49.235.122.136:8848
             #命名空间
-            namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+            namespace: b72a3e14-0e00-47ff-b07e-a93cad98b0d4
             dataId: sentinel-mqtts-gateway
             groupId: DEFAULT_GROUP
             data-type: json

@@ -20,7 +20,7 @@
 
 ~~~
 net.mqtts     
-├── mqtts-ui              // 前端框架 [80]
+├── mqtts-ui              // 前端框架 [8088]
 ├── mqtts-gateway         // 网关模块 [8080]
 ├── mqtts-auth            // 认证中心 [9200]
 ├── mqtts-api             // 接口模块
@@ -39,6 +39,7 @@ net.mqtts
 │       └── mqtts-job                                 // 定时任务 [9203]
 │       └── mqtts-tdengine                            // TDengine服务 [9204]
 │       └── mqtts-file                                // 文件服务 [9300]
+│       └── mqtts-broker                            // Mqtts Broker服务 [1883]
 ├── mqtts-visual          // 图形化管理模块
 │       └── mqtts-visual-monitor                      // 监控中心 [9100]
 ├──pom.xml                // 公共依赖
@@ -74,21 +75,21 @@ net.mqtts
 ## 配置使用
 
 ###启动命令（进入对应目录后逐一启动即可）
-1、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-gateway-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+1、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-gateway-3.1.0.jar >/dev/null 2>&1 &
 
-2、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-auth-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+2、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-auth-3.1.0.jar >/dev/null 2>&1 &
 
-3、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-file-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+3、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-file-3.1.0.jar >/dev/null 2>&1 &
 
-4、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-gen-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+4、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-gen-3.1.0.jar >/dev/null 2>&1 &
 
-5、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-job-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+5、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-job-3.1.0.jar >/dev/null 2>&1 &
 
-6、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-system-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+6、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-system-3.1.0.jar >/dev/null 2>&1 &
 
-7、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-tdengine-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+7、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-tdengine-3.1.0.jar >/dev/null 2>&1 &
 
-8、nohup java -Xms1g -Xmx1g -Xss1024K -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-visual-monitor-3.1.0.jar  --spring.profiles.active=test >/dev/null 2>&1 &
+8、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-visual-monitor-3.1.0.jar >/dev/null 2>&1 &
 
 
 ##交流群
