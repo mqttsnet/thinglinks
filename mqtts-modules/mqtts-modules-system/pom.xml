@@ -17,7 +17,7 @@
 
     <properties>
         <!--打包目录-->
-        <mqtts.package.url>D:\mqtts-package\system</mqtts.package.url>
+        <mqtts.package.url>D:\mqtts-server\system</mqtts.package.url>
         <!--启动类目录-->
         <mqtts.mainClass.url>net.mqtts.system.MqttsSystemApplication</mqtts.mainClass.url>
     </properties>

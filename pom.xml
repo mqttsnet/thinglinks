@@ -39,7 +39,7 @@
         <common-pool.version>2.10.0</common-pool.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <!--lib打包目录-->
-        <mqtts.lib.package.url>D:\mqtts-package\lib\</mqtts.lib.package.url>
+        <mqtts.lib.package.url>D:\mqtts-server\lib\</mqtts.lib.package.url>
         <!-- 文件拷贝时的编码 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
