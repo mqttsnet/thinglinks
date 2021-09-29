@@ -21,7 +21,7 @@
 ~~~
 net.mqtts     
 ├── mqtts-ui              // 前端框架 [19000]
-├── mqtts-gateway         // 网关模块 [19100]、[sentinel:19101、19102]
+├── mqtts-gateway         // 网关模块 [19100]、[sentinel-web:19101、sentinel-port:19102]
 ├── mqtts-auth            // 认证中心 [19200]
 ├── mqtts-api             // 接口模块
 │       └── mqtts-api-system                          // 系统接口
@@ -42,7 +42,7 @@ net.mqtts
 │       └── mqtts-modules-link                        // Link服务 [19305]
 │       └── mqtts-modules-broker                      // Mqtts Broker服务 [19306]、[TCP:11883]、[SSL:18443]、[websocket:18999]
 ├── mqtts-visual          // 图形化管理模块
-│       └── mqtts-visual-monitor                      // 监控中心 [19400]
+│       └── mqtts-visual-monitor                      // 监控中心 [monitor-web:19401、monitor-port:19400]
 ├──pom.xml                // 公共依赖
 ~~~
 
