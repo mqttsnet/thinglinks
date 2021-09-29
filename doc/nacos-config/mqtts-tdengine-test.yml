@@ -1,11 +1,11 @@
 spring: 
     redis:
-        host: 127.0.0.1
+        host: 49.235.122.136
         port: 6379
         password: mqtts
     datasource: 
        driver-class-name: com.taosdata.jdbc.rs.RestfulDriver
-       url: jdbc:TAOS-RS://127.0.0.1:6041/test?timezone=UTC-8&charset=UTF-8&locale=en_US.UTF-8
+       url: jdbc:TAOS-RS://49.235.122.136:6041/test?timezone=UTC-8&charset=UTF-8&locale=en_US.UTF-8
        username: root
        password: taosdata
        druid: 

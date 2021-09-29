@@ -1,12 +1,12 @@
 # spring配置
 spring: 
   redis:
-    host: 127.0.0.1
+    host: 49.235.122.136
     port: 6379
     password: mqtts 
   datasource: 
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/mqtts?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://49.235.122.136:3306/mqtts?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
     username: mqtts
     password: 3jZYkeD5NR8WzKZ6
 

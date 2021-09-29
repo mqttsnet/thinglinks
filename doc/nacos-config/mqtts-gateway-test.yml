@@ -1,6 +1,6 @@
 spring:
   redis:
-    host: 127.0.0.1
+    host: 49.235.122.136
     port: 6379
     password: mqtts
   cloud:
