@@ -1,6 +1,6 @@
 # Tomcat
 server:
-  port: 9300
+  port: 19300
 
 # Spring
 spring: 
@@ -14,14 +14,14 @@ spring:
     nacos:
       discovery:
         # 配置中心地址
-        server-addr: 49.235.122.136:8848
+        server-addr: 127.0.0.1:8848
         #命名空间
-        namespace: b72a3e14-0e00-47ff-b07e-a93cad98b0d4
+        namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
       config:
         # 配置中心地址
-        server-addr: 49.235.122.136:8848
+        server-addr: 127.0.0.1:8848
         #命名空间
-        namespace: b72a3e14-0e00-47ff-b07e-a93cad98b0d4
+        namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
         # 配置文件格式
         file-extension: yml
         # 共享配置

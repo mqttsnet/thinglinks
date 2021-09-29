@@ -14,6 +14,7 @@
         <module>mqtts-modules-job</module>
         <module>mqtts-modules-file</module>
         <module>mqtts-modules-tdengine</module>
+        <module>mqtts-modules-link</module>
     </modules>
 
     <artifactId>mqtts-modules</artifactId>

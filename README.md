@@ -7,7 +7,7 @@
 
 2、后端采用Spring Boot、Spring Cloud & Alibaba。
 
-3、MqttBroker基于Netty、Reactor3、Reactor-netty(基于[mqtt-cluster](https://gitee.com/quickmsg/mqtt-cluster.git)))。
+3、MqttBroker(支持集群化部署)基于Netty、Reactor3、Reactor-netty(基于[mqtt-cluster](https://gitee.com/quickmsg/mqtt-cluster.git)))。
 
 4、注册中心、配置中心选型Nacos，权限认证使用Redis。
 
@@ -20,9 +20,9 @@
 
 ~~~
 net.mqtts     
-├── mqtts-ui              // 前端框架 [8088]
-├── mqtts-gateway         // 网关模块 [8080]
-├── mqtts-auth            // 认证中心 [9200]
+├── mqtts-ui              // 前端框架 [19000]
+├── mqtts-gateway         // 网关模块 [19100]、[sentinel:19101、19102]
+├── mqtts-auth            // 认证中心 [19200]
 ├── mqtts-api             // 接口模块
 │       └── mqtts-api-system                          // 系统接口
 ├── mqtts-common          // 通用模块
@@ -34,14 +34,15 @@ net.mqtts
 │       └── mqtts-common-security                     // 安全模块
 │       └── mqtts-common-swagger                      // 系统接口
 ├── mqtts-modules         // 业务模块
-│       └── mqtts-system                              // 系统模块 [9201]
-│       └── mqtts-gen                                 // 代码生成 [9202]
-│       └── mqtts-job                                 // 定时任务 [9203]
-│       └── mqtts-tdengine                            // TDengine服务 [9204]
-│       └── mqtts-file                                // 文件服务 [9300]
-│       └── mqtts-broker                            // Mqtts Broker服务 [1883]
+│       └── mqtts-modules-file                        // 文件服务 [19300]
+│       └── mqtts-modules-gen                         // 代码生成 [19301]
+│       └── mqtts-modules-job                         // 定时任务 [19302]
+│       └── mqtts-modules-system                      // 系统模块 [19303]
+│       └── mqtts-modules-tdengine                    // TDengine服务 [19304]
+│       └── mqtts-modules-link                        // Link服务 [19305]
+│       └── mqtts-modules-broker                      // Mqtts Broker服务 [19306]、[TCP:11883]、[SSL:18443]、[websocket:18999]
 ├── mqtts-visual          // 图形化管理模块
-│       └── mqtts-visual-monitor                      // 监控中心 [9100]
+│       └── mqtts-visual-monitor                      // 监控中心 [19400]
 ├──pom.xml                // 公共依赖
 ~~~
 

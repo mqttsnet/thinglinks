@@ -1,12 +1,12 @@
 # Tomcat
 server:
-  port: 19400
+  port: 19305
 
 # Spring
 spring: 
   application:
     # 应用名称
-    name: mqtts-monitor
+    name: mqtts-link
   profiles:
     # 环境配置
     active: test
