@@ -1,7 +1,7 @@
 # spring配置
 spring: 
   redis:
-    host: 49.235.122.136
+    host: 218.78.103.93
     port: 6379
     password: mqtts
   datasource:
@@ -30,7 +30,7 @@ spring:
           # 主库数据源
           master:
             driver-class-name: com.mysql.cj.jdbc.Driver
-            url: jdbc:mysql://49.235.122.136:3306/mqtts?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+            url: jdbc:mysql://218.78.103.93:3306/mqtts?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
             username: mqtts
             password: 3jZYkeD5NR8WzKZ6
           # 从库数据源
@@ -59,15 +59,15 @@ seata:
   config:
     type: nacos
     nacos:
-      serverAddr: 49.235.122.136:8848
+      serverAddr: 218.78.103.93:8848
       group: SEATA_GROUP
-      namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+      namespace: d52c413e-9b5c-4ee7-b4c2-7950ebe0a0d6
   registry:
     type: nacos
     nacos:
       application: seata-server
-      server-addr: 49.235.122.136:8848
-      namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+      server-addr: 218.78.103.93:8848
+      namespace: d52c413e-9b5c-4ee7-b4c2-7950ebe0a0d6
 
 # mybatis配置
 mybatis:

@@ -1,6 +1,6 @@
 # 本地文件上传    
 file:
-    domain: http://49.235.122.136:9300
+    domain: http://218.78.103.93:9300
     path: D:/mqtts/uploadPath
     prefix: /statics
 
@@ -13,7 +13,7 @@ fdfs:
 
 # Minio配置
 minio:
-  url: http://49.235.122.136:9000
+  url: http://218.78.103.93:9000
   accessKey: minioadmin
   secretKey: minioadmin
   bucketName: mqtts

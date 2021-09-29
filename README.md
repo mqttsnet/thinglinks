@@ -21,7 +21,7 @@
 ~~~
 net.mqtts     
 ├── mqtts-ui              // 前端框架 [19000]
-├── mqtts-gateway         // 网关模块 [19100]、[sentinel-web:19101、sentinel-port:19102]
+├── mqtts-gateway         // 网关模块 [19100]、[sentinel:19101]
 ├── mqtts-auth            // 认证中心 [19200]
 ├── mqtts-api             // 接口模块
 │       └── mqtts-api-system                          // 系统接口
@@ -42,7 +42,7 @@ net.mqtts
 │       └── mqtts-modules-link                        // Link服务 [19305]
 │       └── mqtts-modules-broker                      // Mqtts Broker服务 [19306]、[TCP:11883]、[SSL:18443]、[websocket:18999]
 ├── mqtts-visual          // 图形化管理模块
-│       └── mqtts-visual-monitor                      // 监控中心 [monitor-web:19401、monitor-port:19400]
+│       └── mqtts-visual-monitor                      // 监控中心 [19400]
 ├──pom.xml                // 公共依赖
 ~~~
 
@@ -77,6 +77,8 @@ net.mqtts
 
 ###启动命令（进入对应目录后逐一启动即可）
 
+~~~
+
 1、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-gateway-3.1.0.jar >/dev/null 2>&1 &
 
 2、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-auth-3.1.0.jar >/dev/null 2>&1 &
@@ -93,6 +95,9 @@ net.mqtts
 
 8、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-visual-monitor-3.1.0.jar >/dev/null 2>&1 &
 
+9、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -Dserver.port=19101 -Dcsp.sentinel.dashboard.server=localhost:19101 -Dproject.name=sentinel-dashboard -Dsentinel.dashboard.auth.username=mqtts -Dsentinel.dashboard.auth.password=123456 -jar -Dfile.encoding=utf-8  ./sentinel-dashboard-1.8.2.jar >/dev/null 2>&1 &
+
+~~~
 
 ##交流群
 

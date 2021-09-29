@@ -35,7 +35,7 @@ spring:
       transport:
         # 控制台地址
         dashboard: 49.235.122.136:19101
-        port: 19102
+        port: 19101
       # nacos配置持久化
       datasource:
         ds1:
