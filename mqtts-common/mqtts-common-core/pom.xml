@@ -107,6 +107,13 @@
             <artifactId>swagger-annotations</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.7.14</version>
+        </dependency>
+
     </dependencies>
 
 </project>

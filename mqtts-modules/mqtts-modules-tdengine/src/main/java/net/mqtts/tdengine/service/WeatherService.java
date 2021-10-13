@@ -2,6 +2,7 @@ package net.mqtts.tdengine.service;
 
 import net.mqtts.tdengine.dao.WeatherMapper;
 import net.mqtts.tdengine.domain.Weather;
+import net.mqtts.tdengine.util.DateUntils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +42,13 @@ public class WeatherService {
     }
 
     public int save(float temperature, float humidity) {
+        long ts = System.currentTimeMillis();
+        long thirtySec = 1000 * 30;
         Weather weather = new Weather();
+        weather.setTs(new Timestamp(ts + (thirtySec)));
         weather.setTemperature(temperature);
         weather.setHumidity(humidity);
-
+        weather.setNote("1");
         return weatherMapper.insert(weather);
     }
 
