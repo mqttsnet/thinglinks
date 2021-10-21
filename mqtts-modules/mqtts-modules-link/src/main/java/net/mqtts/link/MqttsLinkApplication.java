@@ -1,5 +1,6 @@
 package net.mqtts.link;
 
+import io.github.quickmsg.starter.EnableMqttServer;
 import net.mqtts.common.security.annotation.EnableCustomConfig;
 import net.mqtts.common.security.annotation.EnableRyFeignClients;
 import net.mqtts.common.swagger.annotation.EnableCustomSwagger2;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
  * 
  * @author mqtts
  */
+@EnableMqttServer
 @EnableCustomConfig
 @EnableCustomSwagger2
 @EnableRyFeignClients
