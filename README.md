@@ -1,13 +1,15 @@
 
 # mqtts平台简介
 
-一款高性、高吞吐量、高扩展性的物联网平台！单机可以支持百万链接，同时支持自定义扩展功能多种协议交互，功能非常强大，采用netty作为通信层组件，支持插件化开发！
+本系统采用Spring Cloud 微服务架构,一款高性、高吞吐量、高扩展性的物联网平台! 单机可以支持百万链接,同时支持自定义扩展功能多种协议交互，支持插件化开发! 
 
-1、采用前后端分离的模式，前端框架(基于 [RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue))。
+## 技术栈
+
+1、采用前后端分离的模式，前端框架VUE。
 
 2、后端采用Spring Boot、Spring Cloud & Alibaba。
 
-3、MqttBroker(支持集群化部署)基于Netty、Reactor3、Reactor-netty(基于[mqtt-cluster](https://gitee.com/quickmsg/mqtt-cluster.git)))。
+3、MqttBroker(支持集群化部署)基于Netty、Reactor3、Reactor-netty(无缝集成SMQTT[mqtt-cluster](https://github.com/quickmsg/smqtt)))。
 
 4、注册中心、配置中心选型Nacos，权限认证使用Redis。
 
@@ -15,6 +17,13 @@
 
 6、时序数据库采用TDengine开源、高效的物联网大数据平台、处理物联网海量数据写入与负载查询。
 
+## 核心特性
+
+支持统一产品模型管理,多种设备,多种厂家,统一设备连接管理,多协议适配(TCP,MQTT,UDP,CoAP,HTTP等)。
+
+灵活的规则引擎,设备告警,消息通知,数据转发。
+
+设备地理位置可视化查看,可视化大屏
 
 ## 系统模块
 
@@ -39,12 +48,15 @@ net.mqtts
 │       └── mqtts-modules-job                         // 定时任务 [19302]
 │       └── mqtts-modules-system                      // 系统模块 [19303]
 │       └── mqtts-modules-tdengine                    // TDengine服务 [19304]
-│       └── mqtts-modules-link                        // Link服务 [19305]
-│       └── mqtts-modules-broker                      // Mqtts Broker服务 [19306]、[TCP:11883]、[SSL:18443]、[websocket:18999]
+│       └── mqtts-modules-link                        // Link服务 [19305]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
 ├── mqtts-visual          // 图形化管理模块
 │       └── mqtts-visual-monitor                      // 监控中心 [19400]
 ├──pom.xml                // 公共依赖
 ~~~
+
+## 设备集成LINK架构
+
+![](doc/imgs/link.png)
 
 ## 功能列表
 
@@ -52,18 +64,18 @@ net.mqtts
 
 ## 在线体验(暂未对外开放)
 
-- admin/admin123
+- mqtts/123456
 
 演示地址：http://mqtts.net
 文档地址：http://doc.mqtts.net
 
 ## 开发计划
 
-1、MQTTbroker集成时序数据库TDengine
+1、设备集成、设备管理页面开发(实现中)
 
-2、客户端、主题列表
+2、设备消息查看
 
-3、规则引擎
+3、规则引擎可视化配置页面
 
 4、告警列表
 
