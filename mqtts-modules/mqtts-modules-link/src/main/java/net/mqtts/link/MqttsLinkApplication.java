@@ -4,9 +4,13 @@ import io.github.quickmsg.starter.EnableMqttServer;
 import net.mqtts.common.security.annotation.EnableCustomConfig;
 import net.mqtts.common.security.annotation.EnableRyFeignClients;
 import net.mqtts.common.swagger.annotation.EnableCustomSwagger2;
+import net.mqtts.link.service.impl.PasswordAuthenticationImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.CrossOrigin;
+
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 /**
  * Link
@@ -29,5 +33,11 @@ public class MqttsLinkApplication
     {
         SpringApplication.run(MqttsLinkApplication.class, args);
         System.out.println("(♥◠‿◠)ﾉﾞ  Link模块启动成功   ლ(´ڡ`ლ)ﾞ  ");
+        ServiceLoader<PasswordAuthenticationImpl> serviceLoader = ServiceLoader.load(PasswordAuthenticationImpl.class);
+
+        Iterator iterator = serviceLoader.iterator();
+        while (iterator.hasNext()){
+            PasswordAuthenticationImpl item = (PasswordAuthenticationImpl)iterator.next();
+        }
     }
 }

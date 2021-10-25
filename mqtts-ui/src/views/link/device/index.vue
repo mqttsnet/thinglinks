@@ -234,7 +234,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -271,6 +271,14 @@
         <el-form-item label="设备名称" prop="deviceName">
           <el-input v-model="form.deviceName" placeholder="请输入设备名称" />
         </el-form-item>
+
+
+        <el-form-item label="设备名称" prop="deviceName">
+          <mapView @locationChange="locationChange" @locationFail="locationFail" ref="mapView" ></mapView>
+        </el-form-item>
+
+
+
         <el-form-item label="纬度" prop="latitude">
           <el-input v-model="form.latitude" placeholder="请输入纬度" />
         </el-form-item>
@@ -364,7 +372,12 @@
 <script>
 import { listDevice, getDevice, delDevice, addDevice, updateDevice } from "@/api/link/device";
 
+import mapView from './mapView';
+
 export default {
+  components: {
+    mapView
+  },
   name: "Device",
   dicts: ['link_device_auth_mode', 'link_device_connector', 'link_device_status', 'link_device_connect_status', 'link_device_is_will', 'link_device_protocol_type', 'link_device_device_type'],
   data() {
@@ -569,6 +582,12 @@ export default {
           }
         }
       });
+    },
+    locationChange(e){
+
+    },
+    locationFail(e){
+
     },
     /** 删除按钮操作 */
     handleDelete(row) {
