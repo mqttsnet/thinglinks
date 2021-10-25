@@ -3,8 +3,59 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="net.mqtts.link.mapper.MqttsDeviceMapper">
-    
-    <resultMap type="MqttsDevice" id="MqttsDeviceResult">
+    <sql id="Base_Column_List">
+        id,
+        client_id,
+        user_name,
+        `password`,
+        auth_mode,
+        device_id,
+        device_name,
+        latitude,
+        longitude,
+        connector,
+        device_description,
+        device_status,
+        connect_status,
+        is_will,
+        device_tags,
+        product_id,
+        manufacturer_id,
+        protocol_type,
+        device_type,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        remark
+    </sql>
+    <resultMap id="BaseResultMap" type="net.mqtts.link.domain.MqttsDevice">
+        <result column="id" property="id"/>
+        <result column="client_id" property="clientId"/>
+        <result column="user_name" property="userName"/>
+        <result column="password" property="password"/>
+        <result column="auth_mode" property="authMode"/>
+        <result column="device_id" property="deviceId"/>
+        <result column="device_name" property="deviceName"/>
+        <result column="latitude" property="latitude"/>
+        <result column="longitude" property="longitude"/>
+        <result column="connector" property="connector"/>
+        <result column="device_description" property="deviceDescription"/>
+        <result column="device_status" property="deviceStatus"/>
+        <result column="connect_status" property="connectStatus"/>
+        <result column="is_will" property="isWill"/>
+        <result column="device_tags" property="deviceTags"/>
+        <result column="product_id" property="productId"/>
+        <result column="manufacturer_id" property="manufacturerId"/>
+        <result column="protocol_type" property="protocolType"/>
+        <result column="device_type" property="deviceType"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+    <resultMap type="net.mqtts.link.domain.MqttsDevice" id="MqttsDeviceResult">
         <result property="id"    column="id"    />
         <result property="clientId"    column="client_id"    />
         <result property="userName"    column="user_name"    />
@@ -35,7 +86,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, client_id, user_name, password, auth_mode, device_id, device_name, latitude, longitude, connector, device_description, device_status, connect_status, is_will, device_tags, product_id, manufacturer_id, protocol_type, device_type, create_by, create_time, update_by, update_time, remark from mqtts_device
     </sql>
 
-    <select id="selectMqttsDeviceList" parameterType="MqttsDevice" resultMap="MqttsDeviceResult">
+    <select id="selectMqttsDeviceList" parameterType="net.mqtts.link.domain.MqttsDevice" resultMap="MqttsDeviceResult">
         <include refid="selectMqttsDeviceVo"/>
         <where>  
             <if test="clientId != null  and clientId != ''"> and client_id like concat('%', #{clientId}, '%')</if>
@@ -57,7 +108,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertMqttsDevice" parameterType="MqttsDevice">
+    <insert id="insertMqttsDevice" parameterType="net.mqtts.link.domain.MqttsDevice">
         insert into mqtts_device
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
@@ -113,7 +164,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateMqttsDevice" parameterType="MqttsDevice">
+    <update id="updateMqttsDevice" parameterType="net.mqtts.link.domain.MqttsDevice">
         update mqtts_device
         <trim prefix="SET" suffixOverrides=",">
             <if test="clientId != null and clientId != ''">client_id = #{clientId},</if>
@@ -153,4 +204,58 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+<!--auto shihuan sun  e-mail: 13733918655@163.com on 2021-10-25-->
+    <select id="findOneByClientIdAndUserNameAndPassword" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mqtts_device
+        <where>
+            <if test="clientId != null and clientId != ''">
+                and client_id=#{clientId}
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name=#{userName}
+            </if>
+            <if test="password != null and password != ''">
+                and `password`=#{password}
+            </if>
+        </where>
+    </select>
+
+<!--auto shihuan sun  e-mail: 13733918655@163.com on 2021-10-25-->
+    <select id="findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from mqtts_device
+        <where>
+            <if test="clientId != null and clientId != ''">
+                and client_id=#{clientId}
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name=#{userName}
+            </if>
+            <if test="password != null and password != ''">
+                and `password`=#{password}
+            </if>
+            <if test="deviceStatus != null and deviceStatus != ''">
+                and device_status=#{deviceStatus}
+            </if>
+            <if test="protocolType != null and protocolType != ''">
+                and protocol_type=#{protocolType}
+            </if>
+        </where>
+    </select>
+
+
+<!--auto shihuan sun  e-mail: 13733918655@163.com on 2021-10-26-->
+    <update id="updateConnectStatusByClientId">
+        update mqtts_device
+        set connect_status=#{updatedConnectStatus}
+        <where>
+            <if test="clientId != null and clientId != ''">
+                and client_id=#{clientId}
+            </if>
+        </where>
+    </update>
 </mapper>

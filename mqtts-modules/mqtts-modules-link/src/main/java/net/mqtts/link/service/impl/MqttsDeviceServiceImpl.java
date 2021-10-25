@@ -100,4 +100,29 @@ public class MqttsDeviceServiceImpl implements IMqttsDeviceService
     {
         return mqttsDeviceMapper.deleteMqttsDeviceById(id);
     }
+
+    @Override
+    public MqttsDevice findOneByClientIdAndUserNameAndPassword(String clientId, String userName, String password) {
+        return mqttsDeviceMapper.findOneByClientIdAndUserNameAndPassword(clientId,userName,password);
+    }
+
+	@Override
+	public MqttsDevice findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(String clientId,String userName,String password,String deviceStatus,String protocolType){
+		 return mqttsDeviceMapper.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientId,userName,password,deviceStatus,protocolType);
+	}
+
+
+	@Override
+	public int updateConnectStatusByClientId(String updatedConnectStatus,String clientId){
+		 return mqttsDeviceMapper.updateConnectStatusByClientId(updatedConnectStatus,clientId);
+	}
+
+
+
+
+
+
+
+
+
 }

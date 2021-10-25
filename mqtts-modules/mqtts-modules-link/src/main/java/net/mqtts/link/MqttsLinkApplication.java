@@ -33,11 +33,5 @@ public class MqttsLinkApplication
     {
         SpringApplication.run(MqttsLinkApplication.class, args);
         System.out.println("(♥◠‿◠)ﾉﾞ  Link模块启动成功   ლ(´ڡ`ლ)ﾞ  ");
-        ServiceLoader<PasswordAuthenticationImpl> serviceLoader = ServiceLoader.load(PasswordAuthenticationImpl.class);
-
-        Iterator iterator = serviceLoader.iterator();
-        while (iterator.hasNext()){
-            PasswordAuthenticationImpl item = (PasswordAuthenticationImpl)iterator.next();
-        }
     }
 }

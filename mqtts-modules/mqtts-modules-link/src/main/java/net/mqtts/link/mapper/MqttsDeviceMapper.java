@@ -1,4 +1,5 @@
 package net.mqtts.link.mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import net.mqtts.link.domain.MqttsDevice;
@@ -58,4 +59,13 @@ public interface MqttsDeviceMapper
      * @return 结果
      */
     public int deleteMqttsDeviceByIds(Long[] ids);
+
+    MqttsDevice findOneByClientIdAndUserNameAndPassword(@Param("clientId")String clientId,@Param("userName")String userName,@Param("password")String password);
+
+    MqttsDevice findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(@Param("clientId")String clientId,@Param("userName")String userName,@Param("password")String password,@Param("deviceStatus")String deviceStatus,@Param("protocolType")String protocolType);
+
+    int updateConnectStatusByClientId(@Param("updatedConnectStatus")String updatedConnectStatus,@Param("clientId")String clientId);
+
+
+
 }

@@ -2,6 +2,7 @@ package net.mqtts.link.service;
 
 import java.util.List;
 import net.mqtts.link.domain.MqttsDevice;
+import org.springframework.stereotype.Component;
 
 /**
  * 设备管理Service接口
@@ -58,4 +59,21 @@ public interface IMqttsDeviceService
      * @return 结果
      */
     public int deleteMqttsDeviceById(Long id);
+
+
+
+	MqttsDevice findOneByClientIdAndUserNameAndPassword(String clientId,String userName,String password);
+
+
+
+	MqttsDevice findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(String clientId,String userName,String password,String deviceStatus,String protocolType);
+
+
+
+
+	int updateConnectStatusByClientId(String updatedConnectStatus,String clientId);
+
+
+
+
 }
