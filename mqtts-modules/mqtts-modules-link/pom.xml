@@ -89,11 +89,11 @@
             <version>3.1.0</version>
         </dependency>
 
-        <!--   https://github.com/quickmsg/smqtt  V1.0.8   -->
+        <!--   https://github.com/quickmsg/smqtt  V1.0.9   -->
         <dependency>
             <groupId>io.github.quickmsg</groupId>
             <artifactId>smqtt-spring-boot-starter</artifactId>
-            <version>1.0.8</version>
+            <version>1.0.9</version>
             <!-- 去除非必要版本 -->
             <exclusions>
                 <exclusion>

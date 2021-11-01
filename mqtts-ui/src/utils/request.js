@@ -1,11 +1,14 @@
 import axios from 'axios'
-import { Notification, MessageBox, Message } from 'element-ui'
+import { Notification, MessageBox, Message, Loading } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
-import { tansParams } from "@/utils/ruoyi";
+import { tansParams, blobValidate } from "@/utils/ruoyi";
+import { saveAs } from 'file-saver'
 
-axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
+let downloadLoadingInstance;
+
+axios.defaults.headers['Conntent-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
 const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
@@ -30,8 +33,8 @@ service.interceptors.request.use(config => {
   }
   return config
 }, error => {
-    console.log(error)
-    Promise.reject(error)
+  console.log(error)
+  Promise.reject(error)
 })
 
 // 响应拦截器
@@ -40,6 +43,10 @@ service.interceptors.response.use(res => {
     const code = res.data.code || 200;
     // 获取错误信息
     const msg = errorCode[code] || res.data.msg || errorCode['default']
+    // 二进制数据则直接返回
+    if(res.request.responseType ===  'blob' || res.request.responseType ===  'arraybuffer'){
+      return res.data
+    }
     if (code === 401) {
       MessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
           confirmButtonText: '重新登录',
@@ -90,31 +97,24 @@ service.interceptors.response.use(res => {
 
 // 通用下载方法
 export function download(url, params, filename) {
+  downloadLoadingInstance = Loading.service({ text: "正在下载数据，请稍后", spinner: "el-icon-loading", background: "rgba(0, 0, 0, 0.7)", })
   return service.post(url, params, {
-    transformRequest: [(params) => {
-      return tansParams(params)
-    }],
-    headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    },
+    transformRequest: [(params) => { return tansParams(params) }],
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     responseType: 'blob'
-  }).then((data) => {
-    const content = data
-    const blob = new Blob([content])
-    if ('download' in document.createElement('a')) {
-      const elink = document.createElement('a')
-      elink.download = filename
-      elink.style.display = 'none'
-      elink.href = URL.createObjectURL(blob)
-      document.body.appendChild(elink)
-      elink.click()
-      URL.revokeObjectURL(elink.href)
-      document.body.removeChild(elink)
+  }).then(async (data) => {
+    const isLogin = await blobValidate(data);
+    if (isLogin) {
+      const blob = new Blob([data])
+      saveAs(blob, filename)
     } else {
-      navigator.msSaveBlob(blob, filename)
+      Message.error('无效的会话，或者会话已过期，请重新登录。');
     }
+    downloadLoadingInstance.close();
   }).catch((r) => {
     console.error(r)
+    Message.error('下载文件出现错误，请联系管理员！')
+    downloadLoadingInstance.close();
   })
 }
 
