@@ -9,7 +9,7 @@
 
 2、后端采用Spring Boot、Spring Cloud & Alibaba。
 
-3、MqttBroker(支持集群化部署)基于Netty、Reactor3、Reactor-netty(无缝集成SMQTT[mqtt-cluster](https://github.com/quickmsg/smqtt)))。
+3、MqttBroker(支持集群化部署)基于Netty、Reactor3、Reactor-netty。
 
 4、注册中心、配置中心选型Nacos，权限认证使用Redis。
 
