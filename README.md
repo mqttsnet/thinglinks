@@ -67,7 +67,7 @@ net.mqtts
 - mqtts/123456
 
 演示地址：http://mqtts.net
-文档地址：http://doc.mqtts.net
+文档地址：http://showdoc.mqtts.net
 
 ## 开发计划
 
