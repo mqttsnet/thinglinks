@@ -1,1 +1,2 @@
 net.mqtts.link.service.impl.DemoInterceptor
+net.mqtts.link.service.impl.DeviceActionInterceptor
