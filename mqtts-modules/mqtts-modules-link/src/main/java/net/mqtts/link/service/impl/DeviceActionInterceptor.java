@@ -1,36 +1,33 @@
 package net.mqtts.link.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import io.github.quickmsg.common.channel.MqttChannel;
 import io.github.quickmsg.common.config.Configuration;
 import io.github.quickmsg.common.context.ReceiveContext;
 import io.github.quickmsg.common.interceptor.Interceptor;
 import io.github.quickmsg.common.interceptor.Invocation;
 import io.github.quickmsg.common.message.SmqttMessage;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.handler.codec.mqtt.*;
+import io.netty.handler.codec.mqtt.MqttConnectPayload;
+import io.netty.handler.codec.mqtt.MqttFixedHeader;
+import io.netty.handler.codec.mqtt.MqttMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
-
 /**
- * @Description: mqtt消息拦截器示例
+ * @Description: Mqtt 设备动作拦截处理
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
- * @CreateDate: 2021/11/3$ 18:47$
+ * @Website: http://mqtts.net
+ * @CreateDate: 2021/11/16$ 10:33$
  * @UpdateUser: ShiHuan Sun
- * @UpdateDate: 2021/11/3$ 18:47$
+ * @UpdateDate: 2021/11/16$ 10:33$
  * @UpdateRemark: 修改内容
  * @Version: 1.0
  */
 @Service
 @Slf4j
 @Component
-public class DemoInterceptor implements Interceptor {
+public class DeviceActionInterceptor implements Interceptor {
     /**
      * 拦截目标参数
      *
@@ -46,6 +43,7 @@ public class DemoInterceptor implements Interceptor {
             Object variableHeader =  smqttMessage.getMessage().variableHeader();
             final MqttConnectPayload payload = (MqttConnectPayload) smqttMessage.getMessage().payload();
             log.info(variableHeader.getClass().getName());
+            //TODO 设备上下线日志写入处理，更新设备在线状态信息
            /* if("$event/connect".equals(parseObject.get("topicName"))){
                 //设备连接事件
                 log.info(parseObject.get("topicName").toString());
