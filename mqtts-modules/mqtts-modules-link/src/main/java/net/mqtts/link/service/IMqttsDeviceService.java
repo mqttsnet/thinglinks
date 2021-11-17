@@ -1,20 +1,19 @@
 package net.mqtts.link.service;
 
 import java.util.List;
+
 import net.mqtts.link.domain.MqttsDevice;
-import org.springframework.stereotype.Component;
 
 /**
  * 设备管理Service接口
- * 
+ *
  * @author mqtts
  * @date 2021-10-22
  */
-public interface IMqttsDeviceService 
-{
+public interface IMqttsDeviceService<updatateDeviceStacus> {
     /**
      * 查询设备管理
-     * 
+     *
      * @param id 设备管理主键
      * @return 设备管理
      */
@@ -22,7 +21,7 @@ public interface IMqttsDeviceService
 
     /**
      * 查询设备管理列表
-     * 
+     *
      * @param mqttsDevice 设备管理
      * @return 设备管理集合
      */
@@ -30,7 +29,7 @@ public interface IMqttsDeviceService
 
     /**
      * 新增设备管理
-     * 
+     *
      * @param mqttsDevice 设备管理
      * @return 结果
      */
@@ -38,7 +37,7 @@ public interface IMqttsDeviceService
 
     /**
      * 修改设备管理
-     * 
+     *
      * @param mqttsDevice 设备管理
      * @return 结果
      */
@@ -46,7 +45,7 @@ public interface IMqttsDeviceService
 
     /**
      * 批量删除设备管理
-     * 
+     *
      * @param ids 需要删除的设备管理主键集合
      * @return 结果
      */
@@ -54,26 +53,24 @@ public interface IMqttsDeviceService
 
     /**
      * 删除设备管理信息
-     * 
+     *
      * @param id 设备管理主键
      * @return 结果
      */
     public int deleteMqttsDeviceById(Long id);
 
+    MqttsDevice findOneByClientIdAndUserNameAndPassword(String clientId, String userName, String password);
 
 
-	MqttsDevice findOneByClientIdAndUserNameAndPassword(String clientId,String userName,String password);
+    MqttsDevice findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(String clientId, String userName, String password, String deviceStatus, String protocolType);
 
-
-
-	MqttsDevice findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(String clientId,String userName,String password,String deviceStatus,String protocolType);
-
-
-
-
-	int updateConnectStatusByClientId(String updatedConnectStatus,String clientId);
-
-
-
+    /**
+     * 更新设备在线状态
+     *
+     * @param updatedConnectStatus 设备状态
+     * @param clientId             客户端ID
+     * @return
+     */
+    int updateConnectStatusByClientId(String updatedConnectStatus, String clientId);
 
 }
