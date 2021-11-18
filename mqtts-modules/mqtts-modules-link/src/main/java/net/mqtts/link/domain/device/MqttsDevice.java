@@ -1,4 +1,4 @@
-package net.mqtts.link.domain;
+package net.mqtts.link.domain.device;
 
 import java.math.BigDecimal;
 

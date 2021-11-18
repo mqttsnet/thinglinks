@@ -1,10 +1,10 @@
-package net.mqtts.link.mapper;
+package net.mqtts.link.mapper.device;
 
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-import net.mqtts.link.domain.MqttsDevice;
+import net.mqtts.link.domain.device.MqttsDevice;
 
 /**
  * 设备管理Mapper接口

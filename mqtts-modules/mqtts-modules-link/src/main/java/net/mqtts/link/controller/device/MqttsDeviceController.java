@@ -1,4 +1,4 @@
-package net.mqtts.link.controller;
+package net.mqtts.link.controller.device;
 
 import java.util.List;
 import java.io.IOException;
@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import net.mqtts.link.domain.MqttsDevice;
-import net.mqtts.link.service.IMqttsDeviceService;
+import net.mqtts.link.domain.device.MqttsDevice;
+import net.mqtts.link.service.device.IMqttsDeviceService;
 
 /**
  * 设备管理Controller

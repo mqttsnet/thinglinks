@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="net.mqtts.link.mapper.MqttsDeviceMapper">
+<mapper namespace="net.mqtts.link.mapper.device.MqttsDeviceMapper">
     <sql id="Base_Column_List">
         id,
         client_id,
@@ -29,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update_time,
         remark
     </sql>
-    <resultMap id="BaseResultMap" type="net.mqtts.link.domain.MqttsDevice">
+    <resultMap id="BaseResultMap" type="net.mqtts.link.domain.device.MqttsDevice">
         <result column="id" property="id"/>
         <result column="client_id" property="clientId"/>
         <result column="user_name" property="userName"/>
@@ -55,7 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result column="update_time" property="updateTime"/>
         <result column="remark" property="remark"/>
     </resultMap>
-    <resultMap type="net.mqtts.link.domain.MqttsDevice" id="MqttsDeviceResult">
+    <resultMap type="net.mqtts.link.domain.device.MqttsDevice" id="MqttsDeviceResult">
         <result property="id"    column="id"    />
         <result property="clientId"    column="client_id"    />
         <result property="userName"    column="user_name"    />
@@ -86,7 +86,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, client_id, user_name, password, auth_mode, device_id, device_name, latitude, longitude, connector, device_description, device_status, connect_status, is_will, device_tags, product_id, manufacturer_id, protocol_type, device_type, create_by, create_time, update_by, update_time, remark from mqtts_device
     </sql>
 
-    <select id="selectMqttsDeviceList" parameterType="net.mqtts.link.domain.MqttsDevice" resultMap="MqttsDeviceResult">
+    <select id="selectMqttsDeviceList" parameterType="net.mqtts.link.domain.device.MqttsDevice" resultMap="MqttsDeviceResult">
         <include refid="selectMqttsDeviceVo"/>
         <where>  
             <if test="clientId != null  and clientId != ''"> and client_id like concat('%', #{clientId}, '%')</if>
@@ -108,7 +108,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertMqttsDevice" parameterType="net.mqtts.link.domain.MqttsDevice">
+    <insert id="insertMqttsDevice" parameterType="net.mqtts.link.domain.device.MqttsDevice">
         insert into mqtts_device
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
@@ -164,7 +164,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateMqttsDevice" parameterType="net.mqtts.link.domain.MqttsDevice">
+    <update id="updateMqttsDevice" parameterType="net.mqtts.link.domain.device.MqttsDevice">
         update mqtts_device
         <trim prefix="SET" suffixOverrides=",">
             <if test="clientId != null and clientId != ''">client_id = #{clientId},</if>
