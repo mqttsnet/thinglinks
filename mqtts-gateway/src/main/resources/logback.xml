@@ -3,9 +3,9 @@
     <!-- 日志存放路径 -->
 	<property name="log.path" value="logs/mqtts-gateway" />
    <!-- 日志输出格式 -->
-	<property name="log.pattern" value="%black(控制台) %red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger) - %cyan(%msg%n)" />
+	<property name="log.pattern" value="%black(mqtts.net) %red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger) - %cyan(%msg%n)" />
 
-    <!-- 控制台输出 -->
+    <!-- mqtts.net输出 -->
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>${log.pattern}</pattern>
