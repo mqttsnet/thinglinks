@@ -7,7 +7,7 @@ import net.mqtts.link.common.enums.DeviceConnectStatus;
 import net.mqtts.link.common.enums.DeviceStatus;
 import net.mqtts.link.common.enums.ProtocolType;
 import net.mqtts.link.domain.device.MqttsDevice;
-import net.mqtts.link.service.device.IMqttsDeviceService;
+import net.mqtts.link.service.device.MqttsDeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class PasswordAuthenticationImpl implements PasswordAuthentication {
     private static PasswordAuthenticationImpl PasswordAuthenticationImpl;
 
     @Autowired
-    private IMqttsDeviceService mqttsDeviceService;
+    private MqttsDeviceService mqttsDeviceService;
 
 
     @PostConstruct

@@ -1,2 +1,3 @@
 net.mqtts.link.service.impl.DemoMessageInterceptor
 net.mqtts.link.service.impl.DeviceActionInterceptor
+net.mqtts.link.service.impl.DeviceDatasInterceptor

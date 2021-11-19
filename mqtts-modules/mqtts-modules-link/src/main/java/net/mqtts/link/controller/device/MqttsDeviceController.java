@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import net.mqtts.link.domain.device.MqttsDevice;
-import net.mqtts.link.service.device.IMqttsDeviceService;
+import net.mqtts.link.service.device.MqttsDeviceService;
 
 /**
  * 设备管理Controller
@@ -34,7 +34,7 @@ import net.mqtts.link.service.device.IMqttsDeviceService;
 public class MqttsDeviceController extends BaseController
 {
     @Autowired
-    private IMqttsDeviceService mqttsDeviceService;
+    private MqttsDeviceService mqttsDeviceService;
 
     /**
      * 查询设备管理列表

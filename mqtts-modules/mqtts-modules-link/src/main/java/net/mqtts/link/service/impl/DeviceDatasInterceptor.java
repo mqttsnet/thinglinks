@@ -1,7 +1,6 @@
 package net.mqtts.link.service.impl;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
-import cn.hutool.core.lang.copier.Copier;
 import io.github.quickmsg.common.channel.MqttChannel;
 import io.github.quickmsg.common.config.Configuration;
 import io.github.quickmsg.common.context.ReceiveContext;
@@ -13,49 +12,41 @@ import io.github.quickmsg.common.rule.DslExecutor;
 import io.github.quickmsg.common.utils.MessageUtils;
 import io.netty.handler.codec.mqtt.*;
 import lombok.extern.slf4j.Slf4j;
-import net.mqtts.link.domain.device.MqttsDeviceAction;
 import net.mqtts.link.domain.device.MqttsDeviceDatas;
-import net.mqtts.link.service.device.MqttsDeviceActionService;
-import net.mqtts.link.service.device.MqttsDeviceService;
+import net.mqtts.link.service.device.MqttsDeviceDatasService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import reactor.core.scheduler.Schedulers;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
- * @Description: Mqtt 设备动作拦截处理
+ * @Description: mqtt消息拦截处理
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
  * @Website: http://mqtts.net
- * @CreateDate: 2021/11/16$ 10:33$
+ * @CreateDate: 2021/11/19$ 21:25$
  * @UpdateUser: ShiHuan Sun
- * @UpdateDate: 2021/11/16$ 10:33$
+ * @UpdateDate: 2021/11/19$ 21:25$
  * @UpdateRemark: 修改内容
  * @Version: 1.0
  */
 @Service
 @Slf4j
 @Component
-public class DeviceActionInterceptor implements Interceptor {
+public class DeviceDatasInterceptor implements Interceptor {
 
-    private static DeviceActionInterceptor DeviceActionInterceptor;
-
-    @Autowired
-    private MqttsDeviceService mqttsDeviceService;
+    private static DeviceDatasInterceptor DeviceDatasInterceptor;
 
     @Autowired
-    private MqttsDeviceActionService mqttsDeviceActionService;
+    private MqttsDeviceDatasService mqttsDeviceDatasService;
 
 
     @PostConstruct
     public void init() {
-        DeviceActionInterceptor = this;
-        DeviceActionInterceptor.mqttsDeviceService = this.mqttsDeviceService;
-        DeviceActionInterceptor.mqttsDeviceActionService = this.mqttsDeviceActionService;
+        DeviceDatasInterceptor = this;
+        DeviceDatasInterceptor.mqttsDeviceDatasService = this.mqttsDeviceDatasService;
     }
 
     /**
@@ -72,27 +63,33 @@ public class DeviceActionInterceptor implements Interceptor {
             ReceiveContext<Configuration> mqttReceiveContext = (ReceiveContext<Configuration>) invocation.getArgs()[2];
             DslExecutor dslExecutor = mqttReceiveContext.getDslExecutor();
             MqttMessage message = smqttMessage.getMessage();
-            //TODO MQTT动作数据处理
-            List<MqttMessageType> mqttMessageType = Arrays.asList(MqttMessageType.PUBLISH,MqttMessageType.DISCONNECT,MqttMessageType.PINGRESP,MqttMessageType.SUBSCRIBE,MqttMessageType.UNSUBSCRIBE);
-            if (!smqttMessage.getIsCluster() &&  mqttMessageType.contains(message.fixedHeader().messageType()) ) {
+            //TODO 发布消息类型处理（业务数据）
+            if (!smqttMessage.getIsCluster() && message instanceof MqttPublishMessage && message.fixedHeader().messageType() == MqttMessageType.PUBLISH) {
                 MqttPublishMessage publishMessage = (MqttPublishMessage) message;
                 HeapMqttMessage heapMqttMessage = this.clusterMessage(publishMessage, mqttChannel, smqttMessage.getTimestamp());
-                MqttsDeviceAction mqttsDeviceAction = new MqttsDeviceAction();
-                mqttsDeviceAction.setDevice_id(mqttChannel.getClientIdentifier());
-                mqttsDeviceAction.setAction_type(message.fixedHeader().messageType().toString());
-                mqttsDeviceAction.setStatus(message.decoderResult().toString());
-                mqttsDeviceAction.setMessage(heapMqttMessage.getTopic());
-                mqttsDeviceAction.setCreate_time(LocalDateTimeUtil.now());
-                DeviceActionInterceptor.mqttsDeviceActionService.insert(mqttsDeviceAction);
-                DeviceActionInterceptor.mqttsDeviceService.updateConnectStatusByClientId(mqttChannel.getStatus().toString(), mqttChannel.getClientIdentifier());
+                log.info("Topic->{}"+heapMqttMessage.getTopic()+"Message->{}"+new String(heapMqttMessage.getMessage()));
+                MqttsDeviceDatas mqttsDeviceDatas = new MqttsDeviceDatas();
+                mqttsDeviceDatas.setDevice_id(heapMqttMessage.getClientIdentifier());
+                mqttsDeviceDatas.setTopic(heapMqttMessage.getTopic());
+                mqttsDeviceDatas.setMessage_id(String.valueOf(heapMqttMessage.getTimestamp()));
+                mqttsDeviceDatas.setMessage(new String(heapMqttMessage.getMessage()).trim());
+                mqttsDeviceDatas.setStatus(message.decoderResult().toString());
+                mqttsDeviceDatas.setCreate_time(LocalDateTimeUtil.now());
+                DeviceDatasInterceptor.mqttsDeviceDatasService.insert(mqttsDeviceDatas);
+               /* if (mqttReceiveContext.getConfiguration().getClusterConfig().isEnable()) {
+                    mqttReceiveContext.getClusterRegistry().spreadPublishMessage(heapMqttMessage).subscribeOn(Schedulers.boundedElastic()).subscribe();
+                }
+                if (dslExecutor.isExecute()) {
+                    dslExecutor.executeRule(mqttChannel, heapMqttMessage, mqttReceiveContext);
+                }*/
             }
-            // 拦截业务
             return invocation.proceed(); // 放行
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
 
     /**
      * 构建消息体
@@ -113,14 +110,14 @@ public class DeviceActionInterceptor implements Interceptor {
                 .qos(fixedHeader.qosLevel().value())
                 .build();
     }
-
     /**
      * 排序
-     *值越大权重越高
+     * 值越大权重越高
+     *
      * @return 排序
      */
     @Override
     public int sort() {
-        return 1;
+        return 0;
     }
 }

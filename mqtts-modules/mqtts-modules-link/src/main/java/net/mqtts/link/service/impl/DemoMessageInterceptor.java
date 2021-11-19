@@ -56,7 +56,7 @@ public class DemoMessageInterceptor implements Interceptor {
             if (!smqttMessage.getIsCluster() && message instanceof MqttPublishMessage) {
                 MqttPublishMessage publishMessage = (MqttPublishMessage) message;
                 HeapMqttMessage heapMqttMessage = this.clusterMessage(publishMessage, mqttChannel, smqttMessage.getTimestamp());
-                log.info("TOPIC-"+heapMqttMessage.getTopic()+"Message:"+new String(heapMqttMessage.getMessage()));
+                log.info("TOPIC-"+heapMqttMessage.getTopic()+"------Message:"+new String(heapMqttMessage.getMessage()));
                 if (mqttReceiveContext.getConfiguration().getClusterConfig().isEnable()) {
                     mqttReceiveContext.getClusterRegistry().spreadPublishMessage(heapMqttMessage).subscribeOn(Schedulers.boundedElastic()).subscribe();
                 }

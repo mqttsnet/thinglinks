@@ -4,7 +4,7 @@ import net.mqtts.common.core.utils.DateUtils;
 import net.mqtts.common.security.service.TokenService;
 import net.mqtts.link.domain.device.MqttsDevice;
 import net.mqtts.link.mapper.device.MqttsDeviceMapper;
-import net.mqtts.link.service.device.IMqttsDeviceService;
+import net.mqtts.link.service.device.MqttsDeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import java.util.List;
  * @date 2021-10-22
  */
 @Service
-public class MqttsDeviceServiceImpl implements IMqttsDeviceService 
+public class MqttsDeviceServiceImpl implements MqttsDeviceService
 {
     @Autowired
     private MqttsDeviceMapper mqttsDeviceMapper;

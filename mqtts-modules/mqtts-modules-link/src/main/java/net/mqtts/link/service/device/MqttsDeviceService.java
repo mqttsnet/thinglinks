@@ -10,7 +10,7 @@ import net.mqtts.link.domain.device.MqttsDevice;
  * @author mqtts
  * @date 2021-10-22
  */
-public interface IMqttsDeviceService<updatateDeviceStacus> {
+public interface MqttsDeviceService<updatateDeviceStacus> {
     /**
      * 查询设备管理
      *
