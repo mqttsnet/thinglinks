@@ -1,6 +1,5 @@
-package net.mqtts.link.service.impl;
+package net.mqtts.broker.service;
 
-import cn.hutool.core.date.LocalDateTimeUtil;
 import io.github.quickmsg.common.channel.MqttChannel;
 import io.github.quickmsg.common.config.Configuration;
 import io.github.quickmsg.common.context.ReceiveContext;
@@ -10,45 +9,30 @@ import io.github.quickmsg.common.message.HeapMqttMessage;
 import io.github.quickmsg.common.message.SmqttMessage;
 import io.github.quickmsg.common.rule.DslExecutor;
 import io.github.quickmsg.common.utils.MessageUtils;
-import io.netty.handler.codec.mqtt.*;
+import io.netty.handler.codec.mqtt.MqttFixedHeader;
+import io.netty.handler.codec.mqtt.MqttMessage;
+import io.netty.handler.codec.mqtt.MqttPublishMessage;
+import io.netty.handler.codec.mqtt.MqttPublishVariableHeader;
 import lombok.extern.slf4j.Slf4j;
-import net.mqtts.link.domain.device.MqttsDeviceDatas;
-import net.mqtts.link.service.device.MqttsDeviceDatasService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import reactor.core.scheduler.Schedulers;
 
-import javax.annotation.PostConstruct;
 
 /**
- * @Description: mqtt消息拦截处理
+ * @Description: mqtt消息拦截器示例
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
- * @Website: http://mqtts.net
- * @CreateDate: 2021/11/19$ 21:25$
+ * @CreateDate: 2021/11/3$ 18:47$
  * @UpdateUser: ShiHuan Sun
- * @UpdateDate: 2021/11/19$ 21:25$
+ * @UpdateDate: 2021/11/3$ 18:47$
  * @UpdateRemark: 修改内容
  * @Version: 1.0
  */
 @Service
 @Slf4j
 @Component
-public class DeviceDatasInterceptor implements Interceptor {
-
-    private static DeviceDatasInterceptor DeviceDatasInterceptor;
-
-    @Autowired
-    private MqttsDeviceDatasService mqttsDeviceDatasService;
-
-
-    @PostConstruct
-    public void init() {
-        DeviceDatasInterceptor = this;
-        DeviceDatasInterceptor.mqttsDeviceDatasService = this.mqttsDeviceDatasService;
-    }
-
+public class DemoMessageInterceptor implements Interceptor {
     /**
      * 拦截目标参数
      *
@@ -63,25 +47,16 @@ public class DeviceDatasInterceptor implements Interceptor {
             ReceiveContext<Configuration> mqttReceiveContext = (ReceiveContext<Configuration>) invocation.getArgs()[2];
             DslExecutor dslExecutor = mqttReceiveContext.getDslExecutor();
             MqttMessage message = smqttMessage.getMessage();
-            //TODO 发布消息类型处理（业务数据）
-            if (!smqttMessage.getIsCluster() && message instanceof MqttPublishMessage && message.fixedHeader().messageType() == MqttMessageType.PUBLISH) {
+            if (!smqttMessage.getIsCluster() && message instanceof MqttPublishMessage) {
                 MqttPublishMessage publishMessage = (MqttPublishMessage) message;
                 HeapMqttMessage heapMqttMessage = this.clusterMessage(publishMessage, mqttChannel, smqttMessage.getTimestamp());
-                log.info("Topic->{}"+heapMqttMessage.getTopic()+"Message->{}"+new String(heapMqttMessage.getMessage()));
-                MqttsDeviceDatas mqttsDeviceDatas = new MqttsDeviceDatas();
-                mqttsDeviceDatas.setDevice_id(heapMqttMessage.getClientIdentifier());
-                mqttsDeviceDatas.setTopic(heapMqttMessage.getTopic());
-                mqttsDeviceDatas.setMessage_id(String.valueOf(heapMqttMessage.getTimestamp()));
-                mqttsDeviceDatas.setMessage(new String(heapMqttMessage.getMessage()).trim());
-                mqttsDeviceDatas.setStatus(message.decoderResult().toString());
-                mqttsDeviceDatas.setCreate_time(LocalDateTimeUtil.now());
-                DeviceDatasInterceptor.mqttsDeviceDatasService.insert(mqttsDeviceDatas);
-               /* if (mqttReceiveContext.getConfiguration().getClusterConfig().isEnable()) {
+                log.info("TOPIC-"+heapMqttMessage.getTopic()+"------Message:"+new String(heapMqttMessage.getMessage()));
+                if (mqttReceiveContext.getConfiguration().getClusterConfig().isEnable()) {
                     mqttReceiveContext.getClusterRegistry().spreadPublishMessage(heapMqttMessage).subscribeOn(Schedulers.boundedElastic()).subscribe();
                 }
                 if (dslExecutor.isExecute()) {
                     dslExecutor.executeRule(mqttChannel, heapMqttMessage, mqttReceiveContext);
-                }*/
+                }
             }
             return invocation.proceed(); // 放行
         } catch (Exception e) {
@@ -89,7 +64,6 @@ public class DeviceDatasInterceptor implements Interceptor {
         }
         return null;
     }
-
 
     /**
      * 构建消息体
@@ -110,9 +84,9 @@ public class DeviceDatasInterceptor implements Interceptor {
                 .qos(fixedHeader.qosLevel().value())
                 .build();
     }
+
     /**
      * 排序
-     * 值越大权重越高
      *
      * @return 排序
      */

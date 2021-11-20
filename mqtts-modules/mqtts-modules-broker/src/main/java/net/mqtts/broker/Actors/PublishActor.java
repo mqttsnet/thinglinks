@@ -1,4 +1,4 @@
-package net.mqtts.link.controller.Actors;
+package net.mqtts.broker.Actors;
 
 import io.github.quickmsg.common.annotation.AllowCors;
 import io.github.quickmsg.common.annotation.Router;

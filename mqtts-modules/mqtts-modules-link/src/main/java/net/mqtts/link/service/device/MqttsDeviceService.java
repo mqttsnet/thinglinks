@@ -1,8 +1,8 @@
 package net.mqtts.link.service.device;
 
-import java.util.List;
+import net.mqtts.link.api.domain.MqttsDevice;
 
-import net.mqtts.link.domain.device.MqttsDevice;
+import java.util.List;
 
 /**
  * 设备管理Service接口

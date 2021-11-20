@@ -1,6 +1,6 @@
-package net.mqtts.link.service.impl;
+package net.mqtts.broker.service;
 
-import com.alibaba.fastjson.JSONObject;
+import cn.hutool.core.date.LocalDateTimeUtil;
 import io.github.quickmsg.common.channel.MqttChannel;
 import io.github.quickmsg.common.config.Configuration;
 import io.github.quickmsg.common.context.ReceiveContext;
@@ -8,37 +8,46 @@ import io.github.quickmsg.common.interceptor.Interceptor;
 import io.github.quickmsg.common.interceptor.Invocation;
 import io.github.quickmsg.common.message.HeapMqttMessage;
 import io.github.quickmsg.common.message.SmqttMessage;
-import io.github.quickmsg.common.protocol.ProtocolAdaptor;
 import io.github.quickmsg.common.rule.DslExecutor;
 import io.github.quickmsg.common.utils.MessageUtils;
-import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.mqtt.*;
-import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
+import net.mqtts.link.api.RemoteMqttsDeviceDatasService;
+import net.mqtts.link.api.domain.MqttsDeviceDatas;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import reactor.core.scheduler.Schedulers;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import javax.annotation.PostConstruct;
 
 /**
- * @Description: mqtt消息拦截器示例
+ * @Description: mqtt消息拦截处理
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
- * @CreateDate: 2021/11/3$ 18:47$
+ * @Website: http://mqtts.net
+ * @CreateDate: 2021/11/19$ 21:25$
  * @UpdateUser: ShiHuan Sun
- * @UpdateDate: 2021/11/3$ 18:47$
+ * @UpdateDate: 2021/11/19$ 21:25$
  * @UpdateRemark: 修改内容
  * @Version: 1.0
  */
 @Service
 @Slf4j
 @Component
-public class DemoMessageInterceptor implements Interceptor {
+public class DeviceDatasInterceptor implements Interceptor {
+
+    private static DeviceDatasInterceptor DeviceDatasInterceptor;
+
+    @Autowired
+    private RemoteMqttsDeviceDatasService remoteMqttsDeviceDatasService;
+
+
+    @PostConstruct
+    public void init() {
+        DeviceDatasInterceptor = this;
+        DeviceDatasInterceptor.remoteMqttsDeviceDatasService = this.remoteMqttsDeviceDatasService;
+    }
+
     /**
      * 拦截目标参数
      *
@@ -53,16 +62,25 @@ public class DemoMessageInterceptor implements Interceptor {
             ReceiveContext<Configuration> mqttReceiveContext = (ReceiveContext<Configuration>) invocation.getArgs()[2];
             DslExecutor dslExecutor = mqttReceiveContext.getDslExecutor();
             MqttMessage message = smqttMessage.getMessage();
-            if (!smqttMessage.getIsCluster() && message instanceof MqttPublishMessage) {
+            //TODO 发布消息类型处理（业务数据）
+            if (!smqttMessage.getIsCluster() && message instanceof MqttPublishMessage && message.fixedHeader().messageType() == MqttMessageType.PUBLISH) {
                 MqttPublishMessage publishMessage = (MqttPublishMessage) message;
                 HeapMqttMessage heapMqttMessage = this.clusterMessage(publishMessage, mqttChannel, smqttMessage.getTimestamp());
-                log.info("TOPIC-"+heapMqttMessage.getTopic()+"------Message:"+new String(heapMqttMessage.getMessage()));
-                if (mqttReceiveContext.getConfiguration().getClusterConfig().isEnable()) {
+                log.info("Topic->{}" + heapMqttMessage.getTopic() + "Message->{}" + new String(heapMqttMessage.getMessage()));
+                MqttsDeviceDatas mqttsDeviceDatas = new MqttsDeviceDatas();
+                mqttsDeviceDatas.setDevice_id(heapMqttMessage.getClientIdentifier());
+                mqttsDeviceDatas.setTopic(heapMqttMessage.getTopic());
+                mqttsDeviceDatas.setMessage_id(String.valueOf(heapMqttMessage.getTimestamp()));
+                mqttsDeviceDatas.setMessage(new String(heapMqttMessage.getMessage(), "UTF-8").trim());
+                mqttsDeviceDatas.setStatus(message.decoderResult().toString());
+                mqttsDeviceDatas.setCreate_time(LocalDateTimeUtil.now());
+                DeviceDatasInterceptor.remoteMqttsDeviceDatasService.add(mqttsDeviceDatas);
+               /* if (mqttReceiveContext.getConfiguration().getClusterConfig().isEnable()) {
                     mqttReceiveContext.getClusterRegistry().spreadPublishMessage(heapMqttMessage).subscribeOn(Schedulers.boundedElastic()).subscribe();
                 }
                 if (dslExecutor.isExecute()) {
                     dslExecutor.executeRule(mqttChannel, heapMqttMessage, mqttReceiveContext);
-                }
+                }*/
             }
             return invocation.proceed(); // 放行
         } catch (Exception e) {
@@ -70,6 +88,7 @@ public class DemoMessageInterceptor implements Interceptor {
         }
         return null;
     }
+
 
     /**
      * 构建消息体
@@ -93,6 +112,7 @@ public class DemoMessageInterceptor implements Interceptor {
 
     /**
      * 排序
+     * 值越大权重越高
      *
      * @return 排序
      */

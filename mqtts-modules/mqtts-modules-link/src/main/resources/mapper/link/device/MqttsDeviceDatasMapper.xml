@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="net.mqtts.link.mapper.device.MqttsDeviceDatasMapper">
-  <resultMap id="BaseResultMap" type="net.mqtts.link.domain.device.MqttsDeviceDatas">
+  <resultMap id="BaseResultMap" type="net.mqtts.link.api.domain.MqttsDeviceDatas">
     <!--@mbg.generated-->
     <!--@Table mqtts.mqtts_device_datas-->
     <id column="id" jdbcType="BIGINT" property="id" />
@@ -11,11 +11,12 @@
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="net.mqtts.link.domain.device.MqttsDeviceDatas">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="net.mqtts.link.api.domain.MqttsDeviceDatas">
     <!--@mbg.generated-->
     <!--@Table mqtts.mqtts_device_datas-->
     <result column="message" jdbcType="LONGVARCHAR" property="message" />
   </resultMap>
+
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, device_id, message_id, topic, `status`, create_time
@@ -24,6 +25,20 @@
     <!--@mbg.generated-->
     message
   </sql>
+
+  <sql id="selectMqttsDeviceDatasVo">
+    select id, device_id, message_id, topic, `status`, message,create_time from mqtts_device_datas
+  </sql>
+
+
+  <select id="selectMqttsDeviceDatasList" parameterType="net.mqtts.link.api.domain.MqttsDeviceDatas" resultMap="BaseResultMap">
+    <include refid="selectMqttsDeviceDatasVo"/>
+    <where>
+      <if test="status != null  and status != ''"> and status = #{status}</if>
+      <if test="deviceId != null  and deviceId != ''"> and device_id = #{deviceId}</if>
+    </where>
+  </select>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
     <!--@mbg.generated-->
     select 
@@ -38,7 +53,7 @@
     delete from mqtts.mqtts_device_datas
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="net.mqtts.link.domain.device.MqttsDeviceDatas" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="net.mqtts.link.api.domain.MqttsDeviceDatas" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into mqtts.mqtts_device_datas (device_id, message_id, topic, 
       `status`, create_time, message
@@ -47,7 +62,7 @@
       #{status,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP}, #{message,jdbcType=LONGVARCHAR}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="net.mqtts.link.domain.device.MqttsDeviceDatas" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="net.mqtts.link.api.domain.MqttsDeviceDatas" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into mqtts.mqtts_device_datas
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -91,7 +106,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="net.mqtts.link.domain.device.MqttsDeviceDatas">
+  <update id="updateByPrimaryKeySelective" parameterType="net.mqtts.link.api.domain.MqttsDeviceDatas">
     <!--@mbg.generated-->
     update mqtts.mqtts_device_datas
     <set>
@@ -116,7 +131,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="net.mqtts.link.domain.device.MqttsDeviceDatas">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="net.mqtts.link.api.domain.MqttsDeviceDatas">
     <!--@mbg.generated-->
     update mqtts.mqtts_device_datas
     set device_id = #{device_id,jdbcType=VARCHAR},
@@ -127,7 +142,7 @@
       message = #{message,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="net.mqtts.link.domain.device.MqttsDeviceDatas">
+  <update id="updateByPrimaryKey" parameterType="net.mqtts.link.api.domain.MqttsDeviceDatas">
     <!--@mbg.generated-->
     update mqtts.mqtts_device_datas
     set device_id = #{device_id,jdbcType=VARCHAR},
@@ -240,7 +255,7 @@
         )
     </foreach>
   </insert>
-  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="net.mqtts.link.domain.device.MqttsDeviceDatas" useGeneratedKeys="true">
+  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="net.mqtts.link.api.domain.MqttsDeviceDatas" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into mqtts.mqtts_device_datas
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -276,7 +291,7 @@
       create_time = #{create_time,jdbcType=TIMESTAMP},
     </trim>
   </insert>
-  <insert id="insertOrUpdateWithBLOBs" keyColumn="id" keyProperty="id" parameterType="net.mqtts.link.domain.device.MqttsDeviceDatas" useGeneratedKeys="true">
+  <insert id="insertOrUpdateWithBLOBs" keyColumn="id" keyProperty="id" parameterType="net.mqtts.link.api.domain.MqttsDeviceDatas" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into mqtts.mqtts_device_datas
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -315,7 +330,7 @@
       message = #{message,jdbcType=LONGVARCHAR},
     </trim>
   </insert>
-  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="net.mqtts.link.domain.device.MqttsDeviceDatas" useGeneratedKeys="true">
+  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="net.mqtts.link.api.domain.MqttsDeviceDatas" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into mqtts.mqtts_device_datas
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -390,4 +405,13 @@
       </if>
     </trim>
   </insert>
+
+  <delete id="deleteMqttsDeviceDatasByIds" parameterType="String">
+    delete from mqtts_device_action where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+
 </mapper>

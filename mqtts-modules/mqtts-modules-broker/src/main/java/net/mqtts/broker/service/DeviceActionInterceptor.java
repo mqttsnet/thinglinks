@@ -1,7 +1,6 @@
-package net.mqtts.link.service.impl;
+package net.mqtts.broker.service;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
-import cn.hutool.core.lang.copier.Copier;
 import io.github.quickmsg.common.channel.MqttChannel;
 import io.github.quickmsg.common.config.Configuration;
 import io.github.quickmsg.common.context.ReceiveContext;
@@ -13,16 +12,15 @@ import io.github.quickmsg.common.rule.DslExecutor;
 import io.github.quickmsg.common.utils.MessageUtils;
 import io.netty.handler.codec.mqtt.*;
 import lombok.extern.slf4j.Slf4j;
-import net.mqtts.link.domain.device.MqttsDeviceAction;
-import net.mqtts.link.domain.device.MqttsDeviceDatas;
-import net.mqtts.link.service.device.MqttsDeviceActionService;
-import net.mqtts.link.service.device.MqttsDeviceService;
+import net.mqtts.link.api.RemoteMqttsDeviceActionService;
+import net.mqtts.link.api.RemoteMqttsDeviceService;
+import net.mqtts.link.api.domain.MqttsDevice;
+import net.mqtts.link.api.domain.MqttsDeviceAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,10 +43,10 @@ public class DeviceActionInterceptor implements Interceptor {
     private static DeviceActionInterceptor DeviceActionInterceptor;
 
     @Autowired
-    private MqttsDeviceService mqttsDeviceService;
+    private RemoteMqttsDeviceService mqttsDeviceService;
 
     @Autowired
-    private MqttsDeviceActionService mqttsDeviceActionService;
+    private RemoteMqttsDeviceActionService mqttsDeviceActionService;
 
 
     @PostConstruct
@@ -73,8 +71,8 @@ public class DeviceActionInterceptor implements Interceptor {
             DslExecutor dslExecutor = mqttReceiveContext.getDslExecutor();
             MqttMessage message = smqttMessage.getMessage();
             //TODO MQTT动作数据处理
-            List<MqttMessageType> mqttMessageType = Arrays.asList(MqttMessageType.PUBLISH,MqttMessageType.DISCONNECT,MqttMessageType.PINGRESP,MqttMessageType.SUBSCRIBE,MqttMessageType.UNSUBSCRIBE);
-            if (!smqttMessage.getIsCluster() &&  mqttMessageType.contains(message.fixedHeader().messageType()) ) {
+            List<MqttMessageType> mqttMessageType = Arrays.asList(MqttMessageType.PUBLISH, MqttMessageType.DISCONNECT, MqttMessageType.PINGRESP, MqttMessageType.SUBSCRIBE, MqttMessageType.UNSUBSCRIBE);
+            if (!smqttMessage.getIsCluster() && mqttMessageType.contains(message.fixedHeader().messageType())) {
                 MqttPublishMessage publishMessage = (MqttPublishMessage) message;
                 HeapMqttMessage heapMqttMessage = this.clusterMessage(publishMessage, mqttChannel, smqttMessage.getTimestamp());
                 MqttsDeviceAction mqttsDeviceAction = new MqttsDeviceAction();
@@ -83,8 +81,8 @@ public class DeviceActionInterceptor implements Interceptor {
                 mqttsDeviceAction.setStatus(message.decoderResult().toString());
                 mqttsDeviceAction.setMessage(heapMqttMessage.getTopic());
                 mqttsDeviceAction.setCreate_time(LocalDateTimeUtil.now());
-                DeviceActionInterceptor.mqttsDeviceActionService.insert(mqttsDeviceAction);
-                DeviceActionInterceptor.mqttsDeviceService.updateConnectStatusByClientId(mqttChannel.getStatus().toString(), mqttChannel.getClientIdentifier());
+                DeviceActionInterceptor.mqttsDeviceActionService.add(mqttsDeviceAction);
+                DeviceActionInterceptor.mqttsDeviceService.updateConnectStatusByClientId(new MqttsDevice(mqttChannel.getStatus().toString(), mqttChannel.getClientIdentifier()));
             }
             // 拦截业务
             return invocation.proceed(); // 放行
@@ -116,7 +114,8 @@ public class DeviceActionInterceptor implements Interceptor {
 
     /**
      * 排序
-     *值越大权重越高
+     * 值越大权重越高
+     *
      * @return 排序
      */
     @Override

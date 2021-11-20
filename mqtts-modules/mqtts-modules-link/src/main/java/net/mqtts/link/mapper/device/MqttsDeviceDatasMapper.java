@@ -1,7 +1,8 @@
 package net.mqtts.link.mapper.device;
 
 import java.util.List;
-import net.mqtts.link.domain.device.MqttsDeviceDatas;
+
+import net.mqtts.link.api.domain.MqttsDeviceDatas;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -55,6 +56,8 @@ public interface MqttsDeviceDatasMapper {
      */
     int insertSelective(MqttsDeviceDatas record);
 
+    List<MqttsDeviceDatas> selectMqttsDeviceDatasList(MqttsDeviceDatas record);
+
     /**
      * select by primary key
      * @param id primary key
@@ -83,4 +86,6 @@ public interface MqttsDeviceDatasMapper {
     int updateBatchSelective(List<MqttsDeviceDatas> list);
 
     int batchInsert(@Param("list") List<MqttsDeviceDatas> list);
+
+    int deleteMqttsDeviceDatasByIds(Long[] ids);
 }

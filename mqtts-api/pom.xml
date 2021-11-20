@@ -10,6 +10,7 @@
 
     <modules>
         <module>mqtts-api-system</module>
+        <module>mqtts-api-link</module>
     </modules>
 
     <artifactId>mqtts-api</artifactId>

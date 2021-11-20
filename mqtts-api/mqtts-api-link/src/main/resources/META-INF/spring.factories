@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  net.mqtts.link.api.factory.RemoteMqttsDeviceFallbackFactory,\
+  net.mqtts.link.api.factory.RemoteMqttsDeviceActionFallbackFactory, \
+  net.mqtts.link.api.factory.RemoteMqttsDeviceDatasFallbackFactory

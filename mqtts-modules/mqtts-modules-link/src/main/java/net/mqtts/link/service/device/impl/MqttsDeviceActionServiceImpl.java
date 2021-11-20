@@ -1,6 +1,6 @@
 package net.mqtts.link.service.device.impl;
 
-import net.mqtts.link.domain.device.MqttsDeviceAction;
+import net.mqtts.link.api.domain.MqttsDeviceAction;
 import net.mqtts.link.mapper.device.MqttsDeviceActionMapper;
 import net.mqtts.link.service.device.MqttsDeviceActionService;
 import org.springframework.stereotype.Service;
@@ -9,28 +9,18 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
-
-* @Description:    java类作用描述
-
-* @Author:         ShiHuan Sun
-
-* @E-mail:          13733918655@163.com
-
-* @Website:         http://mqtts.net
-
-* @CreateDate:     2021/11/18$ 9:41$
-
-* @UpdateUser:     ShiHuan Sun
-
-* @UpdateDate:     2021/11/18$ 9:41$
-
-* @UpdateRemark:   修改内容
-
-* @Version:        1.0
-
-*/
+ * @Description: java类作用描述
+ * @Author: ShiHuan Sun
+ * @E-mail: 13733918655@163.com
+ * @Website: http://mqtts.net
+ * @CreateDate: 2021/11/18$ 9:41$
+ * @UpdateUser: ShiHuan Sun
+ * @UpdateDate: 2021/11/18$ 9:41$
+ * @UpdateRemark: 修改内容
+ * @Version: 1.0
+ */
 @Service
-public class MqttsDeviceActionServiceImpl implements MqttsDeviceActionService{
+public class MqttsDeviceActionServiceImpl implements MqttsDeviceActionService {
 
     @Resource
     private MqttsDeviceActionMapper mqttsDeviceActionMapper;
@@ -66,6 +56,11 @@ public class MqttsDeviceActionServiceImpl implements MqttsDeviceActionService{
     }
 
     @Override
+    public List<MqttsDeviceAction> selectMqttsDeviceActionList(MqttsDeviceAction record) {
+        return mqttsDeviceActionMapper.selectMqttsDeviceActionList(record);
+    }
+
+    @Override
     public MqttsDeviceAction selectByPrimaryKey(Long id) {
         return mqttsDeviceActionMapper.selectByPrimaryKey(id);
     }
@@ -98,6 +93,11 @@ public class MqttsDeviceActionServiceImpl implements MqttsDeviceActionService{
     @Override
     public int batchInsert(List<MqttsDeviceAction> list) {
         return mqttsDeviceActionMapper.batchInsert(list);
+    }
+
+    @Override
+    public int deleteMqttsDeviceActionByIds(Long[] ids) {
+        return mqttsDeviceActionMapper.deleteMqttsDeviceActionByIds(ids);
     }
 
 }
