@@ -1,4 +1,4 @@
-package net.mqtts.link.service.impl;
+package net.mqtts.broker.service;
 
 import io.github.quickmsg.common.message.MessageRegistry;
 import io.github.quickmsg.common.message.RetainMessage;

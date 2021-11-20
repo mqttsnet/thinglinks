@@ -21,4 +21,9 @@ public class ServiceNameConstants
      * 文件服务的serviceid
      */
     public static final String FILE_SERVICE = "mqtts-file";
+
+    /**
+     * Link服务
+     */
+    public static final String MQTTS_LINK = "mqtts-link";
 }

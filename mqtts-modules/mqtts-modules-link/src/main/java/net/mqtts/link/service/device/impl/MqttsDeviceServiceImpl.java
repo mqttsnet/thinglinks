@@ -2,7 +2,7 @@ package net.mqtts.link.service.device.impl;
 
 import net.mqtts.common.core.utils.DateUtils;
 import net.mqtts.common.security.service.TokenService;
-import net.mqtts.link.domain.device.MqttsDevice;
+import net.mqtts.link.api.domain.MqttsDevice;
 import net.mqtts.link.mapper.device.MqttsDeviceMapper;
 import net.mqtts.link.service.device.MqttsDeviceService;
 import org.springframework.beans.factory.annotation.Autowired;

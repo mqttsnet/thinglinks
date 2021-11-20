@@ -1,10 +1,11 @@
-package net.mqtts.link.domain.device;
+package net.mqtts.link.api.domain;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import lombok.Data;
 
 /**
 
@@ -27,12 +28,13 @@ import lombok.Data;
 * @Version:        1.0
 
 */
+
 /**
-    * 设备动作数据
+    * 设备消息
     */
-@ApiModel(value="设备动作数据")
+@ApiModel(value="设备消息")
 @Data
-public class MqttsDeviceAction implements Serializable {
+public class MqttsDeviceDatas implements Serializable {
     /**
     * id
     */
@@ -46,10 +48,16 @@ public class MqttsDeviceAction implements Serializable {
     private String device_id;
 
     /**
-    * 动作类型
+    * 消息ID
     */
-    @ApiModelProperty(value="动作类型")
-    private String action_type;
+    @ApiModelProperty(value="消息ID")
+    private String message_id;
+
+    /**
+    * topic
+    */
+    @ApiModelProperty(value="topic")
+    private String topic;
 
     /**
     * 状态

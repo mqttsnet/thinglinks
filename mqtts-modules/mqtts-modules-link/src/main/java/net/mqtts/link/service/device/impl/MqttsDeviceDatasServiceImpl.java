@@ -1,6 +1,6 @@
 package net.mqtts.link.service.device.impl;
 
-import net.mqtts.link.domain.device.MqttsDeviceDatas;
+import net.mqtts.link.api.domain.MqttsDeviceDatas;
 import net.mqtts.link.mapper.device.MqttsDeviceDatasMapper;
 import net.mqtts.link.service.device.MqttsDeviceDatasService;
 import org.springframework.stereotype.Service;
@@ -66,6 +66,11 @@ public class MqttsDeviceDatasServiceImpl implements MqttsDeviceDatasService{
     }
 
     @Override
+    public List<MqttsDeviceDatas> selectMqttsDeviceDatasList(MqttsDeviceDatas record) {
+        return mqttsDeviceDatasMapper.selectMqttsDeviceDatasList(record);
+    }
+
+    @Override
     public MqttsDeviceDatas selectByPrimaryKey(Long id) {
         return mqttsDeviceDatasMapper.selectByPrimaryKey(id);
     }
@@ -98,6 +103,11 @@ public class MqttsDeviceDatasServiceImpl implements MqttsDeviceDatasService{
     @Override
     public int batchInsert(List<MqttsDeviceDatas> list) {
         return mqttsDeviceDatasMapper.batchInsert(list);
+    }
+
+    @Override
+    public int deleteMqttsDeviceDatasByIds(Long[] ids) {
+        return mqttsDeviceDatasMapper.deleteMqttsDeviceDatasByIds(ids);
     }
 
 }

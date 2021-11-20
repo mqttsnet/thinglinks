@@ -1,13 +1,10 @@
-package net.mqtts.link.service.impl;
+package net.mqtts.broker.service;
 
 
 import io.github.quickmsg.common.auth.PasswordAuthentication;
 import lombok.extern.slf4j.Slf4j;
-import net.mqtts.link.common.enums.DeviceConnectStatus;
-import net.mqtts.link.common.enums.DeviceStatus;
-import net.mqtts.link.common.enums.ProtocolType;
-import net.mqtts.link.domain.device.MqttsDevice;
-import net.mqtts.link.service.device.MqttsDeviceService;
+import net.mqtts.link.api.RemoteMqttsDeviceService;
+import net.mqtts.link.api.domain.MqttsDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -33,7 +30,7 @@ public class PasswordAuthenticationImpl implements PasswordAuthentication {
     private static PasswordAuthenticationImpl PasswordAuthenticationImpl;
 
     @Autowired
-    private MqttsDeviceService mqttsDeviceService;
+    private RemoteMqttsDeviceService mqttsDeviceService;
 
 
     @PostConstruct
@@ -52,10 +49,10 @@ public class PasswordAuthenticationImpl implements PasswordAuthentication {
      */
     @Override
     public boolean auth(String userName, byte[] passwordInBytes, String clientIdentifier) {
-        MqttsDevice oneByClientIdAndUserNameAndPassword = PasswordAuthenticationImpl.mqttsDeviceService.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, userName, new String(passwordInBytes), DeviceStatus.ENABLE.getValue(), ProtocolType.MQTT.getValue());
-        if (Optional.ofNullable(oneByClientIdAndUserNameAndPassword).isPresent()){
+        MqttsDevice mqttsDevice = PasswordAuthenticationImpl.mqttsDeviceService.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, userName, new String(passwordInBytes), "ENABLE", "MQTT").getData();
+        if (Optional.ofNullable(mqttsDevice).isPresent()) {
             //更改设备在线状态为在线
-            PasswordAuthenticationImpl.mqttsDeviceService.updateConnectStatusByClientId(DeviceConnectStatus.ONLINE.getValue(),clientIdentifier);
+            PasswordAuthenticationImpl.mqttsDeviceService.updateConnectStatusByClientId(new MqttsDevice("INIT", clientIdentifier));
             return true;
         }
         return false;
