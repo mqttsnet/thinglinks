@@ -15,6 +15,7 @@
         <module>mqtts-modules-file</module>
         <module>mqtts-modules-tdengine</module>
         <module>mqtts-modules-link</module>
+        <module>mqtts-modules-broker</module>
     </modules>
 
     <artifactId>mqtts-modules</artifactId>
