@@ -52,14 +52,14 @@
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-datasource</artifactId>
-            <version>3.1.0</version>
+            <version>${mqtts.version}</version>
         </dependency>
 
         <!-- mqtts Common DataScope -->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-datascope</artifactId>
-            <version>3.1.0</version>
+            <version>${mqtts.version}</version>
         </dependency>
 
         <!--   https://github.com/quickmsg/smqtt  V1.0.9   -->
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-api-link</artifactId>
-            <version>3.1.0</version>
+            <version>${mqtts.version}</version>
         </dependency>
 
     </dependencies>

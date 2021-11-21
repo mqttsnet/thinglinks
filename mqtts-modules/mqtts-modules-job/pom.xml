@@ -77,14 +77,14 @@
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-log</artifactId>
-            <version>3.1.0</version>
+            <version>${mqtts.version}</version>
         </dependency>
         
         <!-- mqtts Common Swagger -->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-swagger</artifactId>
-            <version>3.1.0</version>
+            <version>${mqtts.version}</version>
         </dependency>
         
     </dependencies>
