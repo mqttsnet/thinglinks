@@ -48,7 +48,8 @@ net.mqtts
 │       └── mqtts-modules-job                         // 定时任务 [19302]
 │       └── mqtts-modules-system                      // 系统模块 [19303]
 │       └── mqtts-modules-tdengine                    // TDengine服务 [19304]
-│       └── mqtts-modules-link                        // Link服务 [19305]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
+│       └── mqtts-modules-link                        // Link服务 [19305]
+        └── mqtts-modules-broker                      // broker服务 [19306]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
 ├── mqtts-visual          // 图形化管理模块
 │       └── mqtts-visual-monitor                      // 监控中心 [19400]
 ├──pom.xml                // 公共依赖
