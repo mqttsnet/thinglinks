@@ -6,14 +6,14 @@
 
     <groupId>net.mqtts</groupId>
     <artifactId>mqtts</artifactId>
-    <version>3.1.0</version>
+    <version>${mqtts.version}</version>
 
     <name>mqtts</name>
     <url>http://mqtts.net</url>
     <description>MQTTS物联网平台微服务系统</description>
 
     <properties>
-        <mqtts.version>3.1.0</mqtts.version>
+        <mqtts.version>1.0.0-RELEASE</mqtts.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>

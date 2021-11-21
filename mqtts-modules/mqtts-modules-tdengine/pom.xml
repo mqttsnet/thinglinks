@@ -5,14 +5,14 @@
     <parent>
         <artifactId>mqtts-modules</artifactId>
         <groupId>net.mqtts</groupId>
-        <version>3.1.0</version>
+        <version>${mqtts.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mqtts-modules-tdengine</artifactId>
 
     <description>
-        mqtts-modules-tdengine时序数据库模块
+        mqtts-modules-tdengine  时序数据库模块
     </description>
 
     <properties>

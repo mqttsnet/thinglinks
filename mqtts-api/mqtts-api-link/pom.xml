@@ -5,7 +5,7 @@
     <parent>
         <artifactId>mqtts-api</artifactId>
         <groupId>net.mqtts</groupId>
-        <version>3.1.0</version>
+        <version>${mqtts.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

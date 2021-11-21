@@ -1,0 +1,116 @@
+#@mattsnet Docker Compose管理容器
+#参考文档
+#https://www.jianshu.com/p/658911a8cff3
+#https://www.runoob.com/docker/docker-compose.html
+#dcoker 版本  yaml 配置实例
+version: "3.8"
+#mqtts微服务集合
+services:
+  #服务名称
+  gateway:
+    #什么情况重启  --非正常退出时候
+    #no：是默认的重启策略，在任何情况下都不会重启容器。
+    #always：容器总是重新启动。
+    #on-failure：在容器非正常退出时（退出状态非0），才会重启容器。
+    #unless-stopped：在容器退出时总是重启容器，但是不考虑在Docker守护进程启动时就已经停止了的容器
+    restart: on-failure
+    #创建镜像
+    build: ./gateway
+    #镜像名称
+    image: "gateway:1.0.0"
+    #容器名称
+    container_name: gateway
+    #加入网络
+    networks:
+      - mqtts
+    #端口
+    ports:
+      - "19100:19100"
+      - "19101:19101"
+  oauth:
+    restart: on-failure
+    build: ./auth
+    image: "auth:1.0.0"
+    container_name: auth
+    networks:
+      - mqtts
+    ports:
+      - "19200:19200"
+  file:
+    restart: on-failure
+    build: ./file
+    image: "file:1.0.0"
+    container_name: file
+    networks:
+      - mqtts
+    ports:
+      - "19300:19300"
+  gen:
+    restart: on-failure
+    build: ./gen
+    image: "gen:1.0.0"
+    container_name: gen
+    networks:
+      - mqtts
+    ports:
+      - "19301:19301"
+  job:
+    restart: on-failure
+    build: ./job
+    image: "job:1.0.0"
+    container_name: job
+    networks:
+      - mqtts
+    ports:
+      - "19302:19302"
+  system:
+    restart: on-failure
+    build: ./system
+    image: "system:1.0.0"
+    container_name: system
+    networks:
+      - mqtts
+    ports:
+      - "19303:19303"
+  tdengine:
+    restart: on-failure
+    build: ./tdengine
+    image: "tdengine:1.0.0"
+    container_name: tdengine
+    networks:
+      - mqtts
+    ports:
+      - "19304:19304"
+  link:
+    restart: on-failure
+    build: ./link
+    image: "link:1.0.0"
+    container_name: link
+    networks:
+      - mqtts
+    ports:
+      - "19305:19305"
+  broker:
+    restart: on-failure
+    build: ./broker
+    image: "broker:1.0.0"
+    container_name: broker
+    networks:
+      - mqtts
+    ports:
+      - "19306:19306"
+      - "11883:11883"
+      - "18443:18443"
+      - "18999:18999"
+  monitor:
+    restart: on-failure
+    build: ./monitor
+    image: "monitor:1.0.0"
+    container_name: monitor
+    networks:
+      - mqtts
+    ports:
+      - "19400:19400"
+networks:
+  mqtts:
+    driver: bridge
