@@ -35,6 +35,19 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
+// 引入百度地图
+import BaiduMap from 'vue-baidu-map'
+
+// 引入高德
+import AmapVue from '@amap/amap-vue';
+AmapVue.config.version = '2.0'; // 默认2.0，这里可以不修改
+AmapVue.config.key = '1c26e30abecdc9022e34e0a54fdc8d71';
+AmapVue.config.plugins = [
+  'AMap.moveAnimation',
+  'AMap.Geocoder',
+  // 在此配置你需要预加载的插件，如果不配置，在使用到的时候会自动异步加载
+];
+Vue.use(AmapVue);
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -55,6 +68,7 @@ Vue.component('Editor', Editor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 
+
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
@@ -72,6 +86,10 @@ DictData.install()
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
 })
+
+Vue.use(BaiduMap, {
+  ak: 'GRDscTDALCFC14GMv7TgTG1kxXV7yypD'
+});
 
 Vue.config.productionTip = false
 

@@ -244,122 +244,179 @@
     />
 
     <!-- 添加或修改设备管理对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="客户端标识" prop="clientId">
-          <el-input v-model="form.clientId" placeholder="请输入客户端标识" />
-        </el-form-item>
-        <el-form-item label="用户名" prop="userName">
-          <el-input v-model="form.userName" placeholder="请输入用户名" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" placeholder="请输入密码" />
-        </el-form-item>
-        <el-form-item label="认证方式" prop="authMode">
-          <el-select v-model="form.authMode" placeholder="请选择认证方式">
-            <el-option
-              v-for="dict in dict.type.link_device_auth_mode"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="设备标识" prop="deviceId">
-          <el-input v-model="form.deviceId" placeholder="请输入设备标识" />
-        </el-form-item>
-        <el-form-item label="设备名称" prop="deviceName">
-          <el-input v-model="form.deviceName" placeholder="请输入设备名称" />
-        </el-form-item>
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="客户端标识" prop="clientId">
+              <el-input v-model="form.clientId" placeholder="请输入客户端标识" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="用户名" prop="userName">
+              <el-input v-model="form.userName" placeholder="请输入用户名" />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="密码" prop="password">
+              <el-input v-model="form.password" placeholder="请输入密码" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="认证方式" prop="authMode">
+              <el-select v-model="form.authMode" placeholder="请选择认证方式">
+                <el-option
+                  v-for="dict in dict.type.link_device_auth_mode"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-        <el-form-item label="设备名称" prop="deviceName">
-          <mapView @locationChange="locationChange" @locationFail="locationFail" ref="mapView" ></mapView>
-        </el-form-item>
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="设备标识" prop="deviceId">
+              <el-input v-model="form.deviceId" placeholder="请输入设备标识" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="连接实例" prop="connector">
+              <el-select v-model="form.connector" placeholder="请选择连接实例">
+                <el-option
+                  v-for="dict in dict.type.link_device_connector"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
+        <el-row>
+          <el-col :span="22">
+            <mapView
+              @locationChange="locationChange"
+              @locationFail="locationFail"
+              ref="mapView"
+            ></mapView>
+          </el-col>
+        </el-row>
 
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="纬度" prop="latitude">
+              <el-input v-model="form.latitude" placeholder="请输入纬度" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="经度" prop="longitude">
+              <el-input v-model="form.longitude" placeholder="请输入经度" />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-        <el-form-item label="纬度" prop="latitude">
-          <el-input v-model="form.latitude" placeholder="请输入纬度" />
-        </el-form-item>
-        <el-form-item label="经度" prop="longitude">
-          <el-input v-model="form.longitude" placeholder="请输入经度" />
-        </el-form-item>
-        <el-form-item label="连接实例" prop="connector">
-          <el-select v-model="form.connector" placeholder="请选择连接实例">
-            <el-option
-              v-for="dict in dict.type.link_device_connector"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="设备描述" prop="deviceDescription">
-          <el-input v-model="form.deviceDescription" placeholder="请输入设备描述" />
-        </el-form-item>
-        <el-form-item label="设备状态" prop="deviceStatus">
-          <el-select v-model="form.deviceStatus" placeholder="请选择设备状态">
-            <el-option
-              v-for="dict in dict.type.link_device_status"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="连接状态" prop="connectStatus">
-          <el-select v-model="form.connectStatus" placeholder="请选择连接状态">
-            <el-option
-              v-for="dict in dict.type.link_device_connect_status"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否遗言" prop="isWill">
-          <el-select v-model="form.isWill" placeholder="请选择是否遗言">
-            <el-option
-              v-for="dict in dict.type.link_device_is_will"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="设备标签" prop="deviceTags">
-          <el-input v-model="form.deviceTags" placeholder="请输入设备标签" />
-        </el-form-item>
-        <el-form-item label="产品型号" prop="productId">
-          <el-input v-model="form.productId" placeholder="请输入产品型号" />
-        </el-form-item>
-        <el-form-item label="厂商ID" prop="manufacturerId">
-          <el-input v-model="form.manufacturerId" placeholder="请输入厂商ID" />
-        </el-form-item>
-        <el-form-item label="产品协议类型" prop="protocolType">
-          <el-select v-model="form.protocolType" placeholder="请选择产品协议类型">
-            <el-option
-              v-for="dict in dict.type.link_device_protocol_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="设备类型" prop="deviceType">
-          <el-select v-model="form.deviceType" placeholder="请选择设备类型">
-            <el-option
-              v-for="dict in dict.type.link_device_device_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="设备描述" prop="deviceDescription">
+              <el-input v-model="form.deviceDescription" placeholder="请输入设备描述" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="设备状态" prop="deviceStatus">
+              <el-select v-model="form.deviceStatus" placeholder="请选择设备状态">
+                <el-option
+                  v-for="dict in dict.type.link_device_status"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="连接状态" prop="connectStatus">
+              <el-select v-model="form.connectStatus" placeholder="请选择连接状态">
+                <el-option
+                  v-for="dict in dict.type.link_device_connect_status"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="是否遗言" prop="isWill">
+              <el-select v-model="form.isWill" placeholder="请选择是否遗言">
+                <el-option
+                  v-for="dict in dict.type.link_device_is_will"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="产品型号" prop="productId">
+              <el-input v-model="form.productId" placeholder="请输入产品型号" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="厂商ID" prop="manufacturerId">
+              <el-input v-model="form.manufacturerId" placeholder="请输入厂商ID" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="产品协议类型" prop="protocolType">
+              <el-select v-model="form.protocolType" placeholder="请选择产品协议类型">
+                <el-option
+                  v-for="dict in dict.type.link_device_protocol_type"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="设备类型" prop="deviceType">
+              <el-select v-model="form.deviceType" placeholder="请选择设备类型">
+                <el-option
+                  v-for="dict in dict.type.link_device_device_type"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="20">
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -372,7 +429,7 @@
 <script>
 import { listDevice, getDevice, delDevice, addDevice, updateDevice } from "@/api/link/device";
 
-import mapView from './mapView';
+import mapView from "./mapView";
 
 export default {
   components: {
@@ -416,6 +473,7 @@ export default {
         protocolType: null,
         deviceType: null,
       },
+
       // 表单参数
       form: {},
       // 表单校验
@@ -487,6 +545,18 @@ export default {
     this.getList();
   },
   methods: {
+
+      locationChange(e) {
+          this.form.longitude = e[0];
+          this.form.latitude = e[1];
+      },
+      locationFail(message) {
+          this.$message({
+              message: message,
+              type: "warning",
+              duration: 1500,
+          });
+      },
     /** 查询设备管理列表 */
     getList() {
       this.loading = true;
@@ -582,12 +652,6 @@ export default {
           }
         }
       });
-    },
-    locationChange(e){
-
-    },
-    locationFail(e){
-
     },
     /** 删除按钮操作 */
     handleDelete(row) {
