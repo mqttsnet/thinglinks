@@ -62,6 +62,13 @@
             <version>${mqtts.version}</version>
         </dependency>
 
+        <!-- mqtts Common Swagger -->
+        <dependency>
+            <groupId>net.mqtts</groupId>
+            <artifactId>mqtts-common-swagger</artifactId>
+            <version>${mqtts.version}</version>
+        </dependency>
+
         <!--   https://github.com/quickmsg/smqtt  V1.0.9   -->
         <dependency>
             <groupId>io.github.quickmsg</groupId>
