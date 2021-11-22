@@ -3,32 +3,27 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>mqtts-api</artifactId>
         <groupId>net.mqtts</groupId>
+        <artifactId>mqtts-common</artifactId>
         <version>${mqtts.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mqtts-api-link</artifactId>
-
+    <artifactId>mqtts-common-rocketmq</artifactId>
 
     <description>
-        mqtts-api-link 设备接口模块
+        mqtts-common-rocketmq消息服务
     </description>
 
+
     <dependencies>
-
-        <!-- mqtts Common Core-->
+        <!-- https://mvnrepository.com/artifact/org.apache.rocketmq/rocketmq-spring-boot-starter -->
         <dependency>
-            <groupId>net.mqtts</groupId>
-            <artifactId>mqtts-common-core</artifactId>
-            <version>${mqtts.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-spring-boot-starter</artifactId>
+            <version>2.2.1</version>
         </dependency>
 
     </dependencies>
+
 </project>

@@ -89,6 +89,13 @@
             <version>${mqtts.version}</version>
         </dependency>
 
+        <!-- mqtts Common Rocketmq -->
+        <dependency>
+            <groupId>net.mqtts</groupId>
+            <artifactId>mqtts-common-rocketmq</artifactId>
+            <version>${mqtts.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-api-link</artifactId>

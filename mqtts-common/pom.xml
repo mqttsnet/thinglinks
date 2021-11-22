@@ -16,6 +16,7 @@
         <module>mqtts-common-security</module>
         <module>mqtts-common-datascope</module>
 		<module>mqtts-common-datasource</module>
+        <module>mqtts-common-rocketmq</module>
     </modules>
 
     <artifactId>mqtts-common</artifactId>
