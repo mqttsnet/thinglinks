@@ -1,15 +1,22 @@
 package net.mqtts.link.service.device.impl;
 
+import cn.hutool.core.date.LocalDateTimeUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.nacos.shaded.com.google.gson.Gson;
+import io.netty.handler.codec.mqtt.MqttMessage;
+import lombok.extern.slf4j.Slf4j;
 import net.mqtts.link.api.domain.MqttsDeviceAction;
 import net.mqtts.link.mapper.device.MqttsDeviceActionMapper;
 import net.mqtts.link.service.device.MqttsDeviceActionService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * @Description: java类作用描述
+ * @Description: mqtt上下线动作数据处理
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
  * @Website: http://mqtts.net
@@ -19,6 +26,7 @@ import java.util.List;
  * @UpdateRemark: 修改内容
  * @Version: 1.0
  */
+@Slf4j
 @Service
 public class MqttsDeviceActionServiceImpl implements MqttsDeviceActionService {
 
@@ -98,6 +106,39 @@ public class MqttsDeviceActionServiceImpl implements MqttsDeviceActionService {
     @Override
     public int deleteMqttsDeviceActionByIds(Long[] ids) {
         return mqttsDeviceActionMapper.deleteMqttsDeviceActionByIds(ids);
+    }
+
+    /**
+     * 设备连接事件
+     *
+     * @param mqttsMessage
+     */
+    @Override
+    public void connectEvent(String mqttsMessage) {
+        Gson gson = new Gson();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map = gson.fromJson(mqttsMessage, map.getClass());
+        log.info(map.toString());
+        /*MqttsDeviceAction mqttsDeviceAction = new MqttsDeviceAction();
+        mqttsDeviceAction.setDevice_id(mqttsMessage.get("clientIdentifier").toString());
+        mqttsDeviceAction.setAction_type(message.fixedHeader().messageType().toString());
+        mqttsDeviceAction.setStatus(message.decoderResult().toString());
+        mqttsDeviceAction.setMessage(heapMqttMessage.getTopic());
+        mqttsDeviceAction.setCreate_time(LocalDateTimeUtil.now());
+        mqttsDeviceActionMapper.insert(mqttsDeviceAction);*/
+    }
+
+    /**
+     * 设备断开事件
+     *
+     * @param mqttsMessage
+     */
+    @Override
+    public void closeEvent(String mqttsMessage) {
+        Gson gson = new Gson();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map = gson.fromJson(mqttsMessage, map.getClass());
+        log.info(map.toString());
     }
 
 }

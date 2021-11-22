@@ -1,11 +1,12 @@
 package net.mqtts.link.service.device;
 
+import com.alibaba.fastjson.JSONObject;
 import net.mqtts.link.api.domain.MqttsDeviceAction;
 
 import java.util.List;
 
 /**
- * @Description: java类作用描述
+ * @Description: 设备动作处理接口
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
  * @Website: http://mqtts.net
@@ -47,4 +48,16 @@ public interface MqttsDeviceActionService {
     int batchInsert(List<MqttsDeviceAction> list);
 
     int deleteMqttsDeviceActionByIds(Long[] ids);
+
+    /**
+     * 设备连接事件
+     * @param mqttsMessage
+     */
+    void connectEvent(String mqttsMessage);
+
+    /**
+     * 设备断开事件
+     * @param mqttsMessage
+     */
+    void closeEvent(String mqttsMessage);
 }

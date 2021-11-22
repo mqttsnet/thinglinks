@@ -1,16 +1,22 @@
 package net.mqtts.link.service.device.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.nacos.shaded.com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import net.mqtts.link.api.domain.MqttsDeviceDatas;
 import net.mqtts.link.mapper.device.MqttsDeviceDatasMapper;
 import net.mqtts.link.service.device.MqttsDeviceDatasService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 
-* @Description:    java类作用描述
+* @Description:    mqtt基础业务处理
 
 * @Author:         ShiHuan Sun
 
@@ -29,6 +35,7 @@ import java.util.List;
 * @Version:        1.0
 
 */
+@Slf4j
 @Service
 public class MqttsDeviceDatasServiceImpl implements MqttsDeviceDatasService{
 
@@ -108,6 +115,19 @@ public class MqttsDeviceDatasServiceImpl implements MqttsDeviceDatasService{
     @Override
     public int deleteMqttsDeviceDatasByIds(Long[] ids) {
         return mqttsDeviceDatasMapper.deleteMqttsDeviceDatasByIds(ids);
+    }
+
+    /**
+     * mqtt基础数据处理
+     *
+     * @param mqttsMessage
+     */
+    @Override
+    public void insertBaseDatas(String mqttsMessage) {
+        Gson gson = new Gson();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map = gson.fromJson(mqttsMessage, map.getClass());
+        log.info(map.toString());
     }
 
 }

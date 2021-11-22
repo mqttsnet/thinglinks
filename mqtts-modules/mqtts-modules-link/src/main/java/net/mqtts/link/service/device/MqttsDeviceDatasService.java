@@ -1,5 +1,6 @@
 package net.mqtts.link.service.device;
 
+import com.alibaba.fastjson.JSONObject;
 import net.mqtts.link.api.domain.MqttsDeviceDatas;
 
 import java.util.List;
@@ -47,4 +48,10 @@ public interface MqttsDeviceDatasService {
     int batchInsert(List<MqttsDeviceDatas> list);
 
     int deleteMqttsDeviceDatasByIds(Long[] ids);
+
+    /**
+     * mqtt基础数据处理
+     * @param mqttsMessage
+     */
+    void insertBaseDatas(String mqttsMessage);
 }
