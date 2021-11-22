@@ -41,7 +41,7 @@ import BaiduMap from 'vue-baidu-map'
 // 引入高德
 import AmapVue from '@amap/amap-vue';
 AmapVue.config.version = '2.0'; // 默认2.0，这里可以不修改
-AmapVue.config.key = '1c26e30abecdc9022e34e0a54fdc8d71';
+AmapVue.config.key = 'e13456422e8fe93451cf2201f4db84bd';
 AmapVue.config.plugins = [
   'AMap.moveAnimation',
   'AMap.Geocoder',

@@ -2,47 +2,46 @@ package net.mqtts.common.core.utils;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.mqtts.common.core.constant.UserConstants;
 import net.mqtts.common.core.text.Convert;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import net.mqtts.common.core.constant.SecurityConstants;
 
 /**
  * 权限获取工具类
- * 
+ *
  * @author mqtts
  */
-public class SecurityUtils
-{
+public class SecurityUtils {
     /**
      * 获取用户
      */
-    public static String getUsername()
-    {
+    public static String getUsername() {
         String username = ServletUtils.getRequest().getHeader(SecurityConstants.DETAILS_USERNAME);
+        if (StringUtils.isEmpty(username)) {
+            return UserConstants.MQTTS;
+        }
         return ServletUtils.urlDecode(username);
     }
 
     /**
      * 获取用户ID
      */
-    public static Long getUserId()
-    {
+    public static Long getUserId() {
         return Convert.toLong(ServletUtils.getRequest().getHeader(SecurityConstants.DETAILS_USER_ID));
     }
 
     /**
      * 获取请求token
      */
-    public static String getToken()
-    {
+    public static String getToken() {
         return getToken(ServletUtils.getRequest());
     }
 
     /**
      * 根据request获取请求token
      */
-    public static String getToken(HttpServletRequest request)
-    {
+    public static String getToken(HttpServletRequest request) {
         String token = request.getHeader(SecurityConstants.TOKEN_AUTHENTICATION);
         return replaceTokenPrefix(token);
     }
@@ -50,10 +49,8 @@ public class SecurityUtils
     /**
      * 替换token前缀
      */
-    public static String replaceTokenPrefix(String token)
-    {
-        if (StringUtils.isNotEmpty(token) && token.startsWith(SecurityConstants.TOKEN_PREFIX))
-        {
+    public static String replaceTokenPrefix(String token) {
+        if (StringUtils.isNotEmpty(token) && token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
             token = token.replace(SecurityConstants.TOKEN_PREFIX, "");
         }
         return token;
@@ -61,12 +58,11 @@ public class SecurityUtils
 
     /**
      * 是否为管理员
-     * 
+     *
      * @param userId 用户ID
      * @return 结果
      */
-    public static boolean isAdmin(Long userId)
-    {
+    public static boolean isAdmin(Long userId) {
         return userId != null && 1L == userId;
     }
 
@@ -76,8 +72,7 @@ public class SecurityUtils
      * @param password 密码
      * @return 加密字符串
      */
-    public static String encryptPassword(String password)
-    {
+    public static String encryptPassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder.encode(password);
     }
@@ -85,12 +80,11 @@ public class SecurityUtils
     /**
      * 判断密码是否相同
      *
-     * @param rawPassword 真实密码
+     * @param rawPassword     真实密码
      * @param encodedPassword 加密后字符
      * @return 结果
      */
-    public static boolean matchesPassword(String rawPassword, String encodedPassword)
-    {
+    public static boolean matchesPassword(String rawPassword, String encodedPassword) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
