@@ -8,6 +8,16 @@ package net.mqtts.common.core.constant;
 public class UserConstants
 {
     /**
+     * 平台默认超级管理员
+     */
+    public static final String ADMIN = "admin";
+
+    /**
+     * 平台默认管理员
+     */
+    public static final String MQTTS = "mqtts";
+
+    /**
      * 平台内系统用户的唯一标志
      */
     public static final String SYS_USER = "SYS_USER";
