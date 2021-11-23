@@ -124,10 +124,7 @@ public class MqttsDeviceDatasServiceImpl implements MqttsDeviceDatasService{
      */
     @Override
     public void insertBaseDatas(String mqttsMessage) {
-        Gson gson = new Gson();
-        Map<String, Object> map = new HashMap<String, Object>();
-        map = gson.fromJson(mqttsMessage, map.getClass());
-        log.info(map.toString());
+       log.info(mqttsMessage);
     }
 
 }

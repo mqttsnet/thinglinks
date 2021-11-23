@@ -265,6 +265,7 @@
       device_id,
       message_id,
       topic,
+      message,
       `status`,
       create_time,
     </trim>
@@ -276,6 +277,7 @@
       #{device_id,jdbcType=VARCHAR},
       #{message_id,jdbcType=VARCHAR},
       #{topic,jdbcType=VARCHAR},
+      #{message,jdbcType=LONGVARCHAR},
       #{status,jdbcType=VARCHAR},
       #{create_time,jdbcType=TIMESTAMP},
     </trim>
@@ -287,6 +289,7 @@
       device_id = #{device_id,jdbcType=VARCHAR},
       message_id = #{message_id,jdbcType=VARCHAR},
       topic = #{topic,jdbcType=VARCHAR},
+      message = #{message,jdbcType=LONGVARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
       create_time = #{create_time,jdbcType=TIMESTAMP},
     </trim>

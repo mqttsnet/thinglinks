@@ -5,9 +5,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
 import io.netty.handler.codec.mqtt.MqttMessage;
 import lombok.extern.slf4j.Slf4j;
+import net.mqtts.link.api.domain.MqttsDevice;
 import net.mqtts.link.api.domain.MqttsDeviceAction;
 import net.mqtts.link.mapper.device.MqttsDeviceActionMapper;
 import net.mqtts.link.service.device.MqttsDeviceActionService;
+import net.mqtts.link.service.device.MqttsDeviceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -32,6 +35,9 @@ public class MqttsDeviceActionServiceImpl implements MqttsDeviceActionService {
 
     @Resource
     private MqttsDeviceActionMapper mqttsDeviceActionMapper;
+
+    @Autowired
+    private MqttsDeviceService mqttsDeviceService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -116,16 +122,15 @@ public class MqttsDeviceActionServiceImpl implements MqttsDeviceActionService {
     @Override
     public void connectEvent(String mqttsMessage) {
         Gson gson = new Gson();
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map = gson.fromJson(mqttsMessage, map.getClass());
-        log.info(map.toString());
-        /*MqttsDeviceAction mqttsDeviceAction = new MqttsDeviceAction();
-        mqttsDeviceAction.setDevice_id(mqttsMessage.get("clientIdentifier").toString());
-        mqttsDeviceAction.setAction_type(message.fixedHeader().messageType().toString());
-        mqttsDeviceAction.setStatus(message.decoderResult().toString());
-        mqttsDeviceAction.setMessage(heapMqttMessage.getTopic());
+        MqttsDeviceAction mqttsDeviceAction = new MqttsDeviceAction();
+        mqttsDeviceAction.setDevice_id(String.valueOf(map.get("clientIdentifier")));
+        mqttsDeviceAction.setAction_type(String.valueOf(map.get("channelStatus")));
+        mqttsDeviceAction.setStatus("success");
+        mqttsDeviceAction.setMessage("Device Connection");
         mqttsDeviceAction.setCreate_time(LocalDateTimeUtil.now());
-        mqttsDeviceActionMapper.insert(mqttsDeviceAction);*/
+        mqttsDeviceActionMapper.insertOrUpdate(mqttsDeviceAction);
     }
 
     /**
@@ -136,9 +141,17 @@ public class MqttsDeviceActionServiceImpl implements MqttsDeviceActionService {
     @Override
     public void closeEvent(String mqttsMessage) {
         Gson gson = new Gson();
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map = gson.fromJson(mqttsMessage, map.getClass());
-        log.info(map.toString());
+        int i = mqttsDeviceService.updateConnectStatusByClientId("OFFLINE", String.valueOf(map.get("clientIdentifier")));
+        MqttsDeviceAction mqttsDeviceAction = new MqttsDeviceAction();
+        mqttsDeviceAction.setDevice_id(String.valueOf(map.get("clientIdentifier")));
+        mqttsDeviceAction.setAction_type(String.valueOf(map.get("channelStatus")));
+        mqttsDeviceAction.setStatus(i!=0?"success":"failure");
+        mqttsDeviceAction.setMessage("Device Disconnection");
+        mqttsDeviceAction.setCreate_time(LocalDateTimeUtil.now());
+        mqttsDeviceActionMapper.insertOrUpdate(mqttsDeviceAction);
+
     }
 
 }

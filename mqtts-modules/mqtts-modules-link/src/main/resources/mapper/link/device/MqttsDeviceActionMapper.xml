@@ -246,6 +246,7 @@
       device_id,
       action_type,
       `status`,
+      message,
       create_time,
     </trim>
     values
@@ -256,6 +257,7 @@
       #{device_id,jdbcType=VARCHAR},
       #{action_type,jdbcType=VARCHAR},
       #{status,jdbcType=VARCHAR},
+      #{message,jdbcType=LONGVARCHAR},
       #{create_time,jdbcType=TIMESTAMP},
     </trim>
     on duplicate key update 
@@ -266,6 +268,7 @@
       device_id = #{device_id,jdbcType=VARCHAR},
       action_type = #{action_type,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
+      message = #{message,jdbcType=LONGVARCHAR},
       create_time = #{create_time,jdbcType=TIMESTAMP},
     </trim>
   </insert>
