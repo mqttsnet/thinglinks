@@ -38,8 +38,10 @@ net.mqtts
 │       └── mqtts-common-core                         // 核心模块
 │       └── mqtts-common-datascope                    // 权限范围
 │       └── mqtts-common-datasource                   // 多数据源
+│       └── mqtts-common-job                          // 定时任务
 │       └── mqtts-common-log                          // 日志记录
 │       └── mqtts-common-redis                        // 缓存服务
+│       └── mqtts-common-rocketmq                     // 消息服务
 │       └── mqtts-common-security                     // 安全模块
 │       └── mqtts-common-swagger                      // 系统接口
 ├── mqtts-modules         // 业务模块
