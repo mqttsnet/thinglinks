@@ -102,6 +102,12 @@
             <version>${mqtts.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>net.mqtts</groupId>
+            <artifactId>mqtts-common-job</artifactId>
+            <version>${mqtts.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

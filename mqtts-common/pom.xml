@@ -17,6 +17,7 @@
         <module>mqtts-common-datascope</module>
 		<module>mqtts-common-datasource</module>
         <module>mqtts-common-rocketmq</module>
+        <module>mqtts-common-job</module>
     </modules>
 
     <artifactId>mqtts-common</artifactId>
