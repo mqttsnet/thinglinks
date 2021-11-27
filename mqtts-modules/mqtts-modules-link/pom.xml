@@ -102,9 +102,17 @@
             <version>${mqtts.version}</version>
         </dependency>
 
+        <!-- mqtts Common job -->
         <dependency>
             <groupId>net.mqtts</groupId>
             <artifactId>mqtts-common-job</artifactId>
+            <version>${mqtts.version}</version>
+        </dependency>
+
+        <!-- mqtts Common kafka -->
+        <dependency>
+            <groupId>net.mqtts</groupId>
+            <artifactId>mqtts-common-kafka</artifactId>
             <version>${mqtts.version}</version>
         </dependency>
 

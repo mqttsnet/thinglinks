@@ -18,6 +18,7 @@
 		<module>mqtts-common-datasource</module>
         <module>mqtts-common-rocketmq</module>
         <module>mqtts-common-job</module>
+        <module>mqtts-common-kafka</module>
     </modules>
 
     <artifactId>mqtts-common</artifactId>

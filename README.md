@@ -38,10 +38,11 @@ net.mqtts
 │       └── mqtts-common-core                         // 核心模块
 │       └── mqtts-common-datascope                    // 权限范围
 │       └── mqtts-common-datasource                   // 多数据源
-│       └── mqtts-common-job                          // 定时任务
+│       └── mqtts-common-job                          // 分布式定时任务
+│       └── mqtts-common-kafka                        // kafka消息服务
 │       └── mqtts-common-log                          // 日志记录
 │       └── mqtts-common-redis                        // 缓存服务
-│       └── mqtts-common-rocketmq                     // 消息服务
+│       └── mqtts-common-rocketmq                     // rocketmq消息服务
 │       └── mqtts-common-security                     // 安全模块
 │       └── mqtts-common-swagger                      // 系统接口
 ├── mqtts-modules         // 业务模块
@@ -72,17 +73,19 @@ net.mqtts
 演示地址：http://mqtts.net
 文档地址：http://showdoc.mqtts.net
 
-## 开发计划
+## 功能开发计划
 
-1、设备集成、设备管理页面开发(实现中)
+*、设备集成、设备管理页面开发(实现中)
 
-2、设备消息查看
+*、设备消息查看(实现中)
 
-3、规则引擎可视化配置页面
+*、Docker容器化部署(实现中)
 
-4、告警列表
+*、规则引擎可视化配置页面
 
-5、大屏展示（客户端、消息发布订阅、告警）
+*、告警列表
+
+*、大屏展示（客户端、消息发布订阅、告警）
 
 ## 演示图
 
@@ -115,6 +118,12 @@ net.mqtts
 10、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -Dserver.port=19101 -Dcsp.sentinel.dashboard.server=localhost:19101 -Dproject.name=sentinel-dashboard -Dsentinel.dashboard.auth.username=mqtts -Dsentinel.dashboard.auth.password=123456 -jar -Dfile.encoding=utf-8  ./sentinel-dashboard-1.8.2.jar >/dev/null 2>&1 &
 
 ~~~
+
+##贡献代码(欢迎你的加入)
+
+如果你有兴趣参与项目开发，请联系mqttsnet团队邮箱: mqttsnet@163.com 
+
+目前需要一个会VUE的前端大佬支持！！！
 
 ##交流群
 
