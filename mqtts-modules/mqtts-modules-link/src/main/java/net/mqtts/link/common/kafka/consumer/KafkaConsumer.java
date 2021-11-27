@@ -3,6 +3,7 @@ package net.mqtts.link.common.kafka.consumer;
 import lombok.extern.slf4j.Slf4j;
 import net.mqtts.link.common.kafka.producer.KafkaProducer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -22,6 +23,7 @@ import java.util.Optional;
  * @UpdateRemark: 修改内容
  * @Version: 1.0
  */
+@RefreshScope
 @Component
 @Slf4j
 public class KafkaConsumer {

@@ -2,6 +2,7 @@ package net.mqtts.file.config;
 
 import java.io.File;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * 
  * @author mqtts
  */
+@RefreshScope
 @Configuration
 public class ResourcesConfig implements WebMvcConfigurer
 {

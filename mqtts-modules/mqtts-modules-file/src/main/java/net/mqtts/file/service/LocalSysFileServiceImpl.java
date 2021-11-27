@@ -2,6 +2,7 @@ package net.mqtts.file.service;
 
 import net.mqtts.file.utils.FileUploadUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 
  * @author mqtts
  */
+@RefreshScope
 @Primary
 @Service
 public class LocalSysFileServiceImpl implements ISysFileService

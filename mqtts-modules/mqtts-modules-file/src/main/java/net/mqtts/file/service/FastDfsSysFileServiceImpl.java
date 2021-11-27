@@ -3,6 +3,7 @@ package net.mqtts.file.service;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.github.tobato.fastdfs.domain.fdfs.StorePath;
@@ -13,6 +14,7 @@ import com.github.tobato.fastdfs.service.FastFileStorageClient;
  * 
  * @author mqtts
  */
+@RefreshScope
 @Service
 public class FastDfsSysFileServiceImpl implements ISysFileService
 {
