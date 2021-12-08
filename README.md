@@ -121,14 +121,14 @@ com.mqttsnet.thinglinks
 
 ~~~
 
-##贡献代码(欢迎你的加入)
+## 贡献代码(欢迎你的加入)
 
 如果你有兴趣参与项目开发，请联系mqttsnet团队邮箱: mqttsnet@163.com 
 
-##友情链接
+## 友情链接
 
 [本平台高效MQTTBroker采用：SMQTT](https://github.com/quickmsg/smqtt)
 
-##交流群
+## 交流群
 
 待更新
