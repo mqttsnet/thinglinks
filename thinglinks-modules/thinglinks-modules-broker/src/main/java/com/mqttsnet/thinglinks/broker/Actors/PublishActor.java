@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
  * @UpdateRemark: 修改内容
  * @Version: 1.0
  */
-@Router(value = "/link/publish", type = HttpType.POST)
+@Router(value = "/publish", type = HttpType.POST)
 @Slf4j
 @AllowCors
 public class PublishActor extends AbstractHttpActor {

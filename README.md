@@ -70,7 +70,7 @@ com.mqttsnet.thinglinks
 
 - mqtts/123456
 
-演示地址：http://thinglinks.mqttsnet.com
+演示地址：http://mqtts.net
 文档地址：http://showdoc.mqtts.net
 
 ## 功能开发计划
@@ -125,6 +125,9 @@ com.mqttsnet.thinglinks
 
 如果你有兴趣参与项目开发，请联系mqttsnet团队邮箱: mqttsnet@163.com 
 
+##友情链接
+
+[本平台高效MQTTBroker采用：SMQTT](https://github.com/quickmsg/smqtt)
 
 ##交流群
 
