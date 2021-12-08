@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.mqttsnet</groupId>
+        <artifactId>thinglinks-common</artifactId>
+        <version>${thinglinks.version}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    
+    <artifactId>thinglinks-common-redis</artifactId>
+	
+    <description>
+        thinglinks-common-redis缓存服务
+    </description>
+
+    <dependencies>
+		
+        <!-- SpringBoot Boot Redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.lettuce</groupId>
+                    <artifactId>lettuce-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+
+        <!-- thinglinks Common Core-->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-core</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+        
+    </dependencies>
+</project>

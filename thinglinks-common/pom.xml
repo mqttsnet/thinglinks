@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.mqttsnet</groupId>
+        <artifactId>thinglinks</artifactId>
+        <version>${thinglinks.version}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>thinglinks-common-log</module>
+        <module>thinglinks-common-core</module>
+        <module>thinglinks-common-redis</module>
+        <module>thinglinks-common-swagger</module>
+        <module>thinglinks-common-security</module>
+        <module>thinglinks-common-datascope</module>
+		<module>thinglinks-common-datasource</module>
+        <module>thinglinks-common-rocketmq</module>
+        <module>thinglinks-common-job</module>
+        <module>thinglinks-common-kafka</module>
+    </modules>
+
+    <artifactId>thinglinks-common</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        thinglinks-common通用模块
+    </description>
+
+</project>

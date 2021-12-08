@@ -1,10 +1,10 @@
-#@mattsnet Docker Compose管理容器
+#@mattsnet  thinglinks  Docker Compose管理容器
 #参考文档
 #https://www.jianshu.com/p/658911a8cff3
 #https://www.runoob.com/docker/docker-compose.html
 #dcoker 版本  yaml 配置实例
 version: "3.8"
-#mqtts微服务集合
+#thinglinks微服务集合
 services:
   #服务名称
   gateway:
@@ -22,7 +22,7 @@ services:
     container_name: gateway
     #加入网络
     networks:
-      - mqtts
+      - thinglinks
     #端口
     ports:
       - "19100:19100"
@@ -33,7 +33,7 @@ services:
     image: "auth:1.0.0"
     container_name: auth
     networks:
-      - mqtts
+      - thinglinks
     ports:
       - "19200:19200"
   file:
@@ -42,7 +42,7 @@ services:
     image: "file:1.0.0"
     container_name: file
     networks:
-      - mqtts
+      - thinglinks
     ports:
       - "19300:19300"
   gen:
@@ -51,7 +51,7 @@ services:
     image: "gen:1.0.0"
     container_name: gen
     networks:
-      - mqtts
+      - thinglinks
     ports:
       - "19301:19301"
   job:
@@ -60,7 +60,7 @@ services:
     image: "job:1.0.0"
     container_name: job
     networks:
-      - mqtts
+      - thinglinks
     ports:
       - "19302:19302"
   system:
@@ -69,7 +69,7 @@ services:
     image: "system:1.0.0"
     container_name: system
     networks:
-      - mqtts
+      - thinglinks
     ports:
       - "19303:19303"
   tdengine:
@@ -78,7 +78,7 @@ services:
     image: "tdengine:1.0.0"
     container_name: tdengine
     networks:
-      - mqtts
+      - thinglinks
     ports:
       - "19304:19304"
   link:
@@ -87,7 +87,7 @@ services:
     image: "link:1.0.0"
     container_name: link
     networks:
-      - mqtts
+      - thinglinks
     ports:
       - "19305:19305"
   broker:
@@ -96,7 +96,7 @@ services:
     image: "broker:1.0.0"
     container_name: broker
     networks:
-      - mqtts
+      - thinglinks
     ports:
       - "19306:19306"
       - "11883:11883"
@@ -108,9 +108,9 @@ services:
     image: "monitor:1.0.0"
     container_name: monitor
     networks:
-      - mqtts
+      - thinglinks
     ports:
       - "19400:19400"
 networks:
-  mqtts:
+  thinglinks:
     driver: bridge

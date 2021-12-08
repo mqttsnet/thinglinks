@@ -4,16 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.mqtts</groupId>
-    <artifactId>mqtts</artifactId>
-    <version>${mqtts.version}</version>
+    <groupId>com.mqttsnet</groupId>
+    <artifactId>thinglinks</artifactId>
+    <version>${thinglinks.version}</version>
 
-    <name>mqtts</name>
-    <url>http://mqtts.net</url>
-    <description>MQTTS物联网平台微服务系统</description>
+    <name>thinglinks</name>
+    <url>http://thinglinks.mqttsnet.com</url>
+    <description>ThingLinks物联网一体化平台</description>
 
     <properties>
-        <mqtts.version>1.0.0-RELEASE</mqtts.version>
+        <thinglinks.version>1.0.0-RELEASE</thinglinks.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
@@ -39,7 +39,7 @@
         <common-pool.version>2.10.0</common-pool.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <!--lib打包目录-->
-        <mqtts.lib.package.url>D:\mqtts-server\lib\</mqtts.lib.package.url>
+        <mqtts.lib.package.url>D:\thinglinks-server\lib\</mqtts.lib.package.url>
         <!-- 文件拷贝时的编码 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -189,58 +189,58 @@
 
             <!-- 核心模块 -->
             <dependency>
-                <groupId>net.mqtts</groupId>
-                <artifactId>mqtts-common-core</artifactId>
-                <version>${mqtts.version}</version>
+                <groupId>com.mqttsnet</groupId>
+                <artifactId>thinglinks-common-core</artifactId>
+                <version>${thinglinks.version}</version>
             </dependency>
 
             <!-- 接口模块 -->
             <dependency>
-                <groupId>net.mqtts</groupId>
-                <artifactId>mqtts-common-swagger</artifactId>
-                <version>${mqtts.version}</version>
+                <groupId>com.mqttsnet</groupId>
+                <artifactId>thinglinks-common-swagger</artifactId>
+                <version>${thinglinks.version}</version>
             </dependency>
 
             <!-- 安全模块 -->
             <dependency>
-                <groupId>net.mqtts</groupId>
-                <artifactId>mqtts-common-security</artifactId>
-                <version>${mqtts.version}</version>
+                <groupId>com.mqttsnet</groupId>
+                <artifactId>thinglinks-common-security</artifactId>
+                <version>${thinglinks.version}</version>
             </dependency>
 
             <!-- 权限范围 -->
             <dependency>
-                <groupId>net.mqtts</groupId>
-                <artifactId>mqtts-common-datascope</artifactId>
-                <version>${mqtts.version}</version>
+                <groupId>com.mqttsnet</groupId>
+                <artifactId>thinglinks-common-datascope</artifactId>
+                <version>${thinglinks.version}</version>
             </dependency>
 
             <!-- 多数据源 -->
             <dependency>
-                <groupId>net.mqtts</groupId>
-                <artifactId>mqtts-common-datasource</artifactId>
-                <version>${mqtts.version}</version>
+                <groupId>com.mqttsnet</groupId>
+                <artifactId>thinglinks-common-datasource</artifactId>
+                <version>${thinglinks.version}</version>
             </dependency>
 
             <!-- 日志记录 -->
             <dependency>
-                <groupId>net.mqtts</groupId>
-                <artifactId>mqtts-common-log</artifactId>
-                <version>${mqtts.version}</version>
+                <groupId>com.mqttsnet</groupId>
+                <artifactId>thinglinks-common-log</artifactId>
+                <version>${thinglinks.version}</version>
             </dependency>
 
             <!-- 缓存服务 -->
             <dependency>
-                <groupId>net.mqtts</groupId>
-                <artifactId>mqtts-common-redis</artifactId>
-                <version>${mqtts.version}</version>
+                <groupId>com.mqttsnet</groupId>
+                <artifactId>thinglinks-common-redis</artifactId>
+                <version>${thinglinks.version}</version>
             </dependency>
 
             <!-- 系统接口 -->
             <dependency>
-                <groupId>net.mqtts</groupId>
-                <artifactId>mqtts-api-system</artifactId>
-                <version>${mqtts.version}</version>
+                <groupId>com.mqttsnet</groupId>
+                <artifactId>thinglinks-api-system</artifactId>
+                <version>${thinglinks.version}</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/org.sonatype.oss/oss-parent -->
@@ -256,12 +256,12 @@
     </dependencyManagement>
 
     <modules>
-        <module>mqtts-auth</module>
-        <module>mqtts-gateway</module>
-        <module>mqtts-visual</module>
-        <module>mqtts-modules</module>
-        <module>mqtts-api</module>
-        <module>mqtts-common</module>
+        <module>thinglinks-auth</module>
+        <module>thinglinks-gateway</module>
+        <module>thinglinks-visual</module>
+        <module>thinglinks-modules</module>
+        <module>thinglinks-api</module>
+        <module>thinglinks-common</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -297,15 +297,15 @@
     </licenses>
     <scm>
         <tag>master</tag>
-        <url>git@github.com:xiaonannet/mqtts.git</url>
-        <connection>scm:git@github.com:xiaonannet/mqtts.git</connection>
-        <developerConnection>scm:git@github.com:xiaonannet/mqtts.git</developerConnection>
+        <url>git@github.com:mqttsnet/thinglinks.git</url>
+        <connection>scm:git@github.com:mqttsnet/thinglinks.git</connection>
+        <developerConnection>scm:git@github.com:mqttsnet/thinglinks.git</developerConnection>
     </scm>
     <developers>
         <developer>
-            <name>xiaonannet</name>
-            <email>13733918655@163.com</email>
-            <organization>xiaonannet</organization>
+            <name>mqttsnet</name>
+            <email>mqttsnet@163.com</email>
+            <organization>mqttsnet</organization>
         </developer>
     </developers>
 

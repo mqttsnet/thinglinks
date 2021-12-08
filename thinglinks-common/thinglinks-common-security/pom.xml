@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.mqttsnet</groupId>
+        <artifactId>thinglinks-common</artifactId>
+        <version>${thinglinks.version}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    
+    <artifactId>thinglinks-common-security</artifactId>
+
+    <description>
+        thinglinks-common-security安全模块
+    </description>
+
+    <dependencies>
+    
+        <!-- thinglinks Api System -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-api-system</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+        
+        <!-- thinglinks Common Redis-->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-redis</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

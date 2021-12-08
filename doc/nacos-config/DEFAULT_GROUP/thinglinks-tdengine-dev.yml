@@ -1,0 +1,29 @@
+spring: 
+    redis:
+        host: 127.0.0.1
+        port: 6379
+        password: thinglinks
+    datasource: 
+       driver-class-name: com.taosdata.jdbc.rs.RestfulDriver
+       url: jdbc:TAOS-RS://127.0.0.1:6041/test?timezone=UTC-8&charset=UTF-8&locale=en_US.UTF-8
+       username: root
+       password: taosdata
+       druid: 
+            initial-size: 5
+            min-idle: 5
+            max-active: 5
+            max-wait: 30000
+            validation-query: select server_status();
+    aop: 
+        auto: true
+        proxy-target-class: true
+mybatis: 
+    mapper-locations: classpath:mapper/*.xml
+logging:  
+    level: 
+        com: 
+            taosdata: 
+                jdbc: 
+                    springbootdemo: 
+                        dao: debug
+

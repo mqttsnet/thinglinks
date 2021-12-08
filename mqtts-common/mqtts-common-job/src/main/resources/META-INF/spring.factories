@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  net.mqtts.common.job.config.MqttsJobConfig
-
-  

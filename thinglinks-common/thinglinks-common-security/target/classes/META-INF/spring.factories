@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.mqttsnet.thinglinks.common.security.service.TokenService,\
+  com.mqttsnet.thinglinks.common.security.aspect.PreAuthorizeAspect,\
+  com.mqttsnet.thinglinks.common.security.aspect.InnerAuthAspect,\
+  com.mqttsnet.thinglinks.common.security.handler.GlobalExceptionHandler

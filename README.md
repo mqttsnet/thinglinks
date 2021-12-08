@@ -1,5 +1,5 @@
 
-# mqtts平台简介
+# ThingLinks平台简介
 
 本系统采用Spring Cloud 微服务架构,一款高性、高吞吐量、高扩展性的物联网平台! 单机可以支持百万链接,同时支持自定义扩展功能多种协议交互，支持插件化开发! 
 
@@ -23,38 +23,38 @@
 
 灵活的规则引擎,设备告警,消息通知,数据转发。
 
-设备地理位置可视化查看,可视化大屏
+设备地理位置可视化查看,可视化大屏。
 
 ## 系统模块
 
 ~~~
-net.mqtts     
-├── mqtts-ui              // 前端框架 [19000]
-├── mqtts-gateway         // 网关模块 [19100]、[sentinel:19101]
-├── mqtts-auth            // 认证中心 [19200]
-├── mqtts-api             // 接口模块
-│       └── mqtts-api-system                          // 系统接口
-├── mqtts-common          // 通用模块
-│       └── mqtts-common-core                         // 核心模块
-│       └── mqtts-common-datascope                    // 权限范围
-│       └── mqtts-common-datasource                   // 多数据源
-│       └── mqtts-common-job                          // 分布式定时任务
-│       └── mqtts-common-kafka                        // kafka消息服务
-│       └── mqtts-common-log                          // 日志记录
-│       └── mqtts-common-redis                        // 缓存服务
-│       └── mqtts-common-rocketmq                     // rocketmq消息服务
-│       └── mqtts-common-security                     // 安全模块
-│       └── mqtts-common-swagger                      // 系统接口
-├── mqtts-modules         // 业务模块
-│       └── mqtts-modules-file                        // 文件服务 [19300]
-│       └── mqtts-modules-gen                         // 代码生成 [19301]
-│       └── mqtts-modules-job                         // 定时任务 [19302]
-│       └── mqtts-modules-system                      // 系统模块 [19303]
-│       └── mqtts-modules-tdengine                    // TDengine服务 [19304]
-│       └── mqtts-modules-link                        // Link服务 [19305]
-        └── mqtts-modules-broker                      // broker服务 [19306]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
-├── mqtts-visual          // 图形化管理模块
-│       └── mqtts-visual-monitor                      // 监控中心 [19400]
+com.mqttsnet.thinglinks     
+├── thinglinks-ui              // 前端框架 [19000]
+├── thinglinks-gateway         // 网关模块 [19100]、[sentinel:19101]
+├── thinglinks-auth            // 认证中心 [19200]
+├── thinglinks-api             // 接口模块
+│       └── thinglinks-api-system                          // 系统接口
+├── thinglinks-common          // 通用模块
+│       └── thinglinks-common-core                         // 核心模块
+│       └── thinglinks-common-datascope                    // 权限范围
+│       └── thinglinks-common-datasource                   // 多数据源
+│       └── thinglinks-common-job                          // 分布式定时任务
+│       └── thinglinks-common-kafka                        // kafka消息服务
+│       └── thinglinks-common-log                          // 日志记录
+│       └── thinglinks-common-redis                        // 缓存服务
+│       └── thinglinks-common-rocketmq                     // rocketmq消息服务
+│       └── thinglinks-common-security                     // 安全模块
+│       └── thinglinks-common-swagger                      // 系统接口
+├── thinglinks-modules         // 业务模块
+│       └── thinglinks-modules-file                        // 文件服务 [19300]
+│       └── thinglinks-modules-gen                         // 代码生成 [19301]
+│       └── thinglinks-modules-job                         // 定时任务 [19302]
+│       └── thinglinks-modules-system                      // 系统模块 [19303]
+│       └── thinglinks-modules-tdengine                    // TDengine服务 [19304]
+│       └── thinglinks-modules-link                        // Link服务 [19305]
+        └── thinglinks-modules-broker                      // broker服务 [19306]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
+├── thinglinks-visual          // 图形化管理模块
+│       └── thinglinks-visual-monitor                      // 监控中心 [19400]
 ├──pom.xml                // 公共依赖
 ~~~
 
@@ -70,7 +70,7 @@ net.mqtts
 
 - mqtts/123456
 
-演示地址：http://mqtts.net
+演示地址：http://thinglinks.mqttsnet.com
 文档地址：http://showdoc.mqtts.net
 
 ## 功能开发计划
@@ -93,29 +93,31 @@ net.mqtts
 
 ## 配置使用
 
-###启动命令（进入对应目录后逐一启动即可）
+###启动命令（进入对应目录后逐一启动即可、可根据服务器性能调整JVM参数）
 
 ~~~
 
-1、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-gateway-3.1.0.jar >/dev/null 2>&1 &
+1、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-gateway-1.0.0-RELEASE.jar >/dev/null 2>&1 &
 
-2、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-auth-3.1.0.jar >/dev/null 2>&1 &
+2、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-auth-1.0.0-RELEASE.jar >/dev/null 2>&1 &
 
-3、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-file-3.1.0.jar >/dev/null 2>&1 &
+3、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-file-1.0.0-RELEASE.jar >/dev/null 2>&1 &
 
-4、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-gen-3.1.0.jar >/dev/null 2>&1 &
+4、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-gen-1.0.0-RELEASE.jar >/dev/null 2>&1 &
 
-5、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-job-3.1.0.jar >/dev/null 2>&1 &
+5、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-job-1.0.0-RELEASE.jar >/dev/null 2>&1 &
 
-6、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-system-3.1.0.jar >/dev/null 2>&1 &
+6、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-system-1.0.0-RELEASE.jar >/dev/null 2>&1 &
 
-7、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-tdengine-3.1.0.jar >/dev/null 2>&1 &
+7、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-tdengine-1.0.0-RELEASE.jar >/dev/null 2>&1 &
 
-8、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-modules-link-3.1.0.jar >/dev/null 2>&1 &
+8、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-link-1.0.0-RELEASE.jar >/dev/null 2>&1 &
 
-9、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./mqtts-visual-monitor-3.1.0.jar >/dev/null 2>&1 &
+9、nohup java -Xms400m -Xmx400m -Xmn150m -Xss512k -XX:MetaspaceSize=1024m -XX:MaxMetaspaceSize=1024m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-broker-1.0.0-RELEASE.jar >/dev/null 2>&1 &
 
-10、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -Dserver.port=19101 -Dcsp.sentinel.dashboard.server=localhost:19101 -Dproject.name=sentinel-dashboard -Dsentinel.dashboard.auth.username=mqtts -Dsentinel.dashboard.auth.password=123456 -jar -Dfile.encoding=utf-8  ./sentinel-dashboard-1.8.2.jar >/dev/null 2>&1 &
+10、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-visual-monitor-1.0.0-RELEASE.jar >/dev/null 2>&1 &
+
+11、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -Dserver.port=19101 -Dcsp.sentinel.dashboard.server=localhost:19101 -Dproject.name=sentinel-dashboard -Dsentinel.dashboard.auth.username=mqtts -Dsentinel.dashboard.auth.password=123456 -jar -Dfile.encoding=utf-8  ./sentinel-dashboard-1.8.2.jar >/dev/null 2>&1 &
 
 ~~~
 
@@ -123,7 +125,6 @@ net.mqtts
 
 如果你有兴趣参与项目开发，请联系mqttsnet团队邮箱: mqttsnet@163.com 
 
-目前需要一个会VUE的前端大佬支持！！！
 
 ##交流群
 

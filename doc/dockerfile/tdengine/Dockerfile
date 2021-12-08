@@ -3,6 +3,6 @@
 FROM java:8
 #FROM primetoninc/jdk:1.8
 VOLUME /tmp/tdengine
-ADD mqtts-modules-tdengine-1.0.0.RELEASE.jar tdengine.jar
+ADD thinglinks-modules-tdengine-1.0.0.RELEASE.jar tdengine.jar
 EXPOSE 19304
 ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/tdengine.jar"]

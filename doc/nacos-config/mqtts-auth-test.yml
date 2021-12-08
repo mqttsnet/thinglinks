@@ -1,5 +1,0 @@
-spring: 
-  redis:
-    host: 218.78.103.93
-    port: 6379
-    password: mqtts

@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  net.mqtts.common.swagger.config.SwaggerAutoConfiguration,\
-  net.mqtts.common.swagger.config.SwaggerWebConfiguration

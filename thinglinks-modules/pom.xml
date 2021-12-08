@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.mqttsnet</groupId>
+        <artifactId>thinglinks</artifactId>
+        <version>${thinglinks.version}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>thinglinks-modules-system</module>
+        <module>thinglinks-modules-gen</module>
+        <module>thinglinks-modules-job</module>
+        <module>thinglinks-modules-file</module>
+        <module>thinglinks-modules-tdengine</module>
+        <module>thinglinks-modules-link</module>
+        <module>thinglinks-modules-broker</module>
+    </modules>
+
+    <artifactId>thinglinks-modules</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        thinglinks-modules业务模块
+    </description>
+
+</project>

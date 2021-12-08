@@ -1,0 +1,102 @@
+spring:
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: thinglinks
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          lowerCaseServiceId: true
+          enabled: true
+      routes:
+        # 认证中心
+        - id: thinglinks-auth
+          uri: lb://thinglinks-auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            # 验证码处理
+            - CacheRequestFilter
+            - ValidateCodeFilter
+            - StripPrefix=1
+        # 代码生成
+        - id: thinglinks-gen
+          uri: lb://thinglinks-gen
+          predicates:
+            - Path=/code/**
+          filters:
+            - StripPrefix=1
+        # 定时任务
+        - id: thinglinks-job
+          uri: lb://thinglinks-job
+          predicates:
+            - Path=/schedule/**
+          filters:
+            - StripPrefix=1
+        # 系统模块
+        - id: thinglinks-system
+          uri: lb://thinglinks-system
+          predicates:
+            - Path=/system/**
+          filters:
+            - StripPrefix=1
+        # 文件服务
+        - id: thinglinks-file
+          uri: lb://thinglinks-file
+          predicates:
+            - Path=/file/**
+          filters:
+            - StripPrefix=1
+        # TDengine服务
+        - id: thinglinks-tdengine
+          uri: lb://thinglinks-tdengine
+          predicates:
+            - Path=/tdengine/**
+          filters:
+            - StripPrefix=1
+        # Link服务
+        - id: thinglinks-link
+          uri: lb://thinglinks-link
+          predicates:
+            - Path=/link/**
+          filters:
+            - StripPrefix=1
+        # Broker服务
+        - id: thinglinks-broker
+          uri: lb://thinglinks-broker
+          predicates:
+            - Path=/broker/**
+          filters:
+            - StripPrefix=1
+
+# 安全配置
+security:
+  # 验证码
+  captcha:
+    enabled: true
+    type: char
+  # 防止XSS攻击
+  xss:
+    enabled: true
+    excludeUrls:
+      - /system/notice
+  # 不校验白名单
+  ignore:
+    whites:
+      - /auth/logout
+      - /auth/login
+      - /auth/register
+      - /*/v2/api-docs
+      - /csrf
+      #设备认证接口
+      - /link/device/findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType
+      #更新设备在线状态
+      - /link/device/updateConnectStatusByClientId
+      #更新设备在线状态
+      - /link/device/updateConnectStatusByClientId
+      #新增设备消息
+      - /link/device/datas/add
+      #新增设备动作
+      - /link/device/action/add

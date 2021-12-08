@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.mqttsnet.thinglinks.system.api.factory.RemoteUserFallbackFactory,\
+  com.mqttsnet.thinglinks.system.api.factory.RemoteLogFallbackFactory, \
+  com.mqttsnet.thinglinks.system.api.factory.RemoteFileFallbackFactory
