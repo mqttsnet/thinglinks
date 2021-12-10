@@ -127,8 +127,12 @@ com.mqttsnet.thinglinks
 
 ## 友情链接
 
-[本平台高效MQTTBroker采用：SMQTT](https://github.com/quickmsg/smqtt)
+[本平台高效MQTTBroker采用：SMQTT](https://gitee.com/quickmsg/mqtt-cluster)
 
-## 交流群
+## License
 
-待更新
+[Apache License, Version 2.0](LICENSE)
+
+## 交流社区
+
+![](doc/imgs/zsxq.jpg)
