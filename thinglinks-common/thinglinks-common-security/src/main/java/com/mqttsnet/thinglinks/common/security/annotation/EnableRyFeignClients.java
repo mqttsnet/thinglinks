@@ -17,7 +17,7 @@ public @interface EnableRyFeignClients
 {
     String[] value() default {};
 
-    String[] basePackages() default { "net.mqtts" };
+    String[] basePackages() default { "com.mqttsnet.thinglinks" };
 
     Class<?>[] basePackageClasses() default {};
 
