@@ -71,7 +71,8 @@ com.mqttsnet.thinglinks
 - mqtts/123456
 
 演示地址：http://mqtts.net
-文档地址：http://showdoc.mqtts.net
+
+[相关技术资料及话题](https://t.zsxq.com/IeMZFMv)
 
 ## 功能开发计划
 

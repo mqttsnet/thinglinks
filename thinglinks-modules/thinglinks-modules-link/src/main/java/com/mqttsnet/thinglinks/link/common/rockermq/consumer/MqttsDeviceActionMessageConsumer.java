@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = "mqtts", topic = "mqtts")
+@RocketMQMessageListener(consumerGroup = "thinglinks", topic = "thinglinks")
 public class MqttsDeviceActionMessageConsumer implements RocketMQListener {
     @Autowired
     private MqttsDeviceActionService mqttsDeviceActionService;
