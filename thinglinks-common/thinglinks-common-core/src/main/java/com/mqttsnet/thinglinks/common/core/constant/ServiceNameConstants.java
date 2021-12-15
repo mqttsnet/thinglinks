@@ -10,20 +10,20 @@ public class ServiceNameConstants
     /**
      * 认证服务的serviceid
      */
-    public static final String AUTH_SERVICE = "thinglink-auth";
+    public static final String AUTH_SERVICE = "thinglinks-auth";
 
     /**
      * 系统模块的serviceid
      */
-    public static final String SYSTEM_SERVICE = "thinglink-system";
+    public static final String SYSTEM_SERVICE = "thinglinks-system";
 
     /**
      * 文件服务的serviceid
      */
-    public static final String FILE_SERVICE = "thinglink-file";
+    public static final String FILE_SERVICE = "thinglinks-file";
 
     /**
      * Link服务
      */
-    public static final String THINGLINKS_LINK = "thinglink-link";
+    public static final String THINGLINKS_LINK = "thinglinks-link";
 }

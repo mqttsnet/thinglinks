@@ -18,28 +18,28 @@ import org.springframework.context.annotation.Configuration;
 public class MqttsJobConfig {
     private Logger logger = LoggerFactory.getLogger(MqttsJobConfig.class);
 
-    @Value("${mqtts.link.job.admin.addresses}")
+    @Value("${thinglinks.link.job.admin.addresses}")
     private String adminAddresses;
 
-    @Value("${mqtts.link.job.accessToken}")
+    @Value("${thinglinks.link.job.accessToken}")
     private String accessToken;
 
-    @Value("${mqtts.link.job.executor.appname}")
+    @Value("${thinglinks.link.job.executor.appname}")
     private String appname;
 
-    @Value("${mqtts.link.job.executor.address}")
+    @Value("${thinglinks.link.job.executor.address}")
     private String address;
 
-    @Value("${mqtts.link.job.executor.ip}")
+    @Value("${thinglinks.link.job.executor.ip}")
     private String ip;
 
-    @Value("${mqtts.link.job.executor.port}")
+    @Value("${thinglinks.link.job.executor.port}")
     private int port;
 
-    @Value("${mqtts.link.job.executor.logpath}")
+    @Value("${thinglinks.link.job.executor.logpath}")
     private String logPath;
 
-    @Value("${mqtts.link.job.executor.logretentiondays}")
+    @Value("${thinglinks.link.job.executor.logretentiondays}")
     private int logRetentionDays;
 
     @Bean

@@ -69,7 +69,7 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
-        <!--   https://github.com/quickmsg/smqtt  V1.1.0   -->
+        <!-- TODO  https://github.com/quickmsg/smqtt  V1.1.0   -->
         <dependency>
             <groupId>io.github.quickmsg</groupId>
             <artifactId>smqtt-spring-boot-starter</artifactId>
@@ -79,6 +79,10 @@
                 <exclusion>
                     <groupId>io.github.quickmsg</groupId>
                     <artifactId>smqtt-ui</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.github.quickmsg</groupId>
+                    <artifactId>smqtt-metric-influxdb</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
