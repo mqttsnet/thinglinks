@@ -70,7 +70,7 @@ com.mqttsnet.thinglinks
 
 - mqtts/123456
 
-演示地址：http://mqtts.net
+演示地址：http://thinglinks.mqttsnet.com/
 
 [相关技术资料及话题](https://t.zsxq.com/IeMZFMv)
 
