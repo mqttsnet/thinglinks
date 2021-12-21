@@ -150,7 +150,7 @@ com.mqttsnet.thinglinks
 
 ## License
 
-[Apache License, Version 2.0](Apache License)
+[Apache License, Version 2.0](License)
 
 [感谢JetBrains官方提供免费 IDEA License](https://www.jetbrains.com)
 
