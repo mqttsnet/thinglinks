@@ -62,13 +62,23 @@ com.mqttsnet.thinglinks
 
 ![](doc/imgs/link.png)
 
-## 功能列表
+## 核心功能列表
 
-待更新
+系统管理：用户管理、角色管理、菜单管理、部门管理、岗位管理、字典管理、参数设置、通知公告、日志管理
+
+系统监控：在线用户、定时任务、Sentinel控制台、Nacos控制台、Admin控制台、任务调度管理
+
+系统工具：表单构建、代码生成、系统接口
+
+设备集成：设备管理（支持MQTT协议设备接入）
+
+规则引擎消息转发：支持KAFKA节点、HTTP节点、PREDICATE节点、ROCKET_MQ节点、RABBIT_MQ节点、MYSQL节点、MQTT节点、TOPIC节点、LOG节点
+
+
 
 ## 在线体验(暂未对外开放)
 
-- mqtts/123456
+- thinglinks/123456
 
 演示地址：http://thinglinks.mqttsnet.com/
 
@@ -76,13 +86,13 @@ com.mqttsnet.thinglinks
 
 ## 功能开发计划
 
-*、设备集成、设备管理页面开发(实现中)
+*、设备管理页面展示优化(实现中)
 
-*、设备消息查看(实现中)
+*、设备消息列表(实现中)
 
 *、Docker容器化部署(实现中)
 
-*、规则引擎可视化配置页面
+*、规则引擎可视化（规划中）
 
 *、告警列表
 
@@ -90,7 +100,15 @@ com.mqttsnet.thinglinks
 
 ## 演示图
 
-待更新
+![](doc/imgs/deviceIntegration/menuManagement.png)
+
+![](doc/imgs/deviceIntegration/dataDictionary.png)
+
+![](doc/imgs/deviceIntegration/formBuilding.png)
+
+![](doc/imgs/deviceIntegration/deviceList.png)
+
+![](doc/imgs/deviceIntegration/deviceAdd.png)
 
 ## 配置使用
 
@@ -132,7 +150,9 @@ com.mqttsnet.thinglinks
 
 ## License
 
-[Apache License, Version 2.0](LICENSE)
+[Apache License, Version 2.0](Apache License)
+
+[感谢JetBrains官方提供免费 IDEA License](https://www.jetbrains.com)
 
 ## 交流社区
 
