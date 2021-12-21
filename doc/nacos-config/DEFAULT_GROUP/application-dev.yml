@@ -30,14 +30,11 @@ feign:
 
 # 暴露监控端点
 management:
+  metrics:
+    export:
+      influx:
+        enabled: false
   endpoints:
     web:
       exposure:
         include: '*'
-
-#动态刷新配置 ---需要忽略权限拦截
-management:
-  endpoints:
-    web:
-      exposure:
-        include: refresh
