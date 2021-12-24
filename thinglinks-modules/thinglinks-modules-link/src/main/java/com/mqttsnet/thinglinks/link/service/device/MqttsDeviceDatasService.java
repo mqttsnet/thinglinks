@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.device;
 
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDeviceDatas;
+import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDeviceDatas;
 
 import java.util.List;
 

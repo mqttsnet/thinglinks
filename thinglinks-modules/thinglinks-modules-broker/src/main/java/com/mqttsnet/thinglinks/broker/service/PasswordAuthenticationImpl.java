@@ -4,7 +4,7 @@ package com.mqttsnet.thinglinks.broker.service;
 import io.github.quickmsg.common.auth.PasswordAuthentication;
 import lombok.extern.slf4j.Slf4j;
 import com.mqttsnet.thinglinks.link.api.RemoteMqttsDeviceService;
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDevice;
+import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;

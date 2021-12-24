@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.link.job;
+package com.mqttsnet.thinglinks.link.common.job;
 
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;

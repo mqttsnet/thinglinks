@@ -5,7 +5,7 @@ import com.alibaba.nacos.shaded.com.google.gson.Gson;
 import com.mqttsnet.thinglinks.link.mapper.device.MqttsDeviceActionMapper;
 import com.mqttsnet.thinglinks.link.service.device.MqttsDeviceService;
 import lombok.extern.slf4j.Slf4j;
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDeviceAction;
+import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDeviceAction;
 import com.mqttsnet.thinglinks.link.service.device.MqttsDeviceActionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

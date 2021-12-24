@@ -4,7 +4,7 @@ import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.mapper.device.MqttsDeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.MqttsDeviceService;
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDevice;
+import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

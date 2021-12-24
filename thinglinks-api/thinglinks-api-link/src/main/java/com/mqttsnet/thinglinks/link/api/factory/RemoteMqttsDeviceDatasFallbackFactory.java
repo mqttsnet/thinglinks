@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.link.api.factory;
 
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.link.api.RemoteMqttsDeviceDatasService;
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDeviceDatas;
+import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDeviceDatas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;

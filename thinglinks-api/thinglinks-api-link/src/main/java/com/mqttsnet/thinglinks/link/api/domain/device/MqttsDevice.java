@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.link.api.domain;
+package com.mqttsnet.thinglinks.link.api.domain.device;
 
 import com.mqttsnet.thinglinks.common.core.annotation.Excel;
 import com.mqttsnet.thinglinks.common.core.web.domain.BaseEntity;

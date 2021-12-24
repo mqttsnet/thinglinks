@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.link.mapper.device;
 
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDevice;
+import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDevice;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

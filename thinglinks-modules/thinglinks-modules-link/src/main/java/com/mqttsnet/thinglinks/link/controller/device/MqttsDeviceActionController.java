@@ -7,7 +7,7 @@ import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDeviceAction;
+import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDeviceAction;
 import com.mqttsnet.thinglinks.link.service.device.MqttsDeviceActionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

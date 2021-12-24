@@ -3,7 +3,7 @@ package com.mqttsnet.thinglinks.link.api;
 import com.mqttsnet.thinglinks.common.core.constant.ServiceNameConstants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.link.api.factory.RemoteMqttsDeviceFallbackFactory;
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDevice;
+import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDevice;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 

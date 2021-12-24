@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.link.mapper.device;
 
 import java.util.List;
 
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDeviceDatas;
+import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDeviceDatas;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

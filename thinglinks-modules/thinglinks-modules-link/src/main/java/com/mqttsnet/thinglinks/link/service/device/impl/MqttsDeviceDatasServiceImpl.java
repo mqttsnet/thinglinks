@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.mqttsnet.thinglinks.link.mapper.device.MqttsDeviceDatasMapper;
 import lombok.extern.slf4j.Slf4j;
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDeviceDatas;
+import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDeviceDatas;
 import com.mqttsnet.thinglinks.link.service.device.MqttsDeviceDatasService;
 import org.springframework.stereotype.Service;
 
