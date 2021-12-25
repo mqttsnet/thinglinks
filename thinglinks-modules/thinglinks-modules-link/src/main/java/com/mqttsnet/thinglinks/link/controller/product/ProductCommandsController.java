@@ -27,7 +27,7 @@ private ProductCommandsService productCommandsService;
 * @return 单条数据
 */
 @GetMapping("selectOne")
-public ProductCommands selectOne(Integer id) {
+public ProductCommands selectOne(Long id) {
 return productCommandsService.selectByPrimaryKey(id);
 }
 

@@ -110,11 +110,11 @@ public class DeviceActionServiceImpl implements DeviceActionService{
         Map<String, Object> map = new HashMap<>();
         map = gson.fromJson(thinglinksMessage, map.getClass());
         DeviceAction deviceAction = new DeviceAction();
-        deviceAction.setDevice_identification(String.valueOf(map.get("clientIdentifier")));
-        deviceAction.setAction_type(String.valueOf(map.get("channelStatus")));
+        deviceAction.setDeviceIdentification(String.valueOf(map.get("clientIdentifier")));
+        deviceAction.setActionType(String.valueOf(map.get("channelStatus")));
         deviceAction.setStatus("success");
         deviceAction.setMessage("Device Connection");
-        deviceAction.setCreate_time(LocalDateTimeUtil.now());
+        deviceAction.setCreateTime(LocalDateTimeUtil.now());
         deviceActionMapper.insertOrUpdate(deviceAction);
     }
 
@@ -128,13 +128,13 @@ public class DeviceActionServiceImpl implements DeviceActionService{
         Gson gson = new Gson();
         Map<String, Object> map = new HashMap<>();
         map = gson.fromJson(thinglinksMessage, map.getClass());
-        int i = deviceService.updateConnect_statusByClient_id("OFFLINE", String.valueOf(map.get("clientIdentifier")));
+        int i = deviceService.updateConnectStatusByClientId("OFFLINE", String.valueOf(map.get("clientIdentifier")));
         DeviceAction deviceAction = new DeviceAction();
-        deviceAction.setDevice_identification(String.valueOf(map.get("clientIdentifier")));
-        deviceAction.setAction_type(String.valueOf(map.get("channelStatus")));
+        deviceAction.setDeviceIdentification(String.valueOf(map.get("clientIdentifier")));
+        deviceAction.setActionType(String.valueOf(map.get("channelStatus")));
         deviceAction.setStatus(i!=0?"success":"failure");
         deviceAction.setMessage("Device Disconnection");
-        deviceAction.setCreate_time(LocalDateTimeUtil.now());
+        deviceAction.setCreateTime(LocalDateTimeUtil.now());
         deviceActionMapper.insertOrUpdate(deviceAction);
     }
 
