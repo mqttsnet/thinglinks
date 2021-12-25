@@ -35,10 +35,10 @@ public interface RemoteDeviceService {
     /**
      * 更新设备在线状态
      *
-     * @param mqttsDevice
+     * @param device
      * @return
      */
     @PutMapping("/device/updateConnectStatusByClientId")
-    public R updateConnectStatusByClientId(@RequestBody Device mqttsDevice);
+    public R updateConnectStatusByClientId(@RequestBody Device device);
 
 }

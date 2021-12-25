@@ -52,7 +52,10 @@ public class PasswordAuthenticationImpl implements PasswordAuthentication {
         Device mqttsDevice = PasswordAuthenticationImpl.deviceService.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, userName, new String(passwordInBytes), "ENABLE", "MQTT").getData();
         if (Optional.ofNullable(mqttsDevice).isPresent()) {
             //更改设备在线状态为在线
-            PasswordAuthenticationImpl.deviceService.updateConnectStatusByClientId(new Device("ONLINE", clientIdentifier));
+            Device device = new Device();
+            device.setConnectStatus("ONLINE");
+            device.setDeviceIdentification(clientIdentifier);
+            PasswordAuthenticationImpl.deviceService.updateConnectStatusByClientId(device);
             return true;
         }
         return false;

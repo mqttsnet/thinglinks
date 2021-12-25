@@ -27,7 +27,7 @@ public class RemoteDeviceFallbackFactory implements FallbackFactory<RemoteDevice
             }
 
             @Override
-            public R updateConnectStatusByClientId(Device mqttsDevice) {
+            public R updateConnectStatusByClientId(Device device) {
                 return R.fail("更新设备在线状态失败:" + throwable.getMessage());
             }
         };
