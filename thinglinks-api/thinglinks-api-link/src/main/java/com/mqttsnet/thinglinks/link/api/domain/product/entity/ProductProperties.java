@@ -12,9 +12,9 @@ import lombok.Data;
 * @Author:         ShiHuan Sun
 * @E-mail:         13733918655@163.com
 * @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/23$ 18:40$
+* @CreateDate:     2021/12/25$ 23:52$
 * @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/23$ 18:40$
+* @UpdateDate:     2021/12/25$ 23:52$
 * @UpdateRemark:   修改内容
 * @Version:        1.0
 
@@ -26,10 +26,28 @@ import lombok.Data;
 @Data
 public class ProductProperties implements Serializable {
     /**
-    * id
+    * 属性id
     */
-    @ApiModelProperty(value="id")
+    @ApiModelProperty(value="属性id")
     private Long id;
+
+    /**
+    * 指示属性名称。
+    */
+    @ApiModelProperty(value="指示属性名称。")
+    private String name;
+
+    /**
+    * 服务ID
+    */
+    @ApiModelProperty(value="服务ID")
+    private Long serviceId;
+
+    /**
+    * 是否必填(字典值：是  否)
+    */
+    @ApiModelProperty(value="是否必填(字典值：是  否)")
+    private String isRequired;
 
     /**
     * 指示数据类型：取值范围：string、int、decimal（float和double都可以使用此类型）、DateTime、jsonObject上报数据时，复杂类型数据格式如下：
@@ -81,12 +99,6 @@ public class ProductProperties implements Serializable {
     private String min;
 
     /**
-    * 指示属性名称。
-    */
-    @ApiModelProperty(value="指示属性名称。")
-    private String name;
-
-    /**
     * 指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。
 
     */
@@ -114,25 +126,25 @@ public class ProductProperties implements Serializable {
     * 创建者
     */
     @ApiModelProperty(value="创建者")
-    private String create_by;
+    private String createBy;
 
     /**
     * 创建时间
     */
     @ApiModelProperty(value="创建时间")
-    private LocalDateTime create_time;
+    private LocalDateTime createTime;
 
     /**
     * 更新者
     */
     @ApiModelProperty(value="更新者")
-    private String update_by;
+    private String updateBy;
 
     /**
     * 更新时间
     */
     @ApiModelProperty(value="更新时间")
-    private LocalDateTime update_time;
+    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 }

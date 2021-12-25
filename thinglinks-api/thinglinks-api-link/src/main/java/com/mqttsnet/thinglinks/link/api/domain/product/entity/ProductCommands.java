@@ -12,24 +12,30 @@ import lombok.Data;
 * @Author:         ShiHuan Sun
 * @E-mail:         13733918655@163.com
 * @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/23$ 18:40$
+* @CreateDate:     2021/12/25$ 23:52$
 * @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/23$ 18:40$
+* @UpdateDate:     2021/12/25$ 23:52$
 * @UpdateRemark:   修改内容
 * @Version:        1.0
 
 */
 /**
-    * 产品模型设备服务命令属性表
+    * 产品模型设备服务命令表
     */
-@ApiModel(value="产品模型设备服务命令属性表")
+@ApiModel(value="产品模型设备服务命令表")
 @Data
 public class ProductCommands implements Serializable {
     /**
-    * id
+    * 命令id
     */
-    @ApiModelProperty(value="id")
+    @ApiModelProperty(value="命令id")
     private Long id;
+
+    /**
+    * 服务ID
+    */
+    @ApiModelProperty(value="服务ID")
+    private Long serviceId;
 
     /**
     * 指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。
@@ -46,40 +52,28 @@ public class ProductCommands implements Serializable {
     private String description;
 
     /**
-    * 响应命令字段，该字段下参数与requests相同，如果无该字段，则配置为[]。
-    */
-    @ApiModelProperty(value="响应命令字段，该字段下参数与requests相同，如果无该字段，则配置为[]。")
-    private String responses;
-
-    /**
-    * 设备服务命令属性表ID
-    */
-    @ApiModelProperty(value="设备服务命令属性表ID")
-    private Long requests_id;
-
-    /**
     * 创建者
     */
     @ApiModelProperty(value="创建者")
-    private String create_by;
+    private String createBy;
 
     /**
     * 创建时间
     */
     @ApiModelProperty(value="创建时间")
-    private LocalDateTime create_time;
+    private LocalDateTime createTime;
 
     /**
     * 更新者
     */
     @ApiModelProperty(value="更新者")
-    private String update_by;
+    private String updateBy;
 
     /**
     * 更新时间
     */
     @ApiModelProperty(value="更新时间")
-    private LocalDateTime update_time;
+    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 }

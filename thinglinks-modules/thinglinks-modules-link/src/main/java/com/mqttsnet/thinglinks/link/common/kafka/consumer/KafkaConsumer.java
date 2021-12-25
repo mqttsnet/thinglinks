@@ -25,7 +25,7 @@ import java.util.Optional;
 public class KafkaConsumer {
 
     //消费者：监听topic1
-    @KafkaListener(topics = {"thinglinks"})
+    @KafkaListener(topics = {"thinglinks-link"})
     public void consumer1(ConsumerRecord<Integer,String> record){
         Optional message = Optional.ofNullable(record.value());
         if (message.isPresent()) {
@@ -34,7 +34,7 @@ public class KafkaConsumer {
         }
     }
     //消费者：监听mqtts，groupId2
-    @KafkaListener(topics = {"thinglinks"},groupId = "groupId2")
+    @KafkaListener(topics = {"thinglinks-link"},groupId = "groupId2")
     public void consumer3(ConsumerRecord<Integer,String> record){
         Optional message = Optional.ofNullable(record.value());
         if (message.isPresent()) {
@@ -43,7 +43,7 @@ public class KafkaConsumer {
         }
     }
     //消费者：监听mqtts，groupId2
-    @KafkaListener(topics = {"thinglinks"},groupId = "groupId2")
+    @KafkaListener(topics = {"thinglinks-link"},groupId = "groupId2")
     public void consumer2(ConsumerRecord<Integer,String> record){
         Optional message = Optional.ofNullable(record.value());
         if (message.isPresent()) {

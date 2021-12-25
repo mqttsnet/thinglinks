@@ -12,17 +12,17 @@ import lombok.Data;
 * @Author:         ShiHuan Sun
 * @E-mail:         13733918655@163.com
 * @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/23$ 18:40$
+* @CreateDate:     2021/12/25$ 23:52$
 * @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/23$ 18:40$
+* @UpdateDate:     2021/12/25$ 23:52$
 * @UpdateRemark:   修改内容
 * @Version:        1.0
 
 */
 /**
-    * 产品模型设备服务命令表
+    * 产品模型设备下发服务命令属性表
     */
-@ApiModel(value="产品模型设备服务命令表")
+@ApiModel(value="产品模型设备下发服务命令属性表")
 @Data
 public class ProductCommandsRequests implements Serializable {
     /**
@@ -30,6 +30,24 @@ public class ProductCommandsRequests implements Serializable {
     */
     @ApiModelProperty(value="id")
     private Long id;
+
+    /**
+    * 服务ID
+    */
+    @ApiModelProperty(value="服务ID")
+    private Long serviceId;
+
+    /**
+    * 命令ID
+    */
+    @ApiModelProperty(value="命令ID")
+    private Long commandsId;
+
+    /**
+    * 是否必填(字典值：是  否)
+    */
+    @ApiModelProperty(value="是否必填(字典值：是  否)")
+    private String isRequired;
 
     /**
     * 指示数据类型。取值范围：string、int、decimal
@@ -73,13 +91,13 @@ public class ProductCommandsRequests implements Serializable {
     * 命令中参数的描述，不影响实际功能，可配置为空字符串""。
     */
     @ApiModelProperty(value="命令中参数的描述，不影响实际功能，可配置为空字符串''。")
-    private String parameter_description;
+    private String parameterDescription;
 
     /**
     * 命令中参数的名字。
     */
     @ApiModelProperty(value="命令中参数的名字。")
-    private String parameter_name;
+    private String parameterName;
 
     /**
     * 指示本条属性是否必填，取值为0或1，默认取值1（必填）。
@@ -109,25 +127,25 @@ public class ProductCommandsRequests implements Serializable {
     * 创建者
     */
     @ApiModelProperty(value="创建者")
-    private String create_by;
+    private String createBy;
 
     /**
     * 创建时间
     */
     @ApiModelProperty(value="创建时间")
-    private LocalDateTime create_time;
+    private LocalDateTime createTime;
 
     /**
     * 更新者
     */
     @ApiModelProperty(value="更新者")
-    private String update_by;
+    private String updateBy;
 
     /**
     * 更新时间
     */
     @ApiModelProperty(value="更新时间")
-    private LocalDateTime update_time;
+    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 }

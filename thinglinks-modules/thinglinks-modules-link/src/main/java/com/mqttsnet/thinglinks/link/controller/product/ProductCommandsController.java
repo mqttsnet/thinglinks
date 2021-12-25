@@ -1,7 +1,5 @@
-package com.mqttsnet.thinglinks.link.controller.product;
-
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands;
-import com.mqttsnet.thinglinks.link.service.product.ProductCommandsService;
+import com.mqttsnet.thinglinks.link.service.product.impl.ProductCommandsService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -9,7 +7,7 @@ import javax.annotation.Resource;
 /**
 * (product_commands)表控制层
 *
-* @author thinglinks
+* @author xxxxx
 */
 @RestController
 @RequestMapping("product_commands")
@@ -27,7 +25,7 @@ private ProductCommandsService productCommandsService;
 * @return 单条数据
 */
 @GetMapping("selectOne")
-public ProductCommands selectOne(Long id) {
+public ProductCommands selectOne(Integer id) {
 return productCommandsService.selectByPrimaryKey(id);
 }
 

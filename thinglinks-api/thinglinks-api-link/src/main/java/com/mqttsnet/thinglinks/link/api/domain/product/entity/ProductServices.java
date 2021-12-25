@@ -12,9 +12,9 @@ import lombok.Data;
 * @Author:         ShiHuan Sun
 * @E-mail:         13733918655@163.com
 * @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/23$ 18:40$
+* @CreateDate:     2021/12/25$ 23:52$
 * @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/23$ 18:40$
+* @UpdateDate:     2021/12/25$ 23:52$
 * @UpdateRemark:   修改内容
 * @Version:        1.0
 
@@ -26,9 +26,9 @@ import lombok.Data;
 @Data
 public class ProductServices implements Serializable {
     /**
-    * id
+    * 服务id
     */
-    @ApiModelProperty(value="id")
+    @ApiModelProperty(value="服务id")
     private Long id;
 
     /**
@@ -36,7 +36,25 @@ public class ProductServices implements Serializable {
 
     */
     @ApiModelProperty(value="服务名称:支持英文大小写、数字、下划线和中划线,")
-    private String service_id;
+    private String serviceName;
+
+    /**
+    * 产品ID
+    */
+    @ApiModelProperty(value="产品ID")
+    private Long productId;
+
+    /**
+    * 产品模型模板ID
+    */
+    @ApiModelProperty(value="产品模型模板ID")
+    private Long templateId;
+
+    /**
+    * 状态(字典值：启用  停用)
+    */
+    @ApiModelProperty(value="状态(字典值：启用  停用)")
+    private String status;
 
     /**
     * 服务的描述信息:文本描述，不影响实际功能，可配置为空字符串""。
@@ -46,40 +64,28 @@ public class ProductServices implements Serializable {
     private String description;
 
     /**
-    * 产品模型设备服务指令表ID：指示设备可以执行的命令，如果本服务无命令则配置为[]。
-    */
-    @ApiModelProperty(value="产品模型设备服务指令表ID：指示设备可以执行的命令，如果本服务无命令则配置为[]。")
-    private Long commands_id;
-
-    /**
-    * 产品模型服务属性表ID
-    */
-    @ApiModelProperty(value="产品模型服务属性表ID")
-    private Long properties_id;
-
-    /**
     * 创建者
     */
     @ApiModelProperty(value="创建者")
-    private String create_by;
+    private String createBy;
 
     /**
     * 创建时间
     */
     @ApiModelProperty(value="创建时间")
-    private LocalDateTime create_time;
+    private LocalDateTime createTime;
 
     /**
     * 更新者
     */
     @ApiModelProperty(value="更新者")
-    private String update_by;
+    private String updateBy;
 
     /**
     * 更新时间
     */
     @ApiModelProperty(value="更新时间")
-    private LocalDateTime update_time;
+    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 }

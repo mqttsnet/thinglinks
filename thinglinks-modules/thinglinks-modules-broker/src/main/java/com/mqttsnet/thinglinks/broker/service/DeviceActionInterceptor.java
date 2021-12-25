@@ -1,24 +1,16 @@
 package com.mqttsnet.thinglinks.broker.service;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
-import io.github.quickmsg.common.channel.MqttChannel;
-import io.github.quickmsg.common.config.Configuration;
-import io.github.quickmsg.common.context.ReceiveContext;
-import io.github.quickmsg.common.interceptor.Interceptor;
-import io.github.quickmsg.common.interceptor.Invocation;
-import io.github.quickmsg.common.message.HeapMqttMessage;
-import io.github.quickmsg.common.message.SmqttMessage;
-import io.github.quickmsg.common.rule.DslExecutor;
-import io.github.quickmsg.common.utils.MessageUtils;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction;
 import io.netty.handler.codec.mqtt.*;
 import lombok.extern.slf4j.Slf4j;
-import com.mqttsnet.thinglinks.link.api.RemoteMqttsDeviceActionService;
-import com.mqttsnet.thinglinks.link.api.RemoteMqttsDeviceService;
-import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDevice;
-import com.mqttsnet.thinglinks.link.api.domain.device.MqttsDeviceAction;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceActionService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import sun.misc.MessageUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
@@ -43,17 +35,17 @@ public class DeviceActionInterceptor implements Interceptor {
     private static DeviceActionInterceptor DeviceActionInterceptor;
 
     @Autowired
-    private RemoteMqttsDeviceService mqttsDeviceService;
+    private RemoteDeviceService deviceService;
 
     @Autowired
-    private RemoteMqttsDeviceActionService mqttsDeviceActionService;
+    private RemoteDeviceActionService deviceActionService;
 
 
     @PostConstruct
     public void init() {
         DeviceActionInterceptor = this;
-        DeviceActionInterceptor.mqttsDeviceService = this.mqttsDeviceService;
-        DeviceActionInterceptor.mqttsDeviceActionService = this.mqttsDeviceActionService;
+        DeviceActionInterceptor.deviceService = this.deviceService;
+        DeviceActionInterceptor.deviceActionService = this.deviceActionService;
     }
 
     /**
@@ -75,14 +67,14 @@ public class DeviceActionInterceptor implements Interceptor {
             if (!smqttMessage.getIsCluster() && mqttMessageType.contains(message.fixedHeader().messageType())) {
                 MqttPublishMessage publishMessage = (MqttPublishMessage) message;
                 HeapMqttMessage heapMqttMessage = this.clusterMessage(publishMessage, mqttChannel, smqttMessage.getTimestamp());
-                MqttsDeviceAction mqttsDeviceAction = new MqttsDeviceAction();
-                mqttsDeviceAction.setDevice_id(mqttChannel.getClientIdentifier());
-                mqttsDeviceAction.setAction_type(message.fixedHeader().messageType().toString());
-                mqttsDeviceAction.setStatus(message.decoderResult().toString());
-                mqttsDeviceAction.setMessage(heapMqttMessage.getTopic());
-                mqttsDeviceAction.setCreate_time(LocalDateTimeUtil.now());
-                DeviceActionInterceptor.mqttsDeviceActionService.add(mqttsDeviceAction);
-                DeviceActionInterceptor.mqttsDeviceService.updateConnectStatusByClientId(new MqttsDevice(mqttChannel.getStatus().toString(), mqttChannel.getClientIdentifier()));
+                DeviceAction deviceAction = new DeviceAction();
+                deviceAction.setDeviceIdentification(mqttChannel.getClientIdentifier());
+                deviceAction.setActionType(message.fixedHeader().messageType().toString());
+                deviceAction.setStatus(message.decoderResult().toString());
+                deviceAction.setMessage(heapMqttMessage.getTopic());
+                deviceAction.setCreateTime(LocalDateTimeUtil.now());
+                DeviceActionInterceptor.deviceActionService.add(deviceAction);
+                DeviceActionInterceptor.deviceService.updateConnectStatusByClientId(new Device(mqttChannel.getStatus().toString(), mqttChannel.getClientIdentifier()));
             }
             // 拦截业务
             return invocation.proceed(); // 放行

@@ -5,19 +5,17 @@
     <!--@mbg.generated-->
     <!--@Table product_commands-->
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="service_id" jdbcType="BIGINT" property="serviceId" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="responses" jdbcType="VARCHAR" property="responses" />
-    <result column="requests_id" jdbcType="BIGINT" property="requests_id" />
-    <result column="create_by" jdbcType="VARCHAR" property="create_by" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
-    <result column="update_by" jdbcType="VARCHAR" property="update_by" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, `name`, description, responses, requests_id, create_by, create_time, update_by, 
-    update_time
+    id, service_id, `name`, description, create_by, create_time, update_by, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -33,28 +31,25 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into product_commands (`name`, description, responses, 
-      requests_id, create_by, create_time, 
-      update_by, update_time)
-    values (#{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{responses,jdbcType=VARCHAR}, 
-      #{requests_id,jdbcType=BIGINT}, #{create_by,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP}, 
-      #{update_by,jdbcType=VARCHAR}, #{update_time,jdbcType=TIMESTAMP})
+    insert into product_commands (service_id, `name`, description, 
+      create_by, create_time, update_by, 
+      update_time)
+    values (#{service_id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{create_by,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP}, #{update_by,jdbcType=VARCHAR}, 
+      #{update_time,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into product_commands
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="service_id != null">
+        service_id,
+      </if>
       <if test="name != null and name != ''">
         `name`,
       </if>
       <if test="description != null and description != ''">
         description,
-      </if>
-      <if test="responses != null and responses != ''">
-        responses,
-      </if>
-      <if test="requests_id != null">
-        requests_id,
       </if>
       <if test="create_by != null and create_by != ''">
         create_by,
@@ -70,17 +65,14 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="service_id != null">
+        #{service_id,jdbcType=BIGINT},
+      </if>
       <if test="name != null and name != ''">
         #{name,jdbcType=VARCHAR},
       </if>
       <if test="description != null and description != ''">
         #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="responses != null and responses != ''">
-        #{responses,jdbcType=VARCHAR},
-      </if>
-      <if test="requests_id != null">
-        #{requests_id,jdbcType=BIGINT},
       </if>
       <if test="create_by != null and create_by != ''">
         #{create_by,jdbcType=VARCHAR},
@@ -100,17 +92,14 @@
     <!--@mbg.generated-->
     update product_commands
     <set>
+      <if test="service_id != null">
+        service_id = #{service_id,jdbcType=BIGINT},
+      </if>
       <if test="name != null and name != ''">
         `name` = #{name,jdbcType=VARCHAR},
       </if>
       <if test="description != null and description != ''">
         description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="responses != null and responses != ''">
-        responses = #{responses,jdbcType=VARCHAR},
-      </if>
-      <if test="requests_id != null">
-        requests_id = #{requests_id,jdbcType=BIGINT},
       </if>
       <if test="create_by != null and create_by != ''">
         create_by = #{create_by,jdbcType=VARCHAR},
@@ -130,10 +119,9 @@
   <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands">
     <!--@mbg.generated-->
     update product_commands
-    set `name` = #{name,jdbcType=VARCHAR},
+    set service_id = #{service_id,jdbcType=BIGINT},
+      `name` = #{name,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
-      responses = #{responses,jdbcType=VARCHAR},
-      requests_id = #{requests_id,jdbcType=BIGINT},
       create_by = #{create_by,jdbcType=VARCHAR},
       create_time = #{create_time,jdbcType=TIMESTAMP},
       update_by = #{update_by,jdbcType=VARCHAR},
@@ -144,6 +132,11 @@
     <!--@mbg.generated-->
     update product_commands
     <trim prefix="set" suffixOverrides=",">
+      <trim prefix="service_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.service_id,jdbcType=BIGINT}
+        </foreach>
+      </trim>
       <trim prefix="`name` = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
@@ -152,16 +145,6 @@
       <trim prefix="description = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           when id = #{item.id,jdbcType=BIGINT} then #{item.description,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="responses = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.responses,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="requests_id = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.requests_id,jdbcType=BIGINT}
         </foreach>
       </trim>
       <trim prefix="create_by = case" suffix="end,">
@@ -194,6 +177,13 @@
     <!--@mbg.generated-->
     update product_commands
     <trim prefix="set" suffixOverrides=",">
+      <trim prefix="service_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.service_id != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.service_id,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
       <trim prefix="`name` = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           <if test="item.name != null">
@@ -205,20 +195,6 @@
         <foreach collection="list" index="index" item="item">
           <if test="item.description != null">
             when id = #{item.id,jdbcType=BIGINT} then #{item.description,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="responses = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.responses != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.responses,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="requests_id = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.requests_id != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.requests_id,jdbcType=BIGINT}
           </if>
         </foreach>
       </trim>
@@ -259,13 +235,12 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into product_commands
-    (`name`, description, responses, requests_id, create_by, create_time, update_by, 
-      update_time)
+    (service_id, `name`, description, create_by, create_time, update_by, update_time)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.name,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.responses,jdbcType=VARCHAR}, 
-        #{item.requests_id,jdbcType=BIGINT}, #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP}, 
-        #{item.update_by,jdbcType=VARCHAR}, #{item.update_time,jdbcType=TIMESTAMP})
+      (#{item.service_id,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, 
+        #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP}, #{item.update_by,jdbcType=VARCHAR}, 
+        #{item.update_time,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
   <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true">
@@ -275,10 +250,9 @@
       <if test="id != null">
         id,
       </if>
+      service_id,
       `name`,
       description,
-      responses,
-      requests_id,
       create_by,
       create_time,
       update_by,
@@ -289,10 +263,9 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
+      #{service_id,jdbcType=BIGINT},
       #{name,jdbcType=VARCHAR},
       #{description,jdbcType=VARCHAR},
-      #{responses,jdbcType=VARCHAR},
-      #{requests_id,jdbcType=BIGINT},
       #{create_by,jdbcType=VARCHAR},
       #{create_time,jdbcType=TIMESTAMP},
       #{update_by,jdbcType=VARCHAR},
@@ -303,10 +276,9 @@
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
+      service_id = #{service_id,jdbcType=BIGINT},
       `name` = #{name,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
-      responses = #{responses,jdbcType=VARCHAR},
-      requests_id = #{requests_id,jdbcType=BIGINT},
       create_by = #{create_by,jdbcType=VARCHAR},
       create_time = #{create_time,jdbcType=TIMESTAMP},
       update_by = #{update_by,jdbcType=VARCHAR},
@@ -320,17 +292,14 @@
       <if test="id != null">
         id,
       </if>
+      <if test="service_id != null">
+        service_id,
+      </if>
       <if test="name != null and name != ''">
         `name`,
       </if>
       <if test="description != null and description != ''">
         description,
-      </if>
-      <if test="responses != null and responses != ''">
-        responses,
-      </if>
-      <if test="requests_id != null">
-        requests_id,
       </if>
       <if test="create_by != null and create_by != ''">
         create_by,
@@ -350,17 +319,14 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
+      <if test="service_id != null">
+        #{service_id,jdbcType=BIGINT},
+      </if>
       <if test="name != null and name != ''">
         #{name,jdbcType=VARCHAR},
       </if>
       <if test="description != null and description != ''">
         #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="responses != null and responses != ''">
-        #{responses,jdbcType=VARCHAR},
-      </if>
-      <if test="requests_id != null">
-        #{requests_id,jdbcType=BIGINT},
       </if>
       <if test="create_by != null and create_by != ''">
         #{create_by,jdbcType=VARCHAR},
@@ -380,17 +346,14 @@
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
+      <if test="service_id != null">
+        service_id = #{service_id,jdbcType=BIGINT},
+      </if>
       <if test="name != null and name != ''">
         `name` = #{name,jdbcType=VARCHAR},
       </if>
       <if test="description != null and description != ''">
         description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="responses != null and responses != ''">
-        responses = #{responses,jdbcType=VARCHAR},
-      </if>
-      <if test="requests_id != null">
-        requests_id = #{requests_id,jdbcType=BIGINT},
       </if>
       <if test="create_by != null and create_by != ''">
         create_by = #{create_by,jdbcType=VARCHAR},

@@ -5,6 +5,9 @@
     <!--@mbg.generated-->
     <!--@Table product_properties-->
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="service_id" jdbcType="BIGINT" property="serviceId" />
+    <result column="is_required" jdbcType="VARCHAR" property="isRequired" />
     <result column="datatype" jdbcType="VARCHAR" property="datatype" />
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="enumlist" jdbcType="VARCHAR" property="enumlist" />
@@ -12,19 +15,18 @@
     <result column="maxlength" jdbcType="VARCHAR" property="maxlength" />
     <result column="method" jdbcType="VARCHAR" property="method" />
     <result column="min" jdbcType="VARCHAR" property="min" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="required" jdbcType="VARCHAR" property="required" />
     <result column="step" jdbcType="VARCHAR" property="step" />
     <result column="unit" jdbcType="VARCHAR" property="unit" />
-    <result column="create_by" jdbcType="VARCHAR" property="create_by" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
-    <result column="update_by" jdbcType="VARCHAR" property="update_by" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="update_time" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, datatype, description, enumlist, `max`, maxlength, `method`, `min`, `name`, required, 
-    step, unit, create_by, create_time, update_by, update_time
+    id, `name`, service_id, is_required, datatype, description, enumlist, `max`, maxlength, 
+    `method`, `min`, required, step, unit, create_by, create_time, update_by, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -40,23 +42,32 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into product_properties (datatype, description, enumlist, 
+    insert into product_properties (`name`, service_id, is_required, 
+      datatype, description, enumlist, 
       `max`, maxlength, `method`, 
-      `min`, `name`, required, 
-      step, unit, create_by, 
-      create_time, update_by, update_time
-      )
-    values (#{datatype,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{enumlist,jdbcType=VARCHAR}, 
+      `min`, required, step, 
+      unit, create_by, create_time, 
+      update_by, update_time)
+    values (#{name,jdbcType=VARCHAR}, #{service_id,jdbcType=BIGINT}, #{is_required,jdbcType=VARCHAR}, 
+      #{datatype,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{enumlist,jdbcType=VARCHAR}, 
       #{max,jdbcType=VARCHAR}, #{maxlength,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR}, 
-      #{min,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{required,jdbcType=VARCHAR}, 
-      #{step,jdbcType=VARCHAR}, #{unit,jdbcType=VARCHAR}, #{create_by,jdbcType=VARCHAR}, 
-      #{create_time,jdbcType=TIMESTAMP}, #{update_by,jdbcType=VARCHAR}, #{update_time,jdbcType=TIMESTAMP}
-      )
+      #{min,jdbcType=VARCHAR}, #{required,jdbcType=VARCHAR}, #{step,jdbcType=VARCHAR}, 
+      #{unit,jdbcType=VARCHAR}, #{create_by,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP}, 
+      #{update_by,jdbcType=VARCHAR}, #{update_time,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into product_properties
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null and name != ''">
+        `name`,
+      </if>
+      <if test="service_id != null">
+        service_id,
+      </if>
+      <if test="is_required != null and is_required != ''">
+        is_required,
+      </if>
       <if test="datatype != null and datatype != ''">
         datatype,
       </if>
@@ -77,9 +88,6 @@
       </if>
       <if test="min != null and min != ''">
         `min`,
-      </if>
-      <if test="name != null and name != ''">
-        `name`,
       </if>
       <if test="required != null and required != ''">
         required,
@@ -104,6 +112,15 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null and name != ''">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="service_id != null">
+        #{service_id,jdbcType=BIGINT},
+      </if>
+      <if test="is_required != null and is_required != ''">
+        #{is_required,jdbcType=VARCHAR},
+      </if>
       <if test="datatype != null and datatype != ''">
         #{datatype,jdbcType=VARCHAR},
       </if>
@@ -124,9 +141,6 @@
       </if>
       <if test="min != null and min != ''">
         #{min,jdbcType=VARCHAR},
-      </if>
-      <if test="name != null and name != ''">
-        #{name,jdbcType=VARCHAR},
       </if>
       <if test="required != null and required != ''">
         #{required,jdbcType=VARCHAR},
@@ -155,6 +169,15 @@
     <!--@mbg.generated-->
     update product_properties
     <set>
+      <if test="name != null and name != ''">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="service_id != null">
+        service_id = #{service_id,jdbcType=BIGINT},
+      </if>
+      <if test="is_required != null and is_required != ''">
+        is_required = #{is_required,jdbcType=VARCHAR},
+      </if>
       <if test="datatype != null and datatype != ''">
         datatype = #{datatype,jdbcType=VARCHAR},
       </if>
@@ -175,9 +198,6 @@
       </if>
       <if test="min != null and min != ''">
         `min` = #{min,jdbcType=VARCHAR},
-      </if>
-      <if test="name != null and name != ''">
-        `name` = #{name,jdbcType=VARCHAR},
       </if>
       <if test="required != null and required != ''">
         required = #{required,jdbcType=VARCHAR},
@@ -206,14 +226,16 @@
   <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties">
     <!--@mbg.generated-->
     update product_properties
-    set datatype = #{datatype,jdbcType=VARCHAR},
+    set `name` = #{name,jdbcType=VARCHAR},
+      service_id = #{service_id,jdbcType=BIGINT},
+      is_required = #{is_required,jdbcType=VARCHAR},
+      datatype = #{datatype,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
       enumlist = #{enumlist,jdbcType=VARCHAR},
       `max` = #{max,jdbcType=VARCHAR},
       maxlength = #{maxlength,jdbcType=VARCHAR},
       `method` = #{method,jdbcType=VARCHAR},
       `min` = #{min,jdbcType=VARCHAR},
-      `name` = #{name,jdbcType=VARCHAR},
       required = #{required,jdbcType=VARCHAR},
       step = #{step,jdbcType=VARCHAR},
       unit = #{unit,jdbcType=VARCHAR},
@@ -227,6 +249,21 @@
     <!--@mbg.generated-->
     update product_properties
     <trim prefix="set" suffixOverrides=",">
+      <trim prefix="`name` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="service_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.service_id,jdbcType=BIGINT}
+        </foreach>
+      </trim>
+      <trim prefix="is_required = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.is_required,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
       <trim prefix="datatype = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           when id = #{item.id,jdbcType=BIGINT} then #{item.datatype,jdbcType=VARCHAR}
@@ -260,11 +297,6 @@
       <trim prefix="`min` = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           when id = #{item.id,jdbcType=BIGINT} then #{item.min,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="`name` = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="required = case" suffix="end,">
@@ -312,6 +344,27 @@
     <!--@mbg.generated-->
     update product_properties
     <trim prefix="set" suffixOverrides=",">
+      <trim prefix="`name` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.name != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="service_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.service_id != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.service_id,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="is_required = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.is_required != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.is_required,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
       <trim prefix="datatype = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           <if test="item.datatype != null">
@@ -358,13 +411,6 @@
         <foreach collection="list" index="index" item="item">
           <if test="item.min != null">
             when id = #{item.id,jdbcType=BIGINT} then #{item.min,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="`name` = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.name != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
@@ -426,16 +472,17 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into product_properties
-    (datatype, description, enumlist, `max`, maxlength, `method`, `min`, `name`, required, 
-      step, unit, create_by, create_time, update_by, update_time)
+    (`name`, service_id, is_required, datatype, description, enumlist, `max`, maxlength, 
+      `method`, `min`, required, step, unit, create_by, create_time, update_by, update_time
+      )
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.datatype,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.enumlist,jdbcType=VARCHAR}, 
+      (#{item.name,jdbcType=VARCHAR}, #{item.service_id,jdbcType=BIGINT}, #{item.is_required,jdbcType=VARCHAR}, 
+        #{item.datatype,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.enumlist,jdbcType=VARCHAR}, 
         #{item.max,jdbcType=VARCHAR}, #{item.maxlength,jdbcType=VARCHAR}, #{item.method,jdbcType=VARCHAR}, 
-        #{item.min,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR}, #{item.required,jdbcType=VARCHAR}, 
-        #{item.step,jdbcType=VARCHAR}, #{item.unit,jdbcType=VARCHAR}, #{item.create_by,jdbcType=VARCHAR}, 
-        #{item.create_time,jdbcType=TIMESTAMP}, #{item.update_by,jdbcType=VARCHAR}, #{item.update_time,jdbcType=TIMESTAMP}
-        )
+        #{item.min,jdbcType=VARCHAR}, #{item.required,jdbcType=VARCHAR}, #{item.step,jdbcType=VARCHAR}, 
+        #{item.unit,jdbcType=VARCHAR}, #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP}, 
+        #{item.update_by,jdbcType=VARCHAR}, #{item.update_time,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
   <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties" useGeneratedKeys="true">
@@ -445,6 +492,9 @@
       <if test="id != null">
         id,
       </if>
+      `name`,
+      service_id,
+      is_required,
       datatype,
       description,
       enumlist,
@@ -452,7 +502,6 @@
       maxlength,
       `method`,
       `min`,
-      `name`,
       required,
       step,
       unit,
@@ -466,6 +515,9 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
+      #{name,jdbcType=VARCHAR},
+      #{service_id,jdbcType=BIGINT},
+      #{is_required,jdbcType=VARCHAR},
       #{datatype,jdbcType=VARCHAR},
       #{description,jdbcType=VARCHAR},
       #{enumlist,jdbcType=VARCHAR},
@@ -473,7 +525,6 @@
       #{maxlength,jdbcType=VARCHAR},
       #{method,jdbcType=VARCHAR},
       #{min,jdbcType=VARCHAR},
-      #{name,jdbcType=VARCHAR},
       #{required,jdbcType=VARCHAR},
       #{step,jdbcType=VARCHAR},
       #{unit,jdbcType=VARCHAR},
@@ -487,6 +538,9 @@
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
+      `name` = #{name,jdbcType=VARCHAR},
+      service_id = #{service_id,jdbcType=BIGINT},
+      is_required = #{is_required,jdbcType=VARCHAR},
       datatype = #{datatype,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
       enumlist = #{enumlist,jdbcType=VARCHAR},
@@ -494,7 +548,6 @@
       maxlength = #{maxlength,jdbcType=VARCHAR},
       `method` = #{method,jdbcType=VARCHAR},
       `min` = #{min,jdbcType=VARCHAR},
-      `name` = #{name,jdbcType=VARCHAR},
       required = #{required,jdbcType=VARCHAR},
       step = #{step,jdbcType=VARCHAR},
       unit = #{unit,jdbcType=VARCHAR},
@@ -510,6 +563,15 @@
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
+      </if>
+      <if test="name != null and name != ''">
+        `name`,
+      </if>
+      <if test="service_id != null">
+        service_id,
+      </if>
+      <if test="is_required != null and is_required != ''">
+        is_required,
       </if>
       <if test="datatype != null and datatype != ''">
         datatype,
@@ -531,9 +593,6 @@
       </if>
       <if test="min != null and min != ''">
         `min`,
-      </if>
-      <if test="name != null and name != ''">
-        `name`,
       </if>
       <if test="required != null and required != ''">
         required,
@@ -562,6 +621,15 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
+      <if test="name != null and name != ''">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="service_id != null">
+        #{service_id,jdbcType=BIGINT},
+      </if>
+      <if test="is_required != null and is_required != ''">
+        #{is_required,jdbcType=VARCHAR},
+      </if>
       <if test="datatype != null and datatype != ''">
         #{datatype,jdbcType=VARCHAR},
       </if>
@@ -582,9 +650,6 @@
       </if>
       <if test="min != null and min != ''">
         #{min,jdbcType=VARCHAR},
-      </if>
-      <if test="name != null and name != ''">
-        #{name,jdbcType=VARCHAR},
       </if>
       <if test="required != null and required != ''">
         #{required,jdbcType=VARCHAR},
@@ -613,6 +678,15 @@
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
+      <if test="name != null and name != ''">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="service_id != null">
+        service_id = #{service_id,jdbcType=BIGINT},
+      </if>
+      <if test="is_required != null and is_required != ''">
+        is_required = #{is_required,jdbcType=VARCHAR},
+      </if>
       <if test="datatype != null and datatype != ''">
         datatype = #{datatype,jdbcType=VARCHAR},
       </if>
@@ -633,9 +707,6 @@
       </if>
       <if test="min != null and min != ''">
         `min` = #{min,jdbcType=VARCHAR},
-      </if>
-      <if test="name != null and name != ''">
-        `name` = #{name,jdbcType=VARCHAR},
       </if>
       <if test="required != null and required != ''">
         required = #{required,jdbcType=VARCHAR},
