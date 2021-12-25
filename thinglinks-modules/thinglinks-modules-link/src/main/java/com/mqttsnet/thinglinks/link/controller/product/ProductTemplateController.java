@@ -1,5 +1,7 @@
+package com.mqttsnet.thinglinks.link.controller.product;
+
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate;
-import com.mqttsnet.thinglinks.link.service.product.impl.ProductTemplateService;
+import com.mqttsnet.thinglinks.link.service.product.ProductTemplateService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
