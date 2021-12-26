@@ -8,13 +8,13 @@ import lombok.Data;
 
 /**
 
-* @Description:    设备消息
+* @Description:    java类作用描述
 * @Author:         ShiHuan Sun
 * @E-mail:         13733918655@163.com
 * @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/26$ 0:27$
+* @CreateDate:     2021/12/26$ 13:20$
 * @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/26$ 0:27$
+* @UpdateDate:     2021/12/26$ 13:20$
 * @UpdateRemark:   修改内容
 * @Version:        1.0
 

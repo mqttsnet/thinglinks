@@ -13,7 +13,7 @@ import java.util.List;
  * @date 2021-12-23
  */
 @Data
-public class Product {
+public class ProductModel {
     private static final long serialVersionUID = 1L;
     private String productName;
     private Integer productType;
