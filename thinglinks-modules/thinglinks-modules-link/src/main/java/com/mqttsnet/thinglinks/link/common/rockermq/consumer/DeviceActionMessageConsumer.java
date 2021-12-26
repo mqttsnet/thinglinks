@@ -32,7 +32,7 @@ public class DeviceActionMessageConsumer implements RocketMQListener {
     @Override
     public void onMessage(Object message) {
         assert message!=null;
-        System.out.println("Link消费设备消息"+message);
+        log.info("Link消费设备消息"+message);
         JSONObject thinglinksMessage = JSONObject.parseObject(String.valueOf(message));
         /**
          * TODO 设备上下线处理
@@ -41,7 +41,7 @@ public class DeviceActionMessageConsumer implements RocketMQListener {
          * ${topic}  其他为业务数据自行处理
          */
         if("$event/connect".equals(thinglinksMessage.get("topic"))){
-            deviceActionService.connectEvent(String.valueOf(thinglinksMessage.get("msg").toString()));
+            deviceActionService.connectEvent(String.valueOf(thinglinksMessage.get("msg")));
         }else if("$event/close".equals(thinglinksMessage.get("topic"))){
             deviceActionService.closeEvent(String.valueOf(thinglinksMessage.get("msg")));
         }else {
