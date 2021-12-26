@@ -76,6 +76,27 @@
             <version>2.0.34</version>
         </dependency>
 
+        <!-- thinglinks Common Datasource -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-datasource</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Common Rocketmq -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-rocketmq</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Api link -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-api-link</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
     </dependencies>
 
     <!--<build>

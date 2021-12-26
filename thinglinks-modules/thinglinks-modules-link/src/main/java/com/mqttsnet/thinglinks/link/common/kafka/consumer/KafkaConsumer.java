@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.link.common.kafka.consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,7 @@ import java.util.Optional;
  */
 @RefreshScope
 @Component
+@EnableKafka
 @Slf4j
 public class KafkaConsumer {
 

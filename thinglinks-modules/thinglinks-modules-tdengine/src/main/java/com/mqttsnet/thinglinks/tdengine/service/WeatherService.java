@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.tdengine.service;
 
-import com.mqttsnet.thinglinks.tdengine.dao.WeatherMapper;
+import com.mqttsnet.thinglinks.tdengine.mapper.WeatherMapper;
 import com.mqttsnet.thinglinks.tdengine.domain.Weather;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

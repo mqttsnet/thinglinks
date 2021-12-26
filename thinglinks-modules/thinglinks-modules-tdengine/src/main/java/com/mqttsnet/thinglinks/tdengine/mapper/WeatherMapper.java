@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.tdengine.dao;
+package com.mqttsnet.thinglinks.tdengine.mapper;
 
 import com.mqttsnet.thinglinks.tdengine.domain.Weather;
 import org.apache.ibatis.annotations.Mapper;
