@@ -10,9 +10,9 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="设备标识" prop="deviceId">
+      <el-form-item label="设备标识" prop="deviceIdentification">
         <el-input
-          v-model="queryParams.deviceId"
+          v-model="queryParams.deviceIdentification"
           placeholder="请输入设备标识"
           clearable
           size="small"
@@ -166,7 +166,7 @@
           <dict-tag :options="dict.type.link_device_auth_mode" :value="scope.row.authMode"/>
         </template>
       </el-table-column>
-      <el-table-column label="设备标识" align="center" prop="deviceId" />
+      <el-table-column label="设备标识" align="center" prop="deviceIdentification" />
       <el-table-column label="设备名称" align="center" prop="deviceName" />
       <el-table-column label="连接实例" align="center" prop="connector">
         <template slot-scope="scope">
@@ -281,8 +281,8 @@
 
         <el-row>
           <el-col :span="11">
-            <el-form-item label="设备标识" prop="deviceId">
-              <el-input v-model="form.deviceId" placeholder="请输入设备标识" />
+            <el-form-item label="设备标识" prop="deviceIdentification">
+              <el-input v-model="form.deviceIdentification" placeholder="请输入设备标识" />
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -462,7 +462,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         clientId: null,
-        deviceId: null,
+        deviceIdentification: null,
         deviceName: null,
         connector: null,
         deviceStatus: null,
@@ -493,7 +493,7 @@ export default {
         authMode: [
           { required: true, message: "认证方式不能为空", trigger: "change" }
         ],
-        deviceId: [
+        deviceIdentification: [
           { required: true, message: "设备标识不能为空", trigger: "blur" }
         ],
         deviceName: [
@@ -579,7 +579,7 @@ export default {
         userName: null,
         password: null,
         authMode: null,
-        deviceId: null,
+        deviceIdentification: null,
         deviceName: null,
         latitude: null,
         longitude: null,

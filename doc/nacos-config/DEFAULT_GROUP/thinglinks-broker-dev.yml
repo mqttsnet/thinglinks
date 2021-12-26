@@ -76,6 +76,7 @@ smqtt:
     port: 11883 # mqtt端口号
     username: thinglinks # mqtt连接默认用户名  生产环境建议spi去注入PasswordAuthentication接口
     password: thinglinks  # mqtt连接默认密码 生产环境建议spi去注入PasswordAuthentication接口
+    connectModel: UNIQUE # UNIQUE 唯一 KICK 互踢
     wiretap: false  # 二进制日志 前提是 smqtt.logLevel = DEBUG
     bossThreadSize: 4  # boss线程 默认=cpu核心数
     workThreadSize: 16  # work线程 默认=cpu核心数*2
@@ -122,19 +123,19 @@ smqtt:
     - ruleName: ROCKET_MQ # 过滤器名称
       chain: # 规则链(支持多个)
         - ruleType: ROCKET_MQ  # 过滤器类型
-          script:  '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
+          script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
     - ruleName: KAFKA # 过滤器名称
       chain: # 规则链(支持多个)
         - ruleType: KAFKA  # 过滤器类型
-          script:  '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
+          script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
 #    - ruleName: HTTP # 过滤器名称
 #      chain: # 规则链(支持多个)
 #        - ruleType: HTTP
-#          script:  '{"topic":"${topic}","msg":"${msg.test}","qos":${qos}}'
+#          script:  '{"topic":"${topic}","msg":${msg.test},"qos":${qos}}'
 #    - ruleName: MQTT # 过滤器名称
 #      chain: # 规则链(支持多个)
 #        - ruleType: MQTT # 过滤器类型
-#          script: '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
+#          script: '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
 #    - ruleName: DATA_BASE # 过滤器名称
 #      chain: # 规则链
 #        - ruleType: DATA_BASE # 过滤器类型
@@ -142,7 +143,7 @@ smqtt:
 #    - ruleName: RABBIT_MQ # 过滤器名称
 #      chain: # 规则链
 #        - ruleType: RABBIT_MQ # 过滤器类型
-#          script: '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
+#          script: '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
   sources: # 配置数据源sources
     - source: ROCKET_MQ # rocketmq配置
       sourceName: rocket_mq

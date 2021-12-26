@@ -25,6 +25,8 @@
 
 设备地理位置可视化查看,可视化大屏。
 
+TDengine时序数据库超级表设计概念：每个设备一张表,每类设备一个超级表。
+
 ## 系统模块
 
 ~~~
@@ -55,6 +57,7 @@ com.mqttsnet.thinglinks
         └── thinglinks-modules-broker                      // broker服务 [19306]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
 ├── thinglinks-visual          // 图形化管理模块
 │       └── thinglinks-visual-monitor                      // 监控中心 [19400]
+│       └── thinglinks-visual-collection                   // 服务器监控采集服务 [19401]
 ├──pom.xml                // 公共依赖
 ~~~
 

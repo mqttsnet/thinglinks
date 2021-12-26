@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
  * 
  * @author thinglinks
  */
-@EnableKafka
 @EnableCustomConfig
 @EnableCustomSwagger2
 @EnableRyFeignClients

@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.link.common.kafka.producer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
  */
 @RefreshScope
 @Component
+@EnableKafka
 @Slf4j
 public class KafkaProducer {
     @Autowired

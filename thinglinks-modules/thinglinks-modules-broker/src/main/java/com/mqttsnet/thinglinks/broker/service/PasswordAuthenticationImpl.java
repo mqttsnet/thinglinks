@@ -1,10 +1,10 @@
 package com.mqttsnet.thinglinks.broker.service;
 
 
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import io.github.quickmsg.common.auth.PasswordAuthentication;
 import lombok.extern.slf4j.Slf4j;
-import com.mqttsnet.thinglinks.link.api.RemoteMqttsDeviceService;
-import com.mqttsnet.thinglinks.link.api.domain.MqttsDevice;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -30,13 +30,13 @@ public class PasswordAuthenticationImpl implements PasswordAuthentication {
     private static PasswordAuthenticationImpl PasswordAuthenticationImpl;
 
     @Autowired
-    private RemoteMqttsDeviceService mqttsDeviceService;
+    private RemoteDeviceService deviceService;
 
 
     @PostConstruct
     public void init() {
         PasswordAuthenticationImpl = this;
-        PasswordAuthenticationImpl.mqttsDeviceService = this.mqttsDeviceService;
+        PasswordAuthenticationImpl.deviceService = this.deviceService;
     }
 
     /**
@@ -49,10 +49,13 @@ public class PasswordAuthenticationImpl implements PasswordAuthentication {
      */
     @Override
     public boolean auth(String userName, byte[] passwordInBytes, String clientIdentifier) {
-        MqttsDevice mqttsDevice = PasswordAuthenticationImpl.mqttsDeviceService.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, userName, new String(passwordInBytes), "ENABLE", "MQTT").getData();
+        Device mqttsDevice = PasswordAuthenticationImpl.deviceService.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, userName, new String(passwordInBytes), "ENABLE", "MQTT").getData();
         if (Optional.ofNullable(mqttsDevice).isPresent()) {
             //更改设备在线状态为在线
-            PasswordAuthenticationImpl.mqttsDeviceService.updateConnectStatusByClientId(new MqttsDevice("ONLINE", clientIdentifier));
+            Device device = new Device();
+            device.setConnectStatus("ONLINE");
+            device.setDeviceIdentification(clientIdentifier);
+            PasswordAuthenticationImpl.deviceService.updateConnectStatusByClientId(device);
             return true;
         }
         return false;

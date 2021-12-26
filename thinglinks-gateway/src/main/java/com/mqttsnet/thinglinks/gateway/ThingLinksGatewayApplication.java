@@ -21,6 +21,6 @@ public class ThingLinksGatewayApplication
     public static void main(String[] args)
     {
         SpringApplication.run(ThingLinksGatewayApplication.class, args);
-        System.out.println("(♥◠‿◠)ﾉﾞ  MQTTS网关启动成功   ლ(´ڡ`ლ)ﾞ  ");
+        System.out.println("(♥◠‿◠)ﾉﾞ  ThingLinks网关启动成功   ლ(´ڡ`ლ)ﾞ  ");
     }
 }

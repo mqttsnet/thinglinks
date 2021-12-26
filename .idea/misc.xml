@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="ES6" />
+  </component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/thinglinks-visual/thinglinks-visual-collection/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/classes" />
+  </component>
+  <component name="yapi">
+    <option name="projectToken">666587a633416fde42ef69dea9236a39021b74e4f6ed55bfbbd506b50bf707a5</option>
+    <option name="projectId">119</option>
+    <option name="yapiUrl">http://192.168.1.158:3000</option>
+    <option name="projectType">api</option>
+  </component>
+</project>
