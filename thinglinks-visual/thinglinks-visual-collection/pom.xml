@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>thinglinks-visual</artifactId>
+        <groupId>com.mqttsnet</groupId>
+        <version>1.0.0-RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>thinglinks-visual-collection</artifactId>
+
+    <dependencies>
+
+        <!-- SpringCloud Alibaba Nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+
+        <!-- SpringCloud Alibaba Nacos Config -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <!-- SpringBoot Actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Swagger UI -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${swagger.fox.version}</version>
+        </dependency>
+
+        <!-- thinglinks Common Log -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-log</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Common Rocketmq -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-rocketmq</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Common Swagger -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-swagger</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>5.3.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>5.10.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform -->
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna-platform</artifactId>
+            <version>5.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>
