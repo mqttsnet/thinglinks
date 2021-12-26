@@ -6,22 +6,21 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
-
-* @Description:    java类作用描述
-* @Author:         ShiHuan Sun
-* @E-mail:         13733918655@163.com
-* @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/26$ 0:27$
-* @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/26$ 0:27$
-* @UpdateRemark:   修改内容
-* @Version:        1.0
-
-*/
+ * @Description: java类作用描述
+ * @Author: ShiHuan Sun
+ * @E-mail: 13733918655@163.com
+ * @Website: http://thinglinks.mqttsnet.com
+ * @CreateDate: 2021/12/26$ 13:20$
+ * @UpdateUser: ShiHuan Sun
+ * @UpdateDate: 2021/12/26$ 13:20$
+ * @UpdateRemark: 修改内容
+ * @Version: 1.0
+ */
 @Mapper
 public interface DeviceDatasMapper {
     /**
      * delete by primary key
+     *
      * @param id primaryKey
      * @return deleteCount
      */
@@ -29,6 +28,7 @@ public interface DeviceDatasMapper {
 
     /**
      * insert record to table
+     *
      * @param record the record
      * @return insert count
      */
@@ -42,6 +42,7 @@ public interface DeviceDatasMapper {
 
     /**
      * insert record to table selective
+     *
      * @param record the record
      * @return insert count
      */
@@ -49,6 +50,7 @@ public interface DeviceDatasMapper {
 
     /**
      * select by primary key
+     *
      * @param id primary key
      * @return object by primary key
      */
@@ -56,6 +58,7 @@ public interface DeviceDatasMapper {
 
     /**
      * update record selective
+     *
      * @param record the updated record
      * @return update count
      */
@@ -65,6 +68,7 @@ public interface DeviceDatasMapper {
 
     /**
      * update record
+     *
      * @param record the updated record
      * @return update count
      */

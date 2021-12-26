@@ -13,21 +13,20 @@ import java.util.Map;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceActionMapper;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction;
 import com.mqttsnet.thinglinks.link.service.device.DeviceActionService;
+
 /**
-
-* @Description:    java类作用描述
-* @Author:         ShiHuan Sun
-* @E-mail:         13733918655@163.com
-* @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/26$ 0:27$
-* @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/26$ 0:27$
-* @UpdateRemark:   修改内容
-* @Version:        1.0
-
-*/
+ * @Description: java类作用描述
+ * @Author: ShiHuan Sun
+ * @E-mail: 13733918655@163.com
+ * @Website: http://thinglinks.mqttsnet.com
+ * @CreateDate: 2021/12/26$ 0:27$
+ * @UpdateUser: ShiHuan Sun
+ * @UpdateDate: 2021/12/26$ 0:27$
+ * @UpdateRemark: 修改内容
+ * @Version: 1.0
+ */
 @Service
-public class DeviceActionServiceImpl implements DeviceActionService{
+public class DeviceActionServiceImpl implements DeviceActionService {
 
     @Resource
     private DeviceActionMapper deviceActionMapper;
@@ -132,10 +131,12 @@ public class DeviceActionServiceImpl implements DeviceActionService{
         DeviceAction deviceAction = new DeviceAction();
         deviceAction.setDeviceIdentification(String.valueOf(map.get("clientIdentifier")));
         deviceAction.setActionType(String.valueOf(map.get("channelStatus")));
-        deviceAction.setStatus(i!=0?"success":"failure");
+        deviceAction.setStatus(i != 0 ? "success" : "failure");
         deviceAction.setMessage("Device Disconnection");
         deviceAction.setCreateTime(LocalDateTimeUtil.now());
         deviceActionMapper.insertOrUpdate(deviceAction);
     }
 
 }
+
+

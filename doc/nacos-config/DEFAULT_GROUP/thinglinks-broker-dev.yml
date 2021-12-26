@@ -123,19 +123,19 @@ smqtt:
     - ruleName: ROCKET_MQ # 过滤器名称
       chain: # 规则链(支持多个)
         - ruleType: ROCKET_MQ  # 过滤器类型
-          script:  '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
+          script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
     - ruleName: KAFKA # 过滤器名称
       chain: # 规则链(支持多个)
         - ruleType: KAFKA  # 过滤器类型
-          script:  '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
+          script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
 #    - ruleName: HTTP # 过滤器名称
 #      chain: # 规则链(支持多个)
 #        - ruleType: HTTP
-#          script:  '{"topic":"${topic}","msg":"${msg.test}","qos":${qos}}'
+#          script:  '{"topic":"${topic}","msg":${msg.test},"qos":${qos}}'
 #    - ruleName: MQTT # 过滤器名称
 #      chain: # 规则链(支持多个)
 #        - ruleType: MQTT # 过滤器类型
-#          script: '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
+#          script: '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
 #    - ruleName: DATA_BASE # 过滤器名称
 #      chain: # 规则链
 #        - ruleType: DATA_BASE # 过滤器类型
@@ -143,7 +143,7 @@ smqtt:
 #    - ruleName: RABBIT_MQ # 过滤器名称
 #      chain: # 规则链
 #        - ruleType: RABBIT_MQ # 过滤器类型
-#          script: '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
+#          script: '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
   sources: # 配置数据源sources
     - source: ROCKET_MQ # rocketmq配置
       sourceName: rocket_mq
