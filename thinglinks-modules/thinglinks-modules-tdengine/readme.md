@@ -1,10 +1,10 @@
-## TDengine SpringBoot + Mybatis Demo
+## TDengine SpringBoot + Mybatis Demo  超级表设计概念：每个设备一张表,每类设备一个超级表 ;命名规则 : 产品类型_产品标识_服务名称_设备标识
 
 ### 配置 application.properties
 ```properties
 # datasource config
 spring.datasource.driver-class-name=com.taosdata.jdbc.TSDBDriver
-spring.datasource.url=jdbc:TAOS://127.0.0.1:6030/log
+spring.datasource.url=jdbc:TAOS://127.0.0.1:6030/thinglinks
 spring.datasource.username=root
 spring.datasource.password=taosdata
 
@@ -16,9 +16,9 @@ spring.datasource.druid.max-wait=60000
 
 spring.datasource.druid.validation-query=select server_status();
 spring.datasource.druid.validation-query-timeout=5000
-spring.datasource.druid.test-on-borrow=false
-spring.datasource.druid.test-on-return=false
-spring.datasource.druid.test-while-idle=true
+spring.datasource.druid.thinglinks-on-borrow=false
+spring.datasource.druid.thinglinks-on-return=false
+spring.datasource.druid.thinglinks-while-idle=true
 spring.datasource.druid.time-between-eviction-runs-millis=60000
 spring.datasource.druid.min-evictable-idle-time-millis=600000
 spring.datasource.druid.max-evictable-idle-time-millis=900000
@@ -36,11 +36,11 @@ logging.level.com.taosdata.jdbc.springbootdemo.dao=debug
 ```xml
 <!-- weatherMapper.xml -->
  <update id="createDB" >
-        create database if not exists test;
+        create database if not exists thinglinks;
     </update>
 
     <update id="createTable" >
-        create table if not exists test.weather(ts timestamp, temperature int, humidity float);
+        create table if not exists thinglinks.weather(ts timestamp, temperature int, humidity float);
     </update>
 ```
 
@@ -48,14 +48,14 @@ logging.level.com.taosdata.jdbc.springbootdemo.dao=debug
 ```xml
 <!-- weatherMapper.xml -->
     <insert id="insert" parameterType="Weather" >
-        insert into test.weather (ts, temperature, humidity) values (now, #{temperature,jdbcType=INTEGER}, #{humidity,jdbcType=FLOAT})
+        insert into thinglinks.weather (ts, temperature, humidity) values (now, #{temperature,jdbcType=INTEGER}, #{humidity,jdbcType=FLOAT})
     </insert>
 ```
 * 插入多条记录
 ```xml
 <!-- weatherMapper.xml -->
 <insert id="batchInsert" parameterType="java.util.List" >
-    insert into test.weather (ts, temperature, humidity) values
+    insert into thinglinks.weather (ts, temperature, humidity) values
     <foreach separator=" " collection="list" item="weather" index="index" >
         (now + #{index}a, #{weather.temperature}, #{weather.humidity})
     </foreach>
@@ -82,12 +82,12 @@ logging.level.com.taosdata.jdbc.springbootdemo.dao=debug
     <select id="select" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
-        from test.weather
+        from thinglinks.weather
         order by ts desc
-        <if test="limit != null">
+        <if thinglinks="limit != null">
             limit #{limit,jdbcType=BIGINT}
         </if>
-        <if test="offset != null">
+        <if thinglinks="offset != null">
             offset #{offset,jdbcType=BIGINT}
         </if>
     </select>

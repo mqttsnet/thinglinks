@@ -1,0 +1,429 @@
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : thinglinks开发环境
+ Source Server Type    : MySQL
+ Source Server Version : 50734
+ Source Host           : 49.235.122.136:3306
+ Source Schema         : wgcloud
+
+ Target Server Type    : MySQL
+ Target Server Version : 50734
+ File Encoding         : 65001
+
+ Date: 26/12/2021 22:54:45
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for APP_INFO
+-- ----------------------------
+DROP TABLE IF EXISTS `APP_INFO`;
+CREATE TABLE `APP_INFO`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `HOST_NAME` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `APP_PID` char(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  `APP_NAME` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CPU_PER` double(8, 2) NULL DEFAULT NULL,
+  `MEM_PER` double(10, 2) NULL DEFAULT NULL,
+  `APP_TYPE` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `STATE` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of APP_INFO
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for APP_STATE
+-- ----------------------------
+DROP TABLE IF EXISTS `APP_STATE`;
+CREATE TABLE `APP_STATE`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `APP_INFO_ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CPU_PER` double(8, 2) NULL DEFAULT NULL,
+  `MEM_PER` double(10, 2) NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  INDEX `APP_STAT_INDEX`(`APP_INFO_ID`, `CREATE_TIME`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of APP_STATE
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for CPU_STATE
+-- ----------------------------
+DROP TABLE IF EXISTS `CPU_STATE`;
+CREATE TABLE `CPU_STATE`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `HOST_NAME` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `USER` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `SYS` double(8, 2) NULL DEFAULT NULL,
+  `IDLE` double(8, 2) NULL DEFAULT NULL,
+  `IOWAIT` double(8, 2) NULL DEFAULT NULL,
+  `IRQ` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `SOFT` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `DATE_STR` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  INDEX `CPU_ACC_HOST_INDEX`(`HOST_NAME`, `CREATE_TIME`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of CPU_STATE
+-- ----------------------------
+INSERT INTO `CPU_STATE` VALUES ('00defd1412cb41d5b92a6617efba7b62', '192.168.43.131', NULL, 9.40, NULL, NULL, NULL, NULL, '14:24:01', '2021-12-24 14:24:01');
+INSERT INTO `CPU_STATE` VALUES ('0335d43f8e114b42bcf8d523ca3d96dc', '192.168.43.131', NULL, 9.10, NULL, NULL, NULL, NULL, '14:14:06', '2021-12-24 14:14:06');
+INSERT INTO `CPU_STATE` VALUES ('0f067ac4511f41329fe5546a85433e17', '192.168.43.131', NULL, 7.60, NULL, NULL, NULL, NULL, '14:22:01', '2021-12-24 14:22:01');
+INSERT INTO `CPU_STATE` VALUES ('20e72cad1b3f4a528d05146e2d2e0b5d', '127.0.0.1', NULL, 6.20, NULL, NULL, NULL, NULL, '14:02:08', '2021-12-24 14:02:08');
+INSERT INTO `CPU_STATE` VALUES ('3e36e856d3314751914a6bb8937bedd5', '192.168.43.131', NULL, 17.20, NULL, NULL, NULL, NULL, '14:30:01', '2021-12-24 14:30:01');
+INSERT INTO `CPU_STATE` VALUES ('6b240136c9544feeab4487435b2f38fb', '192.168.43.131', NULL, 8.40, NULL, NULL, NULL, NULL, '14:28:01', '2021-12-24 14:28:01');
+INSERT INTO `CPU_STATE` VALUES ('80cb0755e5ac43a293953359ea6c3f47', '192.168.43.131', NULL, 9.20, NULL, NULL, NULL, NULL, '14:20:01', '2021-12-24 14:20:01');
+INSERT INTO `CPU_STATE` VALUES ('8a24b7ecd676477ead8ff8abdd1e6b06', '192.168.43.131', NULL, 10.40, NULL, NULL, NULL, NULL, '14:08:01', '2021-12-24 14:08:01');
+INSERT INTO `CPU_STATE` VALUES ('9893bed39f3148d88097fb80a13397e9', '192.168.43.131', NULL, 71.60, NULL, NULL, NULL, NULL, '14:10:01', '2021-12-24 14:10:01');
+INSERT INTO `CPU_STATE` VALUES ('995dc4d521d44dd39ad998a7d4e30af2', '127.0.0.1', NULL, 6.30, NULL, NULL, NULL, NULL, '14:06:08', '2021-12-24 14:06:08');
+INSERT INTO `CPU_STATE` VALUES ('9c187ea32575494287c69cfdba58d543', '127.0.0.1', NULL, 14.00, NULL, NULL, NULL, NULL, '14:04:08', '2021-12-24 14:04:08');
+INSERT INTO `CPU_STATE` VALUES ('a1835b7d29b94cc183a6bb2fb0b2f73c', '192.168.43.131', NULL, 17.90, NULL, NULL, NULL, NULL, '13:48:34', '2021-12-24 13:48:34');
+INSERT INTO `CPU_STATE` VALUES ('a3b3bdd8d8fc45e2b80dd20b3daf6559', '192.168.43.131', NULL, 12.10, NULL, NULL, NULL, NULL, '14:18:01', '2021-12-24 14:18:01');
+INSERT INTO `CPU_STATE` VALUES ('ac5d608416a14734b6153ff8b952ffc7', '192.168.43.131', NULL, 15.80, NULL, NULL, NULL, NULL, '13:59:06', '2021-12-24 13:59:06');
+INSERT INTO `CPU_STATE` VALUES ('aca73a1db3b94329a6f6437f5e2c5984', '192.168.43.131', NULL, 8.70, NULL, NULL, NULL, NULL, '14:26:01', '2021-12-24 14:26:01');
+INSERT INTO `CPU_STATE` VALUES ('e4b349e7257e425cbf8d98c3ad2ccb08', '192.168.43.131', NULL, 19.50, NULL, NULL, NULL, NULL, '14:16:04', '2021-12-24 14:16:04');
+INSERT INTO `CPU_STATE` VALUES ('f4ee2fc4332142ba9969b1acc9753d18', '192.168.43.131', NULL, 13.80, NULL, NULL, NULL, NULL, '14:12:01', '2021-12-24 14:12:01');
+
+-- ----------------------------
+-- Table structure for DB_INFO
+-- ----------------------------
+DROP TABLE IF EXISTS `DB_INFO`;
+CREATE TABLE `DB_INFO`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `DBTYPE` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `USER` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `PASSWD` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `IP` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `PORT` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `DBNAME` char(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `DB_STATE` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `ALIAS_NAME` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of DB_INFO
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for DB_TABLE
+-- ----------------------------
+DROP TABLE IF EXISTS `DB_TABLE`;
+CREATE TABLE `DB_TABLE`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `TABLE_NAME` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `WHERE_VAL` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `REMARK` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `TABLE_COUNT` bigint(20) NULL DEFAULT NULL,
+  `DATE_STR` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `DBINFO_ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of DB_TABLE
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for DB_TABLE_COUNT
+-- ----------------------------
+DROP TABLE IF EXISTS `DB_TABLE_COUNT`;
+CREATE TABLE `DB_TABLE_COUNT`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `DB_TABLE_ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `TABLE_COUNT` bigint(20) NULL DEFAULT NULL,
+  `DATE_STR` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of DB_TABLE_COUNT
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for DESK_STATE
+-- ----------------------------
+DROP TABLE IF EXISTS `DESK_STATE`;
+CREATE TABLE `DESK_STATE`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `HOST_NAME` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `FILE_STSTEM` char(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `SIZE` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `USED` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `AVAIL` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `USE_PER` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `DATE_STR` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  INDEX `DESK_ACC_HOST_INDEX`(`HOST_NAME`, `CREATE_TIME`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of DESK_STATE
+-- ----------------------------
+INSERT INTO `DESK_STATE` VALUES ('073c0523de91425296a100c746776b35', '192.168.43.131', '本地固定磁盘 (C:)', '79G', '65G', '14G', '82.4%', '12-24 14:30:01', '2021-12-24 14:30:01');
+INSERT INTO `DESK_STATE` VALUES ('14b985b936d6419bad88a2afd7c1323c', '192.168.43.131', '本地固定磁盘 (D:)', '383G', '216G', '166G', '56.48%', '12-24 14:30:01', '2021-12-24 14:30:01');
+INSERT INTO `DESK_STATE` VALUES ('5a09c879604a41319547ebc41c2bdfab', '127.0.0.1', '本地固定磁盘 (E:)', '0G', '0G', '0G', '0.0%', '12-24 14:06:08', '2021-12-24 14:06:08');
+INSERT INTO `DESK_STATE` VALUES ('b107d3e008164438aea87bcc24c2e0f7', '127.0.0.1', '本地固定磁盘 (C:)', '79G', '65G', '14G', '82.38%', '12-24 14:06:08', '2021-12-24 14:06:08');
+INSERT INTO `DESK_STATE` VALUES ('c1616c7cd5ab48f386a99b3074e38372', '127.0.0.1', '本地固定磁盘 (D:)', '383G', '216G', '166G', '56.48%', '12-24 14:06:08', '2021-12-24 14:06:08');
+INSERT INTO `DESK_STATE` VALUES ('fa1f0b8fb02d45418d584638132df476', '192.168.43.131', '本地固定磁盘 (E:)', '0G', '0G', '0G', '0.0%', '12-24 14:30:01', '2021-12-24 14:30:01');
+
+-- ----------------------------
+-- Table structure for HEATH_MONITOR
+-- ----------------------------
+DROP TABLE IF EXISTS `HEATH_MONITOR`;
+CREATE TABLE `HEATH_MONITOR`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `APP_NAME` char(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `HEATH_URL` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `HEATH_STATUS` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of HEATH_MONITOR
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for HOST_INFO
+-- ----------------------------
+DROP TABLE IF EXISTS `HOST_INFO`;
+CREATE TABLE `HOST_INFO`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `IP` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `PORT` char(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `ROOT` char(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `PASSWD` char(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `REMARK` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of HOST_INFO
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for INTRUSION_INFO
+-- ----------------------------
+DROP TABLE IF EXISTS `INTRUSION_INFO`;
+CREATE TABLE `INTRUSION_INFO`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `HOST_NAME` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `LSMOD` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  `PASSWD_INFO` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CRONTAB` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  `PROMISC` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `RPCINFO` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of INTRUSION_INFO
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for LOG_INFO
+-- ----------------------------
+DROP TABLE IF EXISTS `LOG_INFO`;
+CREATE TABLE `LOG_INFO`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `HOST_NAME` char(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `INFO_CONTENT` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL,
+  `STATE` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of LOG_INFO
+-- ----------------------------
+INSERT INTO `LOG_INFO` VALUES ('600f3af693e94f0b9f9faa3e19d5d14a', '192.168.43.131：Agent获取进程列表错误', 'org.springframework.web.client.ResourceAccessException: I/O error on POST request for \"http://192.168.43.131:19999/appInfo/agentList\": Connect to 192.168.43.131:19999 [/192.168.43.131] failed: Connection refused: connect; nested exception is org.apache.http.conn.HttpHostConnectException: Connect to 192.168.43.131:19999 [/192.168.43.131] failed: Connection refused: connect', NULL, '2021-12-24 13:58:35');
+
+-- ----------------------------
+-- Table structure for MAIL_SET
+-- ----------------------------
+DROP TABLE IF EXISTS `MAIL_SET`;
+CREATE TABLE `MAIL_SET`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `SEND_MAIL` char(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `FROM_MAIL_NAME` char(60) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `FROM_PWD` char(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `SMTP_HOST` char(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `SMTP_PORT` char(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `SMTP_SSL` char(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `TO_MAIL` char(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `CPU_PER` char(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  `MEM_PER` char(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `HEATH_PER` char(30) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of MAIL_SET
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for MEM_STATE
+-- ----------------------------
+DROP TABLE IF EXISTS `MEM_STATE`;
+CREATE TABLE `MEM_STATE`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `HOST_NAME` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `TOTAL` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `USED` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `FREE` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `USE_PER` double(8, 2) NULL DEFAULT NULL,
+  `DATE_STR` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  INDEX `MEM_ACC_HOST_INDEX`(`HOST_NAME`, `CREATE_TIME`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of MEM_STATE
+-- ----------------------------
+INSERT INTO `MEM_STATE` VALUES ('0bc08dc6341c434a9e55e276b414164a', '192.168.43.131', NULL, NULL, NULL, 73.90, '14:10:01', '2021-12-24 14:10:01');
+INSERT INTO `MEM_STATE` VALUES ('0c65ffd5b3904622b5e4351ca2f0eaae', '192.168.43.131', NULL, NULL, NULL, 67.90, '13:48:34', '2021-12-24 13:48:34');
+INSERT INTO `MEM_STATE` VALUES ('1516792d7d0944469dcf43227f5c40b6', '192.168.43.131', NULL, NULL, NULL, 74.40, '14:22:01', '2021-12-24 14:22:01');
+INSERT INTO `MEM_STATE` VALUES ('1e855e385854493281f3651a6988269c', '127.0.0.1', NULL, NULL, NULL, 74.00, '14:06:08', '2021-12-24 14:06:08');
+INSERT INTO `MEM_STATE` VALUES ('49f09a06518a4d9894c2402b73505ae3', '192.168.43.131', NULL, NULL, NULL, 73.90, '13:59:06', '2021-12-24 13:59:06');
+INSERT INTO `MEM_STATE` VALUES ('4df4574f908c4779ba7c6844c8985e89', '127.0.0.1', NULL, NULL, NULL, 74.40, '14:02:08', '2021-12-24 14:02:08');
+INSERT INTO `MEM_STATE` VALUES ('54ff467d524c4b9e85630ef88dfe10af', '192.168.43.131', NULL, NULL, NULL, 74.10, '14:12:01', '2021-12-24 14:12:01');
+INSERT INTO `MEM_STATE` VALUES ('5fec58355dd34f97b15f0e80cc9680bf', '192.168.43.131', NULL, NULL, NULL, 73.90, '14:08:01', '2021-12-24 14:08:01');
+INSERT INTO `MEM_STATE` VALUES ('6d882fa9789b4d9c9f980dccc2c1f8f4', '127.0.0.1', NULL, NULL, NULL, 74.00, '14:04:08', '2021-12-24 14:04:08');
+INSERT INTO `MEM_STATE` VALUES ('77758202e56e4a1ca732ab98021dbf84', '192.168.43.131', NULL, NULL, NULL, 74.10, '14:14:06', '2021-12-24 14:14:06');
+INSERT INTO `MEM_STATE` VALUES ('95e4510aad6a4e92b9cea2212475a1a5', '192.168.43.131', NULL, NULL, NULL, 74.70, '14:28:01', '2021-12-24 14:28:01');
+INSERT INTO `MEM_STATE` VALUES ('9c3c667c2d7443be8c7fdd3501c7be7f', '192.168.43.131', NULL, NULL, NULL, 75.60, '14:30:01', '2021-12-24 14:30:01');
+INSERT INTO `MEM_STATE` VALUES ('b47ef814fca84674ba1f6035f1dca7bd', '192.168.43.131', NULL, NULL, NULL, 74.50, '14:18:01', '2021-12-24 14:18:01');
+INSERT INTO `MEM_STATE` VALUES ('babb15f511c34781943ea07b72d6fd67', '192.168.43.131', NULL, NULL, NULL, 74.40, '14:16:04', '2021-12-24 14:16:04');
+INSERT INTO `MEM_STATE` VALUES ('d46d4206c8dd4f85877b95c61a5d3f14', '192.168.43.131', NULL, NULL, NULL, 74.50, '14:20:01', '2021-12-24 14:20:01');
+INSERT INTO `MEM_STATE` VALUES ('deba357f0f9b4a43a1db296bd0e6008c', '192.168.43.131', NULL, NULL, NULL, 75.10, '14:24:01', '2021-12-24 14:24:01');
+INSERT INTO `MEM_STATE` VALUES ('f4a658af4a1c446997a7930a909c2c8d', '192.168.43.131', NULL, NULL, NULL, 74.30, '14:26:01', '2021-12-24 14:26:01');
+
+-- ----------------------------
+-- Table structure for NETIO_STATE
+-- ----------------------------
+DROP TABLE IF EXISTS `NETIO_STATE`;
+CREATE TABLE `NETIO_STATE`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `HOST_NAME` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `RXPCK` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `TXPCK` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `RXBYT` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `TXBYT` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `RXCMP` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `TXCMP` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `RXMCST` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `DATE_STR` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  INDEX `NETIO_ACC_HOST_INDEX`(`HOST_NAME`, `CREATE_TIME`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of NETIO_STATE
+-- ----------------------------
+INSERT INTO `NETIO_STATE` VALUES ('02f8e896bdb84b6481dfb63807be12bd', '127.0.0.1', '0', '0', '0', '0', NULL, NULL, NULL, '14:02:08', '2021-12-24 14:02:08');
+INSERT INTO `NETIO_STATE` VALUES ('15d6e0625fca47619823f73f16c66cb2', '192.168.43.131', '0', '0', '10', '2', NULL, NULL, NULL, '14:28:01', '2021-12-24 14:28:01');
+INSERT INTO `NETIO_STATE` VALUES ('29cd92ac0f744a60b667a00ddaf39b8b', '192.168.43.131', '0', '0', '0', '0', NULL, NULL, NULL, '13:59:06', '2021-12-24 13:59:06');
+INSERT INTO `NETIO_STATE` VALUES ('3533a1b06dea466784d024eaad60a9f9', '127.0.0.1', '0', '0', '2', '1', NULL, NULL, NULL, '14:04:08', '2021-12-24 14:04:08');
+INSERT INTO `NETIO_STATE` VALUES ('4892803ddeef426896052a85d5ecc3ae', '192.168.43.131', '0', '0', '0', '0', NULL, NULL, NULL, '14:14:06', '2021-12-24 14:14:06');
+INSERT INTO `NETIO_STATE` VALUES ('57f7c096c69048e79784cbc8e14f378f', '192.168.43.131', '0', '0', '9', '2', NULL, NULL, NULL, '14:30:01', '2021-12-24 14:30:01');
+INSERT INTO `NETIO_STATE` VALUES ('5f59153ea10f4bba95dc7b3637805643', '192.168.43.131', '0', '0', '0', '0', NULL, NULL, NULL, '14:20:01', '2021-12-24 14:20:01');
+INSERT INTO `NETIO_STATE` VALUES ('751102d366d24994b532eaec9377e5e7', '192.168.43.131', '0', '0', '9', '2', NULL, NULL, NULL, '14:22:01', '2021-12-24 14:22:01');
+INSERT INTO `NETIO_STATE` VALUES ('7ba03e42fd87401fb70b15a2afde6baf', '192.168.43.131', '0', '0', '0', '0', NULL, NULL, NULL, '14:12:01', '2021-12-24 14:12:01');
+INSERT INTO `NETIO_STATE` VALUES ('8243c915ed4f4f208f5b0eabd0cb0427', '192.168.43.131', '0', '0', '0', '0', NULL, NULL, NULL, '14:08:01', '2021-12-24 14:08:01');
+INSERT INTO `NETIO_STATE` VALUES ('894c8907ec974151982a6b20baa81486', '192.168.43.131', '0', '0', '0', '0', NULL, NULL, NULL, '14:10:01', '2021-12-24 14:10:01');
+INSERT INTO `NETIO_STATE` VALUES ('9bd145b57d7142048cc5f4d1dab31395', '192.168.43.131', '0', '0', '0', '0', NULL, NULL, NULL, '14:18:01', '2021-12-24 14:18:01');
+INSERT INTO `NETIO_STATE` VALUES ('ae75e08d827d48f0bce4cfadc494466a', '192.168.43.131', '0', '0', '3', '1', NULL, NULL, NULL, '14:16:04', '2021-12-24 14:16:04');
+INSERT INTO `NETIO_STATE` VALUES ('bedb22896ff34db184de72e7b453bf51', '127.0.0.1', '0', '0', '0', '0', NULL, NULL, NULL, '14:06:08', '2021-12-24 14:06:08');
+INSERT INTO `NETIO_STATE` VALUES ('caf04327503d463dbb7c0de2ca140588', '192.168.43.131', '0', '0', '8', '2', NULL, NULL, NULL, '14:26:01', '2021-12-24 14:26:01');
+INSERT INTO `NETIO_STATE` VALUES ('ef750d909fd04574948e01661f747a6f', '192.168.43.131', '0', '0', '9', '2', NULL, NULL, NULL, '14:24:01', '2021-12-24 14:24:01');
+INSERT INTO `NETIO_STATE` VALUES ('f822f68ff24e4deda12470f25b8e5238', '192.168.43.131', '0', '0', '0', '0', NULL, NULL, NULL, '13:48:34', '2021-12-24 13:48:34');
+
+-- ----------------------------
+-- Table structure for SYSTEM_INFO
+-- ----------------------------
+DROP TABLE IF EXISTS `SYSTEM_INFO`;
+CREATE TABLE `SYSTEM_INFO`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `HOST_NAME` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `VERSION` char(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `VERSION_DETAIL` char(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CPU_PER` double(8, 2) NULL DEFAULT NULL,
+  `MEM_PER` double(8, 2) NULL DEFAULT NULL,
+  `CPU_CORE_NUM` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  `CPU_XH` char(150) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `STATE` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `REMARK` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of SYSTEM_INFO
+-- ----------------------------
+INSERT INTO `SYSTEM_INFO` VALUES ('33adf9dae59046beb27f815e70524994', '127.0.0.1', 'Microsoft Windows 10.0 (Home) build 19043', 'Microsoft Windows 10.0 (Home) build 19043，总内存：15.8 GiB', 6.30, 74.00, '8', '2021-12-24 14:06:08', 'Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz', '2', NULL);
+INSERT INTO `SYSTEM_INFO` VALUES ('ffc2b03e962b46b394c21c15c4f31745', '192.168.43.131', 'Microsoft Windows 10.0 (Home) build 19043', 'Microsoft Windows 10.0 (Home) build 19043，总内存：15.8 GiB', 17.20, 75.60, '8', '2021-12-24 14:30:01', 'Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz', '1', NULL);
+
+-- ----------------------------
+-- Table structure for SYS_LOAD_STATE
+-- ----------------------------
+DROP TABLE IF EXISTS `SYS_LOAD_STATE`;
+CREATE TABLE `SYS_LOAD_STATE`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `HOST_NAME` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `ONE_LOAD` double(8, 2) NULL DEFAULT NULL,
+  `FIVE_LOAD` double(8, 2) NULL DEFAULT NULL,
+  `FIFTEEN_LOAD` double(8, 2) NULL DEFAULT NULL,
+  `USERS` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `DATE_STR` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  INDEX `LOAD_ACC_HOST_INDEX`(`HOST_NAME`, `CREATE_TIME`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of SYS_LOAD_STATE
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for TCP_STATE
+-- ----------------------------
+DROP TABLE IF EXISTS `TCP_STATE`;
+CREATE TABLE `TCP_STATE`  (
+  `ID` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `HOST_NAME` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `ACTIVE` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `PASSIVE` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `RETRANS` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `DATE_STR` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  INDEX `TCP_ACC_HOST_INDEX`(`HOST_NAME`, `CREATE_TIME`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of TCP_STATE
+-- ----------------------------
+
+SET FOREIGN_KEY_CHECKS = 1;
