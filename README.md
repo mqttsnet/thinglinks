@@ -55,6 +55,7 @@ com.mqttsnet.thinglinks
         └── thinglinks-modules-broker                      // broker服务 [19306]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
 ├── thinglinks-visual          // 图形化管理模块
 │       └── thinglinks-visual-monitor                      // 监控中心 [19400]
+│       └── thinglinks-visual-collection                   // 服务器监控采集服务 [19401]
 ├──pom.xml                // 公共依赖
 ~~~
 

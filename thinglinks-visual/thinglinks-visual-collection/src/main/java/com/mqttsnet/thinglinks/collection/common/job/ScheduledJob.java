@@ -1,16 +1,12 @@
 package com.mqttsnet.thinglinks.collection.common.job;
 
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import com.mqttsnet.thinglinks.collection.common.mq.CollectionProducer;
+import com.mqttsnet.thinglinks.collection.common.recketmq.CollectionProducer;
 import com.mqttsnet.thinglinks.collection.entity.*;
 import com.mqttsnet.thinglinks.collection.util.FormatUtil;
 import com.mqttsnet.thinglinks.collection.util.OshiUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,10 +15,8 @@ import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OperatingSystem;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 定时推送服务数据
