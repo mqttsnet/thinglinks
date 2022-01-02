@@ -11,6 +11,7 @@
     <modules>
         <module>thinglinks-api-system</module>
         <module>thinglinks-api-link</module>
+        <module>thinglinks-api-monitor</module>
     </modules>
 
     <artifactId>thinglinks-api</artifactId>

@@ -1,19 +1,18 @@
 package com.mqttsnet.thinglinks.collection;
 
-import com.mqttsnet.thinglinks.common.security.annotation.EnableRyFeignClients;
 import com.mqttsnet.thinglinks.common.swagger.annotation.EnableCustomSwagger2;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @EnableCustomSwagger2
-@EnableRyFeignClients
-@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@SpringBootApplication
 @EnableCaching
 @EnableScheduling
+@MapperScan("com.mqttsnet.thinglinks.collection.mapper")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class ThingLinksCollectionApplication {
     public static void main(String[] args) {

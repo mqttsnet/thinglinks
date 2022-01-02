@@ -481,4 +481,18 @@ public final class UUID implements java.io.Serializable, Comparable<UUID>
     {
         return ThreadLocalRandom.current();
     }
+
+
+    public static String getUUID() {
+        return String.valueOf(java.util.UUID.randomUUID()).replace("-", "");
+    }
+
+    /**
+     * 随机6位数字
+     *
+     * @return
+     */
+    public static String getRandomSix() {
+        return "" + new Random().nextInt(999999);
+    }
 }

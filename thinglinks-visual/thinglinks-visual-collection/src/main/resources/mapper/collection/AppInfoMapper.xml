@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.collection.mapper.AppInfoMapper">
+    <resultMap id="resultMap" type="com.mqttsnet.thinglinks.monitor.api.domain.AppInfo">
+        <id column="ID" property="id" jdbcType="CHAR"/>
+        <result column="HOST_NAME" property="hostname" jdbcType="CHAR"/>
+        <result column="APP_PID" property="appPid" jdbcType="CHAR"/>
+        <result column="APP_TYPE" property="appType" jdbcType="CHAR"/>
+        <result column="APP_NAME" property="appName" jdbcType="CHAR"/>
+        <result column="CPU_PER" property="cpuPer" jdbcType="DOUBLE"/>
+        <result column="MEM_PER" property="memPer" jdbcType="DOUBLE"/>
+        <result column="STATE" property="state" jdbcType="CHAR"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="tableColumnList">
+        ID,
+        HOST_NAME,
+        APP_PID,
+        APP_NAME,
+        CREATE_TIME,
+        CPU_PER,
+        MEM_PER,
+        APP_TYPE,
+        STATE
+    </sql>
+
+    <sql id="queryByParams">
+        <if test="hostname != null">
+            <![CDATA[ AND HOST_NAME LIKE  CONCAT('%',#{hostname},'%')]]>
+        </if>
+        <if test="startTime != null and endTime != null and startTime != '' and endTime != ''">
+            <![CDATA[ AND CREATE_TIME >= #{startTime} and CREATE_TIME <=#{endTime}]]>
+        </if>
+        <if test="cpuPer != null">
+            <![CDATA[ AND CPU_PER >= #{cpuPer} ]]>
+        </if>
+        <if test="cpuPerLe != null">
+            <![CDATA[ AND CPU_PER <= #{cpuPerLe} ]]>
+        </if>
+    </sql>
+
+    <select id="selectByParams" parameterType="map" resultMap="resultMap">
+        SELECT
+        <include refid="tableColumnList"/>
+        FROM APP_INFO
+        <where>
+            <include refid="queryByParams"/>
+        </where>
+        ORDER BY CREATE_TIME DESC
+    </select>
+</mapper>
