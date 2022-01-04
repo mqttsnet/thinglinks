@@ -12,6 +12,7 @@
         <module>thinglinks-api-system</module>
         <module>thinglinks-api-link</module>
         <module>thinglinks-api-monitor</module>
+        <module>thinglinks-api-tdengine</module>
     </modules>
 
     <artifactId>thinglinks-api</artifactId>

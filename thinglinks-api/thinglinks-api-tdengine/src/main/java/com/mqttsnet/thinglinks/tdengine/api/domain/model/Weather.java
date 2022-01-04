@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.tdengine.domain;
+package com.mqttsnet.thinglinks.tdengine.api.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

@@ -1,7 +1,7 @@
-package com.mqttsnet.thinglinks.tdengine.common.rockermq.consumer;
+package com.mqttsnet.thinglinks.tdengine.consumer;
 
 import com.alibaba.fastjson.JSONObject;
-import com.mqttsnet.thinglinks.tdengine.service.SuperTableCreateOrUpdateService;
+import com.mqttsnet.thinglinks.tdengine.service.ProductSuperTableCreateOrUpdateService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
@@ -21,21 +21,25 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = "thinglinks-tdengine", topic = "superTable-createOrUpdate")
-public class CreateSuperTableMessageConsumer implements RocketMQListener {
+@RocketMQMessageListener(consumerGroup = "thinglinks-tdengine", topic = "productSuperTable-createOrUpdate")
+public class ProductCreateSuperTableMessageConsumer implements RocketMQListener {
 
     @Autowired
-    private SuperTableCreateOrUpdateService superTableCreateOrUpdateService;
+    private ProductSuperTableCreateOrUpdateService productSuperTableCreateOrUpdateService;
 
+    /**
+     * 超级表创建及修改处理
+     * @param message
+     */
     @Override
     public void onMessage(Object message) {
         assert message!=null;
         JSONObject stableMessage = JSONObject.parseObject(String.valueOf(message));
         log.info("TDengine消费{}超级表消息:{}"+stableMessage.get("type")+stableMessage.get("msg"));
         if("create".equals(stableMessage.get("type"))){
-            superTableCreateOrUpdateService.create(String.valueOf(stableMessage.get("msg")));
+            productSuperTableCreateOrUpdateService.createProductSuperTable(String.valueOf(stableMessage.get("msg")));
         }else if("update".equals(stableMessage.get("type"))){
-            superTableCreateOrUpdateService.update(String.valueOf(stableMessage.get("msg")));
+            productSuperTableCreateOrUpdateService.updateProductSuperTable(String.valueOf(stableMessage.get("msg")));
         }
 
     }

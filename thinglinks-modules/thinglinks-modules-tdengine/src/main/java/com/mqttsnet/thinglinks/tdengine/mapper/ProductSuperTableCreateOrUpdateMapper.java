@@ -14,7 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @Version: 1.0
  */
 @Mapper
-public interface SuperTableCreateOrUpdateMapper {
+public interface ProductSuperTableCreateOrUpdateMapper {
 
     void dropDB();
 

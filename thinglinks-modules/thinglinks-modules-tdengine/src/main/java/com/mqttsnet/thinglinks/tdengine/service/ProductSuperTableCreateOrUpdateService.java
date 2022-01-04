@@ -11,7 +11,7 @@ package com.mqttsnet.thinglinks.tdengine.service;
  * @UpdateRemark: 修改内容
  * @Version: 1.0
  */
-public interface SuperTableCreateOrUpdateService {
+public interface ProductSuperTableCreateOrUpdateService {
 
     /**
      * @Author: ShiHuan Sun
@@ -24,7 +24,7 @@ public interface SuperTableCreateOrUpdateService {
      * @return
      */
 
-    void create(String msg);
+    void createProductSuperTable(String msg);
 
     /**
      * @Author: ShiHuan Sun
@@ -36,5 +36,5 @@ public interface SuperTableCreateOrUpdateService {
      * msg 产品模型信息
      * @return
      */
-    void update(String msg);
+    void updateProductSuperTable(String msg);
 }
