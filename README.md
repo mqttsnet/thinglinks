@@ -149,7 +149,9 @@ com.mqttsnet.thinglinks
 
 ## 友情链接
 
-[本平台高效MQTTBroker采用：SMQTT](https://gitee.com/quickmsg/mqtt-cluster)
+[本平台高效MQTTBroker采用：SMQTT，gitee地址](https://gitee.com/quickmsg/mqtt-cluster)
+
+[本平台高效MQTTBroker采用：SMQTT，github地址](https://github.com/quickmsg/smqtt)
 
 ## License
 
