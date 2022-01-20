@@ -16,7 +16,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @Description: 推送消息
+ * @Description: Broker推送设备消息
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
  * @CreateDate: 2021/10/25$ 17:46$

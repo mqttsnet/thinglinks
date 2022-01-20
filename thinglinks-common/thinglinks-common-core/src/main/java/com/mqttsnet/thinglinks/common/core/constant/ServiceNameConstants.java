@@ -23,7 +23,17 @@ public class ServiceNameConstants
     public static final String FILE_SERVICE = "thinglinks-file";
 
     /**
-     * Link服务
+     * Link服务的serviceid
      */
     public static final String THINGLINKS_LINK = "thinglinks-link";
+
+    /**
+     * Broker服务的serviceid
+     */
+    public static final String THINGLINKS_BROKER = "thinglinks-broker";
+
+    /**
+     * Tdengine服务的serviceid
+     */
+    public static final String THINGLINKS_TDENGINE = "thinglinks-tdengine";
 }

@@ -79,7 +79,7 @@ com.mqttsnet.thinglinks
 
 
 
-## 在线体验(暂未对外开放)
+## 在线体验
 
 - thinglinks/123456
 
@@ -149,7 +149,10 @@ com.mqttsnet.thinglinks
 
 ## 友情链接
 
-[本平台高效MQTTBroker采用：SMQTT](https://gitee.com/quickmsg/mqtt-cluster)
+本平台高效MQTT Broker采用: SMQTT
+
+- [Github](https://github.com/quickmsg/smqtt)
+- [Gitee](https://gitee.com/quickmsg/mqtt-cluster)
 
 ## License
 
