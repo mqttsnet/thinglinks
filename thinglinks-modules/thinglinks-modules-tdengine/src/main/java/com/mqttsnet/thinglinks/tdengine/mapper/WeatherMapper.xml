@@ -3,7 +3,7 @@
 
 <mapper namespace="com.mqttsnet.thinglinks.tdengine.mapper.WeatherMapper">
 
-    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.tdengine.domain.Weather">
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.tdengine.api.domain.model.Weather">
         <id column="ts" jdbcType="TIMESTAMP" property="ts"/>
         <result column="temperature" jdbcType="FLOAT" property="temperature"/>
         <result column="humidity" jdbcType="FLOAT" property="humidity"/>
@@ -45,7 +45,7 @@
         ), groupId int)
     </update>
 
-    <update id="createTable" parameterType="com.mqttsnet.thinglinks.tdengine.domain.Weather">
+    <update id="createTable" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.model.Weather">
         create table if not exists thinglinks.t#{groupId} using thinglinks.weather tags
         (
             #{location},
@@ -63,7 +63,7 @@
         </if>
     </select>
 
-    <insert id="insert" parameterType="com.mqttsnet.thinglinks.tdengine.domain.Weather">
+    <insert id="insert" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.model.Weather">
         insert into thinglinks.t#{groupId} (ts, temperature, humidity, note)
         values (#{ts}, ${temperature}, ${humidity}, #{note})
     </insert>
@@ -78,7 +78,7 @@
         from thinglinks.weather
     </select>
 
-    <resultMap id="avgResultSet" type="com.mqttsnet.thinglinks.tdengine.domain.Weather">
+    <resultMap id="avgResultSet" type="com.mqttsnet.thinglinks.tdengine.api.domain.model.Weather">
         <id column="ts" jdbcType="TIMESTAMP" property="ts"/>
         <result column="avg(temperature)" jdbcType="FLOAT" property="temperature"/>
         <result column="avg(humidity)" jdbcType="FLOAT" property="humidity"/>

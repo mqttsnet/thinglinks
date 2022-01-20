@@ -10,7 +10,6 @@
 
     <modules>
         <module>thinglinks-visual-monitor</module>
-<!--        <module>thinglinks-visual-server</module>-->
         <module>thinglinks-visual-collection</module>
     </modules>
 

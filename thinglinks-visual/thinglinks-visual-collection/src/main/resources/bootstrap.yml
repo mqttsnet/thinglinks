@@ -16,14 +16,19 @@ spring:
         # 配置中心地址
         server-addr: 49.235.122.136:8848
         #命名空间
-        namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+        namespace: 05545134-ed4b-4647-89ff-f83bed4db8f2
       config:
         # 配置中心地址
         server-addr: 49.235.122.136:8848
         #命名空间
-        namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+        namespace: 05545134-ed4b-4647-89ff-f83bed4db8f2
         # 配置文件格式
         file-extension: yml
         # 共享配置
         shared-configs:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+
+#自定义配置参数
+base:
+  #本机ip，不要用localhost或127.0.0.1
+  bindIp: 192.168.10.29

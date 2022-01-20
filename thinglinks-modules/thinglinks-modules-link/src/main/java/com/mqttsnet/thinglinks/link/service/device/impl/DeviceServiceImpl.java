@@ -1,11 +1,13 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
-import java.util.List;
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Description: java类作用描述
@@ -101,16 +103,78 @@ public class DeviceServiceImpl implements DeviceService {
 	}
 
     /**
-     * 批量删除设备管理
+     * 查询设备管理
      *
-     * @param ids 需要删除的设备管理主键集合
+     * @param id 设备管理主键
+     * @return 设备管理
+     */
+    @Override
+    public Device selectDeviceById(Long id)
+    {
+        return deviceMapper.selectDeviceById(id);
+    }
+
+    /**
+     * 查询设备管理列表
+     *
+     * @param device 设备管理
+     * @return 设备管理
+     */
+    @Override
+    public List<Device> selectDeviceList(Device device)
+    {
+        return deviceMapper.selectDeviceList(device);
+    }
+
+    /**
+     * 新增设备管理
+     *
+     * @param device 设备管理
      * @return 结果
      */
     @Override
-    public int deleteDeviceByIds(Long[] ids) {
+    public int insertDevice(Device device)
+    {
+        device.setCreateTime(DateUtils.getNowDate());
+        return deviceMapper.insertDevice(device);
+    }
+
+    /**
+     * 修改设备管理
+     *
+     * @param device 设备管理
+     * @return 结果
+     */
+    @Override
+    public int updateDevice(Device device)
+    {
+        device.setUpdateTime(DateUtils.getNowDate());
+        return deviceMapper.updateDevice(device);
+    }
+
+    /**
+     * 批量删除设备管理
+     *
+     * @param ids 需要删除的设备管理主键
+     * @return 结果
+     */
+    @Override
+    public int deleteDeviceByIds(Long[] ids)
+    {
         return deviceMapper.deleteDeviceByIds(ids);
     }
 
+    /**
+     * 删除设备管理信息
+     *
+     * @param id 设备管理主键
+     * @return 结果
+     */
+    @Override
+    public int deleteDeviceById(Long id)
+    {
+        return deviceMapper.deleteDeviceById(id);
+    }
 
 }
 

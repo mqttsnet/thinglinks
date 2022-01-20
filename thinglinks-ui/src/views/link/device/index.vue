@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="客户端标识" prop="clientId">
         <el-input
           v-model="queryParams.clientId"
@@ -52,6 +52,16 @@
         <el-select v-model="queryParams.connectStatus" placeholder="请选择连接状态" clearable size="small">
           <el-option
             v-for="dict in dict.type.link_device_connect_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="是否遗言" prop="isWill">
+        <el-select v-model="queryParams.isWill" placeholder="请选择是否遗言" clearable size="small">
+          <el-option
+            v-for="dict in dict.type.link_device_is_will"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -161,6 +171,8 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="客户端标识" align="center" prop="clientId" />
+      <el-table-column label="用户名" align="center" prop="userName" />
+      <el-table-column label="密码" align="center" prop="password" />
       <el-table-column label="认证方式" align="center" prop="authMode">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_auth_mode" :value="scope.row.authMode"/>
@@ -243,8 +255,8 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改设备管理对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+    <!-- 添加或修改设备档案对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="40%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="11">
@@ -281,8 +293,29 @@
 
         <el-row>
           <el-col :span="11">
+            <el-form-item label="设备名称" prop="deviceIdentification">
+              <el-input v-model="form.deviceName" placeholder="请输入设备名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
             <el-form-item label="设备标识" prop="deviceIdentification">
               <el-input v-model="form.deviceIdentification" placeholder="请输入设备标识" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="集成应用" prop="appId">
+              <el-select v-model="form.appId" placeholder="请选择集成应用">
+                <el-option
+                  v-for="dict in dict.type.link_application_type"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -298,7 +331,6 @@
             </el-form-item>
           </el-col>
         </el-row>
-
         <el-row>
           <el-col :span="22">
             <mapView
@@ -333,33 +365,6 @@
               <el-select v-model="form.deviceStatus" placeholder="请选择设备状态">
                 <el-option
                   v-for="dict in dict.type.link_device_status"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="连接状态" prop="connectStatus">
-              <el-select v-model="form.connectStatus" placeholder="请选择连接状态">
-                <el-option
-                  v-for="dict in dict.type.link_device_connect_status"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="是否遗言" prop="isWill">
-              <el-select v-model="form.isWill" placeholder="请选择是否遗言">
-                <el-option
-                  v-for="dict in dict.type.link_device_is_will"
                   :key="dict.value"
                   :label="dict.label"
                   :value="dict.value"
@@ -408,9 +413,15 @@
             </el-form-item>
           </el-col>
         </el-row>
-
         <el-row>
-          <el-col :span="20">
+          <el-col :span="22">
+            <el-form-item label="设备标签" prop="deviceTags">
+              <el-input v-model="form.deviceTags" placeholder="请输入设备标签" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="22">
             <el-form-item label="备注" prop="remark">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
             </el-form-item>
@@ -436,7 +447,7 @@ export default {
     mapView
   },
   name: "Device",
-  dicts: ['link_device_auth_mode', 'link_device_connector', 'link_device_status', 'link_device_connect_status', 'link_device_is_will', 'link_device_protocol_type', 'link_device_device_type'],
+  dicts: ['link_device_status', 'link_device_connect_status', 'link_device_protocol_type', 'link_device_device_type', 'link_device_auth_mode', 'link_device_connector', 'link_device_is_will', 'link_application_type'],
   data() {
     return {
       // 遮罩层
@@ -451,7 +462,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 设备管理表格数据
+      // 设备档案表格数据
       deviceList: [],
       // 弹出层标题
       title: "",
@@ -467,20 +478,17 @@ export default {
         connector: null,
         deviceStatus: null,
         connectStatus: null,
+        isWill: null,
         deviceTags: null,
         productId: null,
         manufacturerId: null,
         protocolType: null,
         deviceType: null,
       },
-
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        id: [
-          { required: true, message: "id不能为空", trigger: "blur" }
-        ],
         clientId: [
           { required: true, message: "客户端标识不能为空", trigger: "blur" }
         ],
@@ -489,6 +497,9 @@ export default {
         ],
         password: [
           { required: true, message: "密码不能为空", trigger: "blur" }
+        ],
+        appId: [
+          { required: true, message: "应用ID不能为空", trigger: "blur" }
         ],
         authMode: [
           { required: true, message: "认证方式不能为空", trigger: "change" }
@@ -511,9 +522,6 @@ export default {
         deviceStatus: [
           { required: true, message: "设备状态不能为空", trigger: "change" }
         ],
-        connectStatus: [
-          { required: true, message: "连接状态不能为空", trigger: "change" }
-        ],
         productId: [
           { required: true, message: "产品型号不能为空", trigger: "blur" }
         ],
@@ -525,18 +533,6 @@ export default {
         ],
         deviceType: [
           { required: true, message: "设备类型不能为空", trigger: "change" }
-        ],
-        createBy: [
-          { required: true, message: "创建者不能为空", trigger: "blur" }
-        ],
-        createTime: [
-          { required: true, message: "创建时间不能为空", trigger: "blur" }
-        ],
-        updateBy: [
-          { required: true, message: "更新者不能为空", trigger: "blur" }
-        ],
-        updateTime: [
-          { required: true, message: "更新时间不能为空", trigger: "blur" }
         ],
       }
     };
@@ -557,7 +553,7 @@ export default {
               duration: 1500,
           });
       },
-    /** 查询设备管理列表 */
+    /** 查询设备档案列表 */
     getList() {
       this.loading = true;
       listDevice(this.queryParams).then(response => {
@@ -578,6 +574,7 @@ export default {
         clientId: null,
         userName: null,
         password: null,
+        appId: null,
         authMode: null,
         deviceIdentification: null,
         deviceName: null,
@@ -621,7 +618,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加设备管理";
+      this.title = "添加设备档案";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -630,7 +627,7 @@ export default {
       getDevice(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改设备管理";
+        this.title = "修改设备档案";
       });
     },
     /** 提交按钮 */
@@ -656,7 +653,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除设备管理编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除设备档案编号为"' + ids + '"的数据项？').then(function() {
         return delDevice(ids);
       }).then(() => {
         this.getList();

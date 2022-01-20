@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.tdengine.controller;
 
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.Weather;
 import com.mqttsnet.thinglinks.tdengine.service.WeatherService;
-import com.mqttsnet.thinglinks.tdengine.domain.Weather;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

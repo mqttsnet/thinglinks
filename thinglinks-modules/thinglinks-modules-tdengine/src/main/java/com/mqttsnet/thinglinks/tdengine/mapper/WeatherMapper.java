@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.tdengine.mapper;
 
-import com.mqttsnet.thinglinks.tdengine.domain.Weather;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.Weather;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

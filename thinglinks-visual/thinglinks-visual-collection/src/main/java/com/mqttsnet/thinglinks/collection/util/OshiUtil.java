@@ -1,8 +1,8 @@
 package com.mqttsnet.thinglinks.collection.util;
 
-import com.mqttsnet.thinglinks.collection.entity.*;
+import com.mqttsnet.thinglinks.common.core.utils.FormatUtil;
+import com.mqttsnet.thinglinks.monitor.api.domain.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
@@ -26,22 +26,12 @@ import java.util.List;
 @Slf4j
 public class OshiUtil {
 
-    private static String bindIp;
-
-    @Value("${base.bindIp}")
-    public void setBindIp(String bindIp){
-        OshiUtil.bindIp = bindIp;
-    }
-
-    private static Runtime r = Runtime.getRuntime();
-
-
     /**
      * 获取内存使用信息
      *
      * @return
      */
-    public static MemState memory(GlobalMemory memory) throws Exception {
+    public static MemState memory(GlobalMemory memory, String bindIp) throws Exception {
         MemState memState = new MemState();
         long total = memory.getTotal() / 1024L / 1024L;
         long free = memory.getAvailable() / 1024L / 1024L;
@@ -58,7 +48,7 @@ public class OshiUtil {
      * @return
      * @throws Exception
      */
-    public static CpuState cpu(CentralProcessor processor) throws Exception {
+    public static CpuState cpu(CentralProcessor processor, String bindIp) throws Exception {
 
         long[] prevTicks = processor.getSystemCpuLoadTicks();
         // Wait a second...
@@ -76,7 +66,7 @@ public class OshiUtil {
      * @return
      * @throws Exception
      */
-    public static SystemInfo os(CentralProcessor processor, OperatingSystem os) throws Exception {
+    public static SystemInfo os(CentralProcessor processor, OperatingSystem os, String bindIp) throws Exception {
         SystemInfo systemInfo = new SystemInfo();
         systemInfo.setHostname(bindIp);
         systemInfo.setCpuCoreNum(processor.getLogicalProcessorCount() + "");
@@ -96,7 +86,7 @@ public class OshiUtil {
      *
      * @throws Exception
      */
-    public static List<DeskState> file(Timestamp t, FileSystem fileSystem) throws Exception {
+    public static List<DeskState> file(Timestamp t, FileSystem fileSystem, String bindIp) throws Exception {
 
         List<DeskState> list = new ArrayList<DeskState>();
         List<OSFileStore> fsArray = fileSystem.getFileStores();
@@ -129,7 +119,7 @@ public class OshiUtil {
      *
      * @return
      */
-    public static SysLoadState getLoadState(SystemInfo systemInfo, CentralProcessor processor) throws Exception {
+    public static SysLoadState getLoadState(SystemInfo systemInfo, CentralProcessor processor, String bindIp) throws Exception {
         SysLoadState sysLoadState = new SysLoadState();
         if (systemInfo == null) {
             return null;
@@ -183,7 +173,7 @@ public class OshiUtil {
      * @return
      * @throws Exception
      */
-    public static NetIoState net(HardwareAbstractionLayer hal) throws Exception {
+    public static NetIoState net(HardwareAbstractionLayer hal, String bindIp) throws Exception {
         long rxBytesBegin = 0;
         long txBytesBegin = 0;
         long rxPacketsBegin = 0;

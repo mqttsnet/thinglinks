@@ -42,32 +42,6 @@
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
         </dependency>
 
-        <!-- SpringBoot Web -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- Spring Security -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
-        <!-- thinglinks Common Swagger -->
-        <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-swagger</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>
-
-        <!-- thinglinks Common Log -->
-        <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-log</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>
-
         <!-- thinglinks Common Rocketmq -->
         <dependency>
             <groupId>com.mqttsnet</groupId>
@@ -106,6 +80,25 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
+        <!-- thinglinks-api-monitor -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-api-monitor</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- Mysql Connector -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!-- thinglinks Common DataSource -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-datasource</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
 
     </dependencies>
 

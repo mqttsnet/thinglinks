@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mqttsnet.thinglinks.tdengine.mapper.ProductSuperTableCreateOrUpdateMapper">
+
+    <update id="dropDB">
+        drop
+            database if exists thinglinks
+    </update>
+
+    <update id="createDB">
+        create
+            database if not exists thinglinks
+    </update>
+
+    <update id="createSuperTable" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.model.ProductSuperTableModel">
+        create table if not exists thinglinks.${superTableName}(
+
+        <foreach collection="columns" item="value" index="key" separator=",">
+            #{key} #{value}
+        </foreach>
+
+        )
+        tags(
+            <foreach collection="tags" item="value" index="key" separator=",">
+                #{key} #{value}
+            </foreach>
+        )
+    </update>
+</mapper>

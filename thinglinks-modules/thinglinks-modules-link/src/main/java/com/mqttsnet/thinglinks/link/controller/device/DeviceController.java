@@ -34,9 +34,10 @@ public class DeviceController extends BaseController {
      */
     @PreAuthorize(hasPermi = "link:device:list")
     @GetMapping("/list")
-    public TableDataInfo list(Device device) {
+    public TableDataInfo list(Device device)
+    {
         startPage();
-        List<Device> list = deviceService.findByAll(device);
+        List<Device> list = deviceService.selectDeviceList(device);
         return getDataTable(list);
     }
 
@@ -46,8 +47,9 @@ public class DeviceController extends BaseController {
     @PreAuthorize(hasPermi = "link:device:export")
     @Log(title = "设备管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Device device) throws IOException {
-        List<Device> list = deviceService.findByAll(device);
+    public void export(HttpServletResponse response, Device device) throws IOException
+    {
+        List<Device> list = deviceService.selectDeviceList(device);
         ExcelUtil<Device> util = new ExcelUtil<Device>(Device.class);
         util.exportExcel(response, list, "设备管理数据");
     }
@@ -57,8 +59,9 @@ public class DeviceController extends BaseController {
      */
     @PreAuthorize(hasPermi = "link:device:query")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id) {
-        return AjaxResult.success(deviceService.findOneById(id));
+    public AjaxResult getInfo(@PathVariable("id") Long id)
+    {
+        return AjaxResult.success(deviceService.selectDeviceById(id));
     }
 
     /**
@@ -67,8 +70,9 @@ public class DeviceController extends BaseController {
     @PreAuthorize(hasPermi = "link:device:add")
     @Log(title = "设备管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Device device) {
-        return toAjax(deviceService.insert(device));
+    public AjaxResult add(@RequestBody Device device)
+    {
+        return toAjax(deviceService.insertDevice(device));
     }
 
     /**
@@ -77,8 +81,9 @@ public class DeviceController extends BaseController {
     @PreAuthorize(hasPermi = "link:device:edit")
     @Log(title = "设备管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Device device) {
-        return toAjax(deviceService.updateByPrimaryKey(device));
+    public AjaxResult edit(@RequestBody Device device)
+    {
+        return toAjax(deviceService.updateDevice(device));
     }
 
     /**
@@ -87,7 +92,8 @@ public class DeviceController extends BaseController {
     @PreAuthorize(hasPermi = "link:device:remove")
     @Log(title = "设备管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids) {
+    public AjaxResult remove(@PathVariable Long[] ids)
+    {
         return toAjax(deviceService.deleteDeviceByIds(ids));
     }
 
@@ -95,7 +101,6 @@ public class DeviceController extends BaseController {
      * 更新设备在线状态
      */
     @Log(title = "设备管理", businessType = BusinessType.UPDATE)
-    @PutMapping("/updateConnectStatusByClientId")
     public R updateConnectStatusByClientId(@RequestBody Device device) {
         return R.ok(deviceService.updateConnectStatusByClientId(device.getConnectStatus(), device.getClientId()));
     }

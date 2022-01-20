@@ -12,7 +12,6 @@ import java.util.*;
 import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.util.StringUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.springframework.scheduling.support.CronExpression;
 
 /**
  * 时间工具类
@@ -35,6 +34,106 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
             "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM", 
             "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
             "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
+
+
+    /**
+     * 获取当前时间
+     *
+     * @return 当前日期
+     */
+    public static Timestamp getNowTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(YYYY_MM_DD_HH_MM_SS);
+        Timestamp nowTime = Timestamp.valueOf(dateFormat.format(new Date()));
+        return nowTime;
+    }
+
+    /**
+     * 获取当前系统时间.
+     * 默认模板格式yyyy-MM-dd hh:mm:ss.
+     *
+     * @return 当前系统时间
+     */
+    public static String getCurrentDateTime() {
+        return getCurrentDateTime(YYYY_MM_DD_HH_MM_SS);
+    }
+
+    /**
+     * 获取当前系统同期。
+     *
+     * @return 当前系统日期
+     * @author zhenggz 2003-11-09
+     */
+    public static String getCurrentDate() {
+        return getCurrentDateTime(YYYY_MM_DD);
+    }
+
+    /**
+     * 获取当前系统时间.
+     *
+     * @return 当前系统时间
+     */
+    public static String getCurrentDateTime(String pattern) {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+        return sdf.format(cal.getTime());
+    }
+
+    public static Date getDate(String dateStr) throws ParseException {
+        return getDate(dateStr, YYYY_MM_DD_HH_MM_SS);
+    }
+
+    public static Date getDate(String dateStr, String pattern) throws
+            ParseException {
+        Date date = null;
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+        date = dateFormat.parse(dateStr);
+
+        return date;
+    }
+
+    public static String getDateString(Date date) {
+        return getString(date, YYYY_MM_DD);
+    }
+
+    public static String getDateTimeString(Date date) {
+        return getString(date, YYYY_MM_DD_HH_MM_SS);
+    }
+
+    public static String getString(Date date, String pattern) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+        return dateFormat.format(date);
+    }
+
+    public static int getHour(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        return hour;
+    }
+
+    public static long secsOf2Day(String day1, String day2) {
+        try {
+            Date date1 = getDate(day1);
+            Date date2 = getDate(day2);
+            long secs = Math.abs(date1.getTime() - date2.getTime()) / 1000;
+            return secs;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+
+    public static String getDateBefore(String datetimes, int day) {
+        Calendar now = Calendar.getInstance();
+        try {
+            now.setTime(getDate(datetimes));
+        } catch (ParseException e) {
+            System.out.println("时间格式 [ " + datetimes + " ]  无法被解析：" + e.toString());
+            return null;
+        }
+        now.set(Calendar.DATE, now.get(Calendar.DATE) - day);
+        return getString(now.getTime(), YYYY_MM_DD_HH_MM_SS);
+    }
 
     /**
      * 获取当前Date型日期

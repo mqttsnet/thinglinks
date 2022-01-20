@@ -70,9 +70,9 @@
               >
             </p>
             <p>
-              <i class="el-icon-chat-dot-round"></i> 微信：<a
+              <i class="el-icon-chat-dot-round"></i> MQTTSNET团队邮箱：<a
                 href="javascript:;"
-                >/ *xiaonannet</a
+                >/ *mqttsnet@163.com</a
               >
             </p>
           </div>
@@ -84,28 +84,25 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
-            <el-collapse-item title="V1.2.0 - 开发中">
+            <el-collapse-item title="V1.1.0 - 开发中">
               <ol>
                 <li>设备管理页面列表布局调整</li>
-                <li>支持设备注册定位功能（高德地图）</li>
                 <li>支持Td时序数据库保存在线离线记录</li>
+                <li>新增产品模型管理功能</li>
                 <li>优化设备离线动作记录</li>
                 <li>优化设备离线通知</li>
-                <li>其他细节优化</li>
-              </ol>
-            </el-collapse-item>
-            <el-collapse-item title="V1.1.0 - 2021-10-20">
-              <ol>
-                <li>新增MQTT鉴权功能</li>
-                <li>设备管理页面功能开发</li>
-                <li>MQTT集群支持</li>
-                <li>优化设备注册功能</li>
                 <li>其他细节优化</li>
               </ol>
             </el-collapse-item>
             <el-collapse-item title="V1.0.0 - 2021-10-01">
               <ol>
                 <li>ThingLinks微服务系统正式发布</li>
+                <li>设备管理页面功能开发</li>
+                <li>支持设备注册定位功能（高德地图）</li>
+                <li>新增MQTT鉴权功能</li>
+                <li>MQTT集群支持</li>
+                <li>优化设备注册功能</li>
+                <li>其他细节优化</li>
               </ol>
             </el-collapse-item>
           </el-collapse>
@@ -121,7 +118,7 @@ export default {
   data() {
     return {
       // 版本号
-      version: "1.1.0",
+      version: "1.0.0",
     };
   },
   methods: {

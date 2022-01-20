@@ -2,9 +2,12 @@ package com.mqttsnet.thinglinks.collection.common.job;
 
 import cn.hutool.json.JSONObject;
 import com.mqttsnet.thinglinks.collection.common.recketmq.CollectionProducer;
-import com.mqttsnet.thinglinks.collection.entity.*;
-import com.mqttsnet.thinglinks.collection.util.FormatUtil;
+import com.mqttsnet.thinglinks.collection.common.recketmq.MQConfig;
+import com.mqttsnet.thinglinks.collection.mapper.AppInfoMapper;
 import com.mqttsnet.thinglinks.collection.util.OshiUtil;
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.core.utils.FormatUtil;
+import com.mqttsnet.thinglinks.monitor.api.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +16,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OperatingSystem;
+
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * 定时推送服务数据
@@ -34,11 +36,11 @@ public class ScheduledJob {
     @Autowired
     private CollectionProducer collectionProducer;
 
-    @Value("${rocketmq.topic1}")
-    private String topic1;
+    @Autowired
+    private AppInfoMapper appInfoMapper;
 
-    @Value("${rocketmq.topic2}")
-    private String topic2;
+    @Autowired
+    private MQConfig mqConfig;
 
     @Value("${base.bindIp}")
     private String bindIp;
@@ -52,7 +54,8 @@ public class ScheduledJob {
         APP_INFO_LIST_CP.addAll(appInfoList);
         JSONObject jsonObject = new JSONObject();
         LogInfo logInfo = new LogInfo();
-        Timestamp t = FormatUtil.getNowTime();
+        Timestamp t = DateUtils.getNowTime();
+
         logInfo.setHostname(bindIp + "：Agent错误");
         logInfo.setCreateTime(t);
         try {
@@ -60,21 +63,21 @@ public class ScheduledJob {
             HardwareAbstractionLayer hal = si.getHardware();
             OperatingSystem os = si.getOperatingSystem();
             // 操作系统信息
-            systemInfo = OshiUtil.os(hal.getProcessor(), os);
+            systemInfo = OshiUtil.os(hal.getProcessor(), os, bindIp);
             systemInfo.setCreateTime(t);
             // 文件系统信息
-            List<DeskState> deskStateList = OshiUtil.file(t, os.getFileSystem());
+            List<DeskState> deskStateList = OshiUtil.file(t, os.getFileSystem(), bindIp);
             // cpu信息
-            CpuState cpuState = OshiUtil.cpu(hal.getProcessor());
+            CpuState cpuState = OshiUtil.cpu(hal.getProcessor(), bindIp);
             cpuState.setCreateTime(t);
             // 内存信息
-            MemState memState = OshiUtil.memory(hal.getMemory());
+            MemState memState = OshiUtil.memory(hal.getMemory(), bindIp);
             memState.setCreateTime(t);
             // 网络流量信息
-            NetIoState netIoState = OshiUtil.net(hal);
+            NetIoState netIoState = OshiUtil.net(hal, bindIp);
             netIoState.setCreateTime(t);
             // 系统负载信息
-            SysLoadState sysLoadState = OshiUtil.getLoadState(systemInfo, hal.getProcessor());
+            SysLoadState sysLoadState = OshiUtil.getLoadState(systemInfo, hal.getProcessor(), bindIp);
             if (sysLoadState != null) {
                 sysLoadState.setCreateTime(t);
             }
@@ -115,7 +118,7 @@ public class ScheduledJob {
                     appInfo.setHostname(bindIp);
                     appInfo.setCreateTime(t);
                     appInfo.setState("1");
-                    String pid = FormatUtil.getPidByFile(appInfo);
+                    String pid = FormatUtil.getPidByFile(appInfo.getAppType(), appInfo.getAppPid());
                     if (StringUtils.isEmpty(pid)) {
                         continue;
                     }
@@ -140,7 +143,7 @@ public class ScheduledJob {
             if (!StringUtils.isEmpty(logInfo.getInfoContent())) {
                 jsonObject.put("logInfo", logInfo);
             }
-            collectionProducer.senJsonObject(topic2, jsonObject.toString());
+            collectionProducer.senJsonObject(mqConfig.getSystemTopic(), jsonObject.toString());
         }
     }
 
@@ -152,21 +155,17 @@ public class ScheduledJob {
     public void appInfoListTask() {
         JSONObject jsonObject = new JSONObject();
         LogInfo logInfo = new LogInfo();
-        Timestamp t = FormatUtil.getNowTime();
+        Timestamp t = DateUtils.getNowTime();
         logInfo.setHostname(bindIp + "：Agent获取进程列表错误");
         logInfo.setCreateTime(t);
         try {
             JSONObject paramsJson = new JSONObject();
             paramsJson.put("hostname", bindIp);
-            collectionProducer.senJsonObject(topic1, jsonObject.toString());
-//            String resultJson = restUtil.post(commonConfig.getServerUrl() + "/appInfo/agentList", paramsJson);
-//            if (resultJson != null) {
-//                JSONArray resultArray = JSONUtil.parseArray(resultJson);
-//                appInfoList.clear();
-//                if (resultArray.size() > 0) {
-//                    appInfoList = JSONUtil.toList(resultArray, AppInfo.class);
-//                }
-//            }
+            List<AppInfo> list = appInfoMapper.selectByParams((Map<String, Object>) new HashMap<>().put("hostname", bindIp));
+            if (list != null && list.size() > 0) {
+                appInfoList.clear();
+                appInfoList = list;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             logInfo.setInfoContent(e.toString());
@@ -174,8 +173,7 @@ public class ScheduledJob {
             if (!StringUtils.isEmpty(logInfo.getInfoContent())) {
                 jsonObject.put("logInfo", logInfo);
             }
-            collectionProducer.senJsonObject(topic2, jsonObject.toString());
-//            restUtil.post(commonConfig.getServerUrl() + "/agent/minTask", jsonObject);
+            collectionProducer.senJsonObject(mqConfig.getSystemTopic(), jsonObject.toString());
         }
     }
 }
