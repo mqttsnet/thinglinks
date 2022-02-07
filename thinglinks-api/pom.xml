@@ -13,6 +13,7 @@
         <module>thinglinks-api-link</module>
         <module>thinglinks-api-monitor</module>
         <module>thinglinks-api-tdengine</module>
+        <module>thinglinks-api-broker</module>
     </modules>
 
     <artifactId>thinglinks-api</artifactId>

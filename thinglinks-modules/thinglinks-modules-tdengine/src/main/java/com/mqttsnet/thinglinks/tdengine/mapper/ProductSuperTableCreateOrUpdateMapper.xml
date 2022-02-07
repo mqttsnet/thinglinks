@@ -13,7 +13,7 @@
             database if not exists thinglinks
     </update>
 
-    <update id="createSuperTable" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.model.ProductSuperTableModel">
+    <update id="createSuperTable" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.ProductSuperTableModel">
         create table if not exists thinglinks.${superTableName}(
 
         <foreach collection="columns" item="value" index="key" separator=",">

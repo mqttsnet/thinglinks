@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">ThingLinks物联网一体化平台</h3>
+      <h3 class="title">小南网络科技</h3>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
@@ -50,7 +50,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2021-2025 ThingLinks All Rights Reserved.</span>
+      <span>Copyright © 2021-2025 ThingLinks All Rights Reserved.<a target="_blank" rel="noopener noreferrer" href="http://beian.miit.gov.cn">豫ICP备2021021629号</a></span>
     </div>
   </div>
 </template>

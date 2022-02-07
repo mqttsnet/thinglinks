@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.tdengine.service.impl;
 
-import com.mqttsnet.thinglinks.tdengine.api.domain.model.ProductSuperTableModel;
+import com.mqttsnet.thinglinks.tdengine.api.domain.ProductSuperTableModel;
 import com.mqttsnet.thinglinks.tdengine.mapper.ProductSuperTableCreateOrUpdateMapper;
 import com.mqttsnet.thinglinks.tdengine.service.ProductSuperTableCreateOrUpdateService;
 import lombok.extern.slf4j.Slf4j;

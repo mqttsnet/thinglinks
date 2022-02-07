@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.tdengine.service;
 
 
-import com.mqttsnet.thinglinks.tdengine.api.domain.model.Weather;
+import com.mqttsnet.thinglinks.tdengine.api.domain.Weather;
 
 import java.util.List;
 
