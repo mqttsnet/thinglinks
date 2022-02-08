@@ -17,11 +17,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <spring-boot.version>2.6.2</spring-boot.version>
-        <spring-cloud.version>2021.0.0</spring-cloud.version>
+        <spring-boot.version>2.5.6</spring-boot.version>
+        <spring-cloud.version>2020.0.4</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
         <alibaba.nacos.version>2.0.3</alibaba.nacos.version>
-        <spring-boot-admin.version>2.6.0</spring-boot-admin.version>
+        <spring-boot-admin.version>2.5.2</spring-boot-admin.version>
         <spring-boot.mybatis>2.2.0</spring-boot.mybatis>
         <swagger.fox.version>3.0.0</swagger.fox.version>
         <swagger.core.version>1.6.2</swagger.core.version>
@@ -36,7 +36,7 @@
         <fastjson.version>1.2.79</fastjson.version>
         <minio.version>8.2.2</minio.version>
         <poi.version>4.1.2</poi.version>
-        <common-pool.version>2.10.0</common-pool.version>
+        <common-pool.version>2.11.1</common-pool.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <!--lib打包目录-->
         <mqtts.lib.package.url>D:\thinglinks-server\lib\</mqtts.lib.package.url>

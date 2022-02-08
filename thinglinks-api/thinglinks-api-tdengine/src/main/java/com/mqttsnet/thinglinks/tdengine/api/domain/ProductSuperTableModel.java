@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.tdengine.api.domain.model;
+package com.mqttsnet.thinglinks.tdengine.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

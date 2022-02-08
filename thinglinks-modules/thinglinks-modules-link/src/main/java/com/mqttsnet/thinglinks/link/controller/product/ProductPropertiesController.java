@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 /**
 * (product_properties)表控制层
 *
-* @author xxxxx
+* @author thinglinks
 */
 @RestController
 @RequestMapping("product_properties")

@@ -55,6 +55,12 @@
             <version>${swagger.fox.version}</version>
         </dependency>
 
+        <!-- thinglinks Common Core -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-core</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
 
         <!-- thinglinks Common Log -->
         <dependency>

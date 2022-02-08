@@ -1,8 +1,14 @@
 package com.mqttsnet.thinglinks.link.service.product;
 
 import java.util.List;
+
+import com.alibaba.fastjson.JSONObject;
+import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
-    /**
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+/**
 
 * @Description:    java类作用描述
 * @Author:         ShiHuan Sun
@@ -39,5 +45,21 @@ public interface ProductService{
     int updateBatchSelective(List<Product> list);
 
     int batchInsert(List<Product> list);
+
+    /**
+     * 产品模型导入
+     * @param file
+     * @return AjaxResult
+     * @throws Exception
+     */
+    AjaxResult importProductJson(MultipartFile file) throws Exception;
+
+    /**
+     * 新增产品模型
+     *
+     * @param content 产品模型
+     * @return 结果
+     */
+    AjaxResult insertProduct(JSONObject content)throws Exception;
 
 }

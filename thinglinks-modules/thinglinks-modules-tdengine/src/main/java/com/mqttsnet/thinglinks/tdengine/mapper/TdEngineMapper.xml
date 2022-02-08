@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mqttsnet.thinglinks.tdengine.mapper.TdEngineMapper">
+
+    <update id="createDatabase" parameterType="String">
+        create database if not exists #{databaseName}
+    </update>
+
+    <update id="createSuperTable">
+        create table if not exists #{databaseName}.#{superTableName}
+        <foreach item="item" collection="schemaFields" separator=","
+                 open="(" close=")" index="">
+            <if test="item.fieldName != null || item.fieldName != ''">
+                #{item.fieldName}
+            </if>
+            <if test="item.dataType != null || item.dataType != ''">
+                #{item.dataType}
+            </if>
+            <if test="item.size != null">
+                (#{item.size})
+            </if>
+        </foreach>
+        tags
+        <!--tdEngine不支持动态tags里的数据类型，只能使用choose标签比对-->
+        <foreach item="item" collection="tagsFields" separator=","
+                 open="(" close=")" index="">
+            <if test="item.fieldName != null || item.fieldName != ''">
+                #{item.fieldName}
+            </if>
+            <if test="item.dataType != null || item.dataType != ''">
+                <choose>
+                    <when test="item.dataType == 'timestamp'">
+                        timestamp
+                    </when>
+                    <when test="item.dataType == 'tinyint'">
+                        tinyint
+                    </when>
+                    <when test="item.dataType == 'smallint'">
+                        smallint
+                    </when>
+                    <when test="item.dataType == 'int'">
+                        int
+                    </when>
+                    <when test="item.dataType == 'bigint'">
+                        bigint
+                    </when>
+                    <when test="item.dataType == 'float'">
+                        float
+                    </when>
+                    <when test="item.dataType == 'double'">
+                        double
+                    </when>
+                    <when test="item.dataType == 'binary'">
+                        binary
+                    </when>
+                    <when test="item.dataType == 'nchar'">
+                        nchar
+                    </when>
+                    <when test="item.dataType == 'bool'">
+                        bool
+                    </when>
+                    <when test="item.dataType == 'json'">
+                        json
+                    </when>
+                </choose>
+            </if>
+            <if test="item.size != null">
+                (#{item.size})
+            </if>
+        </foreach>
+    </update>
+
+    <update id="createTable">
+        create table
+        if not exists #{databaseName}.#{tableName}
+        using #{databaseName}.#{superTableName}
+        tags
+        <foreach item="item" collection="tagsFieldValues" separator=","
+                 open="(" close=")" index="">
+            #{item.fieldValue}
+        </foreach>
+    </update>
+
+    <insert id="insertData">
+        insert into #{databaseName}.#{tableName}
+        <foreach item="item" collection="tagsFieldValues" separator=","
+                 open="(" close=")" index="">
+            #{item.fieldName}
+        </foreach>
+        values
+        <foreach item="item" collection="tagsFieldValues" separator=","
+                 open="(" close=")" index="">
+            #{item.fieldValue}
+        </foreach>
+    </insert>
+
+    <select id="selectByTimestamp" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto" resultType="Map">
+        select * from #{dataBaseName}.#{tableName}
+        <!--查询这里不能使用#{}占位符的方式，使用这种方式，tdEngine不识别为列名，只能使用${}占位的方式-->
+        <!--因为tdEngine引擎一次只执行一条sql，所以有效预防了sql的注入，且该服务该接口为内部调用，所以可以使用${}-->
+        where ${fieldName}
+        between #{startTime} and #{endTime}
+    </select>
+
+    <update id="addColumnForSuperTable">
+        ALTER STABLE #{superTableName} ADD COLUMN
+        <if test="fieldsVo.fieldName != null || fieldsVo.fieldName != ''">
+            #{fieldsVo.fieldName}
+        </if>
+        <if test="fieldsVo.dataType != null || fieldsVo.dataType != ''">
+            #{fieldsVo.dataType}
+        </if>
+        <if test="fieldsVo.size != null">
+            (#{fieldsVo.size})
+        </if>
+    </update>
+
+</mapper>

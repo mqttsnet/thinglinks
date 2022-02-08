@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.tdengine.service.impl;
 
-import com.mqttsnet.thinglinks.tdengine.api.domain.model.Weather;
+import com.mqttsnet.thinglinks.tdengine.api.domain.Weather;
 import com.mqttsnet.thinglinks.tdengine.mapper.WeatherMapper;
 import com.mqttsnet.thinglinks.tdengine.service.WeatherService;
 import lombok.extern.slf4j.Slf4j;

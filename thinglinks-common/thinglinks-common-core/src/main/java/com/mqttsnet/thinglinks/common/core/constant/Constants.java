@@ -116,4 +116,14 @@ public class Constants
      * 资源映射路径 前缀
      */
     public static final String RESOURCE_PREFIX = "/profile";
+
+    /**
+     * 重复提交token key
+     */
+    public static final String IDEMPOTENT_TOKEN_NAME = "idempotentToken";
+
+    /**
+     * 文件上传类型
+     */
+    public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 }

@@ -104,11 +104,11 @@
         </dependency>
 
         <!-- thinglinks Common job -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.mqttsnet</groupId>
             <artifactId>thinglinks-common-job</artifactId>
             <version>${thinglinks.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!-- thinglinks Common kafka -->
         <dependency>
