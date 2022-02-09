@@ -733,4 +733,100 @@
       </if>
     </trim>
   </insert>
+
+  <select id="selectProductList" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from product
+    <where>
+      <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
+      <if test="manufacturerId != null  and manufacturerId != ''"> and manufacturer_id = #{manufacturerId}</if>
+      <if test="manufacturerName != null  and manufacturerName != ''"> and manufacturer_name like concat('%', #{manufacturerName}, '%')</if>
+      <if test="model != null  and model != ''"> and model = #{model}</if>
+    </where>
+  </select>
+
+  <select id="selectProductById" parameterType="Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from product
+    where id = #{id}
+  </select>
+
+  <insert id="insertProduct" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product" useGeneratedKeys="true" keyProperty="id">
+    insert into product
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="appId != null and appId != ''">app_id,</if>
+      <if test="templateId != null">template_id,</if>
+      <if test="productName != null and productName != ''">product_name,</if>
+      <if test="productIdentification != null and productIdentification != ''">product_identification,</if>
+      <if test="productType != null and productType != ''">product_type,</if>
+      <if test="manufacturerId != null and manufacturerId != ''">manufacturer_id,</if>
+      <if test="manufacturerName != null and manufacturerName != ''">manufacturer_name,</if>
+      <if test="model != null and model != ''">model,</if>
+      <if test="dataFormat != null and dataFormat != ''">data_format,</if>
+      <if test="deviceType != null and deviceType != ''">device_type,</if>
+      <if test="protocolType != null and protocolType != ''">protocol_type,</if>
+      <if test="status != null and status != ''">status,</if>
+      <if test="remark != null">remark,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="appId != null and appId != ''">#{appId},</if>
+      <if test="templateId != null">#{templateId},</if>
+      <if test="productName != null and productName != ''">#{productName},</if>
+      <if test="productIdentification != null and productIdentification != ''">#{productIdentification},</if>
+      <if test="productType != null and productType != ''">#{productType},</if>
+      <if test="manufacturerId != null and manufacturerId != ''">#{manufacturerId},</if>
+      <if test="manufacturerName != null and manufacturerName != ''">#{manufacturerName},</if>
+      <if test="model != null and model != ''">#{model},</if>
+      <if test="dataFormat != null and dataFormat != ''">#{dataFormat},</if>
+      <if test="deviceType != null and deviceType != ''">#{deviceType},</if>
+      <if test="protocolType != null and protocolType != ''">#{protocolType},</if>
+      <if test="status != null and status != ''">#{status},</if>
+      <if test="remark != null">#{remark},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+    </trim>
+  </insert>
+
+  <update id="updateProduct" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product">
+    update product
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="appId != null and appId != ''">app_id = #{appId},</if>
+      <if test="templateId != null">template_id = #{templateId},</if>
+      <if test="productName != null and productName != ''">product_name = #{productName},</if>
+      <if test="productIdentification != null and productIdentification != ''">product_identification = #{productIdentification},</if>
+      <if test="productType != null and productType != ''">product_type = #{productType},</if>
+      <if test="manufacturerId != null and manufacturerId != ''">manufacturer_id = #{manufacturerId},</if>
+      <if test="manufacturerName != null and manufacturerName != ''">manufacturer_name = #{manufacturerName},</if>
+      <if test="model != null and model != ''">model = #{model},</if>
+      <if test="dataFormat != null and dataFormat != ''">data_format = #{dataFormat},</if>
+      <if test="deviceType != null and deviceType != ''">device_type = #{deviceType},</if>
+      <if test="protocolType != null and protocolType != ''">protocol_type = #{protocolType},</if>
+      <if test="status != null and status != ''">status = #{status},</if>
+      <if test="remark != null">remark = #{remark},</if>
+      <if test="createBy != null">create_by = #{createBy},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+      <if test="updateBy != null">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+    </trim>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteProductById" parameterType="Long">
+    delete from product where id = #{id}
+  </delete>
+
+  <delete id="deleteProductByIds" parameterType="String">
+    delete from product where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

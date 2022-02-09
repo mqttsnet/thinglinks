@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">小南网络科技</h3>
+      <h3 class="title">ThingLinks物联网一体化平台</h3>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
@@ -67,8 +67,8 @@ export default {
       codeUrl: "",
       cookiePassword: "",
       loginForm: {
-        username: "thinglinks",
-        password: "123456",
+        username: "",
+        password: "",
         rememberMe: false,
         code: "",
         uuid: ""
