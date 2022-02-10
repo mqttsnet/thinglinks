@@ -39,7 +39,7 @@
         <common-pool.version>2.11.1</common-pool.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <!--lib打包目录-->
-        <mqtts.lib.package.url>D:\thinglinks-server\lib\</mqtts.lib.package.url>
+        <thinglinks.lib.package.url>D:\thinglinks-server\lib\</thinglinks.lib.package.url>
         <!-- 文件拷贝时的编码 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
