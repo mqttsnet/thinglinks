@@ -225,6 +225,7 @@
       </if>
       device_identification,
       action_type,
+      message,
       `status`,
       create_time,
     </trim>
@@ -235,6 +236,7 @@
       </if>
       #{deviceIdentification,jdbcType=VARCHAR},
       #{actionType,jdbcType=VARCHAR},
+      #{message,jdbcType=LONGVARCHAR},
       #{status,jdbcType=VARCHAR},
       #{createTime,jdbcType=TIMESTAMP},
     </trim>
@@ -245,6 +247,7 @@
       </if>
       device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       action_type = #{actionType,jdbcType=VARCHAR},
+      message = #{message,jdbcType=LONGVARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
     </trim>
