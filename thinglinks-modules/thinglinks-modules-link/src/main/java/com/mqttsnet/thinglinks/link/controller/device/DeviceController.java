@@ -101,6 +101,7 @@ public class DeviceController extends BaseController {
      * 更新设备在线状态
      */
     @Log(title = "设备管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/updateConnectStatusByClientId")
     public R updateConnectStatusByClientId(@RequestBody Device device) {
         return R.ok(deviceService.updateConnectStatusByClientId(device.getConnectStatus(), device.getClientId()));
     }
