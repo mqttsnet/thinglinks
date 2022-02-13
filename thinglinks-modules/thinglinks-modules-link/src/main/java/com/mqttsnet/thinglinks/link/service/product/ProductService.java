@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,12 +55,53 @@ public interface ProductService{
      */
     AjaxResult importProductJson(MultipartFile file) throws Exception;
 
+
+
     /**
-     * 新增产品模型
+     * 查询产品管理
      *
-     * @param content 产品模型
+     * @param id 产品管理主键
+     * @return 产品管理
+     */
+    public Product selectProductById(Long id);
+
+    /**
+     * 查询产品管理列表
+     *
+     * @param product 产品管理
+     * @return 产品管理集合
+     */
+    public List<Product> selectProductList(Product product);
+
+    /**
+     * 新增产品管理
+     *
+     * @param product 产品管理
      * @return 结果
      */
-    AjaxResult insertProduct(JSONObject content)throws Exception;
+    public int insertProduct(Product product);
 
+    /**
+     * 修改产品管理
+     *
+     * @param product 产品管理
+     * @return 结果
+     */
+    public int updateProduct(Product product);
+
+    /**
+     * 批量删除产品管理
+     *
+     * @param ids 需要删除的产品管理主键集合
+     * @return 结果
+     */
+    public int deleteProductByIds(Long[] ids);
+
+    /**
+     * 删除产品管理信息
+     *
+     * @param id 产品管理主键
+     * @return 结果
+     */
+    public int deleteProductById(Long id);
 }

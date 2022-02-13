@@ -4,8 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
+import com.mqttsnet.thinglinks.common.security.service.TokenService;
+import com.mqttsnet.thinglinks.system.api.domain.SysUser;
+import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.BufferedReader;
@@ -27,7 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
 
-* @Description:    java类作用描述
+* @Description:    产品模型业务层
 * @Author:         ShiHuan Sun
 * @E-mail:         13733918655@163.com
 * @Website:        http://thinglinks.mqttsnet.com
@@ -44,6 +49,8 @@ public class ProductServiceImpl implements ProductService{
 
     @Resource
     private ProductMapper productMapper;
+    @Autowired
+    private TokenService tokenService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -52,21 +59,37 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public int insert(Product record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setCreateBy(sysUser.getUserName());
+        record.setCreateTime(DateUtils.getNowDate());
         return productMapper.insert(record);
     }
 
     @Override
     public int insertOrUpdate(Product record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setCreateBy(sysUser.getUserName());
+        record.setCreateTime(DateUtils.getNowDate());
         return productMapper.insertOrUpdate(record);
     }
 
     @Override
     public int insertOrUpdateSelective(Product record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setCreateBy(sysUser.getUserName());
+        record.setCreateTime(DateUtils.getNowDate());
         return productMapper.insertOrUpdateSelective(record);
     }
 
     @Override
     public int insertSelective(Product record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setCreateBy(sysUser.getUserName());
+        record.setCreateTime(DateUtils.getNowDate());
         return productMapper.insertSelective(record);
     }
 
@@ -77,11 +100,19 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public int updateByPrimaryKeySelective(Product record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setUpdateTime(DateUtils.getNowDate());
+        record.setUpdateBy(sysUser.getUserName());
         return productMapper.updateByPrimaryKeySelective(record);
     }
 
     @Override
     public int updateByPrimaryKey(Product record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setUpdateTime(DateUtils.getNowDate());
+        record.setUpdateBy(sysUser.getUserName());
         return productMapper.updateByPrimaryKey(record);
     }
 
@@ -126,7 +157,7 @@ public class ProductServiceImpl implements ProductService{
                     while ((line = reader.readLine()) != null) {
                         sb.append(line);
                     }
-                    return insertProduct(JSONObject.parseObject(sb.toString()));
+                    return importProductJsonData(JSONObject.parseObject(sb.toString()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -167,7 +198,7 @@ public class ProductServiceImpl implements ProductService{
             while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
-            ajaxResult = insertProduct(JSONObject.parseObject(sb.toString()));
+            ajaxResult = importProductJsonData(JSONObject.parseObject(sb.toString()));
         }
         //一定记得关闭流
         zipInputStream.closeEntry();
@@ -181,9 +212,8 @@ public class ProductServiceImpl implements ProductService{
      * @param content 产品模型
      * @return 结果
      */
-    @Override
     @Transactional
-    public AjaxResult insertProduct(JSONObject content) throws Exception{
+    public AjaxResult importProductJsonData(JSONObject content) throws Exception{
         //分析json取值
         String manufacturerId = content.getString("manufacturerId");
         String manufacturerName = content.getString("manufacturerName");
@@ -194,14 +224,14 @@ public class ProductServiceImpl implements ProductService{
         String productSerial = content.getString("productSerial");
         String version = content.getString("version");
         //效验数据是否存在
-        Product query = new Product();
+       /* Product query = new Product();
         query.setUserName(loginUser.getUsername());
         query.setModel(model);
         query.setManufacturerId(manufacturerId);
         List<Product> getList = productMapper.selectListByProduct(query);
         if (getList != null && getList.size()>0){
             return AjaxResult.error("产品模型已上传");
-        }
+        }*/
         //验证properties数据格式（int、decimal、string、bool、dateTime、jsonObject）
         List read1 = JsonPath.read(content.toJSONString(), "$..properties[*].datatype");
         List read2 = JsonPath.read(content.toJSONString(), "$..properties[*].description");
@@ -230,7 +260,7 @@ public class ProductServiceImpl implements ProductService{
             return AjaxResult.error("Invalid product: Invalid dataType,must be one of [int、decimal、string、bool、dateTime、jsonObject]");
         }
         //添加物模型数据
-        Product product = new Product();
+        /*Product product = new Product();
         product.setProductName(productName);
         product.setManufacturerId(manufacturerId);
         product.setManufacturerName(manufacturerName);
@@ -275,8 +305,87 @@ public class ProductServiceImpl implements ProductService{
                 propertiesList.add(properties);
             }
             productServicesMapper.batchProductPropertis(propertiesList);
-        }
+        }*/
         return AjaxResult.success("操作成功");
     }
 
+    /**
+     * 查询产品管理
+     *
+     * @param id 产品管理主键
+     * @return 产品管理
+     */
+    @Override
+    public Product selectProductById(Long id)
+    {
+        return productMapper.selectProductById(id);
+    }
+
+    /**
+     * 查询产品管理列表
+     *
+     * @param product 产品管理
+     * @return 产品管理
+     */
+    @Override
+    public List<Product> selectProductList(Product product)
+    {
+        return productMapper.selectProductList(product);
+    }
+
+    /**
+     * 新增产品管理
+     *
+     * @param product 产品管理
+     * @return 结果
+     */
+    @Override
+    public int insertProduct(Product product)
+    {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        product.setCreateBy(sysUser.getUserName());
+        product.setCreateTime(DateUtils.getNowDate());
+        return productMapper.insertProduct(product);
+    }
+
+    /**
+     * 修改产品管理
+     *
+     * @param product 产品管理
+     * @return 结果
+     */
+    @Override
+    public int updateProduct(Product product)
+    {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        product.setUpdateTime(DateUtils.getNowDate());
+        product.setUpdateBy(sysUser.getUserName());
+        return productMapper.updateProduct(product);
+    }
+
+    /**
+     * 批量删除产品管理
+     *
+     * @param ids 需要删除的产品管理主键
+     * @return 结果
+     */
+    @Override
+    public int deleteProductByIds(Long[] ids)
+    {
+        return productMapper.deleteProductByIds(ids);
+    }
+
+    /**
+     * 删除产品管理信息
+     *
+     * @param id 产品管理主键
+     * @return 结果
+     */
+    @Override
+    public int deleteProductById(Long id)
+    {
+        return productMapper.deleteProductById(id);
+    }
 }

@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * @Description: Broker推送设备消息降级处理
  * @Author: ShiHuan SUN
@@ -28,6 +30,16 @@ public class RemotePublishActorFallbackFactory implements FallbackFactory<Remote
         return new RemotePublishActorService() {
 
 
+            /**
+             * 通知ThingLins MQTT Broker推送消息
+             *
+             * @param params
+             * @return
+             */
+            @Override
+            public R sendMessage(Map<String, String> params) {
+                return R.fail("通知ThingLins MQTT Broker推送消息失败:" + throwable.getMessage());
+            }
         };
     }
 }

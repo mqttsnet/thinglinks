@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.api.domain.product.entity;
 
+import com.mqttsnet.thinglinks.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -24,7 +25,7 @@ import lombok.Data;
     */
 @ApiModel(value="产品模型")
 @Data
-public class Product implements Serializable {
+public class Product extends BaseEntity implements Serializable {
     /**
     * id
     */
@@ -113,30 +114,6 @@ public class Product implements Serializable {
     */
     @ApiModelProperty(value="产品描述")
     private String remark;
-
-    /**
-    * 创建者
-    */
-    @ApiModelProperty(value="创建者")
-    private String createBy;
-
-    /**
-    * 创建时间
-    */
-    @ApiModelProperty(value="创建时间")
-    private LocalDateTime createTime;
-
-    /**
-    * 更新者
-    */
-    @ApiModelProperty(value="更新者")
-    private String updateBy;
-
-    /**
-    * 更新时间
-    */
-    @ApiModelProperty(value="更新时间")
-    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 }

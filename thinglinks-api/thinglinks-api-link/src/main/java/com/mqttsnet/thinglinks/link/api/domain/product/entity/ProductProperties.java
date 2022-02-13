@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.api.domain.product.entity;
 
+import com.mqttsnet.thinglinks.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
@@ -24,7 +25,7 @@ import lombok.Data;
     */
 @ApiModel(value="产品模型服务属性表")
 @Data
-public class ProductProperties implements Serializable {
+public class ProductProperties extends BaseEntity implements Serializable {
     /**
     * 属性id
     */
@@ -122,29 +123,6 @@ public class ProductProperties implements Serializable {
     @ApiModelProperty(value="指示单位。支持长度不超过50。,取值根据参数确定，如：,•温度单位：“C”或“K”,•百分比单位：“%”,•压强单位：“Pa”或“kPa”,")
     private String unit;
 
-    /**
-    * 创建者
-    */
-    @ApiModelProperty(value="创建者")
-    private String createBy;
-
-    /**
-    * 创建时间
-    */
-    @ApiModelProperty(value="创建时间")
-    private LocalDateTime createTime;
-
-    /**
-    * 更新者
-    */
-    @ApiModelProperty(value="更新者")
-    private String updateBy;
-
-    /**
-    * 更新时间
-    */
-    @ApiModelProperty(value="更新时间")
-    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 }
