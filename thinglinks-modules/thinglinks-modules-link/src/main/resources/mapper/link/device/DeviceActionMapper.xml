@@ -21,7 +21,7 @@
   </sql>
   <sql id="Blob_Column_List">
     <!--@mbg.generated-->
-    message
+    `message`
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
     <!--@mbg.generated-->
@@ -37,10 +37,10 @@
     delete from device_action
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="i  d" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device_action (device_identification, action_type, 
-      `status`, create_time, message
+      `status`, create_time, `message`
       )
     values (#{deviceIdentification,jdbcType=VARCHAR}, #{actionType,jdbcType=VARCHAR}, 
       #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{message,jdbcType=LONGVARCHAR}
@@ -63,7 +63,7 @@
         create_time,
       </if>
       <if test="message != null and message != ''">
-        message,
+        `message`,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -101,7 +101,7 @@
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="message != null and message != ''">
-        message = #{message,jdbcType=LONGVARCHAR},
+        `message` = #{message,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -113,7 +113,7 @@
       action_type = #{actionType,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      message = #{message,jdbcType=LONGVARCHAR}
+    `message` = #{message,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction">
@@ -122,7 +122,8 @@
     set device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       action_type = #{actionType,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+    `message` = #{message,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateBatch" parameterType="java.util.List">
@@ -149,7 +150,7 @@
           when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
         </foreach>
       </trim>
-      <trim prefix="message = case" suffix="end,">
+      <trim prefix="`message` = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           when id = #{item.id,jdbcType=BIGINT} then #{item.message,jdbcType=LONGVARCHAR}
         </foreach>
@@ -192,7 +193,7 @@
           </if>
         </foreach>
       </trim>
-      <trim prefix="message = case" suffix="end,">
+      <trim prefix="`message` = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           <if test="item.message != null">
              when id = #{item.id,jdbcType=BIGINT} then #{item.message,jdbcType=LONGVARCHAR}
@@ -208,7 +209,7 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device_action
-    (device_identification, action_type, `status`, create_time, message)
+    (device_identification, action_type, `status`, create_time, `message`)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.deviceIdentification,jdbcType=VARCHAR}, #{item.actionType,jdbcType=VARCHAR}, 
@@ -225,7 +226,7 @@
       </if>
       device_identification,
       action_type,
-      message,
+      `message`,
       `status`,
       create_time,
     </trim>
@@ -247,7 +248,7 @@
       </if>
       device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       action_type = #{actionType,jdbcType=VARCHAR},
-      message = #{message,jdbcType=LONGVARCHAR},
+      `message` = #{message,jdbcType=LONGVARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
     </trim>
@@ -263,7 +264,7 @@
       action_type,
       `status`,
       create_time,
-      message,
+      `message`,
     </trim>
     values
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -285,7 +286,7 @@
       action_type = #{actionType,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      message = #{message,jdbcType=LONGVARCHAR},
+      `message` = #{message,jdbcType=LONGVARCHAR},
     </trim>
   </insert>
   <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction" useGeneratedKeys="true">
@@ -308,7 +309,7 @@
         create_time,
       </if>
       <if test="message != null and message != ''">
-        message,
+        `message`,
       </if>
     </trim>
     values
@@ -350,7 +351,7 @@
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="message != null and message != ''">
-        message = #{message,jdbcType=LONGVARCHAR},
+        `message` = #{message,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>

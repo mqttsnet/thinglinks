@@ -114,7 +114,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         deviceAction.setStatus("success");
         deviceAction.setMessage("Device Connection");
         deviceAction.setCreateTime(LocalDateTimeUtil.now());
-        deviceActionMapper.insertOrUpdate(deviceAction);
+        deviceActionMapper.insert(deviceAction);
     }
 
     /**
@@ -134,7 +134,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         deviceAction.setStatus(i != 0 ? "success" : "failure");
         deviceAction.setMessage("Device Disconnection");
         deviceAction.setCreateTime(LocalDateTimeUtil.now());
-        deviceActionMapper.insertOrUpdate(deviceAction);
+        deviceActionMapper.insert(deviceAction);
     }
 
 }

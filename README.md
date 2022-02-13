@@ -162,4 +162,6 @@ com.mqttsnet.thinglinks
 
 ## 交流社区
 
-![](doc/imgs/zsxq.jpg)
+![image](doc/imgs/zsxq.jpg)
+
+![image](doc/imgs/qq.jpg)
