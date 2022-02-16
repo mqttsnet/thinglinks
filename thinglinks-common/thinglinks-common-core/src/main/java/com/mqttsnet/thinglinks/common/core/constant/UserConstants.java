@@ -15,7 +15,7 @@ public class UserConstants
     /**
      * 平台默认管理员
      */
-    public static final String MQTTS = "mqtts";
+    public static final String THINGLINKS = "thinglinks";
 
     /**
      * 平台内系统用户的唯一标志

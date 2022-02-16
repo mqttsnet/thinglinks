@@ -16,7 +16,7 @@
 
     <properties>
         <!--打包目录-->
-        <thinglinks.package.url>D:\thinglinks-server\gateway</thinglinks.package.url>
+        <thinglinks.package.url>${project.parent.basedir}\doc\dockerfile\thinglinks\gateway\jar</thinglinks.package.url>
         <!--启动类目录-->
         <thinglinks.mainClass.url>com.mqttsnet.thinglinks.gateway.ThingLinksGatewayApplication</thinglinks.mainClass.url>
     </properties>

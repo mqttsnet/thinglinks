@@ -37,7 +37,7 @@
     delete from device_action
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="i  d" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device_action (device_identification, action_type, 
       `status`, create_time, `message`

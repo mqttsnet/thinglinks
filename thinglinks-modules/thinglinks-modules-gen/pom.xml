@@ -17,7 +17,7 @@
 
     <properties>
         <!--打包目录-->
-        <thinglinks.package.url>D:\thinglinks-server\gen</thinglinks.package.url>
+        <thinglinks.package.url>${project.parent.parent.basedir}\doc\dockerfile\thinglinks\gen\jar</thinglinks.package.url>
         <!--启动类目录-->
         <thinglinks.mainClass.url>com.mqttsnet.thinglinks.gen.ThingLinksGenApplication</thinglinks.mainClass.url>
     </properties>

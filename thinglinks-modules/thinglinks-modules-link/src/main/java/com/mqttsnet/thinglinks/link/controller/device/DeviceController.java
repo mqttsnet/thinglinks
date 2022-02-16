@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -67,6 +68,7 @@ public class DeviceController extends BaseController {
     /**
      * 新增设备管理
      */
+    @NoRepeatSubmit
     @PreAuthorize(hasPermi = "link:device:add")
     @Log(title = "设备管理", businessType = BusinessType.INSERT)
     @PostMapping
@@ -78,6 +80,7 @@ public class DeviceController extends BaseController {
     /**
      * 修改设备管理
      */
+    @NoRepeatSubmit
     @PreAuthorize(hasPermi = "link:device:edit")
     @Log(title = "设备管理", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -100,7 +103,6 @@ public class DeviceController extends BaseController {
     /**
      * 更新设备在线状态
      */
-    @Log(title = "设备管理", businessType = BusinessType.UPDATE)
     @PutMapping("/updateConnectStatusByClientId")
     public R updateConnectStatusByClientId(@RequestBody Device device) {
         return R.ok(deviceService.updateConnectStatusByClientId(device.getConnectStatus(), device.getClientId()));

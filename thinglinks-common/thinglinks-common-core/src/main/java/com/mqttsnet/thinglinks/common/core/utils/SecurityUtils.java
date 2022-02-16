@@ -19,7 +19,7 @@ public class SecurityUtils {
     public static String getUsername() {
         String username = ServletUtils.getRequest().getHeader(SecurityConstants.DETAILS_USERNAME);
         if (StringUtils.isEmpty(username)) {
-            return UserConstants.MQTTS;
+            return UserConstants.THINGLINKS;
         }
         return ServletUtils.urlDecode(username);
     }

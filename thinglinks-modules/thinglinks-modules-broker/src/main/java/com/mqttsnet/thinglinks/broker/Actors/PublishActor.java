@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.broker.Actors;
 
 import io.github.quickmsg.common.annotation.AllowCors;
+import io.github.quickmsg.common.annotation.Header;
 import io.github.quickmsg.common.annotation.Router;
 import io.github.quickmsg.common.config.Configuration;
 import io.github.quickmsg.common.enums.HttpType;
@@ -27,20 +28,18 @@ import java.nio.charset.StandardCharsets;
  */
 @Router(value = "/publish", type = HttpType.POST)
 @Slf4j
+@Header(key = "Content-Type", value = "application/json")
 @AllowCors
 public class PublishActor extends AbstractHttpActor {
 
     @Override
-    public Publisher<Void> doRequest(HttpServerRequest request, HttpServerResponse response, Configuration httpConfiguration) {
-        Charset charset = Charset.defaultCharset();
-        log.info("Charset is {}",charset);
+    public Publisher<Void> doRequest(HttpServerRequest request, HttpServerResponse response, Configuration configuration) {
         return request
                 .receive()
-                .asString(StandardCharsets.UTF_8)
+                .asString()
                 .map(this.toJson(HttpPublishMessage.class))
                 .doOnNext(message -> {
-                    this.sendMqttMessage(message.getPublishMessage());
-                    log.info("http request url {} body {}", request.path(), message);
+                    //处理request
                 }).then(response.sendString(Mono.just("success")).then());
     }
 }
