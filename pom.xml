@@ -38,9 +38,6 @@
         <poi.version>4.1.2</poi.version>
         <common-pool.version>2.11.1</common-pool.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <!--lib打包目录-->
-        <!--suppress UnresolvedMavenProperty -->
-        <thinglinks.lib.package.url>${project.basedir}\doc\dockerfile\thinglinks\lib\</thinglinks.lib.package.url>
         <!-- 文件拷贝时的编码 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
