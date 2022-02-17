@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.link.controller.product;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.constant.HttpStatus;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
@@ -126,6 +127,7 @@ public class ProductController extends BaseController {
     /**
      * 新增产品管理
      */
+    @NoRepeatSubmit
     @PreAuthorize(hasPermi = "link:product:add")
     @Log(title = "产品管理", businessType = BusinessType.INSERT)
     @PostMapping
@@ -137,6 +139,7 @@ public class ProductController extends BaseController {
     /**
      * 修改产品管理
      */
+    @NoRepeatSubmit
     @PreAuthorize(hasPermi = "link:product:edit")
     @Log(title = "产品管理", businessType = BusinessType.UPDATE)
     @PutMapping

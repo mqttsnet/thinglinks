@@ -16,8 +16,11 @@
     </description>
 
     <properties>
+        <!--suppress UnresolvedMavenProperty -->
+        <thinglinks.lib.package.url>${project.parent.parent.basedir}\doc\dockerfile\thinglinks\lib\</thinglinks.lib.package.url>
         <!--打包目录-->
-        <thinglinks.package.url>D:\thinglinks-server\broker</thinglinks.package.url>
+        <!--suppress UnresolvedMavenProperty -->
+        <thinglinks.package.url>${project.parent.parent.basedir}\doc\dockerfile\thinglinks\broker\jar</thinglinks.package.url>
         <!--启动类目录-->
         <thinglinks.mainClass.url>com.mqttsnet.thinglinks.broker.ThingLinksBrokerApplication</thinglinks.mainClass.url>
     </properties>
@@ -118,7 +121,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <!--MANIFEST.MF 中 Class-Path 加入前缀-->
-                            <classpathPrefix>../lib/</classpathPrefix>
+                            <classpathPrefix>../../lib/</classpathPrefix>
                             <!--jar包不包含唯一版本标识-->
                             <useUniqueVersions>false</useUniqueVersions>
                             <!--指定入口类-->

@@ -13,7 +13,7 @@
     <description>ThingLinks物联网一体化平台</description>
 
     <properties>
-        <thinglinks.version>1.0.0-RELEASE</thinglinks.version>
+        <thinglinks.version>1.0.0.RELEASE</thinglinks.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
@@ -38,8 +38,6 @@
         <poi.version>4.1.2</poi.version>
         <common-pool.version>2.11.1</common-pool.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <!--lib打包目录-->
-        <thinglinks.lib.package.url>D:\thinglinks-server\lib\</thinglinks.lib.package.url>
         <!-- 文件拷贝时的编码 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
