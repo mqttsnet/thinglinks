@@ -1,10 +1,7 @@
 package com.mqttsnet.thinglinks.link.controller.product;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
-import com.mqttsnet.thinglinks.common.core.constant.Constants;
-import com.mqttsnet.thinglinks.common.core.constant.HttpStatus;
+import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -12,7 +9,6 @@ import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -157,5 +153,21 @@ public class ProductController extends BaseController {
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(productService.deleteProductByIds(ids));
+    }
+
+
+    /**
+     *校验产品名称是否存在
+     * @param productName
+     * @return
+     */
+    @GetMapping(value = "/validationFindOneByProductName/{productName}")
+    public AjaxResult validationFindOneByProductName(@PathVariable("productName") String productName)
+    {
+        Product oneByProductName = productService.findOneByProductName(productName);
+        if (StringUtils.isNull(oneByProductName)){
+            AjaxResult.success("产品名称可用");
+        }
+        return AjaxResult.error("产品名称已存在");
     }
 }

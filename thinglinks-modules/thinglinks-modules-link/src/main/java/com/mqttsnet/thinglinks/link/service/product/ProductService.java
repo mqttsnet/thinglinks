@@ -1,13 +1,10 @@
 package com.mqttsnet.thinglinks.link.service.product;
 
-import java.util.List;
-
-import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
 
@@ -104,4 +101,9 @@ public interface ProductService{
      * @return 结果
      */
     public int deleteProductById(Long id);
+
+
+
+	Product findOneByProductName(String productName);
+
 }

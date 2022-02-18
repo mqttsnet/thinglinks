@@ -84,10 +84,10 @@ logging.level.com.taosdata.jdbc.springbootdemo.dao=debug
         <include refid="Base_Column_List" />
         from thinglinks.weather
         order by ts desc
-        <if thinglinks="limit != null">
+        <if test="limit != null">
             limit #{limit,jdbcType=BIGINT}
         </if>
-        <if thinglinks="offset != null">
+        <if test="offset != null">
             offset #{offset,jdbcType=BIGINT}
         </if>
     </select>

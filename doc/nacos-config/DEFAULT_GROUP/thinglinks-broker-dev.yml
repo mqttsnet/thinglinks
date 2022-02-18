@@ -114,7 +114,7 @@ smqtt:
     url: 127.0.0.1:7771,127.0.0.1:7772 # 启动节点
     port: 7771  # 端口
     node: node-1 # 集群节点名称 唯一
-    namespace: mqtts
+    namespace: thinglinks
     external:
       host: localhost # 用于映射容器ip 请不要随意设置，如果不需要请移除此选项
       port: 7777 # 用于映射容器端口 请不要随意设置，如果不需要请移除此选项
