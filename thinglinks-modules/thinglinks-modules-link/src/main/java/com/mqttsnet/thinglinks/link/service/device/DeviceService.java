@@ -97,5 +97,30 @@ public interface DeviceService {
      */
     public int deleteDeviceById(Long id);
 
+
+
+	Device findOneByClientId(String clientId);
+
+
+
+	Device findOneByClientIdAndDeviceIdentification(String clientId,String deviceIdentification);
+
+
+
+	Device findOneByDeviceIdentification(String deviceIdentification);
+
+
+
+	Device findOneByClientIdOrderByDeviceIdentification(String clientId);
+
+
+
+	Device findOneByClientIdOrDeviceIdentification(String clientId,String deviceIdentification);
+
+
+
+
+
+
 }
 

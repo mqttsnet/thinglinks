@@ -33,5 +33,5 @@ spring:
 
 #自定义配置参数
 base:
-  #本机ip，不要用localhost或127.0.0.1
-  bindIp: 192.168.10.29
+  #本机内网ip，不要用localhost或127.0.0.1
+  bindIp: 127.0.0.1

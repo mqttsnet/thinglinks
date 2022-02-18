@@ -1,9 +1,14 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
+import com.mqttsnet.thinglinks.system.api.domain.SysUser;
+import com.mqttsnet.thinglinks.system.api.model.LoginUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,6 +30,8 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Resource
     private DeviceMapper deviceMapper;
+    @Autowired
+    private TokenService tokenService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -33,21 +40,47 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public int insert(Device record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setCreateBy(sysUser.getUserName());
+        record.setCreateTime(DateUtils.getNowDate());
         return deviceMapper.insert(record);
     }
 
     @Override
     public int insertOrUpdate(Device record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        if (StringUtils.isEmpty(String.valueOf(record.getId()))){
+            record.setCreateBy(sysUser.getUserName());
+            record.setCreateTime(DateUtils.getNowDate());
+        }else {
+            record.setUpdateTime(DateUtils.getNowDate());
+            record.setUpdateBy(sysUser.getUserName());
+        }
         return deviceMapper.insertOrUpdate(record);
     }
 
     @Override
     public int insertOrUpdateSelective(Device record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        if (StringUtils.isEmpty(String.valueOf(record.getId()))){
+            record.setCreateBy(sysUser.getUserName());
+            record.setCreateTime(DateUtils.getNowDate());
+        }else {
+            record.setUpdateTime(DateUtils.getNowDate());
+            record.setUpdateBy(sysUser.getUserName());
+        }
         return deviceMapper.insertOrUpdateSelective(record);
     }
 
     @Override
     public int insertSelective(Device record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setCreateBy(sysUser.getUserName());
+        record.setCreateTime(DateUtils.getNowDate());
         return deviceMapper.insertSelective(record);
     }
 
@@ -58,11 +91,19 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public int updateByPrimaryKeySelective(Device record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setUpdateTime(DateUtils.getNowDate());
+        record.setUpdateBy(sysUser.getUserName());
         return deviceMapper.updateByPrimaryKeySelective(record);
     }
 
     @Override
     public int updateByPrimaryKey(Device record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setUpdateTime(DateUtils.getNowDate());
+        record.setUpdateBy(sysUser.getUserName());
         return deviceMapper.updateByPrimaryKey(record);
     }
 
@@ -135,6 +176,13 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public int insertDevice(Device device)
     {
+        Device oneByClientIdAndDeviceIdentification = deviceMapper.findOneByClientIdOrDeviceIdentification(device.getClientId(), device.getDeviceIdentification());
+        if(StringUtils.isNull(oneByClientIdAndDeviceIdentification)){
+            return 0;
+        }
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        device.setCreateBy(sysUser.getUserName());
         device.setCreateTime(DateUtils.getNowDate());
         return deviceMapper.insertDevice(device);
     }
@@ -148,7 +196,10 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public int updateDevice(Device device)
     {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
         device.setUpdateTime(DateUtils.getNowDate());
+        device.setUpdateBy(sysUser.getUserName());
         return deviceMapper.updateDevice(device);
     }
 
@@ -175,6 +226,31 @@ public class DeviceServiceImpl implements DeviceService {
     {
         return deviceMapper.deleteDeviceById(id);
     }
+
+	@Override
+	public Device findOneByClientId(String clientId){
+		 return deviceMapper.findOneByClientId(clientId);
+	}
+
+	@Override
+	public Device findOneByClientIdAndDeviceIdentification(String clientId,String deviceIdentification){
+		 return deviceMapper.findOneByClientIdAndDeviceIdentification(clientId,deviceIdentification);
+	}
+
+	@Override
+	public Device findOneByDeviceIdentification(String deviceIdentification){
+		 return deviceMapper.findOneByDeviceIdentification(deviceIdentification);
+	}
+
+	@Override
+	public Device findOneByClientIdOrderByDeviceIdentification(String clientId){
+		 return deviceMapper.findOneByClientIdOrderByDeviceIdentification(clientId);
+	}
+
+	@Override
+	public Device findOneByClientIdOrDeviceIdentification(String clientId,String deviceIdentification){
+		 return deviceMapper.findOneByClientIdOrDeviceIdentification(clientId,deviceIdentification);
+	}
 
 }
 

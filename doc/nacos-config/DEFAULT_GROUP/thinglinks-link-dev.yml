@@ -30,8 +30,8 @@ spring:
           # 主库数据源
           master:
             driver-class-name: com.mysql.cj.jdbc.Driver
-            url: jdbc:mysql://127.0.0.1:3306/mqtts?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-            username: mqtts
+            url: jdbc:mysql://127.0.0.1:3306/thinglinks?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+            username: thinglinks
             password: D8K8KzHyTeXFLKez
           # 从库数据源
           # slave:

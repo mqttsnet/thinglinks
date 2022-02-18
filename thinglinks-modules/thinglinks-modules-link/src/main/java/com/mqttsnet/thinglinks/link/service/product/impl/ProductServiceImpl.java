@@ -4,14 +4,22 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
+import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.mapper.product.ProductMapper;
+import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.annotation.Resource;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,16 +27,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import com.mqttsnet.thinglinks.link.mapper.product.ProductMapper;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
-import com.mqttsnet.thinglinks.link.service.product.ProductService;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
 
@@ -70,8 +71,13 @@ public class ProductServiceImpl implements ProductService{
     public int insertOrUpdate(Product record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        record.setCreateBy(sysUser.getUserName());
-        record.setCreateTime(DateUtils.getNowDate());
+        if (StringUtils.isEmpty(String.valueOf(record.getId()))){
+            record.setCreateBy(sysUser.getUserName());
+            record.setCreateTime(DateUtils.getNowDate());
+        }else {
+            record.setUpdateTime(DateUtils.getNowDate());
+            record.setUpdateBy(sysUser.getUserName());
+        }
         return productMapper.insertOrUpdate(record);
     }
 
@@ -79,8 +85,13 @@ public class ProductServiceImpl implements ProductService{
     public int insertOrUpdateSelective(Product record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        record.setCreateBy(sysUser.getUserName());
-        record.setCreateTime(DateUtils.getNowDate());
+        if (StringUtils.isEmpty(String.valueOf(record.getId()))){
+            record.setCreateBy(sysUser.getUserName());
+            record.setCreateTime(DateUtils.getNowDate());
+        }else {
+            record.setUpdateTime(DateUtils.getNowDate());
+            record.setUpdateBy(sysUser.getUserName());
+        }
         return productMapper.insertOrUpdateSelective(record);
     }
 
@@ -342,6 +353,11 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public int insertProduct(Product product)
     {
+        Product oneByProductName = productMapper.findOneByProductName(product.getProductName());
+        if(StringUtils.isNull(oneByProductName)){
+            return 0;
+        }
+        product.setProductIdentification(UUID.getUUID());
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         product.setCreateBy(sysUser.getUserName());
@@ -388,4 +404,10 @@ public class ProductServiceImpl implements ProductService{
     {
         return productMapper.deleteProductById(id);
     }
+
+	@Override
+	public Product findOneByProductName(String productName){
+		 return productMapper.findOneByProductName(productName);
+	}
+
 }

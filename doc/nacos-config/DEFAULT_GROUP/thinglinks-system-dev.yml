@@ -62,13 +62,13 @@ seata:
     nacos:
       serverAddr: 127.0.0.1:8848
       group: SEATA_GROUP
-      namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+      namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
   registry:
     type: nacos
     nacos:
       application: seata-server
       server-addr: 127.0.0.1:8848
-      namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+      namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
 
 # mybatis配置
 mybatis:

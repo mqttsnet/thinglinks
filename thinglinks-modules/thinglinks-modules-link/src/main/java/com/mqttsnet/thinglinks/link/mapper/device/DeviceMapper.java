@@ -143,4 +143,20 @@ public interface DeviceMapper {
      * @return 结果
      */
     public int deleteDeviceByIds(Long[] ids);
+
+    Device findOneByClientId(@Param("clientId")String clientId);
+
+    Device findOneByClientIdAndDeviceIdentification(@Param("clientId")String clientId,@Param("deviceIdentification")String deviceIdentification);
+
+    Device findOneByDeviceIdentification(@Param("deviceIdentification")String deviceIdentification);
+
+    Device findOneByClientIdOrderByDeviceIdentification(@Param("clientId")String clientId);
+
+	Device findOneByClientIdOrDeviceIdentification(@Param("clientId")String clientId,@Param("deviceIdentification")String deviceIdentification);
+
+
+
+
+
+
 }

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -119,4 +120,48 @@ public class DeviceController extends BaseController {
                                                                                            @RequestParam(value = "protocolType", required = true) String protocolType) {
         return R.ok(deviceService.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientId, userName, password, deviceStatus, protocolType));
     }
+
+    /**
+     *校验clientId是否存在
+     * @param clientId
+     * @return
+     */
+    @PreAuthorize(hasPermi = "link:device:remove")
+    @Log(title = "设备管理", businessType = BusinessType.OTHER)
+    @GetMapping(value = "/validationfindOneByClientId/{clientId}")
+    public AjaxResult validationfindOneByClientId(@PathVariable("clientId") String clientId)
+    {
+        Device findOneByClientId = deviceService.findOneByClientId(clientId);
+        if (StringUtils.isNull(findOneByClientId)){
+            AjaxResult.success("clientId可用");
+        }
+        return AjaxResult.error("clientId已存在");
+    }
+
+    /**
+     *校验设备标识是否存在
+     * @param deviceIdentification
+     * @return
+     */
+    @GetMapping(value = "/validationFindOneByDeviceIdentification/{deviceIdentification}")
+    public AjaxResult validationFindOneByDeviceIdentification(@PathVariable("deviceIdentification") String deviceIdentification)
+    {
+        Device findOneByDeviceIdentification = deviceService.findOneByDeviceIdentification(deviceIdentification);
+        if (StringUtils.isNull(findOneByDeviceIdentification)){
+            AjaxResult.success("设备标识可用");
+        }
+        return AjaxResult.error("设备标识已存在");
+    }
+
+    /**
+     * 设备断开连接接口
+     *//*
+    @PreAuthorize(hasPermi = "link:device:remove")
+    @Log(title = "设备管理", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids)
+    {
+        return toAjax(deviceService.deleteDeviceByIds(ids));
+    }*/
+
 }

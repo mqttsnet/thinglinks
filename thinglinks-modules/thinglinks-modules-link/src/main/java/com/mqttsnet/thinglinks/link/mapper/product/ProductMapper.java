@@ -120,4 +120,8 @@ public interface ProductMapper {
      */
     public int deleteProductByIds(Long[] ids);
 
+    Product findOneByProductName(@Param("productName")String productName);
+
+
+
 }

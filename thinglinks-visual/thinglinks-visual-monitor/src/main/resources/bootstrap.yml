@@ -19,14 +19,19 @@ spring:
         # 配置中心地址
         server-addr: 49.235.122.136:8848
         #命名空间
-        namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+        namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
       config:
         # 配置中心地址
         server-addr: 49.235.122.136:8848
         #命名空间
-        namespace: fffe6c69-d6cb-44fd-b542-8167d8a0c29d
+        namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
         # 配置文件格式
         file-extension: yml
+        # 关联配置
+        extension-configs[0]:
+          data-id: thinglinks-collection-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+          group: DEFAULT_GROUP
+          refresh: true
         # 共享配置
         shared-configs:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
