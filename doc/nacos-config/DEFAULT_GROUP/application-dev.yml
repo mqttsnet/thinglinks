@@ -30,9 +30,9 @@ feign:
 
 # 暴露监控端点
 management:
-  metrics:
-    export:
-      influx:
+  metrics: 
+    export: 
+      influx: 
         enabled: false
   endpoints:
     web:

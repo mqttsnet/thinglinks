@@ -1,9 +1,21 @@
 # spring配置
 spring: 
   redis:
+    database: 0
     host: 127.0.0.1
     port: 6379
     password: thinglinks
+    timeout: 30000
+    jedis:
+      pool:
+      # 连接池中的最大空闲连接
+        max-idle: 20
+      # 连接池中的最小空闲连接
+        min-idle: 0
+      # 连接池最大连接数（使用负值表示没有限制）
+        max-active: -1
+      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1
   datasource:
     druid:
       stat-view-servlet:
@@ -132,11 +144,11 @@ smqtt:
 #    - ruleName: HTTP # 过滤器名称
 #      chain: # 规则链(支持多个)
 #        - ruleType: HTTP
-#          script:  '{"topic":"${topic}","msg":${msg.test},"qos":${qos}}'
+#          script:  '{"topic":"${topic}","msg":"${msg.test}","qos":${qos}}'
 #    - ruleName: MQTT # 过滤器名称
 #      chain: # 规则链(支持多个)
 #        - ruleType: MQTT # 过滤器类型
-#          script: '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
+#          script: '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
 #    - ruleName: DATA_BASE # 过滤器名称
 #      chain: # 规则链
 #        - ruleType: DATA_BASE # 过滤器类型
@@ -144,13 +156,13 @@ smqtt:
 #    - ruleName: RABBIT_MQ # 过滤器名称
 #      chain: # 规则链
 #        - ruleType: RABBIT_MQ # 过滤器类型
-#          script: '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
+#          script: '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
   sources: # 配置数据源sources
     - source: ROCKET_MQ # rocketmq配置
       sourceName: rocket_mq
       sourceAttributes:
-        topic: thinglinks
-        tags: thinglinks
+        topic: thinglinks-link
+        tags: thinglinks-link
         namesrvAddr: 127.0.0.1:9876
         instanceName: wt9zfxnoukxsrngp-0721852
         producerGroup: thinglinks
@@ -158,7 +170,7 @@ smqtt:
       sourceName: kafka
       sourceAttributes:
         topic: thinglinks
-        bootstrap-servers: 58.210.180.2:9092
+        bootstrap-servers: 127.0.0.1:9092
         key-serializer: org.apache.kafka.common.serialization.StringSerializer
         value-serializer: org.apache.kafka.common.serialization.StringSerializer
 #     - source: HTTP
