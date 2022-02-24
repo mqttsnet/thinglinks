@@ -260,6 +260,7 @@
         <module>thinglinks-modules</module>
         <module>thinglinks-api</module>
         <module>thinglinks-common</module>
+        <module>thinglinks-registry</module>
     </modules>
     <packaging>pom</packaging>
 
