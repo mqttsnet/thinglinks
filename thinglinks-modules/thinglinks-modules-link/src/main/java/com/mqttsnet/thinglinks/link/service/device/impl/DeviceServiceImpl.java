@@ -177,7 +177,7 @@ public class DeviceServiceImpl implements DeviceService {
     public int insertDevice(Device device)
     {
         Device oneByClientIdAndDeviceIdentification = deviceMapper.findOneByClientIdOrDeviceIdentification(device.getClientId(), device.getDeviceIdentification());
-        if(StringUtils.isNull(oneByClientIdAndDeviceIdentification)){
+        if(StringUtils.isNotNull(oneByClientIdAndDeviceIdentification)){
             return 0;
         }
         LoginUser loginUser = tokenService.getLoginUser();

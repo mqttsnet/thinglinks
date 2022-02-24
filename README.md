@@ -55,6 +55,7 @@ com.mqttsnet.thinglinks
 │       └── thinglinks-modules-tdengine                    // TDengine服务 [19304]
 │       └── thinglinks-modules-link                        // Link服务 [19305]
         └── thinglinks-modules-broker                      // broker服务 [19306]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
+├── thinglinks-registry         // 注册中心微应用
 ├── thinglinks-visual          // 图形化管理模块
 │       └── thinglinks-visual-monitor                      // 监控中心 [19400]
 │       └── thinglinks-visual-collection                   // 服务器监控采集服务 [19401]
@@ -88,6 +89,8 @@ com.mqttsnet.thinglinks
 ## 功能开发计划
 
 *、设备管理页面展示优化(实现中)
+
+*、产品管理(后台接口已完成,web实现中)
 
 *、设备消息列表(实现中)
 

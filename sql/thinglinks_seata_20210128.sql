@@ -1,11 +1,11 @@
-DROP DATABASE IF EXISTS `mqtts_seata`;
+DROP DATABASE IF EXISTS `thinglinks_seata`;
 
-CREATE DATABASE  `mqtts_seata` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE  `thinglinks_seata` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-USE `mqtts_seata`;
+USE `thinglinks_seata`;
 
 -- -------------------------------- The script used when storeMode is 'db' --------------------------------
 -- the table to store GlobalSession data

@@ -354,7 +354,7 @@ public class ProductServiceImpl implements ProductService{
     public int insertProduct(Product product)
     {
         Product oneByProductName = productMapper.findOneByProductName(product.getProductName());
-        if(StringUtils.isNull(oneByProductName)){
+        if(StringUtils.isNotNull(oneByProductName)){
             return 0;
         }
         product.setProductIdentification(UUID.getUUID());
