@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
@@ -180,6 +181,7 @@ public class DeviceServiceImpl implements DeviceService {
         if(StringUtils.isNotNull(oneByClientIdAndDeviceIdentification)){
             return 0;
         }
+        device.setConnectStatus(DeviceConnectStatus.INIT.getValue());
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         device.setCreateBy(sysUser.getUserName());

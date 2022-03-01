@@ -2,9 +2,12 @@ package com.mqttsnet.thinglinks.common.redis.service;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,10 +17,77 @@ import org.springframework.stereotype.Component;
  **/
 @SuppressWarnings(value = { "unchecked", "rawtypes" })
 @Component
+@Slf4j
 public class RedisService
 {
     @Autowired
     public RedisTemplate redisTemplate;
+
+    //分布式锁参数
+    private static final Long RELEASE_SUCCESS = 1L;
+    private static final String RELEASE_LOCK_LUA_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+
+
+    /**
+     * 判断资源是否已经被锁定
+     *
+     * @param key 锁定的资源标识key
+     * @return 未锁定 true
+     */
+    public boolean checkLock(String key, String requestId, Long time) {
+        //检查key是否存在,获取过期时间
+        Boolean result = redisTemplate.hasKey(key);
+        Long expireTime = redisTemplate.getExpire(key);
+        //当前时间加获取key的时间
+        Long expire = System.currentTimeMillis() + expireTime;
+        //判断该锁是否被获得,锁已经被其他请求获得，直接返回
+        if (result != null && result && expire >= System.currentTimeMillis()) {
+            log.info("该锁已被其他用户获得-key：{}，value：{}", key, requestId);
+            return false;
+        }
+       /* if (result != null && expire < System.currentTimeMillis()) {
+            // 移除过期的锁
+            this.releaseDistributedLock(key, requestId);
+        }*/
+        // (在高并发前提下)在当前请求已经获得锁的前提下，还可能有其他请求尝试去获得锁，此时会导致当前锁的过期时间被延长，由于延长时间在毫秒级，可以忽略。
+        return this.setLock(key, requestId, time);
+    }
+
+
+    /**
+     * 尝试获取分布式锁
+     *
+     * @param lockKey    锁
+     * @param requestId  请求标识
+     * @param expireTime 超期时间
+     * @return 是否获取成功
+     */
+    public boolean setLock(String lockKey, String requestId, Long expireTime) {
+        Boolean result = redisTemplate.opsForValue().setIfAbsent(lockKey, requestId, expireTime, TimeUnit.MILLISECONDS);
+        if (result != null && result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 释放分布式锁
+     *
+     * @param lockKey   锁
+     * @param requestId 请求标识
+     * @return 是否释放成功
+     */
+    public boolean releaseDistributedLock(String lockKey, String requestId) {
+        // 指定 lua 脚本，并且指定返回值类型
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(RELEASE_LOCK_LUA_SCRIPT, Long.class);
+        // 参数一：redisScript，参数二：key列表，参数三：arg（可多个）
+        Long result = (Long) redisTemplate.execute(redisScript, Collections.singletonList(lockKey), requestId);
+        if (RELEASE_SUCCESS.equals(result)) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * 缓存基本的对象，Integer、String、实体类等
@@ -464,6 +534,20 @@ public class RedisService
     public boolean setIfAbsent(String key, String value) {
         return redisTemplate.opsForValue().setIfAbsent(key, value);
     }
+
+    /**
+     * 只有在 key 不存在时设置 key 的值
+     *
+     * @param key
+     * @param value
+     * @param timeout
+     *            过期时间
+     * @param unit
+     *            时间单位, 天:TimeUnit.DAYS 小时:TimeUnit.HOURS 分钟:TimeUnit.MINUTES
+     *            秒:TimeUnit.SECONDS 毫秒:TimeUnit.MILLISECONDS
+     * @return 之前已经存在返回false,不存在返回true
+     */
+    public boolean setIfAbsent(String key, String value, long timeout, TimeUnit unit) { return redisTemplate.opsForValue().setIfAbsent(key, value, timeout, unit);}
 
     /**
      * 用 value 参数覆写给定 key 所储存的字符串值，从偏移量 offset 开始

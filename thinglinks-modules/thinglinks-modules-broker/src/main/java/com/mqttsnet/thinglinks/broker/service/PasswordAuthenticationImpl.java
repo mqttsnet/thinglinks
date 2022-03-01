@@ -1,6 +1,10 @@
 package com.mqttsnet.thinglinks.broker.service;
 
 
+import com.mqttsnet.thinglinks.common.core.constant.Constants;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import io.github.quickmsg.common.auth.PasswordAuthentication;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description: MQTT 连接鉴权
@@ -31,12 +36,15 @@ public class PasswordAuthenticationImpl implements PasswordAuthentication {
 
     @Autowired
     private RemoteDeviceService deviceService;
+    @Autowired
+    private RedisService redisService;
 
 
     @PostConstruct
     public void init() {
         PasswordAuthenticationImpl = this;
         PasswordAuthenticationImpl.deviceService = this.deviceService;
+        PasswordAuthenticationImpl.redisService = this.redisService;
     }
 
     /**
@@ -51,9 +59,11 @@ public class PasswordAuthenticationImpl implements PasswordAuthentication {
     public boolean auth(String userName, byte[] passwordInBytes, String clientIdentifier) {
         Device mqttsDevice = PasswordAuthenticationImpl.deviceService.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, userName, new String(passwordInBytes), "ENABLE", "MQTT").getData();
         if (Optional.ofNullable(mqttsDevice).isPresent()) {
+            //缓存设备信息
+            PasswordAuthenticationImpl.redisService.setCacheObject(Constants.DEVICE_RECORD_KEY+mqttsDevice.getClientId(),mqttsDevice,300L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             //更改设备在线状态为在线
             Device device = new Device();
-            device.setConnectStatus("ONLINE");
+            device.setConnectStatus(DeviceConnectStatus.ONLINE.getValue());
             device.setDeviceIdentification(clientIdentifier);
             PasswordAuthenticationImpl.deviceService.updateConnectStatusByClientId(device);
             return true;
