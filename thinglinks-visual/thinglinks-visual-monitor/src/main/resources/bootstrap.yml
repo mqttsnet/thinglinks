@@ -17,14 +17,14 @@ spring:
     nacos:
       discovery:
         # 配置中心地址
-        server-addr: 49.235.122.136:8848
+        server-addr: 127.0.0.1:8848
         #命名空间
-        namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
+        namespace: 8ea40c2e-64ba-4430-9bd8-a25336b2b45a
       config:
         # 配置中心地址
-        server-addr: 49.235.122.136:8848
+        server-addr: 127.0.0.1:8848
         #命名空间
-        namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
+        namespace: 8ea40c2e-64ba-4430-9bd8-a25336b2b45a
         # 配置文件格式
         file-extension: yml
         # 关联配置

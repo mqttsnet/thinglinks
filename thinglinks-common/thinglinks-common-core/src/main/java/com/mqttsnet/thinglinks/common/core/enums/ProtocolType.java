@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.link.common.enums;
+package com.mqttsnet.thinglinks.common.core.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

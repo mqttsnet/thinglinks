@@ -18,11 +18,6 @@
             <artifactId>thinglinks-common-core</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

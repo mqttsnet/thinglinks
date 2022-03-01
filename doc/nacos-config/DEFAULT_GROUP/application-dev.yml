@@ -12,6 +12,8 @@ ribbon:
 
 # feign 配置
 feign:
+  hystrix:
+    enabled: true
   sentinel:
     enabled: true
   okhttp:
