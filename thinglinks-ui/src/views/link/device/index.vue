@@ -156,6 +156,17 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          type="danger"
+          plain
+          icon="el-icon-loading"
+          size="mini"
+          :disabled="multiple"
+          @click="handleDisconnect"
+          v-hasPermi="['link:device:disconnect']"
+        >断开连接</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           type="warning"
           plain
           icon="el-icon-download"
@@ -438,7 +449,7 @@
 </template>
 
 <script>
-import { listDevice, getDevice, delDevice, addDevice, updateDevice } from "@/api/link/device";
+import { listDevice, getDevice, delDevice, addDevice, updateDevice , disconnectDevice} from "@/api/link/device";
 
 import mapView from "./mapView";
 
@@ -658,6 +669,16 @@ export default {
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
+    },
+    /** 断开连接按钮操作 */
+    handleDisconnect(row) {
+      const ids = row.id || this.ids;
+      this.$modal.confirm('是否确认断开连接设备档案编号为"' + ids + '"的数据项？').then(function() {
+        return disconnectDevice(ids);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("操作成功");
       }).catch(() => {});
     },
     /** 导出按钮操作 */
