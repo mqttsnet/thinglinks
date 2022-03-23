@@ -137,8 +137,4 @@ public class Constants
      */
     public static final String RESUBMIT_URL_KEY = "resubmit_url:";
 
-    /**
-     * 分布式锁机制 cache key
-     */
-    public static final String SET_NX = "setnx:";
 }

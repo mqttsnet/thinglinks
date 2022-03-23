@@ -60,7 +60,7 @@ public class PasswordAuthenticationImpl implements PasswordAuthentication {
         Device mqttsDevice = PasswordAuthenticationImpl.deviceService.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, userName, new String(passwordInBytes), "ENABLE", "MQTT").getData();
         if (Optional.ofNullable(mqttsDevice).isPresent()) {
             //缓存设备信息
-            PasswordAuthenticationImpl.redisService.setCacheObject(Constants.DEVICE_RECORD_KEY+mqttsDevice.getClientId(),mqttsDevice,300L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            PasswordAuthenticationImpl.redisService.setCacheObject(Constants.DEVICE_RECORD_KEY+mqttsDevice.getClientId(),mqttsDevice,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             //更改设备在线状态为在线
             Device device = new Device();
             device.setConnectStatus(DeviceConnectStatus.ONLINE.getValue());

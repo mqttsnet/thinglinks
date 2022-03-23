@@ -32,7 +32,7 @@ public class DeviceActionMessageConsumer implements RocketMQListener {
     @Override
     public void onMessage(Object message) {
         assert message!=null;
-        log.info("Link消费设备消息"+message);
+        log.info("ThingLinks物联网平台数据消费-->Received message={}", message);
         JSONObject thinglinksMessage = JSONObject.parseObject(String.valueOf(message));
         /**
          * TODO 设备上下线处理

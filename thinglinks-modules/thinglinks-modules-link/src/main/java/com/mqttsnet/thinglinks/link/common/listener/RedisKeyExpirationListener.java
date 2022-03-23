@@ -3,6 +3,8 @@ package com.mqttsnet.thinglinks.link.common.listener;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
 
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private DeviceService deviceService;
 
     public RedisKeyExpirationListener(RedisMessageListenerContainer listenerContainer) {
         super(listenerContainer);
@@ -38,17 +42,18 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
     @SneakyThrows
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        String expiredKey = Constants.SET_NX+message.toString();
+        String expiredKey = message.toString();
         // 避免多个服务监听情况下重复消费
         boolean resultLock = false;
         String uuid = UUID.getUUID();
         try {
-            resultLock = redisService.checkLock(expiredKey, uuid, 10L);
+            resultLock = redisService.checkLock(expiredKey, uuid, 1000L);
             log.info("获取分布式锁返回值：{}", resultLock);
             if (resultLock) {
                 log.info("获取分布式锁成功-key：{}，value：{}", expiredKey, uuid);
                 if (expiredKey.contains(Constants.DEVICE_RECORD_KEY)){
                     log.info("设备信息缓存失效{}",expiredKey);
+                    deviceService.cacheInvalidation(expiredKey.replace(Constants.DEVICE_RECORD_KEY, ""));
                 }
             }else {
                 log.info("获取分布式锁失败-key：{}，value：{}", expiredKey, uuid);

@@ -181,22 +181,22 @@
     <el-table v-loading="loading" :data="deviceList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="客户端标识" align="center" prop="clientId" />
-      <el-table-column label="用户名" align="center" prop="userName" />
-      <el-table-column label="密码" align="center" prop="password" />
+      <el-table-column label="客户端标识" align="center" prop="clientId" width="180"/>
+      <el-table-column label="用户名" align="center" prop="userName" width="180"/>
+      <el-table-column label="密码" align="center" prop="password" width="180"/>
       <el-table-column label="认证方式" align="center" prop="authMode">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_auth_mode" :value="scope.row.authMode"/>
         </template>
       </el-table-column>
-      <el-table-column label="设备标识" align="center" prop="deviceIdentification" />
-      <el-table-column label="设备名称" align="center" prop="deviceName" />
-      <el-table-column label="连接实例" align="center" prop="connector">
+      <el-table-column label="设备标识" align="center" prop="deviceIdentification" width="180"/>
+      <el-table-column label="设备名称" align="center" prop="deviceName" width="180"/>
+      <el-table-column label="连接实例" align="center" prop="connector" width="180">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_connector" :value="scope.row.connector"/>
         </template>
       </el-table-column>
-      <el-table-column label="设备描述" align="center" prop="deviceDescription" />
+      <el-table-column label="设备描述" align="center" prop="deviceDescription" width="180"/>
       <el-table-column label="设备状态" align="center" prop="deviceStatus">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_status" :value="scope.row.deviceStatus"/>
@@ -215,7 +215,7 @@
       <el-table-column label="设备标签" align="center" prop="deviceTags" />
       <el-table-column label="产品型号" align="center" prop="productId" />
       <el-table-column label="厂商ID" align="center" prop="manufacturerId" />
-      <el-table-column label="产品协议类型" align="center" prop="protocolType">
+      <el-table-column label="产品协议类型" align="center" prop="protocolType" width="100">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.protocolType"/>
         </template>
@@ -228,13 +228,13 @@
       <el-table-column label="创建者" align="center" prop="createBy" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="更新者" align="center" prop="updateBy" />
       <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />

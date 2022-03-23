@@ -7,14 +7,14 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * @Description: java类作用描述
- * @Author: ShiHuan Sun
+ * @Author: ShiHuan SUN
  * @E-mail: 13733918655@163.com
  * @Website: http://thinglinks.mqttsnet.com
- * @CreateDate: 2021/12/26$ 2:03$
- * @UpdateUser: ShiHuan Sun
- * @UpdateDate: 2021/12/26$ 2:03$
+ * @CreateDate: 2022/3/23$ 17:55$
+ * @UpdateUser: ShiHuan SUN
+ * @UpdateDate: 2022/3/23$ 17:55$
  * @UpdateRemark: 修改内容
- * @Version: 1.0
+ * @Version: V1.0
  */
 @Mapper
 public interface DeviceLocationMapper {
@@ -72,7 +72,7 @@ public interface DeviceLocationMapper {
 
     int updateBatch(List<DeviceLocation> list);
 
-    int updateBatchSelective(List<DeviceLocation> list);
-
     int batchInsert(@Param("list") List<DeviceLocation> list);
+
+    int updateBatchSelective(List<DeviceLocation> list);
 }

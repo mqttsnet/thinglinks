@@ -1,10 +1,15 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceDatasMapper;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas;
 import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
@@ -99,7 +104,16 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      */
     @Override
     public void insertBaseDatas(String thinglinksMessage) {
-        log.info(thinglinksMessage);
+        JSONObject mqttMessage = JSONObject.parseObject(thinglinksMessage);
+        String topic = mqttMessage.getString("topic");
+        String msg = mqttMessage.getString("msg");
+        if (Objects.equals(msg, "{}")) {
+            log.error("topic:{},报文体为空已忽略处理", topic);
+            return;
+        }
+        if (topic.contains("datas")) {
+
+        }
     }
 
 }

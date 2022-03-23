@@ -37,22 +37,22 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into device_location (device_identification, latitude, 
-      longitude, full_name, province_code, 
-      city_code, region_code, create_by, 
-      create_time, update_by, update_time, 
-      remark)
-    values (#{device_identification,jdbcType=VARCHAR}, #{latitude,jdbcType=DECIMAL}, 
-      #{longitude,jdbcType=DECIMAL}, #{full_name,jdbcType=VARCHAR}, #{province_code,jdbcType=VARCHAR}, 
-      #{city_code,jdbcType=VARCHAR}, #{region_code,jdbcType=VARCHAR}, #{create_by,jdbcType=VARCHAR}, 
-      #{create_time,jdbcType=TIMESTAMP}, #{update_by,jdbcType=VARCHAR}, #{update_time,jdbcType=TIMESTAMP}, 
-      #{remark,jdbcType=VARCHAR})
+    insert into device_location (device_identification, latitude, longitude, 
+      full_name, province_code, city_code, 
+      region_code, create_by, create_time, 
+      update_by, update_time, remark
+      )
+    values (#{deviceIdentification,jdbcType=VARCHAR}, #{latitude,jdbcType=DECIMAL}, #{longitude,jdbcType=DECIMAL}, 
+      #{fullName,jdbcType=VARCHAR}, #{provinceCode,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR}, 
+      #{regionCode,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device_location
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="device_identification != null and device_identification != ''">
+      <if test="deviceIdentification != null">
         device_identification,
       </if>
       <if test="latitude != null">
@@ -61,37 +61,37 @@
       <if test="longitude != null">
         longitude,
       </if>
-      <if test="full_name != null and full_name != ''">
+      <if test="fullName != null">
         full_name,
       </if>
-      <if test="province_code != null and province_code != ''">
+      <if test="provinceCode != null">
         province_code,
       </if>
-      <if test="city_code != null and city_code != ''">
+      <if test="cityCode != null">
         city_code,
       </if>
-      <if test="region_code != null and region_code != ''">
+      <if test="regionCode != null">
         region_code,
       </if>
-      <if test="create_by != null and create_by != ''">
+      <if test="createBy != null">
         create_by,
       </if>
-      <if test="create_time != null">
+      <if test="createTime != null">
         create_time,
       </if>
-      <if test="update_by != null and update_by != ''">
+      <if test="updateBy != null">
         update_by,
       </if>
-      <if test="update_time != null">
+      <if test="updateTime != null">
         update_time,
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="device_identification != null and device_identification != ''">
-        #{device_identification,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        #{deviceIdentification,jdbcType=VARCHAR},
       </if>
       <if test="latitude != null">
         #{latitude,jdbcType=DECIMAL},
@@ -99,31 +99,31 @@
       <if test="longitude != null">
         #{longitude,jdbcType=DECIMAL},
       </if>
-      <if test="full_name != null and full_name != ''">
-        #{full_name,jdbcType=VARCHAR},
+      <if test="fullName != null">
+        #{fullName,jdbcType=VARCHAR},
       </if>
-      <if test="province_code != null and province_code != ''">
-        #{province_code,jdbcType=VARCHAR},
+      <if test="provinceCode != null">
+        #{provinceCode,jdbcType=VARCHAR},
       </if>
-      <if test="city_code != null and city_code != ''">
-        #{city_code,jdbcType=VARCHAR},
+      <if test="cityCode != null">
+        #{cityCode,jdbcType=VARCHAR},
       </if>
-      <if test="region_code != null and region_code != ''">
-        #{region_code,jdbcType=VARCHAR},
+      <if test="regionCode != null">
+        #{regionCode,jdbcType=VARCHAR},
       </if>
-      <if test="create_by != null and create_by != ''">
-        #{create_by,jdbcType=VARCHAR},
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
       </if>
-      <if test="create_time != null">
-        #{create_time,jdbcType=TIMESTAMP},
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="update_by != null and update_by != ''">
-        #{update_by,jdbcType=VARCHAR},
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
       </if>
-      <if test="update_time != null">
-        #{update_time,jdbcType=TIMESTAMP},
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
@@ -132,8 +132,8 @@
     <!--@mbg.generated-->
     update device_location
     <set>
-      <if test="device_identification != null and device_identification != ''">
-        device_identification = #{device_identification,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       </if>
       <if test="latitude != null">
         latitude = #{latitude,jdbcType=DECIMAL},
@@ -141,31 +141,31 @@
       <if test="longitude != null">
         longitude = #{longitude,jdbcType=DECIMAL},
       </if>
-      <if test="full_name != null and full_name != ''">
-        full_name = #{full_name,jdbcType=VARCHAR},
+      <if test="fullName != null">
+        full_name = #{fullName,jdbcType=VARCHAR},
       </if>
-      <if test="province_code != null and province_code != ''">
-        province_code = #{province_code,jdbcType=VARCHAR},
+      <if test="provinceCode != null">
+        province_code = #{provinceCode,jdbcType=VARCHAR},
       </if>
-      <if test="city_code != null and city_code != ''">
-        city_code = #{city_code,jdbcType=VARCHAR},
+      <if test="cityCode != null">
+        city_code = #{cityCode,jdbcType=VARCHAR},
       </if>
-      <if test="region_code != null and region_code != ''">
-        region_code = #{region_code,jdbcType=VARCHAR},
+      <if test="regionCode != null">
+        region_code = #{regionCode,jdbcType=VARCHAR},
       </if>
-      <if test="create_by != null and create_by != ''">
-        create_by = #{create_by,jdbcType=VARCHAR},
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
       </if>
-      <if test="create_time != null">
-        create_time = #{create_time,jdbcType=TIMESTAMP},
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="update_by != null and update_by != ''">
-        update_by = #{update_by,jdbcType=VARCHAR},
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
       </if>
-      <if test="update_time != null">
-        update_time = #{update_time,jdbcType=TIMESTAMP},
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
     </set>
@@ -174,17 +174,17 @@
   <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation">
     <!--@mbg.generated-->
     update device_location
-    set device_identification = #{device_identification,jdbcType=VARCHAR},
+    set device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       latitude = #{latitude,jdbcType=DECIMAL},
       longitude = #{longitude,jdbcType=DECIMAL},
-      full_name = #{full_name,jdbcType=VARCHAR},
-      province_code = #{province_code,jdbcType=VARCHAR},
-      city_code = #{city_code,jdbcType=VARCHAR},
-      region_code = #{region_code,jdbcType=VARCHAR},
-      create_by = #{create_by,jdbcType=VARCHAR},
-      create_time = #{create_time,jdbcType=TIMESTAMP},
-      update_by = #{update_by,jdbcType=VARCHAR},
-      update_time = #{update_time,jdbcType=TIMESTAMP},
+      full_name = #{fullName,jdbcType=VARCHAR},
+      province_code = #{provinceCode,jdbcType=VARCHAR},
+      city_code = #{cityCode,jdbcType=VARCHAR},
+      region_code = #{regionCode,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
       remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -194,7 +194,7 @@
     <trim prefix="set" suffixOverrides=",">
       <trim prefix="device_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.device_identification,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.deviceIdentification,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="latitude = case" suffix="end,">
@@ -209,141 +209,47 @@
       </trim>
       <trim prefix="full_name = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.full_name,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.fullName,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="province_code = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.province_code,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.provinceCode,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="city_code = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.city_code,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.cityCode,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="region_code = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.region_code,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.regionCode,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="create_by = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.create_by,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="create_time = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.create_time,jdbcType=TIMESTAMP}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
         </foreach>
       </trim>
       <trim prefix="update_by = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.update_by,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="update_time = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.update_time,jdbcType=TIMESTAMP}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
         </foreach>
       </trim>
       <trim prefix="remark = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           when id = #{item.id,jdbcType=BIGINT} then #{item.remark,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-    </trim>
-    where id in
-    <foreach close=")" collection="list" item="item" open="(" separator=", ">
-      #{item.id,jdbcType=BIGINT}
-    </foreach>
-  </update>
-  <update id="updateBatchSelective" parameterType="java.util.List">
-    <!--@mbg.generated-->
-    update device_location
-    <trim prefix="set" suffixOverrides=",">
-      <trim prefix="device_identification = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.device_identification != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.device_identification,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="latitude = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.latitude != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.latitude,jdbcType=DECIMAL}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="longitude = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.longitude != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.longitude,jdbcType=DECIMAL}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="full_name = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.full_name != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.full_name,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="province_code = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.province_code != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.province_code,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="city_code = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.city_code != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.city_code,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="region_code = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.region_code != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.region_code,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="create_by = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.create_by != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.create_by,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="create_time = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.create_time != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.create_time,jdbcType=TIMESTAMP}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="update_by = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.update_by != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.update_by,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="update_time = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.update_time != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.update_time,jdbcType=TIMESTAMP}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="remark = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.remark != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.remark,jdbcType=VARCHAR}
-          </if>
         </foreach>
       </trim>
     </trim>
@@ -359,10 +265,10 @@
       region_code, create_by, create_time, update_by, update_time, remark)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.device_identification,jdbcType=VARCHAR}, #{item.latitude,jdbcType=DECIMAL}, 
-        #{item.longitude,jdbcType=DECIMAL}, #{item.full_name,jdbcType=VARCHAR}, #{item.province_code,jdbcType=VARCHAR}, 
-        #{item.city_code,jdbcType=VARCHAR}, #{item.region_code,jdbcType=VARCHAR}, #{item.create_by,jdbcType=VARCHAR}, 
-        #{item.create_time,jdbcType=TIMESTAMP}, #{item.update_by,jdbcType=VARCHAR}, #{item.update_time,jdbcType=TIMESTAMP}, 
+      (#{item.deviceIdentification,jdbcType=VARCHAR}, #{item.latitude,jdbcType=DECIMAL}, 
+        #{item.longitude,jdbcType=DECIMAL}, #{item.fullName,jdbcType=VARCHAR}, #{item.provinceCode,jdbcType=VARCHAR}, 
+        #{item.cityCode,jdbcType=VARCHAR}, #{item.regionCode,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, 
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, 
         #{item.remark,jdbcType=VARCHAR})
     </foreach>
   </insert>
@@ -391,17 +297,17 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      #{device_identification,jdbcType=VARCHAR},
+      #{deviceIdentification,jdbcType=VARCHAR},
       #{latitude,jdbcType=DECIMAL},
       #{longitude,jdbcType=DECIMAL},
-      #{full_name,jdbcType=VARCHAR},
-      #{province_code,jdbcType=VARCHAR},
-      #{city_code,jdbcType=VARCHAR},
-      #{region_code,jdbcType=VARCHAR},
-      #{create_by,jdbcType=VARCHAR},
-      #{create_time,jdbcType=TIMESTAMP},
-      #{update_by,jdbcType=VARCHAR},
-      #{update_time,jdbcType=TIMESTAMP},
+      #{fullName,jdbcType=VARCHAR},
+      #{provinceCode,jdbcType=VARCHAR},
+      #{cityCode,jdbcType=VARCHAR},
+      #{regionCode,jdbcType=VARCHAR},
+      #{createBy,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP},
+      #{updateBy,jdbcType=VARCHAR},
+      #{updateTime,jdbcType=TIMESTAMP},
       #{remark,jdbcType=VARCHAR},
     </trim>
     on duplicate key update 
@@ -409,17 +315,17 @@
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
-      device_identification = #{device_identification,jdbcType=VARCHAR},
+      device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       latitude = #{latitude,jdbcType=DECIMAL},
       longitude = #{longitude,jdbcType=DECIMAL},
-      full_name = #{full_name,jdbcType=VARCHAR},
-      province_code = #{province_code,jdbcType=VARCHAR},
-      city_code = #{city_code,jdbcType=VARCHAR},
-      region_code = #{region_code,jdbcType=VARCHAR},
-      create_by = #{create_by,jdbcType=VARCHAR},
-      create_time = #{create_time,jdbcType=TIMESTAMP},
-      update_by = #{update_by,jdbcType=VARCHAR},
-      update_time = #{update_time,jdbcType=TIMESTAMP},
+      full_name = #{fullName,jdbcType=VARCHAR},
+      province_code = #{provinceCode,jdbcType=VARCHAR},
+      city_code = #{cityCode,jdbcType=VARCHAR},
+      region_code = #{regionCode,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
       remark = #{remark,jdbcType=VARCHAR},
     </trim>
   </insert>
@@ -430,7 +336,7 @@
       <if test="id != null">
         id,
       </if>
-      <if test="device_identification != null and device_identification != ''">
+      <if test="deviceIdentification != null">
         device_identification,
       </if>
       <if test="latitude != null">
@@ -439,31 +345,31 @@
       <if test="longitude != null">
         longitude,
       </if>
-      <if test="full_name != null and full_name != ''">
+      <if test="fullName != null">
         full_name,
       </if>
-      <if test="province_code != null and province_code != ''">
+      <if test="provinceCode != null">
         province_code,
       </if>
-      <if test="city_code != null and city_code != ''">
+      <if test="cityCode != null">
         city_code,
       </if>
-      <if test="region_code != null and region_code != ''">
+      <if test="regionCode != null">
         region_code,
       </if>
-      <if test="create_by != null and create_by != ''">
+      <if test="createBy != null">
         create_by,
       </if>
-      <if test="create_time != null">
+      <if test="createTime != null">
         create_time,
       </if>
-      <if test="update_by != null and update_by != ''">
+      <if test="updateBy != null">
         update_by,
       </if>
-      <if test="update_time != null">
+      <if test="updateTime != null">
         update_time,
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark,
       </if>
     </trim>
@@ -472,8 +378,8 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="device_identification != null and device_identification != ''">
-        #{device_identification,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        #{deviceIdentification,jdbcType=VARCHAR},
       </if>
       <if test="latitude != null">
         #{latitude,jdbcType=DECIMAL},
@@ -481,31 +387,31 @@
       <if test="longitude != null">
         #{longitude,jdbcType=DECIMAL},
       </if>
-      <if test="full_name != null and full_name != ''">
-        #{full_name,jdbcType=VARCHAR},
+      <if test="fullName != null">
+        #{fullName,jdbcType=VARCHAR},
       </if>
-      <if test="province_code != null and province_code != ''">
-        #{province_code,jdbcType=VARCHAR},
+      <if test="provinceCode != null">
+        #{provinceCode,jdbcType=VARCHAR},
       </if>
-      <if test="city_code != null and city_code != ''">
-        #{city_code,jdbcType=VARCHAR},
+      <if test="cityCode != null">
+        #{cityCode,jdbcType=VARCHAR},
       </if>
-      <if test="region_code != null and region_code != ''">
-        #{region_code,jdbcType=VARCHAR},
+      <if test="regionCode != null">
+        #{regionCode,jdbcType=VARCHAR},
       </if>
-      <if test="create_by != null and create_by != ''">
-        #{create_by,jdbcType=VARCHAR},
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
       </if>
-      <if test="create_time != null">
-        #{create_time,jdbcType=TIMESTAMP},
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="update_by != null and update_by != ''">
-        #{update_by,jdbcType=VARCHAR},
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
       </if>
-      <if test="update_time != null">
-        #{update_time,jdbcType=TIMESTAMP},
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
@@ -514,8 +420,8 @@
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
-      <if test="device_identification != null and device_identification != ''">
-        device_identification = #{device_identification,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       </if>
       <if test="latitude != null">
         latitude = #{latitude,jdbcType=DECIMAL},
@@ -523,31 +429,31 @@
       <if test="longitude != null">
         longitude = #{longitude,jdbcType=DECIMAL},
       </if>
-      <if test="full_name != null and full_name != ''">
-        full_name = #{full_name,jdbcType=VARCHAR},
+      <if test="fullName != null">
+        full_name = #{fullName,jdbcType=VARCHAR},
       </if>
-      <if test="province_code != null and province_code != ''">
-        province_code = #{province_code,jdbcType=VARCHAR},
+      <if test="provinceCode != null">
+        province_code = #{provinceCode,jdbcType=VARCHAR},
       </if>
-      <if test="city_code != null and city_code != ''">
-        city_code = #{city_code,jdbcType=VARCHAR},
+      <if test="cityCode != null">
+        city_code = #{cityCode,jdbcType=VARCHAR},
       </if>
-      <if test="region_code != null and region_code != ''">
-        region_code = #{region_code,jdbcType=VARCHAR},
+      <if test="regionCode != null">
+        region_code = #{regionCode,jdbcType=VARCHAR},
       </if>
-      <if test="create_by != null and create_by != ''">
-        create_by = #{create_by,jdbcType=VARCHAR},
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
       </if>
-      <if test="create_time != null">
-        create_time = #{create_time,jdbcType=TIMESTAMP},
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="update_by != null and update_by != ''">
-        update_by = #{update_by,jdbcType=VARCHAR},
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
       </if>
-      <if test="update_time != null">
-        update_time = #{update_time,jdbcType=TIMESTAMP},
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
