@@ -11,7 +11,9 @@ import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
+import com.mqttsnet.thinglinks.system.api.RemoteFileService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +36,8 @@ public class ProductController extends BaseController {
      */
     @Resource
     private ProductService productService;
+    @Autowired
+    private RemoteFileService remoteFileService;
 
     /**
      * 通过主键查询单条数据
@@ -66,22 +70,27 @@ public class ProductController extends BaseController {
     }*/
 
     /**
-     * @param file
+     * 导入产品模型json数据
+     * @param file json文件
+     * @param updateSupport 是否更新已经存在的产品模型数据
+     * @param appId 应用ID
+     * @param templateId  产品模型模板ID
+     * @param status 状态(字典值：启用  停用)
      * @return AjaxResult
-     * @description: 导入产品模型json数据
-     * @throws:
-     * @author: thinglinks
-     * @datetime: 2021/3/11 17:08
+     * @throws Exception
      */
-    @PreAuthorize(hasPermi = "link:product:import")
-    @Log(title = "产品模型", businessType = BusinessType.IMPORT)
-    @PostMapping("/importProductJson")
-    public AjaxResult importProductJson(@RequestParam("file") MultipartFile file) throws Exception {
-        AjaxResult ajaxResult = productService.importProductJson(file);
+//    @PreAuthorize(hasPermi = "link:product:import")
+    @Log(title = "产品管理", businessType = BusinessType.IMPORT)
+    @PostMapping("/importProductJsonFile")
+    public AjaxResult importProductJson(MultipartFile file,
+                                        Boolean updateSupport,
+                                        String appId,
+                                        String templateId,
+                                        String status
+    ) throws Exception {
+        AjaxResult ajaxResult = productService.importProductJson(file,updateSupport,appId,templateId,status);
         //存储产品模型原始文件
-       /* if (ajaxResult.get(AjaxResult.CODE_TAG).equals(200)){
-            minioFileService.upload(file,loginUser.getUsername(), Constants.APPLICATION_OCTET_STREAM);
-        }*/
+//        final R<SysFile> uploadMessage = remoteFileService.upload(file);
         return ajaxResult;
     }
 

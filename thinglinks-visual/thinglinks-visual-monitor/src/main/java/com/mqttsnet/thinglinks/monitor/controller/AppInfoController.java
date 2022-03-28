@@ -52,7 +52,7 @@ public class AppInfoController extends BaseController {
     /**
      * agent查询进程列表
      *
-     * @param hostname
+     * @param params
      * @return
      */
     @GetMapping(value = "/agentList")

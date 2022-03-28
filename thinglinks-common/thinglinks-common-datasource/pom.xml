@@ -31,11 +31,11 @@
             <version>${dynamic-ds.version}</version>
         </dependency>
         
-        <!-- SpringBoot Seata -->
+       <!-- &lt;!&ndash; SpringBoot Seata &ndash;&gt;
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 </project>

@@ -63,12 +63,11 @@ public class Product extends BaseEntity implements Serializable {
     private String productIdentification;
 
     /**
-    * 支持以下两种产品类型•0：普通产品，需直连设备。
-•1：网关产品，可挂载子设备。
+    * 支持以下两种产品类型•COMMON：普通产品，需直连设备。•GATEWAY：网关产品，可挂载子设备。
 
     */
     @Excel(name = "产品类型")
-    @ApiModelProperty(value="支持以下两种产品类型•0：普通产品，需直连设备。,•1：网关产品，可挂载子设备")
+    @ApiModelProperty(value="支持以下两种产品类型•COMMON：普通产品，需直连设备。,•GATEWAY：网关产品，可挂载子设备")
     private String productType;
 
     /**
@@ -117,10 +116,10 @@ public class Product extends BaseEntity implements Serializable {
     private String protocolType;
 
     /**
-    * 状态(字典值：启用  停用)
+    * 状态(字典值：0启用  1停用)
     */
-    @Excel(name = "状态(字典值：启用  停用)")
-    @ApiModelProperty(value="状态(字典值：启用  停用)")
+    @Excel(name = "状态(字典值：0启用  1停用)")
+    @ApiModelProperty(value="状态(字典值：0启用  1停用)")
     private String status;
 
     /**

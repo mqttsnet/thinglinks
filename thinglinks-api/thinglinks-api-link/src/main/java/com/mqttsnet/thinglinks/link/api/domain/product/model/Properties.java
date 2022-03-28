@@ -6,7 +6,7 @@ package com.mqttsnet.thinglinks.link.api.domain.product.model;
 import lombok.Data;
 
 /**
- * 产品模型对象 Properties
+ * 产品模型服务属性详情对象 Properties
  *
  * @author thinglinks
  * @date 2021-12-23

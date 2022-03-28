@@ -39,9 +39,9 @@ public class ProductTemplate extends BaseEntity implements Serializable {
     private String appId;
 
     /**
-    * 产品名称:自定义，支持中文、英文大小写、数字、下划线和中划线
+    * 产品模板名称:自定义，支持中文、英文大小写、数字、下划线和中划线
     */
-    @ApiModelProperty(value="产品名称:自定义，支持中文、英文大小写、数字、下划线和中划线")
+    @ApiModelProperty(value="产品模板名称:自定义，支持中文、英文大小写、数字、下划线和中划线")
     private String templateName;
 
     /**
