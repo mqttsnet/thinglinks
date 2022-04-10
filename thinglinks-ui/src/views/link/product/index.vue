@@ -85,7 +85,8 @@
           size="mini"
           @click="handleImport"
           v-hasPermi="['link:product:import']"
-        >导入</el-button>
+        >导入
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -125,13 +126,13 @@
         </template>
       </el-table-column>
       <el-table-column label="产品描述" align="center" prop="remark"/>
-      <el-table-column label="创建者" align="center" prop="createBy" />
+      <el-table-column label="创建者" align="center" prop="createBy"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新者" align="center" prop="updateBy" />
+      <el-table-column label="更新者" align="center" prop="updateBy"/>
       <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
@@ -173,21 +174,21 @@
         <el-row>
           <el-col :span="11">
             <el-form-item label="应用ID" prop="appId">
-             <el-col :span="22">
-               <el-select v-model="form.appId" placeholder="请选择应用ID">
-                 <el-option
-                   v-for="dict in dict.type.link_application_type"
-                   :key="dict.value"
-                   :label="dict.label"
-                   :value="dict.value"
-                 ></el-option>
-               </el-select>
-             </el-col>
-             <el-col :span="2" style="padding-left: 5px">
-               <el-tooltip class="item" effect="light" content="应用ID需全局唯一，应用ID创建后无法变更" placement="right-start">
-                 <i class="el-icon-question" />
-               </el-tooltip>
-             </el-col>
+              <el-col :span="22">
+                <el-select v-model="form.appId" placeholder="请选择应用ID">
+                  <el-option
+                    v-for="dict in dict.type.link_application_type"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-col>
+              <el-col :span="2" style="padding-left: 5px">
+                <el-tooltip class="item" effect="light" content="应用ID需全局唯一，应用ID创建后无法变更" placement="right-start">
+                  <i class="el-icon-question"/>
+                </el-tooltip>
+              </el-col>
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -203,8 +204,9 @@
                 </el-select>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" effect="light" content="标准化的物模型可以沉淀为平台资产，供用户快速创建产品Profile" placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" effect="light" content="标准化的物模型可以沉淀为平台资产，供用户快速创建产品Profile"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -218,7 +220,7 @@
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
                 <el-tooltip class="item" effect="light" content="自定义，支持中文、英文大小写、数字、下划线和中划线" placement="right-start">
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -230,7 +232,7 @@
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
                 <el-tooltip class="item" effect="light" content="产品标识需全局唯一，默认为：UUID" placement="right-start">
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -250,8 +252,9 @@
                 </el-select>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" effect="light" content="支持以下两种产品类型•0：普通产品，需直连设备。•1：网关产品，可挂载子设备。" placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" effect="light" content="支持以下两种产品类型•0：普通产品，需直连设备。•1：网关产品，可挂载子设备。"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -263,7 +266,7 @@
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
                 <el-tooltip class="item" effect="light" content="支持英文大小写，数字，下划线和中划线" placement="right-start">
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -277,7 +280,7 @@
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
                 <el-tooltip class="item" effect="light" content="支持英文大小写，数字，下划线和中划线" placement="right-start">
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -288,8 +291,9 @@
                 <el-input v-model="form.model" placeholder="请输入产品型号"/>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" effect="light" content="建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线" placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" effect="light" content="建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -303,7 +307,7 @@
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
                 <el-tooltip class="item" effect="light" content="默认为JSON无需修改。" placement="right-start">
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -315,7 +319,7 @@
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
                 <el-tooltip class="item" effect="light" content="支持英文大小写、数字、下划线和中划线" placement="right-start">
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -336,7 +340,7 @@
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
                 <el-tooltip class="item" effect="light" content="默认为MQTT无需修改。" placement="right-start">
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -355,7 +359,7 @@
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
                 <el-tooltip class="item" effect="light" content="字典值：默认启用、停用" placement="right-start">
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -391,6 +395,7 @@
       >
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处,或<em>点击上传</em>,<span>仅允许导入json格式文件。</span></div>
+
         <div class="el-upload__tip text-center" slot="tip">
           <div class="el-upload__tip" slot="tip">
             <el-col :span="12">
@@ -406,21 +411,22 @@
             <el-col :span="12">
               <el-input v-model="upload.templateId" placeholder="请输入产品模型模板ID"/>
             </el-col>
-            <el-col :span="12">
-              <el-select v-model="upload.status" placeholder="请选择状态">
-                <el-option
-                  v-for="dict in dict.type.sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
+
+            <el-col :span="12" hidden="hidden">
+              <el-input value="0" v-model="upload.status" hidden="hidden"/>
             </el-col>
-            <el-col :span="12">
-              <el-checkbox v-model="upload.updateSupport" /> 是否更新已经存在的产品模型数据
-            </el-col>
+
           </div>
-          <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;" @click="importTemplate">下载模板</el-link>
+          <div class="el-upload__tip text-center" slot="tip">
+            <div class="el-upload__tip" slot="tip">
+              <el-checkbox v-model="upload.updateSupport"/>
+              是否更新已经存在的用户数据
+            </div>
+            <span>仅允许导入xls、xlsx格式文件。</span>
+            <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;"
+                     @click="importTemplate">下载模板
+            </el-link>
+          </div>
         </div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
@@ -433,7 +439,7 @@
 
 <script>
 import {listProduct, getProduct, delProduct, addProduct, updateProduct} from "@/api/link/product";
-import { getToken } from "@/utils/auth";
+import {getToken} from "@/utils/auth";
 
 export default {
   name: "Product",
@@ -480,11 +486,11 @@ export default {
         // 产品模型模板
         templateId: "",
         // 状态
-        status: "",
+        status: "0",
         // 是否更新已经存在的用户数据
         updateSupport: 0,
         // 设置上传的请求头部
-        headers: { Authorization: "Bearer " + getToken() },
+        headers: {Authorization: "Bearer " + getToken()},
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/link/product/importProductJsonFile"
       },
@@ -518,7 +524,8 @@ export default {
         ],
         deviceType: [
           {
-            required: true, message: "设备类型不能为空", trigger: "change" }
+            required: true, message: "设备类型不能为空", trigger: "change"
+          }
         ],
         protocolType: [
           {required: true, message: "设备接入平台的协议类型不能为空", trigger: "change"}
@@ -529,167 +536,158 @@ export default {
       }
     };
   },
-    created()
-    {
+  created() {
+    this.getList();
+  }
+  ,
+  methods: {
+    /** 查询产品管理列表 */
+    getList() {
+      this.loading = true;
+      listProduct(this.queryParams).then(response => {
+        this.productList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
+    }
+    ,
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    }
+    ,
+    // 表单重置
+    reset() {
+      this.form = {
+        id: null,
+        appId: null,
+        templateId: null,
+        productName: null,
+        productIdentification: null,
+        productType: null,
+        manufacturerId: null,
+        manufacturerName: null,
+        model: null,
+        dataFormat: null,
+        deviceType: null,
+        protocolType: null,
+        status: null,
+        remark: null,
+        createBy: null,
+        createTime: null,
+        updateBy: null,
+        updateTime: null
+      };
+      this.resetForm("form");
+    }
+    ,
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
       this.getList();
     }
-  ,
-    methods: {
-      /** 查询产品管理列表 */
-      getList()
-      {
-        this.loading = true;
-        listProduct(this.queryParams).then(response => {
-          this.productList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
-      }
     ,
-      // 取消按钮
-      cancel()
-      {
-        this.open = false;
-        this.reset();
-      }
-    ,
-      // 表单重置
-      reset()
-      {
-        this.form = {
-          id: null,
-          appId: null,
-          templateId: null,
-          productName: null,
-          productIdentification: null,
-          productType: null,
-          manufacturerId: null,
-          manufacturerName: null,
-          model: null,
-          dataFormat: null,
-          deviceType: null,
-          protocolType: null,
-          status: null,
-          remark: null,
-          createBy: null,
-          createTime: null,
-          updateBy: null,
-          updateTime: null
-        };
-        this.resetForm("form");
-      }
-    ,
-      /** 搜索按钮操作 */
-      handleQuery()
-      {
-        this.queryParams.pageNum = 1;
-        this.getList();
-      }
-    ,
-      /** 重置按钮操作 */
-      resetQuery()
-      {
-        this.resetForm("queryForm");
-        this.handleQuery();
-      }
-    ,
-      // 多选框选中数据
-      handleSelectionChange(selection)
-      {
-        this.ids = selection.map(item => item.id)
-        this.single = selection.length !== 1
-        this.multiple = !selection.length
-      }
-    ,
-      /** 新增按钮操作 */
-      handleAdd()
-      {
-        this.reset();
-        this.open = true;
-        this.title = "添加产品管理";
-      }
-    ,
-      /** 修改按钮操作 */
-      handleUpdate(row)
-      {
-        this.reset();
-        const id = row.id || this.ids
-        getProduct(id).then(response => {
-          this.form = response.data;
-          this.open = true;
-          this.title = "修改产品管理";
-        });
-      }
-    ,
-      /** 提交按钮 */
-      submitForm()
-      {
-        this.$refs["form"].validate(valid => {
-          if (valid) {
-            if (this.form.id != null) {
-              updateProduct(this.form).then(response => {
-                this.$modal.msgSuccess("修改成功");
-                this.open = false;
-                this.getList();
-              });
-            } else {
-              addProduct(this.form).then(response => {
-                this.$modal.msgSuccess("新增成功");
-                this.open = false;
-                this.getList();
-              });
-            }
-          }
-        });
-      }
-    ,
-      /** 删除按钮操作 */
-      handleDelete(row)
-      {
-        const ids = row.id || this.ids;
-        this.$modal.confirm('是否确认删除产品管理编号为"' + ids + '"的数据项？').then(function () {
-          return delProduct(ids);
-        }).then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        }).catch(() => {
-        });
-      }
-    ,
-      /** 导出按钮操作 */
-      handleExport()
-      {
-        this.download('link/product/export', {
-          ...this.queryParams
-        }, `link_product.json`)
-      },
-      /** 导入按钮操作 */
-      handleImport() {
-        this.upload.title = "产品模型导入";
-        this.upload.open = true;
-      },
-      /** 下载模板操作 */
-      importTemplate() {
-        this.download('link/product/importTemplate', {
-          ...this.queryParams
-        }, `product_${new Date().getTime()}.json`)
-      },
-      // 文件上传中处理
-      handleFileUploadProgress(event, file, fileList) {
-        this.upload.isUploading = true;
-      },
-      // 文件上传成功处理
-      handleFileSuccess(response, file, fileList) {
-        this.upload.open = false;
-        this.upload.isUploading = false;
-        this.$refs.upload.clearFiles();
-        this.$alert(response.msg, "导入结果", { dangerouslyUseHTMLString: true });
-        this.getList();
-      },
-      // 提交上传文件
-      submitFileForm() {
-        this.$refs.upload.submit();
-      }
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.resetForm("queryForm");
+      this.handleQuery();
     }
-  };
+    ,
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.id)
+      this.single = selection.length !== 1
+      this.multiple = !selection.length
+    }
+    ,
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.open = true;
+      this.title = "添加产品管理";
+    }
+    ,
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const id = row.id || this.ids
+      getProduct(id).then(response => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改产品管理";
+      });
+    }
+    ,
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          if (this.form.id != null) {
+            updateProduct(this.form).then(response => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
+          } else {
+            addProduct(this.form).then(response => {
+              this.$modal.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
+        }
+      });
+    }
+    ,
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const ids = row.id || this.ids;
+      this.$modal.confirm('是否确认删除产品管理编号为"' + ids + '"的数据项？').then(function () {
+        return delProduct(ids);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {
+      });
+    }
+    ,
+    /** 导出按钮操作 */
+    handleExport() {
+      this.download('link/product/export', {
+        ...this.queryParams
+      }, `link_product.json`)
+    },
+    /** 导入按钮操作 */
+    handleImport() {
+      this.upload.title = "产品模型导入";
+      this.upload.open = true;
+    },
+    /** 下载模板操作 */
+    importTemplate() {
+      this.download('link/product/importTemplate', {
+        ...this.queryParams
+      }, `product_${new Date().getTime()}.json`)
+    },
+    // 文件上传中处理
+    handleFileUploadProgress(event, file, fileList) {
+      this.upload.isUploading = true;
+    },
+    // 文件上传成功处理
+    handleFileSuccess(response, file, fileList) {
+      this.upload.open = false;
+      this.upload.isUploading = false;
+      this.$refs.upload.clearFiles();
+      this.$alert(response.msg, "导入结果", {dangerouslyUseHTMLString: true});
+      this.getList();
+    },
+    // 提交上传文件
+    submitFileForm() {
+      this.$refs.upload.submit();
+      this.upload.appId = "";
+      this.upload.templateId = "";
+      this.upload.updateSupport = "";
+    }
+  }
+};
 </script>
