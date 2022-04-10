@@ -5,7 +5,7 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import java.util.List;
 
 /**
- * @Description: java类作用描述
+ * @Description: 设备管理业务层接口
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
  * @Website: http://thinglinks.mqttsnet.com
@@ -118,9 +118,18 @@ public interface DeviceService {
 	Device findOneByClientIdOrDeviceIdentification(String clientId,String deviceIdentification);
 
 
+    /**
+     * 设备信息缓存失效
+     * @param clientId
+     * @return
+     */
+    Boolean cacheInvalidation(String clientId);
 
-
-
-
+    /**
+     * 批量断开设备连接端口
+     * @param ids
+     * @return
+     */
+    int disconnect(Long[] ids);
 }
 

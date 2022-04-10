@@ -73,25 +73,23 @@ seata:
     nacos:
       serverAddr: 127.0.0.1:8848
       group: SEATA_GROUP
-      namespace: 8ea40c2e-64ba-4430-9bd8-a25336b2b45a
+      namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
   registry:
     type: nacos
     nacos:
       application: seata-server
       server-addr: 127.0.0.1:8848
-      namespace: 8ea40c2e-64ba-4430-9bd8-a25336b2b45a
+      namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
     
 #smqtt官方配置文件V1.1.2
 smqtt:
   logLevel: INFO # 系统日志
   tcp: # tcp配置
     port: 11883 # mqtt端口号
-    username: thinglinks # mqtt连接默认用户名  生产环境建议spi去注入PasswordAuthentication接口
-    password: thinglinks  # mqtt连接默认密码 生产环境建议spi去注入PasswordAuthentication接口
     connectModel: KICK # UNIQUE 唯一 KICK 互踢
-    notKickSecond: 30  # KICK互踢模式生效, 单位秒, 指定时间内客户端不互踢, 避免客户端自动连接持续互踢
+    notKickSecond: 30 # KICK互踢模式生效, 单位秒, 指定时间内客户端不互踢, 避免客户端自动连接持续互踢
     wiretap: false  # 二进制日志 前提是 smqtt.logLevel = DEBUG
-    bossThreadSize: 4  # boss线程 默认=cpu核心数
+    bossThreadSize: 8  # boss线程 默认=cpu核心数
     workThreadSize: 16  # work线程 默认=cpu核心数*2
     businessThreadSize: 32 # 业务线程数 默认=cpu核心数*10
     businessQueueSize: 100000 #业务队列 默认=100000
@@ -108,6 +106,14 @@ smqtt:
       enable: false # 开关
       key: classpath:ssl/server.key # 指定ssl文件 默认系统生成
       crt: classpath:ssl/server.crt # 指定ssl文件 默认系统生成
+  acl:
+    aclPolicy: JDBC # NONE or FILE or JDBC
+    filePath:  # FILE时配置filePath
+    jdbcAclConfig:
+      driver: com.mysql.jdbc.Driver
+      url: ${spring.datasource.dynamic.datasource.master.url}
+      username: ${spring.datasource.dynamic.datasource.master.username}
+      password: ${spring.datasource.dynamic.datasource.master.password}
   http: # http相关配置 端口固定60000
     enable: false # 开关
     accessLog: false # http访问日志

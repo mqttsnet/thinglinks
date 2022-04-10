@@ -126,14 +126,13 @@ public class DeviceController extends BaseController {
      * @param clientId
      * @return
      */
-    @PreAuthorize(hasPermi = "link:device:remove")
     @Log(title = "设备管理", businessType = BusinessType.OTHER)
     @GetMapping(value = "/validationfindOneByClientId/{clientId}")
     public AjaxResult validationfindOneByClientId(@PathVariable("clientId") String clientId)
     {
         Device findOneByClientId = deviceService.findOneByClientId(clientId);
         if (StringUtils.isNull(findOneByClientId)){
-            AjaxResult.success("clientId可用");
+            return AjaxResult.success("clientId可用");
         }
         return AjaxResult.error("clientId已存在");
     }
@@ -143,25 +142,28 @@ public class DeviceController extends BaseController {
      * @param deviceIdentification
      * @return
      */
+    @Log(title = "设备管理", businessType = BusinessType.OTHER)
     @GetMapping(value = "/validationFindOneByDeviceIdentification/{deviceIdentification}")
     public AjaxResult validationFindOneByDeviceIdentification(@PathVariable("deviceIdentification") String deviceIdentification)
     {
         Device findOneByDeviceIdentification = deviceService.findOneByDeviceIdentification(deviceIdentification);
         if (StringUtils.isNull(findOneByDeviceIdentification)){
-            AjaxResult.success("设备标识可用");
+            return AjaxResult.success("设备标识可用");
         }
         return AjaxResult.error("设备标识已存在");
     }
 
+
     /**
      * 设备断开连接接口
-     *//*
-    @PreAuthorize(hasPermi = "link:device:remove")
-    @Log(title = "设备管理", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
+     */
+    @PreAuthorize(hasPermi = "link:device:disconnect")
+    @Log(title = "设备管理", businessType = BusinessType.OTHER)
+    @PostMapping("/disconnect/{ids}")
+    public AjaxResult disconnect(@PathVariable Long[] ids)
     {
-        return toAjax(deviceService.deleteDeviceByIds(ids));
-    }*/
+        deviceService.disconnect(ids);
+        return AjaxResult.success("操作成功");
+    }
 
 }

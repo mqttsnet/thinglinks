@@ -7,17 +7,17 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 产品模型服务能力描述对象 Services
+ * 产品模型服务命令对象 Commands
  *
  * @author thinglinks
  * @date 2021-12-23
  */
 @Data
-public class Services{
+public class Commands {
     private static final long serialVersionUID = 1L;
-    private String serviceId;
+    private String name;
     private String description;
-    private List<Commands> commands;
-    private List<Properties> properties;
+    private List<Properties> requests;
+    private List<Properties> responses;
 
 }

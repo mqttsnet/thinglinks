@@ -5,7 +5,7 @@
    <!-- 日志输出格式 -->
 	<property name="log.pattern" value="%black(thinglinks.mqttsnet.com) %red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger) - %cyan(%msg%n)" />
 
-    <!-- mqtts.net输出 -->
+    <!-- thinglinks.mqttsnet.com输出 -->
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>${log.pattern}</pattern>

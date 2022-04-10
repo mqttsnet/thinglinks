@@ -11,9 +11,8 @@
 
     <artifactId>thinglinks-api-link</artifactId>
 
-
     <description>
-        thinglinks-api-link 设备集成Link模块
+        thinglinks-api-link 设备集成Link模块API
     </description>
 
     <dependencies>

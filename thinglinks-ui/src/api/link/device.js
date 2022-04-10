@@ -42,3 +42,11 @@ export function delDevice(id) {
     method: 'delete'
   })
 }
+
+// 断开设备连接
+export function disconnectDevice(id) {
+  return request({
+    url: '/link/device/disconnect/' + id,
+    method: 'post'
+  })
+}

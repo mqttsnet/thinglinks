@@ -138,7 +138,8 @@ public class Constants
     public static final String RESUBMIT_URL_KEY = "resubmit_url:";
 
     /**
-     * 分布式锁机制 cache key
+     * TDengine superTableFields cache key
      */
-    public static final String SET_NX = "setnx:";
+    public static final String TDENGINE_SUPERTABLEFILELDS = "TDengine_superTableFields:";
+
 }

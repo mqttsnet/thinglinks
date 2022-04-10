@@ -23,8 +23,8 @@ spring:
         loginUsername: admin
         loginPassword: 123456
     dynamic:
-      # 开启seata代理
-      seata: true
+      # 开启seata代理，开启后默认每个数据源都代理，如果某个不需要代理可单独关闭
+      seata: false
       druid:
         initial-size: 5
         min-idle: 5
@@ -41,19 +41,18 @@ spring:
         filters: stat,slf4j
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
-          # 主库数据源
-          master:
-            driver-class-name: com.mysql.cj.jdbc.Driver
-            url: jdbc:mysql://127.0.0.1:3306/thinglinks?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-            username: thinglinks
-            password: NAhtGR8ByPpymakG
-          # 从库数据源
-          # slave:
-            # username: 
-            # password: 
-            # url: 
-            # driver-class-name: 
-      # seata: true    # 开启seata代理，开启后默认每个数据源都代理，如果某个不需要代理可单独关闭
+        # 主库数据源
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://127.0.0.1:3306/thinglinks?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: thinglinks
+          password: NAhtGR8ByPpymakG
+        # 从库数据源
+        # slave:
+          # username: 
+          # password: 
+          # url: 
+          # driver-class-name: 
 
 # rocketmq地址
 rocketmq: 
@@ -79,7 +78,7 @@ thinglinks:
 
 # seata配置
 seata:
-  enabled: true
+  enabled: false
   # Seata 应用编号，默认为 ${spring.application.name}
   application-id: thinglinks-link
   # Seata 事务组编号，用于 TC 集群名

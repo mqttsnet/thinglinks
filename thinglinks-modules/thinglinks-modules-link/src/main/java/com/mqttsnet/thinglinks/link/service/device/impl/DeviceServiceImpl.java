@@ -3,12 +3,14 @@ package com.mqttsnet.thinglinks.link.service.device.impl;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +18,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * @Description: java类作用描述
+ * @Description: 设备管理业务层接口实现类
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
  * @Website: http://thinglinks.mqttsnet.com
@@ -27,6 +29,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Service
+@Slf4j
 public class DeviceServiceImpl implements DeviceService {
 
     @Resource
@@ -253,6 +256,32 @@ public class DeviceServiceImpl implements DeviceService {
 	public Device findOneByClientIdOrDeviceIdentification(String clientId,String deviceIdentification){
 		 return deviceMapper.findOneByClientIdOrDeviceIdentification(clientId,deviceIdentification);
 	}
+
+    /**
+     * 设备信息缓存失效
+     * @param clientId
+     * @return
+     */
+    @Override
+    public Boolean cacheInvalidation(String clientId) {
+        Device oneByClientId = deviceMapper.findOneByClientId(clientId);
+        log.info(oneByClientId.toString());
+        return null;
+    }
+
+    /**
+     * 批量断开设备连接端口
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public int disconnect(Long[] ids) {
+        log.info("主动断开设备连接ID{}",ids);
+        //TODO 调用broker api实现mqtt设备断开连接
+
+        return 0;
+    }
 
 }
 

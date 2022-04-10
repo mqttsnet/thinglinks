@@ -31,7 +31,7 @@ public interface RemoteTdEngineService {
      * @Date 2021/12/31 11:05
      */
     @PostMapping("/dataOperation/createDb")
-    R<?> createDataBase(@RequestParam("dbName") String databaseName);
+    R<?> createDataBase(@RequestParam("databaseName") String databaseName);
 
     /**
      * @param superTableDto 创建超级表需要的入参的实体类

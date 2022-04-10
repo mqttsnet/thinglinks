@@ -12,7 +12,7 @@ ribbon:
 
 # feign 配置
 feign:
-  hystrix:
+  hystrix: 
     enabled: true
   sentinel:
     enabled: true

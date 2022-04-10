@@ -78,7 +78,7 @@ public class DeviceActionInterceptor implements Interceptor {
             //TODO MQTT设备心跳处理
             List<MqttMessageType> mqttMessageType = Collections.singletonList(MqttMessageType.PINGREQ);
             if (!smqttMessage.getIsCluster() && mqttMessageType.contains(message.fixedHeader().messageType())) {
-                DeviceActionInterceptor.redisService.expire(Constants.DEVICE_RECORD_KEY+mqttChannel.getClientIdentifier(),300L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+                DeviceActionInterceptor.redisService.expire(Constants.DEVICE_RECORD_KEY+mqttChannel.getClientIdentifier(),60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             }
             return invocation.proceed(); // 放行
         } catch (Exception e) {

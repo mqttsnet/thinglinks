@@ -15,7 +15,41 @@
                 #{item.fieldName}
             </if>
             <if test="item.dataType != null || item.dataType != ''">
-                #{item.dataType}
+                <choose>
+                    <when test="item.dataType == 'timestamp'">
+                        timestamp
+                    </when>
+                    <when test="item.dataType == 'tinyint'">
+                        tinyint
+                    </when>
+                    <when test="item.dataType == 'smallint'">
+                        smallint
+                    </when>
+                    <when test="item.dataType == 'int'">
+                        int
+                    </when>
+                    <when test="item.dataType == 'bigint'">
+                        bigint
+                    </when>
+                    <when test="item.dataType == 'float'">
+                        float
+                    </when>
+                    <when test="item.dataType == 'double'">
+                        double
+                    </when>
+                    <when test="item.dataType == 'binary'">
+                        binary
+                    </when>
+                    <when test="item.dataType == 'nchar'">
+                        nchar
+                    </when>
+                    <when test="item.dataType == 'bool'">
+                        bool
+                    </when>
+                    <when test="item.dataType == 'json'">
+                        json
+                    </when>
+                </choose>
             </if>
             <if test="item.size != null">
                 (#{item.size})
@@ -108,8 +142,45 @@
         <if test="fieldsVo.fieldName != null || fieldsVo.fieldName != ''">
             #{fieldsVo.fieldName}
         </if>
-        <if test="fieldsVo.dataType != null || fieldsVo.dataType != ''">
+        <!--<if test="fieldsVo.dataType != null || fieldsVo.dataType != ''">
             #{fieldsVo.dataType}
+        </if>-->
+        <if test="fieldsVo.dataType != null || fieldsVo.dataType != ''">
+            <choose>
+                <when test="fieldsVo.dataType == 'timestamp'">
+                    timestamp
+                </when>
+                <when test="fieldsVo.dataType == 'tinyint'">
+                    tinyint
+                </when>
+                <when test="fieldsVo.dataType == 'smallint'">
+                    smallint
+                </when>
+                <when test="fieldsVo.dataType == 'int'">
+                    int
+                </when>
+                <when test="fieldsVo.dataType == 'bigint'">
+                    bigint
+                </when>
+                <when test="fieldsVo.dataType == 'float'">
+                    float
+                </when>
+                <when test="fieldsVo.dataType == 'double'">
+                    double
+                </when>
+                <when test="fieldsVo.dataType == 'binary'">
+                    binary
+                </when>
+                <when test="fieldsVo.dataType == 'nchar'">
+                    nchar
+                </when>
+                <when test="fieldsVo.dataType == 'bool'">
+                    bool
+                </when>
+                <when test="fieldsVo.dataType == 'json'">
+                    json
+                </when>
+            </choose>
         </if>
         <if test="fieldsVo.size != null">
             (#{fieldsVo.size})

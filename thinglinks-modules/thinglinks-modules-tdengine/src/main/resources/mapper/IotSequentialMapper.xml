@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mqttsnet.thinglinks.tdengine.mapper.IotSequentialMapper">
+    <resultMap id="map" type="com.mqttsnet.thinglinks.tdengine.api.domain.IotSequential">
+        <id column="statetime" jdbcType="TIMESTAMP" property="statetime"/>
+        <result column="endTime" jdbcType="TIMESTAMP" property="endtime"/>
+        <result column="deviceid" jdbcType="VARCHAR" property="deviceid"/>
+        <result column="eventtime" jdbcType="VARCHAR" property="eventtime"/>
+        <result column="serviceid" jdbcType="VARCHAR" property="serviceid"/>
+        <result column="devices" jdbcType="VARCHAR" property="devices"/>
+    </resultMap>
+
+    <select id="getList" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.IotSequential" resultMap="map">
+        select * from sequential
+        <where>
+            <if test="statetime != null and sequential != null">
+                statetime = #{statetime}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByTime" parameterType="String" resultMap="map">
+        select * from sequential where statetime = #{statetime}
+    </select>
+
+    <insert id="save">
+        insert into sequential(statetime,endtime,deviceid,eventtime,serviceid,devices) values(statetime = #{statetime},endtime = #{endtime},deviceid = #{deviceid},eventtime = #{eventtime},
+        serviceid = #{serviceid},devices =#{devices})
+    </insert>
+</mapper>

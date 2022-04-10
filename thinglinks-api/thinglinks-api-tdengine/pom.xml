@@ -11,6 +11,10 @@
 
     <artifactId>thinglinks-api-tdengine</artifactId>
 
+    <description>
+        thinglinks-api-tdengine  TDengine模块API
+    </description>
+
     <dependencies>
         <!-- thinglinks Common Core-->
         <dependency>

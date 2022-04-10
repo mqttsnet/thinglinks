@@ -48,7 +48,8 @@ public class ScheduledJob {
     /**
      * 60秒后执行，每隔120秒执行, 单位：ms。
      */
-    @Scheduled(initialDelay = 59 * 1000L, fixedRate = 120 * 1000)
+    //@Scheduled(initialDelay = 59 * 1000L, fixedRate = 120 * 1000)
+    @Scheduled(initialDelay = 1000L, fixedRate = 1000)
     public void minTask() {
         List<AppInfo> APP_INFO_LIST_CP = new ArrayList<AppInfo>();
         APP_INFO_LIST_CP.addAll(appInfoList);
@@ -81,35 +82,19 @@ public class ScheduledJob {
             if (sysLoadState != null) {
                 sysLoadState.setCreateTime(t);
             }
-            if (cpuState != null) {
-                jsonObject.put("cpuState", cpuState);
-            }
-            if (memState != null) {
-                jsonObject.put("memState", memState);
-            }
-            if (netIoState != null) {
-                jsonObject.put("netIoState", netIoState);
-            }
+            jsonObject.put("cpuState", cpuState);
+            jsonObject.put("memState", memState);
+            jsonObject.put("netIoState", netIoState);
             if (sysLoadState != null) {
                 jsonObject.put("sysLoadState", sysLoadState);
             }
             if (systemInfo != null) {
-                if (memState != null) {
-                    systemInfo.setVersionDetail(systemInfo.getVersion() + "，总内存：" + oshi.util.FormatUtil.formatBytes(hal.getMemory().getTotal()));
-                    systemInfo.setMemPer(memState.getUsePer());
-                } else {
-                    systemInfo.setMemPer(0d);
-                }
-                if (cpuState != null) {
-                    systemInfo.setCpuPer(cpuState.getSys());
-                } else {
-                    systemInfo.setCpuPer(0d);
-                }
+                systemInfo.setVersionDetail(systemInfo.getVersion() + "，总内存：" + oshi.util.FormatUtil.formatBytes(hal.getMemory().getTotal()));
+                systemInfo.setMemPer(memState.getUsePer());
+                systemInfo.setCpuPer(cpuState.getSys());
                 jsonObject.put("systemInfo", systemInfo);
             }
-            if (deskStateList != null) {
-                jsonObject.put("deskStateList", deskStateList);
-            }
+            jsonObject.put("deskStateList", deskStateList);
             //进程信息
             if (APP_INFO_LIST_CP.size() > 0) {
                 List<AppInfo> appInfoResList = new ArrayList<>();
@@ -151,7 +136,8 @@ public class ScheduledJob {
      * 30秒后执行，每隔5分钟执行, 单位：ms。
      * 获取监控进程
      */
-    @Scheduled(initialDelay = 28 * 1000L, fixedRate = 300 * 1000)
+    //@Scheduled(initialDelay = 28 * 1000L, fixedRate = 300 * 1000)
+   /* @Scheduled(initialDelay = 1000L, fixedRate = 1000)
     public void appInfoListTask() {
         JSONObject jsonObject = new JSONObject();
         LogInfo logInfo = new LogInfo();
@@ -175,5 +161,5 @@ public class ScheduledJob {
             }
             collectionProducer.senJsonObject(mqConfig.getSystemTopic(), jsonObject.toString());
         }
-    }
+    }*/
 }

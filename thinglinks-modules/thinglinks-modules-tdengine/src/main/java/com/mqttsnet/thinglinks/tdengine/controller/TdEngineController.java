@@ -44,7 +44,7 @@ public class TdEngineController {
      * @Date 2021/12/27 16:26
      */
     @PostMapping("/createDb")
-    public R createDataBase(@RequestParam("dbName") String databaseName) {
+    public R createDataBase(@RequestBody() String databaseName) {
         //调用创建数据库方法
         this.tdEngineService.createDateBase(databaseName);
         log.info("successful operation: created database '" + databaseName + "' success");

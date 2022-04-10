@@ -1,27 +1,28 @@
 package com.mqttsnet.thinglinks.link.mapper.product;
 
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+
 import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
-
-* @Description:    java类作用描述
-* @Author:         ShiHuan Sun
-* @E-mail:         13733918655@163.com
-* @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/25$ 23:52$
-* @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/25$ 23:52$
-* @UpdateRemark:   修改内容
-* @Version:        1.0
-
-*/
+ * @Description: java类作用描述
+ * @Author: ShiHuan Sun
+ * @E-mail: 13733918655@163.com
+ * @Website: http://thinglinks.mqttsnet.com
+ * @CreateDate: 2021/12/25$ 23:52$
+ * @UpdateUser: ShiHuan Sun
+ * @UpdateDate: 2021/12/25$ 23:52$
+ * @UpdateRemark: 修改内容
+ * @Version: 1.0
+ */
 @Mapper
 public interface ProductMapper {
     /**
      * delete by primary key
+     *
      * @param id primaryKey
      * @return deleteCount
      */
@@ -29,6 +30,7 @@ public interface ProductMapper {
 
     /**
      * insert record to table
+     *
      * @param record the record
      * @return insert count
      */
@@ -40,6 +42,7 @@ public interface ProductMapper {
 
     /**
      * insert record to table selective
+     *
      * @param record the record
      * @return insert count
      */
@@ -47,6 +50,7 @@ public interface ProductMapper {
 
     /**
      * select by primary key
+     *
      * @param id primary key
      * @return object by primary key
      */
@@ -54,6 +58,7 @@ public interface ProductMapper {
 
     /**
      * update record selective
+     *
      * @param record the updated record
      * @return update count
      */
@@ -61,6 +66,7 @@ public interface ProductMapper {
 
     /**
      * update record
+     *
      * @param record the updated record
      * @return update count
      */
@@ -120,7 +126,12 @@ public interface ProductMapper {
      */
     public int deleteProductByIds(Long[] ids);
 
-    Product findOneByProductName(@Param("productName")String productName);
+    Product findOneByProductName(@Param("productName") String productName);
+
+    List<Product> selectByManufacturerIdAndModelAndDeviceType(@Param("manufacturerId")String manufacturerId,@Param("model")String model,@Param("deviceType")String deviceType);
+
+	Product findOneByManufacturerIdAndModelAndDeviceType(@Param("manufacturerId")String manufacturerId,@Param("model")String model,@Param("deviceType")String deviceType);
+
 
 
 

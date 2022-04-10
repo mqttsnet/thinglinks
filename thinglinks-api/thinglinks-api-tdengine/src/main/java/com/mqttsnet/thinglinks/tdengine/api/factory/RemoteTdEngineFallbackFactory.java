@@ -24,7 +24,7 @@ public class RemoteTdEngineFallbackFactory implements FallbackFactory<RemoteTdEn
 
     @Override
     public RemoteTdEngineService create(Throwable throwable) {
-        log.error("时序性数据库服务调用失败:{}", throwable.getMessage());
+        log.error("TDengine服务调用失败:{}", throwable.getMessage());
         return new RemoteTdEngineService()
         {
 

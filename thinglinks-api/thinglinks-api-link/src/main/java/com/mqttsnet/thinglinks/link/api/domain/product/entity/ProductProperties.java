@@ -45,12 +45,6 @@ public class ProductProperties extends BaseEntity implements Serializable {
     private Long serviceId;
 
     /**
-    * 是否必填(字典值：是  否)
-    */
-    @ApiModelProperty(value="是否必填(字典值：是  否)")
-    private String isRequired;
-
-    /**
     * 指示数据类型：取值范围：string、int、decimal（float和double都可以使用此类型）、DateTime、jsonObject上报数据时，复杂类型数据格式如下：
 •DateTime:yyyyMMdd’T’HHmmss’Z’如:20151212T121212Z•jsonObject：自定义json结构体，平台不理解只透传
 
@@ -83,7 +77,7 @@ public class ProductProperties extends BaseEntity implements Serializable {
 
     */
     @ApiModelProperty(value="指示字符串长度。仅当dataType为string、DateTime时生效。,")
-    private String maxlength;
+    private Integer maxlength;
 
     /**
     * 指示访问模式。R:可读；W:可写；E属性值更改时上报数据取值范围：R、RW、RE、RWE
@@ -100,17 +94,16 @@ public class ProductProperties extends BaseEntity implements Serializable {
     private String min;
 
     /**
-    * 指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。
-
+    * 指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。(字典值link_product_isRequired：0非必填 1必填)。
     */
-    @ApiModelProperty(value="指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。,")
-    private String required;
+    @ApiModelProperty(value="指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。(字典值link_product_isRequired：0非必填 1必填)")
+    private Integer required;
 
     /**
     * 指示步长。
     */
     @ApiModelProperty(value="指示步长。")
-    private String step;
+    private Integer step;
 
     /**
     * 指示单位。支持长度不超过50。

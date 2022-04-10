@@ -1,22 +1,43 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
+import com.mqttsnet.thinglinks.common.core.constant.Constants;
+import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.Commands;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.Properties;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.Services;
 import com.mqttsnet.thinglinks.link.mapper.product.ProductMapper;
+import com.mqttsnet.thinglinks.link.mapper.product.ProductPropertiesMapper;
+import com.mqttsnet.thinglinks.link.mapper.product.ProductServicesMapper;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
+import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
+import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,10 +47,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import static cn.hutool.json.XMLTokener.entity;
 
 /**
 
@@ -46,12 +69,28 @@ import java.util.zip.ZipInputStream;
 */
 @Service
 @Slf4j
+@RefreshScope
+@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class ProductServiceImpl implements ProductService{
 
-    @Resource
+    @Autowired
     private ProductMapper productMapper;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private ProductServicesMapper productServicesMapper;
+    @Autowired
+    private ProductPropertiesMapper productPropertiesMapper;
+    @Resource
+    private RemoteTdEngineService remoteTdEngineService;
+    @Autowired
+    private RedisService redisService;
+
+    /**
+     * 数据库名称
+     */
+    @Value("${spring.datasource.dynamic.datasource.master.dbName:thinglinks}")
+    private String databaseName;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -143,23 +182,27 @@ public class ProductServiceImpl implements ProductService{
     }
 
     /**
-     * 产品模型导入
+     * 产品模型文件导入
      *
-     * @param file
+     * @param file json文件
+     * @param updateSupport 是否更新已经存在的产品模型数据
+     * @param appId 应用ID
+     * @param templateId  产品模型模板ID
+     * @param status 状态(字典值：启用  停用)
      * @return AjaxResult
      * @throws Exception
      */
     @Override
-    public AjaxResult importProductJson(MultipartFile file) throws Exception {
+    public AjaxResult importProductJson(MultipartFile file,Boolean updateSupport,String appId,String templateId,String status) throws Exception {
         // 首先校验json格式
-        List<String> imageType = Lists.newArrayList("json");
-        List<String> zip = Lists.newArrayList("zip", "rar", "7z");
+        List<String> jsonType = Lists.newArrayList("json");
         // 获取文件名，带后缀
         String originalFilename = file.getOriginalFilename();
         // 获取文件的后缀格式
         String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
-        StringBuilder sb = new StringBuilder();
-        if (imageType.contains(fileSuffix)) {
+        StringBuilder sb = null;
+        if (jsonType.contains(fileSuffix)) {
+            //JSON格式
             try (InputStream inputStream = file.getInputStream()) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, CharsetKit.getFilecharset(file.getInputStream())));
                 sb = new StringBuilder();
@@ -168,22 +211,18 @@ public class ProductServiceImpl implements ProductService{
                     while ((line = reader.readLine()) != null) {
                         sb.append(line);
                     }
-                    return importProductJsonData(JSONObject.parseObject(sb.toString()));
+                    //解析产品模型数据
+                    return this.productJsonDataAnalysis(JSONObject.parseObject(sb.toString()), appId, templateId, status);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     try {
                         inputStream.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                 }
             }
-        } else if (zip.contains(fileSuffix)) {
-            // 非法文件
-            InputStream inputStream = file.getInputStream();
-            return readZip(inputStream);
-            //   log.error("the picture's suffix is illegal");
         } else {
             //非法文件
             return AjaxResult.error("the picture's suffix is illegal");
@@ -191,132 +230,206 @@ public class ProductServiceImpl implements ProductService{
         return null;
     }
 
-    public AjaxResult readZip(InputStream inputStream) throws Exception {
-        //获取ZIP输入流(一定要指定字符集Charset.forName("GBK")否则会报java.lang.IllegalArgumentException: MALFORMED)
-        ZipInputStream zipInputStream = new ZipInputStream(inputStream, Charset.forName("UTF-8"));
-        //定义ZipEntry置为null,避免由于重复调用zipInputStream.getNextEntry造成的不必要的问题
-        ZipEntry ze = null;
-        AjaxResult ajaxResult = null;
-        //循环遍历
-        while ((ze = zipInputStream.getNextEntry()) != null) {
-            log.info("文件名：" + ze.getName() + " 文件大小：" + ze.getSize() + " bytes");
-            log.info("文件内容：");
-            //读取
-            StringBuilder sb = new StringBuilder();
-            BufferedReader br = new BufferedReader(new InputStreamReader(zipInputStream, Charset.forName("UTF-8")));
-            String line;
-            //内容不为空，输出
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
+    /**
+     * 解析产品模型数据
+     *
+     * @param content 产品模型数据
+     * @param appId 应用ID
+     * @param templateId  产品模型模板ID
+     * @param status 状态(字典值：启用  停用)
+     * @return 解析结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public AjaxResult productJsonDataAnalysis(JSONObject content,String appId,String templateId,String status) throws Exception{
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        try {
+            //厂商ID
+            String manufacturerId = JsonPath.read(content, "$.manufacturerId");
+            //厂商名称
+            String manufacturerName = JsonPath.read(content, "$.manufacturerName");
+            //产品型号
+            String model = JsonPath.read(content, "$.model");
+            //产品名称
+            String productName = JsonPath.read(content, "$.productName");
+            //产品类型
+            String productType = JsonPath.read(content, "$.productType");
+            //数据格式
+            String dataFormat = JsonPath.read(content, "$.dataFormat");
+            //设备类型
+            String deviceType = JsonPath.read(content, "$.deviceType");
+            //设备接入平台的协议类型
+            String protocolType = JsonPath.read(content, "$.protocolType");
+            //产品描述
+            String remark = JsonPath.read(content, "$.remark");
+            //验证产品模型是否存在
+            Product oneByManufacturerIdAndModelAndDeviceType = productMapper.findOneByManufacturerIdAndModelAndDeviceType(manufacturerId, model, deviceType);
+            if (StringUtils.isNotNull(oneByManufacturerIdAndModelAndDeviceType)){
+                return AjaxResult.error("产品模型已存在,无需上传");
             }
-            ajaxResult = importProductJsonData(JSONObject.parseObject(sb.toString()));
+            //验证properties数据格式
+            List readDatatype = JsonPath.read(content.toJSONString(), "$..properties[*].datatype");
+            List readDescription = JsonPath.read(content.toJSONString(), "$..properties[*].description");
+            List readEnumlist = JsonPath.read(content.toJSONString(), "$..properties[*].enumlist");
+            List readMax = JsonPath.read(content.toJSONString(), "$..properties[*].max");
+            List readMaxlength = JsonPath.read(content.toJSONString(), "$..properties[*].maxlength");
+            List readMethod = JsonPath.read(content.toJSONString(), "$..properties[*].method");
+            List readMin = JsonPath.read(content.toJSONString(), "$..properties[*].min");
+            List readName = JsonPath.read(content.toJSONString(), "$..properties[*].name");
+            List readRequired = JsonPath.read(content.toJSONString(), "$..properties[*].required");
+            List readStep = JsonPath.read(content.toJSONString(), "$..properties[*].step");
+            List readUnit = JsonPath.read(content.toJSONString(), "$..properties[*].unit");
+            Map<String, Object> parsingErrorMessages = new HashMap<>();
+            List<Object> list = new ArrayList<>();
+            //验证datatype数据格式（int、decimal、string、bool、dateTime、jsonObject）
+            readDatatype.forEach(item -> {
+                boolean flag = "int".equals(item) || "decimal".equals(item) || "string".equals(item)
+                        || "bool".equals(item) || "dateTime".equals(item) || "jsonObject".equals(item);
+                list.add(flag);
+                if (list.contains(false)) {
+                    parsingErrorMessages.put("datatype:"+item,"Invalid product: Invalid dataType,must be one of [int、decimal、string、bool、dateTime、jsonObject]");
+                }
+            });
+            if (!parsingErrorMessages.isEmpty()){
+                return AjaxResult.error(JSONObject.parseObject(parsingErrorMessages.toString()).toJSONString());
+            }
+            //服务属性解析处理
+            Product product = new Product();
+            product.setAppId(appId);
+            if (StringUtils.isNotEmpty(templateId)){
+                product.setTemplateId(Long.valueOf(templateId));
+            }
+            product.setProductName(productName);
+            product.setProductIdentification(UUID.getUUID());
+            product.setProductType(String.valueOf(productType));
+            product.setManufacturerId(manufacturerId);
+            product.setManufacturerName(manufacturerName);
+            product.setModel(model);
+            product.setDataFormat(dataFormat);
+            product.setDeviceType(deviceType);
+            product.setProtocolType(protocolType);
+            product.setStatus(status);
+            product.setRemark(remark);
+            product.setCreateBy(sysUser.getUserName());
+            product.setCreateTime(DateUtils.getNowDate());
+            final int insertProduct = productMapper.insertProduct(product);
+            if (insertProduct==0){
+                return AjaxResult.error("Product model storage error");
+            }
+            //添加服务数据
+            JSONArray services = content.getJSONArray("services");
+            for (int i = 0; i < services.size(); i++) {
+                JSONObject service = services.getJSONObject(i);
+                ProductServices productServices = new ProductServices();
+                productServices.setServiceName(service.getString("serviceId"));
+                productServices.setProductId(product.getId());
+                productServices.setStatus(product.getStatus());
+                productServices.setDescription(service.getString("description"));
+                productServices.setCreateBy(sysUser.getUserName());
+                productServices.setCreateTime(DateUtils.getNowDate());
+                final int insertSelective = productServicesMapper.insertSelective(productServices);
+                if (insertSelective==0) {
+                    throw new RuntimeException("Service capability Data storage fails");
+                }
+                //添加属性数据
+                JSONArray properties = service.getJSONArray("properties");
+                for (int j = 0; j < properties.size(); j++) {
+                    JSONObject propertie = properties.getJSONObject(j);
+                    ProductProperties productProperties = new ProductProperties();
+                    BeanUtils.copyProperties(propertie.toJavaObject(Properties.class),productProperties);
+                    productProperties.setServiceId(productServices.getId());
+                    productProperties.setCreateBy(sysUser.getUserName());
+                    productProperties.setCreateTime(DateUtils.getNowDate());
+                    final int batchInsert = productPropertiesMapper.insertSelective(productProperties);
+                }
+            }
+            //解析入库成功创建TD超级表及子表
+            this.createSuperTable(product,services);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return AjaxResult.error("操作失败");
         }
-        //一定记得关闭流
-        zipInputStream.closeEntry();
-        inputStream.close();
-        return ajaxResult;
+        return AjaxResult.success("操作成功");
     }
 
     /**
-     * 新增导入产品模型
-     *
-     * @param content 产品模型
-     * @return 结果
+     * 创建TD超级表
+     * @param product
+     * @param services
+     * @return
+     * @throws Exception
      */
-    @Transactional
-    public AjaxResult importProductJsonData(JSONObject content) throws Exception{
-        //分析json取值
-        String manufacturerId = content.getString("manufacturerId");
-        String manufacturerName = content.getString("manufacturerName");
-        String model = content.getString("model");
-        String productName = content.getString("productName");
-        String productType = content.getString("productType");
-        String status = content.getString("status");
-        String productSerial = content.getString("productSerial");
-        String version = content.getString("version");
-        //效验数据是否存在
-       /* Product query = new Product();
-        query.setUserName(loginUser.getUsername());
-        query.setModel(model);
-        query.setManufacturerId(manufacturerId);
-        List<Product> getList = productMapper.selectListByProduct(query);
-        if (getList != null && getList.size()>0){
-            return AjaxResult.error("产品模型已上传");
-        }*/
-        //验证properties数据格式（int、decimal、string、bool、dateTime、jsonObject）
-        List read1 = JsonPath.read(content.toJSONString(), "$..properties[*].datatype");
-        List read2 = JsonPath.read(content.toJSONString(), "$..properties[*].description");
-        List read3 = JsonPath.read(content.toJSONString(), "$..properties[*].maxlength");
-        List read4 = JsonPath.read(content.toJSONString(), "$..properties[*].method");
-        List read5 = JsonPath.read(content.toJSONString(), "$..properties[*].name");
-        List read6 = JsonPath.read(content.toJSONString(), "$..properties[*].required");
-        List read7 = JsonPath.read(content.toJSONString(), "$..properties[*].step");
-        List read8 = JsonPath.read(content.toJSONString(), "$..properties[*].unit");
-        List booleans = new ArrayList<>();
-        booleans.add(read1.size());
-        booleans.add(read2.size());
-        booleans.add(read3.size());
-        booleans.add(read4.size());
-        booleans.add(read5.size());
-        booleans.add(read6.size());
-        booleans.add(read7.size());
-        booleans.add(read8.size());
-        ArrayList<Object> list = new ArrayList<>();
-        read1.stream().forEach(p -> {
-            boolean b = "int".equals(p) || "decimal".equals(p) || "string".equals(p)
-                    || "bool".equals(p) || "dateTime".equals(p) || "jsonObject".equals(p);
-            list.add(b);
-        });
-        if (list.contains(false)) {
-            return AjaxResult.error("Invalid product: Invalid dataType,must be one of [int、decimal、string、bool、dateTime、jsonObject]");
-        }
-        //添加物模型数据
-        /*Product product = new Product();
-        product.setProductName(productName);
-        product.setManufacturerId(manufacturerId);
-        product.setManufacturerName(manufacturerName);
-        product.setProdoctType(productType);
-        product.setModel(model);
-        product.setProductSerial(productSerial);
-        product.setVersion(version);
-        product.setStatus(status);
-        product.setContent(content.toJSONString().replaceAll("\\\\",""));
-        product.setCreateDate(DateUtil.now());
-        product.setUpdateDate(new Date());
-        product.setUserName(loginUser.getUsername());
-        if ("1".equals(productType)) {
-            product.setLineType(ClientConstant.LINETYPE_WG);
-        } else if ("0".equals(productType)) {
-            product.setLineType(ClientConstant.LINETYPE_ZL);
-        }
-        productMapper.insertProduct(product);
-        //添加服务数据
-        JSONArray jsonArray = content.getJSONArray("services");
-        for (int i = 0; i < jsonArray.size(); i++) {
-            ProductServices services = new ProductServices();
-            JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-            services.setServiceid(jsonObject1.getString("serviceId"));
-            services.setDescription(jsonObject1.getString("description"));
-            services.setProductid(product.getId());
-            services.setCreatedate(DateUtil.now());
-            services.setAccount(product.getUserName());
-            productServicesMapper.insertProductServices(services);
-            //添加属性数据
-            List<ProductPropertis> propertiesList = new ArrayList<>();
-            JSONArray jsonArray1 = jsonObject1.getJSONArray("properties");
-            for (int j = 0; j < jsonArray1.size(); j++) {
-                ProductPropertis properties = new ProductPropertis();
-                JSONObject jsonObject2 = jsonArray1.getJSONObject(j);
-                properties.setServicesId(String.valueOf(services.getId()));
-                properties.setUnit(jsonObject2.getString("unit"));
-                properties.setDescription(jsonObject2.getString("description"));
-                properties.setName(jsonObject2.getString("name"));
-                properties.setAccount(services.getAccount());
-                properties.setCreatedate(DateUtil.now());
-                propertiesList.add(properties);
+    @Transactional(rollbackFor = Exception.class)
+    public AjaxResult createSuperTable(Product product,JSONArray services) throws Exception{
+        //构建超级表入参对象
+        SuperTableDto superTableDto = new SuperTableDto();
+        try {
+            loop:
+            for (int i = 0; i < services.size(); i++) {
+                JSONObject service = services.getJSONObject(i);
+                //超级表名称命名规则:产品类型_产品标识_服务名称
+                String superTableName = product.getProductType()+"_"+product.getProductIdentification()+"_"+service.getString("serviceId");
+                //设置数据库名称和超级表名称
+                superTableDto.setDatabaseName(databaseName);
+                superTableDto.setSuperTableName(superTableName);
+                //构建超级表的表结构字段列表
+                JSONArray properties = service.getJSONArray("properties");
+                //如果服务下属性值为空，没必要为该服务创建超级表，跳过该循环，进入下个服务
+                if (properties.isEmpty()) {
+                    continue loop;
+                }
+                //构建超级表的表结构字段列表
+                List<Fields> schemaFields = new ArrayList<>();
+                //超级表第一个字段数据类型必须为时间戳
+                Fields firstColumn = new Fields();
+                firstColumn.setFieldName("ts");
+                firstColumn.setDataType(DataTypeEnum.TIMESTAMP);
+                schemaFields.add(firstColumn);
+                //根据属性对象列表循环构建超级表表结构
+                for (int j = 0; j < properties.size(); j++) {
+                    JSONObject propertie = properties.getJSONObject(j);
+                    //获取字段名称
+                    String filedName = (String) propertie.get("name");
+                    //获取该属性数据类型
+                    String datatype = (String) propertie.get("datatype");
+                    //获取该属性的数据大小
+                    Integer size = (Integer) propertie.get("maxlength");
+                    //添加超级表表结构字段
+                    Fields fields = new Fields(filedName, datatype, size);
+                    schemaFields.add(fields);
+                }
+                //构建超级表标签字段列表
+                //根据业务逻辑，将超级表的标签字段定为
+                // 1:设备标识：deviceIdentification
+                List<Fields> tagsFields = new ArrayList<>();
+                Fields tags = new Fields();
+                tags.setFieldName("deviceIdentification");
+                tags.setDataType(DataTypeEnum.BINARY);
+                tags.setSize(64);
+                tagsFields.add(tags);
+
+                //设置超级表表结构列表
+                superTableDto.setSchemaFields(schemaFields);
+                //设置超级表标签字段列表
+                superTableDto.setTagsFields(tagsFields);
+                R<?> cstResult = remoteTdEngineService.createSuperTable(superTableDto);
+                //创建超级表报错，打印报错信息，并跳过该循环，继续为下个服务创建表
+                if (cstResult.getCode() != 200) {
+                    log.error("Create SuperTable Exception: " + cstResult.getMsg());
+                    continue loop;
+                }
+                log.info("Create SuperTable Result: {}",cstResult.getCode());
+                //将之前存在redis里的同样的名称的超级表的表结构信息删除
+                if (redisService.hasKey(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName)) {
+                    redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName);
+                }
+                //在redis里存入新的超级表对的表结构信息
+                redisService.setCacheList(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName, schemaFields);
+
             }
-            productServicesMapper.batchProductPropertis(propertiesList);
-        }*/
+        }catch (Exception e){
+         log.error(e.getMessage());
+        }
         return AjaxResult.success("操作成功");
     }
 
@@ -409,5 +522,29 @@ public class ProductServiceImpl implements ProductService{
 	public Product findOneByProductName(String productName){
 		 return productMapper.findOneByProductName(productName);
 	}
+
+	@Override
+	public List<Product> selectByManufacturerIdAndModelAndDeviceType(String manufacturerId,String model,String deviceType){
+		 return productMapper.selectByManufacturerIdAndModelAndDeviceType(manufacturerId,model,deviceType);
+	}
+
+	@Override
+	public Product findOneByManufacturerIdAndModelAndDeviceType(String manufacturerId,String model,String deviceType){
+		 return productMapper.findOneByManufacturerIdAndModelAndDeviceType(manufacturerId,model,deviceType);
+	}
+
+	@Override
+	public ProductServices findOneByProductId(Long productId){
+		 return productServicesMapper.findOneByProductId(productId);
+	}
+
+
+
+
+
+
+
+
+
 
 }
