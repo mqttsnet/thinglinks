@@ -11,6 +11,10 @@
 
     <artifactId>thinglinks-api-monitor</artifactId>
 
+    <description>
+        thinglinks-api-monitor  监控模块API
+    </description>
+
     <dependencies>
         <!-- thinglinks Common Core-->
         <dependency>

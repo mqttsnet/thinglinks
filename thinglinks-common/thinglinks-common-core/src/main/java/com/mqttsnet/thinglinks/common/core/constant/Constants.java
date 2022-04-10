@@ -137,4 +137,9 @@ public class Constants
      */
     public static final String RESUBMIT_URL_KEY = "resubmit_url:";
 
+    /**
+     * TDengine superTableFields cache key
+     */
+    public static final String TDENGINE_SUPERTABLEFILELDS = "TDengine_superTableFields:";
+
 }

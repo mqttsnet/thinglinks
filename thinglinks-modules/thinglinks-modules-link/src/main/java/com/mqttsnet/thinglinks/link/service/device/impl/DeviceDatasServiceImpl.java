@@ -111,7 +111,9 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             log.error("topic:{},报文体为空已忽略处理", topic);
             return;
         }
-        if (topic.contains("datas")) {
+        //边设备上报数据处理
+        if (topic.startsWith("/v1/devices/") && topic.endsWith("/datas")) {
+            log.info("边设备上报数据处理,Topic:{},Msg:{}", topic, msg);
 
         }
     }

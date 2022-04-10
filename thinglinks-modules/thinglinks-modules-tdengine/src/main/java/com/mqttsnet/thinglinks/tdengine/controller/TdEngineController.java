@@ -37,17 +37,17 @@ public class TdEngineController {
     private static final Logger log = LoggerFactory.getLogger(TdEngineController.class);
 
     /**
-     * @param dbName 数据库名称
+     * @param databaseName 数据库名称
      * @return R
      * @MethodDescription 创建tdEngine数据库
      * @author thinglinks
      * @Date 2021/12/27 16:26
      */
     @PostMapping("/createDb")
-    public R createDataBase(@RequestBody() String dbName) {
+    public R createDataBase(@RequestBody() String databaseName) {
         //调用创建数据库方法
-        this.tdEngineService.createDateBase(dbName);
-        log.info("successful operation: created database '" + dbName + "' success");
+        this.tdEngineService.createDateBase(databaseName);
+        log.info("successful operation: created database '" + databaseName + "' success");
         return R.ok();
     }
 

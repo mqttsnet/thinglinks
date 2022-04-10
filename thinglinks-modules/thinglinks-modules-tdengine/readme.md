@@ -1,4 +1,13 @@
-## TDengine SpringBoot + Mybatis Demo  超级表设计概念：每个设备一张表,每类设备一个超级表 ;命名规则 : 产品类型_产品标识_服务名称_设备标识
+## TDengine SpringBoot + Mybatis Demo  
+## 超级表设计概念：每个设备一张表,每类设备一个超级表 ;
+## 超级表命名规则 : 产品类型_产品标识_服务名称
+## 子表命名规则 : 产品类型_产品标识_服务名称_设备标识（非ClientId）
+
+
+## TDengine 服务端版本及搭建
+### 推荐版本  tdengine/tdengine:2.4.0.4
+### 搭建教程：https://www.taosdata.com/docs/cn/v2.0/getting-started/docker
+
 
 ### 配置 application.properties
 ```properties

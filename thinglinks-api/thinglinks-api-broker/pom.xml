@@ -11,6 +11,10 @@
 
     <artifactId>thinglinks-api-broker</artifactId>
 
+    <description>
+        thinglinks-api-broker Broker模块API
+    </description>
+
     <dependencies>
         <!-- thinglinks Common Core-->
         <dependency>

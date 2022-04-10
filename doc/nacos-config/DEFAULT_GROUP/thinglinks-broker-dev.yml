@@ -71,15 +71,15 @@ seata:
   config:
     type: nacos
     nacos:
-      serverAddr: 49.235.122.136:8848
+      serverAddr: 127.0.0.1:8848
       group: SEATA_GROUP
-      namespace: 8ea40c2e-64ba-4430-9bd8-a25336b2b45a
+      namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
   registry:
     type: nacos
     nacos:
       application: seata-server
-      server-addr: 49.235.122.136:8848
-      namespace: 8ea40c2e-64ba-4430-9bd8-a25336b2b45a
+      server-addr: 127.0.0.1:8848
+      namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
     
 #smqtt官方配置文件V1.1.2
 smqtt:
@@ -143,10 +143,10 @@ smqtt:
       chain: # 规则链(支持多个)
         - ruleType: ROCKET_MQ  # 过滤器类型
           script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
-#    - ruleName: KAFKA # 过滤器名称
-#     chain: # 规则链(支持多个)
-#        - ruleType: KAFKA  # 过滤器类型
-#          script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
+    - ruleName: KAFKA # 过滤器名称
+      chain: # 规则链(支持多个)
+        - ruleType: KAFKA  # 过滤器类型
+          script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
 #    - ruleName: HTTP # 过滤器名称
 #      chain: # 规则链(支持多个)
 #        - ruleType: HTTP
@@ -172,13 +172,13 @@ smqtt:
         namesrvAddr: 127.0.0.1:9876
         instanceName: wt9zfxnoukxsrngp-0721852
         producerGroup: thinglinks
-#    - source: KAFKA # kafka配置
-#      sourceName: kafka
-#     sourceAttributes:
-#        topic: thinglinks
-#        bootstrap-servers: 127.0.0.1:9092
-#        key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#        value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    - source: KAFKA # kafka配置
+      sourceName: kafka
+      sourceAttributes:
+        topic: thinglinks
+        bootstrap-servers: 127.0.0.1:9092
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.apache.kafka.common.serialization.StringSerializer
 #     - source: HTTP
 #       sourceName: http
 #       sourceAttributes:

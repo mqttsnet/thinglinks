@@ -476,11 +476,11 @@ export default {
         // 是否禁用上传
         isUploading: false,
         // 应用ID
-        appId: null,
+        appId: "",
         // 产品模型模板
-        templateId: null,
+        templateId: "",
         // 状态
-        status: null,
+        status: "",
         // 是否更新已经存在的用户数据
         updateSupport: 0,
         // 设置上传的请求头部

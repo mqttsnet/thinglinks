@@ -12,7 +12,7 @@
     <artifactId>thinglinks-api-system</artifactId>
 
     <description>
-        thinglinks-api-system系统接口模块
+        thinglinks-api-system系统模块API
     </description>
 
     <dependencies>
