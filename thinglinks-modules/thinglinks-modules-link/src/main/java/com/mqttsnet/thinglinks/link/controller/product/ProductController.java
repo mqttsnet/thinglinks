@@ -12,6 +12,7 @@ import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.RemoteFileService;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -178,5 +179,21 @@ public class ProductController extends BaseController {
             AjaxResult.success("产品名称可用");
         }
         return AjaxResult.error("产品名称已存在");
+    }
+
+    /**
+     * 获取超级表模型
+     * @return
+     */
+    @GetMapping(value = "/findCreateSuperTableDataModel")
+    public AjaxResult findCreateSuperTableDataModel()
+    {
+        try {
+            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel();
+            return AjaxResult.success(superTableDataModel);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return AjaxResult.error("产品数据异常,请联系管理员");
     }
 }

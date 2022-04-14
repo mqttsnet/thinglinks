@@ -2,13 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.mqttsnet.thinglinks.tdengine.mapper.TdEngineMapper">
-
     <update id="createDatabase" parameterType="String">
-        create database if not exists #{databaseName}
+        create database if not exists #{dataBaseName}
     </update>
 
     <update id="createSuperTable">
-        create table if not exists #{databaseName}.#{superTableName}
+        create table if not exists #{dataBaseName}.#{superTableName}
         <foreach item="item" collection="schemaFields" separator=","
                  open="(" close=")" index="">
             <if test="item.fieldName != null || item.fieldName != ''">
@@ -107,9 +106,9 @@
 
     <update id="createTable">
         create table
-        if not exists #{databaseName}.#{tableName}
-        using #{databaseName}.#{superTableName}
-        tags
+                if not exists #{dataBaseName}.#{tableName}
+                using #{dataBaseName}.#{superTableName}
+                tags
         <foreach item="item" collection="tagsFieldValues" separator=","
                  open="(" close=")" index="">
             #{item.fieldValue}
@@ -117,7 +116,7 @@
     </update>
 
     <insert id="insertData">
-        insert into #{databaseName}.#{tableName}
+        insert into #{dataBaseName}.#{tableName}
         <foreach item="item" collection="tagsFieldValues" separator=","
                  open="(" close=")" index="">
             #{item.fieldName}
@@ -129,7 +128,8 @@
         </foreach>
     </insert>
 
-    <select id="selectByTimestamp" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto" resultType="Map">
+    <select id="selectByTimestamp" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto"
+            resultType="Map">
         select * from #{dataBaseName}.#{tableName}
         <!--查询这里不能使用#{}占位符的方式，使用这种方式，tdEngine不识别为列名，只能使用${}占位的方式-->
         <!--因为tdEngine引擎一次只执行一条sql，所以有效预防了sql的注入，且该服务该接口为内部调用，所以可以使用${}-->
@@ -138,13 +138,14 @@
     </select>
 
     <update id="addColumnForSuperTable">
-        ALTER STABLE #{superTableName} ADD COLUMN
+        ALTER
+                STABLE
+                #{superTableName}
+                ADD
+                COLUMN
         <if test="fieldsVo.fieldName != null || fieldsVo.fieldName != ''">
             #{fieldsVo.fieldName}
         </if>
-        <!--<if test="fieldsVo.dataType != null || fieldsVo.dataType != ''">
-            #{fieldsVo.dataType}
-        </if>-->
         <if test="fieldsVo.dataType != null || fieldsVo.dataType != ''">
             <choose>
                 <when test="fieldsVo.dataType == 'timestamp'">
@@ -183,8 +184,90 @@
             </choose>
         </if>
         <if test="fieldsVo.size != null">
-            (#{fieldsVo.size})
+            (
+                    #{fieldsVo.size}
+                    )
         </if>
     </update>
 
+    <update id="dropColumnForSuperTable">
+        ALTER
+        STABLE
+        #{superTableName}
+        DROP
+        COLUMN
+        <if test="fieldsVo.fieldName != null || fieldsVo.fieldName != ''">
+            #{fieldsVo.fieldName}
+        </if>
+    </update>
+
+    <update id="addTagForSuperTable">
+        ALTER
+        STABLE
+        #{superTableName}
+        ADD
+        TAG
+        <if test="fieldsVo.fieldName != null || fieldsVo.fieldName != ''">
+            #{fieldsVo.fieldName}
+        </if>
+        <if test="fieldsVo.dataType != null || fieldsVo.dataType != ''">
+            <choose>
+                <when test="fieldsVo.dataType == 'timestamp'">
+                    timestamp
+                </when>
+                <when test="fieldsVo.dataType == 'tinyint'">
+                    tinyint
+                </when>
+                <when test="fieldsVo.dataType == 'smallint'">
+                    smallint
+                </when>
+                <when test="fieldsVo.dataType == 'int'">
+                    int
+                </when>
+                <when test="fieldsVo.dataType == 'bigint'">
+                    bigint
+                </when>
+                <when test="fieldsVo.dataType == 'float'">
+                    float
+                </when>
+                <when test="fieldsVo.dataType == 'double'">
+                    double
+                </when>
+                <when test="fieldsVo.dataType == 'binary'">
+                    binary
+                </when>
+                <when test="fieldsVo.dataType == 'nchar'">
+                    nchar
+                </when>
+                <when test="fieldsVo.dataType == 'bool'">
+                    bool
+                </when>
+                <when test="fieldsVo.dataType == 'json'">
+                    json
+                </when>
+            </choose>
+        </if>
+        <if test="fieldsVo.size != null">
+            (
+            #{fieldsVo.size}
+            )
+        </if>
+    </update>
+
+    <update id="dropTagForSuperTable">
+        ALTER
+        STABLE
+        #{superTableName}
+        DROP
+        TAG
+        <if test="fieldsVo.fieldName != null || fieldsVo.fieldName != ''">
+            #{fieldsVo.fieldName}
+        </if>
+    </update>
+
+    <select id="getCountByTimestamp" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto"
+            resultType="java.util.Map">
+        SELECT count(0) AS count
+        FROM #{dataBaseName}.#{tableName} WHERE ${fieldName} BETWEEN #{startTime} AND #{endTime}
+    </select>
 </mapper>

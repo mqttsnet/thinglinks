@@ -40,4 +40,9 @@ public interface ProductPropertiesService{
 
     int batchInsert(List<ProductProperties> list);
 
+
+
+	List<ProductProperties> findAllByServiceId(Long serviceId);
+
+
 }

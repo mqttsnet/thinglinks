@@ -140,6 +140,6 @@ public class Constants
     /**
      * TDengine superTableFields cache key
      */
-    public static final String TDENGINE_SUPERTABLEFILELDS = "TDengine_superTableFields:";
+    public static final String TDENGINE_SUPERTABLEFILELDS = "TDengine_SuperTableFields:";
 
 }

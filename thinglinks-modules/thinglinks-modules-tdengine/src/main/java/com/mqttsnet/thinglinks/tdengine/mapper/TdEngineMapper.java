@@ -19,11 +19,11 @@ import java.util.Map;
 @Mapper
 public interface TdEngineMapper {
 
-    void createDatabase(@Param("databaseName") String databaseName);
+    void createDatabase(@Param("dataBaseName") String dataBaseName);
 
     void createSuperTable(@Param("schemaFields") List<FieldsVo> schemaFields,
                           @Param("tagsFields") List<FieldsVo> tagsFields,
-                          @Param("databaseName") String databaseName,
+                          @Param("dataBaseName") String dataBaseName,
                           @Param("superTableName") String superTableName);
 
     void createTable(TableDto tableDto);
@@ -34,4 +34,15 @@ public interface TdEngineMapper {
 
     void addColumnForSuperTable(@Param("superTableName") String superTableName,
                                 @Param("fieldsVo") FieldsVo fieldsVo);
+
+    void dropColumnForSuperTable(@Param("superTableName") String superTableName,
+                                @Param("fieldsVo") FieldsVo fieldsVo);
+
+    void addTagForSuperTable(@Param("superTableName") String superTableName,
+                                @Param("fieldsVo") FieldsVo fieldsVo);
+
+    void dropTagForSuperTable(@Param("superTableName") String superTableName,
+                                 @Param("fieldsVo") FieldsVo fieldsVo);
+
+    Map<String, Long> getCountByTimestamp(SelectDto selectDto);
 }

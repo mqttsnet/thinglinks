@@ -75,7 +75,11 @@ public class DeviceController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody Device device)
     {
-        return toAjax(deviceService.insertDevice(device));
+        try {
+            return toAjax(deviceService.insertDevice(device));
+        }catch (Exception e){
+            return AjaxResult.error(e.getMessage());
+        }
     }
 
     /**

@@ -72,7 +72,9 @@ public interface ProductServicesMapper {
 
     int batchInsert(@Param("list") List<ProductServices> list);
 
-    ProductServices findOneByProductId(@Param("productId")Long productId);
+    List<ProductServices> findByProductIds(@Param("productIds") List<Long> productIds);
+
+    List<ProductServices> findAllByProductIdAndStatus(@Param("productId")Long productId,@Param("status")String status);
 
 
 }

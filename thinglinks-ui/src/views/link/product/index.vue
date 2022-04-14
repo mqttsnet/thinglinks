@@ -420,7 +420,7 @@
           <div class="el-upload__tip text-center" slot="tip">
             <div class="el-upload__tip" slot="tip">
               <el-checkbox v-model="upload.updateSupport"/>
-              是否更新已经存在的用户数据
+              是否更新已经存在的产品模型数据
             </div>
             <span>仅允许导入xls、xlsx格式文件。</span>
             <el-link type="primary" :underline="false" style="font-size:12px;vertical-align: baseline;"

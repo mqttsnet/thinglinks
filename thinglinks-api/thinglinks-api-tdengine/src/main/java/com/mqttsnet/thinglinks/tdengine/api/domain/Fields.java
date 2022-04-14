@@ -12,6 +12,7 @@ import lombok.Data;
  */
 @Data
 public class Fields {
+    private static final long serialVersionUID = 1L;
 
     /**
      * 字段名称
@@ -55,8 +56,8 @@ public class Fields {
                 this.dataType = DataTypeEnum.DOUBLE;
                 break;
             case ("datetime"):
-                if ("eventTime_td".equals(fieldName))
-                    this.fieldName = "ptEventTime_td";
+                if ("eventTime".equals(fieldName))
+                    this.fieldName = "eventTime";
                 this.dataType = DataTypeEnum.TIMESTAMP;
                 break;
         }

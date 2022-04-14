@@ -13,12 +13,13 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 public class BaseEntity {
+    private static final long serialVersionUID = 1L;
 
     /**
      * 数据库名称
      */
     @NotBlank(message = "invalid operation: databaseName can not be empty")
-    private String databaseName;
+    private String dataBaseName;
 
     /**
      * 超级表名称

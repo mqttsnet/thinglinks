@@ -41,11 +41,11 @@ public class DeviceActionMessageConsumer implements RocketMQListener {
          * ${topic}  其他为业务数据自行处理
          */
         if("$event/connect".equals(thinglinksMessage.get("topic"))){
-            deviceActionService.connectEvent(String.valueOf(thinglinksMessage.get("msg")));
+            deviceActionService.connectEvent(String.valueOf(thinglinksMessage.getString("msg")));
         }else if("$event/close".equals(thinglinksMessage.get("topic"))){
-            deviceActionService.closeEvent(String.valueOf(thinglinksMessage.get("msg")));
+            deviceActionService.closeEvent(String.valueOf(thinglinksMessage.getString("msg")));
         }else {
-            deviceDatasService.insertBaseDatas(String.valueOf(thinglinksMessage.get("msg")));
+            deviceDatasService.insertBaseDatas(thinglinksMessage);
         }
     }
 }

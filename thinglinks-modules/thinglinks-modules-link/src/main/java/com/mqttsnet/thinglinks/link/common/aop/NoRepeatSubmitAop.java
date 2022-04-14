@@ -40,9 +40,8 @@ public class NoRepeatSubmitAop {
             String key = SecurityUtils.getToken() + "-" + request.getServletPath();
             log.info("newToken:{}", key);
             if (!redisService.hasKey(Constants.RESUBMIT_URL_KEY+key)) {// 如果缓存中有这个url视为重复提交
-                Object o = pjp.proceed();//当使用环绕通知时，这个方法必须调用，否则拦截到的方法就不会再执行了
-                redisService.setCacheObject(Constants.RESUBMIT_URL_KEY+key, o, 2L, TimeUnit.SECONDS);
-                return o;
+                redisService.setCacheObject(Constants.RESUBMIT_URL_KEY+key, pjp.toString(), 3000L, TimeUnit.MILLISECONDS);
+                return pjp.proceed();
             } else {
                 log.error("请勿重复提交");
                 return AjaxResult.error("请勿重复提交");

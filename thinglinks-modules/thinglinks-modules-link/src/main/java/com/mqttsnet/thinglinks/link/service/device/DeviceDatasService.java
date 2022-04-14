@@ -1,6 +1,8 @@
 package com.mqttsnet.thinglinks.link.service.device;
 
 import java.util.List;
+
+import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas;
 
 /**
@@ -48,7 +50,16 @@ public interface DeviceDatasService {
      *
      * @param thinglinksMessage
      */
-    void insertBaseDatas(String thinglinksMessage);
+    void insertBaseDatas(JSONObject thinglinksMessage);
+
+
+    /**
+     * 处理datas Topic数据上报
+     *
+     * @param deviceIdentification 设备标识
+     * @param msg                  数据
+     */
+    void processingDatasTopic(String deviceIdentification,String msg) throws Exception;
 
 }
 
