@@ -34,7 +34,7 @@
         <commons.io.version>2.11.0</commons.io.version>
         <commons.fileupload.version>1.4</commons.fileupload.version>
         <velocity.version>1.7</velocity.version>
-        <fastjson.version>1.2.79</fastjson.version>
+        <fastjson.version>1.2.76</fastjson.version>
         <minio.version>8.2.2</minio.version>
         <poi.version>4.1.2</poi.version>
         <common-pool.version>2.11.1</common-pool.version>
@@ -166,9 +166,9 @@
             </dependency>
 
             <!-- Collection 增强Java集合框架 -->
-            <dependency> 
-                <groupId>commons-collections</groupId> 
-                <artifactId>commons-collections</artifactId> 
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
                 <version>${commons-collections.version}</version>
             </dependency>
 
