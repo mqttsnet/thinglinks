@@ -31,5 +31,5 @@ public interface TdEngineService {
 
     Long getCountByTimesTamp(SelectDto selectDto);
 
-    void initSTableFrame() throws Exception;
+    void initSTableFrame(String msg) throws Exception;
 }

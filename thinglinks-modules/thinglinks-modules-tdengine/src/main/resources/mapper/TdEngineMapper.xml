@@ -270,4 +270,8 @@
         SELECT count(0) AS count
         FROM #{dataBaseName}.#{tableName} WHERE ${fieldName} BETWEEN #{startTime} AND #{endTime}
     </select>
+
+    <select id="checkTableExists" resultType="java.lang.Integer">
+        SELECT COUNT(0) FROM #{dataBaseName}.#{tableName}
+    </select>
 </mapper>

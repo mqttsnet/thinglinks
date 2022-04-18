@@ -37,7 +37,7 @@ public class ProductController extends BaseController {
      */
     @Resource
     private ProductService productService;
-    @Autowired
+    @Resource
     private RemoteFileService remoteFileService;
 
     /**
@@ -182,18 +182,21 @@ public class ProductController extends BaseController {
     }
 
     /**
-     * 获取超级表模型
+     * 初始化生成超级表模型
+     * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
      * @return
+     * @throws Exception
      */
-    @GetMapping(value = "/findCreateSuperTableDataModel")
-    public AjaxResult findCreateSuperTableDataModel()
-    {
+    @GetMapping(value = "/findCreateSuperTableDataModel/{productId}")
+    public AjaxResult findCreateSuperTableDataModel(@PathVariable("productId") Long productId) throws Exception {
         try {
-            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel();
+            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel(productId);
             return AjaxResult.success(superTableDataModel);
         }catch (Exception e){
             log.error(e.getMessage());
         }
         return AjaxResult.error("产品数据异常,请联系管理员");
     }
+
+
 }

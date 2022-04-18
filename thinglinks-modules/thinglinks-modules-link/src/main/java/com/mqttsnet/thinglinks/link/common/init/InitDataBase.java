@@ -1,17 +1,16 @@
-package com.mqttsnet.thinglinks.tdengine.common;
+package com.mqttsnet.thinglinks.link.common.init;
 
-import com.mqttsnet.thinglinks.tdengine.service.TdEngineService;
+import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
 /**
- * @Description: 初始化数据库
+ * @Description: 初始化基础数据
  * @Author: ShiHuan SUN
  * @E-mail: 13733918655@163.com
  * @Website: http://thinglinks.mqttsnet.com
@@ -28,26 +27,18 @@ public class InitDataBase {
     private static InitDataBase InitDataBase;
 
     @Autowired
-    private TdEngineService tdEngineService;
-
-    /**
-     * 数据库名称
-     */
-    @Value("${spring.datasource.dynamic.datasource.master.dbName:thinglinks}")
-    private String dataBaseName;
+    private ProductService productService;
 
     @PostConstruct
     public void init() throws Exception {
         InitDataBase = this;
-        InitDataBase.tdEngineService=this.tdEngineService;
+        InitDataBase.productService=this.productService;
         StopWatch watch = new StopWatch();
         watch.start();
-        //创建数据库
-        this.tdEngineService.createDateBase(dataBaseName);
-        //初始化超级表结构
-        this.tdEngineService.initSTableFrame();
+        //初始化产品模型数据
+        this.productService.createSuperTableDataModel(null);
         watch.stop();
-        log.info("初始化数据库及超级表:{} 成功 ! Time Elapsed (millisecond): {}",dataBaseName,watch.getTime());
+        log.info("初始化基础数据成功 ! Time Elapsed (millisecond): {}",watch.getTime());
     }
 
 }

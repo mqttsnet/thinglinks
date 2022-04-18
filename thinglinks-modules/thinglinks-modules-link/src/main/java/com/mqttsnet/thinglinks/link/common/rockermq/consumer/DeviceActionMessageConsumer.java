@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.link.common.rockermq.consumer;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerGroupConstant;
 import lombok.extern.slf4j.Slf4j;
 import com.mqttsnet.thinglinks.link.service.device.DeviceActionService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = "thinglinks-link", topic = "thinglinks-link")
+@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_GROUP, topic = "thinglinks-link")
 public class DeviceActionMessageConsumer implements RocketMQListener {
     @Autowired
     private DeviceActionService deviceActionService;

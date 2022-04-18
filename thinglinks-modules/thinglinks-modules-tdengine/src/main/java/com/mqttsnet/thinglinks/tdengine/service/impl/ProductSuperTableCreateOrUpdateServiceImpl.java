@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.tdengine.service.impl;
 import com.mqttsnet.thinglinks.tdengine.api.domain.ProductSuperTableModel;
 import com.mqttsnet.thinglinks.tdengine.mapper.ProductSuperTableCreateOrUpdateMapper;
 import com.mqttsnet.thinglinks.tdengine.service.ProductSuperTableCreateOrUpdateService;
+import com.mqttsnet.thinglinks.tdengine.service.TdEngineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,19 +27,14 @@ public class ProductSuperTableCreateOrUpdateServiceImpl implements ProductSuperT
 
     @Autowired
     private ProductSuperTableCreateOrUpdateMapper productSuperTableCreateOrUpdateMapper;
+    @Autowired
+    private TdEngineService tdEngineService;
 
 
     @Override
-    public void createProductSuperTable(String msg) {
+    public void createProductSuperTable(String msg) throws Exception {
         //TODO 创建超级表逻辑处理
-        productSuperTableCreateOrUpdateMapper.createDB();
-        productSuperTableCreateOrUpdateMapper.createSuperTable();
-        ProductSuperTableModel productSuperTableModel = new ProductSuperTableModel();
-        //ts时间处理
-        long ts = System.currentTimeMillis();
-        long thirtySec = 1000 * 30;
-        productSuperTableModel.setTs(new Timestamp(ts + (thirtySec)));
-
+        tdEngineService.initSTableFrame(msg);
     }
 
 

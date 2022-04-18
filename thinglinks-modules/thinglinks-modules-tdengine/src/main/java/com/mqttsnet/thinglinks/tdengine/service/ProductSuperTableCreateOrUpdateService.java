@@ -24,7 +24,7 @@ public interface ProductSuperTableCreateOrUpdateService {
      * @return
      */
 
-    void createProductSuperTable(String msg);
+    void createProductSuperTable(String msg) throws Exception;
 
     /**
      * @Author: ShiHuan Sun

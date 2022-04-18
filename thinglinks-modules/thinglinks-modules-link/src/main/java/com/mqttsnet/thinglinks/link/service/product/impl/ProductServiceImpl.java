@@ -17,6 +17,8 @@ import com.mqttsnet.thinglinks.common.core.utils.SpringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
+import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
+import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
@@ -38,6 +40,7 @@ import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,6 +96,8 @@ public class ProductServiceImpl implements ProductService{
     private RemoteTdEngineService remoteTdEngineService;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
 
     /**
      * 数据库名称
@@ -549,15 +554,23 @@ public class ProductServiceImpl implements ProductService{
 
 
     /**
-     * 生成超级表模型
-     * @return List<SuperTableDto>
+     * 初始化生成超级表模型
+     * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
+     * @return
      * @throws Exception
      */
     @Async
     @Override
-    public List<SuperTableDto> createSuperTableDataModel()throws Exception{
+    public List<SuperTableDto> createSuperTableDataModel(Long productId)throws Exception{
         List<SuperTableDto> superTableDtoList = new ArrayList<>();
-        List<Product> allByStatus = this.findAllByStatus("0");
+        List<Product> allByStatus = null;
+        if (productId == null) {
+            allByStatus = this.findAllByStatus("0");
+        }else {
+            allByStatus = new ArrayList<>();
+            Product product = this.findOneByIdAndStatus(productId,"0");
+            allByStatus.add(product);
+        }
         SuperTableDto superTableDto;
         loop:
         for (Product product : allByStatus) {
@@ -622,6 +635,14 @@ public class ProductServiceImpl implements ProductService{
                 redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, JSON.toJSONString(superTableDto));
                 log.info("缓存超级表数据模型:{}",JSON.toJSONString(superTableDto));
                 superTableDtoList.add(superTableDto);
+                //推送RocketMq消息初始化超级表
+                MQMessage mqMessage = new MQMessage();
+                mqMessage.setTopic(ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE);
+                final JSONObject jsonObject = new JSONObject();
+                jsonObject.put("type","create");
+                jsonObject.put("msg",JSON.toJSONString(superTableDto));
+                mqMessage.setMessage(jsonObject.toJSONString());
+                rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
             }
         }
         return superTableDtoList;
@@ -631,6 +652,14 @@ public class ProductServiceImpl implements ProductService{
 	public Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(String manufacturerId,String model,String protocolType,String status){
 		 return productMapper.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(manufacturerId,model,protocolType,status);
 	}
+
+	@Override
+	public Product findOneByIdAndStatus(Long id,String status){
+		 return productMapper.findOneByIdAndStatus(id,status);
+	}
+
+
+
 
 
 

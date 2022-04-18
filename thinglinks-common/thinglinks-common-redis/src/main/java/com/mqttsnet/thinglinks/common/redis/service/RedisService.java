@@ -1,16 +1,14 @@
 package com.mqttsnet.thinglinks.common.redis.service;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * spring redis 工具类
@@ -1620,41 +1618,5 @@ public class RedisService
      */
     public Cursor<ZSetOperations.TypedTuple<String>> zScan(String key, ScanOptions options) {
         return redisTemplate.opsForZSet().scan(key, options);
-    }
-
-    /**
-     * 模糊匹配key
-     *
-     * @param match
-     * @param count
-     * @return
-     */
-    public Cursor<String> scan(String match, int count) {
-        ScanOptions scanOptions = ScanOptions.scanOptions().match(match).count(count).build();
-        RedisSerializer<String> redisSerializer = (RedisSerializer<String>) redisTemplate.getKeySerializer();
-        Cursor cursor = (Cursor) redisTemplate.executeWithStickyConnection((RedisCallback) redisConnection ->
-                new ConvertingCursor<>(redisConnection.scan(scanOptions), redisSerializer::deserialize));
-        return cursor;
-    }
-
-    /**
-     * scan模糊匹配删除
-     *
-     * @param match
-     * @param count
-     */
-    public void scanDelete(String match, int count) {
-        try {
-            List<String> keys = Lists.newArrayList();
-            Cursor<String> cursor = scan(match, count);
-            while (cursor.hasNext()) {
-                //找到一次就添加一次
-                keys.add(cursor.next());
-            }
-            cursor.close();
-            final long deleteObjectCount = deleteObject(keys);
-        } catch (Exception e) {
-            log.error("scanDelete error {}", e.getMessage());
-        }
     }
 }

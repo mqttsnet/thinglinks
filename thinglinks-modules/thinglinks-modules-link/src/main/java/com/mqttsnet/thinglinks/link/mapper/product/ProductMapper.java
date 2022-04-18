@@ -138,6 +138,9 @@ public interface ProductMapper {
 
     Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(@Param("manufacturerId")String manufacturerId,@Param("model")String model,@Param("protocolType")String protocolType,@Param("status")String status);
 
+    Product findOneByIdAndStatus(@Param("id")Long id,@Param("status")String status);
+
+
 
 
 }

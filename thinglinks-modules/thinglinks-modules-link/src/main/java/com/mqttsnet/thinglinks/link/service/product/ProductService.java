@@ -136,15 +136,21 @@ public interface ProductService{
 	List<Product> findAllByStatus(String status);
 
     /**
-     * 生成超级表模型
-     * @return List<SuperTableDto>
+     * 初始化生成超级表模型
+     * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
+     * @return
      * @throws Exception
      */
-    List<SuperTableDto> createSuperTableDataModel()throws Exception;
+    List<SuperTableDto> createSuperTableDataModel(Long productId)throws Exception;
 
 
 
 	Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(String manufacturerId,String model,String protocolType,String status);
+
+
+
+	Product findOneByIdAndStatus(Long id,String status);
+
 
 
 }
