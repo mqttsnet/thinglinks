@@ -12,6 +12,7 @@ import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.RemoteFileService;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class ProductController extends BaseController {
      */
     @Resource
     private ProductService productService;
-    @Autowired
+    @Resource
     private RemoteFileService remoteFileService;
 
     /**
@@ -179,4 +180,23 @@ public class ProductController extends BaseController {
         }
         return AjaxResult.error("产品名称已存在");
     }
+
+    /**
+     * 初始化生成超级表模型
+     * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
+     * @return
+     * @throws Exception
+     */
+    @GetMapping(value = "/findCreateSuperTableDataModel/{productId}")
+    public AjaxResult findCreateSuperTableDataModel(@PathVariable("productId") Long productId) throws Exception {
+        try {
+            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel(productId);
+            return AjaxResult.success(superTableDataModel);
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return AjaxResult.error("产品数据异常,请联系管理员");
+    }
+
+
 }

@@ -80,4 +80,19 @@ public class ProductServicesServiceImpl implements ProductServicesService{
         return productServicesMapper.batchInsert(list);
     }
 
+    @Override
+    public List<ProductServices> findByProductIds(List<Long> productIds){
+         return productServicesMapper.findByProductIds(productIds);
+    }
+
+	@Override
+	public List<ProductServices> findAllByProductIdAndStatus(Long productId,String status){
+		 return productServicesMapper.findAllByProductIdAndStatus(productId,status);
+	}
+
+
+
+
+
+
 }

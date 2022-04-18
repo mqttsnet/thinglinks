@@ -37,17 +37,17 @@ public class TdEngineController {
     private static final Logger log = LoggerFactory.getLogger(TdEngineController.class);
 
     /**
-     * @param databaseName 数据库名称
+     * @param dataBaseName 数据库名称
      * @return R
      * @MethodDescription 创建tdEngine数据库
      * @author thinglinks
      * @Date 2021/12/27 16:26
      */
     @PostMapping("/createDb")
-    public R createDataBase(@RequestBody() String databaseName) {
+    public R createDataBase(@RequestBody() String dataBaseName) {
         //调用创建数据库方法
-        this.tdEngineService.createDateBase(databaseName);
-        log.info("successful operation: created database '" + databaseName + "' success");
+        this.tdEngineService.createDateBase(dataBaseName);
+        log.info("successful operation: created database '" + dataBaseName + "' success");
         return R.ok();
     }
 
@@ -65,7 +65,7 @@ public class TdEngineController {
         //从入参对象获取标签字段对象集合
         List<Fields> tagsFields = superTableDto.getTagsFields();
         //从入参获取数据库名称
-        String databaseName = superTableDto.getDatabaseName();
+        String dataBaseName = superTableDto.getDataBaseName();
         //从入参获取超级表名称
         String superTableName = superTableDto.getSuperTableName();
         //获取列字段对象集合的第一个对象的字段数据类型
@@ -81,7 +81,7 @@ public class TdEngineController {
             List<FieldsVo> schemaFieldsVoList = FieldsVo.fieldsTranscoding(schemaFields);
             List<FieldsVo> tagsFieldsVoList = FieldsVo.fieldsTranscoding(tagsFields);
             //创建超级表
-            this.tdEngineService.createSuperTable(schemaFieldsVoList, tagsFieldsVoList, databaseName, superTableName);
+            this.tdEngineService.createSuperTable(schemaFieldsVoList, tagsFieldsVoList, dataBaseName, superTableName);
             log.info("successful operation: created superTable '" + superTableName + "' success");
             return R.ok();
         } catch (UncategorizedSQLException e) {
@@ -97,6 +97,11 @@ public class TdEngineController {
         }
     }
 
+    /**
+     * 添加列字段
+     * @param superTableDto
+     * @return
+     */
     @PostMapping("/addColumnInStb")
     public R addColumnForSuperTable(@RequestBody SuperTableDto superTableDto) {
 
@@ -140,7 +145,7 @@ public class TdEngineController {
         try {
             this.tdEngineService.createTable(tableDto);
             log.info("successful operation: create table success");
-            return R.ok();
+            return R.ok("successful operation: create table success");
         } catch (UncategorizedSQLException e) {
             String message = e.getCause().getMessage();
             try {
@@ -191,5 +196,10 @@ public class TdEngineController {
     @PostMapping("/getDataByTimestamp")
     public R selectByTimesTamp(@Validated @RequestBody SelectDto selectDto) {
         return R.ok(this.tdEngineService.selectByTimesTamp(selectDto));
+    }
+
+    @PostMapping("/getCountByTimestamp")
+    public R getCountByTimestamp(@Validated @RequestBody SelectDto selectDto) {
+        return R.ok(this.tdEngineService.getCountByTimesTamp(selectDto));
     }
 }

@@ -1,7 +1,10 @@
-package com.mqttsnet.thinglinks.tdengine.consumer;
+package com.mqttsnet.thinglinks.tdengine.common.consumer;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.tdengine.service.ProductSuperTableCreateOrUpdateService;
+import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerGroupConstant;
+import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
@@ -21,7 +24,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = "thinglinks-tdengine", topic = "productSuperTable-createOrUpdate")
+@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_GROUP, topic = ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE)
 public class ProductCreateSuperTableMessageConsumer implements RocketMQListener {
 
     @Autowired
@@ -33,11 +36,18 @@ public class ProductCreateSuperTableMessageConsumer implements RocketMQListener 
      */
     @Override
     public void onMessage(Object message) {
-        assert message!=null;
+        if (StringUtils.isNull(message)) {
+            log.error("消息为空，不处理");
+            return;
+        }
         JSONObject stableMessage = JSONObject.parseObject(String.valueOf(message));
         log.info("TDengine消费{}超级表消息:{}"+stableMessage.get("type")+stableMessage.get("msg"));
         if("create".equals(stableMessage.get("type"))){
-            productSuperTableCreateOrUpdateService.createProductSuperTable(String.valueOf(stableMessage.get("msg")));
+            try {
+                productSuperTableCreateOrUpdateService.createProductSuperTable(String.valueOf(stableMessage.get("msg")));
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
         }else if("update".equals(stableMessage.get("type"))){
             productSuperTableCreateOrUpdateService.updateProductSuperTable(String.valueOf(stableMessage.get("msg")));
         }

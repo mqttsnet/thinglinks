@@ -133,6 +133,14 @@ public interface ProductMapper {
 	Product findOneByManufacturerIdAndModelAndDeviceType(@Param("manufacturerId")String manufacturerId,@Param("model")String model,@Param("deviceType")String deviceType);
 
 
+    List<Product> findAllByStatus(@Param("status")String status);
+
+
+    Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(@Param("manufacturerId")String manufacturerId,@Param("model")String model,@Param("protocolType")String protocolType,@Param("status")String status);
+
+    Product findOneByIdAndStatus(@Param("id")Long id,@Param("status")String status);
+
+
 
 
 }

@@ -4,7 +4,7 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import java.util.List;
     /**
 
-* @Description:    java类作用描述
+* @Description:    产品服务
 * @Author:         ShiHuan Sun
 * @E-mail:         13733918655@163.com
 * @Website:        http://thinglinks.mqttsnet.com
@@ -39,5 +39,12 @@ public interface ProductServicesService{
     int updateBatchSelective(List<ProductServices> list);
 
     int batchInsert(List<ProductServices> list);
+
+    List<ProductServices> findByProductIds(List<Long> productIds);
+
+
+
+	List<ProductServices> findAllByProductIdAndStatus(Long productId,String status);
+
 
 }

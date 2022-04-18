@@ -1,21 +1,36 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
+import com.mqttsnet.thinglinks.link.service.product.ProductService;
+import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
+import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
+import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
+import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Description: 设备管理业务层接口实现类
@@ -30,12 +45,24 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class DeviceServiceImpl implements DeviceService {
 
     @Resource
     private DeviceMapper deviceMapper;
     @Autowired
     private TokenService tokenService;
+    @Resource
+    private RemoteTdEngineService remoteTdEngineService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private ProductServicesService productServicesService;
+    /**
+     * 数据库名称
+     */
+    @Value("${spring.datasource.dynamic.datasource.master.dbName:thinglinks}")
+    private String dataBaseName;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -178,8 +205,8 @@ public class DeviceServiceImpl implements DeviceService {
      * @return 结果
      */
     @Override
-    public int insertDevice(Device device)
-    {
+    @Transactional(rollbackFor = Exception.class)
+    public int insertDevice(Device device)throws Exception {
         Device oneByClientIdAndDeviceIdentification = deviceMapper.findOneByClientIdOrDeviceIdentification(device.getClientId(), device.getDeviceIdentification());
         if(StringUtils.isNotNull(oneByClientIdAndDeviceIdentification)){
             return 0;
@@ -189,7 +216,35 @@ public class DeviceServiceImpl implements DeviceService {
         SysUser sysUser = loginUser.getSysUser();
         device.setCreateBy(sysUser.getUserName());
         device.setCreateTime(DateUtils.getNowDate());
-        return deviceMapper.insertDevice(device);
+        final int insertDeviceCount = deviceMapper.insertDevice(device);
+        Product product = productService.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(device.getManufacturerId(), device.getProductId(), device.getProtocolType(),"0");
+        if (StringUtils.isNull(product)) {
+            new Throwable("The side device reports data processing, but the product does not exist,DeviceIdentification:" + device.getDeviceIdentification() + ",Msg:" + JSON.toJSONString(device));
+        }
+        // 新增设备管理成功后，创建TD普通表
+        List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), "0");
+        TableDto tableDto;
+        for (ProductServices productServices : allByProductIdAndStatus) {
+            tableDto = new TableDto();
+            tableDto.setDataBaseName(dataBaseName);
+            //超级表名称命名规则:产品类型_产品标识_服务名称_设备标识（非ClientId）
+            String superTableName = product.getProductType()+"_"+product.getProductIdentification()+"_"+productServices.getServiceName();
+            tableDto.setSuperTableName(superTableName);
+            tableDto.setTableName(superTableName+"_"+device.getDeviceIdentification());
+            //Tag的处理
+            List<Fields> tagsFieldValues = new ArrayList<>();
+            Fields fields = new Fields();
+            fields.setFieldValue(device.getDeviceIdentification());
+            tagsFieldValues.add(fields);
+            tableDto.setTagsFieldValues(tagsFieldValues);
+            final R<?> ctResult = remoteTdEngineService.createTable(tableDto);
+            if (ctResult.getCode() != 200) {
+                log.error("Create SuperTable Exception: " + ctResult.getMsg());
+            }else {
+                log.info("Create SuperTable Success: " + ctResult.getMsg());
+            }
+        }
+        return insertDeviceCount;
     }
 
     /**

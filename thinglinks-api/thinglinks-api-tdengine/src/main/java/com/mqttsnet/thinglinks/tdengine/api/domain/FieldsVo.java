@@ -16,6 +16,8 @@ import java.util.List;
  */
 @Data
 public class FieldsVo {
+    private static final long serialVersionUID = 1L;
+
     /**
      * 字段名称
      */

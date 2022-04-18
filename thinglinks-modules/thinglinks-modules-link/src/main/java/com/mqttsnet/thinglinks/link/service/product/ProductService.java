@@ -1,15 +1,17 @@
 package com.mqttsnet.thinglinks.link.service.product;
+import com.alibaba.fastjson.JSONArray;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 /**
 
-* @Description:    java类作用描述
+* @Description:    产品服务接口
 * @Author:         ShiHuan Sun
 * @E-mail:         13733918655@163.com
 * @Website:        http://thinglinks.mqttsnet.com
@@ -120,9 +122,34 @@ public interface ProductService{
 	Product findOneByManufacturerIdAndModelAndDeviceType(String manufacturerId,String model,String deviceType);
 
 
+    /**
+     * 根据产品模型创建超级表
+     * @param product
+     * @param services
+     * @return
+     * @throws Exception
+     */
+    AjaxResult createSuperTable(Product product, JSONArray services) throws Exception;
 
-	ProductServices findOneByProductId(Long productId);
 
+
+	List<Product> findAllByStatus(String status);
+
+    /**
+     * 初始化生成超级表模型
+     * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
+     * @return
+     * @throws Exception
+     */
+    List<SuperTableDto> createSuperTableDataModel(Long productId)throws Exception;
+
+
+
+	Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(String manufacturerId,String model,String protocolType,String status);
+
+
+
+	Product findOneByIdAndStatus(Long id,String status);
 
 
 

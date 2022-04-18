@@ -71,4 +71,8 @@ public interface ProductPropertiesMapper {
     int updateBatchSelective(List<ProductProperties> list);
 
     int batchInsert(@Param("list") List<ProductProperties> list);
+
+    List<ProductProperties> findAllByServiceId(@Param("serviceId")Long serviceId);
+
+
 }

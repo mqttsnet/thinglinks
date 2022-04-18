@@ -71,7 +71,7 @@ public interface DeviceService {
      * @param device 设备管理
      * @return 结果
      */
-    public int insertDevice(Device device);
+    public int insertDevice(Device device)throws Exception;
 
     /**
      * 修改设备管理

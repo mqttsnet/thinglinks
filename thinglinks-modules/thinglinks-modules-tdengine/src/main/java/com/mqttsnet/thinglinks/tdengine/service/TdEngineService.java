@@ -17,9 +17,9 @@ import java.util.Map;
  * @Version 1.0
  */
 public interface TdEngineService {
-    void createDateBase(String databaseName);
+    void createDateBase(String dataBaseName);
 
-    void createSuperTable(List<FieldsVo> schemaFields, List<FieldsVo> tagsFields, String databaseName, String superTableName);
+    void createSuperTable(List<FieldsVo> schemaFields, List<FieldsVo> tagsFields, String dataBaseName, String superTableName);
 
     void createTable(TableDto tableDto);
 
@@ -28,4 +28,8 @@ public interface TdEngineService {
     List<Map<String, Object>> selectByTimesTamp(SelectDto selectDto);
 
     void addColumnForSuperTable(String superTableName, FieldsVo fieldsVo);
+
+    Long getCountByTimesTamp(SelectDto selectDto);
+
+    void initSTableFrame(String msg) throws Exception;
 }

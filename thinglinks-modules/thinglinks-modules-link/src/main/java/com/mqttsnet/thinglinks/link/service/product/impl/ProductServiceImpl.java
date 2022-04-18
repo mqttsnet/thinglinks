@@ -1,5 +1,7 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
+import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
@@ -8,11 +10,15 @@ import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
+import com.mqttsnet.thinglinks.common.core.text.Convert;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.core.utils.SpringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
+import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
+import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
@@ -23,7 +29,10 @@ import com.mqttsnet.thinglinks.link.api.domain.product.model.Services;
 import com.mqttsnet.thinglinks.link.mapper.product.ProductMapper;
 import com.mqttsnet.thinglinks.link.mapper.product.ProductPropertiesMapper;
 import com.mqttsnet.thinglinks.link.mapper.product.ProductServicesMapper;
+import com.mqttsnet.thinglinks.link.service.product.ProductPropertiesService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
+import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
+import com.mqttsnet.thinglinks.system.api.domain.SysDictData;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
@@ -31,10 +40,12 @@ import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -78,19 +89,21 @@ public class ProductServiceImpl implements ProductService{
     @Autowired
     private TokenService tokenService;
     @Autowired
-    private ProductServicesMapper productServicesMapper;
+    private ProductServicesService productServicesService;
     @Autowired
-    private ProductPropertiesMapper productPropertiesMapper;
+    private ProductPropertiesService productPropertiesService;
     @Resource
     private RemoteTdEngineService remoteTdEngineService;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
 
     /**
      * 数据库名称
      */
     @Value("${spring.datasource.dynamic.datasource.master.dbName:thinglinks}")
-    private String databaseName;
+    private String dataBaseName;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -327,7 +340,7 @@ public class ProductServiceImpl implements ProductService{
                 productServices.setDescription(service.getString("description"));
                 productServices.setCreateBy(sysUser.getUserName());
                 productServices.setCreateTime(DateUtils.getNowDate());
-                final int insertSelective = productServicesMapper.insertSelective(productServices);
+                final int insertSelective = productServicesService.insertSelective(productServices);
                 if (insertSelective==0) {
                     throw new RuntimeException("Service capability Data storage fails");
                 }
@@ -340,7 +353,7 @@ public class ProductServiceImpl implements ProductService{
                     productProperties.setServiceId(productServices.getId());
                     productProperties.setCreateBy(sysUser.getUserName());
                     productProperties.setCreateTime(DateUtils.getNowDate());
-                    final int batchInsert = productPropertiesMapper.insertSelective(productProperties);
+                    final int batchInsert = productPropertiesService.insertSelective(productProperties);
                 }
             }
             //解析入库成功创建TD超级表及子表
@@ -353,12 +366,13 @@ public class ProductServiceImpl implements ProductService{
     }
 
     /**
-     * 创建TD超级表
+     * 根据产品模型创建超级表
      * @param product
      * @param services
      * @return
      * @throws Exception
      */
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult createSuperTable(Product product,JSONArray services) throws Exception{
         //构建超级表入参对象
@@ -370,7 +384,7 @@ public class ProductServiceImpl implements ProductService{
                 //超级表名称命名规则:产品类型_产品标识_服务名称
                 String superTableName = product.getProductType()+"_"+product.getProductIdentification()+"_"+service.getString("serviceId");
                 //设置数据库名称和超级表名称
-                superTableDto.setDatabaseName(databaseName);
+                superTableDto.setDataBaseName(dataBaseName);
                 superTableDto.setSuperTableName(superTableName);
                 //构建超级表的表结构字段列表
                 JSONArray properties = service.getJSONArray("properties");
@@ -424,8 +438,8 @@ public class ProductServiceImpl implements ProductService{
                     redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName);
                 }
                 //在redis里存入新的超级表对的表结构信息
-                redisService.setCacheList(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName, schemaFields);
-
+                redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, JSON.toJSONString(superTableDto));
+                log.info("缓存超级表数据模型:{}",JSON.toJSONString(superTableDto));
             }
         }catch (Exception e){
          log.error(e.getMessage());
@@ -534,12 +548,115 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
-	public ProductServices findOneByProductId(Long productId){
-		 return productServicesMapper.findOneByProductId(productId);
+	public List<Product> findAllByStatus(String status){
+		 return productMapper.findAllByStatus(status);
 	}
 
 
+    /**
+     * 初始化生成超级表模型
+     * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
+     * @return
+     * @throws Exception
+     */
+    @Async
+    @Override
+    public List<SuperTableDto> createSuperTableDataModel(Long productId)throws Exception{
+        List<SuperTableDto> superTableDtoList = new ArrayList<>();
+        List<Product> allByStatus = null;
+        if (productId == null) {
+            allByStatus = this.findAllByStatus("0");
+        }else {
+            allByStatus = new ArrayList<>();
+            Product product = this.findOneByIdAndStatus(productId,"0");
+            allByStatus.add(product);
+        }
+        SuperTableDto superTableDto;
+        loop:
+        for (Product product : allByStatus) {
+            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), "0");
+            if(StringUtils.isEmpty(allByProductIdAndStatus)){
+                continue loop;
+            }
+            for (ProductServices productServices : allByProductIdAndStatus) {
+                superTableDto = new SuperTableDto();
+                if(StringUtils.isNull(productServices)){
+                    continue loop;
+                }
+                //超级表名称命名规则:产品类型_产品标识_服务名称
+                String superTableName = product.getProductType()+"_"+product.getProductIdentification()+"_"+productServices.getServiceName();
+                //设置数据库名称和超级表名称
+                superTableDto.setDataBaseName(dataBaseName);
+                superTableDto.setSuperTableName(superTableName);
+                //构建超级表的表结构字段列表
+                List<ProductProperties> allByServiceId = productPropertiesService.findAllByServiceId(productServices.getId());
+                //如果服务下属性值为空，没必要为该服务创建超级表，跳过该循环，进入下个服务
+                if(StringUtils.isNull(allByServiceId)){
+                    continue loop;
+                }
+                //构建超级表的表结构字段列表
+                List<Fields> schemaFields = new ArrayList<>();
+                //超级表第一个字段数据类型必须为时间戳
+                Fields firstColumn = new Fields();
+                firstColumn.setFieldName("ts");
+                firstColumn.setDataType(DataTypeEnum.TIMESTAMP);
+                schemaFields.add(firstColumn);
+                //根据属性对象列表循环构建超级表表结构
+                for (ProductProperties productProperties : allByServiceId) {
+                    //获取字段名称
+                    String filedName = productProperties.getName();
+                    //获取该属性数据类型
+                    String datatype = productProperties.getDatatype();
+                    //获取该属性的数据大小
+                    Integer size = productProperties.getMaxlength();
+                    //添加超级表表结构字段
+                    Fields fields = new Fields(filedName, datatype, size);
+                    schemaFields.add(fields);
+                }
+                //构建超级表标签字段列表
+                //根据业务逻辑，将超级表的标签字段定为
+                // 1:设备标识：deviceIdentification
+                List<Fields> tagsFields = new ArrayList<>();
+                Fields tags = new Fields();
+                tags.setFieldName("deviceIdentification");
+                tags.setDataType(DataTypeEnum.BINARY);
+                tags.setSize(64);
+                tagsFields.add(tags);
 
+                //设置超级表表结构列表
+                superTableDto.setSchemaFields(schemaFields);
+                //设置超级表标签字段列表
+                superTableDto.setTagsFields(tagsFields);
+                //将之前存在redis里的同样的名称的超级表的表结构信息删除
+                if (redisService.hasKey(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName)) {
+                    redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName);
+                }
+                //在redis里存入新的超级表对的表结构信息
+                redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, JSON.toJSONString(superTableDto));
+                log.info("缓存超级表数据模型:{}",JSON.toJSONString(superTableDto));
+                superTableDtoList.add(superTableDto);
+                //推送RocketMq消息初始化超级表
+                MQMessage mqMessage = new MQMessage();
+                mqMessage.setTopic(ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE);
+                final JSONObject jsonObject = new JSONObject();
+                jsonObject.put("type","create");
+                jsonObject.put("msg",JSON.toJSONString(superTableDto));
+                mqMessage.setMessage(jsonObject.toJSONString());
+                rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
+            }
+        }
+        return superTableDtoList;
+    }
+
+	@Override
+	public Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(String manufacturerId,String model,String protocolType,String status){
+		 return productMapper.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(manufacturerId,model,protocolType,status);
+	}
+
+	@Override
+	public Product findOneByIdAndStatus(Long id,String status){
+		 return productMapper.findOneByIdAndStatus(id,status);
+	}
 
 
 

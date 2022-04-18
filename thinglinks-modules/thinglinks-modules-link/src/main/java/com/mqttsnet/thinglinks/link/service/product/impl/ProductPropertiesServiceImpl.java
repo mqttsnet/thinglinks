@@ -80,4 +80,12 @@ public class ProductPropertiesServiceImpl implements ProductPropertiesService{
         return productPropertiesMapper.batchInsert(list);
     }
 
+	@Override
+	public List<ProductProperties> findAllByServiceId(Long serviceId){
+		 return productPropertiesMapper.findAllByServiceId(serviceId);
+	}
+
+
+
+
 }
