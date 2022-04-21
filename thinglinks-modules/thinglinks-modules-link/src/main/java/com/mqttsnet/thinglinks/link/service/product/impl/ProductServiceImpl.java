@@ -556,12 +556,13 @@ public class ProductServiceImpl implements ProductService{
     /**
      * 初始化生成超级表模型
      * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
+     * @param InitializeOrNot  是否初始化
      * @return
      * @throws Exception
      */
     @Async
     @Override
-    public List<SuperTableDto> createSuperTableDataModel(Long productId)throws Exception{
+    public List<SuperTableDto> createSuperTableDataModel(Long productId,Boolean InitializeOrNot)throws Exception{
         List<SuperTableDto> superTableDtoList = new ArrayList<>();
         List<Product> allByStatus = null;
         if (productId == null) {
@@ -635,14 +636,16 @@ public class ProductServiceImpl implements ProductService{
                 redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, JSON.toJSONString(superTableDto));
                 log.info("缓存超级表数据模型:{}",JSON.toJSONString(superTableDto));
                 superTableDtoList.add(superTableDto);
-                //推送RocketMq消息初始化超级表
-                MQMessage mqMessage = new MQMessage();
-                mqMessage.setTopic(ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE);
-                final JSONObject jsonObject = new JSONObject();
-                jsonObject.put("type","create");
-                jsonObject.put("msg",JSON.toJSONString(superTableDto));
-                mqMessage.setMessage(jsonObject.toJSONString());
-                rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
+                if (InitializeOrNot){
+                    //推送RocketMq消息初始化超级表
+                    MQMessage mqMessage = new MQMessage();
+                    mqMessage.setTopic(ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE);
+                    final JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("type","create");
+                    jsonObject.put("msg",JSON.toJSONString(superTableDto));
+                    mqMessage.setMessage(jsonObject.toJSONString());
+                    rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
+                }
             }
         }
         return superTableDtoList;

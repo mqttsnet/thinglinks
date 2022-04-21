@@ -54,5 +54,13 @@
         "limitApp": "default",
         "strategy": 0,
         "controlBehavior": 0
+    },
+	{
+        "resource": "thinglinks-protocolAnalysis",
+        "count": 300,
+        "grade": 1,
+        "limitApp": "default",
+        "strategy": 0,
+        "controlBehavior": 0
     }
 ]

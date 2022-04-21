@@ -177,6 +177,19 @@ services:
     links:
       - thinglinks-redis
       - thinglinks-mysql
+  thinglinks-modules-protocolAnalysis:
+    container_name: thinglinks-modules-protocolAnalysis
+    build:
+      context: ./thinglinks/modules/protocolAnalysis
+      dockerfile: dockerfile
+    ports:
+      - "19307:19307"
+      - "18901:18901"
+      - "18902:18902"
+    depends_on:
+      - thinglinks-redis
+    links:
+      - thinglinks-redis
   thinglinks-visual-monitor:
     container_name: thinglinks-visual-monitor
     build:

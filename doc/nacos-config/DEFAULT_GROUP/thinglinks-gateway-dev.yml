@@ -81,6 +81,13 @@ spring:
             - Path=/broker/**
           filters:
             - StripPrefix=1
+        # ProtocolAnalysis服务
+        - id: thinglinks-protocolAnalysis
+          uri: lb://thinglinks-protocolAnalysis
+          predicates:
+            - Path=/protocolAnalysis/**
+          filters:
+            - StripPrefix=1
 
 # 安全配置
 security:

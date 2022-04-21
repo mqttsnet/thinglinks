@@ -32,7 +32,7 @@ public class DeviceActionMessageConsumer implements RocketMQListener {
 
     @Override
     public void onMessage(Object message) {
-        assert message!=null;
+        assert message!=null:"message cannot be empty";
         log.info("ThingLinks物联网平台数据消费-->Received message={}", message);
         JSONObject thinglinksMessage = JSONObject.parseObject(String.valueOf(message));
         /**

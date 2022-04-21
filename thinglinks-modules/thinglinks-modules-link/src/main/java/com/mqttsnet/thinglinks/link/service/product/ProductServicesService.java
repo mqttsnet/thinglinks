@@ -47,4 +47,9 @@ public interface ProductServicesService{
 	List<ProductServices> findAllByProductIdAndStatus(Long productId,String status);
 
 
+
+	List<ProductServices> findAllByProductIdAndServiceNameAndStatus(Long productId,String serviceName,String status);
+
+
+
 }

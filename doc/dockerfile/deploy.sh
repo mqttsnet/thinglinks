@@ -19,6 +19,8 @@ port(){
 	firewall-cmd --add-port=11883/tcp --permanent
 	firewall-cmd --add-port=18443/tcp --permanent
 	firewall-cmd --add-port=18999/tcp --permanent
+	firewall-cmd --add-port=18901/tcp --permanent
+	firewall-cmd --add-port=18902/tcp --permanent
 	service firewalld restart
 }
 
@@ -29,7 +31,7 @@ base(){
 
 # 启动程序模块（必须）
 modules(){
-	docker-compose up -d thinglinks-nginx thinglinks-gateway thinglinks-auth thinglinks-modules-file thinglinks-modules-gen thinglinks-modules-job thinglinks-modules-system thinglinks-modules-tdengine thinglinks-modules-link thinglinks-modules-broker thinglinks-visual-monitor thinglinks-visual-collection
+	docker-compose up -d thinglinks-nginx thinglinks-gateway thinglinks-auth thinglinks-modules-file thinglinks-modules-gen thinglinks-modules-job thinglinks-modules-system thinglinks-modules-tdengine thinglinks-modules-link thinglinks-modules-broker thinglinks-modules-protocolAnalysis thinglinks-visual-monitor thinglinks-visual-collection
 }
 
 # 关闭所有环境/模块

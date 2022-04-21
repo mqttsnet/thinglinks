@@ -90,6 +90,14 @@ public class ProductServicesServiceImpl implements ProductServicesService{
 		 return productServicesMapper.findAllByProductIdAndStatus(productId,status);
 	}
 
+	@Override
+	public List<ProductServices> findAllByProductIdAndServiceNameAndStatus(Long productId,String serviceName,String status){
+		 return productServicesMapper.findAllByProductIdAndServiceNameAndStatus(productId,serviceName,status);
+	}
+
+
+
+
 
 
 

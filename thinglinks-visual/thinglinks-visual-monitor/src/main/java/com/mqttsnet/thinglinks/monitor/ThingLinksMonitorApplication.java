@@ -9,11 +9,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @EnableCustomSwagger2
+@SpringBootApplication(scanBasePackages = {"com.mqttsnet.thinglinks"})
 @MapperScan("com.mqttsnet.thinglinks.monitor.mapper")
-@CrossOrigin(origins = "*",maxAge = 3600)
-@SpringBootApplication
 @EnableCaching
 @EnableScheduling
+@CrossOrigin(origins = "*",maxAge = 3600)
 public class ThingLinksMonitorApplication {
     public static void main(String[] args) {
         SpringApplication.run(ThingLinksMonitorApplication.class, args);

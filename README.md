@@ -54,7 +54,8 @@ com.mqttsnet.thinglinks
 │       └── thinglinks-modules-system                      // 系统模块 [19303]
 │       └── thinglinks-modules-tdengine                    // TDengine服务 [19304]
 │       └── thinglinks-modules-link                        // Link服务 [19305]
-        └── thinglinks-modules-broker                      // broker服务 [19306]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
+│       └── thinglinks-modules-broker                      // broker服务 [19306]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
+│       └── thinglinks-modules-protocolAnalysis            // 协议解析服务 [19307]、[TCP-IP:18901]、[UDP-IP:18902]
 ├── thinglinks-registry         // 注册中心微应用
 ├── thinglinks-visual          // 图形化管理模块
 │       └── thinglinks-visual-monitor                      // 监控中心 [19400]
@@ -74,7 +75,7 @@ com.mqttsnet.thinglinks
 
 系统工具：表单构建、代码生成、系统接口
 
-设备集成：设备管理（支持MQTT协议设备接入）
+设备集成：设备管理（支持MQTT协议、TCP-IP协议设备接入）
 
 规则引擎消息转发：支持KAFKA节点、HTTP节点、PREDICATE节点、ROCKET_MQ节点、RABBIT_MQ节点、MYSQL节点、MQTT节点、TOPIC节点、LOG节点
 
@@ -138,9 +139,11 @@ com.mqttsnet.thinglinks
 
 9、nohup java -Xms400m -Xmx400m -Xmn150m -Xss512k -XX:MetaspaceSize=1024m -XX:MaxMetaspaceSize=1024m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-broker-1.0.0.RELEASE.jar >/dev/null 2>&1 &
 
-10、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-visual-monitor-1.0.0.RELEASE.jar >/dev/null 2>&1 &
+10、nohup java -Xms400m -Xmx400m -Xmn150m -Xss512k -XX:MetaspaceSize=1024m -XX:MaxMetaspaceSize=1024m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-protocolAnalysis-1.0.0.RELEASE.jar >/dev/null 2>&1 &
 
-11、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -Dserver.port=19101 -Dcsp.sentinel.dashboard.server=localhost:19101 -Dproject.name=sentinel-dashboard -Dsentinel.dashboard.auth.username=thinglinks -Dsentinel.dashboard.auth.password=123456 -jar -Dfile.encoding=utf-8  ./sentinel-dashboard-1.8.2.jar >/dev/null 2>&1 &
+11、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-visual-monitor-1.0.0.RELEASE.jar >/dev/null 2>&1 &
+
+12、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -Dserver.port=19101 -Dcsp.sentinel.dashboard.server=localhost:19101 -Dproject.name=sentinel-dashboard -Dsentinel.dashboard.auth.username=thinglinks -Dsentinel.dashboard.auth.password=123456 -jar -Dfile.encoding=utf-8  ./sentinel-dashboard-1.8.2.jar >/dev/null 2>&1 &
 
 ~~~
 
