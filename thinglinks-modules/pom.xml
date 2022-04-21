@@ -16,6 +16,7 @@
         <module>thinglinks-modules-tdengine</module>
         <module>thinglinks-modules-link</module>
         <module>thinglinks-modules-broker</module>
+        <module>thinglinks-modules-protocolAnalysis</module>
     </modules>
 
     <artifactId>thinglinks-modules</artifactId>

@@ -190,7 +190,7 @@ public class ProductController extends BaseController {
     @GetMapping(value = "/findCreateSuperTableDataModel/{productId}")
     public AjaxResult findCreateSuperTableDataModel(@PathVariable("productId") Long productId) throws Exception {
         try {
-            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel(productId);
+            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel(productId,false);
             return AjaxResult.success(superTableDataModel);
         }catch (Exception e){
             log.error(e.getMessage());

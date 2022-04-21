@@ -143,10 +143,10 @@ smqtt:
       chain: # 规则链(支持多个)
         - ruleType: ROCKET_MQ  # 过滤器类型
           script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
-    - ruleName: KAFKA # 过滤器名称
-      chain: # 规则链(支持多个)
-        - ruleType: KAFKA  # 过滤器类型
-          script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
+#    - ruleName: KAFKA # 过滤器名称
+#      chain: # 规则链(支持多个)
+#        - ruleType: KAFKA  # 过滤器类型
+#          script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
 #    - ruleName: HTTP # 过滤器名称
 #      chain: # 规则链(支持多个)
 #        - ruleType: HTTP
@@ -167,18 +167,18 @@ smqtt:
     - source: ROCKET_MQ # rocketmq配置
       sourceName: rocket_mq
       sourceAttributes:
-        topic: thinglinks-link
+        topic: thinglinks-link-mqttMsg
         tags: thinglinks-link
-        namesrvAddr: 127.0.0.1:9876
-        instanceName: wt9zfxnoukxsrngp-0721852
+        namesrvAddr: 127.0.0.1:19876
+        instanceName: broker-a
         producerGroup: thinglinks
-    - source: KAFKA # kafka配置
-      sourceName: kafka
-      sourceAttributes:
-        topic: thinglinks
-        bootstrap-servers: 127.0.0.1:9092
-        key-serializer: org.apache.kafka.common.serialization.StringSerializer
-        value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#    - source: KAFKA # kafka配置
+#      sourceName: kafka
+#      sourceAttributes:
+#        topic: thinglinks
+#        bootstrap-servers: 127.0.0.1:9092
+#        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#        value-serializer: org.apache.kafka.common.serialization.StringSerializer
 #     - source: HTTP
 #       sourceName: http
 #       sourceAttributes:

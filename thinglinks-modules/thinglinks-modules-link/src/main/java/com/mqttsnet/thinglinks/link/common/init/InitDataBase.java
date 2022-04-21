@@ -36,7 +36,7 @@ public class InitDataBase {
         StopWatch watch = new StopWatch();
         watch.start();
         //初始化产品模型数据
-        this.productService.createSuperTableDataModel(null);
+        this.productService.createSuperTableDataModel(null,true);
         watch.stop();
         log.info("初始化基础数据成功 ! Time Elapsed (millisecond): {}",watch.getTime());
     }

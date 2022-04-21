@@ -76,5 +76,8 @@ public interface ProductServicesMapper {
 
     List<ProductServices> findAllByProductIdAndStatus(@Param("productId")Long productId,@Param("status")String status);
 
+    List<ProductServices> findAllByProductIdAndServiceNameAndStatus(@Param("productId")Long productId,@Param("serviceName")String serviceName,@Param("status")String status);
+
+
 
 }

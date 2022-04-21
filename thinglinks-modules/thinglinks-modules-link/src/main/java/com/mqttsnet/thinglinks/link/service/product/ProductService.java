@@ -138,10 +138,11 @@ public interface ProductService{
     /**
      * 初始化生成超级表模型
      * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
+     * @param InitializeOrNot  是否初始化
      * @return
      * @throws Exception
      */
-    List<SuperTableDto> createSuperTableDataModel(Long productId)throws Exception;
+    List<SuperTableDto> createSuperTableDataModel(Long productId,Boolean InitializeOrNot)throws Exception;
 
 
 

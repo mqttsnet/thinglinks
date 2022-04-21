@@ -44,7 +44,7 @@ public class ConsumerCollection implements RocketMQListener {
 
     @Override
     public void onMessage(Object message) {
-        assert message != null;
+        assert message != null:"message cannot be empty";
         log.info("Monitor消费服务器采集消息" + message);
         cn.hutool.json.JSONObject agentJsonObject = (cn.hutool.json.JSONObject) JSONUtil.parse(String.valueOf(message));
         cn.hutool.json.JSONObject resultJson = new cn.hutool.json.JSONObject();

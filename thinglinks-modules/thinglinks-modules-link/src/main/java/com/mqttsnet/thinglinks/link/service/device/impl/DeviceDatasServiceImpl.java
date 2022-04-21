@@ -1,11 +1,14 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jayway.jsonpath.JsonPath;
+import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.SubStringUtil;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceDatasMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
@@ -146,15 +149,27 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
     @Override
     public void processingDatasTopic(String deviceIdentification, String msg) throws Exception{
         final Device oneByDeviceIdentification = deviceService.findOneByDeviceIdentification(deviceIdentification);
-        if (Objects.isNull(oneByDeviceIdentification)) {
+        if (StringUtils.isNull(oneByDeviceIdentification)) {
             log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
             return;
         }
         final Product oneByManufacturerIdAndModelAndDeviceType = productService.findOneByManufacturerIdAndModelAndDeviceType(oneByDeviceIdentification.getManufacturerId(), oneByDeviceIdentification.getProductId(), oneByDeviceIdentification.getProtocolType());
-        if (Objects.isNull(oneByManufacturerIdAndModelAndDeviceType)) {
+        if (StringUtils.isNull(oneByManufacturerIdAndModelAndDeviceType)) {
             log.error("The side device reports data processing, but the product does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
             return;
         }
+        List<String> serviceId = JsonPath.read(msg, "$.devices[*]..serviceId");
+        if (StringUtils.isEmpty(serviceId)) {
+            log.error("The side device reports data processing, but the serviceId does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+        }
+        for (String serviceName : serviceId) {
+            final List<ProductServices> allByProductIdAndServiceNameAndStatus = productServicesService.findAllByProductIdAndServiceNameAndStatus(oneByManufacturerIdAndModelAndDeviceType.getId(), serviceName, "0");
+            if (StringUtils.isEmpty(allByProductIdAndServiceNameAndStatus)) {
+                log.error("The side device reports data processing, but the service does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+            }
+
+        }
+        
 
     }
 
