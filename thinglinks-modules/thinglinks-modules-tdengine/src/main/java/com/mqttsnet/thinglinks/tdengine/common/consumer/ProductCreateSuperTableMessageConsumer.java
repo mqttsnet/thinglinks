@@ -41,7 +41,7 @@ public class ProductCreateSuperTableMessageConsumer implements RocketMQListener 
             return;
         }
         JSONObject stableMessage = JSONObject.parseObject(String.valueOf(message));
-        log.info("TDengine消费{}超级表消息:{}"+stableMessage.get("type")+stableMessage.get("msg"));
+        log.info("TDengine消费{}超级表消息:{}",stableMessage.get("type"),stableMessage.get("msg"));
         if("create".equals(stableMessage.get("type"))){
             try {
                 productSuperTableCreateOrUpdateService.createProductSuperTable(String.valueOf(stableMessage.get("msg")));

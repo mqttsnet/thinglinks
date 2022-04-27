@@ -7,6 +7,7 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -137,12 +138,12 @@ public interface ProductService{
 
     /**
      * 初始化生成超级表模型
-     * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
+     * @param productIds 产品ID集合  productIds==null 初始化所有产品:productIds!=null 初始化指定产品
      * @param InitializeOrNot  是否初始化
      * @return
      * @throws Exception
      */
-    List<SuperTableDto> createSuperTableDataModel(Long productId,Boolean InitializeOrNot)throws Exception;
+    List<SuperTableDto> createSuperTableDataModel(Long[] productIds,Boolean InitializeOrNot)throws Exception;
 
 
 
@@ -154,4 +155,9 @@ public interface ProductService{
 
 
 
+	Product findOneByProductIdentificationAndProtocolType(String productIdentification,String protocolType);
+
+
+
+	List<Product> findAllByIdInAndStatus(Collection<Long> idCollection,String status);
 }

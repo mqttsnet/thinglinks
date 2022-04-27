@@ -51,25 +51,6 @@ public class ProductController extends BaseController {
         return productService.selectByPrimaryKey(id);
     }
 
-   /* *//**
-     * 新增产品模型
-     *//*
-    @PreAuthorize(hasPermi = "link:product:add")
-    @Log(title = "产品模型", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@RequestBody JSONObject content) {
-        JSONObject tokenObj = new JSONObject();
-        try {
-//            AjaxResult ajaxResult = productService.insert(content);
-            return null;
-        } catch (JSONException e) {
-            return new AjaxResult(HttpStatus.ERROR, "文件数据的json格式错误", tokenObj);
-        } catch (Exception e) {
-            log.error("新增产品模型异常：", e);
-            return new AjaxResult(HttpStatus.ERROR, "快捷生成失败", tokenObj);
-        }
-    }*/
-
     /**
      * 导入产品模型json数据
      * @param file json文件
@@ -183,14 +164,15 @@ public class ProductController extends BaseController {
 
     /**
      * 初始化生成超级表模型
-     * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
+     * @param productIds 产品ID集合
+     * @param initializeOrNot  是否初始化
      * @return
      * @throws Exception
      */
-    @GetMapping(value = "/findCreateSuperTableDataModel/{productId}")
-    public AjaxResult findCreateSuperTableDataModel(@PathVariable("productId") Long productId) throws Exception {
+    @GetMapping(value = "/findCreateSuperTableDataModel/{productIds}/{initializeOrNot}")
+    public AjaxResult findCreateSuperTableDataModel(@PathVariable("productIds") Long[] productIds,@PathVariable("initializeOrNot") Boolean initializeOrNot) throws Exception {
         try {
-            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel(productId,false);
+            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel(productIds,initializeOrNot);
             return AjaxResult.success(superTableDataModel);
         }catch (Exception e){
             log.error(e.getMessage());

@@ -10,10 +10,8 @@ import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
-import com.mqttsnet.thinglinks.common.core.text.Convert;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
-import com.mqttsnet.thinglinks.common.core.utils.SpringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
@@ -23,23 +21,17 @@ import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-import com.mqttsnet.thinglinks.link.api.domain.product.model.Commands;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.Properties;
-import com.mqttsnet.thinglinks.link.api.domain.product.model.Services;
 import com.mqttsnet.thinglinks.link.mapper.product.ProductMapper;
-import com.mqttsnet.thinglinks.link.mapper.product.ProductPropertiesMapper;
-import com.mqttsnet.thinglinks.link.mapper.product.ProductServicesMapper;
 import com.mqttsnet.thinglinks.link.service.product.ProductPropertiesService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
-import com.mqttsnet.thinglinks.system.api.domain.SysDictData;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,13 +49,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import static cn.hutool.json.XMLTokener.entity;
 
 /**
 
@@ -555,29 +541,27 @@ public class ProductServiceImpl implements ProductService{
 
     /**
      * 初始化生成超级表模型
-     * @param productId  productId==null 初始化所有产品:productId!=null 初始化指定产品
+     * @param productIds 产品ID集合  productIds==null 初始化所有产品:productIds!=null 初始化指定产品
      * @param InitializeOrNot  是否初始化
      * @return
      * @throws Exception
      */
     @Async
     @Override
-    public List<SuperTableDto> createSuperTableDataModel(Long productId,Boolean InitializeOrNot)throws Exception{
+    public List<SuperTableDto> createSuperTableDataModel(Long[] productIds,Boolean InitializeOrNot)throws Exception{
         List<SuperTableDto> superTableDtoList = new ArrayList<>();
-        List<Product> allByStatus = null;
-        if (productId == null) {
-            allByStatus = this.findAllByStatus("0");
+        List<Product>  productList = new ArrayList<>();
+        if (productIds.length > 0) {
+            productList = this.findAllByStatus("0");
         }else {
-            allByStatus = new ArrayList<>();
-            Product product = this.findOneByIdAndStatus(productId,"0");
-            allByStatus.add(product);
+            productList = this.findAllByIdInAndStatus(Arrays.asList(productIds),"0");
         }
         SuperTableDto superTableDto;
         loop:
-        for (Product product : allByStatus) {
+        for (Product product : productList) {
             List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), "0");
             if(StringUtils.isEmpty(allByProductIdAndStatus)){
-                continue loop;
+                continue;
             }
             for (ProductServices productServices : allByProductIdAndStatus) {
                 superTableDto = new SuperTableDto();
@@ -660,6 +644,22 @@ public class ProductServiceImpl implements ProductService{
 	public Product findOneByIdAndStatus(Long id,String status){
 		 return productMapper.findOneByIdAndStatus(id,status);
 	}
+
+	@Override
+	public Product findOneByProductIdentificationAndProtocolType(String productIdentification,String protocolType){
+		 return productMapper.findOneByProductIdentificationAndProtocolType(productIdentification,protocolType);
+	}
+
+	@Override
+	public List<Product> findAllByIdInAndStatus(Collection<Long> idCollection, String status){
+		 return productMapper.findAllByIdInAndStatus(idCollection,status);
+	}
+
+
+
+
+
+
 
 
 

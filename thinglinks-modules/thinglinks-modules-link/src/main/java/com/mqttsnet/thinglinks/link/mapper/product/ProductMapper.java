@@ -1,4 +1,5 @@
 package com.mqttsnet.thinglinks.link.mapper.product;
+import java.util.Collection;
 
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 
@@ -139,6 +140,11 @@ public interface ProductMapper {
     Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(@Param("manufacturerId")String manufacturerId,@Param("model")String model,@Param("protocolType")String protocolType,@Param("status")String status);
 
     Product findOneByIdAndStatus(@Param("id")Long id,@Param("status")String status);
+
+    Product findOneByProductIdentificationAndProtocolType(@Param("productIdentification")String productIdentification,@Param("protocolType")String protocolType);
+
+    List<Product> findAllByIdInAndStatus(@Param("idCollection")Collection<Long> idCollection,@Param("status")String status);
+
 
 
 

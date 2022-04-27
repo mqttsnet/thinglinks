@@ -127,18 +127,12 @@ public class Device  extends BaseEntity implements Serializable{
     private String deviceTags;
 
     /**
-     * 产品型号
+     * 产品标识
      */
-    @Excel(name = "产品型号")
-    @ApiModelProperty(value = "产品型号")
-    private String productId;
+    @Excel(name = "产品标识")
+    @ApiModelProperty(value = "产品标识")
+    private String productIdentification;
 
-    /**
-     * 厂商ID
-     */
-    @Excel(name = "厂商ID")
-    @ApiModelProperty(value = "厂商ID")
-    private String manufacturerId;
 
     /**
      * 产品协议类型 ：mqtt || coap || modbus || http

@@ -18,8 +18,7 @@
     <result column="connect_status" jdbcType="VARCHAR" property="connectStatus" />
     <result column="is_will" jdbcType="VARCHAR" property="isWill" />
     <result column="device_tags" jdbcType="VARCHAR" property="deviceTags" />
-    <result column="product_id" jdbcType="VARCHAR" property="productId" />
-    <result column="manufacturer_id" jdbcType="VARCHAR" property="manufacturerId" />
+    <result column="product_identification" jdbcType="VARCHAR" property="productIdentification" />
     <result column="protocol_type" jdbcType="VARCHAR" property="protocolType" />
     <result column="device_type" jdbcType="VARCHAR" property="deviceType" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
@@ -43,8 +42,7 @@
     <result property="connectStatus"    column="connect_status"    />
     <result property="isWill"    column="is_will"    />
     <result property="deviceTags"    column="device_tags"    />
-    <result property="productId"    column="product_id"    />
-    <result property="manufacturerId"    column="manufacturer_id"    />
+    <result property="productIdentification"    column="product_identification"    />
     <result property="protocolType"    column="protocol_type"    />
     <result property="deviceType"    column="device_type"    />
     <result property="createBy"    column="create_by"    />
@@ -57,7 +55,7 @@
     <!--@mbg.generated-->
     id, client_id, user_name, `password`, app_id, auth_mode, device_identification, device_name, 
     connector, device_description, device_status, connect_status, is_will, device_tags, 
-    product_id, manufacturer_id, protocol_type, device_type, create_by, create_time, 
+    product_identification, protocol_type, device_type, create_by, create_time,
     update_by, update_time, remark
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -78,7 +76,7 @@
       app_id, auth_mode, device_identification, 
       device_name, connector, device_description, 
       device_status, connect_status, is_will, 
-      device_tags, product_id, manufacturer_id, 
+      device_tags, product_identification,
       protocol_type, device_type, create_by, 
       create_time, update_by, update_time, 
       remark)
@@ -86,7 +84,7 @@
       #{app_id,jdbcType=VARCHAR}, #{auth_mode,jdbcType=VARCHAR}, #{device_identification,jdbcType=VARCHAR}, 
       #{device_name,jdbcType=VARCHAR}, #{connector,jdbcType=VARCHAR}, #{device_description,jdbcType=VARCHAR}, 
       #{device_status,jdbcType=VARCHAR}, #{connect_status,jdbcType=VARCHAR}, #{is_will,jdbcType=VARCHAR}, 
-      #{device_tags,jdbcType=VARCHAR}, #{product_id,jdbcType=VARCHAR}, #{manufacturer_id,jdbcType=VARCHAR}, 
+      #{device_tags,jdbcType=VARCHAR}, #{product_identification,jdbcType=VARCHAR},
       #{protocol_type,jdbcType=VARCHAR}, #{device_type,jdbcType=VARCHAR}, #{create_by,jdbcType=VARCHAR}, 
       #{create_time,jdbcType=TIMESTAMP}, #{update_by,jdbcType=VARCHAR}, #{update_time,jdbcType=TIMESTAMP}, 
       #{remark,jdbcType=VARCHAR})
@@ -134,11 +132,8 @@
       <if test="device_tags != null and device_tags != ''">
         device_tags,
       </if>
-      <if test="product_id != null and product_id != ''">
-        product_id,
-      </if>
-      <if test="manufacturer_id != null and manufacturer_id != ''">
-        manufacturer_id,
+      <if test="product_identification != null and product_identification != ''">
+        product_identification,
       </if>
       <if test="protocol_type != null and protocol_type != ''">
         protocol_type,
@@ -202,11 +197,8 @@
       <if test="device_tags != null and device_tags != ''">
         #{device_tags,jdbcType=VARCHAR},
       </if>
-      <if test="product_id != null and product_id != ''">
-        #{product_id,jdbcType=VARCHAR},
-      </if>
-      <if test="manufacturer_id != null and manufacturer_id != ''">
-        #{manufacturer_id,jdbcType=VARCHAR},
+      <if test="product_identification != null and product_identification != ''">
+        #{product_identification,jdbcType=VARCHAR},
       </if>
       <if test="protocol_type != null and protocol_type != ''">
         #{protocol_type,jdbcType=VARCHAR},
@@ -274,11 +266,8 @@
       <if test="device_tags != null and device_tags != ''">
         device_tags = #{device_tags,jdbcType=VARCHAR},
       </if>
-      <if test="product_id != null and product_id != ''">
-        product_id = #{product_id,jdbcType=VARCHAR},
-      </if>
-      <if test="manufacturer_id != null and manufacturer_id != ''">
-        manufacturer_id = #{manufacturer_id,jdbcType=VARCHAR},
+      <if test="product_identification != null and product_identification != ''">
+        product_identification = #{product_identification,jdbcType=VARCHAR},
       </if>
       <if test="protocol_type != null and protocol_type != ''">
         protocol_type = #{protocol_type,jdbcType=VARCHAR},
@@ -320,8 +309,7 @@
       connect_status = #{connect_status,jdbcType=VARCHAR},
       is_will = #{is_will,jdbcType=VARCHAR},
       device_tags = #{device_tags,jdbcType=VARCHAR},
-      product_id = #{product_id,jdbcType=VARCHAR},
-      manufacturer_id = #{manufacturer_id,jdbcType=VARCHAR},
+      product_identification = #{product_identification,jdbcType=VARCHAR},
       protocol_type = #{protocol_type,jdbcType=VARCHAR},
       device_type = #{device_type,jdbcType=VARCHAR},
       create_by = #{create_by,jdbcType=VARCHAR},
@@ -400,14 +388,9 @@
           when id = #{item.id,jdbcType=BIGINT} then #{item.device_tags,jdbcType=VARCHAR}
         </foreach>
       </trim>
-      <trim prefix="product_id = case" suffix="end,">
+      <trim prefix="product_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.product_id,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="manufacturer_id = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.manufacturer_id,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.product_identification,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="protocol_type = case" suffix="end,">
@@ -546,17 +529,10 @@
           </if>
         </foreach>
       </trim>
-      <trim prefix="product_id = case" suffix="end,">
+      <trim prefix="product_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.product_id != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.product_id,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="manufacturer_id = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.manufacturer_id != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.manufacturer_id,jdbcType=VARCHAR}
+          <if test="item.product_identification != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.product_identification,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
@@ -620,7 +596,7 @@
     insert into device
     (client_id, user_name, `password`, app_id, auth_mode, device_identification, device_name, 
       connector, device_description, device_status, connect_status, is_will, device_tags, 
-      product_id, manufacturer_id, protocol_type, device_type, create_by, create_time, 
+      product_identification, protocol_type, device_type, create_by, create_time,
       update_by, update_time, remark)
     values
     <foreach collection="list" item="item" separator=",">
@@ -628,8 +604,8 @@
         #{item.app_id,jdbcType=VARCHAR}, #{item.auth_mode,jdbcType=VARCHAR}, #{item.device_identification,jdbcType=VARCHAR}, 
         #{item.device_name,jdbcType=VARCHAR}, #{item.connector,jdbcType=VARCHAR}, #{item.device_description,jdbcType=VARCHAR}, 
         #{item.device_status,jdbcType=VARCHAR}, #{item.connect_status,jdbcType=VARCHAR}, 
-        #{item.is_will,jdbcType=VARCHAR}, #{item.device_tags,jdbcType=VARCHAR}, #{item.product_id,jdbcType=VARCHAR}, 
-        #{item.manufacturer_id,jdbcType=VARCHAR}, #{item.protocol_type,jdbcType=VARCHAR}, 
+        #{item.is_will,jdbcType=VARCHAR}, #{item.device_tags,jdbcType=VARCHAR}, #{item.product_identification,jdbcType=VARCHAR}, 
+        #{item.protocol_type,jdbcType=VARCHAR},
         #{item.device_type,jdbcType=VARCHAR}, #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP}, 
         #{item.update_by,jdbcType=VARCHAR}, #{item.update_time,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}
         )
@@ -655,8 +631,7 @@
       connect_status,
       is_will,
       device_tags,
-      product_id,
-      manufacturer_id,
+      product_identification,
       protocol_type,
       device_type,
       create_by,
@@ -683,8 +658,7 @@
       #{connect_status,jdbcType=VARCHAR},
       #{is_will,jdbcType=VARCHAR},
       #{device_tags,jdbcType=VARCHAR},
-      #{product_id,jdbcType=VARCHAR},
-      #{manufacturer_id,jdbcType=VARCHAR},
+      #{product_identification,jdbcType=VARCHAR},
       #{protocol_type,jdbcType=VARCHAR},
       #{device_type,jdbcType=VARCHAR},
       #{create_by,jdbcType=VARCHAR},
@@ -711,8 +685,7 @@
       connect_status = #{connect_status,jdbcType=VARCHAR},
       is_will = #{is_will,jdbcType=VARCHAR},
       device_tags = #{device_tags,jdbcType=VARCHAR},
-      product_id = #{product_id,jdbcType=VARCHAR},
-      manufacturer_id = #{manufacturer_id,jdbcType=VARCHAR},
+      product_identification = #{product_identification,jdbcType=VARCHAR},
       protocol_type = #{protocol_type,jdbcType=VARCHAR},
       device_type = #{device_type,jdbcType=VARCHAR},
       create_by = #{create_by,jdbcType=VARCHAR},
@@ -768,11 +741,8 @@
       <if test="device_tags != null and device_tags != ''">
         device_tags,
       </if>
-      <if test="product_id != null and product_id != ''">
-        product_id,
-      </if>
-      <if test="manufacturer_id != null and manufacturer_id != ''">
-        manufacturer_id,
+      <if test="product_identification != null and product_identification != ''">
+        product_identification,
       </if>
       <if test="protocol_type != null and protocol_type != ''">
         protocol_type,
@@ -840,11 +810,8 @@
       <if test="device_tags != null and device_tags != ''">
         #{device_tags,jdbcType=VARCHAR},
       </if>
-      <if test="product_id != null and product_id != ''">
-        #{product_id,jdbcType=VARCHAR},
-      </if>
-      <if test="manufacturer_id != null and manufacturer_id != ''">
-        #{manufacturer_id,jdbcType=VARCHAR},
+      <if test="product_identification != null and product_identification != ''">
+        #{product_identification,jdbcType=VARCHAR},
       </if>
       <if test="protocol_type != null and protocol_type != ''">
         #{protocol_type,jdbcType=VARCHAR},
@@ -912,11 +879,8 @@
       <if test="device_tags != null and device_tags != ''">
         device_tags = #{device_tags,jdbcType=VARCHAR},
       </if>
-      <if test="product_id != null and product_id != ''">
-        product_id = #{product_id,jdbcType=VARCHAR},
-      </if>
-      <if test="manufacturer_id != null and manufacturer_id != ''">
-        manufacturer_id = #{manufacturer_id,jdbcType=VARCHAR},
+      <if test="product_identification != null and product_identification != ''">
+        product_identification = #{product_identification,jdbcType=VARCHAR},
       </if>
       <if test="protocol_type != null and protocol_type != ''">
         protocol_type = #{protocol_type,jdbcType=VARCHAR},
@@ -1061,11 +1025,8 @@
       <if test="deviceTags != null and deviceTags != ''">
         and device_tags=#{deviceTags,jdbcType=VARCHAR}
       </if>
-      <if test="productId != null and productId != ''">
-        and product_id=#{productId,jdbcType=VARCHAR}
-      </if>
-      <if test="manufacturerId != null and manufacturerId != ''">
-        and manufacturer_id=#{manufacturerId,jdbcType=VARCHAR}
+      <if test="productIdentification != null and productIdentification != ''">
+        and product_identification=#{productIdentification,jdbcType=VARCHAR}
       </if>
       <if test="protocolType != null and protocolType != ''">
         and protocol_type=#{protocolType,jdbcType=VARCHAR}
@@ -1109,7 +1070,7 @@
     </where>
   </select>
   <sql id="selectDeviceVo">
-    select id, client_id, user_name, password, app_id, auth_mode, device_identification, device_name, connector, device_description, device_status, connect_status, is_will, device_tags, product_id, manufacturer_id, protocol_type, device_type, create_by, create_time, update_by, update_time, remark from device
+    select id, client_id, user_name, password, app_id, auth_mode, device_identification, device_name, connector, device_description, device_status, connect_status, is_will, device_tags, product_identification,  protocol_type, device_type, create_by, create_time, update_by, update_time, remark from device
   </sql>
 
   <select id="selectDeviceList" parameterType="Device" resultMap="DeviceResult">
@@ -1123,8 +1084,7 @@
       <if test="connectStatus != null  and connectStatus != ''"> and connect_status = #{connectStatus}</if>
       <if test="isWill != null  and isWill != ''"> and is_will = #{isWill}</if>
       <if test="deviceTags != null  and deviceTags != ''"> and device_tags = #{deviceTags}</if>
-      <if test="productId != null  and productId != ''"> and product_id = #{productId}</if>
-      <if test="manufacturerId != null  and manufacturerId != ''"> and manufacturer_id = #{manufacturerId}</if>
+      <if test="productIdentification != null  and productIdentification != ''"> and product_identification = #{productIdentification}</if>
       <if test="protocolType != null  and protocolType != ''"> and protocol_type = #{protocolType}</if>
       <if test="deviceType != null  and deviceType != ''"> and device_type = #{deviceType}</if>
       <if test="createTime != null "> and create_time = #{createTime}</if>
@@ -1152,8 +1112,7 @@
       <if test="connectStatus != null and connectStatus != ''">connect_status,</if>
       <if test="isWill != null">is_will,</if>
       <if test="deviceTags != null and deviceTags != ''">device_tags,</if>
-      <if test="productId != null and productId != ''">product_id,</if>
-      <if test="manufacturerId != null and manufacturerId != ''">manufacturer_id,</if>
+      <if test="productIdentification != null and productIdentification != ''">product_identification,</if>
       <if test="protocolType != null and protocolType != ''">protocol_type,</if>
       <if test="deviceType != null and deviceType != ''">device_type,</if>
       <if test="createBy != null">create_by,</if>
@@ -1176,7 +1135,7 @@
       <if test="connectStatus != null and connectStatus != ''">#{connectStatus},</if>
       <if test="isWill != null">#{isWill},</if>
       <if test="deviceTags != null and deviceTags != ''">#{deviceTags},</if>
-      <if test="productId != null and productId != ''">#{productId},</if>
+      <if test="productIdentification != null and productIdentification != ''">#{productIdentification},</if>
       <if test="manufacturerId != null and manufacturerId != ''">#{manufacturerId},</if>
       <if test="protocolType != null and protocolType != ''">#{protocolType},</if>
       <if test="deviceType != null and deviceType != ''">#{deviceType},</if>
@@ -1204,8 +1163,7 @@
       <if test="connectStatus != null and connectStatus != ''">connect_status = #{connectStatus},</if>
       <if test="isWill != null">is_will = #{isWill},</if>
       <if test="deviceTags != null and deviceTags != ''">device_tags = #{deviceTags},</if>
-      <if test="productId != null and productId != ''">product_id = #{productId},</if>
-      <if test="manufacturerId != null and manufacturerId != ''">manufacturer_id = #{manufacturerId},</if>
+      <if test="productIdentification != null and productIdentification != ''">product_identification = #{productIdentification},</if>
       <if test="protocolType != null and protocolType != ''">protocol_type = #{protocolType},</if>
       <if test="deviceType != null and deviceType != ''">device_type = #{deviceType},</if>
       <if test="createBy != null">create_by = #{createBy},</if>

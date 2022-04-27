@@ -52,17 +52,6 @@ public class DeviceServiceImpl implements DeviceService {
     private DeviceMapper deviceMapper;
     @Autowired
     private TokenService tokenService;
-    @Resource
-    private RemoteTdEngineService remoteTdEngineService;
-    @Autowired
-    private ProductService productService;
-    @Autowired
-    private ProductServicesService productServicesService;
-    /**
-     * 数据库名称
-     */
-    @Value("${spring.datasource.dynamic.datasource.master.dbName:thinglinks}")
-    private String dataBaseName;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -217,33 +206,6 @@ public class DeviceServiceImpl implements DeviceService {
         device.setCreateBy(sysUser.getUserName());
         device.setCreateTime(DateUtils.getNowDate());
         final int insertDeviceCount = deviceMapper.insertDevice(device);
-        Product product = productService.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(device.getManufacturerId(), device.getProductId(), device.getProtocolType(),"0");
-        if (StringUtils.isNull(product)) {
-            new Throwable("The side device reports data processing, but the product does not exist,DeviceIdentification:" + device.getDeviceIdentification() + ",Msg:" + JSON.toJSONString(device));
-        }
-        // 新增设备管理成功后，创建TD普通表
-        List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), "0");
-        TableDto tableDto;
-        for (ProductServices productServices : allByProductIdAndStatus) {
-            tableDto = new TableDto();
-            tableDto.setDataBaseName(dataBaseName);
-            //超级表名称命名规则:产品类型_产品标识_服务名称_设备标识（非ClientId）
-            String superTableName = product.getProductType()+"_"+product.getProductIdentification()+"_"+productServices.getServiceName();
-            tableDto.setSuperTableName(superTableName);
-            tableDto.setTableName(superTableName+"_"+device.getDeviceIdentification());
-            //Tag的处理
-            List<Fields> tagsFieldValues = new ArrayList<>();
-            Fields fields = new Fields();
-            fields.setFieldValue(device.getDeviceIdentification());
-            tagsFieldValues.add(fields);
-            tableDto.setTagsFieldValues(tagsFieldValues);
-            final R<?> ctResult = remoteTdEngineService.createTable(tableDto);
-            if (ctResult.getCode() != 200) {
-                log.error("Create SuperTable Exception: " + ctResult.getMsg());
-            }else {
-                log.info("Create SuperTable Success: " + ctResult.getMsg());
-            }
-        }
         return insertDeviceCount;
     }
 

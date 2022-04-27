@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.link.common.rockermq.consumer;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerGroupConstant;
+import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
 import lombok.extern.slf4j.Slf4j;
 import com.mqttsnet.thinglinks.link.service.device.DeviceActionService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_GROUP, topic = "thinglinks-link")
+@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_GROUP, topic = ConsumerTopicConstant.THINGLINKS_LINK_MQTT_MSG)
 public class DeviceActionMessageConsumer implements RocketMQListener {
     @Autowired
     private DeviceActionService deviceActionService;
@@ -35,18 +36,22 @@ public class DeviceActionMessageConsumer implements RocketMQListener {
         assert message!=null:"message cannot be empty";
         log.info("ThingLinks物联网平台数据消费-->Received message={}", message);
         JSONObject thinglinksMessage = JSONObject.parseObject(String.valueOf(message));
-        /**
-         * TODO 设备上下线处理
-         * $event/close	设备断开事件
-         * $event/connect	设备连接事件
-         * ${topic}  其他为业务数据自行处理
-         */
-        if("$event/connect".equals(thinglinksMessage.get("topic"))){
-            deviceActionService.connectEvent(String.valueOf(thinglinksMessage.getString("msg")));
-        }else if("$event/close".equals(thinglinksMessage.get("topic"))){
-            deviceActionService.closeEvent(String.valueOf(thinglinksMessage.getString("msg")));
-        }else {
-            deviceDatasService.insertBaseDatas(thinglinksMessage);
+        try {
+            /**
+             * TODO 设备上下线处理
+             * $event/close	设备断开事件
+             * $event/connect	设备连接事件
+             * ${topic}  其他为业务数据自行处理
+             */
+            if("$event/connect".equals(thinglinksMessage.get("topic"))){
+                deviceActionService.connectEvent(String.valueOf(thinglinksMessage.getString("msg")));
+            }else if("$event/close".equals(thinglinksMessage.get("topic"))){
+                deviceActionService.closeEvent(String.valueOf(thinglinksMessage.getString("msg")));
+            }else {
+                deviceDatasService.insertBaseDatas(thinglinksMessage);
+            }
+        }catch (Exception e){
+            log.error("ThingLinks物联网平台数据消费-->消费失败，失败原因：{}", e.getMessage());
         }
     }
 }

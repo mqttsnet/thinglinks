@@ -77,19 +77,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="产品型号" prop="productId">
+      <el-form-item label="产品标识" prop="productIdentification">
         <el-input
-          v-model="queryParams.productId"
-          placeholder="请输入产品型号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="厂商ID" prop="manufacturerId">
-        <el-input
-          v-model="queryParams.manufacturerId"
-          placeholder="请输入厂商ID"
+          v-model="queryParams.productIdentification"
+          placeholder="请输入产品标识"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -213,8 +204,7 @@
         </template>
       </el-table-column>
       <el-table-column label="设备标签" align="center" prop="deviceTags" />
-      <el-table-column label="产品型号" align="center" prop="productId" />
-      <el-table-column label="厂商ID" align="center" prop="manufacturerId" />
+      <el-table-column label="产品标识" align="center" prop="productIdentification" />
       <el-table-column label="产品协议类型" align="center" prop="protocolType" width="100">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.protocolType"/>
@@ -387,13 +377,8 @@
 
         <el-row>
           <el-col :span="11">
-            <el-form-item label="产品型号" prop="productId">
-              <el-input v-model="form.productId" placeholder="请输入产品型号" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="厂商ID" prop="manufacturerId">
-              <el-input v-model="form.manufacturerId" placeholder="请输入厂商ID" />
+            <el-form-item label="产品标识" prop="productIdentification">
+              <el-input v-model="form.productIdentification" placeholder="请输入产品标识" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -491,8 +476,7 @@ export default {
         connectStatus: null,
         isWill: null,
         deviceTags: null,
-        productId: null,
-        manufacturerId: null,
+        productIdentification: null,
         protocolType: null,
         deviceType: null,
       },
@@ -533,11 +517,8 @@ export default {
         deviceStatus: [
           { required: true, message: "设备状态不能为空", trigger: "change" }
         ],
-        productId: [
-          { required: true, message: "产品型号不能为空", trigger: "blur" }
-        ],
-        manufacturerId: [
-          { required: true, message: "厂商ID不能为空", trigger: "blur" }
+        productIdentification: [
+          { required: true, message: "产品标识不能为空", trigger: "blur" }
         ],
         protocolType: [
           { required: true, message: "产品协议类型不能为空", trigger: "change" }
@@ -597,8 +578,7 @@ export default {
         connectStatus: null,
         isWill: null,
         deviceTags: null,
-        productId: null,
-        manufacturerId: null,
+        productIdentification: null,
         protocolType: null,
         deviceType: null,
         createBy: null,
