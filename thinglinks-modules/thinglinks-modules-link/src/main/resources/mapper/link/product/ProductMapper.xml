@@ -29,6 +29,9 @@
     manufacturer_name, model, data_format, device_type, protocol_type, `status`, remark, 
     create_by, create_time, update_by, update_time
   </sql>
+  <sql id="OrderByCreateTimeDesc">
+    order by create_time desc
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select 
@@ -744,6 +747,7 @@
       <if test="manufacturerName != null  and manufacturerName != ''"> and manufacturer_name like concat('%', #{manufacturerName}, '%')</if>
       <if test="model != null  and model != ''"> and model = #{model}</if>
     </where>
+    <include refid="OrderByCreateTimeDesc" />
   </select>
 
   <select id="selectProductById" parameterType="Long" resultMap="BaseResultMap">

@@ -14,7 +14,12 @@ import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
+import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.service.product.ProductService;
+import com.mqttsnet.thinglinks.system.api.domain.SysUser;
+import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
@@ -30,6 +35,10 @@ import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 public class DeviceController extends BaseController {
     @Autowired
     private DeviceService deviceService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 查询设备管理列表
@@ -60,10 +69,20 @@ public class DeviceController extends BaseController {
      * 获取设备管理详细信息
      */
     @PreAuthorize(hasPermi = "link:device:query")
-    @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
+    @GetMapping(value = { "/", "/{id}" })
+    public AjaxResult getInfo(@PathVariable(value = "id", required = false) Long id)
     {
-        return AjaxResult.success(deviceService.selectDeviceById(id));
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        AjaxResult ajax = AjaxResult.success();
+        if (StringUtils.isNotNull(id))
+        {
+            ajax.put(AjaxResult.DATA_TAG,deviceService.selectDeviceById(id));
+            ajax.put("products", productService.selectProductList(new Product()));
+        }else {
+            ajax.put("products", productService.selectProductList(new Product()));
+        }
+        return ajax;
     }
 
     /**

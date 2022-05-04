@@ -551,7 +551,7 @@ public class ProductServiceImpl implements ProductService{
     public List<SuperTableDto> createSuperTableDataModel(Long[] productIds,Boolean InitializeOrNot)throws Exception{
         List<SuperTableDto> superTableDtoList = new ArrayList<>();
         List<Product>  productList = new ArrayList<>();
-        if (productIds.length > 0) {
+        if (null==productIds) {
             productList = this.findAllByStatus("0");
         }else {
             productList = this.findAllByIdInAndStatus(Arrays.asList(productIds),"0");

@@ -86,8 +86,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="产品协议类型" prop="protocolType">
-        <el-select v-model="queryParams.protocolType" placeholder="请选择产品协议类型" clearable size="small">
+      <el-form-item label="协议类型" prop="protocolType">
+        <el-select v-model="queryParams.protocolType" placeholder="请选择协议类型" clearable size="small">
           <el-option
             v-for="dict in dict.type.link_device_protocol_type"
             :key="dict.value"
@@ -182,6 +182,17 @@
       </el-table-column>
       <el-table-column label="设备标识" align="center" prop="deviceIdentification" width="180"/>
       <el-table-column label="设备名称" align="center" prop="deviceName" width="180"/>
+      <el-table-column label="产品标识" align="center" prop="productIdentification" width="180"/>
+      <el-table-column label="协议类型" align="center" prop="protocolType" width="100">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.protocolType"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="设备类型" align="center" prop="deviceType">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.link_device_device_type" :value="scope.row.deviceType"/>
+        </template>
+      </el-table-column>
       <el-table-column label="连接实例" align="center" prop="connector" width="180">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_connector" :value="scope.row.connector"/>
@@ -203,18 +214,7 @@
           <dict-tag :options="dict.type.link_device_is_will" :value="scope.row.isWill"/>
         </template>
       </el-table-column>
-      <el-table-column label="设备标签" align="center" prop="deviceTags" />
-      <el-table-column label="产品标识" align="center" prop="productIdentification" />
-      <el-table-column label="产品协议类型" align="center" prop="protocolType" width="100">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.protocolType"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="设备类型" align="center" prop="deviceType">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_device_device_type" :value="scope.row.deviceType"/>
-        </template>
-      </el-table-column>
+      <el-table-column label="设备标签" align="center" prop="deviceTags" width="180"/>
       <el-table-column label="创建者" align="center" prop="createBy" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -377,16 +377,8 @@
 
         <el-row>
           <el-col :span="11">
-            <el-form-item label="产品标识" prop="productIdentification">
-              <el-input v-model="form.productIdentification" placeholder="请输入产品标识" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="产品协议类型" prop="protocolType">
-              <el-select v-model="form.protocolType" placeholder="请选择产品协议类型">
+            <el-form-item label="协议类型" prop="protocolType">
+              <el-select v-model="form.protocolType" placeholder="请选择协议类型">
                 <el-option
                   v-for="dict in dict.type.link_device_protocol_type"
                   :key="dict.value"
@@ -410,7 +402,20 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="22">
+          <el-col :span="11">
+            <el-form-item label="所属产品">
+              <el-select v-model="form.productIdentification" placeholder="请选择所属产品">
+                <el-option
+                  v-for="item in productOptions"
+                  :key="item.productIdentification"
+                  :label="item.productName"
+                  :value="item.productIdentification"
+                  :disabled="item.status === 0"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
             <el-form-item label="设备标签" prop="deviceTags">
               <el-input v-model="form.deviceTags" placeholder="请输入设备标签" />
             </el-form-item>
@@ -521,7 +526,7 @@ export default {
           { required: true, message: "产品标识不能为空", trigger: "blur" }
         ],
         protocolType: [
-          { required: true, message: "产品协议类型不能为空", trigger: "change" }
+          { required: true, message: "协议类型不能为空", trigger: "change" }
         ],
         deviceType: [
           { required: true, message: "设备类型不能为空", trigger: "change" }
@@ -608,8 +613,11 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.open = true;
-      this.title = "添加设备档案";
+      getDevice().then(response => {
+        this.productOptions = response.products;
+        this.open = true;
+        this.title = "添加设备档案";
+      });
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -617,6 +625,7 @@ export default {
       const id = row.id || this.ids
       getDevice(id).then(response => {
         this.form = response.data;
+        this.productOptions = response.products;
         this.open = true;
         this.title = "修改设备档案";
       });

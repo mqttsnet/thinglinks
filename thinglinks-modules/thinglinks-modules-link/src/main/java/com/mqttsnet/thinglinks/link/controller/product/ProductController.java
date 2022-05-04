@@ -61,7 +61,7 @@ public class ProductController extends BaseController {
      * @return AjaxResult
      * @throws Exception
      */
-//    @PreAuthorize(hasPermi = "link:product:import")
+    @PreAuthorize(hasPermi = "link:product:import")
     @Log(title = "产品管理", businessType = BusinessType.IMPORT)
     @PostMapping("/importProductJsonFile")
     public AjaxResult importProductJson(MultipartFile file,

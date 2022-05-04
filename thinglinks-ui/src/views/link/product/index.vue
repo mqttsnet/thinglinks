@@ -105,17 +105,18 @@
     <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="应用ID" align="center" prop="appId">
+      <el-table-column label="应用ID" align="center" prop="appId"  width="180">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_application_type" :value="scope.row.appId"/>
         </template>
       </el-table-column>
-      <el-table-column label="产品名称" align="center" prop="productName"/>
-      <el-table-column label="厂商ID" align="center" prop="manufacturerId"/>
-      <el-table-column label="厂商名称" align="center" prop="manufacturerName"/>
-      <el-table-column label="产品型号" align="center" prop="model"/>
-      <el-table-column label="设备类型" align="center" prop="deviceType"/>
-      <el-table-column label="协议类型" align="center" prop="protocolType">
+      <el-table-column label="产品名称" align="center" prop="productName"  width="180"/>
+      <el-table-column label="产品标识" align="center" prop="productIdentification"  width="180"/>
+      <el-table-column label="厂商ID" align="center" prop="manufacturerId"  width="180"/>
+      <el-table-column label="厂商名称" align="center" prop="manufacturerName"  width="180"/>
+      <el-table-column label="产品型号" align="center" prop="model"  width="180"/>
+      <el-table-column label="设备类型" align="center" prop="deviceType"  width="180"/>
+      <el-table-column label="协议类型" align="center" prop="protocolType"  width="180">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.protocolType"/>
         </template>
@@ -125,7 +126,7 @@
           <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column label="产品描述" align="center" prop="remark"/>
+      <el-table-column label="产品描述" align="center" prop="remark"  width="180"/>
       <el-table-column label="创建者" align="center" prop="createBy"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">

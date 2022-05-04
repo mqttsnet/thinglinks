@@ -1,11 +1,13 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
@@ -52,6 +54,8 @@ public class DeviceServiceImpl implements DeviceService {
     private DeviceMapper deviceMapper;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -282,6 +286,17 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public Boolean cacheInvalidation(String clientId) {
         Device oneByClientId = deviceMapper.findOneByClientId(clientId);
+        //设备信息缓存失效 删除缓存 更新数据库设备状态
+        if(StringUtils.isNotNull(oneByClientId)){
+            //删除缓存
+            redisService.delete(Constants.DEVICE_RECORD_KEY+clientId);
+            //更新数据库设备状态
+            Device device = new Device();
+            device.setId(oneByClientId.getId());
+            device.setConnectStatus(DeviceConnectStatus.INIT.getValue());
+            device.setUpdateTime(DateUtils.getNowDate());
+            deviceMapper.updateByPrimaryKeySelective(device);
+        }
         log.info(oneByClientId.toString());
         return null;
     }

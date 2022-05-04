@@ -58,6 +58,9 @@
     product_identification, protocol_type, device_type, create_by, create_time,
     update_by, update_time, remark
   </sql>
+  <sql id="OrderByCreateTimeDesc">
+    order by create_time desc
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select 
@@ -1073,7 +1076,7 @@
     select id, client_id, user_name, password, app_id, auth_mode, device_identification, device_name, connector, device_description, device_status, connect_status, is_will, device_tags, product_identification,  protocol_type, device_type, create_by, create_time, update_by, update_time, remark from device
   </sql>
 
-  <select id="selectDeviceList" parameterType="Device" resultMap="DeviceResult">
+  <select id="selectDeviceList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.Device" resultMap="DeviceResult">
     <include refid="selectDeviceVo"/>
     <where>
       <if test="clientId != null  and clientId != ''"> and client_id like concat('%', #{clientId}, '%')</if>
@@ -1089,6 +1092,7 @@
       <if test="deviceType != null  and deviceType != ''"> and device_type = #{deviceType}</if>
       <if test="createTime != null "> and create_time = #{createTime}</if>
     </where>
+    <include refid="OrderByCreateTimeDesc"/>
   </select>
 
   <select id="selectDeviceById" parameterType="Long" resultMap="DeviceResult">
@@ -1096,7 +1100,7 @@
     where id = #{id}
   </select>
 
-  <insert id="insertDevice" parameterType="Device" useGeneratedKeys="true" keyProperty="id">
+  <insert id="insertDevice" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.Device" useGeneratedKeys="true" keyProperty="id">
     insert into device
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="clientId != null and clientId != ''">client_id,</if>
@@ -1136,7 +1140,6 @@
       <if test="isWill != null">#{isWill},</if>
       <if test="deviceTags != null and deviceTags != ''">#{deviceTags},</if>
       <if test="productIdentification != null and productIdentification != ''">#{productIdentification},</if>
-      <if test="manufacturerId != null and manufacturerId != ''">#{manufacturerId},</if>
       <if test="protocolType != null and protocolType != ''">#{protocolType},</if>
       <if test="deviceType != null and deviceType != ''">#{deviceType},</if>
       <if test="createBy != null">#{createBy},</if>
@@ -1147,7 +1150,7 @@
     </trim>
   </insert>
 
-  <update id="updateDevice" parameterType="Device">
+  <update id="updateDevice" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.Device">
     update device
     <trim prefix="SET" suffixOverrides=",">
       <if test="clientId != null and clientId != ''">client_id = #{clientId},</if>
