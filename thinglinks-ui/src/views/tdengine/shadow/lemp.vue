@@ -58,8 +58,7 @@
   </div>
 </template>
 <script>
-import { proOptions, dataList, dataCharts } from "@/api/statistical/target";
-import echarts from "echarts";
+import { proOptions, dataList, dataCharts } from "@/api/tdengine/shadow";
 export default {
   props: {
     clientId: {
