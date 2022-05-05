@@ -1255,4 +1255,15 @@
       </if>
     </where>
   </select>
+
+<!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-05-04-->
+  <select id="countDistinctClientIdByConnectStatus" resultType="java.lang.Long">
+    select count(distinct(client_id))
+    from device
+    <where>
+      <if test="connectStatus != null">
+        and connect_status=#{connectStatus}
+      </if>
+    </where>
+  </select>
 </mapper>

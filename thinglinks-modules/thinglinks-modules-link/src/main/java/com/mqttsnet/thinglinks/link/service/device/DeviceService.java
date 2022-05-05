@@ -131,5 +131,10 @@ public interface DeviceService {
      * @return
      */
     int disconnect(Long[] ids);
+
+
+
+	Long countDistinctClientIdByConnectStatus(String connectStatus);
+
 }
 

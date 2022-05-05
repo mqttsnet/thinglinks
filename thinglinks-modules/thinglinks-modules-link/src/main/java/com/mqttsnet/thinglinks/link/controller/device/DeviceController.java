@@ -1,11 +1,14 @@
 package com.mqttsnet.thinglinks.link.controller.device;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -20,6 +23,7 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
@@ -45,11 +49,20 @@ public class DeviceController extends BaseController {
      */
     @PreAuthorize(hasPermi = "link:device:list")
     @GetMapping("/list")
-    public TableDataInfo list(Device device)
+    public R<Map<String, Object>> list(Device device)
     {
         startPage();
+        final Map<String, Object> results = new HashMap<>();
         List<Device> list = deviceService.selectDeviceList(device);
-        return getDataTable(list);
+        //查询设备数据
+        results.put("device", getDataTable(list));
+        //统计设备在线数量
+        results.put("onlineCount", deviceService.countDistinctClientIdByConnectStatus(DeviceConnectStatus.ONLINE.getValue()));
+        //统计设备离线数量
+        results.put("offlineCount", deviceService.countDistinctClientIdByConnectStatus(DeviceConnectStatus.OFFLINE.getValue()));
+        //统计设备初始化数量
+        results.put("initCount", deviceService.countDistinctClientIdByConnectStatus(DeviceConnectStatus.INIT.getValue()));
+        return R.ok(results);
     }
 
     /**

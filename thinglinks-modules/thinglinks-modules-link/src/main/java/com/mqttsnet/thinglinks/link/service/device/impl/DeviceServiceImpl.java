@@ -315,5 +315,13 @@ public class DeviceServiceImpl implements DeviceService {
         return 0;
     }
 
+	@Override
+	public Long countDistinctClientIdByConnectStatus(String connectStatus){
+		 return deviceMapper.countDistinctClientIdByConnectStatus(connectStatus);
+	}
+
+
+
+
 }
 

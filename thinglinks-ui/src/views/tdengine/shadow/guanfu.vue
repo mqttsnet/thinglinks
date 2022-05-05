@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-form :model="qryData1" ref="queryForm" :inline="true">
+    <el-form :model="qryData" ref="queryForm" :inline="true">
       <el-form-item label="设备" required>
         <el-select
-          v-model="qryData1.clientId"
+          v-model="qryData.clientId"
           size="small"
           placeholder="请选择设备"
           clearable
@@ -11,7 +11,7 @@
           style="width: 220px"
         >
           <el-option
-            v-for="item in prosstionoptionsLamp"
+            v-for="item in prosstionoptions"
             :key="item.clientId"
             :label="item.deviceName"
             :value="item.clientId"
@@ -20,7 +20,7 @@
       </el-form-item>
       <el-form-item label="开始时间:" required>
         <el-date-picker
-          v-model="qryData1.startTime"
+          v-model="qryData.startTime"
           size="small"
           type="datetime"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -29,7 +29,7 @@
       </el-form-item>
       <el-form-item label="结束时间:" required>
         <el-date-picker
-          v-model="qryData1.endTime"
+          v-model="qryData.endTime"
           size="small"
           type="datetime"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -38,23 +38,27 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch1">查询</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery1">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">查询</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-table border highlight-current-row :data="tableDataTwo">
+    <el-table border highlight-current-row :data="tableData">
       <el-table-column align="center" type="index" label="序号" width="60" show-overflow-tooltip></el-table-column>
       <el-table-column align="center" prop="topicName" label="topic名称" show-overflow-tooltip></el-table-column>
       <el-table-column align="center" prop="msgSize" label="数据大小" show-overflow-tooltip></el-table-column>
       <el-table-column align="center" prop="eventTime" label="数据上报时间" show-overflow-tooltip></el-table-column>
       <el-table-column align="center" label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button size="mini" type="text" icon="el-icon-search" @click="gotoDetail(scope.row)">查看</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-search"
+            @click="gotoDetailGuan(scope.row)"
+          >查看</el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <div style="width:100%; height: 480px; left:2%;margin-top:20px" ref="pdechart"></div>
+    <div style="width:100%; height: 480px; left:2%;margin-top:20px" ref="ycechart"></div>
   </div>
 </template>
 <script>
@@ -74,33 +78,42 @@ export default {
   },
   data() {
     return {
-      qryData1: {
+      qryData: {
         clientId: "D2253IpgJo",
         startTime: this.$moment()
           .subtract(1, "days")
           .format("YYYY-MM-DD HH:mm:ss"),
         endTime: this.$moment().format("YYYY-MM-DD HH:mm:ss")
       },
-      prosstionoptionsLamp: [],
-      pdmyChart: null,
-      tableDataTwo: []
+      prosstionoptions: [],
+      ycmyChart: null,
+      tableData: []
     };
   },
   created() {
+    console.log(this.clientId, "namenamename");
+    console.log(this.startTime, "namenamename");
+    console.log(this.endTime, "namenamename");
     if (this.clientId) {
-      this.qryData1.clientId = this.clientId;
-      this.qryData1.startTime = this.startTime;
-      this.qryData1.endTime = this.endTime;
+      this.qryData.clientId = this.clientId;
+      this.qryData.startTime = this.startTime;
+      this.qryData.endTime = this.endTime;
     }
-    console.log(this.clientId, "111111");
+    console.log(this.qryData.clientId, "namenamename");
+    console.log(this.qryData.startTime, "namenamename");
+    console.log(this.qryData.endTime, "namenamename");
     this.deviceOptions();
   },
   methods: {
+    resizeChart() {
+      this.ycmyChart ? this.ycmyChart.resize() : "";
+      this.pdmyChart ? this.pdmyChart.resize() : "";
+    },
     deviceOptions() {
-      proOptions({ type: 12 }).then(res => {
+      proOptions({ type: 11 }).then(res => {
         if (res.code == 200) {
-          this.prosstionoptionsLamp = res.data;
-          this.qryData1.clientId = "D2253IpgJo";
+          this.prosstionoptions = res.data;
+          this.qryData.clientId = "D2253IpgJo";
         }
       });
       this.getList();
@@ -108,24 +121,24 @@ export default {
     },
     getList() {
       let params = {
-        clientId: this.qryData1.clientId,
+        clientId: this.qryData.clientId,
         startTime:
-          this.qryData1.startTime,
+          this.qryData.startTime,
         endTime:
-          this.qryData1.endTime
+          this.qryData.endTime
       };
       dataList(params).then(res => {
         if (res.code == 200) {
-          this.tableDataTwo = res.data;
+          this.tableData = res.data;
         }
       });
     },
     drawLine() {
-      let params = { clientId: this.qryData1.clientId || "" };
+      let params = { clientId: this.qryData.clientId || "" };
       dataCharts(params).then(res => {
         if (res.code == 200) {
-          this.pdmyChart = this.$echarts.init(this.$refs.pdechart);
-          this.pdmyChart.setOption({
+          this.ycmyChart = this.$echarts.init(this.$refs.ycechart);
+          this.ycmyChart.setOption({
             xAxis: {
               type: "category",
               data: res.data.dateList,
@@ -222,14 +235,14 @@ export default {
         }
       });
     },
-    handleSearch1() {
-      let start = this.qryData1.startTime;
-      let end = this.qryData1.endTime;
+    handleSearch() {
+      let start = this.qryData.startTime;
+      let end = this.qryData.endTime;
 
       if (
-        this.qryData1.clientId &&
-        this.qryData1.startTime &&
-        this.qryData1.endTime
+        this.qryData.clientId &&
+        this.qryData.startTime &&
+        this.qryData.endTime
       ) {
         if (start < end) {
           this.getList();
@@ -241,20 +254,20 @@ export default {
         this.$message.error("有参数未选择！");
       }
     }, //查询
-    resetQuery1() {
-      this.qryData1.clientId = "";
-      this.qryData1.startTime = "";
-      this.qryData1.endTime = "";
+    resetQuery() {
+      this.qryData.clientId = "";
+      this.qryData.startTime = "";
+      this.qryData.endTime = "";
     },
-    gotoDetail(row) {
+    gotoDetailGuan(row) {
       this.$router.push({
-        path: "/StatisticalMonitor/Terminal/terminaldetail",
+        path: "/shadow/StatisticalMonitor/Terminal/terminaldetail",
         query: {
-          activeName: "2",
+          activeName: "1",
           row: row,
-          clientId: this.qryData1.clientId,
-          startTime: this.qryData1.startTime,
-          endTime: this.qryData1.endTime
+          clientId: this.qryData.clientId,
+          startTime: this.qryData.startTime,
+          endTime: this.qryData.endTime
         }
       });
     }
@@ -349,3 +362,7 @@ export default {
 }
 </style>
 <style scoped>
+.el-form-item {
+  margin-bottom: 0px !important;
+}
+</style>
