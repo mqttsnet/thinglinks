@@ -182,7 +182,7 @@ export default {
   vertical-align: middle;
   width: 24px;
   height: 24px;
-  background: url("src/assets/images/common/green_point.png") no-repeat
+  background: url("/assets/images/common/green_point.png") no-repeat
     50% 50%;
   background-size: 100%;
   margin-left: 8px;
@@ -192,7 +192,7 @@ export default {
   vertical-align: middle;
   width: 24px;
   height: 24px;
-  background: url("src/assets/images/common/red_point.png") no-repeat 50%
+  background: url("/assets/images/common/red_point.png") no-repeat 50%
     50%;
   background-size: 100%;
   margin-left: 8px;
