@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
 
@@ -25,6 +26,7 @@ import lombok.Data;
 /**
  * 设备管理
  */
+@EqualsAndHashCode(callSuper = true)
 @ApiModel(value = "设备管理")
 @Data
 public class Device  extends BaseEntity implements Serializable{
@@ -127,24 +129,18 @@ public class Device  extends BaseEntity implements Serializable{
     private String deviceTags;
 
     /**
-     * 产品型号
+     * 产品标识
      */
-    @Excel(name = "产品型号")
-    @ApiModelProperty(value = "产品型号")
-    private String productId;
+    @Excel(name = "产品标识")
+    @ApiModelProperty(value = "产品标识")
+    private String productIdentification;
+
 
     /**
-     * 厂商ID
+     * 协议类型 ：mqtt || coap || modbus || http
      */
-    @Excel(name = "厂商ID")
-    @ApiModelProperty(value = "厂商ID")
-    private String manufacturerId;
-
-    /**
-     * 产品协议类型 ：mqtt || coap || modbus || http
-     */
-    @Excel(name = "产品协议类型")
-    @ApiModelProperty(value = "产品协议类型 ：mqtt || coap || modbus || http")
+    @Excel(name = "协议类型")
+    @ApiModelProperty(value = "协议类型 ：mqtt || coap || modbus || http")
     private String protocolType;
 
     /**

@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.link.mapper.device.DeviceInfoMapper">
+  <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo">
+    <!--@mbg.generated-->
+    <!--@Table device_info-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="d_id" jdbcType="BIGINT" property="dId" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="node_id" jdbcType="VARCHAR" property="nodeId" />
+    <result column="node_name" jdbcType="VARCHAR" property="nodeName" />
+    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="manufacturer_id" jdbcType="VARCHAR" property="manufacturerId" />
+    <result column="model" jdbcType="VARCHAR" property="model" />
+    <result column="connect_status" jdbcType="VARCHAR" property="connectStatus" />
+    <result column="shadow_enable" jdbcType="BOOLEAN" property="shadowEnable" />
+    <result column="shadow_table_name" jdbcType="VARCHAR" property="shadowTableName" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, d_id, app_id, node_id, node_name, device_id, description, manufacturer_id, model, 
+    connect_status, shadow_enable, shadow_table_name, `status`, create_by, create_time, 
+    update_by, update_time, remark
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from device_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--@mbg.generated-->
+    delete from device_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into device_info (d_id, app_id, node_id, 
+      node_name, device_id, description, 
+      manufacturer_id, model, connect_status, 
+      shadow_enable, shadow_table_name, `status`, 
+      create_by, create_time, update_by, 
+      update_time, remark)
+    values (#{dId,jdbcType=BIGINT}, #{appId,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR}, 
+      #{nodeName,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{manufacturerId,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{connectStatus,jdbcType=VARCHAR}, 
+      #{shadowEnable,jdbcType=BOOLEAN}, #{shadowTableName,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into device_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="dId != null">
+        d_id,
+      </if>
+      <if test="appId != null">
+        app_id,
+      </if>
+      <if test="nodeId != null">
+        node_id,
+      </if>
+      <if test="nodeName != null">
+        node_name,
+      </if>
+      <if test="deviceId != null">
+        device_id,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="manufacturerId != null">
+        manufacturer_id,
+      </if>
+      <if test="model != null">
+        model,
+      </if>
+      <if test="connectStatus != null">
+        connect_status,
+      </if>
+      <if test="shadowEnable != null">
+        shadow_enable,
+      </if>
+      <if test="shadowTableName != null">
+        shadow_table_name,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="dId != null">
+        #{dId,jdbcType=BIGINT},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeId != null">
+        #{nodeId,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeName != null">
+        #{nodeName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="manufacturerId != null">
+        #{manufacturerId,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="connectStatus != null">
+        #{connectStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="shadowEnable != null">
+        #{shadowEnable,jdbcType=BOOLEAN},
+      </if>
+      <if test="shadowTableName != null">
+        #{shadowTableName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo">
+    <!--@mbg.generated-->
+    update device_info
+    <set>
+      <if test="dId != null">
+        d_id = #{dId,jdbcType=BIGINT},
+      </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeId != null">
+        node_id = #{nodeId,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeName != null">
+        node_name = #{nodeName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="manufacturerId != null">
+        manufacturer_id = #{manufacturerId,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="connectStatus != null">
+        connect_status = #{connectStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="shadowEnable != null">
+        shadow_enable = #{shadowEnable,jdbcType=BOOLEAN},
+      </if>
+      <if test="shadowTableName != null">
+        shadow_table_name = #{shadowTableName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo">
+    <!--@mbg.generated-->
+    update device_info
+    set d_id = #{dId,jdbcType=BIGINT},
+      app_id = #{appId,jdbcType=VARCHAR},
+      node_id = #{nodeId,jdbcType=VARCHAR},
+      node_name = #{nodeName,jdbcType=VARCHAR},
+      device_id = #{deviceId,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      manufacturer_id = #{manufacturerId,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      connect_status = #{connectStatus,jdbcType=VARCHAR},
+      shadow_enable = #{shadowEnable,jdbcType=BOOLEAN},
+      shadow_table_name = #{shadowTableName,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update device_info
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="d_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.dId,jdbcType=BIGINT}
+        </foreach>
+      </trim>
+      <trim prefix="app_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.appId,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="node_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.nodeId,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="node_name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.nodeName,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="device_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.deviceId,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="description = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.description,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="manufacturer_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.manufacturerId,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="model = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.model,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="connect_status = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.connectStatus,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="shadow_enable = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.shadowEnable,jdbcType=BOOLEAN}
+        </foreach>
+      </trim>
+      <trim prefix="shadow_table_name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.shadowTableName,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="`status` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.status,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="create_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="update_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="remark = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.remark,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=BIGINT}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into device_info
+    (d_id, app_id, node_id, node_name, device_id, description, manufacturer_id, model, 
+      connect_status, shadow_enable, shadow_table_name, `status`, create_by, create_time, 
+      update_by, update_time, remark)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.dId,jdbcType=BIGINT}, #{item.appId,jdbcType=VARCHAR}, #{item.nodeId,jdbcType=VARCHAR}, 
+        #{item.nodeName,jdbcType=VARCHAR}, #{item.deviceId,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, 
+        #{item.manufacturerId,jdbcType=VARCHAR}, #{item.model,jdbcType=VARCHAR}, #{item.connectStatus,jdbcType=VARCHAR}, 
+        #{item.shadowEnable,jdbcType=BOOLEAN}, #{item.shadowTableName,jdbcType=VARCHAR}, 
+        #{item.status,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}
+        )
+    </foreach>
+  </insert>
+  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into device_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      d_id,
+      app_id,
+      node_id,
+      node_name,
+      device_id,
+      description,
+      manufacturer_id,
+      model,
+      connect_status,
+      shadow_enable,
+      shadow_table_name,
+      `status`,
+      create_by,
+      create_time,
+      update_by,
+      update_time,
+      remark,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      #{dId,jdbcType=BIGINT},
+      #{appId,jdbcType=VARCHAR},
+      #{nodeId,jdbcType=VARCHAR},
+      #{nodeName,jdbcType=VARCHAR},
+      #{deviceId,jdbcType=VARCHAR},
+      #{description,jdbcType=VARCHAR},
+      #{manufacturerId,jdbcType=VARCHAR},
+      #{model,jdbcType=VARCHAR},
+      #{connectStatus,jdbcType=VARCHAR},
+      #{shadowEnable,jdbcType=BOOLEAN},
+      #{shadowTableName,jdbcType=VARCHAR},
+      #{status,jdbcType=VARCHAR},
+      #{createBy,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP},
+      #{updateBy,jdbcType=VARCHAR},
+      #{updateTime,jdbcType=TIMESTAMP},
+      #{remark,jdbcType=VARCHAR},
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=BIGINT},
+      </if>
+      d_id = #{dId,jdbcType=BIGINT},
+      app_id = #{appId,jdbcType=VARCHAR},
+      node_id = #{nodeId,jdbcType=VARCHAR},
+      node_name = #{nodeName,jdbcType=VARCHAR},
+      device_id = #{deviceId,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      manufacturer_id = #{manufacturerId,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      connect_status = #{connectStatus,jdbcType=VARCHAR},
+      shadow_enable = #{shadowEnable,jdbcType=BOOLEAN},
+      shadow_table_name = #{shadowTableName,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+    </trim>
+  </insert>
+  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into device_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="dId != null">
+        d_id,
+      </if>
+      <if test="appId != null">
+        app_id,
+      </if>
+      <if test="nodeId != null">
+        node_id,
+      </if>
+      <if test="nodeName != null">
+        node_name,
+      </if>
+      <if test="deviceId != null">
+        device_id,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="manufacturerId != null">
+        manufacturer_id,
+      </if>
+      <if test="model != null">
+        model,
+      </if>
+      <if test="connectStatus != null">
+        connect_status,
+      </if>
+      <if test="shadowEnable != null">
+        shadow_enable,
+      </if>
+      <if test="shadowTableName != null">
+        shadow_table_name,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="dId != null">
+        #{dId,jdbcType=BIGINT},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeId != null">
+        #{nodeId,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeName != null">
+        #{nodeName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="manufacturerId != null">
+        #{manufacturerId,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="connectStatus != null">
+        #{connectStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="shadowEnable != null">
+        #{shadowEnable,jdbcType=BOOLEAN},
+      </if>
+      <if test="shadowTableName != null">
+        #{shadowTableName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=BIGINT},
+      </if>
+      <if test="dId != null">
+        d_id = #{dId,jdbcType=BIGINT},
+      </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeId != null">
+        node_id = #{nodeId,jdbcType=VARCHAR},
+      </if>
+      <if test="nodeName != null">
+        node_name = #{nodeName,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="manufacturerId != null">
+        manufacturer_id = #{manufacturerId,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="connectStatus != null">
+        connect_status = #{connectStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="shadowEnable != null">
+        shadow_enable = #{shadowEnable,jdbcType=BOOLEAN},
+      </if>
+      <if test="shadowTableName != null">
+        shadow_table_name = #{shadowTableName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+<!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-05-05-->
+  <delete id="deleteByDeviceId">
+    delete from device_info
+    <where>
+      <if test="deviceId != null">
+        and device_id=#{deviceId,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </delete>
+
+<!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-05-05-->
+  <select id="findOneByDeviceId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from device_info
+        <where>
+            <if test="deviceId != null">
+                and device_id=#{deviceId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

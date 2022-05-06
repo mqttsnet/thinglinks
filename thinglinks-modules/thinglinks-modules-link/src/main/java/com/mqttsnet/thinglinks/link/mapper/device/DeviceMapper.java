@@ -155,6 +155,8 @@ public interface DeviceMapper {
 	Device findOneByClientIdOrDeviceIdentification(@Param("clientId")String clientId,@Param("deviceIdentification")String deviceIdentification);
 
 
+    Long countDistinctClientIdByConnectStatus(@Param("connectStatus")String connectStatus);
+
 
 
 

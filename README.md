@@ -62,6 +62,9 @@ com.mqttsnet.thinglinks
 │       └── thinglinks-visual-collection                   // 服务器监控采集服务 [19401]
 ├──pom.xml                // 公共依赖
 ~~~
+## 平台总体架构
+
+![](doc/imgs/overallArchitecture.png)
 
 ## 设备集成LINK架构
 

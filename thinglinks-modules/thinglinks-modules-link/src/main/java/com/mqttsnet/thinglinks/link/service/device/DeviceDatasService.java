@@ -50,8 +50,32 @@ public interface DeviceDatasService {
      *
      * @param thinglinksMessage
      */
-    void insertBaseDatas(JSONObject thinglinksMessage);
+    void insertBaseDatas(JSONObject thinglinksMessage) throws Exception;
 
+
+    /**
+     * 处理/topo/add Topic边设备添加子设备
+     *
+     * @param deviceIdentification 设备标识
+     * @param msg                  数据
+     */
+    String processingTopoAddTopic(String deviceIdentification,String msg) throws Exception;
+
+    /**
+     * 处理/topo/delete Topic边设备删除子设备
+     *
+     * @param deviceIdentification 设备标识
+     * @param msg                  数据
+     */
+    String processingTopoDeleteTopic(String deviceIdentification,String msg) throws Exception;
+
+    /**
+     * 处理/topo/update Topic边设备更新子设备状态
+     *
+     * @param deviceIdentification 设备标识
+     * @param msg                  数据
+     */
+    String processingTopoUpdateTopic(String deviceIdentification,String msg) throws Exception;
 
     /**
      * 处理datas Topic数据上报
@@ -60,6 +84,14 @@ public interface DeviceDatasService {
      * @param msg                  数据
      */
     void processingDatasTopic(String deviceIdentification,String msg) throws Exception;
+
+    /**
+     * 处理/commandResponse Topic边设备返回给物联网平台的命令响应
+     *
+     * @param deviceIdentification 设备标识
+     * @param msg                  数据
+     */
+    void processingTopoCommandResponseTopic(String deviceIdentification,String msg) throws Exception;
 
 }
 

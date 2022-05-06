@@ -127,6 +127,13 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
+        <!-- thinglinks Api broker -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-api-broker</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

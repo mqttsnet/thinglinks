@@ -29,6 +29,9 @@
     manufacturer_name, model, data_format, device_type, protocol_type, `status`, remark, 
     create_by, create_time, update_by, update_time
   </sql>
+  <sql id="OrderByCreateTimeDesc">
+    order by create_time desc
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select 
@@ -744,6 +747,7 @@
       <if test="manufacturerName != null  and manufacturerName != ''"> and manufacturer_name like concat('%', #{manufacturerName}, '%')</if>
       <if test="model != null  and model != ''"> and model = #{model}</if>
     </where>
+    <include refid="OrderByCreateTimeDesc" />
   </select>
 
   <select id="selectProductById" parameterType="Long" resultMap="BaseResultMap">
@@ -919,6 +923,40 @@
         <where>
             <if test="id != null">
                 and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test="status != null">
+                and `status`=#{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+<!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-04-27-->
+  <select id="findOneByProductIdentificationAndProtocolType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from product
+        <where>
+            <if test="productIdentification != null">
+                and product_identification=#{productIdentification,jdbcType=VARCHAR}
+            </if>
+            <if test="protocolType != null">
+                and protocol_type=#{protocolType,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+<!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-04-27-->
+  <select id="findAllByIdInAndStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from product
+        <where>
+            <if test="idCollection != null and idCollection.size() > 0">
+                and id in
+                <foreach item="item" index="index" collection="idCollection"
+                         open="(" separator="," close=")">
+                    #{item,jdbcType=BIGINT}
+                </foreach>
             </if>
             <if test="status != null">
                 and `status`=#{status,jdbcType=VARCHAR}

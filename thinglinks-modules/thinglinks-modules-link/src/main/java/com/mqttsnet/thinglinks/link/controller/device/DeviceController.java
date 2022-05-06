@@ -1,11 +1,14 @@
 package com.mqttsnet.thinglinks.link.controller.device;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -14,7 +17,13 @@ import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
+import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.service.product.ProductService;
+import com.mqttsnet.thinglinks.system.api.domain.SysUser;
+import com.mqttsnet.thinglinks.system.api.model.LoginUser;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
@@ -30,17 +39,30 @@ import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 public class DeviceController extends BaseController {
     @Autowired
     private DeviceService deviceService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 查询设备管理列表
      */
     @PreAuthorize(hasPermi = "link:device:list")
     @GetMapping("/list")
-    public TableDataInfo list(Device device)
+    public R<Map<String, Object>> list(Device device)
     {
         startPage();
+        final Map<String, Object> results = new HashMap<>();
         List<Device> list = deviceService.selectDeviceList(device);
-        return getDataTable(list);
+        //查询设备数据
+        results.put("device", getDataTable(list));
+        //统计设备在线数量
+        results.put("onlineCount", deviceService.countDistinctClientIdByConnectStatus(DeviceConnectStatus.ONLINE.getValue()));
+        //统计设备离线数量
+        results.put("offlineCount", deviceService.countDistinctClientIdByConnectStatus(DeviceConnectStatus.OFFLINE.getValue()));
+        //统计设备初始化数量
+        results.put("initCount", deviceService.countDistinctClientIdByConnectStatus(DeviceConnectStatus.INIT.getValue()));
+        return R.ok(results);
     }
 
     /**
@@ -60,10 +82,20 @@ public class DeviceController extends BaseController {
      * 获取设备管理详细信息
      */
     @PreAuthorize(hasPermi = "link:device:query")
-    @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
+    @GetMapping(value = { "/", "/{id}" })
+    public AjaxResult getInfo(@PathVariable(value = "id", required = false) Long id)
     {
-        return AjaxResult.success(deviceService.selectDeviceById(id));
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        AjaxResult ajax = AjaxResult.success();
+        if (StringUtils.isNotNull(id))
+        {
+            ajax.put(AjaxResult.DATA_TAG,deviceService.selectDeviceById(id));
+            ajax.put("products", productService.selectProductList(new Product()));
+        }else {
+            ajax.put("products", productService.selectProductList(new Product()));
+        }
+        return ajax;
     }
 
     /**

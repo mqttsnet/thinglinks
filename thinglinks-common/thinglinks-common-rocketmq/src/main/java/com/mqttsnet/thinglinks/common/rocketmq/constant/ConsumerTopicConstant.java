@@ -17,6 +17,11 @@ import lombok.Data;
 public class ConsumerTopicConstant {
 
     /**
+     * MQTT设备消息监听主题
+     */
+    public static final String THINGLINKS_LINK_MQTT_MSG = "thinglinks-link-mqttMsg";
+
+    /**
      * TDengine超级表创键修改动作监听主题
      */
     public static final String PRODUCTSUPERTABLE_CREATEORUPDATE = "productSuperTable-createOrUpdate";

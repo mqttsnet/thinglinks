@@ -100,8 +100,8 @@ public class TdEngineServiceImpl implements TdEngineService {
             Integer count = tdEngineMapper.checkTableExists(dataBaseName, tableName);
             return count == 1;
         } catch (Exception e) {
-            log.error("检测{}表失败", e.getMessage());
-            return true;
+            log.error("数据库表不否存在");
+            return false;
         }
     }
 

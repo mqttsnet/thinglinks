@@ -115,7 +115,7 @@ smqtt:
       username: ${spring.datasource.dynamic.datasource.master.username}
       password: ${spring.datasource.dynamic.datasource.master.password}
   http: # http相关配置 端口固定60000
-    enable: false # 开关
+    enable: true # 开关
     accessLog: false # http访问日志
     ssl: # ssl配置
         enable: false
@@ -168,7 +168,7 @@ smqtt:
       sourceName: rocket_mq
       sourceAttributes:
         topic: thinglinks-link-mqttMsg
-        tags: thinglinks-link
+        tags: thinglinks
         namesrvAddr: 127.0.0.1:19876
         instanceName: broker-a
         producerGroup: thinglinks
