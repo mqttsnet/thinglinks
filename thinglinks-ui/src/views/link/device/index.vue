@@ -39,7 +39,13 @@
         </p>
       </div>
     </div>
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="100px">
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      :inline="true"
+      v-show="showSearch"
+      label-width="100px"
+    >
       <el-form-item label="客户端标识" prop="clientId">
         <el-input v-model="queryParams.clientId" placeholder="请输入客户端标识" clearable size="small"
           @keyup.enter.native="handleQuery" />

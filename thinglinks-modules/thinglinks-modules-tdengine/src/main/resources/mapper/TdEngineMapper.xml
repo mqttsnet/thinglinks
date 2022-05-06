@@ -117,12 +117,18 @@
 
     <insert id="insertData">
         insert into #{dataBaseName}.#{tableName}
-        <foreach item="item" collection="tagsFieldValues" separator=","
+        <foreach item="item" collection="schemaFieldValues" separator=","
                  open="(" close=")" index="">
             #{item.fieldName}
         </foreach>
-        values
+        using #{dataBaseName}.#{superTableName}
+        tags
         <foreach item="item" collection="tagsFieldValues" separator=","
+                 open="(" close=")" index="">
+            #{item.fieldValue}
+        </foreach>
+        values
+        <foreach item="item" collection="schemaFieldValues" separator=","
                  open="(" close=")" index="">
             #{item.fieldValue}
         </foreach>

@@ -37,7 +37,7 @@ public class RemotePublishActorFallbackFactory implements FallbackFactory<Remote
              * @return
              */
             @Override
-            public R sendMessage(Map<String, String> params) {
+            public R sendMessage(Map<String, Object> params) {
                 return R.fail("通知ThingLins MQTT Broker推送消息失败:" + throwable.getMessage());
             }
         };

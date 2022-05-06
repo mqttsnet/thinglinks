@@ -59,7 +59,7 @@ public interface DeviceDatasService {
      * @param deviceIdentification 设备标识
      * @param msg                  数据
      */
-    void processingTopoAddTopic(String deviceIdentification,String msg) throws Exception;
+    String processingTopoAddTopic(String deviceIdentification,String msg) throws Exception;
 
     /**
      * 处理/topo/delete Topic边设备删除子设备
@@ -67,7 +67,7 @@ public interface DeviceDatasService {
      * @param deviceIdentification 设备标识
      * @param msg                  数据
      */
-    void processingTopoDeleteTopic(String deviceIdentification,String msg) throws Exception;
+    String processingTopoDeleteTopic(String deviceIdentification,String msg) throws Exception;
 
     /**
      * 处理/topo/update Topic边设备更新子设备状态
@@ -75,7 +75,7 @@ public interface DeviceDatasService {
      * @param deviceIdentification 设备标识
      * @param msg                  数据
      */
-    void processingTopoUpdateTopic(String deviceIdentification,String msg) throws Exception;
+    String processingTopoUpdateTopic(String deviceIdentification,String msg) throws Exception;
 
     /**
      * 处理datas Topic数据上报

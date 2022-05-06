@@ -11,7 +11,7 @@
  Target Server Version : 50734
  File Encoding         : 65001
 
- Date: 10/04/2022 14:12:14
+ Date: 06/05/2022 16:59:14
 */
 
 SET NAMES utf8mb4;
@@ -167,7 +167,7 @@ CREATE TABLE `QRTZ_SCHEDULER_STATE`  (
 -- ----------------------------
 -- Records of QRTZ_SCHEDULER_STATE
 -- ----------------------------
-INSERT INTO `QRTZ_SCHEDULER_STATE` VALUES ('mqttsScheduler', 'localhost1644995400242', 1649571131419, 15000);
+INSERT INTO `QRTZ_SCHEDULER_STATE` VALUES ('mqttsScheduler', 'localhost1644995400242', 1651827552261, 15000);
 
 -- ----------------------------
 -- Table structure for QRTZ_SIMPLE_TRIGGERS
@@ -288,23 +288,23 @@ CREATE TABLE `device`  (
   `connect_status` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '连接状态 : 在线：ONLINE || 离线：OFFLINE || 未连接：INIT',
   `is_will` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '是否遗言',
   `device_tags` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备标签',
-  `product_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '产品型号',
-  `manufacturer_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '厂商ID',
+  `product_identification` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '产品标识',
   `protocol_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '产品协议类型 ：mqtt || coap || modbus || http',
   `device_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备类型',
   `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
-  `update_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `device_id`(`device_identification`) USING BTREE COMMENT '设备标识',
   INDEX `client_id`(`client_id`) USING BTREE COMMENT '客户端标识'
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '设备管理' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '边设备档案信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of device
 -- ----------------------------
+INSERT INTO `device` VALUES (7, '123', '123', '123', 'thinglinks', 'default', '123', '123', '127.0.0.1:11883', '123', 'ENABLE', 'ONLINE', NULL, NULL, '603600f731c64af5ba1b85aeb767361a', 'MQTT', 'GATEWAY', 'admin', '2022-05-06 12:55:12', '', '2022-05-06 12:55:12', NULL);
 
 -- ----------------------------
 -- Table structure for device_action
@@ -319,121 +319,11 @@ CREATE TABLE `device_action`  (
   `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `device_id`(`device_identification`) USING BTREE COMMENT '设备标识'
-) ENGINE = InnoDB AUTO_INCREMENT = 376 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '设备动作数据' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 397 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '设备动作数据' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of device_action
 -- ----------------------------
-INSERT INTO `device_action` VALUES (266, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-14 14:14:25');
-INSERT INTO `device_action` VALUES (267, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 14:14:39');
-INSERT INTO `device_action` VALUES (268, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 17:24:49');
-INSERT INTO `device_action` VALUES (269, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 17:25:00');
-INSERT INTO `device_action` VALUES (270, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 17:34:09');
-INSERT INTO `device_action` VALUES (271, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 17:34:19');
-INSERT INTO `device_action` VALUES (272, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 17:36:17');
-INSERT INTO `device_action` VALUES (273, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-14 17:52:37');
-INSERT INTO `device_action` VALUES (274, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 17:53:14');
-INSERT INTO `device_action` VALUES (275, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 17:53:28');
-INSERT INTO `device_action` VALUES (276, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 17:53:38');
-INSERT INTO `device_action` VALUES (277, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 17:54:16');
-INSERT INTO `device_action` VALUES (278, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 17:54:26');
-INSERT INTO `device_action` VALUES (279, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 17:54:49');
-INSERT INTO `device_action` VALUES (280, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 17:55:10');
-INSERT INTO `device_action` VALUES (281, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 17:55:20');
-INSERT INTO `device_action` VALUES (282, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 17:55:37');
-INSERT INTO `device_action` VALUES (283, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 18:05:46');
-INSERT INTO `device_action` VALUES (284, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 18:07:56');
-INSERT INTO `device_action` VALUES (285, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 18:08:32');
-INSERT INTO `device_action` VALUES (286, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 18:08:32');
-INSERT INTO `device_action` VALUES (287, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 18:08:42');
-INSERT INTO `device_action` VALUES (288, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 18:09:00');
-INSERT INTO `device_action` VALUES (289, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-14 18:14:40');
-INSERT INTO `device_action` VALUES (290, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-14 18:14:58');
-INSERT INTO `device_action` VALUES (291, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-15 16:38:26');
-INSERT INTO `device_action` VALUES (292, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-15 16:38:44');
-INSERT INTO `device_action` VALUES (293, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-15 16:38:57');
-INSERT INTO `device_action` VALUES (294, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-15 16:42:23');
-INSERT INTO `device_action` VALUES (295, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-15 16:42:39');
-INSERT INTO `device_action` VALUES (296, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-15 16:42:39');
-INSERT INTO `device_action` VALUES (297, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-15 16:42:41');
-INSERT INTO `device_action` VALUES (298, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-15 16:42:41');
-INSERT INTO `device_action` VALUES (299, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-15 16:42:41');
-INSERT INTO `device_action` VALUES (300, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-15 16:44:27');
-INSERT INTO `device_action` VALUES (301, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-15 16:44:27');
-INSERT INTO `device_action` VALUES (302, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-15 16:47:18');
-INSERT INTO `device_action` VALUES (303, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-15 16:47:45');
-INSERT INTO `device_action` VALUES (304, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-15 17:12:42');
-INSERT INTO `device_action` VALUES (305, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-15 17:20:11');
-INSERT INTO `device_action` VALUES (306, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-15 17:20:21');
-INSERT INTO `device_action` VALUES (307, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-15 17:34:42');
-INSERT INTO `device_action` VALUES (308, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-15 17:34:44');
-INSERT INTO `device_action` VALUES (309, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-16 09:02:35');
-INSERT INTO `device_action` VALUES (310, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-16 09:09:00');
-INSERT INTO `device_action` VALUES (311, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-16 09:10:41');
-INSERT INTO `device_action` VALUES (312, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-16 09:54:36');
-INSERT INTO `device_action` VALUES (313, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-16 14:20:42');
-INSERT INTO `device_action` VALUES (314, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-24 14:35:07');
-INSERT INTO `device_action` VALUES (315, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-24 14:35:17');
-INSERT INTO `device_action` VALUES (316, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-24 14:35:27');
-INSERT INTO `device_action` VALUES (317, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-24 14:35:31');
-INSERT INTO `device_action` VALUES (318, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-24 14:35:41');
-INSERT INTO `device_action` VALUES (319, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-24 14:37:26');
-INSERT INTO `device_action` VALUES (320, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-24 14:37:26');
-INSERT INTO `device_action` VALUES (321, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-24 14:37:36');
-INSERT INTO `device_action` VALUES (322, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-24 14:43:27');
-INSERT INTO `device_action` VALUES (323, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-24 14:43:27');
-INSERT INTO `device_action` VALUES (324, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-24 14:43:37');
-INSERT INTO `device_action` VALUES (325, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-24 14:43:37');
-INSERT INTO `device_action` VALUES (326, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-24 15:48:33');
-INSERT INTO `device_action` VALUES (327, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-24 15:48:44');
-INSERT INTO `device_action` VALUES (328, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-24 15:49:06');
-INSERT INTO `device_action` VALUES (329, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-24 15:49:16');
-INSERT INTO `device_action` VALUES (330, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-24 15:49:42');
-INSERT INTO `device_action` VALUES (331, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-25 13:34:47');
-INSERT INTO `device_action` VALUES (332, '123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-25 13:34:58');
-INSERT INTO `device_action` VALUES (333, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-25 13:35:05');
-INSERT INTO `device_action` VALUES (334, '123456', 'ONLINE', 'Device Connection', 'success', '2022-02-25 13:45:47');
-INSERT INTO `device_action` VALUES (335, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-25 15:59:55');
-INSERT INTO `device_action` VALUES (336, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-25 16:15:47');
-INSERT INTO `device_action` VALUES (337, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-25 16:38:35');
-INSERT INTO `device_action` VALUES (338, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-25 16:38:36');
-INSERT INTO `device_action` VALUES (339, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-25 16:38:43');
-INSERT INTO `device_action` VALUES (340, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-25 16:44:58');
-INSERT INTO `device_action` VALUES (341, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-25 16:47:00');
-INSERT INTO `device_action` VALUES (342, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-25 16:47:11');
-INSERT INTO `device_action` VALUES (343, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-28 19:06:40');
-INSERT INTO `device_action` VALUES (344, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-28 19:06:51');
-INSERT INTO `device_action` VALUES (345, 'a123456', 'ONLINE', 'Device Connection', 'success', '2022-02-28 19:07:09');
-INSERT INTO `device_action` VALUES (346, 'a123456', 'ONLINE', 'Device Connection', 'success', '2022-02-28 19:07:19');
-INSERT INTO `device_action` VALUES (347, 'a123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-28 19:28:22');
-INSERT INTO `device_action` VALUES (348, 'a123456', 'ONLINE', 'Device Connection', 'success', '2022-02-28 19:28:24');
-INSERT INTO `device_action` VALUES (349, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-28 19:28:26');
-INSERT INTO `device_action` VALUES (350, 'a123456', 'ONLINE', 'Device Connection', 'success', '2022-02-28 19:28:34');
-INSERT INTO `device_action` VALUES (351, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-28 19:28:36');
-INSERT INTO `device_action` VALUES (352, '100030', 'ONLINE', 'Device Connection', 'success', '2022-02-28 19:29:24');
-INSERT INTO `device_action` VALUES (353, 'a123456', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-28 19:30:03');
-INSERT INTO `device_action` VALUES (354, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-02-28 19:30:05');
-INSERT INTO `device_action` VALUES (355, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-01 17:03:16');
-INSERT INTO `device_action` VALUES (356, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-03-01 17:04:49');
-INSERT INTO `device_action` VALUES (357, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-01 17:05:58');
-INSERT INTO `device_action` VALUES (358, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-03-01 17:07:35');
-INSERT INTO `device_action` VALUES (359, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-03-01 17:07:45');
-INSERT INTO `device_action` VALUES (360, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:05:20');
-INSERT INTO `device_action` VALUES (361, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:05:30');
-INSERT INTO `device_action` VALUES (362, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-03-04 17:06:26');
-INSERT INTO `device_action` VALUES (363, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:28:28');
-INSERT INTO `device_action` VALUES (364, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:46:25');
-INSERT INTO `device_action` VALUES (365, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:46:38');
-INSERT INTO `device_action` VALUES (366, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:46:51');
-INSERT INTO `device_action` VALUES (367, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:47:01');
-INSERT INTO `device_action` VALUES (368, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-03-04 17:47:31');
-INSERT INTO `device_action` VALUES (369, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:47:35');
-INSERT INTO `device_action` VALUES (370, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:47:35');
-INSERT INTO `device_action` VALUES (371, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:47:35');
-INSERT INTO `device_action` VALUES (372, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:47:35');
-INSERT INTO `device_action` VALUES (373, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:47:35');
-INSERT INTO `device_action` VALUES (374, '100030', 'OFFLINE', 'Device Disconnection', 'success', '2022-03-04 17:47:41');
-INSERT INTO `device_action` VALUES (375, '100030', 'ONLINE', 'Device Connection', 'success', '2022-03-04 17:48:01');
 
 -- ----------------------------
 -- Table structure for device_datas
@@ -454,6 +344,36 @@ CREATE TABLE `device_datas`  (
 
 -- ----------------------------
 -- Records of device_datas
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for device_info
+-- ----------------------------
+DROP TABLE IF EXISTS `device_info`;
+CREATE TABLE `device_info`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `d_id` bigint(20) NOT NULL COMMENT '边设备档案主键',
+  `app_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '应用ID',
+  `node_id` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备自身的唯一标识',
+  `node_name` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备名称',
+  `device_id` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '平台生成的设备唯一标识',
+  `description` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备描述',
+  `manufacturer_id` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '厂商ID',
+  `model` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备型号',
+  `connect_status` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '子设备连接状态 : 在线：ONLINE || 离线：OFFLINE || 未连接：INIT',
+  `shadow_enable` tinyint(1) NULL DEFAULT 1 COMMENT '是否支持设备影子TRUE:1、FALSE :0',
+  `shadow_table_name` varchar(2048) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '设备影子数据表名(多个英文逗号分割)',
+  `status` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
+  `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'ununited' COMMENT '创建者',
+  `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+  `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
+  `update_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 4532 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '子设备档案表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of device_info
 -- ----------------------------
 
 -- ----------------------------
@@ -607,19 +527,20 @@ CREATE TABLE `product`  (
   `data_format` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '数据格式，默认为JSON无需修改。',
   `device_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '设备类型:支持英文大小写、数字、下划线和中划线\r\n',
   `protocol_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '设备接入平台的协议类型，默认为MQTT无需修改。\r\n ',
-  `status` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '状态(字典值：0启用  1停用)',
+  `status` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
   `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '产品描述',
   `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
-  `update_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `manufacturer_id`(`manufacturer_id`) USING BTREE COMMENT '厂商ID索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '产品模型' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '产品模型' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of product
 -- ----------------------------
+INSERT INTO `product` VALUES (28, 'thinglinks', NULL, 'product_n', '603600f731c64af5ba1b85aeb767361a', 'COMMON', 'TestUtf8ManuId', 'HZYB', 'NBIoTDevice', 'JSON', 'WaterMeter', 'MQTT', '0', '', 'admin', '2022-05-06 12:54:23', '', '2022-05-06 12:54:23');
 
 -- ----------------------------
 -- Table structure for product_commands
@@ -631,9 +552,9 @@ CREATE TABLE `product_commands`  (
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。\r\n支持英文大小写、数字及下划线，长度[2,50]。\r\n',
   `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '命令描述。',
   `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
-  `update_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `service_id`(`service_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '产品模型设备服务命令表' ROW_FORMAT = Dynamic;
@@ -662,9 +583,9 @@ CREATE TABLE `product_commands_requests`  (
   `step` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '指示步长。',
   `unit` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '指示单位。\r\n取值根据参数确定，如：\r\n•温度单位：“C”或“K”\r\n•百分比单位：“%”\r\n•压强单位：“Pa”或“kPa”\r\n',
   `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
-  `update_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `commands_id`(`commands_id`) USING BTREE,
   INDEX `service_id`(`service_id`) USING BTREE
@@ -694,9 +615,9 @@ CREATE TABLE `product_commands_response`  (
   `step` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '指示步长。',
   `unit` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '指示单位。\r\n取值根据参数确定，如：\r\n•温度单位：“C”或“K”\r\n•百分比单位：“%”\r\n•压强单位：“Pa”或“kPa”\r\n',
   `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
-  `update_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `commands_id`(`commands_id`) USING BTREE,
   INDEX `service_id`(`service_id`) USING BTREE
@@ -725,16 +646,20 @@ CREATE TABLE `product_properties`  (
   `step` int(9) NULL DEFAULT NULL COMMENT '指示步长。',
   `unit` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '指示单位。支持长度不超过50。\r\n取值根据参数确定，如：\r\n•温度单位：“C”或“K”\r\n•百分比单位：“%”\r\n•压强单位：“Pa”或“kPa”\r\n',
   `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
-  `update_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `service_id`(`service_id`) USING BTREE COMMENT '服务ID'
-) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '产品模型服务属性表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 37 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '产品模型服务属性表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of product_properties
 -- ----------------------------
+INSERT INTO `product_properties` VALUES (33, 'wendu', 36, 'int', NULL, NULL, '65536', 10, 'R', '0', 1, 1, NULL, 'admin', '2022-05-06 12:48:13', '', '2022-05-06 12:48:13');
+INSERT INTO `product_properties` VALUES (34, 'time', 36, 'int', NULL, NULL, '65536', 10, 'R', '0', 1, 1, NULL, 'admin', '2022-05-06 12:48:13', '', '2022-05-06 12:48:13');
+INSERT INTO `product_properties` VALUES (35, 'wendu', 38, 'int', NULL, NULL, '65536', 10, 'R', '0', 1, 1, NULL, 'admin', '2022-05-06 12:54:24', '', '2022-05-06 12:54:24');
+INSERT INTO `product_properties` VALUES (36, 'time', 38, 'int', NULL, NULL, '65536', 10, 'R', '0', 1, 1, NULL, 'admin', '2022-05-06 12:54:24', '', '2022-05-06 12:54:24');
 
 -- ----------------------------
 -- Table structure for product_services
@@ -748,16 +673,20 @@ CREATE TABLE `product_services`  (
   `status` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '状态(字典值：启用  停用)',
   `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '服务的描述信息:文本描述，不影响实际功能，可配置为空字符串\"\"。\r\n',
   `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
-  `update_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `product_id`(`product_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 30 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '产品模型服务表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 40 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '产品模型服务表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of product_services
 -- ----------------------------
+INSERT INTO `product_services` VALUES (36, 'service1', 27, NULL, '0', NULL, 'admin', '2022-05-06 12:48:13', '', '2022-05-06 12:48:13');
+INSERT INTO `product_services` VALUES (37, 'service2', 27, NULL, '0', NULL, 'admin', '2022-05-06 12:48:13', '', '2022-05-06 12:48:13');
+INSERT INTO `product_services` VALUES (38, 'service1', 28, NULL, '0', NULL, 'admin', '2022-05-06 12:54:23', '', '2022-05-06 12:54:23');
+INSERT INTO `product_services` VALUES (39, 'service2', 28, NULL, '0', NULL, 'admin', '2022-05-06 12:54:24', '', '2022-05-06 12:54:24');
 
 -- ----------------------------
 -- Table structure for product_template
@@ -770,9 +699,9 @@ CREATE TABLE `product_template`  (
   `status` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '状态(字典值：启用  停用)',
   `remark` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '产品模型模板描述',
   `create_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
-  `update_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  `update_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '产品模板' ROW_FORMAT = Dynamic;
 
@@ -981,7 +910,7 @@ CREATE TABLE `sys_job`  (
   `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注信息',
   PRIMARY KEY (`job_id`, `job_name`, `job_group`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '定时任务调度表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '定时任务调度表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_job
@@ -1004,7 +933,7 @@ CREATE TABLE `sys_job_log`  (
   `exception_info` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '异常信息',
   `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`job_log_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 55 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '定时任务调度日志表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '定时任务调度日志表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_job_log
@@ -1022,7 +951,7 @@ CREATE TABLE `sys_logininfor`  (
   `msg` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '提示信息',
   `access_time` datetime(0) NULL DEFAULT NULL COMMENT '访问时间',
   PRIMARY KEY (`info_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 365 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统访问记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 403 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统访问记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_logininfor
@@ -1252,6 +1181,44 @@ INSERT INTO `sys_logininfor` VALUES (361, 'admin', '127.0.0.1', '0', '登录成�
 INSERT INTO `sys_logininfor` VALUES (362, 'admin', '127.0.0.1', '0', '登录成功', '2022-03-29 16:11:42');
 INSERT INTO `sys_logininfor` VALUES (363, 'admin', '127.0.0.1', '0', '登录成功', '2022-03-31 09:15:49');
 INSERT INTO `sys_logininfor` VALUES (364, 'admin', '127.0.0.1', '0', '登录成功', '2022-04-08 09:56:56');
+INSERT INTO `sys_logininfor` VALUES (365, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-04-10 20:19:39');
+INSERT INTO `sys_logininfor` VALUES (366, 'thinglinks', '127.0.0.1', '0', '登录成功', '2022-04-10 20:19:47');
+INSERT INTO `sys_logininfor` VALUES (367, 'thinglinks', '127.0.0.1', '0', '退出成功', '2022-04-10 20:22:06');
+INSERT INTO `sys_logininfor` VALUES (368, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-04-10 20:22:17');
+INSERT INTO `sys_logininfor` VALUES (369, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-04-10 20:22:29');
+INSERT INTO `sys_logininfor` VALUES (370, 'admin', '127.0.0.1', '0', '登录成功', '2022-04-10 20:23:49');
+INSERT INTO `sys_logininfor` VALUES (371, 'admin', '127.0.0.1', '0', '登录成功', '2022-04-11 18:37:00');
+INSERT INTO `sys_logininfor` VALUES (372, 'admin', '127.0.0.1', '0', '登录成功', '2022-04-14 17:02:54');
+INSERT INTO `sys_logininfor` VALUES (373, 'admin', '127.0.0.1', '0', '登录成功', '2022-04-27 15:08:27');
+INSERT INTO `sys_logininfor` VALUES (374, 'admin', '127.0.0.1', '0', '登录成功', '2022-04-29 15:00:02');
+INSERT INTO `sys_logininfor` VALUES (375, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 16:33:17');
+INSERT INTO `sys_logininfor` VALUES (376, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-05-04 17:40:51');
+INSERT INTO `sys_logininfor` VALUES (377, 'admin', '127.0.0.1', '0', '退出成功', '2022-05-04 17:41:49');
+INSERT INTO `sys_logininfor` VALUES (378, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 17:42:47');
+INSERT INTO `sys_logininfor` VALUES (379, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 17:42:53');
+INSERT INTO `sys_logininfor` VALUES (380, 'admin', '127.0.0.1', '0', '退出成功', '2022-05-04 17:57:34');
+INSERT INTO `sys_logininfor` VALUES (381, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 17:58:59');
+INSERT INTO `sys_logininfor` VALUES (382, 'admin', '127.0.0.1', '0', '退出成功', '2022-05-04 18:07:47');
+INSERT INTO `sys_logininfor` VALUES (383, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 18:10:33');
+INSERT INTO `sys_logininfor` VALUES (384, 'admin', '127.0.0.1', '0', '退出成功', '2022-05-04 18:17:59');
+INSERT INTO `sys_logininfor` VALUES (385, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 18:18:17');
+INSERT INTO `sys_logininfor` VALUES (386, 'admin', '127.0.0.1', '0', '退出成功', '2022-05-04 18:21:47');
+INSERT INTO `sys_logininfor` VALUES (387, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 18:22:03');
+INSERT INTO `sys_logininfor` VALUES (388, 'admin', '127.0.0.1', '0', '退出成功', '2022-05-04 18:24:37');
+INSERT INTO `sys_logininfor` VALUES (389, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 18:24:43');
+INSERT INTO `sys_logininfor` VALUES (390, 'admin', '127.0.0.1', '0', '退出成功', '2022-05-04 18:27:22');
+INSERT INTO `sys_logininfor` VALUES (391, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 18:29:51');
+INSERT INTO `sys_logininfor` VALUES (392, 'admin', '127.0.0.1', '0', '退出成功', '2022-05-04 19:31:10');
+INSERT INTO `sys_logininfor` VALUES (393, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 19:31:37');
+INSERT INTO `sys_logininfor` VALUES (394, 'admin', '127.0.0.1', '0', '退出成功', '2022-05-04 20:22:47');
+INSERT INTO `sys_logininfor` VALUES (395, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 20:22:58');
+INSERT INTO `sys_logininfor` VALUES (396, 'admin', '127.0.0.1', '0', '退出成功', '2022-05-04 20:24:31');
+INSERT INTO `sys_logininfor` VALUES (397, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 20:24:48');
+INSERT INTO `sys_logininfor` VALUES (398, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-04 20:28:56');
+INSERT INTO `sys_logininfor` VALUES (399, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-05 11:00:07');
+INSERT INTO `sys_logininfor` VALUES (400, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-05 14:20:43');
+INSERT INTO `sys_logininfor` VALUES (401, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-05 14:43:41');
+INSERT INTO `sys_logininfor` VALUES (402, 'admin', '127.0.0.1', '0', '登录成功', '2022-05-06 12:47:29');
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -1278,7 +1245,7 @@ CREATE TABLE `sys_menu`  (
   `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`menu_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1076 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单权限表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1079 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单权限表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_menu
@@ -1286,7 +1253,7 @@ CREATE TABLE `sys_menu`  (
 INSERT INTO `sys_menu` VALUES (1, '系统管理', 0, 1, 'system', NULL, '', 1, 0, 'M', '0', '0', '', 'system', 'admin', '2021-09-17 18:39:58', '', NULL, '系统管理目录');
 INSERT INTO `sys_menu` VALUES (2, '系统监控', 0, 2, 'monitor', NULL, '', 1, 0, 'M', '0', '0', '', 'monitor', 'admin', '2021-09-17 18:39:58', '', NULL, '系统监控目录');
 INSERT INTO `sys_menu` VALUES (3, '系统工具', 0, 3, 'tool', NULL, '', 1, 0, 'M', '0', '0', '', 'tool', 'admin', '2021-09-17 18:39:58', '', NULL, '系统工具目录');
-INSERT INTO `sys_menu` VALUES (4, 'ThingLinks官网', 0, 5, 'http://thinglinks.mqttsnet.com', NULL, '', 0, 0, 'M', '0', '0', '', 'guide', 'admin', '2021-09-17 18:39:59', 'thinglinks', '2022-01-04 17:40:27', 'mqtts官网地址');
+INSERT INTO `sys_menu` VALUES (4, 'ThingLinks官网', 0, 6, 'http://thinglinks.mqttsnet.com', NULL, '', 0, 0, 'M', '0', '0', '', 'guide', 'admin', '2021-09-17 18:39:59', 'admin', '2022-05-05 14:06:18', 'mqtts官网地址');
 INSERT INTO `sys_menu` VALUES (100, '用户管理', 1, 1, 'user', 'system/user/index', '', 1, 0, 'C', '0', '0', 'system:user:list', 'user', 'admin', '2021-09-17 18:39:59', '', NULL, '用户管理菜单');
 INSERT INTO `sys_menu` VALUES (101, '角色管理', 1, 2, 'role', 'system/role/index', '', 1, 0, 'C', '0', '0', 'system:role:list', 'peoples', 'admin', '2021-09-17 18:39:59', '', NULL, '角色管理菜单');
 INSERT INTO `sys_menu` VALUES (102, '菜单管理', 1, 3, 'menu', 'system/menu/index', '', 1, 0, 'C', '0', '0', 'system:menu:list', 'tree-table', 'admin', '2021-09-17 18:39:59', '', NULL, '菜单管理菜单');
@@ -1381,6 +1348,9 @@ INSERT INTO `sys_menu` VALUES (1072, '产品管理删除', 1068, 4, '#', '', NUL
 INSERT INTO `sys_menu` VALUES (1073, '产品管理导出', 1068, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:product:export', '#', 'admin', '2022-02-09 16:58:42', '', NULL, '');
 INSERT INTO `sys_menu` VALUES (1074, '断开连接', 1062, 6, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:device:disconnect', '#', 'admin', '2022-03-08 16:17:36', 'admin', '2022-03-08 16:17:53', '');
 INSERT INTO `sys_menu` VALUES (1075, '产品管理导入', 1068, 6, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:product:import', '#', 'admin', '2022-03-25 18:04:07', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (1076, '子设备信息', 1062, 7, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:device:deviceInfo', '#', 'admin', '2022-05-04 18:20:08', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (1077, '设备监控', 0, 5, 'tdengine', NULL, NULL, 1, 0, 'M', '0', '0', NULL, 'online', 'admin', '2022-05-05 14:06:11', '', NULL, '');
+INSERT INTO `sys_menu` VALUES (1078, '设备影子', 1077, 1, 'tdengine', 'tdengine/shadow/index', NULL, 1, 0, 'C', '0', '0', 'tdengine:shadow:list', 'cascader', 'admin', '2022-05-05 14:09:20', '', NULL, '');
 
 -- ----------------------------
 -- Table structure for sys_notice
@@ -1403,8 +1373,8 @@ CREATE TABLE `sys_notice`  (
 -- ----------------------------
 -- Records of sys_notice
 -- ----------------------------
-INSERT INTO `sys_notice` VALUES (1, '温馨提醒：2018-07-01 mqtts新版本发布啦', '2', 0xE696B0E78988E69CACE58685E5AEB9, '0', 'admin', '2021-09-17 18:40:16', '', NULL, '管理员');
-INSERT INTO `sys_notice` VALUES (2, '维护通知：2018-07-01 mqtts系统凌晨维护', '1', 0xE7BBB4E68AA4E58685E5AEB9, '0', 'admin', '2021-09-17 18:40:16', '', NULL, '管理员');
+INSERT INTO `sys_notice` VALUES (1, '温馨提醒：2021-07-01 ThingLinks新版本发布啦', '2', 0xE696B0E78988E69CACE58685E5AEB9, '0', 'admin', '2021-09-17 18:40:16', 'admin', '2022-04-29 15:31:33', '管理员');
+INSERT INTO `sys_notice` VALUES (2, '维护通知：2021-07-01 ThingLinks系统凌晨维护', '1', 0x3C703EE7BBB4E68AA4E58685E5AEB93C2F703E, '0', 'admin', '2021-09-17 18:40:16', 'admin', '2022-04-29 15:31:44', '管理员');
 
 -- ----------------------------
 -- Table structure for sys_oper_log
@@ -1428,191 +1398,11 @@ CREATE TABLE `sys_oper_log`  (
   `error_msg` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '错误消息',
   `oper_time` datetime(0) NULL DEFAULT NULL COMMENT '操作时间',
   PRIMARY KEY (`oper_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 181 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '操作日志记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 223 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '操作日志记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_oper_log
 -- ----------------------------
-INSERT INTO `sys_oper_log` VALUES (1, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"tt\",\"deviceStatus\":\"ENABLE\",\"password\":\"x123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"productId\":\"2\",\"manufacturerId\":\"2\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"x123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:39:49');
-INSERT INTO `sys_oper_log` VALUES (2, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"tt\",\"deviceStatus\":\"ENABLE\",\"password\":\"x123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"productId\":\"2\",\"manufacturerId\":\"2\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"x123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:40:10');
-INSERT INTO `sys_oper_log` VALUES (3, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"tt\",\"deviceStatus\":\"ENABLE\",\"password\":\"x123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"productId\":\"2\",\"manufacturerId\":\"2\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"x123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:40:42');
-INSERT INTO `sys_oper_log` VALUES (4, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"654321\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"deviceDescription\":\"test\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"218.78.103.93:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:41:27');
-INSERT INTO `sys_oper_log` VALUES (5, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"654321\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"deviceDescription\":\"test\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"218.78.103.93:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:41:48');
-INSERT INTO `sys_oper_log` VALUES (6, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"654321\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"deviceDescription\":\"test\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:42:03');
-INSERT INTO `sys_oper_log` VALUES (7, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"654321\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"deviceDescription\":\"test\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:42:21');
-INSERT INTO `sys_oper_log` VALUES (8, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"654321\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"deviceDescription\":\"test\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:42:29');
-INSERT INTO `sys_oper_log` VALUES (9, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"654321\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"deviceDescription\":\"test\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:42:42');
-INSERT INTO `sys_oper_log` VALUES (10, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"654321\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"deviceDescription\":\"test\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:42:45');
-INSERT INTO `sys_oper_log` VALUES (11, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"654321\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"654321\",\"deviceDescription\":\"test\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"654321\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 14:42:50');
-INSERT INTO `sys_oper_log` VALUES (12, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"a123456\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"a123456\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"a123456\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 15:23:30');
-INSERT INTO `sys_oper_log` VALUES (13, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"a123456\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"a123456\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"a123456\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 15:24:16');
-INSERT INTO `sys_oper_log` VALUES (14, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"a123456\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"a123456\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"a123456\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 15:32:36');
-INSERT INTO `sys_oper_log` VALUES (15, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"a123456\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"a123456\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"a123456\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 15:33:32');
-INSERT INTO `sys_oper_log` VALUES (16, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"a123456\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"a123456\",\"deviceDescription\":\"test\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"a123456\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 15:34:13');
-INSERT INTO `sys_oper_log` VALUES (17, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"1\",\"remark\":\"1\",\"deviceName\":\"1\",\"deviceStatus\":\"ENABLE\",\"password\":\"1\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"1\",\"deviceDescription\":\"1\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"1\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"1\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 15:45:48');
-INSERT INTO `sys_oper_log` VALUES (18, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"1\",\"remark\":\"1\",\"deviceName\":\"1\",\"deviceStatus\":\"ENABLE\",\"password\":\"1\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"1\",\"deviceDescription\":\"1\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"1\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"1\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 15:45:49');
-INSERT INTO `sys_oper_log` VALUES (19, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"1\",\"remark\":\"1\",\"deviceName\":\"1\",\"deviceStatus\":\"ENABLE\",\"password\":\"1\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"1\",\"deviceDescription\":\"1\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"1\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"1\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 15:53:18');
-INSERT INTO `sys_oper_log` VALUES (20, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"1\",\"remark\":\"1\",\"deviceName\":\"1\",\"deviceStatus\":\"ENABLE\",\"password\":\"1\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"1\",\"deviceDescription\":\"1\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"1\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"1\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 17:44:34');
-INSERT INTO `sys_oper_log` VALUES (21, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"1\",\"remark\":\"1\",\"deviceName\":\"1\",\"deviceStatus\":\"ENABLE\",\"password\":\"1\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"1\",\"deviceDescription\":\"1\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"1\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"1\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 17:48:33');
-INSERT INTO `sys_oper_log` VALUES (22, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"1\",\"remark\":\"1\",\"deviceName\":\"1\",\"deviceStatus\":\"ENABLE\",\"password\":\"1\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"1\",\"deviceDescription\":\"1\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"1\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"1\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 17:49:18');
-INSERT INTO `sys_oper_log` VALUES (23, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"1\",\"remark\":\"1\",\"deviceName\":\"1\",\"deviceStatus\":\"ENABLE\",\"password\":\"1\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"1\",\"deviceDescription\":\"1\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"1\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"1\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 17:49:50');
-INSERT INTO `sys_oper_log` VALUES (24, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"1\",\"remark\":\"1\",\"deviceName\":\"1\",\"deviceStatus\":\"ENABLE\",\"password\":\"1\",\"appId\":\"thinglinks\",\"deviceType\":\"COMMON\",\"clientId\":\"1\",\"deviceDescription\":\"1\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"1\",\"authMode\":\"default\",\"connector\":\"127.0.0.1:11883\",\"deviceIdentification\":\"1\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-02-24 17:51:57');
-INSERT INTO `sys_oper_log` VALUES (25, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"1\",\"remark\":\"1\",\"deviceName\":\"1\",\"deviceStatus\":\"ENABLE\",\"password\":\"1\",\"appId\":\"thinglinks\",\"id\":7,\"deviceType\":\"COMMON\",\"clientId\":\"1\",\"deviceDescription\":\"1\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"1\",\"authMode\":\"default\",\"createBy\":\"admin\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1645696377661,\"deviceIdentification\":\"1\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-02-24 17:52:58');
-INSERT INTO `sys_oper_log` VALUES (26, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"a123456\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"id\":8,\"deviceType\":\"COMMON\",\"clientId\":\"a123456\",\"deviceDescription\":\"a123456\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"createBy\":\"thinglinks\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1646046368340,\"deviceIdentification\":\"a123456\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-02-28 19:06:10');
-INSERT INTO `sys_oper_log` VALUES (27, '设备管理', 3, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.remove()', 'DELETE', 1, 'thinglinks', NULL, '/device/8', '192.168.100.229', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-02-28 19:27:49');
-INSERT INTO `sys_oper_log` VALUES (28, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'thinglinks', NULL, '/device', '192.168.100.229', '', '{\"deviceName\":\"a123456\",\"deviceStatus\":\"ENABLE\",\"password\":\"a123456\",\"appId\":\"thinglinks\",\"id\":9,\"deviceType\":\"COMMON\",\"clientId\":\"a123456\",\"deviceDescription\":\"a123456\",\"productId\":\"1\",\"manufacturerId\":\"1\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"a123456\",\"authMode\":\"default\",\"createBy\":\"thinglinks\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1646047694065,\"deviceIdentification\":\"a123456\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-02-28 19:28:14');
-INSERT INTO `sys_oper_log` VALUES (29, '菜单管理', 1, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.add()', 'POST', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"orderNum\":\"6\",\"menuName\":\"断开连接\",\"params\":{},\"parentId\":1062,\"isCache\":\"0\",\"createBy\":\"admin\",\"children\":[],\"isFrame\":\"1\",\"menuType\":\"F\",\"perms\":\"ink:device:disconnect\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 16:17:36');
-INSERT INTO `sys_oper_log` VALUES (30, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"#\",\"orderNum\":\"6\",\"menuName\":\"断开连接\",\"params\":{},\"parentId\":1062,\"isCache\":\"0\",\"path\":\"\",\"children\":[],\"createTime\":1646727456000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1074,\"menuType\":\"F\",\"perms\":\"link:device:disconnect\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 16:17:53');
-INSERT INTO `sys_oper_log` VALUES (31, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'DELETE', 1, 'admin', NULL, '/device/disconnect/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:09:46');
-INSERT INTO `sys_oper_log` VALUES (32, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'DELETE', 1, 'admin', NULL, '/device/disconnect/9', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:10:20');
-INSERT INTO `sys_oper_log` VALUES (33, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:14:41');
-INSERT INTO `sys_oper_log` VALUES (34, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:14:55');
-INSERT INTO `sys_oper_log` VALUES (35, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:21:21');
-INSERT INTO `sys_oper_log` VALUES (36, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:22:53');
-INSERT INTO `sys_oper_log` VALUES (37, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:23:31');
-INSERT INTO `sys_oper_log` VALUES (38, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:23:57');
-INSERT INTO `sys_oper_log` VALUES (39, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:27:10');
-INSERT INTO `sys_oper_log` VALUES (40, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:29:35');
-INSERT INTO `sys_oper_log` VALUES (41, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:29:51');
-INSERT INTO `sys_oper_log` VALUES (42, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:31:28');
-INSERT INTO `sys_oper_log` VALUES (43, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:31:43');
-INSERT INTO `sys_oper_log` VALUES (44, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:32:05');
-INSERT INTO `sys_oper_log` VALUES (45, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:33:15');
-INSERT INTO `sys_oper_log` VALUES (46, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:33:32');
-INSERT INTO `sys_oper_log` VALUES (47, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:34:15');
-INSERT INTO `sys_oper_log` VALUES (48, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:35:53');
-INSERT INTO `sys_oper_log` VALUES (49, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:37:29');
-INSERT INTO `sys_oper_log` VALUES (50, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:38:26');
-INSERT INTO `sys_oper_log` VALUES (51, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-08 17:38:57');
-INSERT INTO `sys_oper_log` VALUES (52, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功！！！\",\"code\":200}', 0, NULL, '2022-03-08 17:39:35');
-INSERT INTO `sys_oper_log` VALUES (53, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/3', '127.0.0.1', '', '[3]', '{\"msg\":\"操作成功！！！\",\"code\":500}', 0, NULL, '2022-03-08 17:40:49');
-INSERT INTO `sys_oper_log` VALUES (54, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:02:51');
-INSERT INTO `sys_oper_log` VALUES (55, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:02:51');
-INSERT INTO `sys_oper_log` VALUES (56, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:02:58');
-INSERT INTO `sys_oper_log` VALUES (57, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:02:58');
-INSERT INTO `sys_oper_log` VALUES (58, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:02:59');
-INSERT INTO `sys_oper_log` VALUES (59, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12w', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:02:59');
-INSERT INTO `sys_oper_log` VALUES (60, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12wq', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:03:04');
-INSERT INTO `sys_oper_log` VALUES (61, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12wqe', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:03:28');
-INSERT INTO `sys_oper_log` VALUES (62, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12wqe5', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:03:55');
-INSERT INTO `sys_oper_log` VALUES (63, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12wqe55', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:04:04');
-INSERT INTO `sys_oper_log` VALUES (64, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12wqe555', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-03-08 18:04:57');
-INSERT INTO `sys_oper_log` VALUES (65, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12wqe5552', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:05:59');
-INSERT INTO `sys_oper_log` VALUES (66, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:18:45');
-INSERT INTO `sys_oper_log` VALUES (67, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:18:45');
-INSERT INTO `sys_oper_log` VALUES (68, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/123', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:18:45');
-INSERT INTO `sys_oper_log` VALUES (69, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/1232', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:18:46');
-INSERT INTO `sys_oper_log` VALUES (70, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/12323', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:18:47');
-INSERT INTO `sys_oper_log` VALUES (71, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/null', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:01');
-INSERT INTO `sys_oper_log` VALUES (72, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/null', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:01');
-INSERT INTO `sys_oper_log` VALUES (73, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:01');
-INSERT INTO `sys_oper_log` VALUES (74, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:01');
-INSERT INTO `sys_oper_log` VALUES (75, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:02');
-INSERT INTO `sys_oper_log` VALUES (76, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:02');
-INSERT INTO `sys_oper_log` VALUES (77, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB11', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:02');
-INSERT INTO `sys_oper_log` VALUES (78, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB111', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:02');
-INSERT INTO `sys_oper_log` VALUES (79, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB1112', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:05');
-INSERT INTO `sys_oper_log` VALUES (80, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB11123', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:05');
-INSERT INTO `sys_oper_log` VALUES (81, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB111235', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:12');
-INSERT INTO `sys_oper_log` VALUES (82, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB1112355', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:12');
-INSERT INTO `sys_oper_log` VALUES (83, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB11123555', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:19:12');
-INSERT INTO `sys_oper_log` VALUES (84, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationfindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationfindOneByClientId/%E5%8E%BB111235557', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-03-08 18:23:51');
-INSERT INTO `sys_oper_log` VALUES (85, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"INIT\",\"listClass\":\"default\",\"dictSort\":0,\"remark\":\"设备未连接\",\"params\":{},\"dictType\":\"link_device_connect_status\",\"dictLabel\":\"未连接\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"cssClass\":\"info\",\"createTime\":1634891835000,\"dictCode\":36,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 16:54:43');
-INSERT INTO `sys_oper_log` VALUES (86, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"ONLINE\",\"listClass\":\"default\",\"dictSort\":1,\"remark\":\"设备在线\",\"params\":{},\"dictType\":\"link_device_connect_status\",\"dictLabel\":\"在线\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"cssClass\":\"success\",\"createTime\":1634891753000,\"dictCode\":34,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 16:54:57');
-INSERT INTO `sys_oper_log` VALUES (87, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"OFFLINE\",\"listClass\":\"default\",\"dictSort\":2,\"remark\":\"设备离线\",\"params\":{},\"dictType\":\"link_device_connect_status\",\"dictLabel\":\"离线\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"cssClass\":\"danger\",\"createTime\":1634891783000,\"dictCode\":35,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 16:55:05');
-INSERT INTO `sys_oper_log` VALUES (88, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"INIT\",\"listClass\":\"success\",\"dictSort\":0,\"remark\":\"设备未连接\",\"params\":{},\"dictType\":\"link_device_connect_status\",\"dictLabel\":\"未连接\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"cssClass\":\"\",\"createTime\":1634891835000,\"dictCode\":36,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:00:24');
-INSERT INTO `sys_oper_log` VALUES (89, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"INIT\",\"listClass\":\"info\",\"dictSort\":0,\"remark\":\"设备未连接\",\"params\":{},\"dictType\":\"link_device_connect_status\",\"dictLabel\":\"未连接\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"cssClass\":\"\",\"createTime\":1634891835000,\"dictCode\":36,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:00:35');
-INSERT INTO `sys_oper_log` VALUES (90, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"ONLINE\",\"listClass\":\"success\",\"dictSort\":1,\"remark\":\"设备在线\",\"params\":{},\"dictType\":\"link_device_connect_status\",\"dictLabel\":\"在线\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"cssClass\":\"success\",\"createTime\":1634891753000,\"dictCode\":34,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:00:39');
-INSERT INTO `sys_oper_log` VALUES (91, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"OFFLINE\",\"listClass\":\"warning\",\"dictSort\":2,\"remark\":\"设备离线\",\"params\":{},\"dictType\":\"link_device_connect_status\",\"dictLabel\":\"离线\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"cssClass\":\"danger\",\"createTime\":1634891783000,\"dictCode\":35,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:00:44');
-INSERT INTO `sys_oper_log` VALUES (92, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"0\",\"listClass\":\"primary\",\"dictSort\":0,\"params\":{},\"dictType\":\"link_device_is_will\",\"dictLabel\":\"是\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"createTime\":1634892055000,\"dictCode\":37,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:04:43');
-INSERT INTO `sys_oper_log` VALUES (93, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"1\",\"listClass\":\"warning\",\"dictSort\":0,\"params\":{},\"dictType\":\"link_device_is_will\",\"dictLabel\":\"否\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"createTime\":1634892062000,\"dictCode\":38,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:04:50');
-INSERT INTO `sys_oper_log` VALUES (94, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"ENABLE\",\"listClass\":\"success\",\"dictSort\":0,\"remark\":\"设备启用\",\"params\":{},\"dictType\":\"link_device_status\",\"dictLabel\":\"启用\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"createTime\":1634891293000,\"dictCode\":32,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:05:13');
-INSERT INTO `sys_oper_log` VALUES (95, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"DISABLE\",\"listClass\":\"danger\",\"dictSort\":1,\"remark\":\"设备禁用\",\"params\":{},\"dictType\":\"link_device_status\",\"dictLabel\":\"禁用\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"createTime\":1634891311000,\"dictCode\":33,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:05:17');
-INSERT INTO `sys_oper_log` VALUES (96, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"ONLINE\",\"listClass\":\"success\",\"dictSort\":1,\"remark\":\"设备在线\",\"params\":{},\"dictType\":\"link_device_connect_status\",\"dictLabel\":\"在线\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"cssClass\":\"\",\"createTime\":1634891753000,\"dictCode\":34,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:05:44');
-INSERT INTO `sys_oper_log` VALUES (97, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"OFFLINE\",\"listClass\":\"warning\",\"dictSort\":2,\"remark\":\"设备离线\",\"params\":{},\"dictType\":\"link_device_connect_status\",\"dictLabel\":\"离线\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"cssClass\":\"\",\"createTime\":1634891783000,\"dictCode\":35,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:05:47');
-INSERT INTO `sys_oper_log` VALUES (98, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"OFFLINE\",\"listClass\":\"warning\",\"dictSort\":2,\"remark\":\"设备离线\",\"params\":{},\"dictType\":\"link_device_connect_status\",\"dictLabel\":\"离线\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"cssClass\":\"\",\"createTime\":1634891783000,\"dictCode\":35,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-23 17:05:47');
-INSERT INTO `sys_oper_log` VALUES (99, '设备管理', 5, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.export()', 'POST', 1, 'admin', NULL, '/device/export', '127.0.0.1', '', '{\"params\":{}}', NULL, 0, NULL, '2022-03-23 17:23:39');
-INSERT INTO `sys_oper_log` VALUES (100, '设备管理', 5, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.export()', 'POST', 1, 'admin', NULL, '/device/export', '127.0.0.1', '', '{\"params\":{}}', NULL, 0, NULL, '2022-03-23 17:24:55');
-INSERT INTO `sys_oper_log` VALUES (101, '产品管理', 5, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.export()', 'POST', 1, 'admin', NULL, '/product/export', '127.0.0.1', '', '{\"params\":{}}', NULL, 0, NULL, '2022-03-23 17:26:53');
-INSERT INTO `sys_oper_log` VALUES (102, '用户管理', 5, 'com.mqttsnet.thinglinks.system.controller.SysUserController.export()', 'POST', 1, 'admin', NULL, '/user/export', '127.0.0.1', '', '{\"admin\":false,\"params\":{\"dataScope\":\"\"}}', NULL, 0, NULL, '2022-03-23 17:27:17');
-INSERT INTO `sys_oper_log` VALUES (103, '用户管理', 5, 'com.mqttsnet.thinglinks.system.controller.SysUserController.export()', 'POST', 1, 'admin', NULL, '/user/export', '127.0.0.1', '', '{\"admin\":false,\"params\":{\"dataScope\":\"\"}}', NULL, 0, NULL, '2022-03-23 17:28:30');
-INSERT INTO `sys_oper_log` VALUES (104, '设备管理', 5, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.export()', 'POST', 1, 'admin', NULL, '/device/export', '127.0.0.1', '', '{\"params\":{}}', NULL, 0, NULL, '2022-03-23 17:39:09');
-INSERT INTO `sys_oper_log` VALUES (105, '产品管理', 5, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.export()', 'POST', 1, 'admin', NULL, '/product/export', '127.0.0.1', '', '{\"params\":{}}', NULL, 0, NULL, '2022-03-23 17:40:30');
-INSERT INTO `sys_oper_log` VALUES (106, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"query\":\"\",\"icon\":\"server\",\"orderNum\":\"5\",\"menuName\":\"Admin控制台\",\"params\":{},\"parentId\":2,\"isCache\":\"0\",\"path\":\"http://localhost:19400/login\",\"component\":\"\",\"children\":[],\"createTime\":1631875199000,\"updateBy\":\"admin\",\"isFrame\":\"0\",\"menuId\":113,\"menuType\":\"C\",\"perms\":\"monitor:server:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-24 10:33:48');
-INSERT INTO `sys_oper_log` VALUES (107, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"query\":\"\",\"icon\":\"sentinel\",\"orderNum\":\"3\",\"menuName\":\"Sentinel控制台\",\"params\":{},\"parentId\":2,\"isCache\":\"0\",\"path\":\"http://localhost:19101\",\"component\":\"\",\"children\":[],\"createTime\":1631875199000,\"updateBy\":\"admin\",\"isFrame\":\"0\",\"menuId\":111,\"menuType\":\"C\",\"perms\":\"monitor:sentinel:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-24 10:37:38');
-INSERT INTO `sys_oper_log` VALUES (108, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-24 13:56:03');
-INSERT INTO `sys_oper_log` VALUES (109, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-24 13:57:17');
-INSERT INTO `sys_oper_log` VALUES (110, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'java.lang.Integer cannot be cast to java.lang.String', '2022-03-24 15:17:29');
-INSERT INTO `sys_oper_log` VALUES (111, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-24 16:27:34');
-INSERT INTO `sys_oper_log` VALUES (112, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'com.alibaba.fastjson.JSONObject cannot be cast to org.apache.poi.ss.formula.functions.T', '2022-03-24 16:34:26');
-INSERT INTO `sys_oper_log` VALUES (113, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'com.alibaba.fastjson.JSONObject cannot be cast to com.mqttsnet.thinglinks.link.api.domain.product.model.Services', '2022-03-24 16:56:11');
-INSERT INTO `sys_oper_log` VALUES (114, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 16:56:42');
-INSERT INTO `sys_oper_log` VALUES (115, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 16:58:21');
-INSERT INTO `sys_oper_log` VALUES (116, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:00:13');
-INSERT INTO `sys_oper_log` VALUES (117, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:02:59');
-INSERT INTO `sys_oper_log` VALUES (118, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:04:08');
-INSERT INTO `sys_oper_log` VALUES (119, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'com.alibaba.fastjson.JSONObject cannot be cast to com.mqttsnet.thinglinks.link.api.domain.product.model.Services', '2022-03-24 17:07:06');
-INSERT INTO `sys_oper_log` VALUES (120, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:10:53');
-INSERT INTO `sys_oper_log` VALUES (121, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:12:06');
-INSERT INTO `sys_oper_log` VALUES (122, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:14:48');
-INSERT INTO `sys_oper_log` VALUES (123, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'com.alibaba.fastjson.JSONObject cannot be cast to com.mqttsnet.thinglinks.link.api.domain.product.model.Services', '2022-03-24 17:16:39');
-INSERT INTO `sys_oper_log` VALUES (124, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:18:29');
-INSERT INTO `sys_oper_log` VALUES (125, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'com.alibaba.fastjson.JSONObject cannot be cast to com.mqttsnet.thinglinks.link.api.domain.product.model.Services', '2022-03-24 17:20:28');
-INSERT INTO `sys_oper_log` VALUES (126, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:26:14');
-INSERT INTO `sys_oper_log` VALUES (127, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'com.alibaba.fastjson.JSONObject cannot be cast to com.mqttsnet.thinglinks.link.api.domain.product.model.Services', '2022-03-24 17:29:56');
-INSERT INTO `sys_oper_log` VALUES (128, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:30:21');
-INSERT INTO `sys_oper_log` VALUES (129, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:31:02');
-INSERT INTO `sys_oper_log` VALUES (130, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'json object can not be null', '2022-03-24 17:35:09');
-INSERT INTO `sys_oper_log` VALUES (131, '产品模型', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '', NULL, 1, 'com.alibaba.fastjson.JSONObject cannot be cast to com.mqttsnet.thinglinks.link.api.domain.product.model.Services', '2022-03-24 17:57:29');
-INSERT INTO `sys_oper_log` VALUES (132, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', NULL, 1, '', '2022-03-25 12:40:54');
-INSERT INTO `sys_oper_log` VALUES (133, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', NULL, 1, '', '2022-03-25 12:42:30');
-INSERT INTO `sys_oper_log` VALUES (134, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 12:46:24');
-INSERT INTO `sys_oper_log` VALUES (135, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 12:49:19');
-INSERT INTO `sys_oper_log` VALUES (136, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 14:13:22');
-INSERT INTO `sys_oper_log` VALUES (137, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 14:14:50');
-INSERT INTO `sys_oper_log` VALUES (138, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-25 14:18:15');
-INSERT INTO `sys_oper_log` VALUES (139, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-25 14:20:16');
-INSERT INTO `sys_oper_log` VALUES (140, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-25 14:33:35');
-INSERT INTO `sys_oper_log` VALUES (141, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', NULL, 1, 'Cannot get Jedis connection; nested exception is redis.clients.jedis.exceptions.JedisConnectionException: Could not get a resource from the pool', '2022-03-25 15:21:03');
-INSERT INTO `sys_oper_log` VALUES (142, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-25 15:22:46');
-INSERT INTO `sys_oper_log` VALUES (143, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-25 15:35:06');
-INSERT INTO `sys_oper_log` VALUES (144, '字典类型', 1, 'com.mqttsnet.thinglinks.system.controller.SysDictTypeController.add()', 'POST', 1, 'admin', NULL, '/dict/type', '127.0.0.1', '', '{\"createBy\":\"admin\",\"dictName\":\"是否必填\",\"params\":{},\"dictType\":\"link_product_isRequired\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 15:39:40');
-INSERT INTO `sys_oper_log` VALUES (145, '字典数据', 1, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.add()', 'POST', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"0\",\"listClass\":\"default\",\"dictSort\":0,\"params\":{},\"dictType\":\"link_product_isRequired\",\"dictLabel\":\"非必填\",\"createBy\":\"admin\",\"default\":false,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 15:51:10');
-INSERT INTO `sys_oper_log` VALUES (146, '字典数据', 1, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.add()', 'POST', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"1\",\"listClass\":\"default\",\"dictSort\":0,\"params\":{},\"dictType\":\"link_product_isRequired\",\"dictLabel\":\"必填\",\"createBy\":\"admin\",\"default\":false,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 15:51:19');
-INSERT INTO `sys_oper_log` VALUES (147, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 16:05:11');
-INSERT INTO `sys_oper_log` VALUES (148, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 16:19:26');
-INSERT INTO `sys_oper_log` VALUES (149, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 16:28:20');
-INSERT INTO `sys_oper_log` VALUES (150, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 16:33:14');
-INSERT INTO `sys_oper_log` VALUES (151, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 16:39:32');
-INSERT INTO `sys_oper_log` VALUES (152, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"产品模型已存在,无需上传\",\"code\":500}', 0, NULL, '2022-03-25 17:07:16');
-INSERT INTO `sys_oper_log` VALUES (153, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'thinglinks', NULL, '/product/importProductJsonFile', '127.0.0.1', '', '123 123 1', '{\"msg\":\"{}\",\"code\":500}', 0, NULL, '2022-03-25 17:07:54');
-INSERT INTO `sys_oper_log` VALUES (154, '菜单管理', 1, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.add()', 'POST', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"orderNum\":\"6\",\"menuName\":\"产品管理导入\",\"params\":{},\"parentId\":1068,\"isCache\":\"0\",\"createBy\":\"admin\",\"children\":[],\"isFrame\":\"1\",\"menuType\":\"F\",\"perms\":\"link:product:import\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-25 18:04:08');
-INSERT INTO `sys_oper_log` VALUES (155, '产品管理', 5, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.export()', 'POST', 1, 'admin', NULL, '/product/export', '127.0.0.1', '', '{\"params\":{}}', NULL, 0, NULL, '2022-03-25 18:16:21');
-INSERT INTO `sys_oper_log` VALUES (156, '产品管理', 5, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.export()', 'POST', 1, 'admin', NULL, '/product/export', '127.0.0.1', '', '{\"params\":{}}', NULL, 0, NULL, '2022-03-28 09:25:37');
-INSERT INTO `sys_oper_log` VALUES (157, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'true', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-28 14:51:01');
-INSERT INTO `sys_oper_log` VALUES (158, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'true', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-28 15:09:41');
-INSERT INTO `sys_oper_log` VALUES (159, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-28 15:16:15');
-INSERT INTO `sys_oper_log` VALUES (160, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-28 15:21:28');
-INSERT INTO `sys_oper_log` VALUES (161, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'true thinglinks null 0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-28 15:41:29');
-INSERT INTO `sys_oper_log` VALUES (162, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'true thinglinks 1 1', NULL, 1, 'Could not open JDBC Connection for transaction; nested exception is com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure\n\nThe last packet successfully received from the server was 43,688 milliseconds ago. The last packet sent successfully to the server was 43,719 milliseconds ago.', '2022-03-28 15:46:00');
-INSERT INTO `sys_oper_log` VALUES (163, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'true thinglinks 1 0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-28 15:46:30');
-INSERT INTO `sys_oper_log` VALUES (164, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks null 0', '{\"msg\":\"产品模型已存在,无需上传\",\"code\":500}', 0, NULL, '2022-03-28 16:00:54');
-INSERT INTO `sys_oper_log` VALUES (165, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks null 0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-29 16:37:43');
-INSERT INTO `sys_oper_log` VALUES (166, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks null 0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-29 16:42:18');
-INSERT INTO `sys_oper_log` VALUES (167, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks null 0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-29 16:42:59');
-INSERT INTO `sys_oper_log` VALUES (168, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks null 0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-29 16:49:06');
-INSERT INTO `sys_oper_log` VALUES (169, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks null 0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-29 17:43:58');
-INSERT INTO `sys_oper_log` VALUES (170, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks null 0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-31 09:16:15');
-INSERT INTO `sys_oper_log` VALUES (171, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks null 0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-03-31 09:17:05');
-INSERT INTO `sys_oper_log` VALUES (172, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-31 09:23:14');
-INSERT INTO `sys_oper_log` VALUES (173, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"产品模型已存在,无需上传\",\"code\":500}', 0, NULL, '2022-03-31 09:29:16');
-INSERT INTO `sys_oper_log` VALUES (174, '产品管理', 3, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.remove()', 'DELETE', 1, 'admin', NULL, '/product/16', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-31 09:29:21');
-INSERT INTO `sys_oper_log` VALUES (175, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-03-31 09:33:54');
-INSERT INTO `sys_oper_log` VALUES (176, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-04-08 09:58:34');
-INSERT INTO `sys_oper_log` VALUES (177, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-04-08 10:08:50');
-INSERT INTO `sys_oper_log` VALUES (178, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-04-08 10:21:16');
-INSERT INTO `sys_oper_log` VALUES (179, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-04-08 10:32:39');
-INSERT INTO `sys_oper_log` VALUES (180, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-04-08 10:35:25');
 
 -- ----------------------------
 -- Table structure for sys_post
@@ -1827,13 +1617,14 @@ CREATE TABLE `sys_user`  (
   `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
 INSERT INTO `sys_user` VALUES (1, 103, 'admin', 'admin', '00', 'mqttsnet@163.com', '15888888888', '0', 'http://218.78.103.93:19300/statics/2021/10/23/fb0b1b4c-42e3-4b1b-966d-32efdae5e2e9.jpeg', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', '2021-09-17 18:39:57', 'admin', '2021-09-17 18:39:57', '', '2021-09-28 14:21:29', '管理员');
 INSERT INTO `sys_user` VALUES (3, 100, 'thinglinks', 'thinglinks', '00', 'mqttsnet@qq.com', '', '0', NULL, '$2a$10$oeiU9tYwmguNECk.RbslvuNz0s1bCEcVf5Hj/I1Fok8p0YWUthB3y', '0', '0', '', NULL, 'admin', '2021-10-21 17:03:52', 'thinglinks', '2022-01-11 20:40:43', NULL);
+INSERT INTO `sys_user` VALUES (999, 1, 'test', 'test', '00', 'test@163.com  m', '13211112222', '0', '', '$2a$10$E3oV9rc67TMNJ2m/51V2POXvyFsa7.OlR.VHWcGOVbXKBNWVav.a2', '0', '0', '', NULL, 'admin', '2022-04-10 20:28:25', '', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for sys_user_post
@@ -1870,12 +1661,12 @@ INSERT INTO `sys_user_role` VALUES (2, 2);
 INSERT INTO `sys_user_role` VALUES (3, 2);
 
 -- ----------------------------
--- Table structure for td_createTable_record
+-- Table structure for td_createStable_record
 -- ----------------------------
-DROP TABLE IF EXISTS `td_createTable_record`;
-CREATE TABLE `td_createTable_record`  (
+DROP TABLE IF EXISTS `td_createStable_record`;
+CREATE TABLE `td_createStable_record`  (
   `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `table_type` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '表类型•0：超级表。\r\n•1：子表。\r\n',
+  `table_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '表名',
   `sql_message` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT 'SQL报文',
   `execute_status` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '执行状态(成功 || 失败)',
   `execute_result` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '执行结果详情',
@@ -1884,11 +1675,12 @@ CREATE TABLE `td_createTable_record`  (
   `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
   `update_time` datetime(0) NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'TDengine创建表记录' ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `table_name`(`table_name`) USING BTREE COMMENT '超级表名'
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'TDengine创建超级表记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of td_createTable_record
+-- Records of td_createStable_record
 -- ----------------------------
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -1,7 +1,7 @@
 <template>
   <div :class="$style['app-content']">
     <div>
-      <span style=" font-weight: bold">业务数据采集项</span>
+      <span style=" font-weight: bold">设备影子数据采集</span>
       <el-tabs
         v-model="activeName"
         @tab-click="handleClick"

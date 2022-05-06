@@ -1,11 +1,24 @@
 import request from '@/utils/request'
 import { praseStrEmpty } from "@/utils/thinglinks";
 
-export class proOptions {
+export function proOptions()  {
+  return request({
+    url: '/api/tdengine/shadow/proOptions',
+    method: 'get',
+  })
 }
 
-export class dataList {
+export function dataList(query) {
+  return request({
+    url: '/api/tdengine/shadow/dataList',
+    method: 'get',
+    params: query
+  })
 }
 
-export class dataCharts {
+export function dataCharts() {
+  return request({
+    url: '/api/tdengine/shadow/dataCharts',
+    method: 'get',
+  })
 }

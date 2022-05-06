@@ -37,6 +37,16 @@ public interface DeviceInfoService {
 
     int batchInsert(List<DeviceInfo> list);
 
+
+
+	int deleteByDeviceId(String deviceId);
+
+
+
+	DeviceInfo findOneByDeviceId(String deviceId);
+
+
+
 }
 
 

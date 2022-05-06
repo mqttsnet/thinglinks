@@ -74,6 +74,22 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         return deviceInfoMapper.batchInsert(list);
     }
 
+	@Override
+	public int deleteByDeviceId(String deviceId){
+		 return deviceInfoMapper.deleteByDeviceId(deviceId);
+	}
+
+	@Override
+	public DeviceInfo findOneByDeviceId(String deviceId){
+		 return deviceInfoMapper.findOneByDeviceId(deviceId);
+	}
+
+
+
+
+
+
+
 }
 
 
