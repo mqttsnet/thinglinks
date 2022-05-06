@@ -17,3 +17,9 @@ export default  {
     }
 }
 </script>
+<style>
+body{
+  background:white;
+  margin: 0;
+}
+</style>
