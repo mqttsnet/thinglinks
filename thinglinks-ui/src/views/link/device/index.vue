@@ -8,16 +8,16 @@
           <span style="color:#71e2a3">{{ onlineCount }}</span>/
           <span style="color:#ff9292">{{ offlineCount }}</span>/
           <span style="color:#ffba00">{{ initCount }}</span>/
-          <span style="color:">{{ total }}</span>
+          <span>{{ total }}</span>
         </p>
       </div>
       <div class="status">
         <p>
           设备状态：
         </p>
-        <span>在线/</span>
-        <span>离线/</span>
-        <span>未连接/</span>
+        <span style="color:#71e2a3">在线/</span>
+        <span style="color:#ff9292">离线/</span>
+        <span style="color:#ffba00">未连接/</span>
         <span>全部</span>
       </div>
       <div class="Mqtt">
@@ -39,13 +39,7 @@
         </p>
       </div>
     </div>
-    <el-form
-      :model="queryParams"
-      ref="queryForm"
-      :inline="true"
-      v-show="showSearch"
-      label-width="100px"
-    >
+    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="客户端标识" prop="clientId">
         <el-input v-model="queryParams.clientId" placeholder="请输入客户端标识" clearable size="small"
           @keyup.enter.native="handleQuery" />
@@ -651,7 +645,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .equipment_status {
-  width: 75%;
+  width: 100%;
   margin: 0 0 10px 10px;
   padding: 20px 30px;
   background: #F8F8F9;
