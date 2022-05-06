@@ -67,4 +67,12 @@ public interface DeviceInfoMapper {
     int updateBatch(List<DeviceInfo> list);
 
     int batchInsert(@Param("list") List<DeviceInfo> list);
+
+    int deleteByDeviceId(@Param("deviceId")String deviceId);
+
+    DeviceInfo findOneByDeviceId(@Param("deviceId")String deviceId);
+
+
+
+
 }

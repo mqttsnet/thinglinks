@@ -1784,4 +1784,14 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         return zoneDateTime1.format(formatter);
     }
 
+    /**
+     * 取得当前时间戳（精确到毫秒秒）Long 类型
+     *
+     * @return
+     */
+    public static Long millisecondStampL() {
+        long ts = System.currentTimeMillis();
+        long thirtySec = 1000 * 30;
+        return ts + (thirtySec);
+    }
 }

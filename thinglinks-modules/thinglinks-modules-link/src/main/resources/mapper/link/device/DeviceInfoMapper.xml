@@ -604,4 +604,26 @@
       </if>
     </trim>
   </insert>
+
+<!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-05-05-->
+  <delete id="deleteByDeviceId">
+    delete from device_info
+    <where>
+      <if test="deviceId != null">
+        and device_id=#{deviceId,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </delete>
+
+<!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-05-05-->
+  <select id="findOneByDeviceId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from device_info
+        <where>
+            <if test="deviceId != null">
+                and device_id=#{deviceId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
 </mapper>

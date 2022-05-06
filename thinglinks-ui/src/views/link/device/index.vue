@@ -1,11 +1,5 @@
 <template>
   <div class="app-container">
-    <div class="equipment_status">
-      <p
-      >
-        设备状态：
-      </p>
-    </div>
     <el-form
       :model="queryParams"
       ref="queryForm"

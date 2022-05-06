@@ -1,9 +1,11 @@
 package com.mqttsnet.thinglinks.common.core.utils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.text.StrFormatter;
 import org.springframework.util.AntPathMatcher;
@@ -507,5 +509,19 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
             source = "";
         }
         return source;
+    }
+    /**
+     *
+     * 方法描述：jsonToMap
+     * @param jsonStr json字符串
+     * @return Map<String, Object> map对象
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes"})
+    public static Map<String, Object> jsonToMap(String jsonStr) {
+        Map<String, Object> paramMap = new HashMap<>();
+        if (jsonStr != null && !"".equals(jsonStr)) {
+            paramMap = (Map) JSON.parse(jsonStr);
+        }
+        return paramMap;
     }
 }

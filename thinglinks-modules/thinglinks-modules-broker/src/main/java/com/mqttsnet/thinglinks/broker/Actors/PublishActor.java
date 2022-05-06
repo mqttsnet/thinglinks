@@ -1,20 +1,16 @@
 package com.mqttsnet.thinglinks.broker.Actors;
 
-import io.github.quickmsg.common.annotation.AllowCors;
-import io.github.quickmsg.common.annotation.Header;
-import io.github.quickmsg.common.annotation.Router;
-import io.github.quickmsg.common.config.Configuration;
-import io.github.quickmsg.common.enums.HttpType;
-import io.github.quickmsg.common.message.HttpPublishMessage;
-import io.github.quickmsg.core.http.AbstractHttpActor;
+import cn.hutool.http.HttpRequest;
+import com.alibaba.fastjson.JSONObject;
+import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
-import reactor.netty.http.server.HttpServerRequest;
-import reactor.netty.http.server.HttpServerResponse;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * @Description: Broker推送设备消息
@@ -26,20 +22,28 @@ import java.nio.charset.StandardCharsets;
  * @UpdateRemark: 修改内容
  * @Version: 1.0
  */
-@Router(value = "/publish", type = HttpType.POST)
 @Slf4j
-@Header(key = "Content-Type", value = "application/json")
-@AllowCors
-public class PublishActor extends AbstractHttpActor {
+@RestController
+@RequestMapping("/publish")
+public class PublishActor{
 
-    @Override
-    public Publisher<Void> doRequest(HttpServerRequest request, HttpServerResponse response, Configuration configuration) {
-        return request
-                .receive()
-                .asString()
-                .map(this.toJson(HttpPublishMessage.class))
-                .doOnNext(message -> {
-                    //处理request
-                }).then(response.sendString(Mono.just("success")).then());
+    /**
+     * MQTT推送消息接口
+     * @param params
+     * @return
+     */
+    @PostMapping("/sendMessage")
+    public R sendMessage(@RequestBody Map<String, Object> params) {
+        log.info("MQTT Broker publish {}", params.toString());
+        JSONObject param = new JSONObject();
+        param.put("topic", params.get("topic"));
+        param.put("qos", Integer.valueOf(params.get("qos").toString()));
+        param.put("retain", Boolean.valueOf(params.get("retain").toString()));
+        param.put("message", String.valueOf(params.get("message")));
+        String result = HttpRequest.post("http://127.0.0.1:60000/smqtt/publish")
+                .header("Content-Type", "application/json;charset=UTF-8")
+                .body(param.toString())
+                .execute().body();
+        return R.ok();
     }
 }

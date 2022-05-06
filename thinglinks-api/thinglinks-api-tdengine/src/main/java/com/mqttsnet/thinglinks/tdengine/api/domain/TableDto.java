@@ -17,10 +17,15 @@ import java.util.List;
 public class TableDto extends BaseEntity{
 
     /**
+     * 超级表普通列字段的值
+     * 值需要与创建超级表时普通列字段的数据类型对应上
+     */
+    private List<Fields> schemaFieldValues;
+
+    /**
      * 超级表标签字段的值
      * 值需要与创建超级表时标签字段的数据类型对应上
      */
-    @NotEmpty(message = "invalid operation: fieldValues can not be empty")
     private List<Fields> tagsFieldValues;
 
     /**

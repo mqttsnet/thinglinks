@@ -26,8 +26,12 @@ public interface RemotePublishActorService {
     /**
      * 通知ThingLins MQTT Broker推送消息
      * @param params
+     * topic topic String	是
+     * qos 服务等级 Integer	是
+     * retain 保留消息  Boolean	是
+     * message 消息 String	是
      * @return
      */
-    @PostMapping("/sendMessage")
-    public R sendMessage(@RequestBody Map<String, String> params);
+    @PostMapping("/publish/sendMessage")
+    public R sendMessage(@RequestBody Map<String, Object> params);
 }
