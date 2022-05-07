@@ -23,8 +23,8 @@
       <div class="Mqtt">
         <p v-for="dict in dict.type.link_device_connector" :key="dict.value">
           MQTT连接地址：
-          <i style="cursor: pointer;" title="复制" class="el-icon-copy-document"></i>
-          {{ dict.label }}
+          <i style="cursor: pointer;" title="复制" class="el-icon-copy-document" @click="copy(dict.label)"></i>
+          <span>{{ dict.label }}</span>
         </p>
       </div>
       <div class="zhengshu">
@@ -132,7 +132,15 @@
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="客户端标识" align="center" prop="clientId" width="180" />
       <el-table-column label="用户名" align="center" prop="userName" width="180" />
-      <el-table-column label="密码" align="center" prop="password" width="180" />
+      <el-table-column label="密码" align="center" prop="password" width="180" >
+        <template slot-scope="scope">
+          <div disable="disable" style="width:100%;display:flex; justify-content: center;align-items:center">
+            <i style="cursor: pointer;" title="复制" class="el-icon-copy-document"
+              @click="copy(deviceList[scope.$index].password)"></i>
+            <el-input  class="inputDeep" v-model="deviceList[scope.$index].password" show-password ></el-input>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column label="认证方式" align="center" prop="authMode">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_auth_mode" :value="scope.row.authMode" />
@@ -230,7 +238,7 @@
         <el-row>
           <el-col :span="11">
             <el-form-item label="密码" prop="password">
-              <el-input v-model="form.password" placeholder="请输入密码" />
+              <el-input v-model="form.password" type="password" placeholder="请输入密码" />
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -367,7 +375,6 @@ import {
   updateDevice,
   disconnectDevice,
 } from "@/api/link/device";
-
 import mapView from "./mapView";
 export default {
   components: {
@@ -386,6 +393,10 @@ export default {
   ],
   data() {
     return {
+      //密码显示隐藏
+      passWord: "******",
+      flag: true,
+      index_x: [],
       // 高级搜索切换
       advancedSearch: false,
       // 高级搜索icon
@@ -482,6 +493,19 @@ export default {
     this.getList();
   },
   methods: {
+    // 复制
+    copy(shareLink) {
+      var input = document.createElement("input");
+      input.value = shareLink;
+      document.body.appendChild(input);
+      input.select()
+      document.execCommand("Copy");
+      document.body.removeChild(input);
+      this.$message({
+        message: '复制成功',
+        type: 'success'
+      });
+    },
     // 高级搜索切换显示隐藏
     advancedSearch_toggle() {
       this.advancedSearch = !this.advancedSearch;
@@ -507,6 +531,7 @@ export default {
     getList() {
       this.loading = true;
       listDevice(this.queryParams).then((response) => {
+        console.log(response);
         this.deviceList = response.data.device.rows;
         this.onlineCount = response.data.onlineCount
         this.offlineCount = response.data.offlineCount
@@ -686,11 +711,7 @@ export default {
   align-items: center;
 }
 
-/* .equipment_status .Mqtt {
-  width: 50%;
-  margin-left: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-} */
+.inputDeep{
+  border: 0 !important;
+}
 </style>
