@@ -293,7 +293,7 @@ public class DeviceServiceImpl implements DeviceService {
             //更新数据库设备状态
             Device device = new Device();
             device.setId(oneByClientId.getId());
-            device.setConnectStatus(DeviceConnectStatus.INIT.getValue());
+            device.setConnectStatus(DeviceConnectStatus.OFFLINE.getValue());
             device.setUpdateTime(DateUtils.getNowDate());
             deviceMapper.updateByPrimaryKeySelective(device);
         }
