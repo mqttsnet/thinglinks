@@ -81,8 +81,11 @@
           @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item v-if="advancedSearch" label="产品标识" prop="productIdentification">
-        <el-input v-model="queryParams.productIdentification" placeholder="请输入产品标识" clearable size="small"
-          @keyup.enter.native="handleQuery" />
+        <el-select v-model="form.productIdentification" placeholder="请选择产品标识">
+          <el-option v-for="item in productOptions" :key="item.productIdentification" :label="item.productName"
+            @keyup.enter.native="handleQuery" :value="item.productIdentification" :disabled="item.status === 0">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item v-if="advancedSearch" label="产品协议类型" prop="protocolType">
         <el-select v-model="queryParams.protocolType" placeholder="请选择产品协议类型" clearable size="small">
@@ -132,12 +135,15 @@
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="客户端标识" align="center" prop="clientId" width="180" />
       <el-table-column label="用户名" align="center" prop="userName" width="180" />
-      <el-table-column label="密码" align="center" prop="password" width="180" >
+      <el-table-column label="密码" align="center" prop="password" width="180">
         <template slot-scope="scope">
           <div disable="disable" style="width:100%;display:flex; justify-content: center;align-items:center">
             <i style="cursor: pointer;" title="复制" class="el-icon-copy-document"
               @click="copy(deviceList[scope.$index].password)"></i>
-            <el-input  class="inputDeep" v-model="deviceList[scope.$index].password" show-password ></el-input>
+            <span v-show="currentIndex != scope.$index" ref="start">********</span>
+            <span v-show="currentIndex == scope.$index" ref="pWord">{{ deviceList[scope.$index].password }}</span>
+            <i style="cursor: pointer;" :ind="scope.$index" class="el-icon-view"
+              @click="setShow(scope.$index, $event)"></i>
           </div>
         </template>
       </el-table-column>
@@ -153,8 +159,7 @@
           <dict-tag :options="dict.type.link_device_connector" :value="scope.row.connector" />
         </template>
       </el-table-column>
-      <el-table-column label="设备标签" align="center" prop="deviceTags" width="180"/>
-      <el-table-column label="产品标识" align="center" prop="productIdentification" width="180"/>
+      <el-table-column label="产品标识" align="center" prop="productIdentification" width="180" />
       <el-table-column label="产品协议类型" align="center" prop="protocolType" width="100">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.protocolType" />
@@ -180,6 +185,7 @@
           <dict-tag :options="dict.type.link_device_is_will" :value="scope.row.isWill" />
         </template>
       </el-table-column>
+      <el-table-column label="设备标签" align="center" prop="deviceTags" width="180" />
       <el-table-column label="设备描述" align="center" prop="deviceDescription" width="180" />
       <el-table-column label="创建者" align="center" prop="createBy" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
@@ -340,13 +346,8 @@
           <el-col :span="11">
             <el-form-item label="所属产品">
               <el-select v-model="form.productIdentification" placeholder="请选择所属产品">
-                <el-option
-                  v-for="item in productOptions"
-                  :key="item.productIdentification"
-                  :label="item.productName"
-                  :value="item.productIdentification"
-                  :disabled="item.status === 0"
-                ></el-option>
+                <el-option v-for="item in productOptions" :key="item.productIdentification" :label="item.productName"
+                  :value="item.productIdentification" :disabled="item.status === 0"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -400,10 +401,10 @@ export default {
   ],
   data() {
     return {
+      productOptions: [],
       //密码显示隐藏
-      passWord: "******",
-      flag: true,
-      index_x: [],
+      show: true,
+      currentIndex: null,
       // 高级搜索切换
       advancedSearch: false,
       // 高级搜索icon
@@ -498,8 +499,22 @@ export default {
   },
   created() {
     this.getList();
+    getDevice().then(response => {
+      this.productOptions = response.products;
+      this.title = "添加设备档案";
+    });
   },
   methods: {
+    //显示隐藏
+    setShow(index) {
+      if (this.show) {
+        this.currentIndex = index
+        this.show = false
+      } else {
+        this.currentIndex = null
+        this.show = true
+      }
+s    },
     // 复制
     copy(shareLink) {
       var input = document.createElement("input");
@@ -722,7 +737,7 @@ export default {
   align-items: center;
 }
 
-.inputDeep{
+.inputDeep {
   border: 0 !important;
 }
 </style>
