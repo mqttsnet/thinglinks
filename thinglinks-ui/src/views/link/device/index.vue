@@ -159,7 +159,6 @@
           <dict-tag :options="dict.type.link_device_connector" :value="scope.row.connector" />
         </template>
       </el-table-column>
-      <el-table-column label="设备标签" align="center" prop="deviceTags" width="180" />
       <el-table-column label="产品标识" align="center" prop="productIdentification" width="180" />
       <el-table-column label="产品协议类型" align="center" prop="protocolType" width="100">
         <template slot-scope="scope">
@@ -186,6 +185,7 @@
           <dict-tag :options="dict.type.link_device_is_will" :value="scope.row.isWill" />
         </template>
       </el-table-column>
+      <el-table-column label="设备标签" align="center" prop="deviceTags" width="180" />
       <el-table-column label="设备描述" align="center" prop="deviceDescription" width="180" />
       <el-table-column label="创建者" align="center" prop="createBy" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
