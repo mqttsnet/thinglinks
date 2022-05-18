@@ -4,6 +4,9 @@ spring:
     allow-bean-definition-overriding: true
   autoconfigure:
     exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 #请求处理的超时时间
 ribbon:
