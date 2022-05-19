@@ -52,7 +52,7 @@ export function disconnectDevice(id) {
   })
 }
 
-// 校验clientId是否存在
+/*// 校验clientId是否存在
 export function validationDeviceIdentification(clientId) {
   return request({
     url: '/link/device/validationfindOneByClientId/' + praseStrEmpty(clientId),
@@ -66,4 +66,4 @@ export function validationDeviceIdentification(deviceIdentification) {
     url: '/link/device/validationFindOneByDeviceIdentification/' + praseStrEmpty(deviceIdentification),
     method: 'get'
   })
-}
+}*/
