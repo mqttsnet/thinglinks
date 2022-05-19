@@ -112,10 +112,6 @@
           v-hasPermi="['link:device:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-          v-hasPermi="['link:device:edit']">修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
           v-hasPermi="['link:device:remove']">删除</el-button>
       </el-col>
@@ -207,8 +203,10 @@
               v-hasPermi="['link:device:remove']"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="light" content="子设备信息" placement="top">
-            <el-button circle size="mini" type="primary" icon="el-icon-s-operation" @click="handleUpdate(scope.row)"
-              v-hasPermi="['link:device:deviceInfo']"></el-button>
+            <router-link :to="'/link/device-data/deviceInfo'">
+              <el-button circle size="mini" type="primary" icon="el-icon-s-operation"
+                v-hasPermi="['link:device:deviceInfo']"></el-button>
+            </router-link>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -223,7 +221,8 @@
         <el-row>
           <el-col :span="11">
             <el-form-item label="客户端标识" prop="clientId">
-              <el-input v-model="form.clientId" placeholder="请输入客户端标识" />
+              <el-input v-model="form.clientId" :disabled='set ? true : false' @keyup.native="clientId"
+                placeholder="请输入客户端标识" />
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -257,7 +256,8 @@
           </el-col>
           <el-col :span="11">
             <el-form-item label="设备标识" prop="deviceIdentification">
-              <el-input v-model="form.deviceIdentification" placeholder="请输入设备标识" />
+              <el-input v-model="form.deviceIdentification" :disabled='set ? true : false'
+                @keyup.native="deviceIdentification" placeholder="请输入设备标识" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -374,6 +374,8 @@ import {
   addDevice,
   updateDevice,
   disconnectDevice,
+  validationDeviceIdentification_clientId,
+  validationDeviceIdentification_deviceIdentification
 } from "@/api/link/device";
 import mapView from "./mapView";
 export default {
@@ -487,6 +489,7 @@ export default {
       onlineCount: 0,  //在线设备
       offlineCount: 0,//离线设备
       initCount: 0,//未连接设备
+      set: false,//修改禁用标识
     };
   },
   created() {
@@ -497,6 +500,28 @@ export default {
     });
   },
   methods: {
+    //客户端标识校验
+    clientId() {
+      validationDeviceIdentification_clientId(this.form.clientId).then(res => {
+        if (res.msg == 'clientId可用') {
+          this.$message({
+            message: '客户端标识通过',
+            type: 'success'
+          });
+        }
+      })
+    },
+    //设备标识校验
+    deviceIdentification() {
+      validationDeviceIdentification_deviceIdentification(this.form.deviceIdentification).then(res => {
+        if (res.msg == '设备标识可用') {
+          this.$message({
+            message: '设备标识通过',
+            type: 'success'
+          });
+        }
+      })
+    },
     //显示隐藏
     setShow(index) {
       if (this.show) {
@@ -506,7 +531,8 @@ export default {
         this.currentIndex = null
         this.show = true
       }
-s    },
+      s
+    },
     // 复制
     copy(shareLink) {
       var input = document.createElement("input");
@@ -608,6 +634,7 @@ s    },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.set = false
       getDevice().then(response => {
         this.productOptions = response.products;
         this.open = true;
@@ -617,6 +644,7 @@ s    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.set = true;
       const id = row.id || this.ids;
       getDevice(id).then((response) => {
         this.form = response.data;

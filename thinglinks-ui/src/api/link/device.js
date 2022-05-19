@@ -52,8 +52,8 @@ export function disconnectDevice(id) {
   })
 }
 
-/*// 校验clientId是否存在
-export function validationDeviceIdentification(clientId) {
+// 校验clientId是否存在
+export function validationDeviceIdentification_clientId(clientId) {
   return request({
     url: '/link/device/validationfindOneByClientId/' + praseStrEmpty(clientId),
     method: 'get'
@@ -61,9 +61,9 @@ export function validationDeviceIdentification(clientId) {
 }
 
 // 校验设备标识是否存在
-export function validationDeviceIdentification(deviceIdentification) {
+export function validationDeviceIdentification_deviceIdentification(deviceIdentification) {
   return request({
     url: '/link/device/validationFindOneByDeviceIdentification/' + praseStrEmpty(deviceIdentification),
     method: 'get'
   })
-}*/
+}
