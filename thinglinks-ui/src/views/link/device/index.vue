@@ -133,6 +133,7 @@
     <el-table v-loading="loading" :data="deviceList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
+      <el-table-column label="设备标识" align="center" prop="deviceIdentification" width="180" />
       <el-table-column label="客户端标识" align="center" prop="clientId" width="180" />
       <el-table-column label="用户名" align="center" prop="userName" width="180" />
       <el-table-column label="密码" align="center" prop="password" width="180">
@@ -152,13 +153,7 @@
           <dict-tag :options="dict.type.link_device_auth_mode" :value="scope.row.authMode" />
         </template>
       </el-table-column>
-      <el-table-column label="设备标识" align="center" prop="deviceIdentification" width="180" />
       <el-table-column label="设备名称" align="center" prop="deviceName" width="180" />
-      <el-table-column label="连接实例" align="center" prop="connector" width="180">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_device_connector" :value="scope.row.connector" />
-        </template>
-      </el-table-column>
       <el-table-column label="产品标识" align="center" prop="productIdentification" width="180" />
       <el-table-column label="产品协议类型" align="center" prop="protocolType" width="100">
         <template slot-scope="scope">
@@ -185,8 +180,6 @@
           <dict-tag :options="dict.type.link_device_is_will" :value="scope.row.isWill" />
         </template>
       </el-table-column>
-      <el-table-column label="设备标签" align="center" prop="deviceTags" width="180" />
-      <el-table-column label="设备描述" align="center" prop="deviceDescription" width="180" />
       <el-table-column label="创建者" align="center" prop="createBy" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -203,7 +196,6 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="light" content="修改" placement="top">

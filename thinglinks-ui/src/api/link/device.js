@@ -51,3 +51,19 @@ export function disconnectDevice(id) {
     method: 'post'
   })
 }
+
+// 校验clientId是否存在
+export function validationDeviceIdentification(clientId) {
+  return request({
+    url: '/link/device/validationfindOneByClientId/' + praseStrEmpty(clientId),
+    method: 'get'
+  })
+}
+
+// 校验设备标识是否存在
+export function validationDeviceIdentification(deviceIdentification) {
+  return request({
+    url: '/link/device/validationFindOneByDeviceIdentification/' + praseStrEmpty(deviceIdentification),
+    method: 'get'
+  })
+}
