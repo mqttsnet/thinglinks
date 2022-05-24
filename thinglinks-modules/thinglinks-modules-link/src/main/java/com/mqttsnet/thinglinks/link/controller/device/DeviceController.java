@@ -166,6 +166,9 @@ public class DeviceController extends BaseController {
     @GetMapping(value = "/validationfindOneByClientId/{clientId}")
     public AjaxResult validationfindOneByClientId(@PathVariable("clientId") String clientId)
     {
+        if(StringUtils.isEmpty(clientId)){
+            return AjaxResult.error("clientId不可为空");
+        }
         Device findOneByClientId = deviceService.findOneByClientId(clientId);
         if (StringUtils.isNull(findOneByClientId)){
             return AjaxResult.success("clientId可用");
@@ -182,6 +185,9 @@ public class DeviceController extends BaseController {
     @GetMapping(value = "/validationFindOneByDeviceIdentification/{deviceIdentification}")
     public AjaxResult validationFindOneByDeviceIdentification(@PathVariable("deviceIdentification") String deviceIdentification)
     {
+        if(StringUtils.isEmpty(deviceIdentification)){
+            return AjaxResult.error("设备标识不可为空");
+        }
         Device findOneByDeviceIdentification = deviceService.findOneByDeviceIdentification(deviceIdentification);
         if (StringUtils.isNull(findOneByDeviceIdentification)){
             return AjaxResult.success("设备标识可用");
