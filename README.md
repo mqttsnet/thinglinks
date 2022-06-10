@@ -174,6 +174,6 @@ MQTT客户端C库: thinglinks-mqtt-c
 
 [感谢JetBrains官方提供免费 IDEA License](https://www.jetbrains.com)
 
-## 交流社区
+## 交流社区（二维码失效后可以添加作者WX: xiaonannet 邀请进群，备注：thinglinks）
 
-![image](doc/imgs/zsxq.jpg)
+![image](doc/imgs/wxsq.jpg)
