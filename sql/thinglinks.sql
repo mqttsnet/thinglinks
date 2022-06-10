@@ -13,6 +13,8 @@
 
  Date: 06/05/2022 16:59:14
 */
+CREATE database if NOT EXISTS `thinglinks` default character set utf8mb4 collate utf8mb4_general_ci;
+USE `thinglinks`;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
