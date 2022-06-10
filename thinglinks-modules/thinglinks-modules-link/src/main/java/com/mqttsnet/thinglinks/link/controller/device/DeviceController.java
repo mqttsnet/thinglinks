@@ -23,6 +23,7 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,7 @@ import com.mqttsnet.thinglinks.link.service.device.DeviceService;
  */
 @RestController
 @RequestMapping("/device")
+@Slf4j
 public class DeviceController extends BaseController {
     @Autowired
     private DeviceService deviceService;
@@ -146,18 +148,6 @@ public class DeviceController extends BaseController {
     }
 
     /**
-     * 设备认证接口
-     */
-    @GetMapping("/findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType")
-    public R<Device> findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(@RequestParam(value = "clientId", required = true) String clientId,
-                                                                                           @RequestParam(value = "userName", required = true) String userName,
-                                                                                           @RequestParam(value = "password", required = true) String password,
-                                                                                           @RequestParam(value = "deviceStatus", required = true) String deviceStatus,
-                                                                                           @RequestParam(value = "protocolType", required = true) String protocolType) {
-        return R.ok(deviceService.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientId, userName, password, deviceStatus, protocolType));
-    }
-
-    /**
      *校验clientId是否存在
      * @param clientId
      * @return
@@ -204,8 +194,28 @@ public class DeviceController extends BaseController {
     @PostMapping("/disconnect/{ids}")
     public AjaxResult disconnect(@PathVariable Long[] ids)
     {
-        deviceService.disconnect(ids);
-        return AjaxResult.success("操作成功");
+        final Boolean disconnect = deviceService.disconnect(ids);
+        return disconnect?AjaxResult.success("操作成功"):AjaxResult.error("操作失败");
     }
+
+    /**
+     * 客户端身份认证
+     * @param params
+     * @return
+     */
+    @PostMapping("/clientAuthentication")
+    public R<Boolean> clientAuthentication(@RequestBody Map<String, Object> params)
+    {
+        final Object clientIdentifier = params.get("clientIdentifier");
+        final Object username = params.get("username");
+        final Object password = params.get("password");
+        final Object deviceStatus = params.get("deviceStatus");
+        final Object protocolType = params.get("protocolType");
+        Boolean  certificationStatus= deviceService.clientAuthentication(clientIdentifier.toString(),username.toString(),password.toString(),deviceStatus.toString(),protocolType.toString());
+        log.info("{} 协议客户端:{} 正在进行身份认证,用户名:{},密码:{},认证结果:{}",protocolType,clientIdentifier,username,password,certificationStatus?"成功":"失败");
+        return certificationStatus?R.ok():R.fail();
+    }
+
+
 
 }

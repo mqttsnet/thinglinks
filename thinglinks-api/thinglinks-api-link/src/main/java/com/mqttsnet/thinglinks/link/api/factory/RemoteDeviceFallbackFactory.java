@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Map;
 
 /**
  * 设备管理服务降级处理
@@ -22,13 +25,13 @@ public class RemoteDeviceFallbackFactory implements FallbackFactory<RemoteDevice
         log.error("设备管理服务调用失败:{}", throwable.getMessage());
         return new RemoteDeviceService() {
             @Override
-            public R<Device> findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(String clientId, String userName, String password, String deviceStatus, String protocolType) {
-                return R.fail("认证接口失败:" + throwable.getMessage());
+            public R updateConnectStatusByClientId(Device device) {
+                return R.fail("更新设备在线状态失败:" + throwable.getMessage());
             }
 
             @Override
-            public R updateConnectStatusByClientId(Device device) {
-                return R.fail("更新设备在线状态失败:" + throwable.getMessage());
+            public R<Boolean> clientAuthentication(@RequestBody Map<String, Object> params) {
+                return R.fail("客户端身份认证:" + throwable.getMessage());
             }
         };
     }

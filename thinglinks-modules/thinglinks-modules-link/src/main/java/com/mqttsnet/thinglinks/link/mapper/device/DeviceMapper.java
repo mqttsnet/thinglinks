@@ -1,4 +1,5 @@
 package com.mqttsnet.thinglinks.link.mapper.device;
+import java.util.Collection;
 
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import org.apache.ibatis.annotations.Mapper;
@@ -156,6 +157,9 @@ public interface DeviceMapper {
 
 
     Long countDistinctClientIdByConnectStatus(@Param("connectStatus")String connectStatus);
+
+    List<Device> findAllByIdIn(@Param("idCollection")Collection<Long> idCollection);
+
 
 
 

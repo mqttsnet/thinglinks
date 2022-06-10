@@ -6,7 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,6 +43,17 @@ public class RemotePublishActorFallbackFactory implements FallbackFactory<Remote
             public R sendMessage(Map<String, Object> params) {
                 return R.fail("通知ThingLins MQTT Broker推送消息失败:" + throwable.getMessage());
             }
+
+            /**
+             * 通知ThingLins MQTT Broker断开链接
+             * @param clientIdentifiers  客户端ID
+             * @return
+             */
+            @Override
+            public R closeConnection(@RequestBody List<String> clientIdentifiers){
+                return R.fail("通知ThingLins MQTT Broker推送消息失败:" + throwable.getMessage());
+            }
+
         };
     }
 }

@@ -67,7 +67,7 @@ seata:
   service:
     # 虚拟组和分组的映射
     vgroup-mapping:
-      ruoyi-system-group: default
+      thinglinks-system-group: default
   config:
     type: nacos
     nacos:

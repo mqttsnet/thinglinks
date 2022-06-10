@@ -1,38 +1,32 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
-import com.alibaba.fastjson.JSON;
+import com.mqttsnet.thinglinks.broker.api.RemotePublishActorService;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
-import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
-import com.mqttsnet.thinglinks.link.service.product.ProductService;
-import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
-import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
-import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
-import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 设备管理业务层接口实现类
@@ -56,6 +50,8 @@ public class DeviceServiceImpl implements DeviceService {
     private TokenService tokenService;
     @Autowired
     private RedisService redisService;
+    @Resource
+    private RemotePublishActorService remotePublishActorService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -308,17 +304,49 @@ public class DeviceServiceImpl implements DeviceService {
      * @return
      */
     @Override
-    public int disconnect(Long[] ids) {
-        log.info("主动断开设备连接ID{}",ids);
-        //TODO 调用broker api实现mqtt设备断开连接
-
-        return 0;
+    public Boolean disconnect(Long[] ids) {
+        final List<Device> deviceList = deviceMapper.findAllByIdIn(Arrays.asList(ids));
+        if (StringUtils.isEmpty(deviceList)){
+            return false;
+        }
+        final List<String> clientIdentifiers = deviceList.stream().map(Device::getClientId).collect(Collectors.toList());
+        final R r = remotePublishActorService.closeConnection(clientIdentifiers);
+        log.info("主动断开设备ID: {} 连接 , Broker 处理结果: {}",clientIdentifiers,r.toString());
+        return r.getCode() == 200;
     }
 
 	@Override
 	public Long countDistinctClientIdByConnectStatus(String connectStatus){
 		 return deviceMapper.countDistinctClientIdByConnectStatus(connectStatus);
 	}
+
+    /**
+     * 客户端身份认证
+     * @param clientIdentifier 客户端
+     * @param username 用户名
+     * @param password 密码
+     * @param deviceStatus 设备状态
+     * @param protocolType 协议类型
+     * @return
+     */
+    @Override
+    public Boolean clientAuthentication(String clientIdentifier, String username, String password, String deviceStatus, String protocolType) {
+        final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, username, password, deviceStatus, protocolType);
+        if (Optional.ofNullable(device).isPresent()) {
+            //缓存设备信息
+            redisService.setCacheObject(Constants.DEVICE_RECORD_KEY+device.getClientId(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            //更改设备在线状态为在线
+            this.updateConnectStatusByClientId(DeviceConnectStatus.ONLINE.getValue(),clientIdentifier);
+            return true;
+        }
+        return false;
+    }
+
+	@Override
+	public List<Device> findAllByIdIn(Collection<Long> idCollection){
+		 return deviceMapper.findAllByIdIn(idCollection);
+	}
+
 
 
 

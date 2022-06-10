@@ -72,11 +72,11 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
-        <!-- TODO  https://github.com/quickmsg/smqtt  V1.1.2   -->
+        <!-- TODO  https://github.com/quickmsg/smqtt  V1.1.4   -->
         <dependency>
             <groupId>io.github.quickmsg</groupId>
             <artifactId>smqtt-spring-boot-starter</artifactId>
-            <version>1.1.2</version>
+            <version>1.1.4</version>
             <!-- 去除非必要版本 -->
             <exclusions>
                 <exclusion>

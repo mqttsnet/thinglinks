@@ -2,6 +2,9 @@
 FROM  openjdk:8-jre
 # author
 MAINTAINER thinglinks
+#指定时区
+RUN ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo Asia/Shanghai > /etc/timezone
 
 # 挂载目录
 VOLUME /www/wwwroot/thinglinks/thinglinks-server

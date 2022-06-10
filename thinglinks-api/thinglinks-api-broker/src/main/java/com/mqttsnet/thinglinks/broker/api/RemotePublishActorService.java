@@ -7,6 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,4 +35,13 @@ public interface RemotePublishActorService {
      */
     @PostMapping("/publish/sendMessage")
     public R sendMessage(@RequestBody Map<String, Object> params);
+
+
+    /**
+     * 通知ThingLins MQTT Broker断开链接
+     * @param clientIdentifiers  客户端ID
+     * @return
+     */
+    @PostMapping("/close/connection")
+    public R closeConnection(@RequestBody List<String> clientIdentifiers);
 }

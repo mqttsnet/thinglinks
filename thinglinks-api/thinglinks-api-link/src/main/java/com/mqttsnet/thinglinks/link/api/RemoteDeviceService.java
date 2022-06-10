@@ -2,10 +2,13 @@ package com.mqttsnet.thinglinks.link.api;
 
 import com.mqttsnet.thinglinks.common.core.constant.ServiceNameConstants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.factory.RemoteDeviceFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * 设备管理服务
@@ -16,23 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public interface RemoteDeviceService {
 
     /**
-     * 认证接口
-     *
-     * @param clientId
-     * @param userName
-     * @param password
-     * @param deviceStatus
-     * @param protocolType
-     * @return
-     */
-    @GetMapping("/device/findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType")
-    public R<Device> findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(@RequestParam(value = "clientId", required = true) String clientId,
-                                                                                           @RequestParam(value = "userName", required = true) String userName,
-                                                                                           @RequestParam(value = "password", required = true) String password,
-                                                                                           @RequestParam(value = "deviceStatus", required = true) String deviceStatus,
-                                                                                           @RequestParam(value = "protocolType", required = true) String protocolType);
-
-    /**
      * 更新设备在线状态
      *
      * @param device
@@ -40,5 +26,14 @@ public interface RemoteDeviceService {
      */
     @PutMapping("/device/updateConnectStatusByClientId")
     public R updateConnectStatusByClientId(@RequestBody Device device);
+
+
+    /**
+     * 客户端身份认证
+     * @param params
+     * @return
+     */
+    @PostMapping("/device/clientAuthentication")
+    public R<Boolean> clientAuthentication(@RequestBody Map<String, Object> params);
 
 }

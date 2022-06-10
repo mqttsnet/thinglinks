@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.link.service.device;
 
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -130,11 +131,26 @@ public interface DeviceService {
      * @param ids
      * @return
      */
-    int disconnect(Long[] ids);
+    Boolean disconnect(Long[] ids);
 
 
 
 	Long countDistinctClientIdByConnectStatus(String connectStatus);
+
+    /**
+     * 客户端身份认证
+     * @param clientIdentifier 客户端
+     * @param username 用户名
+     * @param password 密码
+     * @param deviceStatus 设备状态
+     * @param protocolType 协议类型
+     * @return
+     */
+    Boolean clientAuthentication(String clientIdentifier, String username, String password, String deviceStatus, String protocolType);
+
+
+
+	List<Device> findAllByIdIn(Collection<Long> idCollection);
 
 }
 

@@ -1266,4 +1266,20 @@
       </if>
     </where>
   </select>
+
+<!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-06-10-->
+  <select id="findAllByIdIn" resultMap="DeviceResult">
+        select
+        <include refid="Base_Column_List"/>
+        from device
+        <where>
+            <if test="idCollection != null and idCollection.size() > 0">
+                and id in
+                <foreach item="item" index="index" collection="idCollection"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>
