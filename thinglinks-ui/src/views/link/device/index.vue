@@ -194,20 +194,29 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="light" content="修改" placement="top">
-            <el-button circle size="mini" type="primary" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-              v-hasPermi="['link:device:edit']"></el-button>
-          </el-tooltip>
-          <el-tooltip class="item" effect="light" content="删除" placement="top">
-            <el-button circle size="mini" type="primary" icon="el-icon-delete" @click="handleDelete(scope.row)"
-              v-hasPermi="['link:device:remove']"></el-button>
-          </el-tooltip>
-          <el-tooltip class="item" effect="light" content="子设备信息" placement="top">
-            <router-link :to="'/link/device-data/deviceInfo'">
-              <el-button circle size="mini" type="primary" icon="el-icon-s-operation"
-                v-hasPermi="['link:device:deviceInfo']"></el-button>
-            </router-link>
-          </el-tooltip>
+          <span style="margin-right:10px">
+            <el-tooltip class="item" effect="light" content="修改" placement="top">
+              <el-button circle size="mini" type="primary" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                v-hasPermi="['link:device:edit']"></el-button>
+            </el-tooltip>
+          </span>
+
+          <span style="margin-right:10px">
+            <el-tooltip class="item" effect="light" content="删除" placement="top">
+              <el-button circle size="mini" type="primary" icon="el-icon-delete" @click="handleDelete(scope.row)"
+                v-hasPermi="['link:device:remove']"></el-button>
+            </el-tooltip>
+          </span>
+
+          <span style="margin-right:10px">
+            <el-tooltip class="item" effect="light" content="子设备信息" placement="top">
+              <router-link :to="'/link/device-data/deviceInfo'">
+                <el-button circle size="mini" type="primary" icon="el-icon-s-operation"
+                  v-hasPermi="['link:device:deviceInfo']"></el-button>
+              </router-link>
+            </el-tooltip>
+          </span>
+
         </template>
       </el-table-column>
     </el-table>
@@ -359,7 +368,8 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="primary" @click="submitForm"
+          :disabled="xinjian.clientId && xinjian.deviceIdentification ? false : true">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -490,6 +500,10 @@ export default {
       offlineCount: 0,//离线设备
       initCount: 0,//未连接设备
       set: false,//修改禁用标识
+      xinjian: {
+        clientId: false,
+        deviceIdentification: false
+      }
     };
   },
   created() {
@@ -504,10 +518,13 @@ export default {
     clientId() {
       validationDeviceIdentification_clientId(this.form.clientId).then(res => {
         if (res.msg == 'clientId可用') {
+          this.xinjian.clientId = true
           this.$message({
             message: '客户端标识通过',
             type: 'success'
           });
+        } else {
+          this.xinjian.clientId = false
         }
       })
     },
@@ -515,10 +532,13 @@ export default {
     deviceIdentification() {
       validationDeviceIdentification_deviceIdentification(this.form.deviceIdentification).then(res => {
         if (res.msg == '设备标识可用') {
+          this.xinjian.deviceIdentification = true
           this.$message({
             message: '设备标识通过',
             type: 'success'
           });
+        } else {
+          this.xinjian.deviceIdentification = false
         }
       })
     },
@@ -643,6 +663,10 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
+      this.xinjian = {
+        clientId: true,
+        deviceIdentification: true
+      }
       this.reset();
       this.set = true;
       const id = row.id || this.ids;
