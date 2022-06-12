@@ -7,7 +7,7 @@
         <p>：
           <span style="color:#71e2a3">{{ onlineCount }}</span>/
           <span style="color:#ff9292">{{ offlineCount }}</span>/
-          <span style="color:#ffba00">{{ initCount }}</span>/
+          <span style="color:#">{{ initCount }}</span>/
           <span>{{ total }}</span>
         </p>
       </div>
@@ -210,7 +210,7 @@
 
           <span style="margin-right:10px">
             <el-tooltip class="item" effect="light" content="子设备信息" placement="top">
-              <router-link :to="'/link/device-data/deviceInfo'">
+              <router-link :to="{ name: 'deviceInfo', query: { id: scope.row.id } }">
                 <el-button circle size="mini" type="primary" icon="el-icon-s-operation"
                   v-hasPermi="['link:device:deviceInfo']"></el-button>
               </router-link>
