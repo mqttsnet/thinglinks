@@ -86,11 +86,13 @@ com.mqttsnet.thinglinks
 
 ## 在线体验
 
+由于服务器近期频繁遭到境外IP暴力破解攻击，暂时关闭！
+
 - thinglinks/123456
 
 演示地址：http://thinglinks.mqttsnet.com/
 
-[相关技术资料及话题](https://t.zsxq.com/IeMZFMv)
+[相关技术资料及话题](https://bbs.csdn.net/forums/thinglinks?category=0)
 
 ## 功能开发计划
 

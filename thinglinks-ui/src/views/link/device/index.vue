@@ -7,7 +7,7 @@
         <p>：
           <span style="color:#71e2a3">{{ onlineCount }}</span>/
           <span style="color:#ff9292">{{ offlineCount }}</span>/
-          <span style="color:#">{{ initCount }}</span>/
+          <span style="color:#EEB422">{{ initCount }}</span>/
           <span>{{ total }}</span>
         </p>
       </div>

@@ -41,7 +41,7 @@ public class Fields {
         this.fieldName = fieldName;
         //根据规则匹配字段数据类型
         switch (dataType.toLowerCase()) {
-            case ("jsonobject"):
+            case ("jsonObject"):
             case ("string"):
                 this.dataType = DataTypeEnum.NCHAR;
                 this.size = size;
@@ -55,7 +55,7 @@ public class Fields {
             case ("decimal"):
                 this.dataType = DataTypeEnum.DOUBLE;
                 break;
-            case ("datetime"):
+            case ("dateTime"):
                 if ("eventTime".equals(fieldName))
                     this.fieldName = "eventTime";
                 this.dataType = DataTypeEnum.TIMESTAMP;

@@ -8,7 +8,7 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
 
 /**
- * @Description: java类作用描述
+ * @Description: 子设备档案接口实现
  * @Author: ShiHuan SUN
  * @E-mail: 13733918655@163.com
  * @Website: http://thinglinks.mqttsnet.com
