@@ -92,7 +92,7 @@ com.mqttsnet.thinglinks
 
 演示地址：http://thinglinks.mqttsnet.com/
 
-[相关技术资料及话题](https://bbs.csdn.net/forums/thinglinks?category=0)
+[相关技术资料及话题](https://bbs.csdn.net/forums/thinglinks)
 
 ## 功能开发计划
 

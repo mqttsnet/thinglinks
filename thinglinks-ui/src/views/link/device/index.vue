@@ -144,18 +144,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="认证方式" align="center" prop="authMode">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_device_auth_mode" :value="scope.row.authMode" />
-        </template>
-      </el-table-column>
       <el-table-column label="设备名称" align="center" prop="deviceName" width="180" />
-      <el-table-column label="产品标识" align="center" prop="productIdentification" width="180" />
-      <el-table-column label="产品协议类型" align="center" prop="protocolType" width="100">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.protocolType" />
-        </template>
-      </el-table-column>
       <el-table-column label="设备类型" align="center" prop="deviceType">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_device_type" :value="scope.row.deviceType" />
@@ -171,24 +160,11 @@
           <dict-tag :options="dict.type.link_device_connect_status" :value="scope.row.connectStatus" />
         </template>
       </el-table-column>
-      <el-table-column label="是否遗言" align="center" prop="isWill">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_device_is_will" :value="scope.row.isWill" />
-        </template>
-      </el-table-column>
       <el-table-column label="创建者" align="center" prop="createBy" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{
               parseTime(scope.row.createTime, "{y}-{m}-{d} {h}:{i}:{s}")
-          }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="更新者" align="center" prop="updateBy" />
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
-        <template slot-scope="scope">
-          <span>{{
-              parseTime(scope.row.updateTime, "{y}-{m}-{d} {h}:{i}:{s}")
           }}</span>
         </template>
       </el-table-column>

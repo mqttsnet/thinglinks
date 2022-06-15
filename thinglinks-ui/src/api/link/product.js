@@ -42,3 +42,12 @@ export function delProduct(id) {
     method: 'delete'
   })
 }
+
+// 快捷生成
+// export function generateProductJson(data) {
+//   return request({
+//     url: '/link/product/generateProductJson',
+//     method: 'post',
+//     data: data
+//   })
+// }

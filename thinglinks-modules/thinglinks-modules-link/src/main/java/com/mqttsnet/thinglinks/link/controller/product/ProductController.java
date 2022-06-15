@@ -1,5 +1,7 @@
 package com.mqttsnet.thinglinks.link.controller.product;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
@@ -180,5 +182,25 @@ public class ProductController extends BaseController {
         return AjaxResult.error("产品数据异常,请联系管理员");
     }
 
+    /**
+     * 快捷生成产品模型json数据
+     * @param content 模型json数据
+     * @param appId 应用ID
+     * @param templateId  产品模型模板ID
+     * @param status 状态(字典值：启用  停用)
+     * @return AjaxResult
+     * @throws Exception
+     */
+    @PreAuthorize(hasPermi = "link:product:generate")
+    @Log(title = "产品管理", businessType = BusinessType.INSERT)
+    @PostMapping("/generateProductJson")
+    public AjaxResult generateProductJson(String content,
+                                          String appId,
+                                          String templateId,
+                                          String status
+    ) throws Exception {
+        AjaxResult ajaxResult = productService.productJsonDataAnalysis(JSONObject.parseObject(content),appId,templateId,status);
+        return ajaxResult;
+    }
 
 }

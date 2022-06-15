@@ -238,6 +238,7 @@ public class ProductServiceImpl implements ProductService{
      * @param status 状态(字典值：启用  停用)
      * @return 解析结果
      */
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public AjaxResult productJsonDataAnalysis(JSONObject content,String appId,String templateId,String status) throws Exception{
         LoginUser loginUser = tokenService.getLoginUser();

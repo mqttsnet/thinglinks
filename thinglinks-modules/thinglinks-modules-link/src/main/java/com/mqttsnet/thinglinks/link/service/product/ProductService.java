@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.product;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -61,6 +62,17 @@ public interface ProductService{
     AjaxResult importProductJson(MultipartFile file,Boolean updateSupport,String appId,String templateId,String status) throws Exception;
 
 
+    /**
+     *
+     * 解析产品模型数据
+     * @param content 产品模型数据
+     * @param appId 应用ID
+     * @param templateId  产品模型模板ID
+     * @param status 状态(字典值：启用  停用)
+     * @return 解析结果
+     * @throws Exception
+     */
+    public AjaxResult productJsonDataAnalysis(JSONObject content, String appId, String templateId, String status) throws Exception;
 
     /**
      * 查询产品管理
