@@ -175,11 +175,17 @@
         <el-row>
           <el-col :span="22">
             <el-form-item label="规则名称" prop="v0">
-              <el-input v-model="form.v0" placeholder="请输入规则名称" />
+              <el-input placeholder="请输入规则名称" v-model="input3" class="input-with-select">
+                <el-select v-model="form.v0" slot="prepend" placeholder="请选择">
+                  <el-option label="clientId" value="1"></el-option>
+                  <el-option label="IP网段" value="2"></el-option>
+                  <el-option label="all" value="3"></el-option>
+                </el-select>
+              </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip class="item" effect="light" content="规则名称支持类型如下：clientId（限制clientId）、ip（限制ip及网段）、all（限制所有）"
+            <el-tooltip class="item" effect="light" content="规则名称支持类型如下：clientId（限制clientId）、IP网段（限制ip或网段）、all（限制所有）"
                         placement="right-start">
               <i class="el-icon-question" />
             </el-tooltip>

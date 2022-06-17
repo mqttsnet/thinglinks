@@ -1,10 +1,11 @@
 package com.mqttsnet.thinglinks.link.service.device;
 
-import java.util.List;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction;
 
+import java.util.List;
+
 /**
- * @Description: java类作用描述
+ * @Description: 设备动作数据Service接口
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
  * @Website: http://thinglinks.mqttsnet.com
@@ -56,6 +57,54 @@ public interface DeviceActionService {
      * @param thinglinksMessage
      */
     void closeEvent(String thinglinksMessage);
+
+    /**
+     * 查询设备动作数据
+     *
+     * @param id 设备动作数据主键
+     * @return 设备动作数据
+     */
+    public DeviceAction selectDeviceActionById(Long id);
+
+    /**
+     * 查询设备动作数据列表
+     *
+     * @param deviceAction 设备动作数据
+     * @return 设备动作数据集合
+     */
+    public List<DeviceAction> selectDeviceActionList(DeviceAction deviceAction);
+
+    /**
+     * 新增设备动作数据
+     *
+     * @param deviceAction 设备动作数据
+     * @return 结果
+     */
+    public int insertDeviceAction(DeviceAction deviceAction);
+
+    /**
+     * 修改设备动作数据
+     *
+     * @param deviceAction 设备动作数据
+     * @return 结果
+     */
+    public int updateDeviceAction(DeviceAction deviceAction);
+
+    /**
+     * 批量删除设备动作数据
+     *
+     * @param ids 需要删除的设备动作数据主键集合
+     * @return 结果
+     */
+    public int deleteDeviceActionByIds(Long[] ids);
+
+    /**
+     * 删除设备动作数据信息
+     *
+     * @param id 设备动作数据主键
+     * @return 结果
+     */
+    public int deleteDeviceActionById(Long id);
 
 }
 

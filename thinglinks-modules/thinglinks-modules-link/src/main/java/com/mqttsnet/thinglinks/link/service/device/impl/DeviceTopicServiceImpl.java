@@ -1,13 +1,15 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import com.mqttsnet.thinglinks.link.mapper.device.DeviceTopicMapper;
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
-import java.util.List;
+import com.mqttsnet.thinglinks.link.mapper.device.DeviceTopicMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceTopicService;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 /**
-* @Description: java类作用描述
+* @Description: 设备Topic数据Service业务层处理
 * @Author: ShiHuan SUN
 * @E-mail: 13733918655@163.com
 * @Website: http://thinglinks.mqttsnet.com
@@ -78,4 +80,78 @@ public class DeviceTopicServiceImpl implements DeviceTopicService{
         return deviceTopicMapper.batchInsert(list);
     }
 
+
+    /**
+     * 查询设备Topic数据
+     *
+     * @param id 设备Topic数据主键
+     * @return 设备Topic数据
+     */
+    @Override
+    public DeviceTopic selectDeviceTopicById(Long id)
+    {
+        return deviceTopicMapper.selectDeviceTopicById(id);
+    }
+
+    /**
+     * 查询设备Topic数据列表
+     *
+     * @param deviceTopic 设备Topic数据
+     * @return 设备Topic数据
+     */
+    @Override
+    public List<DeviceTopic> selectDeviceTopicList(DeviceTopic deviceTopic)
+    {
+        return deviceTopicMapper.selectDeviceTopicList(deviceTopic);
+    }
+
+    /**
+     * 新增设备Topic数据
+     *
+     * @param deviceTopic 设备Topic数据
+     * @return 结果
+     */
+    @Override
+    public int insertDeviceTopic(DeviceTopic deviceTopic)
+    {
+        deviceTopic.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
+        return deviceTopicMapper.insertDeviceTopic(deviceTopic);
+    }
+
+    /**
+     * 修改设备Topic数据
+     *
+     * @param deviceTopic 设备Topic数据
+     * @return 结果
+     */
+    @Override
+    public int updateDeviceTopic(DeviceTopic deviceTopic)
+    {
+        deviceTopic.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
+        return deviceTopicMapper.updateDeviceTopic(deviceTopic);
+    }
+
+    /**
+     * 批量删除设备Topic数据
+     *
+     * @param ids 需要删除的设备Topic数据主键
+     * @return 结果
+     */
+    @Override
+    public int deleteDeviceTopicByIds(Long[] ids)
+    {
+        return deviceTopicMapper.deleteDeviceTopicByIds(ids);
+    }
+
+    /**
+     * 删除设备Topic数据信息
+     *
+     * @param id 设备Topic数据主键
+     * @return 结果
+     */
+    @Override
+    public int deleteDeviceTopicById(Long id)
+    {
+        return deviceTopicMapper.deleteDeviceTopicById(id);
+    }
 }

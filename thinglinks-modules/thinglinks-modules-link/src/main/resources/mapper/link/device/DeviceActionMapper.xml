@@ -19,6 +19,9 @@
     <!--@mbg.generated-->
     id, device_identification, action_type, `status`, create_time
   </sql>
+  <sql id="selectDeviceActionVo">
+    select id, device_identification, action_type, message, status, create_time from device_action
+  </sql>
   <sql id="Blob_Column_List">
     <!--@mbg.generated-->
     `message`
@@ -355,4 +358,59 @@
       </if>
     </trim>
   </insert>
+  <select id="selectDeviceActionList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction" resultMap="BaseResultMap">
+    <include refid="selectDeviceActionVo"/>
+    <where>
+      <if test="deviceIdentification != null  and deviceIdentification != ''"> and device_identification = #{deviceIdentification}</if>
+      <if test="actionType != null  and actionType != ''"> and action_type = #{actionType}</if>
+      <if test="message != null  and message != ''"> and message = #{message}</if>
+      <if test="status != null  and status != ''"> and status = #{status}</if>
+    </where>
+  </select>
+
+  <select id="selectDeviceActionById" parameterType="Long" resultMap="BaseResultMap">
+    <include refid="selectDeviceActionVo"/>
+    where id = #{id}
+  </select>
+
+  <insert id="insertDeviceAction" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction" useGeneratedKeys="true" keyProperty="id">
+    insert into device_action
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="deviceIdentification != null">device_identification,</if>
+      <if test="actionType != null">action_type,</if>
+      <if test="message != null">message,</if>
+      <if test="status != null">status,</if>
+      <if test="createTime != null">create_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="deviceIdentification != null">#{deviceIdentification},</if>
+      <if test="actionType != null">#{actionType},</if>
+      <if test="message != null">#{message},</if>
+      <if test="status != null">#{status},</if>
+      <if test="createTime != null">#{createTime},</if>
+    </trim>
+  </insert>
+
+  <update id="updateDeviceAction" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction">
+    update device_action
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="deviceIdentification != null">device_identification = #{deviceIdentification},</if>
+      <if test="actionType != null">action_type = #{actionType},</if>
+      <if test="message != null">message = #{message},</if>
+      <if test="status != null">status = #{status},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+    </trim>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteDeviceActionById" parameterType="Long">
+    delete from device_action where id = #{id}
+  </delete>
+
+  <delete id="deleteDeviceActionByIds" parameterType="String">
+    delete from device_action where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

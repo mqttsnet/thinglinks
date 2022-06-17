@@ -2,20 +2,21 @@ package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction;
+import com.mqttsnet.thinglinks.link.mapper.device.DeviceActionMapper;
+import com.mqttsnet.thinglinks.link.service.device.DeviceActionService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mqttsnet.thinglinks.link.mapper.device.DeviceActionMapper;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction;
-import com.mqttsnet.thinglinks.link.service.device.DeviceActionService;
-
 /**
- * @Description: java类作用描述
+ * @Description: 设备动作数据Service业务层处理
  * @Author: ShiHuan Sun
  * @E-mail: 13733918655@163.com
  * @Website: http://thinglinks.mqttsnet.com
@@ -135,6 +136,80 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         deviceAction.setMessage("Device Disconnection");
         deviceAction.setCreateTime(LocalDateTimeUtil.now());
         deviceActionMapper.insert(deviceAction);
+    }
+
+
+    /**
+     * 查询设备动作数据
+     *
+     * @param id 设备动作数据主键
+     * @return 设备动作数据
+     */
+    @Override
+    public DeviceAction selectDeviceActionById(Long id)
+    {
+        return deviceActionMapper.selectDeviceActionById(id);
+    }
+
+    /**
+     * 查询设备动作数据列表
+     *
+     * @param deviceAction 设备动作数据
+     * @return 设备动作数据
+     */
+    @Override
+    public List<DeviceAction> selectDeviceActionList(DeviceAction deviceAction)
+    {
+        return deviceActionMapper.selectDeviceActionList(deviceAction);
+    }
+
+    /**
+     * 新增设备动作数据
+     *
+     * @param deviceAction 设备动作数据
+     * @return 结果
+     */
+    @Override
+    public int insertDeviceAction(DeviceAction deviceAction)
+    {
+        deviceAction.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
+        return deviceActionMapper.insertDeviceAction(deviceAction);
+    }
+
+    /**
+     * 修改设备动作数据
+     *
+     * @param deviceAction 设备动作数据
+     * @return 结果
+     */
+    @Override
+    public int updateDeviceAction(DeviceAction deviceAction)
+    {
+        return deviceActionMapper.updateDeviceAction(deviceAction);
+    }
+
+    /**
+     * 批量删除设备动作数据
+     *
+     * @param ids 需要删除的设备动作数据主键
+     * @return 结果
+     */
+    @Override
+    public int deleteDeviceActionByIds(Long[] ids)
+    {
+        return deviceActionMapper.deleteDeviceActionByIds(ids);
+    }
+
+    /**
+     * 删除设备动作数据信息
+     *
+     * @param id 设备动作数据主键
+     * @return 结果
+     */
+    @Override
+    public int deleteDeviceActionById(Long id)
+    {
+        return deviceActionMapper.deleteDeviceActionById(id);
     }
 
 }

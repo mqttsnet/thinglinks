@@ -3,7 +3,7 @@
 <mapper namespace="com.mqttsnet.thinglinks.link.mapper.device.DeviceTopicMapper">
   <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic">
     <!--@mbg.generated-->
-    <!--@Table thinglinks.device_topic-->
+    <!--@Table device_topic-->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="device_identification" jdbcType="VARCHAR" property="device_identification" />
     <result column="type" jdbcType="VARCHAR" property="type" />
@@ -21,21 +21,25 @@
     id, device_identification, `type`, topic, publisher, subscriber, create_by, create_time, 
     update_by, update_time, remark
   </sql>
+
+  <sql id="selectDeviceTopicVo">
+    select id, device_identification, type, topic, publisher, subscriber, create_by, create_time, update_by, update_time, remark from device_topic
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select 
     <include refid="Base_Column_List" />
-    from thinglinks.device_topic
+    from device_topic
     where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     <!--@mbg.generated-->
-    delete from thinglinks.device_topic
+    delete from device_topic
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into thinglinks.device_topic (device_identification, `type`, topic, 
+    insert into device_topic (device_identification, `type`, topic, 
       publisher, subscriber, create_by, 
       create_time, update_by, update_time, 
       remark)
@@ -46,7 +50,7 @@
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into thinglinks.device_topic
+    insert into device_topic
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="device_identification != null">
         device_identification,
@@ -114,7 +118,7 @@
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic">
     <!--@mbg.generated-->
-    update thinglinks.device_topic
+    update device_topic
     <set>
       <if test="device_identification != null">
         device_identification = #{device_identification,jdbcType=VARCHAR},
@@ -151,7 +155,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic">
     <!--@mbg.generated-->
-    update thinglinks.device_topic
+    update device_topic
     set device_identification = #{device_identification,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
       topic = #{topic,jdbcType=VARCHAR},
@@ -166,7 +170,7 @@
   </update>
   <update id="updateBatch" parameterType="java.util.List">
     <!--@mbg.generated-->
-    update thinglinks.device_topic
+    update device_topic
     <trim prefix="set" suffixOverrides=",">
       <trim prefix="device_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
@@ -226,7 +230,7 @@
   </update>
   <update id="updateBatchSelective" parameterType="java.util.List">
     <!--@mbg.generated-->
-    update thinglinks.device_topic
+    update device_topic
     <trim prefix="set" suffixOverrides=",">
       <trim prefix="device_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
@@ -306,7 +310,7 @@
   </update>
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into thinglinks.device_topic
+    insert into device_topic
     (device_identification, `type`, topic, publisher, subscriber, create_by, create_time, 
       update_by, update_time, remark)
     values
@@ -319,7 +323,7 @@
   </insert>
   <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into thinglinks.device_topic
+    insert into device_topic
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -370,7 +374,7 @@
   </insert>
   <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into thinglinks.device_topic
+    insert into device_topic
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -479,4 +483,75 @@
       </if>
     </trim>
   </insert>
+  <select id="selectDeviceTopicList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic" resultMap="BaseResultMap">
+    <include refid="selectDeviceTopicVo"/>
+    <where>
+      <if test="deviceIdentification != null  and deviceIdentification != ''"> and device_identification = #{deviceIdentification}</if>
+      <if test="type != null  and type != ''"> and type = #{type}</if>
+      <if test="topic != null  and topic != ''"> and topic = #{topic}</if>
+      <if test="publisher != null  and publisher != ''"> and publisher = #{publisher}</if>
+      <if test="subscriber != null  and subscriber != ''"> and subscriber = #{subscriber}</if>
+    </where>
+  </select>
+
+  <select id="selectDeviceTopicById" parameterType="Long" resultMap="BaseResultMap">
+    <include refid="selectDeviceTopicVo"/>
+    where id = #{id}
+  </select>
+
+  <insert id="insertDeviceTopic" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic" useGeneratedKeys="true" keyProperty="id">
+    insert into device_topic
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="deviceIdentification != null and deviceIdentification != ''">device_identification,</if>
+      <if test="type != null">type,</if>
+      <if test="topic != null">topic,</if>
+      <if test="publisher != null">publisher,</if>
+      <if test="subscriber != null">subscriber,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+      <if test="remark != null">remark,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="deviceIdentification != null and deviceIdentification != ''">#{deviceIdentification},</if>
+      <if test="type != null">#{type},</if>
+      <if test="topic != null">#{topic},</if>
+      <if test="publisher != null">#{publisher},</if>
+      <if test="subscriber != null">#{subscriber},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+      <if test="remark != null">#{remark},</if>
+    </trim>
+  </insert>
+
+  <update id="updateDeviceTopic" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic">
+    update device_topic
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="deviceIdentification != null and deviceIdentification != ''">device_identification = #{deviceIdentification},</if>
+      <if test="type != null">type = #{type},</if>
+      <if test="topic != null">topic = #{topic},</if>
+      <if test="publisher != null">publisher = #{publisher},</if>
+      <if test="subscriber != null">subscriber = #{subscriber},</if>
+      <if test="createBy != null">create_by = #{createBy},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+      <if test="updateBy != null">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+      <if test="remark != null">remark = #{remark},</if>
+    </trim>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteDeviceTopicById" parameterType="Long">
+    delete from device_topic where id = #{id}
+  </delete>
+
+  <delete id="deleteDeviceTopicByIds" parameterType="String">
+    delete from device_topic where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

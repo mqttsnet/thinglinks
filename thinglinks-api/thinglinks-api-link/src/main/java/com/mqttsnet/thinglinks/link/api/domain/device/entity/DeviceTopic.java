@@ -2,9 +2,10 @@ package com.mqttsnet.thinglinks.link.api.domain.device.entity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import lombok.Data;
 
 /**
 * @Description: java类作用描述
@@ -30,7 +31,7 @@ public class DeviceTopic implements Serializable {
     * 设备标识
     */
     @ApiModelProperty(value="设备标识")
-    private String device_identification;
+    private String deviceIdentification;
 
     /**
     * 类型(0:基础Topic,1:自定义Topic)
@@ -60,25 +61,25 @@ public class DeviceTopic implements Serializable {
     * 创建者
     */
     @ApiModelProperty(value="创建者")
-    private String create_by;
+    private String createBy;
 
     /**
     * 创建时间
     */
     @ApiModelProperty(value="创建时间")
-    private LocalDateTime create_time;
+    private LocalDateTime createTime;
 
     /**
     * 更新者
     */
     @ApiModelProperty(value="更新者")
-    private String update_by;
+    private String updateBy;
 
     /**
     * 更新时间
     */
     @ApiModelProperty(value="更新时间")
-    private LocalDateTime update_time;
+    private LocalDateTime updateTime;
 
     /**
     * 备注

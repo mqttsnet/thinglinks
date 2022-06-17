@@ -3,7 +3,7 @@ package com.mqttsnet.thinglinks.link.service.device;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
 import java.util.List;
     /**
-* @Description: java类作用描述
+* @Description: 设备Topic数据Service接口
 * @Author: ShiHuan SUN
 * @E-mail: 13733918655@163.com
 * @Website: http://thinglinks.mqttsnet.com
@@ -37,5 +37,53 @@ public interface DeviceTopicService{
     int updateBatchSelective(List<DeviceTopic> list);
 
     int batchInsert(List<DeviceTopic> list);
+
+        /**
+         * 查询设备Topic数据
+         *
+         * @param id 设备Topic数据主键
+         * @return 设备Topic数据
+         */
+        public DeviceTopic selectDeviceTopicById(Long id);
+
+        /**
+         * 查询设备Topic数据列表
+         *
+         * @param deviceTopic 设备Topic数据
+         * @return 设备Topic数据集合
+         */
+        public List<DeviceTopic> selectDeviceTopicList(DeviceTopic deviceTopic);
+
+        /**
+         * 新增设备Topic数据
+         *
+         * @param deviceTopic 设备Topic数据
+         * @return 结果
+         */
+        public int insertDeviceTopic(DeviceTopic deviceTopic);
+
+        /**
+         * 修改设备Topic数据
+         *
+         * @param deviceTopic 设备Topic数据
+         * @return 结果
+         */
+        public int updateDeviceTopic(DeviceTopic deviceTopic);
+
+        /**
+         * 批量删除设备Topic数据
+         *
+         * @param ids 需要删除的设备Topic数据主键集合
+         * @return 结果
+         */
+        public int deleteDeviceTopicByIds(Long[] ids);
+
+        /**
+         * 删除设备Topic数据信息
+         *
+         * @param id 设备Topic数据主键
+         * @return 结果
+         */
+        public int deleteDeviceTopicById(Long id);
 
 }
