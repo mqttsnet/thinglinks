@@ -1,9 +1,10 @@
-package com.mqttsnet.thinglinks.link.mapper.device;
+package com.mqttsnet.thinglinks.link.mapper.casbinRule;
 
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule;
-import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @Description: java类作用描述
@@ -69,4 +70,52 @@ public interface CasbinRuleMapper {
     int updateBatchSelective(List<CasbinRule> list);
 
     int batchInsert(@Param("list") List<CasbinRule> list);
+
+    /**
+     * 查询CAS规则管理
+     *
+     * @param id CAS规则管理主键
+     * @return CAS规则管理
+     */
+    public CasbinRule selectCasbinRuleById(Long id);
+
+    /**
+     * 查询CAS规则管理列表
+     *
+     * @param casbinRule CAS规则管理
+     * @return CAS规则管理集合
+     */
+    public List<CasbinRule> selectCasbinRuleList(CasbinRule casbinRule);
+
+    /**
+     * 新增CAS规则管理
+     *
+     * @param casbinRule CAS规则管理
+     * @return 结果
+     */
+    public int insertCasbinRule(CasbinRule casbinRule);
+
+    /**
+     * 修改CAS规则管理
+     *
+     * @param casbinRule CAS规则管理
+     * @return 结果
+     */
+    public int updateCasbinRule(CasbinRule casbinRule);
+
+    /**
+     * 删除CAS规则管理
+     *
+     * @param id CAS规则管理主键
+     * @return 结果
+     */
+    public int deleteCasbinRuleById(Long id);
+
+    /**
+     * 批量删除CAS规则管理
+     *
+     * @param ids 需要删除的数据主键集合
+     * @return 结果
+     */
+    public int deleteCasbinRuleByIds(Long[] ids);
 }

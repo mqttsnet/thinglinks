@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mqttsnet.thinglinks.link.mapper.device.CasbinRuleMapper">
+<mapper namespace="com.mqttsnet.thinglinks.link.mapper.casbinRule.CasbinRuleMapper">
   <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule">
     <!--@mbg.generated-->
     <!--@Table thinglinks.casbin_rule-->
@@ -16,6 +16,9 @@
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, ptype, v0, v1, v2, v3, v4, v5
+  </sql>
+  <sql id="selectCasbinRuleVo">
+    select id, ptype, v0, v1, v2, v3, v4, v5 from casbin_rule
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -369,4 +372,66 @@
       </if>
     </trim>
   </insert>
+  <select id="selectCasbinRuleList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" resultMap="BaseResultMap">
+    <include refid="selectCasbinRuleVo"/>
+    <where>
+      <if test="ptype != null  and ptype != ''"> and ptype = #{ptype}</if>
+      <if test="v0 != null  and v0 != ''"> and v0 = #{v0}</if>
+      <if test="v1 != null  and v1 != ''"> and v1 = #{v1}</if>
+      <if test="v2 != null  and v2 != ''"> and v2 = #{v2}</if>
+      <if test="v3 != null  and v3 != ''"> and v3 = #{v3}</if>
+    </where>
+  </select>
+
+  <select id="selectCasbinRuleById" parameterType="Long" resultMap="BaseResultMap">
+    <include refid="selectCasbinRuleVo"/>
+    where id = #{id}
+  </select>
+
+  <insert id="insertCasbinRule" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" useGeneratedKeys="true" keyProperty="id">
+    insert into casbin_rule
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="ptype != null and ptype != ''">ptype,</if>
+      <if test="v0 != null">v0,</if>
+      <if test="v1 != null">v1,</if>
+      <if test="v2 != null">v2,</if>
+      <if test="v3 != null">v3,</if>
+      <if test="v4 != null">v4,</if>
+      <if test="v5 != null">v5,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="ptype != null and ptype != ''">#{ptype},</if>
+      <if test="v0 != null">#{v0},</if>
+      <if test="v1 != null">#{v1},</if>
+      <if test="v2 != null">#{v2},</if>
+      <if test="v3 != null">#{v3},</if>
+      <if test="v4 != null">#{v4},</if>
+      <if test="v5 != null">#{v5},</if>
+    </trim>
+  </insert>
+
+  <update id="updateCasbinRule" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule">
+    update casbin_rule
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="ptype != null and ptype != ''">ptype = #{ptype},</if>
+      <if test="v0 != null">v0 = #{v0},</if>
+      <if test="v1 != null">v1 = #{v1},</if>
+      <if test="v2 != null">v2 = #{v2},</if>
+      <if test="v3 != null">v3 = #{v3},</if>
+      <if test="v4 != null">v4 = #{v4},</if>
+      <if test="v5 != null">v5 = #{v5},</if>
+    </trim>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteCasbinRuleById" parameterType="Long">
+    delete from casbin_rule where id = #{id}
+  </delete>
+
+  <delete id="deleteCasbinRuleByIds" parameterType="String">
+    delete from casbin_rule where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

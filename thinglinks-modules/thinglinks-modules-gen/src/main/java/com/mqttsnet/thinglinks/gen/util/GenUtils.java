@@ -1,13 +1,13 @@
 package com.mqttsnet.thinglinks.gen.util;
 
-import java.util.Arrays;
-
 import com.mqttsnet.thinglinks.common.core.constant.GenConstants;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
-import org.apache.commons.lang3.RegExUtils;
 import com.mqttsnet.thinglinks.gen.config.GenConfig;
 import com.mqttsnet.thinglinks.gen.domain.GenTable;
 import com.mqttsnet.thinglinks.gen.domain.GenTableColumn;
+import org.apache.commons.lang3.RegExUtils;
+
+import java.util.Arrays;
 
 /**
  * 代码生成器 工具类
@@ -217,7 +217,7 @@ public class GenUtils
      */
     public static String replaceText(String text)
     {
-        return RegExUtils.replaceAll(text, "(?:表|MQTTS)", "");
+        return RegExUtils.replaceAll(text, "(?:表|ThingLinks)", "");
     }
 
     /**

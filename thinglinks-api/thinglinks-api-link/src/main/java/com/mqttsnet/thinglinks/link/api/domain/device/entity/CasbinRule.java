@@ -1,9 +1,11 @@
 package com.mqttsnet.thinglinks.link.api.domain.device.entity;
 
+import com.mqttsnet.thinglinks.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
 * @Description: java类作用描述
@@ -21,7 +23,7 @@ import lombok.Data;
     */
 @ApiModel(value="CAS规则策略配置表")
 @Data
-public class CasbinRule implements Serializable {
+public class CasbinRule extends BaseEntity implements Serializable {
     /**
     * id
     */

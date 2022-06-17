@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 /**
- * (thinglinks.device_topic)表控制层
+ * 设备Topic管理
  *
- * @author xxxxx
+ * @author sunshihuan
  */
 @RestController
-@RequestMapping("/thinglinks.device_topic")
+@RequestMapping("/deviceTopic")
 public class DeviceTopicController {
     /**
      * 服务对象
