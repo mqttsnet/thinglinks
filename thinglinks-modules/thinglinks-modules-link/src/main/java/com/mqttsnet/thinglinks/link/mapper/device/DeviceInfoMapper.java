@@ -1,9 +1,10 @@
 package com.mqttsnet.thinglinks.link.mapper.device;
 
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo;
-import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @Description: java类作用描述
@@ -73,6 +74,52 @@ public interface DeviceInfoMapper {
     DeviceInfo findOneByDeviceId(@Param("deviceId")String deviceId);
 
 
+    /**
+     * 查询子设备管理
+     *
+     * @param id 子设备管理主键
+     * @return 子设备管理
+     */
+    public DeviceInfo selectDeviceInfoById(Long id);
 
+    /**
+     * 查询子设备管理列表
+     *
+     * @param deviceInfo 子设备管理
+     * @return 子设备管理集合
+     */
+    public List<DeviceInfo> selectDeviceInfoList(DeviceInfo deviceInfo);
+
+    /**
+     * 新增子设备管理
+     *
+     * @param deviceInfo 子设备管理
+     * @return 结果
+     */
+    public int insertDeviceInfo(DeviceInfo deviceInfo);
+
+    /**
+     * 修改子设备管理
+     *
+     * @param deviceInfo 子设备管理
+     * @return 结果
+     */
+    public int updateDeviceInfo(DeviceInfo deviceInfo);
+
+    /**
+     * 删除子设备管理
+     *
+     * @param id 子设备管理主键
+     * @return 结果
+     */
+    public int deleteDeviceInfoById(Long id);
+
+    /**
+     * 批量删除子设备管理
+     *
+     * @param ids 需要删除的数据主键集合
+     * @return 结果
+     */
+    public int deleteDeviceInfoByIds(Long[] ids);
 
 }

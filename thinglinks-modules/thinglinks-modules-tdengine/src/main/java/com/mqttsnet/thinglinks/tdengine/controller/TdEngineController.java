@@ -194,7 +194,7 @@ public class TdEngineController {
     *@Date 2022/1/10 14:44
     */
     @PostMapping("/getDataByTimestamp")
-    public R selectByTimesTamp(@Validated @RequestBody SelectDto selectDto) {
+    public R getDataByTimestamp(@Validated @RequestBody SelectDto selectDto) {
         return R.ok(this.tdEngineService.selectByTimesTamp(selectDto));
     }
 

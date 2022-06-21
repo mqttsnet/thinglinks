@@ -5,10 +5,10 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.mqttsnet.thinglinks.common.core.utils.SpringUtils;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerGroupConstant;
+import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
 import com.mqttsnet.thinglinks.monitor.api.domain.*;
 import com.mqttsnet.thinglinks.monitor.config.mail.MailConfig;
 import com.mqttsnet.thinglinks.monitor.service.LogInfoService;
-import com.mqttsnet.thinglinks.monitor.util.msg.WarnMailUtil;
 import com.mqttsnet.thinglinks.monitor.util.msg.WarnPools;
 import com.mqttsnet.thinglinks.monitor.util.staticvar.BatchData;
 import com.mqttsnet.thinglinks.monitor.util.staticvar.StaticKeys;
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_GROUP, topic = "thinglinks_collection_system")
+@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_GROUP, topic = ConsumerTopicConstant.THINGLINKS_COLLECTION_SYSTEM)
 public class ConsumerCollection implements RocketMQListener {
 
     public static final String content_suffix = "<p><a target='_blank' href='http://www.wgstart.com'>Thinglinks</a>敬上";

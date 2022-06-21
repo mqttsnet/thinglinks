@@ -29,6 +29,9 @@
     connect_status, shadow_enable, shadow_table_name, `status`, create_by, create_time, 
     update_by, update_time, remark
   </sql>
+  <sql id="selectDeviceInfoVo">
+    select id, d_id, app_id, node_id, node_name, device_id, description, manufacturer_id, model, connect_status, shadow_enable, shadow_table_name, status, create_by, create_time, update_by, update_time, remark from device_info
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select 
@@ -626,4 +629,104 @@
             </if>
         </where>
     </select>
+
+  <select id="selectDeviceInfoList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" resultMap="BaseResultMap">
+    <include refid="selectDeviceInfoVo"/>
+    <where>
+      <if test="dId != null "> and d_id = #{dId}</if>
+      <if test="appId != null  and appId != ''"> and app_id = #{appId}</if>
+      <if test="nodeId != null  and nodeId != ''"> and node_id = #{nodeId}</if>
+      <if test="nodeName != null  and nodeName != ''"> and node_name like concat('%', #{nodeName}, '%')</if>
+      <if test="deviceId != null  and deviceId != ''"> and device_id = #{deviceId}</if>
+      <if test="description != null  and description != ''"> and description = #{description}</if>
+      <if test="manufacturerId != null  and manufacturerId != ''"> and manufacturer_id = #{manufacturerId}</if>
+      <if test="model != null  and model != ''"> and model = #{model}</if>
+      <if test="connectStatus != null  and connectStatus != ''"> and connect_status = #{connectStatus}</if>
+      <if test="shadowEnable != null "> and shadow_enable = #{shadowEnable}</if>
+      <if test="shadowTableName != null  and shadowTableName != ''"> and shadow_table_name like concat('%', #{shadowTableName}, '%')</if>
+      <if test="status != null  and status != ''"> and status = #{status}</if>
+    </where>
+  </select>
+
+  <select id="selectDeviceInfoById" parameterType="Long" resultMap="BaseResultMap">
+    <include refid="selectDeviceInfoVo"/>
+    where id = #{id}
+  </select>
+
+  <insert id="insertDeviceInfo" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" useGeneratedKeys="true" keyProperty="id">
+    insert into device_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="dId != null">d_id,</if>
+      <if test="appId != null and appId != ''">app_id,</if>
+      <if test="nodeId != null">node_id,</if>
+      <if test="nodeName != null">node_name,</if>
+      <if test="deviceId != null">device_id,</if>
+      <if test="description != null">description,</if>
+      <if test="manufacturerId != null">manufacturer_id,</if>
+      <if test="model != null">model,</if>
+      <if test="connectStatus != null">connect_status,</if>
+      <if test="shadowEnable != null">shadow_enable,</if>
+      <if test="shadowTableName != null">shadow_table_name,</if>
+      <if test="status != null and status != ''">status,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+      <if test="remark != null">remark,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="dId != null">#{dId},</if>
+      <if test="appId != null and appId != ''">#{appId},</if>
+      <if test="nodeId != null">#{nodeId},</if>
+      <if test="nodeName != null">#{nodeName},</if>
+      <if test="deviceId != null">#{deviceId},</if>
+      <if test="description != null">#{description},</if>
+      <if test="manufacturerId != null">#{manufacturerId},</if>
+      <if test="model != null">#{model},</if>
+      <if test="connectStatus != null">#{connectStatus},</if>
+      <if test="shadowEnable != null">#{shadowEnable},</if>
+      <if test="shadowTableName != null">#{shadowTableName},</if>
+      <if test="status != null and status != ''">#{status},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+      <if test="remark != null">#{remark},</if>
+    </trim>
+  </insert>
+
+  <update id="updateDeviceInfo" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo">
+    update device_info
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="dId != null">d_id = #{dId},</if>
+      <if test="appId != null and appId != ''">app_id = #{appId},</if>
+      <if test="nodeId != null">node_id = #{nodeId},</if>
+      <if test="nodeName != null">node_name = #{nodeName},</if>
+      <if test="deviceId != null">device_id = #{deviceId},</if>
+      <if test="description != null">description = #{description},</if>
+      <if test="manufacturerId != null">manufacturer_id = #{manufacturerId},</if>
+      <if test="model != null">model = #{model},</if>
+      <if test="connectStatus != null">connect_status = #{connectStatus},</if>
+      <if test="shadowEnable != null">shadow_enable = #{shadowEnable},</if>
+      <if test="shadowTableName != null">shadow_table_name = #{shadowTableName},</if>
+      <if test="status != null and status != ''">status = #{status},</if>
+      <if test="createBy != null">create_by = #{createBy},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+      <if test="updateBy != null">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+      <if test="remark != null">remark = #{remark},</if>
+    </trim>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteDeviceInfoById" parameterType="Long">
+    delete from device_info where id = #{id}
+  </delete>
+
+  <delete id="deleteDeviceInfoByIds" parameterType="String">
+    delete from device_info where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

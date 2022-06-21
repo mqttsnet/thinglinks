@@ -26,4 +26,9 @@ public class ConsumerTopicConstant {
      */
     public static final String PRODUCTSUPERTABLE_CREATEORUPDATE = "productSuperTable-createOrUpdate";
 
+    /**
+     * 系统指标数据采集动作监听主题
+     */
+    public static final String THINGLINKS_COLLECTION_SYSTEM = "thinglinks_collection_system";
+
 }

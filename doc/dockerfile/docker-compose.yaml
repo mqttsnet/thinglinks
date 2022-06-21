@@ -119,9 +119,9 @@ services:
     ports:
       - "19302:19302"
     depends_on:
-      - ruoyi-mysql
+      - thinglinks-mysql
     links:
-      - ruoyi-mysql
+      - thinglinks-mysql
   thinglinks-modules-system:
     container_name: thinglinks-modules-system
     build:

@@ -66,6 +66,13 @@ public interface RemoteTdEngineService {
     @PostMapping("/dataOperation/addColumnInStb")
     R<?> addColumnInStb(@RequestBody SuperTableDto superTableDto);
 
+    /**
+     *@MethodDescription 根据时间戳查询数据
+     *@param selectDto 查询数据需要的入参的实体类
+     *@return R
+     *@author thinglinks
+     *@Date 2022/1/10 14:44
+     */
     @PostMapping("/dataOperation/getDataByTimestamp")
     R<?> getDataByTimestamp(@Validated @RequestBody SelectDto selectDto);
 }

@@ -2,14 +2,15 @@ package com.mqttsnet.thinglinks.link.api.domain.device.entity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 /**
-* @Description: java类作用描述
+* @Description: 子设备档案表
 * @Author: ShiHuan SUN
 * @E-mail: 13733918655@163.com
 * @Website: http://thinglinks.mqttsnet.com
@@ -19,9 +20,6 @@ import lombok.NoArgsConstructor;
 * @UpdateRemark: 修改内容
 * @Version: V1.0
 */
-/**
-    * 子设备档案表
-    */
 @ApiModel(value="子设备档案表")
 @Data
 @AllArgsConstructor
@@ -34,10 +32,16 @@ public class DeviceInfo implements Serializable {
     private Long id;
 
     /**
-    * 边设备档案主键
+    * 边设备主键
     */
-    @ApiModelProperty(value="边设备档案主键")
+    @ApiModelProperty(value="边设备主键")
     private Long dId;
+
+    /**
+     * 边设备唯一标识
+     */
+    @ApiModelProperty(value="边设备唯一标识")
+    private String edgeDevicesIdentification;
 
     /**
     * 应用ID

@@ -121,22 +121,18 @@
           <dict-tag :options="dict.type.link_casbinRule_v3" :value="scope.row.v3"/>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column fixed="right" label="操作" align="center" width="200">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['link:casbinRule:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['link:casbinRule:remove']"
-          >删除</el-button>
+          <el-tooltip class="item" effect="light" content="修改" placement="top">
+            <el-button circle size="mini" type="primary" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                       v-hasPermi="['link:casbinRule:edit']">
+            </el-button>
+          </el-tooltip>
+          <el-tooltip class="item" effect="light" content="删除" placement="top">
+            <el-button circle size="mini" type="primary" icon="el-icon-delete" @click="handleDelete(scope.row)"
+                       v-hasPermi="['link:casbinRule:remove']">
+            </el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
