@@ -1,28 +1,28 @@
 <template>
     <div class="app-container">
         <div class="equipment_status">
-            <div class="zhengshu">
+            <div class="equipment_attribute">
                 <p>
                     <span>设备名称</span>
                     <span>{{ deviceInfo.deviceName }}</span>
                 </p>
                 <p>
                     <span>设备状态</span>
-                    <span style="display:flex;align-items: center;" v-if="deviceInfo.connectStatus == '离线'"><i
+                    <span style="display:flex;align-items: center;" v-if="deviceInfo.connectStatus === '离线'"><i
                             style="display:block;width:10px;height:10px;background: #ff9292;border-radius: 50%;"></i>
                         {{ deviceInfo.connectStatus }}
                     </span>
-                    <span style="display:flex;align-items: center;" v-if="deviceInfo.connectStatus == '在线'"><i
+                    <span style="display:flex;align-items: center;" v-if="deviceInfo.connectStatus === '在线'"><i
                             style="display:block;width:10px;height:10px;background: #71e2a3;border-radius: 50%;"></i>
                         {{ deviceInfo.connectStatus }}
                     </span>
-                    <span style="display:flex;align-items: center;" v-if="deviceInfo.connectStatus == '未连接'"><i
+                    <span style="display:flex;align-items: center;" v-if="deviceInfo.connectStatus === '未连接'"><i
                             style="display:block;width:10px;height:10px;background: #ffba00;border-radius: 50%;"></i>
                         {{ deviceInfo.connectStatus }}
                     </span>
                 </p>
             </div>
-            <div class="zhengshu">
+            <div class="equipment_attribute">
                 <p>
                     <span>产品名称</span>
                     <span>{{ deviceInfo.password }}</span>
@@ -36,7 +36,7 @@
                     </span>
                 </p>
             </div>
-            <div class="zhengshu">
+            <div class="equipment_attribute">
                 <p>
                     <span>用户名</span>
                     <span>
@@ -61,7 +61,7 @@
         <div class="detail" style="height:400px;">
             <el-tabs v-model="activeName">
                 <el-tab-pane label="基本信息" name="first">
-                    <div class="zhengshu">
+                    <div class="equipment_attribute">
                         <p>
                             <span>设备标识</span>
                             <span>
@@ -93,7 +93,7 @@
                             </span>
                         </p>
                     </div>
-                    <div class="zhengshu">
+                    <div class="equipment_attribute">
                         <p>
                             <span>设备类型</span>
                             <span>
@@ -280,7 +280,7 @@ export default {
     justify-content: space-around;
 }
 
-.zhengshu {
+.equipment_attribute {
     width: 30%;
 
     p {
@@ -310,7 +310,7 @@ export default {
         display: flex;
         justify-content: space-between;
 
-        .zhengshu {
+        .equipment_attribute {
             width: 35%;
             height: 100%;
             display: flex;

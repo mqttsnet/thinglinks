@@ -137,8 +137,8 @@
           <div disable="disable" style="width:100%;display:flex; justify-content: center;align-items:center">
             <i style="cursor: pointer;" title="复制" class="el-icon-copy-document"
               @click="copy(deviceList[scope.$index].password)"></i>
-            <span v-show="currentIndex != scope.$index" ref="start">********</span>
-            <span v-show="currentIndex == scope.$index" ref="pWord">{{ deviceList[scope.$index].password }}</span>
+            <span v-show="currentIndex !== scope.$index" ref="start">********</span>
+            <span v-show="currentIndex === scope.$index" ref="pWord">{{ deviceList[scope.$index].password }}</span>
             <i style="cursor: pointer;" :ind="scope.$index" class="el-icon-view"
               @click="setShow(scope.$index, $event)"></i>
           </div>
@@ -185,10 +185,10 @@
           </span>
 
           <span style="margin-right:10px">
-            <el-tooltip class="item" effect="light" content="子设备信息" placement="top">
-              <router-link :to="{ name: 'deviceInfo', query: { id: scope.row.id } }">
+            <el-tooltip class="item" effect="light" content="设备详情" placement="top">
+              <router-link :to="{ name: './deviceDetails', query: { id: scope.row.id } }">
                 <el-button circle size="mini" type="primary" icon="el-icon-s-operation"
-                  v-hasPermi="['link:device:deviceInfo']"></el-button>
+                  v-hasPermi="['link:device:deviceDetails']"></el-button>
               </router-link>
             </el-tooltip>
           </span>
@@ -207,7 +207,7 @@
           <el-col :span="11">
             <el-form-item label="客户端标识" prop="clientId">
               <el-input v-model="form.clientId" :disabled='set ? true : false' @keyup.native="clientId"
-                placeholder="请输入客户端标识" />
+                        placeholder="请输入客户端标识" />
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -345,7 +345,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm"
-          :disabled="xinjian.clientId && xinjian.deviceIdentification ? false : true">确 定</el-button>
+          :disabled="check.clientId && check.deviceIdentification ? false:true">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -476,7 +476,7 @@ export default {
       offlineCount: 0,//离线设备
       initCount: 0,//未连接设备
       set: false,//修改禁用标识
-      xinjian: {
+      check: {
         clientId: false,
         deviceIdentification: false
       }
@@ -493,28 +493,28 @@ export default {
     //客户端标识校验
     clientId() {
       validationDeviceIdentification_clientId(this.form.clientId).then(res => {
-        if (res.msg == 'clientId可用') {
-          this.xinjian.clientId = true
+        if (res.code === 200) {
+          this.check.clientId = true
           this.$message({
-            message: '客户端标识通过',
+            message: '客户端标识校验通过',
             type: 'success'
           });
         } else {
-          this.xinjian.clientId = false
+          this.check.clientId = false
         }
       })
     },
     //设备标识校验
     deviceIdentification() {
       validationDeviceIdentification_deviceIdentification(this.form.deviceIdentification).then(res => {
-        if (res.msg == '设备标识可用') {
-          this.xinjian.deviceIdentification = true
+        if (res.code === 200) {
+          this.check.deviceIdentification = true
           this.$message({
-            message: '设备标识通过',
+            message: '设备标识校验通过',
             type: 'success'
           });
         } else {
-          this.xinjian.deviceIdentification = false
+          this.check.deviceIdentification = false
         }
       })
     },
@@ -639,7 +639,7 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.xinjian = {
+      this.check = {
         clientId: true,
         deviceIdentification: true
       }
