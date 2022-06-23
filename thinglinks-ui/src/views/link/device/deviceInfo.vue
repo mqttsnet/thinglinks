@@ -128,20 +128,47 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="Topic列表" name="second">
-                    <el-tabs v-model="TopicactiveName">
-                        <el-tab-pane label="基础Topic" name="first">
-                            <el-table :data="TopicList" style="width: 100%">
-                                <el-table-column prop="Topic" label="Topic" width="280">
+                    <el-tabs v-model="TopicactiveName" @tab-click="topicSwitch">
+                        <el-tab-pane label="基础Topic" name="first" style="width:100%">
+                            <el-table :data="TopicList">
+                                <el-table-column prop="topic" label="Topic" width="280">
                                 </el-table-column>
-                                <el-table-column prop="Publisher" label="Publisher(发布者)" width="180">
+                                <el-table-column prop="publisher" label="Publisher(发布者)" width="180">
                                 </el-table-column>
-                                <el-table-column prop="Subscriber" label="Subscriber(订阅者)" width="180">
+                                <el-table-column prop="subscriber" label="Subscriber(订阅者)" width="180">
                                 </el-table-column>
-                                <el-table-column prop="address" label="用途" width="180">
+                                <el-table-column prop="remark" label="用途" width="180">
                                 </el-table-column>
                             </el-table>
                         </el-tab-pane>
-                        <el-tab-pane label="自定义Topic" name="second">自定义Topic</el-tab-pane>
+                        <el-tab-pane label="自定义Topic" name="second" style="width:100%">
+                            <el-table :data="TopicList" style="width: 100%">
+                                <el-table-column prop="topic" label="Topic" width="280">
+                                </el-table-column>
+                                <el-table-column prop="publisher" label="Publisher(发布者)" width="180">
+                                </el-table-column>
+                                <el-table-column prop="subscriber" label="Subscriber(订阅者)" width="180">
+                                </el-table-column>
+                                <el-table-column prop="remark" label="用途" width="180">
+                                </el-table-column>
+                                <el-table-column fixed="right" label="操作" width="150">
+                                    <template slot-scope="scope">
+                                        <span style="margin-right:10px">
+                                            <el-tooltip class="item" effect="light" content="修改" placement="top">
+                                                <el-button circle size="mini" type="primary" icon="el-icon-edit">
+                                                </el-button>
+                                            </el-tooltip>
+                                        </span>
+                                        <span style="margin-right:10px">
+                                            <el-tooltip class="item" effect="light" content="删除" placement="top">
+                                                <el-button circle size="mini" type="primary" icon="el-icon-delete">
+                                                </el-button>
+                                            </el-tooltip>
+                                        </span>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-tab-pane>
                     </el-tabs>
                 </el-tab-pane>
                 <el-tab-pane label="设备影子" name="third">
@@ -175,6 +202,7 @@
 import {
     getDevice,
 } from "@/api/link/device";
+import { listTopic, getTopic, delTopic, addTopic, updateTopic } from "@/api/link/topic";
 export default {
     data() {
         return {
@@ -193,10 +221,44 @@ export default {
                 address: '边设备添加子设备'
             }],
             //json数据转换
-            detailJSON: ""
+            detailJSON: "",
+            // 查询参数
+            queryParams: {
+                pageNum: 1,
+                pageSize: 10,
+                deviceIdentification: '123',
+                type: 0,
+                topic: null,
+                publisher: null,
+                subscriber: null,
+            },
         }
     },
+    watch: {
+        deviceInfo() {
+            this.queryParams.deviceIdentification = this.deviceInfo.deviceIdentification
+        },
+    },
     methods: {
+        //切换topic列表
+        topicSwitch() {
+            // console.log(this.TopicactiveName);
+            if (this.TopicactiveName == 'first') {
+                this.queryParams.type = 0
+                this.getTopicList()
+            } else if (this.TopicactiveName == 'second') {
+                this.queryParams.type = 1
+                this.getTopicList()
+            }
+        },
+        /** 查询设备Topic数据列表 */
+        getTopicList() {
+            listTopic(this.queryParams).then(response => {
+                // console.log(response);
+                this.TopicList = response.rows;
+                this.total = response.total;
+            });
+        },
         //密码切换
         setShow() {
             this.show = !this.show
@@ -217,10 +279,9 @@ export default {
         //设备详细获取
         getDetail() {
             getDevice(this.id).then((response) => {
-                console.log(response);
                 this.deviceInfo = response.data
                 this.detailJSON = JSON.stringify(response.data)
-                console.log(data);
+                console.log(response.data);
             })
         },
         //验证json并格式化
@@ -254,7 +315,8 @@ export default {
     },
     created() {
         this.id = this.$route.query.id
-        this.getDetail()
+        this.getDetail();
+        this.topicSwitch();
     }
 }
 </script>
