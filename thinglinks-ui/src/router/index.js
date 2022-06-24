@@ -131,9 +131,9 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: 'deviceInfo',
-        component: (resolve) => require(['@/views/link/device/deviceInfo'], resolve),
-        name: 'deviceInfo',
+        path: 'deviceDetails',
+        component: (resolve) => require(['@/views/link/device/deviceDetails'], resolve),
+        name: 'deviceDetails',
         meta: { title: '设备信息', activeMenu: '/link/device' }
       }
     ]

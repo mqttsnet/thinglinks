@@ -374,7 +374,7 @@
                 <el-col :span="22">
                   <el-select v-model="form.appId" placeholder="请选择应用ID">
                     <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label"
-                               :value="dict.value"></el-option>
+                      :value="dict.value"></el-option>
                   </el-select>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
@@ -401,12 +401,12 @@
                 <el-col :span="22">
                   <el-select v-model="form.productType" placeholder="请选择产品类型">
                     <el-option v-for="dict in dict.type.link_product_type" :key="dict.value" :label="dict.label"
-                               :value="dict.value"></el-option>
+                      :value="dict.value"></el-option>
                   </el-select>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
                   <el-tooltip class="item" effect="light" content="支持以下两种产品类型•0：普通产品，需直连设备。•1：网关产品，可挂载子设备。"
-                              placement="right-start">
+                    placement="right-start">
                     <i class="el-icon-question" />
                   </el-tooltip>
                 </el-col>
@@ -443,7 +443,7 @@
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
                   <el-tooltip content=" 产品型号，建议包含字母或数字来保证可扩展性。 支持英文大小写、数字、下划线和中划线，长度[2,50]" placement="right"
-                              effect="light">
+                    effect="light">
                     <i class="el-icon-question" />
                   </el-tooltip>
                 </el-col>
@@ -454,7 +454,7 @@
                 <el-col :span="22">
                   <el-select v-model="dialogquick.form.dataFormat" placeholder="请选择数据格式">
                     <el-option v-for="(item, index) in dataformatlist" :key="index" :label="item.dictLabel"
-                               :value="item.dictValue">
+                      :value="item.dictValue">
                     </el-option>
                   </el-select>
                 </el-col>
@@ -486,8 +486,7 @@
                   </el-select>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
-                  <el-tooltip class="item" effect="light" content="设备接入平台的协议类型，默认为MQTT无需修改。"
-                    placement="right-start">
+                  <el-tooltip class="item" effect="light" content="设备接入平台的协议类型，默认为MQTT无需修改。" placement="right-start">
                     <i class="el-icon-question" />
                   </el-tooltip>
                 </el-col>
@@ -514,7 +513,8 @@
                     <el-input v-model="item.serviceId" autocomplete="off" placeholder="请输入服务名称" />
                   </el-col>
                   <el-col :span="2" style="padding-left: 5px">
-                    <el-tooltip content="支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" placement="right" effect="light">
+                    <el-tooltip content="支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" placement="right"
+                      effect="light">
                       <i class="el-icon-question" />
                     </el-tooltip>
                   </el-col>
@@ -622,7 +622,8 @@
                       <el-input v-model="proItem.max" autocomplete="off" placeholder="请输入指示最大值" />
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示最大值,支持长度不超过50的数字。 仅当dataType为int、decimal时生效，逻辑小于等于" placement="right" effect="light">
+                      <el-tooltip content="指示最大值,支持长度不超过50的数字。 仅当dataType为int、decimal时生效，逻辑小于等于" placement="right"
+                        effect="light">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </el-col>
@@ -654,7 +655,8 @@
                       <el-input v-model="proItem.min" autocomplete="off" placeholder="请输入指示最小值" />
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示最小值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑大于等于。" placement="right" effect="light">
+                      <el-tooltip content="指示最小值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑大于等于。" placement="right"
+                        effect="light">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </el-col>
@@ -701,7 +703,8 @@
                       <el-input v-model="proItem.name" autocomplete="off" placeholder="请输入指示属性名称" />
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]。" placement="right" effect="light">
+                      <el-tooltip content="指示属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]。" placement="right"
+                        effect="light">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </el-col>
@@ -734,7 +737,8 @@
                       <el-input v-model="proItem.method" autocomplete="off" placeholder="请输入指示访问模式" />
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示访问模式。R:可读；W:可写；E属性值更改时上报数据、取值范围：R、RW、RE、RWE" placement="right" effect="light">
+                      <el-tooltip content="指示访问模式。R:可读；W:可写；E属性值更改时上报数据、取值范围：R、RW、RE、RWE" placement="right"
+                        effect="light">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </el-col>
