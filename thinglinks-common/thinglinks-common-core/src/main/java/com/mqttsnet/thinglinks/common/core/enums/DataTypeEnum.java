@@ -44,12 +44,12 @@ public enum DataTypeEnum {
     DOUBLE("double"),
 
     /**
-     * 单字节字符串（建议只用于处理ASCII可见字符）
+     * 单字节字符串（建议只用于处理ASCII可见字符）最大长度16000
      */
     BINARY("binary"),
 
     /**
-     * 记录包含多字节字符在内的字符串（如中文字符）
+     * 记录包含多字节字符在内的字符串（如中文字符）最大长度4093
      */
     NCHAR("nchar"),
 

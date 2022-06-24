@@ -1,9 +1,13 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceTopicMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceTopicService;
+import com.mqttsnet.thinglinks.system.api.domain.SysUser;
+import com.mqttsnet.thinglinks.system.api.model.LoginUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -24,6 +28,8 @@ public class DeviceTopicServiceImpl implements DeviceTopicService{
 
     @Resource
     private DeviceTopicMapper deviceTopicMapper;
+    @Autowired
+    private TokenService tokenService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -114,6 +120,9 @@ public class DeviceTopicServiceImpl implements DeviceTopicService{
     @Override
     public int insertDeviceTopic(DeviceTopic deviceTopic)
     {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        deviceTopic.setCreateBy(sysUser.getUserName());
         deviceTopic.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceTopicMapper.insertDeviceTopic(deviceTopic);
     }
@@ -127,6 +136,9 @@ public class DeviceTopicServiceImpl implements DeviceTopicService{
     @Override
     public int updateDeviceTopic(DeviceTopic deviceTopic)
     {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        deviceTopic.setUpdateBy(sysUser.getUserName());
         deviceTopic.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceTopicMapper.updateDeviceTopic(deviceTopic);
     }
