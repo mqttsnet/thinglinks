@@ -44,10 +44,10 @@ export function delProduct(id) {
 }
 
 // 快捷生成
-// export function generateProductJson(data) {
-//   return request({
-//     url: '/link/product/generateProductJson',
-//     method: 'post',
-//     data: data
-//   })
-// }
+export function generateProductJson(data) {
+  return request({
+    url: '/link/product/generateProductJson',
+    method: 'post',
+    data: data
+  })
+}

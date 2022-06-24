@@ -186,7 +186,7 @@
 
           <span style="margin-right:10px">
             <el-tooltip class="item" effect="light" content="设备详情" placement="top">
-              <router-link :to="{ name: './deviceDetails', query: { id: scope.row.id } }">
+              <router-link :to="{ name: 'deviceDetails', query: { id: scope.row.id } }">
                 <el-button circle size="mini" type="primary" icon="el-icon-s-operation"
                   v-hasPermi="['link:device:deviceDetails']"></el-button>
               </router-link>
@@ -207,7 +207,7 @@
           <el-col :span="11">
             <el-form-item label="客户端标识" prop="clientId">
               <el-input v-model="form.clientId" :disabled='set ? true : false' @keyup.native="clientId"
-                        placeholder="请输入客户端标识" />
+                placeholder="请输入客户端标识" />
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -235,7 +235,7 @@
 
         <el-row>
           <el-col :span="11">
-            <el-form-item label="设备名称" prop="deviceIdentification">
+            <el-form-item label="设备名称" prop="deviceName">
               <el-input v-model="form.deviceName" placeholder="请输入设备名称" />
             </el-form-item>
           </el-col>
@@ -345,7 +345,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm"
-          :disabled="check.clientId && check.deviceIdentification ? false:true">确 定</el-button>
+          :disabled="(check.clientId && check.deviceIdentification) ? false : true">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -499,8 +499,6 @@ export default {
             message: '客户端标识校验通过',
             type: 'success'
           });
-        } else {
-          this.check.clientId = false
         }
       })
     },
@@ -513,8 +511,6 @@ export default {
             message: '设备标识校验通过',
             type: 'success'
           });
-        } else {
-          this.check.deviceIdentification = false
         }
       })
     },
@@ -629,6 +625,10 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
+      this.check = {
+        clientId: false,
+        deviceIdentification: false
+      }
       this.reset();
       this.set = false
       getDevice().then(response => {

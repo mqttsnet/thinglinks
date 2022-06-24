@@ -324,24 +324,23 @@
         '&status=' +
         upload.status
       " :disabled="upload.isUploading" :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess"
-        :auto-upload="false" drag>
+        :on-change="fileUploadChanges" :auto-upload="false" drag>
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">
           将文件拖到此处,或<em>点击上传</em>,<span>仅允许导入json格式文件。</span>
         </div>
 
         <div class="el-upload__tip text-center" slot="tip">
-          <div class="el-upload__tip" slot="tip">
+          <div class="el-upload__tip_inner" slot="tip">
             <el-col :span="12">
-              <el-select v-model="upload.appId" placeholder="请选择应用ID">
+              <el-select v-model="upload.appId" placeholder="请选择应用ID" style="width:95%;margin-bottom: 15px;">
                 <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label"
                   :value="dict.value"></el-option>
               </el-select>
             </el-col>
             <el-col :span="12">
-              <el-input v-model="upload.templateId" placeholder="请输入产品模型模板ID" />
+              <el-input style="width:95%" v-model="upload.templateId" placeholder="请输入产品模型模板ID" />
             </el-col>
-
             <el-col :span="12" hidden="hidden">
               <el-input value="0" v-model="upload.status" hidden="hidden" />
             </el-col>
@@ -399,7 +398,7 @@
             <div class="small">
               <el-form-item label="产品类型" prop="productType">
                 <el-col :span="22">
-                  <el-select v-model="form.productType" placeholder="请选择产品类型">
+                  <el-select v-model="dialogquick.form.productType" placeholder="请选择产品类型">
                     <el-option v-for="dict in dict.type.link_product_type" :key="dict.value" :label="dict.label"
                       :value="dict.value"></el-option>
                   </el-select>
@@ -755,10 +754,10 @@
         </el-form>
       </el-scrollbar>
       <div slot="footer" class="dialog-footer" style="margin-top: 10px; display: flex; justify-content: flex-end">
-        <el-button type="primary" @click="dialogquick.visiblequick = false">
+        <el-button type="primary" @click="onSave"> 保存 </el-button>
+        <el-button type="" @click="dialogquick.visiblequick = false">
           取消
         </el-button>
-        <el-button type="primary" @click="onSave"> 保存 </el-button>
       </div>
     </el-dialog>
   </div>
@@ -771,6 +770,7 @@ import {
   delProduct,
   addProduct,
   updateProduct,
+  generateProductJson,
 } from "@/api/link/product";
 import { getToken } from "@/utils/auth";
 
@@ -785,6 +785,8 @@ export default {
   ],
   data() {
     return {
+      //文件上传
+      file: {},
       // 遮罩层
       loading: true,
       // 选中数组
@@ -881,6 +883,7 @@ export default {
         ],
       },
       //快捷生成
+      content: {},
       dataformatlist: [],
       deviceTypelist: [],
       protocolTypelist: [],
@@ -924,11 +927,7 @@ export default {
         rules: {
           dataFormat: [{ message: "请选择数据格式", trigger: "change" }],
           deviceType: [{ message: "请输入设备类型", trigger: "blur" }],
-          // manufacturerId: [{ required: true, trigger: "blur", validator: rulesManufacturerId }],
-          // manufacturerName: [{ required: true, trigger: "blur", validator: rulesManufacturerName }],
           model: [{ required: true, message: "请输入设备模型", trigger: "blur" }],
-          // productName: [{ required: true, trigger: "blur", validator: rulesProductName }],
-          // productSerial: [{ required: true, trigger: "blur", validator: rulesProducctSerial }],
           productType: [{ required: true, message: "请输入产品类型", trigger: "change" }],
           protocolType: [{ message: "请输入协议类型", trigger: "blur" }],
           status: [{ required: true, message: "请输入状态", trigger: "blur" }],
@@ -943,13 +942,10 @@ export default {
           datatype: [{ required: true, message: "请输入数据类型", trigger: "change" },],
           descriptions: [{ message: "请输入属性描述", trigger: "blur" },],
           enumlist: [{ required: true, message: "请输入枚举列", trigger: "blur" },],
-          // max: [{ required: true, trigger: "blur", validator: rulesMax }],
           maxlength: [{ required: true, message: "请输入最大长度", trigger: "blur" },],
-          // min: [{ required: true, trigger: "blur", validator: rulesMin }],
           step: [{ required: true, message: "请输入合法数字间隔", trigger: "blur" },],
           required: [{ required: true, message: "请输入是否必须", trigger: "blur" },],
           name: [{ required: true, message: "请输入名称", trigger: "blur" }],
-          // unit: [{ required: true, trigger: "blur", validator: rulesUnit },],
           method: [{ required: true, message: "请输入方法", trigger: "blur" }],
         },
       },
@@ -983,29 +979,10 @@ export default {
         if (!valid) {
           this.$message.error("有信息未填写");
           return;
+        } else {
+          this.content = this.dialogquick.form
+          this.dialogquick.visiblequick = false
         }
-        // this.isLoading = true;
-        // this.dialogquick.form.services.forEach((item) => {
-        //   item.properties.forEach((itempro) => {
-        //     itempro.maxlength = Number(itempro.maxlength);
-        //     itempro.required = Number(itempro.required);
-        //     itempro.step = Number(itempro.step);
-        //   });
-        // });
-        // addProduct(this.dialogquick.form)
-        //   .then((res) => {
-        //     if (res.code === 200) {
-        //       this.getList();
-        //       this.isLoading = false;
-        //       this.dialogquick.visiblequick = false;
-        //       this.$toast.success("添加成功");
-        //       this.clearForm()
-        //     } else {
-        //     }
-        //   })
-        //   .catch((res, err) => {
-        //     this.$message.error(err.msg || err.message);
-        //   });
       });
     },
     //获取其他数据
@@ -1214,12 +1191,32 @@ export default {
       this.$alert(response.msg, "导入结果", { dangerouslyUseHTMLString: true });
       this.getList();
     },
+    //文件状态改变
+    fileUploadChanges(file, fileList) {
+      console.log(file);
+      this.file = file
+    },
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit();
-      this.upload.appId = "";
-      this.upload.templateId = "";
-      this.upload.updateSupport = "";
+      console.log(this.content);
+      // let data = {
+      //   appId: this.upload.appId,
+      //   templateId: this.upload.templateId,
+      //   status: this.upload.status,
+      //   content: this.dialogquick.form
+      // }
+      // console.log(this.$refs.upload);
+      // console.log(data);
+      // generateProductJson(data).then(res => {
+      //   console.log(res);
+      //   this.$modal.msgSuccess("上传成功");
+      // }).catch((err) => {
+      //   this.$message.error(err.msg || err.message);
+      // });
+      // this.upload.appId = "";
+      // this.upload.templateId = "";
+      // this.upload.updateSupport = "";
     },
   },
 };
@@ -1292,5 +1289,11 @@ export default {
 
 .uploadfile ::v-deep .el-dialog__footer {
   border-top: 1px solid #606266;
+}
+
+.el-upload__tip_inner {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
 }
 </style>

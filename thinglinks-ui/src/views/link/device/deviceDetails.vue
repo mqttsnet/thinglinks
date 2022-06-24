@@ -59,6 +59,14 @@
             </div>
         </div>
         <div class="detail" style="height:400px;">
+            <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+                v-hasPermi="['link:topic:add']" :disabled="add ? false : true">新增</el-button>
+            <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
+                v-hasPermi="['link:topic:edit']">修改</el-button>
+            <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+                v-hasPermi="['link:topic:remove']">删除</el-button>
+            <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+                v-hasPermi="['link:topic:export']">导出</el-button>
             <el-tabs v-model="activeName">
                 <el-tab-pane label="基本信息" name="first">
                     <div class="equipment_attribute">
@@ -127,44 +135,43 @@
                         </p>
                     </div>
                 </el-tab-pane>
-                <el-tab-pane label="Topic列表" name="second">
-                    <el-tabs v-model="TopicactiveName" @tab-click="topicSwitch">
+
+                <el-tab-pane label="Topic列表" name="second" style="width:100%">
+                    <el-tabs v-model="TopicactiveName" @tab-click="topicSwitch" style="width:100%">
                         <el-tab-pane label="基础Topic" name="first" style="width:100%">
-                            <el-table :data="TopicList">
-                                <el-table-column prop="topic" label="Topic" width="280">
-                                </el-table-column>
-                                <el-table-column prop="publisher" label="Publisher(发布者)" width="180">
-                                </el-table-column>
-                                <el-table-column prop="subscriber" label="Subscriber(订阅者)" width="180">
-                                </el-table-column>
-                                <el-table-column prop="remark" label="用途" width="180">
-                                </el-table-column>
+                            <el-table v-loading="loading" :data="topicList" @selection-change="handleSelectionChange"
+                                style="width:100%">
+                                <el-table-column type="selection" width="55" align="center" />
+                                <el-table-column label="id" align="center" prop="id" />
+                                <el-table-column label="设备标识" align="center" prop="deviceIdentification" />
+                                <el-table-column label="类型(0:基础Topic,1:自定义Topic)" align="center" prop="type"
+                                    width="250" />
+                                <el-table-column label="topic" align="center" prop="topic" />
+                                <el-table-column label="发布者" align="center" prop="publisher" />
+                                <el-table-column label="订阅者" align="center" prop="subscriber" />
+                                <el-table-column label="备注" align="center" prop="remark" />
                             </el-table>
                         </el-tab-pane>
                         <el-tab-pane label="自定义Topic" name="second" style="width:100%">
-                            <el-table :data="TopicList" style="width: 100%">
-                                <el-table-column prop="topic" label="Topic" width="280">
-                                </el-table-column>
-                                <el-table-column prop="publisher" label="Publisher(发布者)" width="180">
-                                </el-table-column>
-                                <el-table-column prop="subscriber" label="Subscriber(订阅者)" width="180">
-                                </el-table-column>
-                                <el-table-column prop="remark" label="用途" width="180">
-                                </el-table-column>
-                                <el-table-column fixed="right" label="操作" width="150">
+                            <el-table v-loading="loading" :data="topicList" @selection-change="handleSelectionChange"
+                                style="width:100%">
+                                <el-table-column type="selection" width="55" align="center" />
+                                <el-table-column label="id" align="center" prop="id" />
+                                <el-table-column label="设备标识" align="center" prop="deviceIdentification" />
+                                <el-table-column label="类型(0:基础Topic,1:自定义Topic)" align="center" prop="type"
+                                    width="250" />
+                                <el-table-column label="topic" align="center" prop="topic" />
+                                <el-table-column label="发布者" align="center" prop="publisher" />
+                                <el-table-column label="订阅者" align="center" prop="subscriber" />
+                                <el-table-column label="备注" align="center" prop="remark" />
+                                <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
                                     <template slot-scope="scope">
-                                        <span style="margin-right:10px">
-                                            <el-tooltip class="item" effect="light" content="修改" placement="top">
-                                                <el-button circle size="mini" type="primary" icon="el-icon-edit">
-                                                </el-button>
-                                            </el-tooltip>
-                                        </span>
-                                        <span style="margin-right:10px">
-                                            <el-tooltip class="item" effect="light" content="删除" placement="top">
-                                                <el-button circle size="mini" type="primary" icon="el-icon-delete">
-                                                </el-button>
-                                            </el-tooltip>
-                                        </span>
+                                        <el-button size="mini" type="text" icon="el-icon-edit"
+                                            @click="handleUpdate(scope.row)" v-hasPermi="['link:topic:edit']">修改
+                                        </el-button>
+                                        <el-button size="mini" type="text" icon="el-icon-delete"
+                                            @click="handleDelete(scope.row)" v-hasPermi="['link:topic:remove']">删除
+                                        </el-button>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -196,6 +203,35 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
+        <!-- 新增||修改topic -->
+        <el-dialog :title="title" :visible.sync="open" width="30%" append-to-body>
+            <el-form ref="form" :model="form" :rules="rules" label-width="20%">
+                <el-form-item label="设备标识" prop="deviceIdentification">
+                    <el-input v-model="form.deviceIdentification" placeholder="请输入设备标识" />
+                </el-form-item>
+                <el-form-item label="类型" prop="type" style="width:100%">
+                    <el-select v-model="form.type" placeholder="请选择类型(0:基础Topic,1:自定义Topic)" style="width:100%">
+                        <el-option label="1" value=1 />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="topic" prop="topic">
+                    <el-input v-model="form.topic" placeholder="请输入topic" />
+                </el-form-item>
+                <el-form-item label="发布者" prop="publisher">
+                    <el-input v-model="form.publisher" placeholder="请输入发布者" />
+                </el-form-item>
+                <el-form-item label="订阅者" prop="subscriber">
+                    <el-input v-model="form.subscriber" placeholder="请输入订阅者" />
+                </el-form-item>
+                <el-form-item label="备注" prop="remark">
+                    <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="submitForm">确 定</el-button>
+                <el-button @click="cancel">取 消</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -206,6 +242,28 @@ import { listTopic, getTopic, delTopic, addTopic, updateTopic } from "@/api/link
 export default {
     data() {
         return {
+            // 非单个禁用
+            single: true,
+            // 非多个禁用
+            multiple: true,
+            // 遮罩层
+            loading: true,
+            //新增按鈕
+            add: false,
+            //修改自定义topic
+            dialogFormVisible: false,
+            setTopicData: {},
+            title: "",
+            // 是否显示弹出层
+            open: false,
+            // 表单参数
+            form: {},
+            // 表单校验
+            rules: {
+                deviceIdentification: [
+                    { required: true, message: "设备标识不能为空", trigger: "blur" }
+                ],
+            },
             //table切换
             activeName: 'first',
             TopicactiveName: "first",
@@ -213,6 +271,8 @@ export default {
             deviceInfo: {},
             //密码切换
             show: true,
+            // 设备Topic数据表格数据
+            topicList: [],
             //Topic列表默认数据
             TopicList: [{
                 Topic: '/v1/devices/{deviceId}/topo/add',
@@ -240,23 +300,106 @@ export default {
         },
     },
     methods: {
+        /** 导出按钮操作 */
+        handleExport() {
+            this.download('link/topic/export', {
+                ...this.queryParams
+            }, `link_topic.xlsx`)
+        },
+        // 多选框选中数据
+        handleSelectionChange(selection) {
+            this.ids = selection.map(item => item.id)
+            this.single = selection.length !== 1
+            this.multiple = !selection.length
+        },
+        // 取消按钮
+        cancel() {
+            this.open = false;
+            this.reset();
+        },
+        /** 新增按钮操作 */
+        handleAdd() {
+            this.reset();
+            this.open = true;
+            this.title = "添加设备Topic数据";
+        },
+        /** 修改按钮操作 */
+        handleUpdate(row) {
+            this.reset();
+            const id = row.id || this.ids
+            getTopic(id).then(response => {
+                this.form = response.data;
+                this.open = true;
+                this.title = "修改设备Topic数据";
+            });
+        },
+        /** 提交按钮 */
+        submitForm() {
+            this.$refs["form"].validate(valid => {
+                if (valid) {
+                    if (this.form.id != null) {
+                        updateTopic(this.form).then(response => {
+                            this.$modal.msgSuccess("修改成功");
+                            this.open = false;
+                            this.getList();
+                        });
+                    } else {
+                        addTopic(this.form).then(response => {
+                            this.$modal.msgSuccess("新增成功");
+                            this.open = false;
+                            this.getList();
+                        });
+                    }
+                }
+            });
+        },
+        /** 删除按钮操作 */
+        handleDelete(row) {
+            const ids = row.id || this.ids;
+            this.$modal.confirm('是否确认删除设备Topic数据编号为"' + ids + '"的数据项？').then(function () {
+                return delTopic(ids);
+            }).then(() => {
+                this.getList();
+                this.$modal.msgSuccess("删除成功");
+            }).catch(() => { });
+        },
+        // 表单重置
+        reset() {
+            this.form = {
+                id: null,
+                deviceIdentification: null,
+                type: null,
+                topic: null,
+                publisher: null,
+                subscriber: null,
+                createBy: null,
+                createTime: null,
+                updateBy: null,
+                updateTime: null,
+                remark: null
+            };
+            this.resetForm("form");
+        },
         //切换topic列表
         topicSwitch() {
             // console.log(this.TopicactiveName);
             if (this.TopicactiveName == 'first') {
+                this.add = false
                 this.queryParams.type = 0
-                this.getTopicList()
+                this.getList()
             } else if (this.TopicactiveName == 'second') {
+                this.add = true
                 this.queryParams.type = 1
-                this.getTopicList()
+                this.getList()
             }
         },
         /** 查询设备Topic数据列表 */
-        getTopicList() {
+        getList() {
+            this.loading = true;
             listTopic(this.queryParams).then(response => {
-                // console.log(response);
-                this.TopicList = response.rows;
+                this.topicList = response.rows;
                 this.total = response.total;
+                this.loading = false;
             });
         },
         //密码切换
@@ -390,7 +533,22 @@ export default {
                 }
             }
         }
+    }
+}
 
+.demo-input-suffix {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+
+    span {
+        width: 30%;
+        text-align: end;
+    }
+
+    .el-input,
+    .el-select {
+        width: 50%;
     }
 }
 </style>
