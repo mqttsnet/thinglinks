@@ -3,50 +3,28 @@
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="类型" prop="ptype">
         <el-select v-model="queryParams.ptype" placeholder="请选择类型" clearable size="small">
-          <el-option
-            v-for="dict in dict.type.link_device_protocol_type"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
+          <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
+            :value="dict.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="规则名称" prop="v0">
-        <el-input
-          v-model="queryParams.v0"
-          placeholder="请输入规则名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.v0" placeholder="请输入规则名称" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="资源" prop="v1">
-        <el-input
-          v-model="queryParams.v1"
-          placeholder="请输入资源"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.v1" placeholder="请输入资源" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="动作" prop="v2">
         <el-select v-model="queryParams.v2" placeholder="请选择动作" clearable size="small">
-          <el-option
-            v-for="dict in dict.type.link_casbinRule_v2"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
+          <el-option v-for="dict in dict.type.link_casbinRule_v2" :key="dict.value" :label="dict.label"
+            :value="dict.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="策略" prop="v3">
         <el-select v-model="queryParams.v3" placeholder="请选择策略" clearable size="small">
-          <el-option
-            v-for="dict in dict.type.link_casbinRule_v3"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
+          <el-option v-for="dict in dict.type.link_casbinRule_v3" :key="dict.value" :label="dict.label"
+            :value="dict.value" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -57,46 +35,20 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['link:casbinRule:add']"
-        >新增</el-button>
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+          v-hasPermi="['link:casbinRule:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['link:casbinRule:edit']"
-        >修改</el-button>
+        <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
+          v-hasPermi="['link:casbinRule:edit']">修改</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['link:casbinRule:remove']"
-        >删除</el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['link:casbinRule:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['link:casbinRule:export']"
-        >导出</el-button>
+        <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+          v-hasPermi="['link:casbinRule:export']">导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -106,73 +58,63 @@
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="类型" align="center" prop="ptype">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.ptype"/>
+          <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.ptype" />
         </template>
       </el-table-column>
       <el-table-column label="规则名称" align="center" prop="v0" />
       <el-table-column label="资源" align="center" prop="v1" />
       <el-table-column label="动作" align="center" prop="v2">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_casbinRule_v2" :value="scope.row.v2"/>
+          <dict-tag :options="dict.type.link_casbinRule_v2" :value="scope.row.v2" />
         </template>
       </el-table-column>
       <el-table-column label="策略" align="center" prop="v3">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_casbinRule_v3" :value="scope.row.v3"/>
+          <dict-tag :options="dict.type.link_casbinRule_v3" :value="scope.row.v3" />
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" align="center" width="200">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="light" content="修改" placement="top">
             <el-button circle size="mini" type="primary" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-                       v-hasPermi="['link:casbinRule:edit']">
+              v-hasPermi="['link:casbinRule:edit']">
             </el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="light" content="删除" placement="top">
             <el-button circle size="mini" type="primary" icon="el-icon-delete" @click="handleDelete(scope.row)"
-                       v-hasPermi="['link:casbinRule:remove']">
+              v-hasPermi="['link:casbinRule:remove']">
             </el-button>
           </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+      @pagination="getList" />
 
     <!-- 添加或修改CAS规则管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="40%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
-          <el-col :span="22">
-            <el-form-item label="类型" prop="ptype">
-              <el-select v-model="form.ptype" placeholder="请选择类型">
-                <el-option
-                  v-for="dict in dict.type.link_device_protocol_type"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
+          <el-col :span="22" style="width:80%">
+            <el-form-item label=" 类型" prop="ptype">
+              <el-select v-model="form.ptype" placeholder="请选择类型" style="width:100%">
+                <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
+                  :value="dict.value"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip class="item" effect="light" content="CAS策略匹配协议，默认MQTT"
-                        placement="right-start">
+            <el-tooltip class="item" effect="light" content="CAS策略匹配协议，默认MQTT" placement="right-start">
               <i class="el-icon-question" />
             </el-tooltip>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="22">
+          <el-col :span="22" style="width:80%">
             <el-form-item label="规则名称" prop="v0">
-              <el-input placeholder="请输入规则名称" v-model="input3" class="input-with-select">
-                <el-select v-model="form.v0" slot="prepend" placeholder="请选择">
+              <el-input :disabled="disabled" :placeholder="prompt" v-model="ruleName" class="input-with-select">
+                <el-select v-model="form.v0" slot="prepend" placeholder="请选择" @change="setContene">
                   <el-option label="clientId" value="1"></el-option>
                   <el-option label="IP网段" value="2"></el-option>
                   <el-option label="all" value="3"></el-option>
@@ -181,60 +123,50 @@
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip class="item" effect="light" content="规则名称支持类型如下：clientId（限制clientId）、IP网段（限制ip或网段）、all（限制所有）"
-                        placement="right-start">
+            <el-tooltip class="item" effect="light" :content="contene" placement="right-start">
               <i class="el-icon-question" />
             </el-tooltip>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="22">
+          <el-col :span="22" style="width:80%">
             <el-form-item label="资源" prop="v1">
-              <el-input v-model="form.v1" placeholder="请输入资源" />
+              <el-input v-model="form.v1" placeholder="请输入资源" style="width:100%" />
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip class="item" effect="light" content="资源支持类型如下：Topic配置（支持通配符Topic、例如拦截以test开头的Topic：test/*）" placement="right-start">
+            <el-tooltip class="item" effect="light" content="资源支持类型如下：Topic配置（支持通配符Topic、例如拦截以test开头的Topic：test/*）"
+              placement="right-start">
               <i class="el-icon-question" />
             </el-tooltip>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="22">
+          <el-col :span="22" style="width:80%">
             <el-form-item label="动作" prop="v2">
-              <el-select v-model="form.v2" placeholder="请选择动作">
-                <el-option
-                  v-for="dict in dict.type.link_casbinRule_v2"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
+              <el-select v-model="form.v2" placeholder="请选择动作" style="width:100%">
+                <el-option v-for="dict in dict.type.link_casbinRule_v2" :key="dict.value" :label="dict.label"
+                  :value="dict.value"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip class="item" effect="light" content="设备触发动作"
-                        placement="right-start">
+            <el-tooltip class="item" effect="light" content="设备触发动作" placement="right-start">
               <i class="el-icon-question" />
             </el-tooltip>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="22">
+          <el-col :span="22" style="width:80%">
             <el-form-item label="策略" prop="v3">
-              <el-select v-model="form.v3" placeholder="请选择策略">
-                <el-option
-                  v-for="dict in dict.type.link_casbinRule_v3"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
+              <el-select v-model="form.v3" placeholder="请选择策略" style="width:100%">
+                <el-option v-for="dict in dict.type.link_casbinRule_v3" :key="dict.value" :label="dict.label"
+                  :value="dict.value"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip class="item" effect="light" content="执行策略"
-                        placement="right-start">
+            <el-tooltip class="item" effect="light" content="执行策略" placement="right-start">
               <i class="el-icon-question" />
             </el-tooltip>
           </el-col>
@@ -256,6 +188,10 @@ export default {
   dicts: ['link_device_protocol_type', 'link_casbinRule_v2', 'link_casbinRule_v3'],
   data() {
     return {
+      ruleName: "",
+      prompt: "请输入规则名称",
+      contene: "规则名称支持类型如下：clientId（限制clientId）、IP网段（限制ip或网段）、all（限制所有）",
+      disabled: false,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -298,6 +234,25 @@ export default {
     this.getList();
   },
   methods: {
+    setContene() {
+      // console.log(this.form.v0);
+      if (this.form.v0 === '1') {
+        this.disabled = false
+        this.ruleName = ''
+        this.prompt = '请输入clientId'
+        this.contene = '限制该clientId'
+      } else if (this.form.v0 === '2') {
+        this.disabled = false
+        this.ruleName = ''
+        this.contene = '限制该ip或网段,示例格式：ip{192.168.0.120}、ip{192.168.0.120/24}'
+        this.prompt = '请输入ip或网段信息'
+      } else if (this.form.v0 === '3') {
+        this.disabled = true
+        this.ruleName = 'all';
+        this.contene = 'all限制所有';
+        this.prompt = "输入框值默认为all";
+      }
+    },
     /** 查询CAS规则管理列表 */
     getList() {
       this.loading = true;
@@ -339,7 +294,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -381,12 +336,12 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除CAS规则管理编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除CAS规则管理编号为"' + ids + '"的数据项？').then(function () {
         return delCasbinRule(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => { });
     },
     /** 导出按钮操作 */
     handleExport() {
