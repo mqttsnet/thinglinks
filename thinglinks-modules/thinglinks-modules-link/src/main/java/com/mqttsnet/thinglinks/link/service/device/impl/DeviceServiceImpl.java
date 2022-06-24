@@ -9,8 +9,10 @@ import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
+import com.mqttsnet.thinglinks.link.service.device.DeviceTopicService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +23,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -52,6 +51,8 @@ public class DeviceServiceImpl implements DeviceService {
     private RedisService redisService;
     @Resource
     private RemotePublishActorService remotePublishActorService;
+    @Autowired
+    private DeviceTopicService deviceTopicService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -194,7 +195,7 @@ public class DeviceServiceImpl implements DeviceService {
      * @return 结果
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public int insertDevice(Device device)throws Exception {
         Device oneByClientIdAndDeviceIdentification = deviceMapper.findOneByClientIdOrDeviceIdentification(device.getClientId(), device.getDeviceIdentification());
         if(StringUtils.isNotNull(oneByClientIdAndDeviceIdentification)){
@@ -206,6 +207,41 @@ public class DeviceServiceImpl implements DeviceService {
         device.setCreateBy(sysUser.getUserName());
         device.setCreateTime(DateUtils.getNowDate());
         final int insertDeviceCount = deviceMapper.insertDevice(device);
+        //基础TOPIC处理
+        Map<String, String> topicMap = new HashMap<>();
+        topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/add","边设备添加子设备");
+        topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/addResponse","物联网平台返回的添加子设备的响应");
+        topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/delete","边设备删除子设备");
+        topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/deleteResponse","物联网平台返回的删除子设备的响应");
+        topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/update","边设备更新子设备状态");
+        topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/updateResponse","物联网平台返回的更新子设备状态的响应");
+        topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/datas","边设备上报数据");
+        topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/command","物联网平台给设备或边设备下发命令");
+        topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/commandResponse","边设备返回给物联网平台的命令响应");
+        if (insertDeviceCount>0){
+            for(Map.Entry<String,String> entry : topicMap.entrySet()) {
+                DeviceTopic deviceTopic = new DeviceTopic();
+                deviceTopic.setDeviceIdentification(device.getDeviceIdentification());
+                deviceTopic.setType("0");
+                deviceTopic.setTopic(entry.getKey());
+                if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("datas")){
+                    deviceTopic.setPublisher("边设备");
+                    deviceTopic.setSubscriber("物联网平台");
+                }else if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("commandResponse")) {
+                    deviceTopic.setPublisher("边设备");
+                    deviceTopic.setSubscriber("物联网平台");
+                }else if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("Response")) {
+                    deviceTopic.setPublisher("物联网平台");
+                    deviceTopic.setSubscriber("边设备");
+                }else {
+                    deviceTopic.setPublisher("边设备");
+                    deviceTopic.setSubscriber("物联网平台");
+                }
+                deviceTopic.setRemark(entry.getValue());
+                deviceTopic.setCreateBy(sysUser.getUserName());
+                deviceTopicService.insertSelective(deviceTopic);
+            }
+        }
         return insertDeviceCount;
     }
 

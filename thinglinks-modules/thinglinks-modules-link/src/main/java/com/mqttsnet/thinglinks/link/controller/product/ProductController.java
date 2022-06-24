@@ -16,7 +16,6 @@ import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.RemoteFileService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +23,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * (product)产品表控制层
@@ -165,14 +165,16 @@ public class ProductController extends BaseController {
     }
 
     /**
-     * 初始化生成超级表模型
+     * 初始化数据模型
      * @param productIds 产品ID集合
      * @param initializeOrNot  是否初始化
      * @return
      * @throws Exception
      */
-    @GetMapping(value = "/findCreateSuperTableDataModel/{productIds}/{initializeOrNot}")
-    public AjaxResult findCreateSuperTableDataModel(@PathVariable("productIds") Long[] productIds,@PathVariable("initializeOrNot") Boolean initializeOrNot) throws Exception {
+    @PreAuthorize(hasPermi = "link:product:initialize")
+    @Log(title = "产品管理", businessType = BusinessType.OTHER)
+    @GetMapping(value = "/initializeDataModel/{productIds}/{initializeOrNot}")
+    public AjaxResult initializeDataModel(@PathVariable("productIds") Long[] productIds,@PathVariable("initializeOrNot") Boolean initializeOrNot) throws Exception {
         try {
             final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel(productIds,initializeOrNot);
             return AjaxResult.success(superTableDataModel);
@@ -184,22 +186,19 @@ public class ProductController extends BaseController {
 
     /**
      * 快捷生成产品模型json数据
-     * @param content 模型json数据
-     * @param appId 应用ID
-     * @param templateId  产品模型模板ID
-     * @param status 状态(字典值：启用  停用)
+     * @param params (content 模型json数据、appId 应用ID、templateId  产品模型模板ID、status 状态(字典值：启用  停用))
      * @return AjaxResult
      * @throws Exception
      */
     @PreAuthorize(hasPermi = "link:product:generate")
     @Log(title = "产品管理", businessType = BusinessType.INSERT)
     @PostMapping("/generateProductJson")
-    public AjaxResult generateProductJson(String content,
-                                          String appId,
-                                          String templateId,
-                                          String status
-    ) throws Exception {
-        AjaxResult ajaxResult = productService.productJsonDataAnalysis(JSONObject.parseObject(content),appId,templateId,status);
+    public AjaxResult generateProductJson(@RequestBody Map<String, Object> params) throws Exception {
+        final Object content = params.get("content");
+        final Object appId = params.get("appId");
+        final Object templateId = params.get("templateId");
+        final Object status = params.get("status");
+        AjaxResult ajaxResult = productService.productJsonDataAnalysis(JSONObject.parseObject(JSON.toJSONString(content)),appId.toString(),templateId.toString(),status.toString());
         return ajaxResult;
     }
 

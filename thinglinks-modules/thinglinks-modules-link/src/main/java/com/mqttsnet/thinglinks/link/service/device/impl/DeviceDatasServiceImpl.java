@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -154,7 +153,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * @param thinglinksMessage
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void insertBaseDatas(JSONObject thinglinksMessage) throws Exception {
         String topic = thinglinksMessage.getString("topic");
         String qos = thinglinksMessage.getString("qos");
@@ -227,7 +226,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * @param msg                  数据
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public String processingTopoAddTopic(String deviceIdentification, String msg) throws Exception{
         final TopoAddDatas topoAddDatas = JSONObject.toJavaObject(JSONObject.parseObject(msg), TopoAddDatas.class);
         Map responseMaps = new HashMap<>();

@@ -1,5 +1,4 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
-import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -239,7 +238,7 @@ public class ProductServiceImpl implements ProductService{
      * @return 解析结果
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public AjaxResult productJsonDataAnalysis(JSONObject content,String appId,String templateId,String status) throws Exception{
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
@@ -281,13 +280,13 @@ public class ProductServiceImpl implements ProductService{
             List readUnit = JsonPath.read(content.toJSONString(), "$..properties[*].unit");
             Map<String, Object> parsingErrorMessages = new HashMap<>();
             List<Object> list = new ArrayList<>();
-            //验证datatype数据格式（int、decimal、string、bool、dateTime、jsonObject）
+            //验证datatype数据格式（int、decimal、string、binary、bool、timestamp、json）
             readDatatype.forEach(item -> {
-                boolean flag = "int".equals(item) || "decimal".equals(item) || "string".equals(item)
-                        || "bool".equals(item) || "dateTime".equals(item) || "jsonObject".equals(item);
+                boolean flag = "int".equals(item) || "decimal".equals(item) || "string".equals(item) || "binary".equals(item)
+                        || "bool".equals(item) || "timestamp".equals(item) || "json".equals(item);
                 list.add(flag);
                 if (list.contains(false)) {
-                    parsingErrorMessages.put("datatype:"+item,"Invalid product: Invalid dataType,must be one of [int、decimal、string、bool、dateTime、jsonObject]");
+                    parsingErrorMessages.put("datatype:"+item,"Invalid product: Invalid dataType,must be one of [int、decimal、string、binary、bool、timestamp、json]");
                 }
             });
             if (!parsingErrorMessages.isEmpty()){
@@ -360,7 +359,7 @@ public class ProductServiceImpl implements ProductService{
      * @throws Exception
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public AjaxResult createSuperTable(Product product,JSONArray services) throws Exception{
         //构建超级表入参对象
         SuperTableDto superTableDto = new SuperTableDto();

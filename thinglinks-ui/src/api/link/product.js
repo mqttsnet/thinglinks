@@ -51,3 +51,15 @@ export function delProduct(id) {
 //     data: data
 //   })
 // }
+
+/**
+ * 初始化数据模型
+ * @param productIds 产品ID集合
+ * @param initializeOrNot  是否初始化
+ */
+// export function initializeDataModel(productIds,initializeOrNot) {
+//   return request({
+//     url: '/link/product/initializeDataModel/' + productIds + initializeOrNot,
+//     method: 'get'
+//   })
+// }

@@ -88,7 +88,9 @@ public class TdEngineController {
             String message = e.getCause().getMessage();
             try {
                 message = message.substring(message.lastIndexOf("invalid operation"));
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+            }
             log.error(message);
             return R.fail(message);
         } catch (SQLException e) {
