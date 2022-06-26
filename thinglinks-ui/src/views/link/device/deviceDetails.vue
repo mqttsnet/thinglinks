@@ -181,7 +181,7 @@
                 <el-tab-pane label="设备影子" name="third">
                     <el-tabs v-model="TopicactiveName">
                         <el-tab-pane label="列表" name="first">
-                            <el-table :data="TopicList" style="width: 100%">
+                            <el-table :data="topicList" style="width: 100%">
                                 <el-table-column prop="Topic" label="Topic" width="280">
                                 </el-table-column>
                                 <el-table-column prop="Publisher" label="Publisher(发布者)" width="180">
@@ -200,6 +200,25 @@
                             </el-button>
                         </el-tab-pane>
                     </el-tabs>
+                </el-tab-pane>
+                <el-tab-pane label="设备动作" name="fourth" style="width:100%">
+                    <el-table :data="equipmentActionList" style="width: 100%">
+                        <el-table-column prop="id" label="ID" width="280">
+                        </el-table-column>
+                        <el-table-column prop="deviceIdentification" label="设备标识" width="180">
+                        </el-table-column>
+                        <el-table-column prop="message" label="信息" width="180">
+                        </el-table-column>
+                        <el-table-column prop="actionType" label="操作类型" width="180">
+                        </el-table-column>
+                        <el-table-column prop="status" label="状态" width="180">
+                            <template slot-scope="scope">
+                                <el-button type="success" v-text="scope.row.status ? '成功' : '失败'"></el-button>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="createTime" label="创建时间" width="180">
+                        </el-table-column>
+                    </el-table>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -239,9 +258,12 @@ import {
     getDevice,
 } from "@/api/link/device";
 import { listTopic, getTopic, delTopic, addTopic, updateTopic } from "@/api/link/topic";
+import { listAction } from "@/api/link/action";
 export default {
     data() {
         return {
+            //设备动作列表
+            equipmentActionList: [],
             // 非单个禁用
             single: true,
             // 非多个禁用
@@ -273,20 +295,13 @@ export default {
             show: true,
             // 设备Topic数据表格数据
             topicList: [],
-            //Topic列表默认数据
-            TopicList: [{
-                Topic: '/v1/devices/{deviceId}/topo/add',
-                Publisher: '边设备',
-                Subscriber: "物联网平台",
-                address: '边设备添加子设备'
-            }],
             //json数据转换
             detailJSON: "",
             // 查询参数
             queryParams: {
                 pageNum: 1,
                 pageSize: 10,
-                deviceIdentification: '123',
+                deviceIdentification: null,
                 type: 0,
                 topic: null,
                 publisher: null,
@@ -297,7 +312,13 @@ export default {
     watch: {
         deviceInfo() {
             this.queryParams.deviceIdentification = this.deviceInfo.deviceIdentification
+            this.getList()
         },
+        activeName(value) {
+            if (value === 'fourth') {
+                this.getEquipmentActionList()
+            }
+        }
     },
     methods: {
         /** 导出按钮操作 */
@@ -393,10 +414,24 @@ export default {
                 this.getList()
             }
         },
+        //查询设备动作列表
+        getEquipmentActionList() {
+            // console.log(this.deviceInfo);
+            let query = { deviceIdentification: this.deviceInfo.deviceIdentification }
+            listAction(query).then(res => {
+                this.equipmentActionList = res.rows
+                console.log(this.equipmentActionList);
+
+            }).catch(res, err => {
+                console.log(res, err);
+            })
+        },
         /** 查询设备Topic数据列表 */
         getList() {
             this.loading = true;
             listTopic(this.queryParams).then(response => {
+                // console.log(this.queryParams);
+                // console.log(response);
                 this.topicList = response.rows;
                 this.total = response.total;
                 this.loading = false;
@@ -424,7 +459,7 @@ export default {
             getDevice(this.id).then((response) => {
                 this.deviceInfo = response.data
                 this.detailJSON = JSON.stringify(response.data)
-                console.log(response.data);
+                // console.log(response.data);
             })
         },
         //验证json并格式化
@@ -459,7 +494,6 @@ export default {
     created() {
         this.id = this.$route.query.id
         this.getDetail();
-        this.topicSwitch();
     }
 }
 </script>
