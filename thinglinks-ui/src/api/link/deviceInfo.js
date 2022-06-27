@@ -42,3 +42,12 @@ export function delDeviceInfo(id) {
     method: 'delete'
   })
 }
+
+// 查询子设备影子数据
+// export function getDeviceInfoShadow(data) {
+//   return request({
+//     url: '/link/getDeviceInfoShadow',
+//     method: 'post',
+//     data: data
+//   })
+// }

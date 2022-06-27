@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
+import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
@@ -7,11 +8,17 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceInfoMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
+import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @Description: 子设备档案接口实现
@@ -25,12 +32,18 @@ import java.util.List;
  * @Version: V1.0
  */
 @Service
+@Slf4j
 public class DeviceInfoServiceImpl implements DeviceInfoService {
 
     @Resource
     private DeviceInfoMapper deviceInfoMapper;
     @Autowired
     private DeviceService deviceService;
+    @Resource
+    private RemoteTdEngineService remoteTdEngineService;
+
+    @Value("${spring.datasource.dynamic.datasource.master.dbName:thinglinks}")
+    private String dataBaseName;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -170,6 +183,51 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     {
         return deviceInfoMapper.deleteDeviceInfoById(id);
     }
+
+    /**
+     * 查询子设备影子数据
+     *
+     * @param ids 需要查询的子设备id
+     * @param startTime 开始时间 格式：yyyy-MM-dd HH:mm:ss
+     * @param endTime 结束时间 格式：yyyy-MM-dd HH:mm:ss
+     * @return 子设备影子数据
+     */
+    @Override
+    public Map<String, List<Map<String, Object>>> getDeviceInfoShadow(String ids,String startTime,String endTime) {
+        List<Long> idCollection = Arrays.stream(ids.split(",")).mapToLong(Long::parseLong).boxed().collect(Collectors.toList());
+        List<DeviceInfo> deviceInfos = deviceInfoMapper.findAllByIdInAndStatus(idCollection, "0");
+        if (StringUtils.isNull(deviceInfos)) {
+            log.error("查询子设备影子数据失败，子设备不存在");
+            return null;
+        }
+        Map<String, List<Map<String, Object>>> map = new HashMap<>();
+        deviceInfos.forEach(deviceInfo -> {
+            List<String> shadowTableNameCollect = Stream.of(deviceInfo.getShadowTableName().split(",")).collect(Collectors.toList());
+            shadowTableNameCollect.forEach(shadowTableName -> {
+                SelectDto selectDto = new SelectDto();
+                selectDto.setDataBaseName(dataBaseName);
+                selectDto.setTableName(shadowTableName);
+                selectDto.setFieldName("ts");
+                selectDto.setStartTime(DateUtils.localDateTime2Millis(DateUtils.dateToLocalDateTime(DateUtils.strToDate(startTime))));
+                selectDto.setEndTime(DateUtils.localDateTime2Millis(DateUtils.dateToLocalDateTime(DateUtils.strToDate(endTime))));
+                R<?> dataByTimestamp = remoteTdEngineService.getDataByTimestamp(selectDto);
+                if (StringUtils.isNull(dataByTimestamp)) {
+                    log.error("查询子设备影子数据失败，子设备影子数据不存在");
+                }else {
+                    List<Map<String, Object>> data = (List<Map<String, Object>>) dataByTimestamp.getData();
+                    map.put(shadowTableName, data);
+                    log.info("查询子设备影子数据成功，子设备影子数据：{}", (List<Map<String, Object>>) dataByTimestamp.getData());
+
+                }
+            });
+        });
+        return map;
+    }
+
+	@Override
+	public List<DeviceInfo> findAllByIdInAndStatus(Collection<Long> idCollection, String status){
+		 return deviceInfoMapper.findAllByIdInAndStatus(idCollection,status);
+	}
 
 
 

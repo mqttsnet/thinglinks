@@ -109,6 +109,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         Gson gson = new Gson();
         Map<String, Object> map = new HashMap<>();
         map = gson.fromJson(thinglinksMessage, map.getClass());
+        int i = deviceService.updateConnectStatusByClientId("ONLINE", String.valueOf(map.get("clientIdentifier")));
         DeviceAction deviceAction = new DeviceAction();
         deviceAction.setDeviceIdentification(String.valueOf(map.get("clientIdentifier")));
         deviceAction.setActionType(String.valueOf(map.get("channelStatus")));

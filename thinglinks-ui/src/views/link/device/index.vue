@@ -35,7 +35,7 @@
         <p>
           <span>二次开发：</span>
           <a href="#" style="color:#357DF5;margin-right:20px">下载Demo</a>
-          <a href="#" style="color:#357DF5">开发文档</a>
+          <a href="https://bbs.csdn.net/forums/thinglinks" target="_blank" style="color:#357DF5">开发文档</a>
         </p>
       </div>
     </div>

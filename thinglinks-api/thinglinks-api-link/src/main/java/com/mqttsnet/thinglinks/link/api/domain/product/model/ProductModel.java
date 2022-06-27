@@ -16,7 +16,7 @@ import java.util.List;
 public class ProductModel {
     private static final long serialVersionUID = 1L;
     private String productName;
-    private Integer productType;
+    private String productType;
     private String manufacturerId;
     private String manufacturerName;
     private String model;

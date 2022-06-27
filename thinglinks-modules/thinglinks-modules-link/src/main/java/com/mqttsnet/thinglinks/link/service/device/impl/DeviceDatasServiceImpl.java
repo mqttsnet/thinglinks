@@ -322,6 +322,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * @param msg                  数据
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public String processingTopoDeleteTopic(String deviceIdentification, String msg) throws Exception {
         Map responseMaps = new HashMap<>();
         List<Map<String, Object>> dataList = new ArrayList();
@@ -360,6 +361,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * @param msg                  数据
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public String processingTopoUpdateTopic(String deviceIdentification, String msg) throws Exception {
         JSONObject message = JSONObject.parseObject(msg);
         Map responseMaps = new HashMap<>();
@@ -412,6 +414,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * @param msg                  数据
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void processingDatasTopic(String deviceIdentification, String msg) throws Exception{
         //根据返回的json解析出上报的数据data，所属的服务serviceName，事件发生的时间eventTime
         Map<String, Object> resultMap = StringUtils.jsonToMap(msg);
@@ -526,6 +529,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * @param msg                  数据
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void processingTopoCommandResponseTopic(String deviceIdentification, String msg) throws Exception {
 
     }
