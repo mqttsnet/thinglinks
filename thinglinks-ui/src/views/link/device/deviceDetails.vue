@@ -58,7 +58,7 @@
                 </p>
             </div>
         </div>
-        <div class="detail" style="height:400px;">
+        <div class="detail">
             <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
                 v-hasPermi="['link:topic:add']" :disabled="add ? false : true">新增</el-button>
             <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
@@ -135,12 +135,11 @@
                         </p>
                     </div>
                 </el-tab-pane>
-
-                <el-tab-pane label="Topic列表" name="second" style="width:100%">
-                    <el-tabs v-model="TopicactiveName" @tab-click="topicSwitch" style="width:100%">
-                        <el-tab-pane label="基础Topic" name="first" style="width:100%">
+                <el-tab-pane label="Topic列表" name="second" style="width:100%;height:100%">
+                    <el-tabs v-model="TopicactiveName" @tab-click="topicSwitch" style="width:100%;height:100%">
+                        <el-tab-pane label="基础Topic" name="first" style="width:100%;height:100%">
                             <el-table v-loading="loading" :data="topicList" @selection-change="handleSelectionChange"
-                                style="width:100%">
+                                style="width:100%" max-height="500">
                                 <el-table-column type="selection" width="55" align="center" />
                                 <el-table-column label="id" align="center" prop="id" />
                                 <el-table-column label="设备标识" align="center" prop="deviceIdentification" />
@@ -151,10 +150,12 @@
                                 <el-table-column label="订阅者" align="center" prop="subscriber" />
                                 <el-table-column label="备注" align="center" prop="remark" />
                             </el-table>
+                            <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+                                :limit.sync="queryParams.pageSize" @pagination="getList" />
                         </el-tab-pane>
-                        <el-tab-pane label="自定义Topic" name="second" style="width:100%">
+                        <el-tab-pane label="自定义Topic" name="second" style="width:100%;height: 100%;">
                             <el-table v-loading="loading" :data="topicList" @selection-change="handleSelectionChange"
-                                style="width:100%">
+                                style="width:100%;height:100%" max-height="500">
                                 <el-table-column type="selection" width="55" align="center" />
                                 <el-table-column label="id" align="center" prop="id" />
                                 <el-table-column label="设备标识" align="center" prop="deviceIdentification" />
@@ -175,13 +176,15 @@
                                     </template>
                                 </el-table-column>
                             </el-table>
+                            <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+                                :limit.sync="queryParams.pageSize" @pagination="getList" />
                         </el-tab-pane>
                     </el-tabs>
                 </el-tab-pane>
-                <el-tab-pane label="设备影子" name="third">
-                    <el-tabs v-model="TopicactiveName">
-                        <el-tab-pane label="列表" name="first">
-                            <el-table :data="topicList" style="width: 100%">
+                <el-tab-pane label="设备影子" name="third" style="width:100%;height: 100%;">
+                    <el-tabs v-model="TopicactiveName" style="width:100%;height: 100%;">
+                        <el-tab-pane label="列表" name="first" style="width:100%;height:100%">
+                            <el-table :data="topicList" style="width: 100%" max-height="500">
                                 <el-table-column prop="Topic" label="Topic" width="280">
                                 </el-table-column>
                                 <el-table-column prop="Publisher" label="Publisher(发布者)" width="180">
@@ -191,34 +194,42 @@
                                 <el-table-column prop="address" label="用途" width="180">
                                 </el-table-column>
                             </el-table>
+                            <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+                                :limit.sync="queryParams.pageSize" @pagination="getList" />
                         </el-tab-pane>
-                        <el-tab-pane label="JSON" name="second">
-                            <el-input class="textJson" type="textarea" :autosize="{ minRows: 6 }" resize="none"
-                                :value="detailJSON" placeholder="无内容"></el-input>
-                            <el-button size="medium" style="margin-top: 10px" type="primary" @click="decoration">
+                        <el-tab-pane label="JSON" name="second" style="width: 100%;height:100%">
+                            <el-button size="medium" style="margin: 10px 0 10px 0" type="primary" @click="decoration">
                                 格式化
                             </el-button>
+                            <el-input class="textJson" type="textarea" style="width:100%" :autosize="{ minRows: 5 }"
+                                resize="none" :value="detailJSON" placeholder="无内容">
+                            </el-input>
                         </el-tab-pane>
                     </el-tabs>
                 </el-tab-pane>
-                <el-tab-pane label="设备动作" name="fourth" style="width:100%">
-                    <el-table :data="equipmentActionList" style="width: 100%">
-                        <el-table-column prop="id" label="ID" width="280">
-                        </el-table-column>
-                        <el-table-column prop="deviceIdentification" label="设备标识" width="180">
-                        </el-table-column>
-                        <el-table-column prop="message" label="信息" width="180">
-                        </el-table-column>
-                        <el-table-column prop="actionType" label="操作类型" width="180">
-                        </el-table-column>
-                        <el-table-column prop="status" label="状态" width="180">
-                            <template slot-scope="scope">
-                                <el-button type="success" v-text="scope.row.status ? '成功' : '失败'"></el-button>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="createTime" label="创建时间" width="180">
-                        </el-table-column>
-                    </el-table>
+                <el-tab-pane label="设备动作" name="fourth" style="width:100%;height: 100%;">
+                    <div style="width:100%;height:100%">
+                        <el-table :data="equipmentActionList" style="width: 100%;height: 100%;" max-height="500">
+                            <el-table-column prop="id" label="ID" width="280">
+                            </el-table-column>
+                            <el-table-column prop="deviceIdentification" label="设备标识" width="280">
+                            </el-table-column>
+                            <el-table-column prop="message" label="信息" width="280">
+                            </el-table-column>
+                            <el-table-column prop="actionType" label="操作类型" width="280">
+                            </el-table-column>
+                            <el-table-column prop="status" label="状态" width="280">
+                                <template slot-scope="scope">
+                                    <el-button type="success" v-text="scope.row.status ? '成功' : '失败'"></el-button>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="createTime" label="创建时间" width="180">
+                            </el-table-column>
+                        </el-table>
+                        <pagination v-show="actionListTotal > 0" :total="actionListTotal"
+                            :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+                            @pagination="getEquipmentActionList" />
+                    </div>
                 </el-tab-pane>
             </el-tabs>
         </div>
@@ -262,6 +273,9 @@ import { listAction } from "@/api/link/action";
 export default {
     data() {
         return {
+            //分页总条数
+            total: 0,
+            actionListTotal: 0,
             //设备动作列表
             equipmentActionList: [],
             // 非单个禁用
@@ -321,6 +335,24 @@ export default {
         }
     },
     methods: {
+        //分页
+        turnThePage(page) {
+            console.log(page);
+            this.queryParams.pageNum = page
+            this.getList();
+        },
+        //上一页
+        pageUp(page) {
+            console.log(page);
+            this.queryParams.pageNum = page
+            this.getList();
+        },
+        pageNext(page) {
+            console.log(page);
+            this.queryParams.pageNum = page
+            this.getList();
+        },
+        //下一页
         /** 导出按钮操作 */
         handleExport() {
             this.download('link/topic/export', {
@@ -416,14 +448,17 @@ export default {
         },
         //查询设备动作列表
         getEquipmentActionList() {
+            this.loading = true;
             // console.log(this.deviceInfo);
-            let query = { deviceIdentification: this.deviceInfo.deviceIdentification }
-            listAction(query).then(res => {
-                this.equipmentActionList = res.rows
-                console.log(this.equipmentActionList);
-
-            }).catch(res, err => {
-                console.log(res, err);
+            this.queryParams.deviceIdentification = this.deviceInfo.deviceIdentification
+            listAction(this.queryParams).then(response => {
+                console.log(response);
+                this.equipmentActionList = response.rows
+                this.actionListTotal = response.total
+                // console.log(this.equipmentActionList);
+                this.loading = false;
+            }).catch(response, err => {
+                console.log(response, err);
             })
         },
         /** 查询设备Topic数据列表 */
@@ -431,7 +466,7 @@ export default {
             this.loading = true;
             listTopic(this.queryParams).then(response => {
                 // console.log(this.queryParams);
-                // console.log(response);
+                this.actionListTotal = response.total
                 this.topicList = response.rows;
                 this.total = response.total;
                 this.loading = false;
@@ -536,6 +571,7 @@ export default {
 
 .detail {
     width: 100%;
+    height: 100%;
     margin: 0 0 10px 10px;
     padding: 20px 30px;
     background: #F8F8F9;
@@ -543,31 +579,42 @@ export default {
     font-weight: 700;
     color: #515a6e;
 
-    .el-tab-pane {
-        width: 80%;
-        height: 300px;
-        display: flex;
-        justify-content: space-between;
+    .el-tabs {
+        height: 100%;
 
-        .equipment_attribute {
-            width: 35%;
-            height: 100%;
+        .el-tab-pane {
+            width: 80%;
+            height: 300px;
             display: flex;
-            flex-direction: column;
-            justify-content: space-around;
+            justify-content: space-between;
 
-            p {
-                width: 100%;
-                display: flex;
-                align-items: center;
-
-                span:first-child {
+            .el-tabs {
+                .el-tab-pane {
                     display: block;
-                    width: 30%;
+                }
+            }
+
+            .equipment_attribute {
+                width: 35%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+
+                p {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+
+                    span:first-child {
+                        display: block;
+                        width: 30%;
+                    }
                 }
             }
         }
     }
+
 }
 
 .demo-input-suffix {
@@ -584,5 +631,9 @@ export default {
     .el-select {
         width: 50%;
     }
+}
+
+.pagination-container {
+    height: 50px;
 }
 </style>

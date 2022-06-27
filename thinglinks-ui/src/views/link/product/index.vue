@@ -619,7 +619,7 @@
                     <el-col :span="22">
                       <el-input v-model="proItem.max" autocomplete="off" @change="maxValue(proItem.max, $event)"
                         placeholder="最大值">
-                        <el-button @click="handleMinus(index)" slot="prepend" icon="el-icon-minus"></el-button>
+                        <el-button @click="handleMinus('max', index)" slot="prepend" icon="el-icon-minus"></el-button>
                         <el-button @click="handlePlus(index)" slot="append" icon="el-icon-plus"></el-button>
                       </el-input>
                     </el-col>
@@ -979,6 +979,18 @@ export default {
   watch: {
   },
   methods: {
+    //加减操作
+    handleMinus(value, index) {
+      if (value === 'max') {
+        this.dialogquick.form.services[index].properties[index].max--
+        if (this.dialogquick.form.services[index].properties[index].max < 0) {
+          this.dialogquick.form.services[index].properties[index].max = 0
+        }
+      }
+    },
+    handlePlus() {
+
+    },
     //最大值||最大长度极值判定
     maxValue(value, event) {
       console.log(value, event);
