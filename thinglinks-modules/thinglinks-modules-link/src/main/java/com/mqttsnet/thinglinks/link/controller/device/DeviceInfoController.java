@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 子设备管理Controller
@@ -95,5 +96,20 @@ public class DeviceInfoController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(deviceInfoService.deleteDeviceInfoByIds(ids));
+    }
+
+    /**
+     * 查询子设备影子数据
+     * @param params
+     * @return
+     */
+    @PreAuthorize(hasPermi = "link:deviceInfo:shadow")
+    @PostMapping(value = "/getDeviceInfoShadow")
+    public AjaxResult getDeviceInfoShadow(@RequestBody Map<String, Object> params)
+    {
+        final Object ids = params.get("ids");
+        final Object startTime = params.get("startTime");
+        final Object endTime = params.get("endTime");
+        return AjaxResult.success(deviceInfoService.getDeviceInfoShadow(ids.toString(), startTime.toString(), endTime.toString()));
     }
 }

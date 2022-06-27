@@ -4,6 +4,7 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -121,5 +122,14 @@ public interface DeviceInfoMapper {
      * @return 结果
      */
     public int deleteDeviceInfoByIds(Long[] ids);
+
+    List<DeviceInfo> findAllByIdInAndStatus(@Param("idCollection")Collection<Long> idCollection,@Param("status")String status);
+
+
+
+
+
+
+
 
 }

@@ -2,7 +2,9 @@ package com.mqttsnet.thinglinks.link.service.device;
 
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 子设备档案接口
@@ -93,6 +95,20 @@ public interface DeviceInfoService {
      * @return 结果
      */
     public int deleteDeviceInfoById(Long id);
+
+    /**
+     * 查询子设备影子数据
+     *
+     * @param ids 需要查询的子设备id
+     * @param startTime 开始时间 格式：yyyy-MM-dd HH:mm:ss
+     * @param endTime 结束时间 格式：yyyy-MM-dd HH:mm:ss
+     * @return 子设备影子数据
+     */
+    public Map<String, List<Map<String, Object>>> getDeviceInfoShadow(String ids, String startTime, String endTime);
+
+
+
+	List<DeviceInfo> findAllByIdInAndStatus(Collection<Long> idCollection, String status);
 
 }
 
