@@ -53,4 +53,6 @@ public interface TdEngineMapper {
      * @return
      */
     Integer checkTableExists(@Param("dataBaseName") String dataBaseName, @Param("tableName")String tableName);
+
+    List<Map<String, Object>> getLastData(SelectDto selectDto);
 }

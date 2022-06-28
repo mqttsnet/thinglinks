@@ -207,18 +207,29 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
                 SelectDto selectDto = new SelectDto();
                 selectDto.setDataBaseName(dataBaseName);
                 selectDto.setTableName(shadowTableName);
-                selectDto.setFieldName("ts");
-                selectDto.setStartTime(DateUtils.localDateTime2Millis(DateUtils.dateToLocalDateTime(DateUtils.strToDate(startTime))));
-                selectDto.setEndTime(DateUtils.localDateTime2Millis(DateUtils.dateToLocalDateTime(DateUtils.strToDate(endTime))));
-                R<?> dataByTimestamp = remoteTdEngineService.getDataByTimestamp(selectDto);
-                if (StringUtils.isNull(dataByTimestamp)) {
-                    log.error("查询子设备影子数据失败，子设备影子数据不存在");
-                }else {
-                    List<Map<String, Object>> data = (List<Map<String, Object>>) dataByTimestamp.getData();
-                    map.put(shadowTableName, data);
-                    log.info("查询子设备影子数据成功，子设备影子数据：{}", (List<Map<String, Object>>) dataByTimestamp.getData());
+                if (StringUtils.isNotEmpty(startTime) && StringUtils.isNotEmpty(endTime)) {
+                    selectDto.setFieldName("ts");
+                    selectDto.setStartTime(DateUtils.localDateTime2Millis(DateUtils.dateToLocalDateTime(DateUtils.strToDate(startTime))));
+                    selectDto.setEndTime(DateUtils.localDateTime2Millis(DateUtils.dateToLocalDateTime(DateUtils.strToDate(endTime))));
+                    R<?> dataByTimestamp = remoteTdEngineService.getDataByTimestamp(selectDto);
+                    if (StringUtils.isNull(dataByTimestamp)) {
+                        log.error("查询子设备影子数据失败，子设备影子数据不存在");
+                    }else {
+                        map.put(shadowTableName, (List<Map<String, Object>>) dataByTimestamp.getData());
+                        log.info("查询子设备影子数据成功，子设备影子数据：{}", dataByTimestamp.getData());
 
+                    }
+                }else{
+                    R<?> lastData = remoteTdEngineService.getLastData(selectDto);
+                    if (StringUtils.isNull(lastData)) {
+                        log.error("查询子设备影子数据失败，子设备影子数据不存在");
+                    }else {
+                        map.put(shadowTableName, (List<Map<String, Object>>) lastData.getData());
+                        log.info("查询子设备影子数据成功，子设备影子数据：{}", lastData.getData());
+
+                    }
                 }
+
             });
         });
         return map;

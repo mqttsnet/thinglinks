@@ -57,6 +57,11 @@ public class RemoteTdEngineFallbackFactory implements FallbackFactory<RemoteTdEn
             public R<?> getDataByTimestamp(SelectDto selectDto) {
                 return R.fail("查询数据失败:{}", throwable.getMessage());
             }
+
+            @Override
+            public R<?> getLastData(SelectDto selectDto) {
+                return R.fail("查询最新数据失败:{}", throwable.getMessage());
+            }
         };
     }
 }

@@ -280,4 +280,9 @@
     <select id="checkTableExists" resultType="java.lang.Integer">
         SELECT COUNT(0) FROM #{dataBaseName}.#{tableName}
     </select>
+
+    <select id="getLastData" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto"
+            resultType="Map">
+        select last(*) from #{dataBaseName}.#{tableName}
+    </select>
 </mapper>

@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
 public class DeviceServiceImpl implements DeviceService {
 
     @Resource

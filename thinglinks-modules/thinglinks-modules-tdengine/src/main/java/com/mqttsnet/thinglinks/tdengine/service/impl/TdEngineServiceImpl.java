@@ -1,20 +1,13 @@
 package com.mqttsnet.thinglinks.tdengine.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.mqttsnet.thinglinks.common.core.constant.Constants;
-import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
-import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.*;
 import com.mqttsnet.thinglinks.tdengine.mapper.TdEngineMapper;
 import com.mqttsnet.thinglinks.tdengine.service.TdEngineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.Cursor;
-import org.springframework.data.redis.core.ScanOptions;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -22,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
 public class TdEngineServiceImpl implements TdEngineService {
 
     @Autowired
@@ -134,6 +126,22 @@ public class TdEngineServiceImpl implements TdEngineService {
         //创建超级表
         this.createSuperTable(schemaFieldsVoList, tagsFieldsVoList, dataBaseName, superTableName);
         log.info("create {} super table success", superTableName);
+    }
+
+    /**
+     * @param selectDto
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> getLastData(SelectDto selectDto) {
+        List<Map<String, Object>> maps = this.tdEngineMapper.getLastData(selectDto);
+        for (Map<String, Object> map : maps) {
+            Map<String, Object> filterMap = map.entrySet()
+                    .stream()
+                    .filter(entry -> entry.getValue() != null)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+        return maps;
     }
 
 
