@@ -135,6 +135,12 @@ export const constantRoutes = [
         component: (resolve) => require(['@/views/link/device/deviceDetails'], resolve),
         name: 'deviceDetails',
         meta: { title: '设备信息', activeMenu: '/link/device' }
+      },
+      {
+        path: 'equipmentShadow',
+        component: (resolve) => require(['@/views/link/deviceInfo/equipmentShadow'], resolve),
+        name: 'equipmentShadow',
+        meta: { title: '设备影子', activeMenu: '/link/device' }
       }
     ]
   },

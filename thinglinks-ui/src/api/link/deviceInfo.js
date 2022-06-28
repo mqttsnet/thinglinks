@@ -44,10 +44,10 @@ export function delDeviceInfo(id) {
 }
 
 // 查询子设备影子数据
-// export function getDeviceInfoShadow(data) {
-//   return request({
-//     url: '/link/getDeviceInfoShadow',
-//     method: 'post',
-//     data: data
-//   })
-// }
+export function getDeviceInfoShadow(data) {
+  return request({
+    url: '/link/deviceInfo/getDeviceInfoShadow',
+    method: 'post',
+    data: data
+  })
+}

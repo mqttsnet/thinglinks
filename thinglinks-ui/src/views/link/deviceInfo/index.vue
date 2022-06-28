@@ -2,96 +2,49 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="边设备" prop="dId">
-        <el-input
-          v-model="queryParams.dId"
-          placeholder="请输入边设备"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.dId" placeholder="请输入边设备" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="应用ID" prop="appId">
-        <el-input
-          v-model="queryParams.appId"
-          placeholder="请输入应用ID"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.appId" placeholder="请输入应用ID" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="设备唯一标识" prop="nodeId">
-        <el-input
-          v-model="queryParams.nodeId"
-          placeholder="请输入设备唯一标识"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.nodeId" placeholder="请输入设备唯一标识" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="设备名称" prop="nodeName">
-        <el-input
-          v-model="queryParams.nodeName"
-          placeholder="请输入设备名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.nodeName" placeholder="请输入设备名称" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="子设备标识" prop="deviceId">
-        <el-input
-          v-model="queryParams.deviceId"
-          placeholder="请输入子设备标识"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.deviceId" placeholder="请输入子设备标识" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="厂商ID" prop="manufacturerId">
-        <el-input
-          v-model="queryParams.manufacturerId"
-          placeholder="请输入厂商ID"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.manufacturerId" placeholder="请输入厂商ID" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="设备型号" prop="model">
-        <el-input
-          v-model="queryParams.model"
-          placeholder="请输入设备型号"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.model" placeholder="请输入设备型号" clearable size="small"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="连接状态" prop="connectStatus">
         <el-select v-model="queryParams.connectStatus" placeholder="请选择连接状态" clearable size="small">
-          <el-option
-            v-for="dict in dict.type.link_device_connect_status"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
+          <el-option v-for="dict in dict.type.link_device_connect_status" :key="dict.value" :label="dict.label"
+            :value="dict.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="是否支持设备影子" prop="shadowEnable">
         <el-select v-model="queryParams.shadowEnable" placeholder="请选择是否支持设备影子" clearable size="small">
-          <el-option
-            v-for="dict in dict.type.link_deviceInfo_shadow_enable"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
+          <el-option v-for="dict in dict.type.link_deviceInfo_shadow_enable" :key="dict.value" :label="dict.label"
+            :value="dict.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
-          <el-option
-            v-for="dict in dict.type.business_data_status"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
+          <el-option v-for="dict in dict.type.business_data_status" :key="dict.value" :label="dict.label"
+            :value="dict.value" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -102,46 +55,20 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['link:deviceInfo:add']"
-        >新增</el-button>
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+          v-hasPermi="['link:deviceInfo:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['link:deviceInfo:edit']"
-        >修改</el-button>
+        <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
+          v-hasPermi="['link:deviceInfo:edit']">修改</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['link:deviceInfo:remove']"
-        >删除</el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['link:deviceInfo:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['link:deviceInfo:export']"
-        >导出</el-button>
+        <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+          v-hasPermi="['link:deviceInfo:export']">导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -153,23 +80,23 @@
       <el-table-column label="应用ID" align="center" prop="appId" />
       <el-table-column label="设备唯一标识" align="center" prop="nodeId" />
       <el-table-column label="设备名称" align="center" prop="nodeName" />
-      <el-table-column label="子设备标识" align="center" prop="deviceId" width="200px"/>
+      <el-table-column label="子设备标识" align="center" prop="deviceId" width="200px" />
       <el-table-column label="设备描述" align="center" prop="description" />
       <el-table-column label="厂商ID" align="center" prop="manufacturerId" />
       <el-table-column label="设备型号" align="center" prop="model" />
       <el-table-column label="连接状态" align="center" prop="connectStatus">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_device_connect_status" :value="scope.row.connectStatus"/>
+          <dict-tag :options="dict.type.link_device_connect_status" :value="scope.row.connectStatus" />
         </template>
       </el-table-column>
       <el-table-column label="是否支持设备影子" align="center" prop="shadowEnable">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_deviceInfo_shadow_enable" :value="scope.row.shadowEnable"/>
+          <dict-tag :options="dict.type.link_deviceInfo_shadow_enable" :value="scope.row.shadowEnable" />
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.business_data_status" :value="scope.row.status"/>
+          <dict-tag :options="dict.type.business_data_status" :value="scope.row.status" />
         </template>
       </el-table-column>
       <el-table-column label="创建者" align="center" prop="createBy" />
@@ -177,7 +104,7 @@
         <template slot-scope="scope">
           <span>{{
               parseTime(scope.row.createTime, "{y}-{m}-{d} {h}:{i}:{s}")
-            }}</span>
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column label="更新者" align="center" prop="updateBy" />
@@ -185,7 +112,7 @@
         <template slot-scope="scope">
           <span>{{
               parseTime(scope.row.updateTime, "{y}-{m}-{d} {h}:{i}:{s}")
-            }}</span>
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
@@ -193,28 +120,25 @@
         <template slot-scope="scope">
           <el-tooltip class="item" effect="light" content="修改" placement="top">
             <el-button circle size="mini" type="primary" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-                       v-hasPermi="['link:deviceInfo:edit']">
+              v-hasPermi="['link:deviceInfo:edit']">
             </el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="light" content="删除" placement="top">
             <el-button circle size="mini" type="primary" icon="el-icon-delete" @click="handleDelete(scope.row)"
-                       v-hasPermi="['link:deviceInfo:remove']">
+              v-hasPermi="['link:deviceInfo:remove']">
             </el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="light" content="设备影子" placement="top">
-            <el-button circle size="mini" type="primary" icon="el-icon-s-operation"></el-button>
+            <router-link :to="{ name: 'equipmentShadow', query: { id: scope.row.id } }">
+              <el-button circle size="mini" type="primary" icon="el-icon-s-operation"></el-button>
+            </router-link>
           </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+      @pagination="getList" />
 
     <!-- 添加或修改子设备管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -245,22 +169,14 @@
         </el-form-item>
         <el-form-item label="连接状态" prop="connectStatus">
           <el-select v-model="form.connectStatus" placeholder="请选择连接状态">
-            <el-option
-              v-for="dict in dict.type.link_device_connect_status"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
+            <el-option v-for="dict in dict.type.link_device_connect_status" :key="dict.value" :label="dict.label"
+              :value="dict.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="是否支持设备影子" prop="shadowEnable">
           <el-select v-model="form.shadowEnable" placeholder="请选择是否支持设备影子">
-            <el-option
-              v-for="dict in dict.type.link_deviceInfo_shadow_enable"
-              :key="dict.value"
-              :label="dict.label"
-              :value="parseInt(dict.value)"
-            ></el-option>
+            <el-option v-for="dict in dict.type.link_deviceInfo_shadow_enable" :key="dict.value" :label="dict.label"
+              :value="parseInt(dict.value)"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="设备影子数据表名" prop="shadowTableName">
@@ -268,12 +184,8 @@
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="form.status" placeholder="请选择状态(字典值：0启用  1停用)">
-            <el-option
-              v-for="dict in dict.type.business_data_status"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
+            <el-option v-for="dict in dict.type.business_data_status" :key="dict.value" :label="dict.label"
+              :value="dict.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -355,6 +267,7 @@ export default {
     getList() {
       this.loading = true;
       listDeviceInfo(this.queryParams).then(response => {
+        console.log(response.rows);
         this.deviceInfoList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -402,7 +315,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -444,12 +357,12 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除子设备管理编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除子设备管理编号为"' + ids + '"的数据项？').then(function () {
         return delDeviceInfo(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => { });
     },
     /** 导出按钮操作 */
     handleExport() {

@@ -57,9 +57,9 @@ export function generateProductJson(data) {
  * @param productIds 产品ID集合
  * @param initializeOrNot  是否初始化
  */
-// export function initializeDataModel(productIds,initializeOrNot) {
-//   return request({
-//     url: '/link/product/initializeDataModel/' + productIds + initializeOrNot,
-//     method: 'get'
-//   })
-// }
+export function initializeDataModel(productIds, initializeOrNot) {
+  return request({
+    url: '/link/product/initializeDataModel/' + productIds + "/" + initializeOrNot,
+    method: 'get'
+  })
+}
