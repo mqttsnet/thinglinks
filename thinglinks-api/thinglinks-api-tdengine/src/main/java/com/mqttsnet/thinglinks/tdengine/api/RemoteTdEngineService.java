@@ -75,4 +75,12 @@ public interface RemoteTdEngineService {
      */
     @PostMapping("/dataOperation/getDataByTimestamp")
     R<?> getDataByTimestamp(@Validated @RequestBody SelectDto selectDto);
+
+    /**
+     * @MethodDescription 查询最新数据
+     * @param selectDto
+     * @return
+     */
+    @PostMapping("/getLastData")
+    R<?> getLastData(@Validated @RequestBody SelectDto selectDto) ;
 }

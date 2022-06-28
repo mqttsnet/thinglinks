@@ -66,7 +66,7 @@ import java.util.*;
 @Service
 @Slf4j
 @RefreshScope
-@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+@Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
 public class ProductServiceImpl implements ProductService{
 
     @Autowired

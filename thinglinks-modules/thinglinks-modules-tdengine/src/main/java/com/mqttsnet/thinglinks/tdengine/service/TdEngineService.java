@@ -1,10 +1,9 @@
 package com.mqttsnet.thinglinks.tdengine.service;
 
 
+import com.mqttsnet.thinglinks.tdengine.api.domain.FieldsVo;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
-import com.mqttsnet.thinglinks.tdengine.api.domain.FieldsVo;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 import java.util.Map;
@@ -32,4 +31,6 @@ public interface TdEngineService {
     Long getCountByTimesTamp(SelectDto selectDto);
 
     void initSTableFrame(String msg) throws Exception;
+
+    List<Map<String, Object>> getLastData(SelectDto selectDto);
 }

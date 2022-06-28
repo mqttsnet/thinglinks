@@ -153,8 +153,8 @@ public class DeviceController extends BaseController {
      * @return
      */
     @Log(title = "设备管理", businessType = BusinessType.OTHER)
-    @GetMapping(value = "/validationfindOneByClientId/{clientId}")
-    public AjaxResult validationfindOneByClientId(@PathVariable("clientId") String clientId)
+    @GetMapping(value = "/validationFindOneByClientId/{clientId}")
+    public AjaxResult validationFindOneByClientId(@PathVariable("clientId") String clientId)
     {
         if(StringUtils.isEmpty(clientId)){
             return AjaxResult.error("clientId不可为空");

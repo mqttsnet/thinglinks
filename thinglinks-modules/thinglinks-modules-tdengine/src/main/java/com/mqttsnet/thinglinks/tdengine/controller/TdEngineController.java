@@ -38,13 +38,13 @@ public class TdEngineController {
 
     /**
      * @param dataBaseName 数据库名称
-     * @return R
+     * @return R<?>
      * @MethodDescription 创建tdEngine数据库
      * @author thinglinks
      * @Date 2021/12/27 16:26
      */
     @PostMapping("/createDb")
-    public R createDataBase(@RequestBody() String dataBaseName) {
+    public R<?> createDataBase(@RequestBody() String dataBaseName) {
         //调用创建数据库方法
         this.tdEngineService.createDateBase(dataBaseName);
         log.info("successful operation: created database '" + dataBaseName + "' success");
@@ -53,13 +53,13 @@ public class TdEngineController {
 
     /**
      * @param superTableDto 创建超级表需要的入参的实体类
-     * @return R
+     * @return R<?>
      * @MethodDescription 创建超级表
      * @author thinglinks
      * @Date 2021/12/27 16:26
      */
     @PostMapping("/createSTb")
-    public R createSuperTable(@Validated @RequestBody SuperTableDto superTableDto) {
+    public R<?> createSuperTable(@Validated @RequestBody SuperTableDto superTableDto) {
         //从入参对象获取列字段（超级表结构）对象集合
         List<Fields> schemaFields = superTableDto.getSchemaFields();
         //从入参对象获取标签字段对象集合
@@ -105,7 +105,7 @@ public class TdEngineController {
      * @return
      */
     @PostMapping("/addColumnInStb")
-    public R addColumnForSuperTable(@RequestBody SuperTableDto superTableDto) {
+    public R<?> addColumnForSuperTable(@RequestBody SuperTableDto superTableDto) {
 
         String superTableName = superTableDto.getSuperTableName();
         if (StringUtils.isBlank(superTableName)) {
@@ -138,12 +138,12 @@ public class TdEngineController {
     /**
     *@MethodDescription 创建超级表的子表
     *@param tableDto 创建超级表的子表需要的入参的实体类
-    *@return R
+    *@return R<?>
     *@author thinglinks
     *@Date 2021/12/30 14:15
     */
     @PostMapping("/createTb")
-    public R createTable(@Validated @RequestBody TableDto tableDto) {
+    public R<?> createTable(@Validated @RequestBody TableDto tableDto) {
         try {
             this.tdEngineService.createTable(tableDto);
             log.info("successful operation: create table success");
@@ -161,12 +161,12 @@ public class TdEngineController {
     /**
     *@MethodDescription 插入数据
     *@param tableDto 插入数据需要的入参的实体类
-    *@return R
+    *@return R<?>
     *@author thinglinks
     *@Date 2022/1/10 14:43
     */
     @PostMapping("/insertData")
-    public R insertData(@Validated @RequestBody TableDto tableDto) {
+    public R<?> insertData(@Validated @RequestBody TableDto tableDto) {
         try {
             List<Fields> tagsFieldValues = tableDto.getTagsFieldValues();
             for (Fields fields : tagsFieldValues) {
@@ -191,17 +191,28 @@ public class TdEngineController {
     /**
     *@MethodDescription 根据时间戳查询数据
     *@param selectDto 查询数据需要的入参的实体类
-    *@return R
+    *@return R<?>
     *@author thinglinks
     *@Date 2022/1/10 14:44
     */
     @PostMapping("/getDataByTimestamp")
-    public R getDataByTimestamp(@Validated @RequestBody SelectDto selectDto) {
+    public R<?> getDataByTimestamp(@Validated @RequestBody SelectDto selectDto) {
         return R.ok(this.tdEngineService.selectByTimesTamp(selectDto));
     }
 
     @PostMapping("/getCountByTimestamp")
-    public R getCountByTimestamp(@Validated @RequestBody SelectDto selectDto) {
+    public R<?> getCountByTimestamp(@Validated @RequestBody SelectDto selectDto) {
         return R.ok(this.tdEngineService.getCountByTimesTamp(selectDto));
+    }
+
+
+    /**
+     * @MethodDescription 查询最新数据
+     * @param selectDto
+     * @return R<?>
+     */
+    @PostMapping("/getLastData")
+    public R<?> getLastData(@Validated @RequestBody SelectDto selectDto) {
+        return R.ok(this.tdEngineService.getLastData(selectDto));
     }
 }
