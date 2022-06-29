@@ -275,8 +275,8 @@
           <el-col :span="11">
             <el-form-item label="协议类型" prop="protocolType">
               <el-col :span="22">
-                <el-select v-model="form.productType" placeholder="请选择产品类型">
-                  <el-option v-for="dict in dict.type.link_product_type" :key="dict.value" :label="dict.label"
+                <el-select v-model="form.protocolType" placeholder="请选择协议类型">
+                  <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
                     :value="dict.value"></el-option>
                 </el-select>
               </el-col>
@@ -375,7 +375,7 @@
         <el-form ref="QuickForm" :model="dialogquick.form" :rules="dialogquick.rules" inline label-width="110px">
           <div class="disply">
             <div class="small">
-              <el-form-item label="应用ID" prop="productName">
+              <el-form-item label="应用ID" prop="appId">
                 <el-col :span="22">
                   <el-select v-model="dialogquick.form.appId" placeholder="请选择应用ID">
                     <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label"
@@ -940,7 +940,7 @@ export default {
           }
         ],
         dataFormat: [
-          { required: true, message: "数据格式不能为空", trigger: "blur" },
+          { required: true, message: "数据格式不能为空", trigger: "change" },
         ],
         deviceType: [
           { required: true, message: "设备类型不能为空", trigger: "change" },
@@ -975,7 +975,7 @@ export default {
           model: "",
           productName: "",
           productType: "",
-          protocolType: "",
+          protocolType: "MQTT",
           remark: "",
           templateId: "",
           services: [
@@ -1002,6 +1002,9 @@ export default {
           ],
         },
         rules: {
+          appId: [
+            { required: true, message: "应用ID不能为空", trigger: "change" },
+          ],
           productName: [
             { required: true, message: "产品名称不能为空", trigger: "blur" },
             { min: 2, max: 64, message: '产品名称长度必须介于 2 和 64 之间', trigger: 'blur' },
@@ -1011,7 +1014,7 @@ export default {
               trigger: "blur"
             }
           ],
-          productType: [{ required: true, message: "请选择产品类型", trigger: "change" }],
+          productType: [{ required: true, message: "产品类型不能为空", trigger: "change" }],
           manufacturerId: [
             { required: true, message: "厂商ID不能为空", trigger: "blur" },
             { min: 2, max: 50, message: '厂商ID长度必须介于 2 和 50 之间', trigger: 'blur' },
@@ -1030,9 +1033,9 @@ export default {
               trigger: "blur"
             }
           ],
-          dataFormat: [{ message: "请选择数据格式", trigger: "change" }],
+          dataFormat: [{ required: true, message: "数据格式不能为空", trigger: "change" }],
           deviceType: [
-            { required: true, message: "请输入设备类型", trigger: "blur" },
+            { required: true, message: "设备类型不能为空", trigger: "blur" },
             { min: 2, max: 50, message: '设备类型长度必须介于 3 和 50 之间', trigger: 'blur' },
             {
               pattern: /^[a-zA-Z0-9_-]+$/,
@@ -1041,7 +1044,7 @@ export default {
             }
           ],
           model: [
-            { required: true, message: "请输入产品型号", trigger: "blur" },
+            { required: true, message: "产品型号不能为空", trigger: "blur" },
             { min: 2, max: 50, message: '产品型号长度必须介于 2 和 50 之间', trigger: 'blur' },
             {
               pattern: /^[a-zA-Z0-9_-]+$/,
@@ -1049,29 +1052,29 @@ export default {
               trigger: "blur"
             }
           ],
-          protocolType: [{ message: "请选择协议类型", trigger: "change" }],
+          protocolType: [{ required: true, message: "协议类型不能为空", trigger: "change" }],
           status: [{ required: true, message: "请输入状态", trigger: "blur" }],
           version: [{ required: true, message: "请输入版本", trigger: "blur" }],
           remark: [{ message: "请输入备注", trigger: "blur" }],
           //services
           serviceId: [
-            { required: true, message: "请输入服务名称", trigger: "blur" },
-            { min: 2, max: 50, message: '产品型号长度必须介于 2 和 50 之间', trigger: 'blur' },
+            { required: true, message: "服务名称不能为空", trigger: "blur" },
+            { min: 2, max: 50, message: '服务名称长度必须介于 2 和 50 之间', trigger: 'blur' },
             {
               pattern: /^[a-z0-9_]+$/,
               message: "英文小写、数字、下划线，长度[2,50]",
               trigger: "blur"
             }
           ],
-          description: [{ required: false, message: "请输入服务描述", trigger: "blur" },],
-          commands: [{ required: true, message: "请输入指令", trigger: "blur" },],
+          description: [{ required: false, message: "服务描述不能为空", trigger: "blur" },],
+          commands: [{ required: true, message: "指令不能为空", trigger: "blur" },],
           statuss: [{ required: true, message: "请输入状态", trigger: "blur" },],
           //properties
-          datatype: [{ required: true, message: "请选择数据类型", trigger: "change" },],
+          datatype: [{ required: true, message: "指示数据类型不能为空", trigger: "change" },],
           descriptions: [{ message: "请输入属性描述", trigger: "blur" },],
-          enumlist: [{ required: true, message: "请输入枚举列", trigger: "blur" },],
+          enumlist: [{ required: true, message: "指示枚举值不能为空", trigger: "blur" },],
           maxlength: [
-            { required: true, message: "请输入字符串长度", trigger: "blur" },
+            { required: true, message: "字符串长度不能为空", trigger: "blur" },
             {
               pattern: /^[0-9]+$/,
               message: "请输入合法数字",
@@ -1100,9 +1103,9 @@ export default {
               trigger: "blur"
             }
           ],
-          required: [{ required: true, message: "请输入是否必须", trigger: "blur" },],
-          name: [{ required: true, message: "请输入名称", trigger: "blur" }],
-          method: [{ required: true, message: "请选择访问模式", trigger: " change" }],
+          required: [{ required: true, message: "是否必须不能为空", trigger: "blur" },],
+          name: [{ required: true, message: "指示属性名称不能为空", trigger: "blur" }],
+          method: [{ required: true, message: "指示访问模式不能为空", trigger: " change" }],
         },
       },
       methodlist: [
