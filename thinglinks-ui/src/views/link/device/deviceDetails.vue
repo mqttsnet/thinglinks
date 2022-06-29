@@ -8,18 +8,7 @@
                 </p>
                 <p>
                     <span>设备状态</span>
-                    <span style="display:flex;align-items: center;" v-if="deviceInfo.connectStatus === '离线'"><i
-                            style="display:block;width:10px;height:10px;background: #ff9292;border-radius: 50%;"></i>
-                        {{ deviceInfo.connectStatus }}
-                    </span>
-                    <span style="display:flex;align-items: center;" v-if="deviceInfo.connectStatus === '在线'"><i
-                            style="display:block;width:10px;height:10px;background: #71e2a3;border-radius: 50%;"></i>
-                        {{ deviceInfo.connectStatus }}
-                    </span>
-                    <span style="display:flex;align-items: center;" v-if="deviceInfo.connectStatus === '未连接'"><i
-                            style="display:block;width:10px;height:10px;background: #ffba00;border-radius: 50%;"></i>
-                        {{ deviceInfo.connectStatus }}
-                    </span>
+                    <dict-tag :options="dict.type.link_device_connect_status" :value="deviceInfo.connectStatus" />
                 </p>
             </div>
             <div class="equipment_attribute">
@@ -59,14 +48,7 @@
             </div>
         </div>
         <div class="detail">
-            <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                v-hasPermi="['link:topic:add']" :disabled="add ? false : true">新增</el-button>
-            <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-                v-hasPermi="['link:topic:edit']">修改</el-button>
-            <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
-                v-hasPermi="['link:topic:remove']">删除</el-button>
-            <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
-                v-hasPermi="['link:topic:export']">导出</el-button>
+
             <el-tabs v-model="activeName">
                 <el-tab-pane label="基本信息" name="first">
                     <div class="equipment_attribute">
@@ -143,8 +125,6 @@
                                 <el-table-column type="selection" width="55" align="center" />
                                 <el-table-column label="id" align="center" prop="id" />
                                 <el-table-column label="设备标识" align="center" prop="deviceIdentification" />
-                                <el-table-column label="类型(0:基础Topic,1:自定义Topic)" align="center" prop="type"
-                                    width="250" />
                                 <el-table-column label="topic" align="center" prop="topic" />
                                 <el-table-column label="发布者" align="center" prop="publisher" />
                                 <el-table-column label="订阅者" align="center" prop="subscriber" />
@@ -154,13 +134,13 @@
                                 :limit.sync="queryParams.pageSize" @pagination="getList" />
                         </el-tab-pane>
                         <el-tab-pane label="自定义Topic" name="second" style="width:100%;height: 100%;">
+                            <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+                                v-hasPermi="['link:topic:add']" style="margin-bottom='10px'">新增</el-button>
                             <el-table v-loading="loading" :data="topicList" @selection-change="handleSelectionChange"
                                 style="width:100%;height:100%" max-height="500">
                                 <el-table-column type="selection" width="55" align="center" />
                                 <el-table-column label="id" align="center" prop="id" />
                                 <el-table-column label="设备标识" align="center" prop="deviceIdentification" />
-                                <el-table-column label="类型(0:基础Topic,1:自定义Topic)" align="center" prop="type"
-                                    width="250" />
                                 <el-table-column label="topic" align="center" prop="topic" />
                                 <el-table-column label="发布者" align="center" prop="publisher" />
                                 <el-table-column label="订阅者" align="center" prop="subscriber" />
@@ -181,32 +161,6 @@
                         </el-tab-pane>
                     </el-tabs>
                 </el-tab-pane>
-                <el-tab-pane label="设备影子" name="third" style="width:100%;height: 100%;">
-                    <el-tabs v-model="TopicactiveName" style="width:100%;height: 100%;">
-                        <el-tab-pane label="列表" name="first" style="width:100%;height:100%">
-                            <el-table :data="topicList" style="width: 100%" max-height="500">
-                                <el-table-column prop="Topic" label="Topic" width="280">
-                                </el-table-column>
-                                <el-table-column prop="Publisher" label="Publisher(发布者)" width="180">
-                                </el-table-column>
-                                <el-table-column prop="Subscriber" label="Subscriber(订阅者)" width="180">
-                                </el-table-column>
-                                <el-table-column prop="address" label="用途" width="180">
-                                </el-table-column>
-                            </el-table>
-                            <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
-                                :limit.sync="queryParams.pageSize" @pagination="getList" />
-                        </el-tab-pane>
-                        <el-tab-pane label="JSON" name="second" style="width: 100%;height:100%">
-                            <el-button size="medium" style="margin: 10px 0 10px 0" type="primary" @click="decoration">
-                                格式化
-                            </el-button>
-                            <el-input class="textJson" type="textarea" style="width:100%" :autosize="{ minRows: 5 }"
-                                resize="none" :value="detailJSON" placeholder="无内容">
-                            </el-input>
-                        </el-tab-pane>
-                    </el-tabs>
-                </el-tab-pane>
                 <el-tab-pane label="设备动作" name="fourth" style="width:100%;height: 100%;">
                     <div style="width:100%;height:100%">
                         <el-table :data="equipmentActionList" style="width: 100%;height: 100%;" max-height="500">
@@ -217,10 +171,15 @@
                             <el-table-column prop="message" label="信息" width="280">
                             </el-table-column>
                             <el-table-column prop="actionType" label="操作类型" width="280">
+                                <template slot-scope="scope">
+                                    <dict-tag :options="dict.type.link_device_action_type"
+                                        :value="scope.row.actionType" />
+                                </template>
                             </el-table-column>
                             <el-table-column prop="status" label="状态" width="280">
                                 <template slot-scope="scope">
-                                    <el-button type="success" v-text="scope.row.status ? '成功' : '失败'"></el-button>
+                                    <el-button type="success" size="mini" v-text="scope.row.status ? '成功' : '失败'">
+                                    </el-button>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="createTime" label="创建时间" width="180">
@@ -271,6 +230,10 @@ import {
 import { listTopic, getTopic, delTopic, addTopic, updateTopic } from "@/api/link/topic";
 import { listAction } from "@/api/link/action";
 export default {
+    dicts: [
+        "link_device_connect_status",
+        "link_device_action_type",
+    ],
     data() {
         return {
             //分页总条数
@@ -376,16 +339,6 @@ export default {
             this.open = true;
             this.title = "添加设备Topic数据";
         },
-        /** 修改按钮操作 */
-        handleUpdate(row) {
-            this.reset();
-            const id = row.id || this.ids
-            getTopic(id).then(response => {
-                this.form = response.data;
-                this.open = true;
-                this.title = "修改设备Topic数据";
-            });
-        },
         /** 提交按钮 */
         submitForm() {
             this.$refs["form"].validate(valid => {
@@ -405,16 +358,6 @@ export default {
                     }
                 }
             });
-        },
-        /** 删除按钮操作 */
-        handleDelete(row) {
-            const ids = row.id || this.ids;
-            this.$modal.confirm('是否确认删除设备Topic数据编号为"' + ids + '"的数据项？').then(function () {
-                return delTopic(ids);
-            }).then(() => {
-                this.getList();
-                this.$modal.msgSuccess("删除成功");
-            }).catch(() => { });
         },
         // 表单重置
         reset() {
@@ -452,7 +395,7 @@ export default {
             // console.log(this.deviceInfo);
             this.queryParams.deviceIdentification = this.deviceInfo.deviceIdentification
             listAction(this.queryParams).then(response => {
-                console.log(response);
+                // console.log(response);
                 this.equipmentActionList = response.rows
                 this.actionListTotal = response.total
                 // console.log(this.equipmentActionList);
@@ -494,7 +437,7 @@ export default {
             getDevice(this.id).then((response) => {
                 this.deviceInfo = response.data
                 this.detailJSON = JSON.stringify(response.data)
-                // console.log(response.data);
+                console.log(response.data);
             })
         },
         //验证json并格式化

@@ -55,6 +55,12 @@
           快捷生成
         </el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button type="primary" plain icon="el-icon-refresh" :disabled="multiple" size="mini"
+          @click="initializeTheDataModel">
+          产品初始化
+        </el-button>
+      </el-col>
     </el-row>
 
     <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
@@ -371,7 +377,7 @@
             <div class="small">
               <el-form-item label="应用ID" prop="productName">
                 <el-col :span="22">
-                  <el-select v-model="form.appId" placeholder="请选择应用ID">
+                  <el-select v-model="dialogquick.form.appId" placeholder="请选择应用ID">
                     <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label"
                       :value="dict.value"></el-option>
                   </el-select>
@@ -503,6 +509,22 @@
                 </el-col>
               </el-form-item>
             </div>
+            <div class="small">
+              <el-form-item label="产品模型模板" prop="templateId">
+                <el-col :span="22">
+                  <el-select v-model="dialogquick.form.templateId" placeholder="请选择产品模型模板">
+                    <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label"
+                      :value="dict.value"></el-option>
+                  </el-select>
+                </el-col>
+                <el-col :span="2" style="padding-left: 5px">
+                  <el-tooltip class="item" effect="light" content="标准化的物模型可以沉淀为平台资产，供用户快速创建产品Profile"
+                    placement="right-start">
+                    <i class="el-icon-question" />
+                  </el-tooltip>
+                </el-col>
+              </el-form-item>
+            </div>
             <!-- services数组 -->
             <div v-for="(item, index) in dialogquick.form.services" :key="index" class="onebox">
               <div class="small">
@@ -619,7 +641,7 @@
                       <el-input v-model="proItem.max" autocomplete="off" @change="maxValue(proItem.max, $event)"
                         placeholder="最大值">
                         <el-button @click="handleMinus('max', index)" slot="prepend" icon="el-icon-minus"></el-button>
-                        <el-button @click="handlePlus(index)" slot="append" icon="el-icon-plus"></el-button>
+                        <el-button @click="handlePlus('max', index)" slot="append" icon="el-icon-plus"></el-button>
                       </el-input>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
@@ -641,8 +663,10 @@
                     <el-col :span="22">
                       <el-input v-model="proItem.maxlength" @change="maxValue(proItem.maxlength, $event)"
                         autocomplete="off" placeholder="请输入指示字符串长度">
-                        <el-button @click="handleMinus(index)" slot="prepend" icon="el-icon-minus"></el-button>
-                        <el-button @click="handlePlus(index)" slot="append" icon="el-icon-plus"></el-button>
+                        <el-button @click="handleMinus('maxlength', index)" slot="prepend" icon="el-icon-minus">
+                        </el-button>
+                        <el-button @click="handlePlus('maxlength', index)" slot="append" icon="el-icon-plus">
+                        </el-button>
                       </el-input>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
@@ -659,8 +683,8 @@
                   " :rules="dialogquick.rules.min">
                     <el-col :span="22">
                       <el-input v-model="proItem.min" autocomplete="off" placeholder="最小值">
-                        <el-button @click="handleMinus(index)" slot="prepend" icon="el-icon-minus"></el-button>
-                        <el-button @click="handlePlus(index)" slot="append" icon="el-icon-plus"></el-button>
+                        <el-button @click="handleMinus('min', index)" slot="prepend" icon="el-icon-minus"></el-button>
+                        <el-button @click="handlePlus('min', index)" slot="append" icon="el-icon-plus"></el-button>
                       </el-input>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
@@ -676,8 +700,8 @@
                   " :rules="dialogquick.rules.step">
                     <el-col :span="22">
                       <el-input v-model="proItem.step" autocomplete="off" placeholder="请输入指示步长">
-                        <el-button @click="handleMinus(index)" slot="prepend" icon="el-icon-minus"></el-button>
-                        <el-button @click="handlePlus(index)" slot="append" icon="el-icon-plus"></el-button>
+                        <el-button @click="handleMinus('step', index)" slot="prepend" icon="el-icon-minus"></el-button>
+                        <el-button @click="handlePlus('step', index)" slot="append" icon="el-icon-plus"></el-button>
                       </el-input>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
@@ -759,6 +783,7 @@
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </el-col>
+
                   </el-form-item>
                 </div>
                 <div class="btn-box">
@@ -789,6 +814,7 @@ import {
   addProduct,
   updateProduct,
   generateProductJson,
+  initializeDataModel,
 } from "@/api/link/product";
 import { getToken } from "@/utils/auth";
 
@@ -941,6 +967,7 @@ export default {
       dialogquick: {
         visiblequick: false,
         form: {
+          appId: "",
           dataFormat: "JSON",
           deviceType: "",
           manufacturerId: "",
@@ -950,6 +977,7 @@ export default {
           productType: "",
           protocolType: "",
           remark: "",
+          templateId: "",
           services: [
             {
               commands: "",
@@ -1091,6 +1119,21 @@ export default {
   watch: {
   },
   methods: {
+    //初始化数据模型
+    initializeTheDataModel() {
+      const ids = this.ids;
+      const initializeOrNot = true
+      this.$modal
+        .confirm('是否初始化"' + ids + '"的数据项？')
+        .then(function () {
+          return initializeDataModel(ids, initializeOrNot);
+        })
+        .then(() => {
+          this.getList()
+          this.$modal.msgSuccess("初始化成功");
+        })
+        .catch(() => { });
+    },
     //加减操作
     handleMinus(value, index) {
       if (value === 'max') {
@@ -1098,10 +1141,35 @@ export default {
         if (this.dialogquick.form.services[index].properties[index].max < 0) {
           this.dialogquick.form.services[index].properties[index].max = 0
         }
+      } else if (value === 'maxlength') {
+        this.dialogquick.form.services[index].properties[index].maxlength--
+        if (this.dialogquick.form.services[index].properties[index].maxlength < 0) {
+          this.dialogquick.form.services[index].properties[index].maxlength = 0
+        }
+      } else if (value === 'min') {
+        this.dialogquick.form.services[index].properties[index].min--
+        if (this.dialogquick.form.services[index].properties[index].min < 0) {
+          this.dialogquick.form.services[index].properties[index].min = 0
+        }
+      }
+      else if (value === 'step') {
+        this.dialogquick.form.services[index].properties[index].step--
+        if (this.dialogquick.form.services[index].properties[index].step < 0) {
+          this.dialogquick.form.services[index].properties[index].step = 0
+        }
       }
     },
-    handlePlus() {
-
+    handlePlus(value, index) {
+      if (value === 'max') {
+        this.dialogquick.form.services[index].properties[index].max++
+      } else if (value === 'maxlength') {
+        this.dialogquick.form.services[index].properties[index].maxlength++
+      } else if (value === 'min') {
+        this.dialogquick.form.services[index].properties[index].min++
+      }
+      else if (value === 'step') {
+        this.dialogquick.form.services[index].properties[index].step++
+      }
     },
     //最大值||最大长度极值判定
     maxValue(value, event) {
