@@ -722,7 +722,7 @@
                     <el-col :span="22">
 <!--                      <el-input v-model="proItem.required" autocomplete="off" placeholder="请输入属性是否必填" />-->
                       <el-select v-model="proItem.required" placeholder="请选择是否必填">
-                        <el-option v-for="dict in dict.type.link_product_isRequired" :key="dict.value" :label="dict.dictlabel" :value="parseInt(item.value)"/>
+                        <el-option v-for="dict in dict.type.link_product_isRequired" :key="dict.value" :label="dict.label" :value="parseInt(dict.value)"/>
                       </el-select>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
@@ -1108,8 +1108,8 @@ export default {
       methodlist: [
         { value: "R", label: "R" },
         { value: "RW", label: "RW" },
-        { value: "RE", labellabel: "RE" },
-        { value: "RWE", labellabel: "RWE" }
+        { value: "RE", label: "RE" },
+        { value: "RWE", label: "RWE" }
       ],
     };
   },
