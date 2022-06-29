@@ -81,6 +81,6 @@ public interface RemoteTdEngineService {
      * @param selectDto
      * @return
      */
-    @PostMapping("/getLastData")
+    @PostMapping("/dataOperation/getLastData")
     R<?> getLastData(@Validated @RequestBody SelectDto selectDto) ;
 }
