@@ -202,6 +202,10 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         }
         Map<String, List<Map<String, Object>>> map = new HashMap<>();
         deviceInfos.forEach(deviceInfo -> {
+            if (StringUtils.isNull(deviceInfo.getShadowTableName())) {
+                log.error("查询子设备影子数据失败，子设备影子表名为空");
+                return;
+            }
             List<String> shadowTableNameCollect = Stream.of(deviceInfo.getShadowTableName().split(",")).collect(Collectors.toList());
             shadowTableNameCollect.forEach(shadowTableName -> {
                 SelectDto selectDto = new SelectDto();

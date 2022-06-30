@@ -277,8 +277,8 @@
           <el-col :span="11">
             <el-form-item label="协议类型" prop="protocolType">
               <el-col :span="22">
-                <el-select v-model="form.productType" placeholder="请选择产品类型">
-                  <el-option v-for="dict in dict.type.link_product_type" :key="dict.value" :label="dict.label"
+                <el-select v-model="form.protocolType" placeholder="请选择协议类型">
+                  <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
                     :value="dict.value"></el-option>
                 </el-select>
               </el-col>
@@ -378,7 +378,7 @@
         <el-form ref="QuickForm" :model="dialogquick.form" :rules="dialogquick.rules" inline label-width="110px">
           <div class="disply">
             <div class="small">
-              <el-form-item label="应用ID" prop="productName">
+              <el-form-item label="应用ID" prop="appId">
                 <el-col :span="22">
                   <el-select v-model="dialogquick.form.appId" placeholder="请选择应用ID">
                     <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label"
@@ -488,7 +488,7 @@
             <div class="small">
               <el-form-item label="协议类型" prop="protocolType">
                 <el-col :span="22">
-                  <el-select v-model="dialogquick.form.protocolType" placeholder="请选择产品类型">
+                  <el-select v-model="dialogquick.form.protocolType" placeholder="请选择协议类型">
                     <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
                       :value="dict.value"></el-option>
                   </el-select>
@@ -587,14 +587,13 @@
                     <el-col :span="22">
                       <el-select v-model="proItem.datatype" placeholder="请选择指示数据类型">
                         <el-option v-for="(item, index) in dict.type.link_product_datatype" :key="index"
-                          :label="item.dictlabel" :value="item.value">
+                          :label="item.label" :value="item.value">
                         </el-option>
                       </el-select>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="取值范围：string、int、bool、decimal（float和double都可以使用此类型）、dateTime、jsonObject、上报数据时，复杂类型数据格式如下：
-                      dateTime：yyyyMMdd’T’HHmmss’Z’如:20220601T121212Z
-                      jsonObject：自定义json结构体，平台不理解只透传" placement="right" effect="light">
+                      <el-tooltip content="取值范围：string、brnary、int、bool、decimal（float和double都可以使用此类型）、timestamp、json、上报数据时，复杂类型数据格式如下：
+                      json：自定义json结构体，平台不理解只透传" placement="right" effect="light">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </el-col>
@@ -665,7 +664,6 @@
                     '.maxlength'
                   " :rules="dialogquick.rules.maxlength">
                     <el-col :span="22">
-
                       <el-input v-model="proItem.maxlength" @change="maxValue(proItem.maxlength, $event)"
                         autocomplete="off" placeholder="请输入指示字符串长度">
                         <el-button @click="handleMinus('maxlength', index)" slot="prepend" icon="el-icon-minus">
@@ -725,7 +723,10 @@
                     '.required'
                   " :rules="dialogquick.rules.required">
                     <el-col :span="22">
-                      <el-input v-model="proItem.required" autocomplete="off" placeholder="请输入属性是否必填" />
+<!--                      <el-input v-model="proItem.required" autocomplete="off" placeholder="请输入属性是否必填" />-->
+                      <el-select v-model="proItem.required" placeholder="请选择是否必填">
+                        <el-option v-for="dict in dict.type.link_product_isRequired" :key="dict.value" :label="dict.label" :value="parseInt(dict.value)"/>
+                      </el-select>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
                       <el-tooltip content="指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。" placement="right"
@@ -774,7 +775,10 @@
                     '.method'
                   " :rules="dialogquick.rules.method">
                     <el-col :span="22">
-                      <el-input v-model="proItem.method" autocomplete="off" placeholder="请输入指示访问模式" />
+<!--                      <el-input v-model="proItem.method" autocomplete="off" placeholder="请输入指示访问模式" />-->
+                      <el-select v-model="proItem.method" placeholder="请选择访问模式">
+                        <el-option v-for="dict in methodlist" :key="dict.value" :label="dict.label" :value="dict.value"/>
+                      </el-select>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
                       <el-tooltip content="	指示访问模式。R:可读；W:可写；E属性值更改时上报数据,取值范围：R、RW、RE、RWE" placement=" right"
@@ -825,6 +829,7 @@ export default {
     "link_product_type",
     "link_device_protocol_type",
     "link_product_datatype",
+    "link_product_isRequired",
     "business_data_status"
   ],
   data() {
@@ -889,38 +894,68 @@ export default {
         ],
         productName: [
           { required: true, message: "产品名称不能为空", trigger: "blur" },
+          { min: 2, max: 64, message: '产品名称长度必须介于 2 和 64 之间', trigger: 'blur' },
+          {
+            //pattern: /^(?!_)(?!.*?_$)(?!-)(?!.*?-$)[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
+            //message: "中文、英文大小写、数字、下划线和中划线，不能以下划线中划线开头和结尾，长度[2,64]",
+            pattern: /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
+            message: "中文、英文大小写、数字、下划线和中划线，长度[2,64]",
+            trigger: "blur"
+          }
         ],
         productIdentification: [
           { required: true, message: "产品标识不能为空", trigger: "blur" },
+          { min: 2, max: 50, message: '产品标识长度必须介于 2 和 50 之间', trigger: 'blur' },
+          {
+            pattern: /^[a-zA-Z0-9_-]+$/,
+            message: "英文大小写、数字、下划线和中划线，长度[2,50]",
+            trigger: "blur"
+          }
         ],
         productType: [
           { required: true, message: "产品类型不能为空", trigger: "change" },
         ],
         manufacturerId: [
           { required: true, message: "厂商ID不能为空", trigger: "blur" },
+          { min: 2, max: 50, message: '厂商ID长度必须介于 2 和 50 之间', trigger: 'blur' },
+          {
+            pattern: /^[a-zA-Z0-9_-]+$/,
+            message: "英文大小写、数字、下划线和中划线，长度[2,50]",
+            trigger: "blur"
+          }
         ],
         manufacturerName: [
           { required: true, message: "厂商名称不能为空", trigger: "blur" },
+          { min: 2, max: 64, message: '厂商名称长度必须介于 2 和 64 之间', trigger: 'blur' },
+          {
+            pattern: /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
+            message: "中文、英文大小写、数字、下划线和中划线，长度[2,64]",
+            trigger: "blur"
+          }
         ],
         model: [
           { required: true, message: "产品型号不能为空", trigger: "blur" },
+          { min: 2, max: 50, message: '产品型号长度必须介于 2 和 50 之间', trigger: 'blur' },
+          {
+            pattern: /^[a-zA-Z0-9_-]+$/,
+            message: "英文大小写、数字、下划线和中划线，长度[2,50]",
+            trigger: "blur"
+          }
         ],
         dataFormat: [
-          { required: true, message: "数据格式不能为空", trigger: "blur" },
+          { required: true, message: "数据格式不能为空", trigger: "change" },
         ],
         deviceType: [
+          { required: true, message: "设备类型不能为空", trigger: "change" },
+          { min: 3, max: 50, message: '设备类型长度必须介于 3 和 50 之间', trigger: 'blur' },
           {
-            required: true,
-            message: "设备类型不能为空",
-            trigger: "change",
-          },
+            pattern: /^[a-zA-Z0-9_-]+$/,
+            message: "英文大小写、数字、下划线和中划线，长度[3,50]",
+            trigger: "blur"
+          }
         ],
         protocolType: [
-          {
-            required: true,
-            message: "设备接入平台的协议类型不能为空",
-            trigger: "change",
-          },
+          { required: true, message: "设备接入平台的协议类型不能为空", trigger: "change" },
         ],
         status: [
           { required: true, message: "状态不能为空", trigger: "change" },
@@ -943,7 +978,7 @@ export default {
           model: "",
           productName: "",
           productType: "",
-          protocolType: "",
+          protocolType: "MQTT",
           remark: "",
           templateId: "",
           services: [
@@ -970,37 +1005,117 @@ export default {
           ],
         },
         rules: {
-          dataFormat: [{ message: "请选择数据格式", trigger: "change" }],
-          deviceType: [{ message: "请输入设备类型", trigger: "blur" }],
-          model: [{ required: true, message: "请输入设备模型", trigger: "blur" }],
-          productType: [{ required: true, message: "请输入产品类型", trigger: "change" }],
-          protocolType: [{ message: "请输入协议类型", trigger: "blur" }],
+          appId: [
+            { required: true, message: "应用ID不能为空", trigger: "change" },
+          ],
+          productName: [
+            { required: true, message: "产品名称不能为空", trigger: "blur" },
+            { min: 2, max: 64, message: '产品名称长度必须介于 2 和 64 之间', trigger: 'blur' },
+            {
+              pattern: /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
+              message: "中文、英文大小写、数字、下划线和中划线，长度[2,64]",
+              trigger: "blur"
+            }
+          ],
+          productType: [{ required: true, message: "产品类型不能为空", trigger: "change" }],
+          manufacturerId: [
+            { required: true, message: "厂商ID不能为空", trigger: "blur" },
+            { min: 2, max: 50, message: '厂商ID长度必须介于 2 和 50 之间', trigger: 'blur' },
+            {
+              pattern: /^[a-zA-Z0-9_-]+$/,
+              message: "英文大小写、数字、下划线和中划线，长度[2,50]",
+              trigger: "blur"
+            }
+          ],
+          manufacturerName: [
+            { required: true, message: "厂商名称不能为空", trigger: "blur" },
+            { min: 2, max: 64, message: '厂商名称长度必须介于 2 和 64 之间', trigger: 'blur' },
+            {
+              pattern: /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
+              message: "中文、英文大小写、数字、下划线和中划线，长度[2,64]",
+              trigger: "blur"
+            }
+          ],
+          dataFormat: [{ required: true, message: "数据格式不能为空", trigger: "change" }],
+          deviceType: [
+            { required: true, message: "设备类型不能为空", trigger: "blur" },
+            { min: 2, max: 50, message: '设备类型长度必须介于 3 和 50 之间', trigger: 'blur' },
+            {
+              pattern: /^[a-zA-Z0-9_-]+$/,
+              message: "英文大小写、数字、下划线和中划线，长度[3,50]",
+              trigger: "blur"
+            }
+          ],
+          model: [
+            { required: true, message: "产品型号不能为空", trigger: "blur" },
+            { min: 2, max: 50, message: '产品型号长度必须介于 2 和 50 之间', trigger: 'blur' },
+            {
+              pattern: /^[a-zA-Z0-9_-]+$/,
+              message: "英文大小写、数字、下划线和中划线，长度[2,50]",
+              trigger: "blur"
+            }
+          ],
+          protocolType: [{ required: true, message: "协议类型不能为空", trigger: "change" }],
           status: [{ required: true, message: "请输入状态", trigger: "blur" }],
           version: [{ required: true, message: "请输入版本", trigger: "blur" }],
           remark: [{ message: "请输入备注", trigger: "blur" }],
           //services
-          serviceId: [{ required: true, message: "请输入服务编码", trigger: "blur" },],
-          description: [{ required: true, message: "请输入产品描述", trigger: "blur" },],
-          commands: [{ required: true, message: "请输入指令", trigger: "blur" },],
+          serviceId: [
+            { required: true, message: "服务名称不能为空", trigger: "blur" },
+            { min: 2, max: 50, message: '服务名称长度必须介于 2 和 50 之间', trigger: 'blur' },
+            {
+              pattern: /^[a-z0-9_]+$/,
+              message: "英文小写、数字、下划线，长度[2,50]",
+              trigger: "blur"
+            }
+          ],
+          description: [{ required: false, message: "服务描述不能为空", trigger: "blur" },],
+          commands: [{ required: true, message: "指令不能为空", trigger: "blur" },],
           statuss: [{ required: true, message: "请输入状态", trigger: "blur" },],
           //properties
-          datatype: [{ required: true, message: "请输入数据类型", trigger: "change" },],
+          datatype: [{ required: true, message: "指示数据类型不能为空", trigger: "change" },],
           descriptions: [{ message: "请输入属性描述", trigger: "blur" },],
-          enumlist: [{ required: true, message: "请输入枚举列", trigger: "blur" },],
-          maxlength: [{ required: true, message: "请输入最大长度", trigger: "blur" },],
-          step: [{ required: true, message: "请输入合法数字间隔", trigger: "blur" },],
-          required: [{ required: true, message: "请输入是否必须", trigger: "blur" },],
-          name: [{ required: true, message: "请输入名称", trigger: "blur" }],
-          method: [{ required: true, message: "请输入方法", trigger: "blur" }],
+          enumlist: [{ required: true, message: "指示枚举值不能为空", trigger: "blur" },],
+          maxlength: [
+            { required: true, message: "字符串长度不能为空", trigger: "blur" },
+            {
+              pattern: /^[0-9]+$/,
+              message: "请输入合法数字",
+              trigger: "blur"
+            }
+          ],
+          max: [
+            {
+              pattern: /^[0-9]+$/,
+              message: "请输入合法数字",
+              trigger: "blur"
+            }
+          ],
+          min: [
+            {
+              pattern: /^[0-9]+$/,
+              message: "请输入合法数字",
+              trigger: "blur"
+            }
+          ],
+          step: [
+            { required: true, message: "请输入指示步长", trigger: "blur" },
+            {
+              pattern: /^[0-9]+$/,
+              message: "请输入合法数字",
+              trigger: "blur"
+            }
+          ],
+          required: [{ required: true, message: "是否必须不能为空", trigger: "blur" },],
+          name: [{ required: true, message: "指示属性名称不能为空", trigger: "blur" }],
+          method: [{ required: true, message: "指示访问模式不能为空", trigger: " change" }],
         },
       },
-      datatypelist: [
-        { dictValue: "int", dictlabel: "int" },
-        { dictValue: "decimal", dictlabel: "decimal" },
-        { dictValue: "string", dictlabel: "string" },
-        { dictValue: "bool", dictlabel: "bool" },
-        { dictValue: "dateTime", dictlabel: "dateTime" },
-        { dictValue: "jsonObject", dictlabel: "jsonObject" },
+      methodlist: [
+        { value: "R", label: "R" },
+        { value: "RW", label: "RW" },
+        { value: "RE", label: "RE" },
+        { value: "RWE", label: "RWE" }
       ],
     };
   },
