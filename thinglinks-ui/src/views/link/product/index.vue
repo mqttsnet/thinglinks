@@ -116,8 +116,10 @@
               v-hasPermi="['link:product:remove']">
             </el-button>
           </el-tooltip>
-          <el-tooltip class="item" effect="light" content="子设备信息" placement="top">
-            <el-button circle size="mini" type="primary" icon="el-icon-s-operation"></el-button>
+          <el-tooltip class="item" effect="light" content="产品初始化" placement="top">
+            <el-button circle size="mini" type="primary" icon="el-icon-refresh"
+              @click="initializeTheDataModel(scope.row.id)">
+            </el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -127,7 +129,7 @@
       @pagination="getList" />
 
     <!-- 添加或修改产品管理对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="48%" append-to-body>
+    <el-dialog :title="title" :close-on-click-modal="false" :visible.sync="open" width="48%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="11">
@@ -318,7 +320,8 @@
     </el-dialog>
 
     <!-- 产品模型导入对话框 -->
-    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+    <el-dialog :title="upload.title" :close-on-click-modal="false" :visible.sync="upload.open" width="400px"
+      append-to-body>
       <el-upload ref="upload" :limit="1" accept=".json" :headers="upload.headers" :action="
         upload.url +
         '?updateSupport=' +
@@ -1008,8 +1011,14 @@ export default {
   },
   methods: {
     //初始化数据模型
-    initializeTheDataModel() {
-      const ids = this.ids;
+    initializeTheDataModel(id) {
+      console.log(id, this.ids);
+      let ids;
+      if (id) {
+        ids = id;
+      } else if (this.ids) {
+        ids = this.ids
+      }
       const initializeOrNot = true
       this.$modal
         .confirm('是否初始化"' + ids + '"的数据项？')
