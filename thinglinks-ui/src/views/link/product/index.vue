@@ -584,7 +584,7 @@
                     <el-col :span="22">
                       <el-select v-model="proItem.datatype" placeholder="请选择指示数据类型">
                         <el-option v-for="(item, index) in dict.type.link_product_datatype" :key="index"
-                          :label="item.dictlabel" :value="item.value">
+                          :label="item.label" :value="item.value">
                         </el-option>
                       </el-select>
                     </el-col>
