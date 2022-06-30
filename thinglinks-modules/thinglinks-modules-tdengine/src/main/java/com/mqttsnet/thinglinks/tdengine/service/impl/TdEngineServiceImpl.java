@@ -35,27 +35,27 @@ public class TdEngineServiceImpl implements TdEngineService {
     private RedisService redisService;
 
     @Override
-    public void createDateBase(String dataBaseName) {
+    public void createDateBase(String dataBaseName) throws Exception{
         this.tdEngineMapper.createDatabase(dataBaseName);
     }
 
     @Override
-    public void createSuperTable(List<FieldsVo> schemaFields, List<FieldsVo> tagsFields, String dataBaseName, String superTableName) {
+    public void createSuperTable(List<FieldsVo> schemaFields, List<FieldsVo> tagsFields, String dataBaseName, String superTableName) throws Exception{
         this.tdEngineMapper.createSuperTable(schemaFields, tagsFields, dataBaseName, superTableName);
     }
 
     @Override
-    public void createTable(TableDto tableDto) {
+    public void createTable(TableDto tableDto) throws Exception {
         this.tdEngineMapper.createTable(tableDto);
     }
 
     @Override
-    public void insertData(TableDto tableDto) {
+    public void insertData(TableDto tableDto) throws Exception{
         this.tdEngineMapper.insertData(tableDto);
     }
 
     @Override
-    public List<Map<String, Object>> selectByTimesTamp(SelectDto selectDto) {
+    public List<Map<String, Object>> selectByTimesTamp(SelectDto selectDto) throws Exception{
         List<Map<String, Object>> maps = this.tdEngineMapper.selectByTimestamp(selectDto);
         for (Map<String, Object> map : maps) {
             Map<String, Object> filterMap = map.entrySet()
@@ -67,12 +67,12 @@ public class TdEngineServiceImpl implements TdEngineService {
     }
 
     @Override
-    public void addColumnForSuperTable(String superTableName, FieldsVo fieldsVo) {
+    public void addColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception{
         this.tdEngineMapper.addColumnForSuperTable(superTableName, fieldsVo);
     }
 
     @Override
-    public Long getCountByTimesTamp(SelectDto selectDto) {
+    public Long getCountByTimesTamp(SelectDto selectDto) throws Exception{
         Map<String, Long> countMap = this.tdEngineMapper.getCountByTimestamp(selectDto);
         if (countMap == null) {
             return 0L;
@@ -87,7 +87,7 @@ public class TdEngineServiceImpl implements TdEngineService {
      * @param tableName tableName 可以为超级表名或普通表名
      * @return
      */
-    public boolean checkTableExists(String dataBaseName,String tableName) {
+    public boolean checkTableExists(String dataBaseName,String tableName) throws Exception{
         try {
             Integer count = tdEngineMapper.checkTableExists(dataBaseName, tableName);
             return count == 1;
@@ -133,7 +133,7 @@ public class TdEngineServiceImpl implements TdEngineService {
      * @return
      */
     @Override
-    public List<Map<String, Object>> getLastData(SelectDto selectDto) {
+    public List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception{
         List<Map<String, Object>> maps = this.tdEngineMapper.getLastData(selectDto);
         for (Map<String, Object> map : maps) {
             Map<String, Object> filterMap = map.entrySet()

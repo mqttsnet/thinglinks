@@ -3,20 +3,18 @@ package com.mqttsnet.thinglinks.tdengine.controller;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
-import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
-import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
-import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
-import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
-import com.mqttsnet.thinglinks.tdengine.api.domain.FieldsVo;
+import com.mqttsnet.thinglinks.tdengine.api.domain.*;
 import com.mqttsnet.thinglinks.tdengine.service.TdEngineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -45,10 +43,22 @@ public class TdEngineController {
      */
     @PostMapping("/createDb")
     public R<?> createDataBase(@RequestBody() String dataBaseName) {
-        //调用创建数据库方法
-        this.tdEngineService.createDateBase(dataBaseName);
-        log.info("successful operation: created database '" + dataBaseName + "' success");
-        return R.ok();
+        try {
+            //调用创建数据库方法
+            this.tdEngineService.createDateBase(dataBaseName);
+            log.info("successful operation: created database '" + dataBaseName + "' success");
+            return R.ok();
+        }catch (UncategorizedSQLException e) {
+            String message = e.getCause().getMessage();
+            try {
+                message = message.substring(message.lastIndexOf("invalid operation"));
+            } catch (Exception ex) {}
+            log.error(message);
+            return R.fail(message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
     }
 
     /**
@@ -88,12 +98,10 @@ public class TdEngineController {
             String message = e.getCause().getMessage();
             try {
                 message = message.substring(message.lastIndexOf("invalid operation"));
-            } catch (Exception ex) {
-                log.error(ex.getMessage());
-            }
+            } catch (Exception ex) {}
             log.error(message);
             return R.fail(message);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             return R.fail(e.getMessage());
         }
@@ -129,7 +137,7 @@ public class TdEngineController {
             } catch (Exception ex) {}
             log.error(message);
             return R.fail(message);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             return R.fail(e.getMessage());
         }
@@ -148,11 +156,13 @@ public class TdEngineController {
             this.tdEngineService.createTable(tableDto);
             log.info("successful operation: create table success");
             return R.ok("successful operation: create table success");
-        } catch (UncategorizedSQLException e) {
+        }  catch (Exception e) {
             String message = e.getCause().getMessage();
             try {
                 message = message.substring(message.lastIndexOf("invalid operation"));
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+                log.error(ex.getMessage());
+            }
             log.error(message);
             return R.fail(message);
         }
@@ -185,6 +195,9 @@ public class TdEngineController {
             } catch (Exception ex) {}
             log.error(message);
             return R.fail(message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return R.fail(e.getMessage());
         }
     }
 
@@ -197,12 +210,36 @@ public class TdEngineController {
     */
     @PostMapping("/getDataByTimestamp")
     public R<?> getDataByTimestamp(@Validated @RequestBody SelectDto selectDto) {
-        return R.ok(this.tdEngineService.selectByTimesTamp(selectDto));
+        try {
+            return R.ok(this.tdEngineService.selectByTimesTamp(selectDto));
+        }catch (UncategorizedSQLException e) {
+            String message = e.getCause().getMessage();
+            try {
+                message = message.substring(message.lastIndexOf("invalid operation"));
+            } catch (Exception ex) {}
+            log.error(message);
+            return R.fail(message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
     }
 
     @PostMapping("/getCountByTimestamp")
     public R<?> getCountByTimestamp(@Validated @RequestBody SelectDto selectDto) {
-        return R.ok(this.tdEngineService.getCountByTimesTamp(selectDto));
+        try {
+            return R.ok(this.tdEngineService.getCountByTimesTamp(selectDto));
+        }catch (UncategorizedSQLException e) {
+            String message = e.getCause().getMessage();
+            try {
+                message = message.substring(message.lastIndexOf("invalid operation"));
+            } catch (Exception ex) {}
+            log.error(message);
+            return R.fail(message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
     }
 
 
@@ -213,6 +250,18 @@ public class TdEngineController {
      */
     @PostMapping("/getLastData")
     public R<?> getLastData(@Validated @RequestBody SelectDto selectDto) {
-        return R.ok(this.tdEngineService.getLastData(selectDto));
+        try {
+            return R.ok(this.tdEngineService.getLastData(selectDto));
+        }catch (UncategorizedSQLException e) {
+            String message = e.getCause().getMessage();
+            try {
+                message = message.substring(message.lastIndexOf("invalid operation"));
+            } catch (Exception ex) {}
+            log.error(message);
+            return R.fail(message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
     }
 }
