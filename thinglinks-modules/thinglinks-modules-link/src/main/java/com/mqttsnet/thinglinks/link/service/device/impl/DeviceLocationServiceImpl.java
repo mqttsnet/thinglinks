@@ -54,6 +54,18 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
         return deviceLocationMapper.selectByPrimaryKey(id);
     }
 
+    /**
+     * 查询设备位置列表
+     *
+     * @param deviceLocation 设备位置
+     * @return 设备位置
+     */
+    @Override
+    public List<DeviceLocation> selectDeviceLocationList(DeviceLocation deviceLocation)
+    {
+        return deviceLocationMapper.selectDeviceLocationList(deviceLocation);
+    }
+
     @Override
     public int updateByPrimaryKeySelective(DeviceLocation record) {
         return deviceLocationMapper.updateByPrimaryKeySelective(record);
@@ -79,6 +91,18 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
         return deviceLocationMapper.batchInsert(list);
     }
 
+
+    /**
+     * 批量删除设备位置
+     *
+     * @param ids 需要删除的设备位置主键
+     * @return 结果
+     */
+    @Override
+    public int deleteDeviceLocationByIds(Long[] ids)
+    {
+        return deviceLocationMapper.deleteDeviceLocationByIds(ids);
+    }
 }
 
 

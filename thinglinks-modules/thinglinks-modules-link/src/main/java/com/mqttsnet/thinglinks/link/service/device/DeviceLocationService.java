@@ -29,6 +29,14 @@ public interface DeviceLocationService {
 
     DeviceLocation selectByPrimaryKey(Long id);
 
+    /**
+     * 查询设备位置列表
+     *
+     * @param deviceLocation 设备位置
+     * @return 设备位置集合
+     */
+    public List<DeviceLocation> selectDeviceLocationList(DeviceLocation deviceLocation);
+
     int updateByPrimaryKeySelective(DeviceLocation record);
 
     int updateByPrimaryKey(DeviceLocation record);
@@ -39,6 +47,13 @@ public interface DeviceLocationService {
 
     int batchInsert(List<DeviceLocation> list);
 
+    /**
+     * 批量删除设备位置
+     *
+     * @param ids 需要删除的设备位置主键集合
+     * @return 结果
+     */
+    int deleteDeviceLocationByIds(Long[] ids);
 }
 
 

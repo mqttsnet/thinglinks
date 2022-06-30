@@ -20,16 +20,28 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, device_identification, latitude, longitude, full_name, province_code, city_code, 
+    id, device_identification, latitude, longitude, full_name, province_code, city_code,
     region_code, create_by, create_time, update_by, update_time, remark
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from device_location
     where id = #{id,jdbcType=BIGINT}
   </select>
+    <select id="selectDeviceLocationList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" resultMap="BaseResultMap">
+        <include refid="Base_Column_List"/>
+        <where>
+            <if test="deviceIdentification != null  and deviceIdentification != ''"> and device_identification = #{deviceIdentification}</if>
+            <if test="latitude != null "> and latitude = #{latitude}</if>
+            <if test="longitude != null "> and longitude = #{longitude}</if>
+            <if test="fullName != null  and fullName != ''"> and full_name like concat('%', #{fullName}, '%')</if>
+            <if test="provinceCode != null  and provinceCode != ''"> and province_code = #{provinceCode}</if>
+            <if test="cityCode != null  and cityCode != ''"> and city_code = #{cityCode}</if>
+            <if test="regionCode != null  and regionCode != ''"> and region_code = #{regionCode}</if>
+        </where>
+    </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     <!--@mbg.generated-->
     delete from device_location
@@ -37,14 +49,14 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into device_location (device_identification, latitude, longitude, 
-      full_name, province_code, city_code, 
-      region_code, create_by, create_time, 
+    insert into device_location (device_identification, latitude, longitude,
+      full_name, province_code, city_code,
+      region_code, create_by, create_time,
       update_by, update_time, remark
       )
-    values (#{deviceIdentification,jdbcType=VARCHAR}, #{latitude,jdbcType=DECIMAL}, #{longitude,jdbcType=DECIMAL}, 
-      #{fullName,jdbcType=VARCHAR}, #{provinceCode,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR}, 
-      #{regionCode,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+    values (#{deviceIdentification,jdbcType=VARCHAR}, #{latitude,jdbcType=DECIMAL}, #{longitude,jdbcType=DECIMAL},
+      #{fullName,jdbcType=VARCHAR}, #{provinceCode,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR},
+      #{regionCode,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
       #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
       )
   </insert>
@@ -261,14 +273,14 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device_location
-    (device_identification, latitude, longitude, full_name, province_code, city_code, 
+    (device_identification, latitude, longitude, full_name, province_code, city_code,
       region_code, create_by, create_time, update_by, update_time, remark)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.deviceIdentification,jdbcType=VARCHAR}, #{item.latitude,jdbcType=DECIMAL}, 
-        #{item.longitude,jdbcType=DECIMAL}, #{item.fullName,jdbcType=VARCHAR}, #{item.provinceCode,jdbcType=VARCHAR}, 
-        #{item.cityCode,jdbcType=VARCHAR}, #{item.regionCode,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, 
-        #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, 
+      (#{item.deviceIdentification,jdbcType=VARCHAR}, #{item.latitude,jdbcType=DECIMAL},
+        #{item.longitude,jdbcType=DECIMAL}, #{item.fullName,jdbcType=VARCHAR}, #{item.provinceCode,jdbcType=VARCHAR},
+        #{item.cityCode,jdbcType=VARCHAR}, #{item.regionCode,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR},
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP},
         #{item.remark,jdbcType=VARCHAR})
     </foreach>
   </insert>
@@ -310,7 +322,7 @@
       #{updateTime,jdbcType=TIMESTAMP},
       #{remark,jdbcType=VARCHAR},
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -415,7 +427,7 @@
         #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -458,4 +470,11 @@
       </if>
     </trim>
   </insert>
+
+  <delete id="deleteDeviceLocationByIds" parameterType="String">
+    delete from device_location where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>
