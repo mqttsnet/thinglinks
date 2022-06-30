@@ -201,7 +201,7 @@
       @pagination="getList" />
 
     <!-- 添加或修改设备档案对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="40%" append-to-body>
+    <el-dialog :title="title" :close-on-click-modal="false" :visible.sync="open" width="40%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="11">
@@ -220,7 +220,7 @@
         <el-row>
           <el-col :span="11">
             <el-form-item label="密码" prop="password">
-              <el-input v-model="form.password" type="password" placeholder="请输入密码" />
+              <el-input v-model="form.password" type="password" show-password placeholder="请输入密码" />
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -549,6 +549,7 @@ export default {
       }
     },
     locationChange(e) {
+      console.log(e);
       this.form.longitude = e[0];
       this.form.latitude = e[1];
     },

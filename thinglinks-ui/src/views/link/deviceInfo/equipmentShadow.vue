@@ -105,17 +105,15 @@
                             <el-tabs v-model="editableTabsValue" type="card">
                                 <el-tab-pane v-for="(value, name, index) in ShadowData" :key="index" :label="name"
                                     :name="String(index + 1)" style="width:100%;height: 100%;">
-                                    <el-table :data="value" style="width: 100%" max-height="450" :fit="true">
+                                    <el-table v-if="JSON.stringify(value) !== '[]'" :data="value" style="width: 100%"
+                                        max-height="450" :fit="true">
                                         <el-table-column prop="index" label="序号" style="width: 25%">
                                             <template slot-scope="scope">
                                                 {{ scope.$index + 1 }}
                                             </template>
                                         </el-table-column>
-                                        <el-table-column prop="wendu" label="wendu" style="width: 25%">
-                                        </el-table-column>
-                                        <el-table-column prop="event_time" label="event_time" style="width: 25%">
-                                        </el-table-column>
-                                        <el-table-column prop="ts" label="ts" style="width: 25%">
+                                        <el-table-column v-for="(ShadowValue, ShadownNme, index) in value[index]"
+                                            :key="index" :prop="ShadownNme" :label="ShadownNme" style="width: 25%">
                                         </el-table-column>
                                     </el-table>
                                 </el-tab-pane>
@@ -200,6 +198,7 @@ export default {
             getDeviceInfoShadow(data).then(res => {
                 console.log(res.data);
                 this.ShadowData = res.data
+                this.detailJSON = JSON.stringify(res.data)
                 this.loading = false
             })
         },
@@ -220,7 +219,6 @@ export default {
             getDeviceInfo(this.id).then((response) => {
                 console.log(response);
                 this.deviceInfo = response.data
-                this.detailJSON = JSON.stringify(response.data)
                 console.log(response.data);
             })
         },
@@ -344,24 +342,4 @@ export default {
     }
 
 }
-
-// .demo-input-suffix {
-//     display: flex;
-//     align-items: center;
-//     margin-bottom: 10px;
-
-//     span {
-//         width: 30%;
-//         text-align: end;
-//     }
-
-//     .el-input,
-//     .el-select {
-//         width: 50%;
-//     }
-// }
-
-// .pagination-container {
-//     height: 50px;
-// }
 </style>

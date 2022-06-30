@@ -93,7 +93,7 @@
       @pagination="getList" />
 
     <!-- 添加或修改CAS规则管理对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="40%" append-to-body>
+    <el-dialog :title="title" :close-on-click-modal="false" :visible.sync="open" width="40%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="22" style="width:80%">

@@ -2,8 +2,11 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="边设备" prop="dId">
-        <el-input v-model="queryParams.dId" placeholder="请输入边设备" clearable size="small"
-          @keyup.enter.native="handleQuery" />
+        <el-select v-model="queryParams.dId" placeholder="请输入边设备" @keyup.enter.native="handleQuery">
+          <el-option v-for="item in deviceList" :key="item.value" :label="item.label"
+            :value="item.deviceIdentification">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="应用ID" prop="appId">
         <el-input v-model="queryParams.appId" placeholder="请输入应用ID" clearable size="small"
@@ -35,7 +38,7 @@
             :value="dict.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="是否支持设备影子" prop="shadowEnable">
+      <el-form-item label="设备影子" prop="shadowEnable">
         <el-select v-model="queryParams.shadowEnable" placeholder="请选择是否支持设备影子" clearable size="small">
           <el-option v-for="dict in dict.type.link_deviceInfo_shadow_enable" :key="dict.value" :label="dict.label"
             :value="dict.value" />
@@ -141,7 +144,7 @@
       @pagination="getList" />
 
     <!-- 添加或修改子设备管理对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :close-on-click-modal="false" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="边设备" prop="dId">
           <el-input v-model="form.dId" placeholder="请输入边设备" />
@@ -202,7 +205,9 @@
 
 <script>
 import { listDeviceInfo, getDeviceInfo, delDeviceInfo, addDeviceInfo, updateDeviceInfo } from "@/api/link/deviceInfo";
-
+import {
+  listDevice,
+} from "@/api/link/device";
 export default {
   name: "DeviceInfo",
   dicts: ['link_device_connect_status', 'link_deviceInfo_shadow_enable', 'business_data_status'],
@@ -222,6 +227,7 @@ export default {
       total: 0,
       // 子设备管理表格数据
       deviceInfoList: [],
+      deviceList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -261,8 +267,16 @@ export default {
   },
   created() {
     this.getList();
+    this.getDeviceList()
   },
   methods: {
+    /** 查询设备档案列表 */
+    getDeviceList() {
+      listDevice(this.queryParams).then((response) => {
+        console.log(response);
+        this.deviceList = response.data.device.rows;
+      });
+    },
     /** 查询子设备管理列表 */
     getList() {
       this.loading = true;
