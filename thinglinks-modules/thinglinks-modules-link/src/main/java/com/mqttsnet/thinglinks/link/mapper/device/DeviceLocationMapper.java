@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.mapper.device;
 
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -55,14 +56,6 @@ public interface DeviceLocationMapper {
     DeviceLocation selectByPrimaryKey(Long id);
 
     /**
-     * 查询设备位置列表
-     *
-     * @param deviceLocation 设备位置
-     * @return 设备位置集合
-     */
-    public List<DeviceLocation> selectDeviceLocationList(DeviceLocation deviceLocation);
-
-    /**
      * update record selective
      *
      * @param record the updated record
@@ -85,10 +78,42 @@ public interface DeviceLocationMapper {
     int updateBatchSelective(List<DeviceLocation> list);
 
     /**
-     * 批量删除设备位置
+     * 查询设备位置
      *
-     * @param ids 需要删除的设备位置主键集合
+     * @param id 设备位置主键
+     * @return 设备位置
+     */
+    public DeviceLocation selectDeviceLocationById(Long id);
+
+    /**
+     * 查询设备位置列表
+     *
+     * @param deviceLocation 设备位置
+     * @return 设备位置集合
+     */
+    public List<DeviceLocation> selectDeviceLocationList(DeviceLocation deviceLocation);
+
+    /**
+     * 新增设备位置
+     *
+     * @param deviceLocation 设备位置
      * @return 结果
      */
-    int deleteDeviceLocationByIds(Long[] ids);
+    public int insertDeviceLocation(DeviceLocation deviceLocation);
+
+    /**
+     * 修改设备位置
+     *
+     * @param deviceLocation 设备位置
+     * @return 结果
+     */
+    public int updateDeviceLocation(DeviceLocation deviceLocation);
+
+    /**
+     * 批量删除设备位置
+     *
+     * @param ids 需要删除的数据主键集合
+     * @return 结果
+     */
+    public int deleteDeviceLocationByIds(Long[] ids);
 }

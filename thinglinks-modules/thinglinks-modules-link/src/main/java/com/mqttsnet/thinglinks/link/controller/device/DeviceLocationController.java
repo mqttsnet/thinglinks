@@ -7,8 +7,10 @@ import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
+import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import com.mqttsnet.thinglinks.link.service.device.DeviceLocationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,6 +31,8 @@ public class DeviceLocationController extends BaseController {
      */
     @Resource
     private DeviceLocationService deviceLocationService;
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 通过主键查询单条数据
@@ -67,6 +71,16 @@ public class DeviceLocationController extends BaseController {
     }
 
     /**
+     * 获取设备位置详细信息
+     */
+    @PreAuthorize(hasPermi = "link:device_location:query")
+    @GetMapping(value = "/{id}")
+    public AjaxResult getInfo(@PathVariable("id") Long id)
+    {
+        return AjaxResult.success(deviceLocationService.selectDeviceLocationById(id));
+    }
+
+    /**
      * 新增设备位置
      */
     @PreAuthorize(hasPermi = "link:device_location:add")
@@ -74,7 +88,8 @@ public class DeviceLocationController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody DeviceLocation deviceLocation)
     {
-        return toAjax(deviceLocationService.insert(deviceLocation));
+        deviceLocation.setCreateBy(tokenService.getLoginUser().getUsername());
+        return toAjax(deviceLocationService.insertDeviceLocation(deviceLocation));
     }
 
     /**
@@ -85,7 +100,8 @@ public class DeviceLocationController extends BaseController {
     @PutMapping
     public AjaxResult edit(@RequestBody DeviceLocation deviceLocation)
     {
-        return toAjax(deviceLocationService.updateByPrimaryKey(deviceLocation));
+        deviceLocation.setUpdateBy(tokenService.getLoginUser().getUsername());
+        return toAjax(deviceLocationService.updateDeviceLocation(deviceLocation));
     }
 
     /**

@@ -30,18 +30,6 @@
     from device_location
     where id = #{id,jdbcType=BIGINT}
   </select>
-    <select id="selectDeviceLocationList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" resultMap="BaseResultMap">
-        <include refid="Base_Column_List"/>
-        <where>
-            <if test="deviceIdentification != null  and deviceIdentification != ''"> and device_identification = #{deviceIdentification}</if>
-            <if test="latitude != null "> and latitude = #{latitude}</if>
-            <if test="longitude != null "> and longitude = #{longitude}</if>
-            <if test="fullName != null  and fullName != ''"> and full_name like concat('%', #{fullName}, '%')</if>
-            <if test="provinceCode != null  and provinceCode != ''"> and province_code = #{provinceCode}</if>
-            <if test="cityCode != null  and cityCode != ''"> and city_code = #{cityCode}</if>
-            <if test="regionCode != null  and regionCode != ''"> and region_code = #{regionCode}</if>
-        </where>
-    </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     <!--@mbg.generated-->
     delete from device_location
@@ -470,6 +458,77 @@
       </if>
     </trim>
   </insert>
+
+  <sql id="selectDeviceLocationVo">
+    select id, device_identification, latitude, longitude, full_name, province_code, city_code, region_code, create_by, create_time, update_by, update_time, remark from device_location
+  </sql>
+
+  <select id="selectDeviceLocationList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" resultMap="BaseResultMap">
+    <include refid="selectDeviceLocationVo"/>
+    <where>
+      <if test="deviceIdentification != null  and deviceIdentification != ''"> and device_identification = #{deviceIdentification}</if>
+      <if test="latitude != null "> and latitude = #{latitude}</if>
+      <if test="longitude != null "> and longitude = #{longitude}</if>
+      <if test="fullName != null  and fullName != ''"> and full_name like concat('%', #{fullName}, '%')</if>
+      <if test="provinceCode != null  and provinceCode != ''"> and province_code = #{provinceCode}</if>
+      <if test="cityCode != null  and cityCode != ''"> and city_code = #{cityCode}</if>
+      <if test="regionCode != null  and regionCode != ''"> and region_code = #{regionCode}</if>
+    </where>
+  </select>
+
+  <select id="selectDeviceLocationById" parameterType="Long" resultMap="BaseResultMap">
+    <include refid="selectDeviceLocationVo"/>
+    where id = #{id}
+  </select>
+
+  <insert id="insertDeviceLocation" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" useGeneratedKeys="true" keyProperty="id">
+    insert into device_location
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="deviceIdentification != null and deviceIdentification != ''">device_identification,</if>
+      <if test="latitude != null">latitude,</if>
+      <if test="longitude != null">longitude,</if>
+      <if test="fullName != null and fullName != ''">full_name,</if>
+      <if test="provinceCode != null and provinceCode != ''">province_code,</if>
+      <if test="cityCode != null and cityCode != ''">city_code,</if>
+      <if test="regionCode != null and regionCode != ''">region_code,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+      <if test="remark != null">remark,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="deviceIdentification != null and deviceIdentification != ''">#{deviceIdentification},</if>
+      <if test="latitude != null">#{latitude},</if>
+      <if test="longitude != null">#{longitude},</if>
+      <if test="fullName != null and fullName != ''">#{fullName},</if>
+      <if test="provinceCode != null and provinceCode != ''">#{provinceCode},</if>
+      <if test="cityCode != null and cityCode != ''">#{cityCode},</if>
+      <if test="regionCode != null and regionCode != ''">#{regionCode},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+      <if test="remark != null">#{remark},</if>
+    </trim>
+  </insert>
+
+  <update id="updateDeviceLocation" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation">
+    update device_location
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="deviceIdentification != null and deviceIdentification != ''">device_identification = #{deviceIdentification},</if>
+      <if test="latitude != null">latitude = #{latitude},</if>
+      <if test="longitude != null">longitude = #{longitude},</if>
+      <if test="fullName != null and fullName != ''">full_name = #{fullName},</if>
+      <if test="provinceCode != null and provinceCode != ''">province_code = #{provinceCode},</if>
+      <if test="cityCode != null and cityCode != ''">city_code = #{cityCode},</if>
+      <if test="regionCode != null and regionCode != ''">region_code = #{regionCode},</if>
+      <if test="updateBy != null">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+      <if test="remark != null">remark = #{remark},</if>
+    </trim>
+    where id = #{id}
+  </update>
 
   <delete id="deleteDeviceLocationByIds" parameterType="String">
     delete from device_location where id in

@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
@@ -54,18 +55,6 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
         return deviceLocationMapper.selectByPrimaryKey(id);
     }
 
-    /**
-     * 查询设备位置列表
-     *
-     * @param deviceLocation 设备位置
-     * @return 设备位置
-     */
-    @Override
-    public List<DeviceLocation> selectDeviceLocationList(DeviceLocation deviceLocation)
-    {
-        return deviceLocationMapper.selectDeviceLocationList(deviceLocation);
-    }
-
     @Override
     public int updateByPrimaryKeySelective(DeviceLocation record) {
         return deviceLocationMapper.updateByPrimaryKeySelective(record);
@@ -91,6 +80,56 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
         return deviceLocationMapper.batchInsert(list);
     }
 
+
+    /**
+     * 查询设备位置
+     *
+     * @param id 设备位置主键
+     * @return 设备位置
+     */
+    @Override
+    public DeviceLocation selectDeviceLocationById(Long id)
+    {
+        return deviceLocationMapper.selectDeviceLocationById(id);
+    }
+
+    /**
+     * 查询设备位置列表
+     *
+     * @param deviceLocation 设备位置
+     * @return 设备位置
+     */
+    @Override
+    public List<DeviceLocation> selectDeviceLocationList(DeviceLocation deviceLocation)
+    {
+        return deviceLocationMapper.selectDeviceLocationList(deviceLocation);
+    }
+
+    /**
+     * 新增设备位置
+     *
+     * @param deviceLocation 设备位置
+     * @return 结果
+     */
+    @Override
+    public int insertDeviceLocation(DeviceLocation deviceLocation)
+    {
+        deviceLocation.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
+        return deviceLocationMapper.insertDeviceLocation(deviceLocation);
+    }
+
+    /**
+     * 修改设备位置
+     *
+     * @param deviceLocation 设备位置
+     * @return 结果
+     */
+    @Override
+    public int updateDeviceLocation(DeviceLocation deviceLocation)
+    {
+        deviceLocation.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
+        return deviceLocationMapper.updateDeviceLocation(deviceLocation);
+    }
 
     /**
      * 批量删除设备位置

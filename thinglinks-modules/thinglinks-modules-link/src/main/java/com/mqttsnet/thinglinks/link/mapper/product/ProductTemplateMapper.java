@@ -71,4 +71,44 @@ public interface ProductTemplateMapper {
     int updateBatchSelective(List<ProductTemplate> list);
 
     int batchInsert(@Param("list") List<ProductTemplate> list);
+
+    /**
+     * 查询产品模板
+     *
+     * @param id 产品模板主键
+     * @return 产品模板
+     */
+    public ProductTemplate selectProductTemplateById(Long id);
+
+    /**
+     * 查询产品模板列表
+     *
+     * @param productTemplate 产品模板
+     * @return 产品模板集合
+     */
+    public List<ProductTemplate> selectProductTemplateList(ProductTemplate productTemplate);
+
+    /**
+     * 新增产品模板
+     *
+     * @param productTemplate 产品模板
+     * @return 结果
+     */
+    public int insertProductTemplate(ProductTemplate productTemplate);
+
+    /**
+     * 修改产品模板
+     *
+     * @param productTemplate 产品模板
+     * @return 结果
+     */
+    public int updateProductTemplate(ProductTemplate productTemplate);
+
+    /**
+     * 批量删除产品模板
+     *
+     * @param ids 需要删除的数据主键集合
+     * @return 结果
+     */
+    public int deleteProductTemplateByIds(Long[] ids);
 }

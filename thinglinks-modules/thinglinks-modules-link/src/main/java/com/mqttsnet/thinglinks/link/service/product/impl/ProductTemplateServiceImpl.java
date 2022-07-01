@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
 
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
@@ -78,6 +79,63 @@ public class ProductTemplateServiceImpl implements ProductTemplateService{
     @Override
     public int batchInsert(List<ProductTemplate> list) {
         return productTemplateMapper.batchInsert(list);
+    }
+
+    /**
+     * 查询产品模板
+     *
+     * @param id 产品模板主键
+     * @return 产品模板
+     */
+    @Override
+    public ProductTemplate selectProductTemplateById(Long id) {
+        return productTemplateMapper.selectProductTemplateById(id);
+    }
+
+    /**
+     * 查询产品模板列表
+     *
+     * @param productTemplate 产品模板
+     * @return 产品模板集合
+     */
+    @Override
+    public List<ProductTemplate> selectProductTemplateList(ProductTemplate productTemplate) {
+        return productTemplateMapper.selectProductTemplateList(productTemplate);
+    }
+
+    /**
+     * 新增产品模板
+     *
+     * @param productTemplate 产品模板
+     * @return 结果
+     */
+    @Override
+    public int insertProductTemplate(ProductTemplate productTemplate) {
+        productTemplate.setCreateTime(DateUtils.getNowDate());
+        return productTemplateMapper.insertProductTemplate(productTemplate);
+    }
+
+    /**
+     * 修改产品模板
+     *
+     * @param productTemplate 产品模板
+     * @return 结果
+     */
+    @Override
+    public int updateProductTemplate(ProductTemplate productTemplate) {
+        productTemplate.setUpdateTime(DateUtils.getNowTime());
+        return productTemplateMapper.updateProductTemplate(productTemplate);
+    }
+
+    /**
+     * 批量删除产品模板
+     *
+     * @param ids 需要删除的产品模板主键集合
+     * @return 结果
+     */
+    @Override
+    public int deleteProductTemplateByIds(Long[] ids) {
+        return productTemplateMapper.deleteProductTemplateByIds(ids);
     }
 
 }

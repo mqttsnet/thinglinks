@@ -20,7 +20,7 @@
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from product_template
     where id = #{id,jdbcType=BIGINT}
@@ -32,11 +32,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into product_template (app_id, template_name, `status`, 
-      remark, create_by, create_time, 
+    insert into product_template (app_id, template_name, `status`,
+      remark, create_by, create_time,
       update_by, update_time)
-    values (#{app_id,jdbcType=VARCHAR}, #{template_name,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
-      #{remark,jdbcType=VARCHAR}, #{create_by,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP}, 
+    values (#{app_id,jdbcType=VARCHAR}, #{template_name,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
+      #{remark,jdbcType=VARCHAR}, #{create_by,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP},
       #{update_by,jdbcType=VARCHAR}, #{update_time,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate" useGeneratedKeys="true">
@@ -262,8 +262,8 @@
       )
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.app_id,jdbcType=VARCHAR}, #{item.template_name,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, 
-        #{item.remark,jdbcType=VARCHAR}, #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP}, 
+      (#{item.app_id,jdbcType=VARCHAR}, #{item.template_name,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR},
+        #{item.remark,jdbcType=VARCHAR}, #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP},
         #{item.update_by,jdbcType=VARCHAR}, #{item.update_time,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
@@ -297,7 +297,7 @@
       #{update_by,jdbcType=VARCHAR},
       #{update_time,jdbcType=TIMESTAMP},
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -374,7 +374,7 @@
         #{update_time,jdbcType=TIMESTAMP},
       </if>
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -405,4 +405,66 @@
       </if>
     </trim>
   </insert>
+
+  <sql id="selectProductTemplateVo">
+    select id, app_id, template_name, status, remark, create_by, create_time, update_by, update_time from product_template
+  </sql>
+
+  <select id="selectProductTemplateList" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate" resultMap="BaseResultMap">
+    <include refid="selectProductTemplateVo"/>
+    <where>
+      <if test="appId != null  and appId != ''"> and app_id = #{appId}</if>
+      <if test="templateName != null  and templateName != ''"> and template_name like concat('%', #{templateName}, '%')</if>
+      <if test="status != null  and status != ''"> and status = #{status}</if>
+    </where>
+  </select>
+
+  <select id="selectProductTemplateById" parameterType="Long" resultMap="BaseResultMap">
+    <include refid="selectProductTemplateVo"/>
+    where id = #{id}
+  </select>
+
+  <insert id="insertProductTemplate" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate" useGeneratedKeys="true" keyProperty="id">
+    insert into product_template
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="appId != null and appId != ''">app_id,</if>
+      <if test="templateName != null and templateName != ''">template_name,</if>
+      <if test="status != null and status != ''">status,</if>
+      <if test="remark != null">remark,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="appId != null and appId != ''">#{appId},</if>
+      <if test="templateName != null and templateName != ''">#{templateName},</if>
+      <if test="status != null and status != ''">#{status},</if>
+      <if test="remark != null">#{remark},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+    </trim>
+  </insert>
+
+  <update id="updateProductTemplate" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate">
+    update product_template
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="appId != null and appId != ''">app_id = #{appId},</if>
+      <if test="templateName != null and templateName != ''">template_name = #{templateName},</if>
+      <if test="status != null and status != ''">status = #{status},</if>
+      <if test="remark != null">remark = #{remark},</if>
+      <if test="updateBy != null">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+    </trim>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteProductTemplateByIds" parameterType="String">
+    delete from product_template where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>
