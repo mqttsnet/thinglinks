@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="98px">
       <el-form-item label="边设备" prop="dId">
         <el-select v-model="queryParams.dId" placeholder="请输入边设备" @keyup.enter.native="handleQuery">
           <el-option v-for="item in deviceList" :key="item.value" :label="item.label"
@@ -20,31 +20,31 @@
         <el-input v-model="queryParams.nodeName" placeholder="请输入设备名称" clearable size="small"
           @keyup.enter.native="handleQuery" />
       </el-form-item>
-      <el-form-item label="子设备标识" prop="deviceId">
+      <el-form-item v-if="advancedSearch" label="子设备标识" prop="deviceId">
         <el-input v-model="queryParams.deviceId" placeholder="请输入子设备标识" clearable size="small"
           @keyup.enter.native="handleQuery" />
       </el-form-item>
-      <el-form-item label="厂商ID" prop="manufacturerId">
+      <el-form-item v-if="advancedSearch" label="厂商ID" prop="manufacturerId">
         <el-input v-model="queryParams.manufacturerId" placeholder="请输入厂商ID" clearable size="small"
           @keyup.enter.native="handleQuery" />
       </el-form-item>
-      <el-form-item label="设备型号" prop="model">
+      <el-form-item v-if="advancedSearch" label="设备型号" prop="model">
         <el-input v-model="queryParams.model" placeholder="请输入设备型号" clearable size="small"
           @keyup.enter.native="handleQuery" />
       </el-form-item>
-      <el-form-item label="连接状态" prop="connectStatus">
+      <el-form-item v-if="advancedSearch" label="连接状态" prop="connectStatus">
         <el-select v-model="queryParams.connectStatus" placeholder="请选择连接状态" clearable size="small">
           <el-option v-for="dict in dict.type.link_device_connect_status" :key="dict.value" :label="dict.label"
             :value="dict.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="设备影子" prop="shadowEnable">
+      <el-form-item v-if="advancedSearch" label="设备影子" prop="shadowEnable">
         <el-select v-model="queryParams.shadowEnable" placeholder="请选择是否支持设备影子" clearable size="small">
           <el-option v-for="dict in dict.type.link_deviceInfo_shadow_enable" :key="dict.value" :label="dict.label"
             :value="dict.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item v-if="advancedSearch" label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
           <el-option v-for="dict in dict.type.business_data_status" :key="dict.value" :label="dict.label"
             :value="dict.value" />
@@ -53,6 +53,7 @@
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button :icon="icon" size="mini" @click="advancedSearch_toggle($event)">高级搜索</el-button>
       </el-form-item>
     </el-form>
 
@@ -121,21 +122,30 @@
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column fixed="right" label="操作" align="center" width="200">
         <template slot-scope="scope">
-          <el-tooltip class="item" effect="light" content="修改" placement="top">
-            <el-button circle size="mini" type="primary" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-              v-hasPermi="['link:deviceInfo:edit']">
-            </el-button>
-          </el-tooltip>
-          <el-tooltip class="item" effect="light" content="删除" placement="top">
-            <el-button circle size="mini" type="primary" icon="el-icon-delete" @click="handleDelete(scope.row)"
-              v-hasPermi="['link:deviceInfo:remove']">
-            </el-button>
-          </el-tooltip>
-          <el-tooltip class="item" effect="light" content="设备影子" placement="top">
-            <router-link :to="{ name: 'equipmentShadow', query: { id: scope.row.id } }">
-              <el-button circle size="mini" type="primary" icon="el-icon-s-operation"></el-button>
-            </router-link>
-          </el-tooltip>
+          <span style="margin-right:10px">
+            <el-tooltip class="item" effect="light" content="修改" placement="top">
+              <el-button circle size="mini" type="primary" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                v-hasPermi="['link:deviceInfo:edit']">
+              </el-button>
+            </el-tooltip>
+          </span>
+
+          <span style="margin-right:10px">
+            <el-tooltip class="item" effect="light" content="删除" placement="top">
+              <el-button circle size="mini" type="primary" icon="el-icon-delete" @click="handleDelete(scope.row)"
+                v-hasPermi="['link:deviceInfo:remove']">
+              </el-button>
+            </el-tooltip>
+          </span>
+
+          <span style="margin-right:10px">
+            <el-tooltip class="item" effect="light" content="设备影子" placement="top">
+              <router-link :to="{ name: 'equipmentShadow', query: { id: scope.row.id } }">
+                <el-button circle size="mini" type="primary" icon="el-icon-s-operation"></el-button>
+              </router-link>
+            </el-tooltip>
+          </span>
+
         </template>
       </el-table-column>
     </el-table>
@@ -213,6 +223,10 @@ export default {
   dicts: ['link_device_connect_status', 'link_deviceInfo_shadow_enable', 'business_data_status'],
   data() {
     return {
+      // 高级搜索切换
+      advancedSearch: false,
+      // 高级搜索icon
+      icon: "el-icon-arrow-down",
       // 遮罩层
       loading: true,
       // 选中数组
@@ -270,6 +284,16 @@ export default {
     this.getDeviceList()
   },
   methods: {
+    // 高级搜索切换显示隐藏
+    advancedSearch_toggle() {
+      this.advancedSearch = !this.advancedSearch;
+      // 切換icon
+      if (this.advancedSearch) {
+        this.icon = "el-icon-arrow-up";
+      } else {
+        this.icon = "el-icon-arrow-down";
+      }
+    },
     /** 查询设备档案列表 */
     getDeviceList() {
       listDevice(this.queryParams).then((response) => {
@@ -387,3 +411,5 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+</style>

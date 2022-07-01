@@ -523,7 +523,6 @@ export default {
         this.currentIndex = null
         this.show = true
       }
-      s
     },
     // 复制
     copy(shareLink) {
