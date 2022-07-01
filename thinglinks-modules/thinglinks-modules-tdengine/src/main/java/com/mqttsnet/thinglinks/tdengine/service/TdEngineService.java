@@ -16,21 +16,21 @@ import java.util.Map;
  * @Version 1.0
  */
 public interface TdEngineService {
-    void createDateBase(String dataBaseName);
+    void createDateBase(String dataBaseName) throws Exception;
 
-    void createSuperTable(List<FieldsVo> schemaFields, List<FieldsVo> tagsFields, String dataBaseName, String superTableName);
+    void createSuperTable(List<FieldsVo> schemaFields, List<FieldsVo> tagsFields, String dataBaseName, String superTableName) throws Exception;
 
-    void createTable(TableDto tableDto);
+    void createTable(TableDto tableDto) throws Exception;
 
-    void insertData(TableDto tableDto);
+    void insertData(TableDto tableDto) throws Exception;
 
-    List<Map<String, Object>> selectByTimesTamp(SelectDto selectDto);
+    List<Map<String, Object>> selectByTimesTamp(SelectDto selectDto) throws Exception;
 
-    void addColumnForSuperTable(String superTableName, FieldsVo fieldsVo);
+    void addColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception;
 
-    Long getCountByTimesTamp(SelectDto selectDto);
+    Long getCountByTimesTamp(SelectDto selectDto) throws Exception;
 
     void initSTableFrame(String msg) throws Exception;
 
-    List<Map<String, Object>> getLastData(SelectDto selectDto);
+    List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception;
 }
