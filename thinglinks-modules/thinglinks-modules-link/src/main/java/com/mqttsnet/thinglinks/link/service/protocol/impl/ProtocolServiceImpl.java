@@ -1,22 +1,25 @@
 package com.mqttsnet.thinglinks.link.service.protocol.impl;
 
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol;
 import com.mqttsnet.thinglinks.link.mapper.protocol.ProtocolMapper;
 import com.mqttsnet.thinglinks.link.service.protocol.ProtocolService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+
 /**
-* @program: thinglinks
-* @description: ${description}
-* @packagename: com.mqttsnet.thinglinks.link.service.protocol.impl
-* @author: ShiHuan Sun
-* @e-mainl: 13733918655@163.com
-* @date: 2022-07-01 17:56
-**/
+ * @program: thinglinks
+ * @description: ${description}
+ * @packagename: com.mqttsnet.thinglinks.link.service.protocol.impl
+ * @author: ShiHuan Sun
+ * @e-mainl: 13733918655@163.com
+ * @date: 2022-07-01 17:56
+ **/
 @Service
-public class ProtocolServiceImpl implements ProtocolService{
+public class ProtocolServiceImpl implements ProtocolService {
 
     @Resource
     private ProtocolMapper protocolMapper;
@@ -76,4 +79,60 @@ public class ProtocolServiceImpl implements ProtocolService{
         return protocolMapper.batchInsert(list);
     }
 
+    /**
+     * 查询协议管理
+     *
+     * @param id 协议管理主键
+     * @return 协议管理
+     */
+    @Override
+    public Protocol selectProtocolById(Long id) {
+        return protocolMapper.selectProtocolById(id);
+    }
+
+    /**
+     * 查询协议管理列表
+     *
+     * @param protocol 协议管理
+     * @return 协议管理
+     */
+    @Override
+    public List<Protocol> selectProtocolList(Protocol protocol) {
+        return protocolMapper.selectProtocolList(protocol);
+    }
+
+    /**
+     * 新增协议管理
+     *
+     * @param protocol 协议管理
+     * @return 结果
+     */
+    @Override
+    public int insertProtocol(Protocol protocol) {
+        protocol.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
+        return protocolMapper.insertProtocol(protocol);
+    }
+
+    /**
+     * 修改协议管理
+     *
+     * @param protocol 协议管理
+     * @return 结果
+     */
+    @Override
+    public int updateProtocol(Protocol protocol) {
+        protocol.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
+        return protocolMapper.updateProtocol(protocol);
+    }
+
+    /**
+     * 批量删除协议管理
+     *
+     * @param ids 需要删除的协议管理主键
+     * @return 结果
+     */
+    @Override
+    public int deleteProtocolByIds(Long[] ids) {
+        return protocolMapper.deleteProtocolByIds(ids);
+    }
 }

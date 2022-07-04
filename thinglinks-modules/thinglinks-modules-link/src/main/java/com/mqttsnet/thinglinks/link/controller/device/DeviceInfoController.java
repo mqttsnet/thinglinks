@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.controller.device;
 
+import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -73,6 +74,7 @@ public class DeviceInfoController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody DeviceInfo deviceInfo)
     {
+        deviceInfo.setCreateBy(SecurityUtils.getUsername());
         return toAjax(deviceInfoService.insertDeviceInfo(deviceInfo));
     }
 
@@ -84,6 +86,7 @@ public class DeviceInfoController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody DeviceInfo deviceInfo)
     {
+        deviceInfo.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(deviceInfoService.updateDeviceInfo(deviceInfo));
     }
 

@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.controller.device;
 
+import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -31,8 +32,6 @@ public class DeviceLocationController extends BaseController {
      */
     @Resource
     private DeviceLocationService deviceLocationService;
-    @Autowired
-    private TokenService tokenService;
 
     /**
      * 通过主键查询单条数据
@@ -88,7 +87,7 @@ public class DeviceLocationController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody DeviceLocation deviceLocation)
     {
-        deviceLocation.setCreateBy(tokenService.getLoginUser().getUsername());
+        deviceLocation.setCreateBy(SecurityUtils.getUsername());
         return toAjax(deviceLocationService.insertDeviceLocation(deviceLocation));
     }
 
@@ -100,7 +99,7 @@ public class DeviceLocationController extends BaseController {
     @PutMapping
     public AjaxResult edit(@RequestBody DeviceLocation deviceLocation)
     {
-        deviceLocation.setUpdateBy(tokenService.getLoginUser().getUsername());
+        deviceLocation.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(deviceLocationService.updateDeviceLocation(deviceLocation));
     }
 

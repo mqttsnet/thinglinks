@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.controller.product;
 
+import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -31,8 +32,6 @@ public class ProductTemplateController extends BaseController {
      */
     @Resource
     private ProductTemplateService productTemplateService;
-    @Autowired
-    private TokenService tokenService;
 
     /**
      * 通过主键查询单条数据
@@ -84,7 +83,7 @@ public class ProductTemplateController extends BaseController {
     @Log(title = "产品模板", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody ProductTemplate productTemplate) {
-        productTemplate.setCreateBy(tokenService.getLoginUser().getUsername());
+        productTemplate.setCreateBy(SecurityUtils.getUsername());
         return toAjax(productTemplateService.insertProductTemplate(productTemplate));
     }
 
@@ -95,7 +94,7 @@ public class ProductTemplateController extends BaseController {
     @Log(title = "产品模板", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody ProductTemplate productTemplate) {
-        productTemplate.setUpdateBy(tokenService.getLoginUser().getUsername());
+        productTemplate.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(productTemplateService.updateProductTemplate(productTemplate));
     }
 

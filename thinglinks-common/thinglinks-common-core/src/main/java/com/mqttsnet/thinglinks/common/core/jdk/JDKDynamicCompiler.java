@@ -1,9 +1,9 @@
 package com.mqttsnet.thinglinks.common.core.jdk;
 
-import com.momo.xcode.common.XCodeConstant;
-import com.momo.xcode.compile.jdk.javafileobject.CharSequenceJavaFileObject;
-import com.momo.xcode.util.CodeUtil;
-import com.momo.xcode.util.MD5Util;
+import com.mqttsnet.thinglinks.common.core.constant.XCodeConstant;
+import com.mqttsnet.thinglinks.common.core.jdk.javafileobject.CharSequenceJavaFileObject;
+import com.mqttsnet.thinglinks.common.core.utils.CodeUtil;
+import com.mqttsnet.thinglinks.common.core.utils.MD5Util;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;

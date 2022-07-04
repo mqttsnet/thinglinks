@@ -67,4 +67,44 @@ public interface ProtocolMapper {
     int updateBatchSelective(List<Protocol> list);
 
     int batchInsert(@Param("list") List<Protocol> list);
+
+    /**
+     * 查询协议管理
+     *
+     * @param id 协议管理主键
+     * @return 协议管理
+     */
+    public Protocol selectProtocolById(Long id);
+
+    /**
+     * 查询协议管理列表
+     *
+     * @param protocol 协议管理
+     * @return 协议管理集合
+     */
+    public List<Protocol> selectProtocolList(Protocol protocol);
+
+    /**
+     * 新增协议管理
+     *
+     * @param protocol 协议管理
+     * @return 结果
+     */
+    public int insertProtocol(Protocol protocol);
+
+    /**
+     * 修改协议管理
+     *
+     * @param protocol 协议管理
+     * @return 结果
+     */
+    public int updateProtocol(Protocol protocol);
+
+    /**
+     * 批量删除协议管理
+     *
+     * @param ids 需要删除的数据主键集合
+     * @return 结果
+     */
+    public int deleteProtocolByIds(Long[] ids);
 }

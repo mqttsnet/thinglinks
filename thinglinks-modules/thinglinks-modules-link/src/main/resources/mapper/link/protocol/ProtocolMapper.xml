@@ -23,13 +23,13 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, product_identification, protocol_name, protocol_identification, protocol_version, 
-    protocol_type, protocol_voice, class_name, file_path, content, `status`, create_by, 
+    id, product_identification, protocol_name, protocol_identification, protocol_version,
+    protocol_type, protocol_voice, class_name, file_path, content, `status`, create_by,
     create_time, update_by, update_time, remark
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from protocol
     where id = #{id,jdbcType=BIGINT}
@@ -41,17 +41,17 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into protocol (product_identification, protocol_name, 
-      protocol_identification, protocol_version, 
-      protocol_type, protocol_voice, class_name, 
-      file_path, content, `status`, 
-      create_by, create_time, update_by, 
+    insert into protocol (product_identification, protocol_name,
+      protocol_identification, protocol_version,
+      protocol_type, protocol_voice, class_name,
+      file_path, content, `status`,
+      create_by, create_time, update_by,
       update_time, remark)
-    values (#{productIdentification,jdbcType=VARCHAR}, #{protocolName,jdbcType=VARCHAR}, 
-      #{protocolIdentification,jdbcType=VARCHAR}, #{protocolVersion,jdbcType=VARCHAR}, 
-      #{protocolType,jdbcType=VARCHAR}, #{protocolVoice,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR}, 
-      #{filePath,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}, #{status,jdbcType=VARCHAR}, 
-      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
+    values (#{productIdentification,jdbcType=VARCHAR}, #{protocolName,jdbcType=VARCHAR},
+      #{protocolIdentification,jdbcType=VARCHAR}, #{protocolVersion,jdbcType=VARCHAR},
+      #{protocolType,jdbcType=VARCHAR}, #{protocolVoice,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR},
+      #{filePath,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}, #{status,jdbcType=VARCHAR},
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},
       #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol" useGeneratedKeys="true">
@@ -427,16 +427,16 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into protocol
-    (product_identification, protocol_name, protocol_identification, protocol_version, 
-      protocol_type, protocol_voice, class_name, file_path, content, `status`, create_by, 
+    (product_identification, protocol_name, protocol_identification, protocol_version,
+      protocol_type, protocol_voice, class_name, file_path, content, `status`, create_by,
       create_time, update_by, update_time, remark)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.productIdentification,jdbcType=VARCHAR}, #{item.protocolName,jdbcType=VARCHAR}, 
-        #{item.protocolIdentification,jdbcType=VARCHAR}, #{item.protocolVersion,jdbcType=VARCHAR}, 
-        #{item.protocolType,jdbcType=VARCHAR}, #{item.protocolVoice,jdbcType=VARCHAR}, 
-        #{item.className,jdbcType=VARCHAR}, #{item.filePath,jdbcType=VARCHAR}, #{item.content,jdbcType=LONGVARCHAR}, 
-        #{item.status,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+      (#{item.productIdentification,jdbcType=VARCHAR}, #{item.protocolName,jdbcType=VARCHAR},
+        #{item.protocolIdentification,jdbcType=VARCHAR}, #{item.protocolVersion,jdbcType=VARCHAR},
+        #{item.protocolType,jdbcType=VARCHAR}, #{item.protocolVoice,jdbcType=VARCHAR},
+        #{item.className,jdbcType=VARCHAR}, #{item.filePath,jdbcType=VARCHAR}, #{item.content,jdbcType=LONGVARCHAR},
+        #{item.status,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
         #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}
         )
     </foreach>
@@ -485,7 +485,7 @@
       #{updateTime,jdbcType=TIMESTAMP},
       #{remark,jdbcType=VARCHAR},
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -611,7 +611,7 @@
         #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -663,4 +663,96 @@
       </if>
     </trim>
   </insert>
+
+  <sql id="selectProtocolVo">
+    select id, product_identification, protocol_name, protocol_identification, protocol_version, protocol_type, protocol_voice, class_name, file_path, content, status, create_by, create_time, update_by, update_time, remark from protocol
+  </sql>
+
+  <select id="selectProtocolList" parameterType="Protocol" resultMap="BaseResultMap">
+    <include refid="selectProtocolVo"/>
+    <where>
+      <if test="productIdentification != null  and productIdentification != ''"> and product_identification = #{productIdentification}</if>
+      <if test="protocolName != null  and protocolName != ''"> and protocol_name like concat('%', #{protocolName}, '%')</if>
+      <if test="protocolIdentification != null  and protocolIdentification != ''"> and protocol_identification = #{protocolIdentification}</if>
+      <if test="protocolVersion != null  and protocolVersion != ''"> and protocol_version = #{protocolVersion}</if>
+      <if test="protocolType != null  and protocolType != ''"> and protocol_type = #{protocolType}</if>
+      <if test="protocolVoice != null  and protocolVoice != ''"> and protocol_voice = #{protocolVoice}</if>
+      <if test="className != null  and className != ''"> and class_name like concat('%', #{className}, '%')</if>
+      <if test="filePath != null  and filePath != ''"> and file_path = #{filePath}</if>
+      <if test="content != null  and content != ''"> and content = #{content}</if>
+      <if test="status != null  and status != ''"> and status = #{status}</if>
+    </where>
+  </select>
+
+  <select id="selectProtocolById" parameterType="Long" resultMap="BaseResultMap">
+    <include refid="selectProtocolVo"/>
+    where id = #{id}
+  </select>
+
+  <insert id="insertProtocol" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol" useGeneratedKeys="true" keyProperty="id">
+    insert into protocol
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productIdentification != null and productIdentification != ''">product_identification,</if>
+      <if test="protocolName != null">protocol_name,</if>
+      <if test="protocolIdentification != null">protocol_identification,</if>
+      <if test="protocolVersion != null">protocol_version,</if>
+      <if test="protocolType != null">protocol_type,</if>
+      <if test="protocolVoice != null">protocol_voice,</if>
+      <if test="className != null">class_name,</if>
+      <if test="filePath != null">file_path,</if>
+      <if test="content != null">content,</if>
+      <if test="status != null and status != ''">status,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+      <if test="remark != null">remark,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="productIdentification != null and productIdentification != ''">#{productIdentification},</if>
+      <if test="protocolName != null">#{protocolName},</if>
+      <if test="protocolIdentification != null">#{protocolIdentification},</if>
+      <if test="protocolVersion != null">#{protocolVersion},</if>
+      <if test="protocolType != null">#{protocolType},</if>
+      <if test="protocolVoice != null">#{protocolVoice},</if>
+      <if test="className != null">#{className},</if>
+      <if test="filePath != null">#{filePath},</if>
+      <if test="content != null">#{content},</if>
+      <if test="status != null and status != ''">#{status},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+      <if test="remark != null">#{remark},</if>
+    </trim>
+  </insert>
+
+  <update id="updateProtocol" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol">
+    update protocol
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="productIdentification != null and productIdentification != ''">product_identification = #{productIdentification},</if>
+      <if test="protocolName != null">protocol_name = #{protocolName},</if>
+      <if test="protocolIdentification != null">protocol_identification = #{protocolIdentification},</if>
+      <if test="protocolVersion != null">protocol_version = #{protocolVersion},</if>
+      <if test="protocolType != null">protocol_type = #{protocolType},</if>
+      <if test="protocolVoice != null">protocol_voice = #{protocolVoice},</if>
+      <if test="className != null">class_name = #{className},</if>
+      <if test="filePath != null">file_path = #{filePath},</if>
+      <if test="content != null">content = #{content},</if>
+      <if test="status != null and status != ''">status = #{status},</if>
+      <if test="createBy != null">create_by = #{createBy},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+      <if test="updateBy != null">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+      <if test="remark != null">remark = #{remark},</if>
+    </trim>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteProtocolByIds" parameterType="String">
+    delete from protocol where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

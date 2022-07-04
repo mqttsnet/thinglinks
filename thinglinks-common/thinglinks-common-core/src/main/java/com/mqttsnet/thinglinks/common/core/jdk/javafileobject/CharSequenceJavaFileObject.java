@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.common.core.jdk.javafileobject;
 
-import com.momo.xcode.common.XCodeConstant;
+import com.mqttsnet.thinglinks.common.core.constant.XCodeConstant;
 
 import javax.tools.SimpleJavaFileObject;
 import java.net.URI;
