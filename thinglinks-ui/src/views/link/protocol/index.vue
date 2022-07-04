@@ -172,7 +172,7 @@ import { listProtocol, getProtocol, delProtocol, addProtocol, updateProtocol } f
 
 export default {
   name: "Protocol",
-  dicts: ['link_device_protocol_type', 'link_protocol_voice', 'business_data_status'],
+  dicts: ['link_device_protocol_type', 'link_ protocol_voice', 'business_data_status'],
   data() {
     return {
       // 遮罩层
