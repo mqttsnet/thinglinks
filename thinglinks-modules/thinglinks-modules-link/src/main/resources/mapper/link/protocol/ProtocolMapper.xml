@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.link.mapper.protocol.ProtocolMapper">
+  <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol">
+    <!--@mbg.generated-->
+    <!--@Table protocol-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="product_identification" jdbcType="VARCHAR" property="productIdentification" />
+    <result column="protocol_name" jdbcType="VARCHAR" property="protocolName" />
+    <result column="protocol_identification" jdbcType="VARCHAR" property="protocolIdentification" />
+    <result column="protocol_version" jdbcType="VARCHAR" property="protocolVersion" />
+    <result column="protocol_type" jdbcType="VARCHAR" property="protocolType" />
+    <result column="protocol_voice" jdbcType="VARCHAR" property="protocolVoice" />
+    <result column="class_name" jdbcType="VARCHAR" property="className" />
+    <result column="file_path" jdbcType="VARCHAR" property="filePath" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, product_identification, protocol_name, protocol_identification, protocol_version, 
+    protocol_type, protocol_voice, class_name, file_path, content, `status`, create_by, 
+    create_time, update_by, update_time, remark
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from protocol
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--@mbg.generated-->
+    delete from protocol
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into protocol (product_identification, protocol_name, 
+      protocol_identification, protocol_version, 
+      protocol_type, protocol_voice, class_name, 
+      file_path, content, `status`, 
+      create_by, create_time, update_by, 
+      update_time, remark)
+    values (#{productIdentification,jdbcType=VARCHAR}, #{protocolName,jdbcType=VARCHAR}, 
+      #{protocolIdentification,jdbcType=VARCHAR}, #{protocolVersion,jdbcType=VARCHAR}, 
+      #{protocolType,jdbcType=VARCHAR}, #{protocolVoice,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR}, 
+      #{filePath,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into protocol
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productIdentification != null">
+        product_identification,
+      </if>
+      <if test="protocolName != null">
+        protocol_name,
+      </if>
+      <if test="protocolIdentification != null">
+        protocol_identification,
+      </if>
+      <if test="protocolVersion != null">
+        protocol_version,
+      </if>
+      <if test="protocolType != null">
+        protocol_type,
+      </if>
+      <if test="protocolVoice != null">
+        protocol_voice,
+      </if>
+      <if test="className != null">
+        class_name,
+      </if>
+      <if test="filePath != null">
+        file_path,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="productIdentification != null">
+        #{productIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolName != null">
+        #{protocolName,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolIdentification != null">
+        #{protocolIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolVersion != null">
+        #{protocolVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolType != null">
+        #{protocolType,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolVoice != null">
+        #{protocolVoice,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null">
+        #{className,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol">
+    <!--@mbg.generated-->
+    update protocol
+    <set>
+      <if test="productIdentification != null">
+        product_identification = #{productIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolName != null">
+        protocol_name = #{protocolName,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolIdentification != null">
+        protocol_identification = #{protocolIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolVersion != null">
+        protocol_version = #{protocolVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolType != null">
+        protocol_type = #{protocolType,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolVoice != null">
+        protocol_voice = #{protocolVoice,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null">
+        class_name = #{className,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol">
+    <!--@mbg.generated-->
+    update protocol
+    set product_identification = #{productIdentification,jdbcType=VARCHAR},
+      protocol_name = #{protocolName,jdbcType=VARCHAR},
+      protocol_identification = #{protocolIdentification,jdbcType=VARCHAR},
+      protocol_version = #{protocolVersion,jdbcType=VARCHAR},
+      protocol_type = #{protocolType,jdbcType=VARCHAR},
+      protocol_voice = #{protocolVoice,jdbcType=VARCHAR},
+      class_name = #{className,jdbcType=VARCHAR},
+      file_path = #{filePath,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR},
+      `status` = #{status,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update protocol
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="product_identification = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.productIdentification,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="protocol_name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.protocolName,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="protocol_identification = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.protocolIdentification,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="protocol_version = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.protocolVersion,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="protocol_type = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.protocolType,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="protocol_voice = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.protocolVoice,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="class_name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.className,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="file_path = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.filePath,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="content = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.content,jdbcType=LONGVARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="`status` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.status,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="create_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="update_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="remark = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=BIGINT} then #{item.remark,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=BIGINT}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update protocol
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="product_identification = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.productIdentification != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.productIdentification,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="protocol_name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.protocolName != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.protocolName,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="protocol_identification = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.protocolIdentification != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.protocolIdentification,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="protocol_version = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.protocolVersion != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.protocolVersion,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="protocol_type = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.protocolType != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.protocolType,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="protocol_voice = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.protocolVoice != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.protocolVoice,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="class_name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.className != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.className,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="file_path = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.filePath != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.filePath,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="content = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.content != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.content,jdbcType=LONGVARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="`status` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.status != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.status,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="create_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createBy != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateBy != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="remark = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.remark != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.remark,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=BIGINT}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into protocol
+    (product_identification, protocol_name, protocol_identification, protocol_version, 
+      protocol_type, protocol_voice, class_name, file_path, content, `status`, create_by, 
+      create_time, update_by, update_time, remark)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.productIdentification,jdbcType=VARCHAR}, #{item.protocolName,jdbcType=VARCHAR}, 
+        #{item.protocolIdentification,jdbcType=VARCHAR}, #{item.protocolVersion,jdbcType=VARCHAR}, 
+        #{item.protocolType,jdbcType=VARCHAR}, #{item.protocolVoice,jdbcType=VARCHAR}, 
+        #{item.className,jdbcType=VARCHAR}, #{item.filePath,jdbcType=VARCHAR}, #{item.content,jdbcType=LONGVARCHAR}, 
+        #{item.status,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}
+        )
+    </foreach>
+  </insert>
+  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into protocol
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      product_identification,
+      protocol_name,
+      protocol_identification,
+      protocol_version,
+      protocol_type,
+      protocol_voice,
+      class_name,
+      file_path,
+      content,
+      `status`,
+      create_by,
+      create_time,
+      update_by,
+      update_time,
+      remark,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      #{productIdentification,jdbcType=VARCHAR},
+      #{protocolName,jdbcType=VARCHAR},
+      #{protocolIdentification,jdbcType=VARCHAR},
+      #{protocolVersion,jdbcType=VARCHAR},
+      #{protocolType,jdbcType=VARCHAR},
+      #{protocolVoice,jdbcType=VARCHAR},
+      #{className,jdbcType=VARCHAR},
+      #{filePath,jdbcType=VARCHAR},
+      #{content,jdbcType=LONGVARCHAR},
+      #{status,jdbcType=VARCHAR},
+      #{createBy,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP},
+      #{updateBy,jdbcType=VARCHAR},
+      #{updateTime,jdbcType=TIMESTAMP},
+      #{remark,jdbcType=VARCHAR},
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=BIGINT},
+      </if>
+      product_identification = #{productIdentification,jdbcType=VARCHAR},
+      protocol_name = #{protocolName,jdbcType=VARCHAR},
+      protocol_identification = #{protocolIdentification,jdbcType=VARCHAR},
+      protocol_version = #{protocolVersion,jdbcType=VARCHAR},
+      protocol_type = #{protocolType,jdbcType=VARCHAR},
+      protocol_voice = #{protocolVoice,jdbcType=VARCHAR},
+      class_name = #{className,jdbcType=VARCHAR},
+      file_path = #{filePath,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR},
+      `status` = #{status,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+    </trim>
+  </insert>
+  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into protocol
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="productIdentification != null">
+        product_identification,
+      </if>
+      <if test="protocolName != null">
+        protocol_name,
+      </if>
+      <if test="protocolIdentification != null">
+        protocol_identification,
+      </if>
+      <if test="protocolVersion != null">
+        protocol_version,
+      </if>
+      <if test="protocolType != null">
+        protocol_type,
+      </if>
+      <if test="protocolVoice != null">
+        protocol_voice,
+      </if>
+      <if test="className != null">
+        class_name,
+      </if>
+      <if test="filePath != null">
+        file_path,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="productIdentification != null">
+        #{productIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolName != null">
+        #{protocolName,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolIdentification != null">
+        #{protocolIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolVersion != null">
+        #{protocolVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolType != null">
+        #{protocolType,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolVoice != null">
+        #{protocolVoice,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null">
+        #{className,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=BIGINT},
+      </if>
+      <if test="productIdentification != null">
+        product_identification = #{productIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolName != null">
+        protocol_name = #{protocolName,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolIdentification != null">
+        protocol_identification = #{protocolIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolVersion != null">
+        protocol_version = #{protocolVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolType != null">
+        protocol_type = #{protocolType,jdbcType=VARCHAR},
+      </if>
+      <if test="protocolVoice != null">
+        protocol_voice = #{protocolVoice,jdbcType=VARCHAR},
+      </if>
+      <if test="className != null">
+        class_name = #{className,jdbcType=VARCHAR},
+      </if>
+      <if test="filePath != null">
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

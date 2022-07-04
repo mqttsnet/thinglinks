@@ -101,7 +101,11 @@
                 </el-tab-pane>
                 <el-tab-pane label="设备影子" name="second" style="width:100%;height: 100%;">
                     <el-tabs v-model="shadowActiveName" style="width:100%;height: 100%;">
-                        <el-tab-pane label="列表" name="first" style="width:100%;height:100%">
+                        <el-tab-pane label="列表" name="first" style="width:100%;height:100%;">
+                            <el-date-picker @change="timeControls" style="margin-bottom: 10px;" v-model="value1"
+                                type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" range-separator="至"
+                                start-placeholder="开始日期" end-placeholder="结束日期">
+                            </el-date-picker>
                             <el-tabs v-model="editableTabsValue" type="card">
                                 <el-tab-pane v-for="(value, name, index) in ShadowData" :key="index" :label="name"
                                     :name="String(index + 1)" style="width:100%;height: 100%;">
@@ -112,8 +116,8 @@
                                                 {{ scope.$index + 1 }}
                                             </template>
                                         </el-table-column>
-                                        <el-table-column v-for="(ShadowValue, ShadownNme, index) in value[index]"
-                                            :key="index" :prop="ShadownNme" :label="ShadownNme" style="width: 25%">
+                                        <el-table-column v-for="(ShadowValue, ShadowName, index1) in value[0]"
+                                            :key="index1" :label="ShadowName" :prop="ShadowName" style="width: 25%">
                                         </el-table-column>
                                     </el-table>
                                 </el-tab-pane>
@@ -146,6 +150,7 @@ export default {
     ],
     data() {
         return {
+            value1: [],
             //分页总条数
             total: 0,
             // 遮罩层
@@ -176,26 +181,33 @@ export default {
                 publisher: null,
                 subscriber: null,
             },
+            // 查询子设备影子数据
+            data: {
+                ids: "",
+                startTime: "",
+                endTime: "",
+            },
         }
     },
+
     watch: {
         activeName(value) {
             if (value === 'second') {
+                this.data.ids = this.deviceInfo.id
                 this.getShadowData()
             }
-        }
+        },
     },
     methods: {
+        timeControls() {
+            this.data.startTime = this.value1[0]
+            this.data.endTime = this.value1[1]
+            this.getShadowData()
+        },
         // 查询子设备影子数据
         getShadowData() {
             this.loading = true
-            let data = {
-                ids: this.deviceInfo.id,
-                startTime: "2022-05-08 10:44:36",
-                endTime: "2022-05-10 10:47:25"
-            }
-            console.log(data);
-            getDeviceInfoShadow(data).then(res => {
+            getDeviceInfoShadow(this.data).then(res => {
                 console.log(res.data);
                 this.ShadowData = res.data
                 this.detailJSON = JSON.stringify(res.data)
@@ -255,6 +267,8 @@ export default {
         this.id = this.$route.query.id
         console.log(this.id);
         this.getDetail();
+        // this.data.ids = this.deviceInfo.id
+        // this.getShadowData()
     }
 }
 </script>
