@@ -23,9 +23,6 @@
           <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
             :value="dict.value" />
         </el-select>
-        <el-tooltip content="协议类型：mqtt || coap || modbus || http" placement="right" effect="light">
-          <i class="el-icon-question" />
-        </el-tooltip>
       </el-form-item>
       <el-form-item label="协议语言" prop="protocolVoice">
         <el-select v-model="queryParams.protocolVoice" placeholder="请选择协议语言" clearable size="small">
@@ -33,8 +30,8 @@
             :value="dict.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="状态(字典值：0启用  1停用)" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择状态(字典值：0启用  1停用)" clearable size="small">
+      <el-form-item label="状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
           <el-option v-for="dict in dict.type.business_data_status" :key="dict.value" :label="dict.label"
             :value="dict.value" />
         </el-select>
@@ -72,7 +69,7 @@
       <el-table-column label="协议名称" align="center" prop="protocolName" />
       <el-table-column label="协议标识" align="center" prop="protocolIdentification" />
       <el-table-column label="协议版本" align="center" prop="protocolVersion" />
-      <el-table-column label="协议类型 ：mqtt || coap || modbus || http" align="center" prop="protocolType">
+      <el-table-column label="协议类型" align="center" prop="protocolType">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.protocolType" />
         </template>
@@ -85,7 +82,7 @@
       <el-table-column label="类名" align="center" prop="className" />
       <el-table-column label="文件地址" align="center" prop="filePath" />
       <el-table-column label="内容" align="center" prop="content" />
-      <el-table-column label="状态(字典值：0启用  1停用)" align="center" prop="status">
+      <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.business_data_status" :value="scope.row.status" />
         </template>
@@ -131,8 +128,8 @@
         <el-form-item label="协议版本" prop="protocolVersion">
           <el-input v-model="form.protocolVersion" placeholder="请输入协议版本" />
         </el-form-item>
-        <el-form-item label="协议类型 ：mqtt || coap || modbus || http" prop="protocolType">
-          <el-select v-model="form.protocolType" placeholder="请选择协议类型 ：mqtt || coap || modbus || http">
+        <el-form-item label="协议类型" prop="protocolType">
+          <el-select v-model="form.protocolType" placeholder="请选择协议类型">
             <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
               :value="dict.value"></el-option>
           </el-select>
@@ -152,8 +149,8 @@
         <el-form-item label="内容">
           <editor v-model="form.content" :min-height="192" />
         </el-form-item>
-        <el-form-item label="状态(字典值：0启用  1停用)" prop="status">
-          <el-select v-model="form.status" placeholder="请选择状态(字典值：0启用  1停用)">
+        <el-form-item label="状态" prop="status">
+          <el-select v-model="form.status" placeholder="请选择状态">
             <el-option v-for="dict in dict.type.business_data_status" :key="dict.value" :label="dict.label"
               :value="dict.value"></el-option>
           </el-select>
