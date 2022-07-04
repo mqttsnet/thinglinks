@@ -1075,7 +1075,7 @@ export default {
           //properties
           datatype: [{ required: true, message: "指示数据类型不能为空", trigger: "change" },],
           descriptions: [{ message: "请输入属性描述", trigger: "blur" },],
-          enumlist: [{ required: true, message: "指示枚举值不能为空", trigger: "blur" },],
+          enumlist: [{ message: "指示枚举值不能为空", trigger: "blur" },],
           maxlength: [
             { required: true, message: "字符串长度不能为空", trigger: "blur" },
             {
@@ -1214,6 +1214,8 @@ export default {
         // );
         this.dialogquick.form.services.forEach((item) => {
           // item.commands=item.commands&&item.commands.split(',');
+          //TODO 事件先清空
+          item.commands = []
           item.properties.forEach((itempro) => {
             itempro.maxlength = Number(itempro.maxlength);
             itempro.required = Number(itempro.required);
@@ -1222,8 +1224,23 @@ export default {
         });
         let obj = JSON.stringify(this.dialogquick.form)
         this.content = obj
-        this.$message.success('保存成功')
-        this.dialogquick.visiblequick = false;
+        let data = {
+          appId: this.dialogquick.form.appId,
+          templateId: this.dialogquick.form.templateId,
+          status: 0,
+          content: this.content
+        }
+        generateProductJson(data).then(res => {
+          console.log(res);
+          this.$message.success('保存成功')
+          this.dialogquick.visiblequick = false;
+          this.getList();
+        }).catch((res, err) => {
+          console.log(res);
+          this.$message.error(res.msg || res.message);
+        });
+        //this.$message.success('保存成功')
+        //this.dialogquick.visiblequick = false;
       });
     },
     //获取其他数据
@@ -1440,24 +1457,24 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit();
-      let data = {
-        appId: this.upload.appId,
-        templateId: this.upload.templateId,
-        status: this.upload.status,
-        content: JSON.parse(this.content)
-      }
-      console.log(this.$refs.upload);
-      console.log(data);
-      generateProductJson(data).then(res => {
-        console.log(res);
-        this.$modal.msgSuccess("上传成功");
-      }).catch((res, err) => {
-        console.log(res);
-        this.$message.error(err.msg || err.message);
-      });
-      this.upload.appId = "";
-      this.upload.templateId = "";
-      this.upload.updateSupport = "";
+      // let data = {
+      //   appId: this.upload.appId,
+      //   templateId: this.upload.templateId,
+      //   status: this.upload.status,
+      //   content: JSON.parse(this.content)
+      // }
+      // console.log(this.$refs.upload);
+      // console.log(data);
+      // generateProductJson(data).then(res => {
+      //   console.log(res);
+      //   this.$modal.msgSuccess("上传成功");
+      // }).catch((res, err) => {
+      //   console.log(res);
+      //   this.$message.error(err.msg || err.message);
+      // });
+      // this.upload.appId = "";
+      // this.upload.templateId = "";
+      // this.upload.updateSupport = "";
     },
   },
 };
