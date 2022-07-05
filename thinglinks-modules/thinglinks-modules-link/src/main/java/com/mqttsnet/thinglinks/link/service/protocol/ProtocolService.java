@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.link.service.protocol;
 
 import com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -75,4 +76,32 @@ public interface ProtocolService {
      * @return 结果
      */
     public int deleteProtocolByIds(Long[] ids);
+
+
+
+	Protocol findOneByProductIdentificationAndProtocolTypeAndStatus(String productIdentification,String protocolType,String status);
+
+    /**
+     * 批量启用协议管理
+     * @param ids
+     * @return
+     */
+    public int enable(Long[] ids);
+
+    /**
+     * 批量禁用协议管理
+     * @param ids
+     * @return
+     */
+    public int disable(Long[] ids);
+
+
+
+	List<Protocol> findAllByIdIn(Collection<Long> idCollection);
+
+
+
+	int updateStatusById(String updatedStatus,Long id);
+
+
 }

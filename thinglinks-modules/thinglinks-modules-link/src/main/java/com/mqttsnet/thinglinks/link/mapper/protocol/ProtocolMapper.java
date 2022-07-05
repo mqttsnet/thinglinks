@@ -4,6 +4,7 @@ import com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -107,4 +108,14 @@ public interface ProtocolMapper {
      * @return 结果
      */
     public int deleteProtocolByIds(Long[] ids);
+
+    Protocol findOneByProductIdentificationAndProtocolTypeAndStatus(@Param("productIdentification")String productIdentification,@Param("protocolType")String protocolType,@Param("status")String status);
+
+    List<Protocol> findAllByIdIn(@Param("idCollection")Collection<Long> idCollection);
+
+    int updateStatusById(@Param("updatedStatus")String updatedStatus,@Param("id")Long id);
+
+
+
+
 }

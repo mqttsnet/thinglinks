@@ -1,9 +1,5 @@
 package com.mqttsnet.thinglinks.link.controller.protocol;
 
-import java.util.List;
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
-
 import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -15,14 +11,11 @@ import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol;
 import com.mqttsnet.thinglinks.link.service.protocol.ProtocolService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * 协议管理Controller
@@ -105,5 +98,30 @@ public class ProtocolController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(protocolService.deleteProtocolByIds(ids));
+    }
+
+    /**
+     * 启用协议管理
+     * @param ids
+     * @return
+     */
+    @PreAuthorize(hasPermi = "link:protocol:enable")
+    @Log(title = "协议管理", businessType = BusinessType.GRANT)
+    @DeleteMapping("/{ids}")
+    public AjaxResult enable(@PathVariable Long[] ids)
+    {
+        return toAjax(protocolService.enable(ids));
+    }
+    /**
+     * 停用协议管理
+     * @param ids
+     * @return
+     */
+    @PreAuthorize(hasPermi = "link:protocol:disable")
+    @Log(title = "协议管理", businessType = BusinessType.GRANT)
+    @DeleteMapping("/{ids}")
+    public AjaxResult disable(@PathVariable Long[] ids)
+    {
+        return toAjax(protocolService.disable(ids));
     }
 }

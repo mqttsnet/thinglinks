@@ -557,14 +557,14 @@ public class ProductServiceImpl implements ProductService{
         List<SuperTableDto> superTableDtoList = new ArrayList<>();
         List<Product>  productList = new ArrayList<>();
         if (null==productIds) {
-            productList = this.findAllByStatus("0");
+            productList = this.findAllByStatus(Constants.ENABLE);
         }else {
-            productList = this.findAllByIdInAndStatus(Arrays.asList(productIds),"0");
+            productList = this.findAllByIdInAndStatus(Arrays.asList(productIds),Constants.ENABLE);
         }
         SuperTableDto superTableDto;
         loop:
         for (Product product : productList) {
-            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), "0");
+            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), Constants.ENABLE);
             if(StringUtils.isEmpty(allByProductIdAndStatus)){
                 continue;
             }

@@ -668,7 +668,7 @@
     select id, product_identification, protocol_name, protocol_identification, protocol_version, protocol_type, protocol_voice, class_name, file_path, content, status, create_by, create_time, update_by, update_time, remark from protocol
   </sql>
 
-  <select id="selectProtocolList" parameterType="Protocol" resultMap="BaseResultMap">
+  <select id="selectProtocolList" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol" resultMap="BaseResultMap">
     <include refid="selectProtocolVo"/>
     <where>
       <if test="productIdentification != null  and productIdentification != ''"> and product_identification = #{productIdentification}</if>
@@ -755,4 +755,32 @@
       #{id}
     </foreach>
   </delete>
+
+<!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-05-->
+  <select id="findOneByProductIdentificationAndProtocolTypeAndStatus" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from protocol
+    where product_identification=#{productIdentification,jdbcType=VARCHAR} and
+    protocol_type=#{protocolType,jdbcType=VARCHAR} and `status`=#{status,jdbcType=VARCHAR}
+  </select>
+
+<!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-05-->
+  <select id="findAllByIdIn" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from protocol
+    where id in
+    <foreach item="item" index="index" collection="idCollection"
+             open="(" separator="," close=")">
+      #{item,jdbcType=BIGINT}
+    </foreach>
+  </select>
+
+<!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-05-->
+  <update id="updateStatusById">
+    update protocol
+    set `status`=#{updatedStatus,jdbcType=VARCHAR}
+    where id=#{id,jdbcType=BIGINT}
+  </update>
 </mapper>

@@ -1,13 +1,20 @@
 package com.mqttsnet.thinglinks.link.service.protocol.impl;
 
+import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol;
 import com.mqttsnet.thinglinks.link.mapper.protocol.ProtocolMapper;
+import com.mqttsnet.thinglinks.link.service.device.DeviceService;
+import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.link.service.protocol.ProtocolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -23,6 +30,12 @@ public class ProtocolServiceImpl implements ProtocolService {
 
     @Resource
     private ProtocolMapper protocolMapper;
+    @Autowired
+    private DeviceService deviceService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -135,4 +148,65 @@ public class ProtocolServiceImpl implements ProtocolService {
     public int deleteProtocolByIds(Long[] ids) {
         return protocolMapper.deleteProtocolByIds(ids);
     }
+
+	@Override
+	public Protocol findOneByProductIdentificationAndProtocolTypeAndStatus(String productIdentification,String protocolType,String status){
+		 return protocolMapper.findOneByProductIdentificationAndProtocolTypeAndStatus(productIdentification,protocolType,status);
+	}
+
+    /**
+     * 批量启用协议管理
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public int enable(Long[] ids) {
+        List<Protocol> protocolList = protocolMapper.findAllByIdIn(Arrays.asList(ids));
+        for (Protocol protocol : protocolList) {
+            List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
+            for (Device device : deviceList) {
+                redisService.set(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+device.getDeviceIdentification(), protocol.getContent());
+            }
+            protocolMapper.updateStatusById(Constants.ENABLE, protocol.getId());
+        }
+        return protocolList.size();
+    }
+
+    /**
+     * 批量禁用协议管理
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public int disable(Long[] ids) {
+        List<Protocol> protocolList = protocolMapper.findAllByIdIn(Arrays.asList(ids));
+        for (Protocol protocol : protocolList) {
+            List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
+            for (Device device : deviceList) {
+                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+device.getDeviceIdentification());
+            }
+            protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
+        }
+        return protocolList.size();
+    }
+
+	@Override
+	public List<Protocol> findAllByIdIn(Collection<Long> idCollection){
+		 return protocolMapper.findAllByIdIn(idCollection);
+	}
+
+	@Override
+	public int updateStatusById(String updatedStatus,Long id){
+		 return protocolMapper.updateStatusById(updatedStatus,id);
+	}
+
+
+
+
+
+
+
+
 }
