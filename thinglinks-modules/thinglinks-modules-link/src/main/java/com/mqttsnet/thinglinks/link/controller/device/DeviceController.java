@@ -1,11 +1,5 @@
 package com.mqttsnet.thinglinks.link.controller.device;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
-
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
@@ -13,21 +7,26 @@ import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
-import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.mqttsnet.thinglinks.link.service.device.DeviceService;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 设备管理Controller
@@ -204,7 +203,7 @@ public class DeviceController extends BaseController {
      * @return
      */
     @PostMapping("/clientAuthentication")
-    public R<Boolean> clientAuthentication(@RequestBody Map<String, Object> params)
+    public ResponseEntity<AjaxResult> clientAuthentication(@RequestBody Map<String, Object> params)
     {
         final Object clientIdentifier = params.get("clientIdentifier");
         final Object username = params.get("username");
@@ -212,8 +211,8 @@ public class DeviceController extends BaseController {
         final Object deviceStatus = params.get("deviceStatus");
         final Object protocolType = params.get("protocolType");
         Boolean  certificationStatus= deviceService.clientAuthentication(clientIdentifier.toString(),username.toString(),password.toString(),deviceStatus.toString(),protocolType.toString());
-        log.info("{} 协议客户端:{} 正在进行身份认证,用户名:{},密码:{},认证结果:{}",protocolType,clientIdentifier,username,password,certificationStatus?"成功":"失败");
-        return certificationStatus?R.ok():R.fail();
+        log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}",protocolType,clientIdentifier,username,password,certificationStatus?"成功":"失败");
+        return certificationStatus?ResponseEntity.ok().body(AjaxResult.success("认证成功")):ResponseEntity.status(403).body(AjaxResult.error("认证失败"));
     }
 
 
