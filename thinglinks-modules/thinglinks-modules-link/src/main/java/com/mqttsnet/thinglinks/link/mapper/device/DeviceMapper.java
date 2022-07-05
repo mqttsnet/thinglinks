@@ -1,10 +1,10 @@
 package com.mqttsnet.thinglinks.link.mapper.device;
-import java.util.Collection;
 
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -160,6 +160,8 @@ public interface DeviceMapper {
 
     List<Device> findAllByIdIn(@Param("idCollection")Collection<Long> idCollection);
 
+
+    List<Device> findAllByProductIdentification(@Param("productIdentification")String productIdentification);
 
 
 

@@ -152,5 +152,10 @@ public interface DeviceService {
 
 	List<Device> findAllByIdIn(Collection<Long> idCollection);
 
+
+
+	List<Device> findAllByProductIdentification(String productIdentification);
+
+
 }
 
