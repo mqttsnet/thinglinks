@@ -107,7 +107,7 @@ public class ProtocolController extends BaseController
      */
     @PreAuthorize(hasPermi = "link:protocol:enable")
     @Log(title = "协议管理", businessType = BusinessType.GRANT)
-    @DeleteMapping("/enable/{ids}")
+    @GetMapping("/enable/{ids}")
     public AjaxResult enable(@PathVariable Long[] ids)
     {
         return toAjax(protocolService.enable(ids));
@@ -119,7 +119,7 @@ public class ProtocolController extends BaseController
      */
     @PreAuthorize(hasPermi = "link:protocol:disable")
     @Log(title = "协议管理", businessType = BusinessType.GRANT)
-    @DeleteMapping("/disable/{ids}")
+    @GetMapping("/disable/{ids}")
     public AjaxResult disable(@PathVariable Long[] ids)
     {
         return toAjax(protocolService.disable(ids));

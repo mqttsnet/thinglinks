@@ -212,7 +212,7 @@ public class ProductServiceImpl implements ProductService{
                     //解析产品模型数据
                     return this.productJsonDataAnalysis(JSONObject.parseObject(sb.toString()), appId, templateId, status);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                 } finally {
                     try {
                         inputStream.close();
@@ -221,11 +221,9 @@ public class ProductServiceImpl implements ProductService{
                     }
                 }
             }
-        } else {
-            //非法文件
-            return AjaxResult.error("the picture's suffix is illegal");
         }
-        return null;
+        //非法文件
+        return AjaxResult.error("the picture's suffix is illegal");
     }
 
     /**
@@ -286,11 +284,12 @@ public class ProductServiceImpl implements ProductService{
                         || "bool".equals(item) || "timestamp".equals(item) || "json".equals(item);
                 list.add(flag);
                 if (list.contains(false)) {
+                    log.error("datatype:"+item,"Invalid product: Invalid dataType,must be one of [int、decimal、string、binary、bool、timestamp、json]");
                     parsingErrorMessages.put("datatype:"+item,"Invalid product: Invalid dataType,must be one of [int、decimal、string、binary、bool、timestamp、json]");
                 }
             });
             if (!parsingErrorMessages.isEmpty()){
-                return AjaxResult.error(JSONObject.parseObject(parsingErrorMessages.toString()).toJSONString());
+                return AjaxResult.error(parsingErrorMessages.toString());
             }
             //服务属性解析处理
             Product product = new Product();

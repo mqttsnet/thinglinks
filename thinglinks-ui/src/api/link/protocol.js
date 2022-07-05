@@ -42,3 +42,28 @@ export function delProtocol(id) {
     method: 'delete'
   })
 }
+
+// 启用协议管理
+export function enable(id) {
+  return request({
+    url: '/link/protocol/enable/' + id,
+    method: 'get'
+  })
+}
+
+// 停用协议管理
+export function disable(id) {
+  return request({
+    url: '/link/protocol/disable/' + id,
+    method: 'get'
+  })
+}
+
+// 动态编译代码
+export function dynamicallyXcode(data) {
+  return request({
+    url: '/link/protocolCompileXcode/dynamicallyXcode',
+    method: 'post',
+    data: data
+  })
+}

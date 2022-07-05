@@ -98,9 +98,9 @@ com.mqttsnet.thinglinks
 
 *、设备管理页面展示优化(实现中)
 
-*、产品管理(后台接口已完成,web实现中)
+*、产品管理(服务属性告警指标配置实现中)
 
-*、设备消息列表(实现中)
+*、协议管理、触发器(实现中)
 
 *、Docker容器化部署(实现中)
 
@@ -112,15 +112,21 @@ com.mqttsnet.thinglinks
 
 ## 演示图
 
-![](doc/imgs/deviceIntegration/menuManagement.png)
+![](doc/imgs/deviceIntegration/img.png)
 
-![](doc/imgs/deviceIntegration/dataDictionary.png)
+![](doc/imgs/deviceIntegration/img_0.png)
 
-![](doc/imgs/deviceIntegration/formBuilding.png)
+![](doc/imgs/deviceIntegration/img_1.png)
 
-![](doc/imgs/deviceIntegration/deviceList.png)
+![](doc/imgs/deviceIntegration/img_2.png)
 
-![](doc/imgs/deviceIntegration/deviceAdd.png)
+![](doc/imgs/deviceIntegration/img_3.png)
+
+![](doc/imgs/deviceIntegration/img_4.png)
+
+![](doc/imgs/deviceIntegration/img_5.png)
+
+![](doc/imgs/deviceIntegration/img_6.png)
 
 ## 配置使用
 
