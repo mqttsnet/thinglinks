@@ -63,6 +63,16 @@ public class Constants
     public static final String REGISTER = "Register";
 
     /**
+     * 启用
+     */
+    public static final String ENABLE = "0";
+
+    /**
+     * 禁用
+     */
+    public static final String DISABLE = "1";
+
+    /**
      * 登录失败
      */
     public static final String LOGIN_FAIL = "Error";
@@ -141,5 +151,10 @@ public class Constants
      * TDengine superTableFields cache key
      */
     public static final String TDENGINE_SUPERTABLEFILELDS = "TDengine_SuperTableFields:";
+
+    /**
+     * 设备数据上报协议脚本 cache key
+     */
+    public static final String DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT = "device_data_reported_agreement_script:";
 
 }

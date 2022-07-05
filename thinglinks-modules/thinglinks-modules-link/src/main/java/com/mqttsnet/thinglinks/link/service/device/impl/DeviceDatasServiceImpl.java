@@ -8,6 +8,10 @@ import com.jayway.jsonpath.JsonPath;
 import com.mqttsnet.thinglinks.broker.api.RemotePublishActorService;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.dynamicCompilation.ClassInjector;
+import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicClassLoader;
+import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicLoaderEngine;
+import com.mqttsnet.thinglinks.common.core.dynamicCompilation.bytecode.InjectionSystem;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
 import com.mqttsnet.thinglinks.common.core.enums.ProtocolType;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
@@ -28,6 +32,7 @@ import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
+import com.mqttsnet.thinglinks.link.service.protocol.ProtocolService;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
@@ -41,6 +46,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -76,6 +84,8 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
     private DeviceInfoService deviceInfoService;
     @Resource
     private RemotePublishActorService remotePublishActorService;
+    @Autowired
+    private ProtocolService protocolService;
     /**
      * 数据库名称
      */
@@ -263,7 +273,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             deviceInfo.setShadowEnable(true);
             StringBuilder shadowTableNameBuilder = new StringBuilder();
             // 新增设备管理成功后，创建TD普通表
-            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), "0");
+            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), Constants.ENABLE);
             TableDto tableDto;
             for (ProductServices productServices : allByProductIdAndStatus) {
                 tableDto = new TableDto();
@@ -416,6 +426,18 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void processingDatasTopic(String deviceIdentification, String msg) throws Exception{
+        //协议脚本转换处理
+        if (redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+deviceIdentification)){
+            String code = redisService.get(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+deviceIdentification);
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            PrintWriter out = new PrintWriter(buffer, true);
+            byte[] classBytes = DynamicLoaderEngine.compile(code, out, null);
+            byte[] injectedClass = ClassInjector.injectSystem(classBytes);
+            InjectionSystem.inject(null, new PrintStream(buffer, true), null);
+            DynamicClassLoader classLoader = new DynamicClassLoader(this.getClass().getClassLoader());
+            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out);
+            msg= buffer.toString().trim();
+        }
         //根据返回的json解析出上报的数据data，所属的服务serviceName，事件发生的时间eventTime
         Map<String, Object> resultMap = StringUtils.jsonToMap(msg);
         List<Map<String, Object>> items = (List<Map<String, Object>>) resultMap.get("devices");
@@ -437,7 +459,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 final Object serviceId = serviceData.get("serviceId");
                 final Object eventTime = serviceData.get("eventTime");
                 Map<String, Object> data = StringUtils.jsonToMap(serviceData.get("data").toString());
-                final Product product = productService.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(oneByDeviceId.getManufacturerId(),oneByDeviceId.getModel(), ProtocolType.MQTT.getValue(), "0");
+                final Product product = productService.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(oneByDeviceId.getManufacturerId(),oneByDeviceId.getModel(), ProtocolType.MQTT.getValue(), Constants.ENABLE);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
                 String superTableName = product.getProductType()+"_"+product.getProductIdentification()+"_"+serviceId.toString();
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）

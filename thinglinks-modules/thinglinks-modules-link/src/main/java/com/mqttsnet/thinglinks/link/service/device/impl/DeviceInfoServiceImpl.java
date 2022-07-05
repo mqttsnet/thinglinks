@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
+import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
@@ -195,7 +196,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     @Override
     public Map<String, List<Map<String, Object>>> getDeviceInfoShadow(String ids,String startTime,String endTime) {
         List<Long> idCollection = Arrays.stream(ids.split(",")).mapToLong(Long::parseLong).boxed().collect(Collectors.toList());
-        List<DeviceInfo> deviceInfos = deviceInfoMapper.findAllByIdInAndStatus(idCollection, "0");
+        List<DeviceInfo> deviceInfos = deviceInfoMapper.findAllByIdInAndStatus(idCollection, Constants.ENABLE);
         if (StringUtils.isNull(deviceInfos)) {
             log.error("查询子设备影子数据失败，子设备不存在");
             return null;
