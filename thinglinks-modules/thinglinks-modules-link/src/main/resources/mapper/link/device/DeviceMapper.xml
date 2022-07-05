@@ -27,30 +27,6 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
   </resultMap>
-  <resultMap type="com.mqttsnet.thinglinks.link.api.domain.device.entity.Device" id="DeviceResult">
-    <result property="id"    column="id"    />
-    <result property="clientId"    column="client_id"    />
-    <result property="userName"    column="user_name"    />
-    <result property="password"    column="password"    />
-    <result property="appId"    column="app_id"    />
-    <result property="authMode"    column="auth_mode"    />
-    <result property="deviceIdentification"    column="device_identification"    />
-    <result property="deviceName"    column="device_name"    />
-    <result property="connector"    column="connector"    />
-    <result property="deviceDescription"    column="device_description"    />
-    <result property="deviceStatus"    column="device_status"    />
-    <result property="connectStatus"    column="connect_status"    />
-    <result property="isWill"    column="is_will"    />
-    <result property="deviceTags"    column="device_tags"    />
-    <result property="productIdentification"    column="product_identification"    />
-    <result property="protocolType"    column="protocol_type"    />
-    <result property="deviceType"    column="device_type"    />
-    <result property="createBy"    column="create_by"    />
-    <result property="createTime"    column="create_time"    />
-    <result property="updateBy"    column="update_by"    />
-    <result property="updateTime"    column="update_time"    />
-    <result property="remark"    column="remark"    />
-  </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, client_id, user_name, `password`, app_id, auth_mode, device_identification, device_name, 
@@ -58,12 +34,9 @@
     product_identification, protocol_type, device_type, create_by, create_time,
     update_by, update_time, remark
   </sql>
-  <sql id="OrderByCreateTimeDesc">
-    order by create_time desc
-  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from device
     where id = #{id,jdbcType=BIGINT}
@@ -75,153 +48,153 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.Device" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into device (client_id, user_name, `password`, 
-      app_id, auth_mode, device_identification, 
-      device_name, connector, device_description, 
-      device_status, connect_status, is_will, 
-      device_tags, product_identification,
-      protocol_type, device_type, create_by, 
-      create_time, update_by, update_time, 
-      remark)
-    values (#{client_id,jdbcType=VARCHAR}, #{user_name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{app_id,jdbcType=VARCHAR}, #{auth_mode,jdbcType=VARCHAR}, #{device_identification,jdbcType=VARCHAR}, 
-      #{device_name,jdbcType=VARCHAR}, #{connector,jdbcType=VARCHAR}, #{device_description,jdbcType=VARCHAR}, 
-      #{device_status,jdbcType=VARCHAR}, #{connect_status,jdbcType=VARCHAR}, #{is_will,jdbcType=VARCHAR}, 
-      #{device_tags,jdbcType=VARCHAR}, #{product_identification,jdbcType=VARCHAR},
-      #{protocol_type,jdbcType=VARCHAR}, #{device_type,jdbcType=VARCHAR}, #{create_by,jdbcType=VARCHAR}, 
-      #{create_time,jdbcType=TIMESTAMP}, #{update_by,jdbcType=VARCHAR}, #{update_time,jdbcType=TIMESTAMP}, 
-      #{remark,jdbcType=VARCHAR})
+    insert into device (client_id, user_name, `password`,
+    app_id, auth_mode, device_identification,
+    device_name, connector, device_description,
+    device_status, connect_status, is_will,
+    device_tags, product_identification, protocol_type,
+    device_type, create_by, create_time,
+    update_by, update_time, remark
+    )
+    values (#{clientId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+    #{appId,jdbcType=VARCHAR}, #{authMode,jdbcType=VARCHAR}, #{deviceIdentification,jdbcType=VARCHAR},
+    #{deviceName,jdbcType=VARCHAR}, #{connector,jdbcType=VARCHAR}, #{deviceDescription,jdbcType=VARCHAR},
+    #{deviceStatus,jdbcType=VARCHAR}, #{connectStatus,jdbcType=VARCHAR}, #{isWill,jdbcType=VARCHAR},
+    #{deviceTags,jdbcType=VARCHAR}, #{productIdentification,jdbcType=VARCHAR}, #{protocolType,jdbcType=VARCHAR},
+    #{deviceType,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+    #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
+    )
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.Device" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="client_id != null and client_id != ''">
+      <if test="clientId != null">
         client_id,
       </if>
-      <if test="user_name != null and user_name != ''">
+      <if test="userName != null">
         user_name,
       </if>
-      <if test="password != null and password != ''">
+      <if test="password != null">
         `password`,
       </if>
-      <if test="app_id != null and app_id != ''">
+      <if test="appId != null">
         app_id,
       </if>
-      <if test="auth_mode != null and auth_mode != ''">
+      <if test="authMode != null">
         auth_mode,
       </if>
-      <if test="device_identification != null and device_identification != ''">
+      <if test="deviceIdentification != null">
         device_identification,
       </if>
-      <if test="device_name != null and device_name != ''">
+      <if test="deviceName != null">
         device_name,
       </if>
-      <if test="connector != null and connector != ''">
+      <if test="connector != null">
         connector,
       </if>
-      <if test="device_description != null and device_description != ''">
+      <if test="deviceDescription != null">
         device_description,
       </if>
-      <if test="device_status != null and device_status != ''">
+      <if test="deviceStatus != null">
         device_status,
       </if>
-      <if test="connect_status != null and connect_status != ''">
+      <if test="connectStatus != null">
         connect_status,
       </if>
-      <if test="is_will != null and is_will != ''">
+      <if test="isWill != null">
         is_will,
       </if>
-      <if test="device_tags != null and device_tags != ''">
+      <if test="deviceTags != null">
         device_tags,
       </if>
-      <if test="product_identification != null and product_identification != ''">
+      <if test="productIdentification != null">
         product_identification,
       </if>
-      <if test="protocol_type != null and protocol_type != ''">
+      <if test="protocolType != null">
         protocol_type,
       </if>
-      <if test="device_type != null and device_type != ''">
+      <if test="deviceType != null">
         device_type,
       </if>
-      <if test="create_by != null and create_by != ''">
+      <if test="createBy != null">
         create_by,
       </if>
-      <if test="create_time != null">
+      <if test="createTime != null">
         create_time,
       </if>
-      <if test="update_by != null and update_by != ''">
+      <if test="updateBy != null">
         update_by,
       </if>
-      <if test="update_time != null">
+      <if test="updateTime != null">
         update_time,
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="client_id != null and client_id != ''">
-        #{client_id,jdbcType=VARCHAR},
+      <if test="clientId != null">
+        #{clientId,jdbcType=VARCHAR},
       </if>
-      <if test="user_name != null and user_name != ''">
-        #{user_name,jdbcType=VARCHAR},
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
       </if>
-      <if test="password != null and password != ''">
+      <if test="password != null">
         #{password,jdbcType=VARCHAR},
       </if>
-      <if test="app_id != null and app_id != ''">
-        #{app_id,jdbcType=VARCHAR},
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
       </if>
-      <if test="auth_mode != null and auth_mode != ''">
-        #{auth_mode,jdbcType=VARCHAR},
+      <if test="authMode != null">
+        #{authMode,jdbcType=VARCHAR},
       </if>
-      <if test="device_identification != null and device_identification != ''">
-        #{device_identification,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        #{deviceIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="device_name != null and device_name != ''">
-        #{device_name,jdbcType=VARCHAR},
+      <if test="deviceName != null">
+        #{deviceName,jdbcType=VARCHAR},
       </if>
-      <if test="connector != null and connector != ''">
+      <if test="connector != null">
         #{connector,jdbcType=VARCHAR},
       </if>
-      <if test="device_description != null and device_description != ''">
-        #{device_description,jdbcType=VARCHAR},
+      <if test="deviceDescription != null">
+        #{deviceDescription,jdbcType=VARCHAR},
       </if>
-      <if test="device_status != null and device_status != ''">
-        #{device_status,jdbcType=VARCHAR},
+      <if test="deviceStatus != null">
+        #{deviceStatus,jdbcType=VARCHAR},
       </if>
-      <if test="connect_status != null and connect_status != ''">
-        #{connect_status,jdbcType=VARCHAR},
+      <if test="connectStatus != null">
+        #{connectStatus,jdbcType=VARCHAR},
       </if>
-      <if test="is_will != null and is_will != ''">
-        #{is_will,jdbcType=VARCHAR},
+      <if test="isWill != null">
+        #{isWill,jdbcType=VARCHAR},
       </if>
-      <if test="device_tags != null and device_tags != ''">
-        #{device_tags,jdbcType=VARCHAR},
+      <if test="deviceTags != null">
+        #{deviceTags,jdbcType=VARCHAR},
       </if>
-      <if test="product_identification != null and product_identification != ''">
-        #{product_identification,jdbcType=VARCHAR},
+      <if test="productIdentification != null">
+        #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="protocol_type != null and protocol_type != ''">
-        #{protocol_type,jdbcType=VARCHAR},
+      <if test="protocolType != null">
+        #{protocolType,jdbcType=VARCHAR},
       </if>
-      <if test="device_type != null and device_type != ''">
-        #{device_type,jdbcType=VARCHAR},
+      <if test="deviceType != null">
+        #{deviceType,jdbcType=VARCHAR},
       </if>
-      <if test="create_by != null and create_by != ''">
-        #{create_by,jdbcType=VARCHAR},
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
       </if>
-      <if test="create_time != null">
-        #{create_time,jdbcType=TIMESTAMP},
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="update_by != null and update_by != ''">
-        #{update_by,jdbcType=VARCHAR},
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
       </if>
-      <if test="update_time != null">
-        #{update_time,jdbcType=TIMESTAMP},
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
@@ -230,67 +203,67 @@
     <!--@mbg.generated-->
     update device
     <set>
-      <if test="client_id != null and client_id != ''">
-        client_id = #{client_id,jdbcType=VARCHAR},
+      <if test="clientId != null">
+        client_id = #{clientId,jdbcType=VARCHAR},
       </if>
-      <if test="user_name != null and user_name != ''">
-        user_name = #{user_name,jdbcType=VARCHAR},
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
       </if>
-      <if test="password != null and password != ''">
+      <if test="password != null">
         `password` = #{password,jdbcType=VARCHAR},
       </if>
-      <if test="app_id != null and app_id != ''">
-        app_id = #{app_id,jdbcType=VARCHAR},
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
       </if>
-      <if test="auth_mode != null and auth_mode != ''">
-        auth_mode = #{auth_mode,jdbcType=VARCHAR},
+      <if test="authMode != null">
+        auth_mode = #{authMode,jdbcType=VARCHAR},
       </if>
-      <if test="device_identification != null and device_identification != ''">
-        device_identification = #{device_identification,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="device_name != null and device_name != ''">
-        device_name = #{device_name,jdbcType=VARCHAR},
+      <if test="deviceName != null">
+        device_name = #{deviceName,jdbcType=VARCHAR},
       </if>
-      <if test="connector != null and connector != ''">
+      <if test="connector != null">
         connector = #{connector,jdbcType=VARCHAR},
       </if>
-      <if test="device_description != null and device_description != ''">
-        device_description = #{device_description,jdbcType=VARCHAR},
+      <if test="deviceDescription != null">
+        device_description = #{deviceDescription,jdbcType=VARCHAR},
       </if>
-      <if test="device_status != null and device_status != ''">
-        device_status = #{device_status,jdbcType=VARCHAR},
+      <if test="deviceStatus != null">
+        device_status = #{deviceStatus,jdbcType=VARCHAR},
       </if>
-      <if test="connect_status != null and connect_status != ''">
-        connect_status = #{connect_status,jdbcType=VARCHAR},
+      <if test="connectStatus != null">
+        connect_status = #{connectStatus,jdbcType=VARCHAR},
       </if>
-      <if test="is_will != null and is_will != ''">
-        is_will = #{is_will,jdbcType=VARCHAR},
+      <if test="isWill != null">
+        is_will = #{isWill,jdbcType=VARCHAR},
       </if>
-      <if test="device_tags != null and device_tags != ''">
-        device_tags = #{device_tags,jdbcType=VARCHAR},
+      <if test="deviceTags != null">
+        device_tags = #{deviceTags,jdbcType=VARCHAR},
       </if>
-      <if test="product_identification != null and product_identification != ''">
-        product_identification = #{product_identification,jdbcType=VARCHAR},
+      <if test="productIdentification != null">
+        product_identification = #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="protocol_type != null and protocol_type != ''">
-        protocol_type = #{protocol_type,jdbcType=VARCHAR},
+      <if test="protocolType != null">
+        protocol_type = #{protocolType,jdbcType=VARCHAR},
       </if>
-      <if test="device_type != null and device_type != ''">
-        device_type = #{device_type,jdbcType=VARCHAR},
+      <if test="deviceType != null">
+        device_type = #{deviceType,jdbcType=VARCHAR},
       </if>
-      <if test="create_by != null and create_by != ''">
-        create_by = #{create_by,jdbcType=VARCHAR},
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
       </if>
-      <if test="create_time != null">
-        create_time = #{create_time,jdbcType=TIMESTAMP},
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="update_by != null and update_by != ''">
-        update_by = #{update_by,jdbcType=VARCHAR},
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
       </if>
-      <if test="update_time != null">
-        update_time = #{update_time,jdbcType=TIMESTAMP},
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
     </set>
@@ -299,27 +272,27 @@
   <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.Device">
     <!--@mbg.generated-->
     update device
-    set client_id = #{client_id,jdbcType=VARCHAR},
-      user_name = #{user_name,jdbcType=VARCHAR},
-      `password` = #{password,jdbcType=VARCHAR},
-      app_id = #{app_id,jdbcType=VARCHAR},
-      auth_mode = #{auth_mode,jdbcType=VARCHAR},
-      device_identification = #{device_identification,jdbcType=VARCHAR},
-      device_name = #{device_name,jdbcType=VARCHAR},
-      connector = #{connector,jdbcType=VARCHAR},
-      device_description = #{device_description,jdbcType=VARCHAR},
-      device_status = #{device_status,jdbcType=VARCHAR},
-      connect_status = #{connect_status,jdbcType=VARCHAR},
-      is_will = #{is_will,jdbcType=VARCHAR},
-      device_tags = #{device_tags,jdbcType=VARCHAR},
-      product_identification = #{product_identification,jdbcType=VARCHAR},
-      protocol_type = #{protocol_type,jdbcType=VARCHAR},
-      device_type = #{device_type,jdbcType=VARCHAR},
-      create_by = #{create_by,jdbcType=VARCHAR},
-      create_time = #{create_time,jdbcType=TIMESTAMP},
-      update_by = #{update_by,jdbcType=VARCHAR},
-      update_time = #{update_time,jdbcType=TIMESTAMP},
-      remark = #{remark,jdbcType=VARCHAR}
+    set client_id = #{clientId,jdbcType=VARCHAR},
+    user_name = #{userName,jdbcType=VARCHAR},
+    `password` = #{password,jdbcType=VARCHAR},
+    app_id = #{appId,jdbcType=VARCHAR},
+    auth_mode = #{authMode,jdbcType=VARCHAR},
+    device_identification = #{deviceIdentification,jdbcType=VARCHAR},
+    device_name = #{deviceName,jdbcType=VARCHAR},
+    connector = #{connector,jdbcType=VARCHAR},
+    device_description = #{deviceDescription,jdbcType=VARCHAR},
+    device_status = #{deviceStatus,jdbcType=VARCHAR},
+    connect_status = #{connectStatus,jdbcType=VARCHAR},
+    is_will = #{isWill,jdbcType=VARCHAR},
+    device_tags = #{deviceTags,jdbcType=VARCHAR},
+    product_identification = #{productIdentification,jdbcType=VARCHAR},
+    protocol_type = #{protocolType,jdbcType=VARCHAR},
+    device_type = #{deviceType,jdbcType=VARCHAR},
+    create_by = #{createBy,jdbcType=VARCHAR},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    update_by = #{updateBy,jdbcType=VARCHAR},
+    update_time = #{updateTime,jdbcType=TIMESTAMP},
+    remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateBatch" parameterType="java.util.List">
@@ -328,12 +301,12 @@
     <trim prefix="set" suffixOverrides=",">
       <trim prefix="client_id = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.client_id,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.clientId,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="user_name = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.user_name,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.userName,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="`password` = case" suffix="end,">
@@ -343,22 +316,22 @@
       </trim>
       <trim prefix="app_id = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.app_id,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.appId,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="auth_mode = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.auth_mode,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.authMode,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="device_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.device_identification,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.deviceIdentification,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="device_name = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.device_name,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.deviceName,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="connector = case" suffix="end,">
@@ -368,62 +341,62 @@
       </trim>
       <trim prefix="device_description = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.device_description,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.deviceDescription,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="device_status = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.device_status,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.deviceStatus,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="connect_status = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.connect_status,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.connectStatus,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="is_will = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.is_will,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.isWill,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="device_tags = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.device_tags,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.deviceTags,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="product_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.product_identification,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.productIdentification,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="protocol_type = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.protocol_type,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.protocolType,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="device_type = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.device_type,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.deviceType,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="create_by = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.create_by,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="create_time = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.create_time,jdbcType=TIMESTAMP}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
         </foreach>
       </trim>
       <trim prefix="update_by = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.update_by,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="update_time = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.update_time,jdbcType=TIMESTAMP}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
         </foreach>
       </trim>
       <trim prefix="remark = case" suffix="end,">
@@ -443,15 +416,15 @@
     <trim prefix="set" suffixOverrides=",">
       <trim prefix="client_id = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.client_id != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.client_id,jdbcType=VARCHAR}
+          <if test="item.clientId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.clientId,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="user_name = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.user_name != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.user_name,jdbcType=VARCHAR}
+          <if test="item.userName != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.userName,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
@@ -464,29 +437,29 @@
       </trim>
       <trim prefix="app_id = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.app_id != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.app_id,jdbcType=VARCHAR}
+          <if test="item.appId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.appId,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="auth_mode = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.auth_mode != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.auth_mode,jdbcType=VARCHAR}
+          <if test="item.authMode != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.authMode,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="device_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.device_identification != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.device_identification,jdbcType=VARCHAR}
+          <if test="item.deviceIdentification != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.deviceIdentification,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="device_name = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.device_name != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.device_name,jdbcType=VARCHAR}
+          <if test="item.deviceName != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.deviceName,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
@@ -499,85 +472,85 @@
       </trim>
       <trim prefix="device_description = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.device_description != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.device_description,jdbcType=VARCHAR}
+          <if test="item.deviceDescription != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.deviceDescription,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="device_status = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.device_status != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.device_status,jdbcType=VARCHAR}
+          <if test="item.deviceStatus != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.deviceStatus,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="connect_status = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.connect_status != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.connect_status,jdbcType=VARCHAR}
+          <if test="item.connectStatus != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.connectStatus,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="is_will = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.is_will != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.is_will,jdbcType=VARCHAR}
+          <if test="item.isWill != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.isWill,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="device_tags = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.device_tags != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.device_tags,jdbcType=VARCHAR}
+          <if test="item.deviceTags != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.deviceTags,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="product_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.product_identification != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.product_identification,jdbcType=VARCHAR}
+          <if test="item.productIdentification != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.productIdentification,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="protocol_type = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.protocol_type != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.protocol_type,jdbcType=VARCHAR}
+          <if test="item.protocolType != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.protocolType,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="device_type = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.device_type != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.device_type,jdbcType=VARCHAR}
+          <if test="item.deviceType != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.deviceType,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="create_by = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.create_by != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.create_by,jdbcType=VARCHAR}
+          <if test="item.createBy != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="create_time = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.create_time != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.create_time,jdbcType=TIMESTAMP}
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
           </if>
         </foreach>
       </trim>
       <trim prefix="update_by = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.update_by != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.update_by,jdbcType=VARCHAR}
+          <if test="item.updateBy != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="update_time = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.update_time != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.update_time,jdbcType=TIMESTAMP}
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
           </if>
         </foreach>
       </trim>
@@ -597,21 +570,20 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device
-    (client_id, user_name, `password`, app_id, auth_mode, device_identification, device_name, 
-      connector, device_description, device_status, connect_status, is_will, device_tags, 
-      product_identification, protocol_type, device_type, create_by, create_time,
-      update_by, update_time, remark)
+    (client_id, user_name, `password`, app_id, auth_mode, device_identification, device_name,
+    connector, device_description, device_status, connect_status, is_will, device_tags,
+    product_identification, protocol_type, device_type, create_by, create_time, update_by,
+    update_time, remark)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.client_id,jdbcType=VARCHAR}, #{item.user_name,jdbcType=VARCHAR}, #{item.password,jdbcType=VARCHAR}, 
-        #{item.app_id,jdbcType=VARCHAR}, #{item.auth_mode,jdbcType=VARCHAR}, #{item.device_identification,jdbcType=VARCHAR}, 
-        #{item.device_name,jdbcType=VARCHAR}, #{item.connector,jdbcType=VARCHAR}, #{item.device_description,jdbcType=VARCHAR}, 
-        #{item.device_status,jdbcType=VARCHAR}, #{item.connect_status,jdbcType=VARCHAR}, 
-        #{item.is_will,jdbcType=VARCHAR}, #{item.device_tags,jdbcType=VARCHAR}, #{item.product_identification,jdbcType=VARCHAR}, 
-        #{item.protocol_type,jdbcType=VARCHAR},
-        #{item.device_type,jdbcType=VARCHAR}, #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP}, 
-        #{item.update_by,jdbcType=VARCHAR}, #{item.update_time,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}
-        )
+      (#{item.clientId,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.password,jdbcType=VARCHAR},
+      #{item.appId,jdbcType=VARCHAR}, #{item.authMode,jdbcType=VARCHAR}, #{item.deviceIdentification,jdbcType=VARCHAR},
+      #{item.deviceName,jdbcType=VARCHAR}, #{item.connector,jdbcType=VARCHAR}, #{item.deviceDescription,jdbcType=VARCHAR},
+      #{item.deviceStatus,jdbcType=VARCHAR}, #{item.connectStatus,jdbcType=VARCHAR},
+      #{item.isWill,jdbcType=VARCHAR}, #{item.deviceTags,jdbcType=VARCHAR}, #{item.productIdentification,jdbcType=VARCHAR},
+      #{item.protocolType,jdbcType=VARCHAR}, #{item.deviceType,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR},
+      #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP},
+      #{item.remark,jdbcType=VARCHAR})
     </foreach>
   </insert>
   <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.Device" useGeneratedKeys="true">
@@ -648,53 +620,53 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      #{client_id,jdbcType=VARCHAR},
-      #{user_name,jdbcType=VARCHAR},
+      #{clientId,jdbcType=VARCHAR},
+      #{userName,jdbcType=VARCHAR},
       #{password,jdbcType=VARCHAR},
-      #{app_id,jdbcType=VARCHAR},
-      #{auth_mode,jdbcType=VARCHAR},
-      #{device_identification,jdbcType=VARCHAR},
-      #{device_name,jdbcType=VARCHAR},
+      #{appId,jdbcType=VARCHAR},
+      #{authMode,jdbcType=VARCHAR},
+      #{deviceIdentification,jdbcType=VARCHAR},
+      #{deviceName,jdbcType=VARCHAR},
       #{connector,jdbcType=VARCHAR},
-      #{device_description,jdbcType=VARCHAR},
-      #{device_status,jdbcType=VARCHAR},
-      #{connect_status,jdbcType=VARCHAR},
-      #{is_will,jdbcType=VARCHAR},
-      #{device_tags,jdbcType=VARCHAR},
-      #{product_identification,jdbcType=VARCHAR},
-      #{protocol_type,jdbcType=VARCHAR},
-      #{device_type,jdbcType=VARCHAR},
-      #{create_by,jdbcType=VARCHAR},
-      #{create_time,jdbcType=TIMESTAMP},
-      #{update_by,jdbcType=VARCHAR},
-      #{update_time,jdbcType=TIMESTAMP},
+      #{deviceDescription,jdbcType=VARCHAR},
+      #{deviceStatus,jdbcType=VARCHAR},
+      #{connectStatus,jdbcType=VARCHAR},
+      #{isWill,jdbcType=VARCHAR},
+      #{deviceTags,jdbcType=VARCHAR},
+      #{productIdentification,jdbcType=VARCHAR},
+      #{protocolType,jdbcType=VARCHAR},
+      #{deviceType,jdbcType=VARCHAR},
+      #{createBy,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP},
+      #{updateBy,jdbcType=VARCHAR},
+      #{updateTime,jdbcType=TIMESTAMP},
       #{remark,jdbcType=VARCHAR},
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
-      client_id = #{client_id,jdbcType=VARCHAR},
-      user_name = #{user_name,jdbcType=VARCHAR},
+      client_id = #{clientId,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
       `password` = #{password,jdbcType=VARCHAR},
-      app_id = #{app_id,jdbcType=VARCHAR},
-      auth_mode = #{auth_mode,jdbcType=VARCHAR},
-      device_identification = #{device_identification,jdbcType=VARCHAR},
-      device_name = #{device_name,jdbcType=VARCHAR},
+      app_id = #{appId,jdbcType=VARCHAR},
+      auth_mode = #{authMode,jdbcType=VARCHAR},
+      device_identification = #{deviceIdentification,jdbcType=VARCHAR},
+      device_name = #{deviceName,jdbcType=VARCHAR},
       connector = #{connector,jdbcType=VARCHAR},
-      device_description = #{device_description,jdbcType=VARCHAR},
-      device_status = #{device_status,jdbcType=VARCHAR},
-      connect_status = #{connect_status,jdbcType=VARCHAR},
-      is_will = #{is_will,jdbcType=VARCHAR},
-      device_tags = #{device_tags,jdbcType=VARCHAR},
-      product_identification = #{product_identification,jdbcType=VARCHAR},
-      protocol_type = #{protocol_type,jdbcType=VARCHAR},
-      device_type = #{device_type,jdbcType=VARCHAR},
-      create_by = #{create_by,jdbcType=VARCHAR},
-      create_time = #{create_time,jdbcType=TIMESTAMP},
-      update_by = #{update_by,jdbcType=VARCHAR},
-      update_time = #{update_time,jdbcType=TIMESTAMP},
+      device_description = #{deviceDescription,jdbcType=VARCHAR},
+      device_status = #{deviceStatus,jdbcType=VARCHAR},
+      connect_status = #{connectStatus,jdbcType=VARCHAR},
+      is_will = #{isWill,jdbcType=VARCHAR},
+      device_tags = #{deviceTags,jdbcType=VARCHAR},
+      product_identification = #{productIdentification,jdbcType=VARCHAR},
+      protocol_type = #{protocolType,jdbcType=VARCHAR},
+      device_type = #{deviceType,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
       remark = #{remark,jdbcType=VARCHAR},
     </trim>
   </insert>
@@ -705,67 +677,67 @@
       <if test="id != null">
         id,
       </if>
-      <if test="client_id != null and client_id != ''">
+      <if test="clientId != null">
         client_id,
       </if>
-      <if test="user_name != null and user_name != ''">
+      <if test="userName != null">
         user_name,
       </if>
-      <if test="password != null and password != ''">
+      <if test="password != null">
         `password`,
       </if>
-      <if test="app_id != null and app_id != ''">
+      <if test="appId != null">
         app_id,
       </if>
-      <if test="auth_mode != null and auth_mode != ''">
+      <if test="authMode != null">
         auth_mode,
       </if>
-      <if test="device_identification != null and device_identification != ''">
+      <if test="deviceIdentification != null">
         device_identification,
       </if>
-      <if test="device_name != null and device_name != ''">
+      <if test="deviceName != null">
         device_name,
       </if>
-      <if test="connector != null and connector != ''">
+      <if test="connector != null">
         connector,
       </if>
-      <if test="device_description != null and device_description != ''">
+      <if test="deviceDescription != null">
         device_description,
       </if>
-      <if test="device_status != null and device_status != ''">
+      <if test="deviceStatus != null">
         device_status,
       </if>
-      <if test="connect_status != null and connect_status != ''">
+      <if test="connectStatus != null">
         connect_status,
       </if>
-      <if test="is_will != null and is_will != ''">
+      <if test="isWill != null">
         is_will,
       </if>
-      <if test="device_tags != null and device_tags != ''">
+      <if test="deviceTags != null">
         device_tags,
       </if>
-      <if test="product_identification != null and product_identification != ''">
+      <if test="productIdentification != null">
         product_identification,
       </if>
-      <if test="protocol_type != null and protocol_type != ''">
+      <if test="protocolType != null">
         protocol_type,
       </if>
-      <if test="device_type != null and device_type != ''">
+      <if test="deviceType != null">
         device_type,
       </if>
-      <if test="create_by != null and create_by != ''">
+      <if test="createBy != null">
         create_by,
       </if>
-      <if test="create_time != null">
+      <if test="createTime != null">
         create_time,
       </if>
-      <if test="update_by != null and update_by != ''">
+      <if test="updateBy != null">
         update_by,
       </if>
-      <if test="update_time != null">
+      <if test="updateTime != null">
         update_time,
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark,
       </if>
     </trim>
@@ -774,175 +746,140 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="client_id != null and client_id != ''">
-        #{client_id,jdbcType=VARCHAR},
+      <if test="clientId != null">
+        #{clientId,jdbcType=VARCHAR},
       </if>
-      <if test="user_name != null and user_name != ''">
-        #{user_name,jdbcType=VARCHAR},
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
       </if>
-      <if test="password != null and password != ''">
+      <if test="password != null">
         #{password,jdbcType=VARCHAR},
       </if>
-      <if test="app_id != null and app_id != ''">
-        #{app_id,jdbcType=VARCHAR},
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
       </if>
-      <if test="auth_mode != null and auth_mode != ''">
-        #{auth_mode,jdbcType=VARCHAR},
+      <if test="authMode != null">
+        #{authMode,jdbcType=VARCHAR},
       </if>
-      <if test="device_identification != null and device_identification != ''">
-        #{device_identification,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        #{deviceIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="device_name != null and device_name != ''">
-        #{device_name,jdbcType=VARCHAR},
+      <if test="deviceName != null">
+        #{deviceName,jdbcType=VARCHAR},
       </if>
-      <if test="connector != null and connector != ''">
+      <if test="connector != null">
         #{connector,jdbcType=VARCHAR},
       </if>
-      <if test="device_description != null and device_description != ''">
-        #{device_description,jdbcType=VARCHAR},
+      <if test="deviceDescription != null">
+        #{deviceDescription,jdbcType=VARCHAR},
       </if>
-      <if test="device_status != null and device_status != ''">
-        #{device_status,jdbcType=VARCHAR},
+      <if test="deviceStatus != null">
+        #{deviceStatus,jdbcType=VARCHAR},
       </if>
-      <if test="connect_status != null and connect_status != ''">
-        #{connect_status,jdbcType=VARCHAR},
+      <if test="connectStatus != null">
+        #{connectStatus,jdbcType=VARCHAR},
       </if>
-      <if test="is_will != null and is_will != ''">
-        #{is_will,jdbcType=VARCHAR},
+      <if test="isWill != null">
+        #{isWill,jdbcType=VARCHAR},
       </if>
-      <if test="device_tags != null and device_tags != ''">
-        #{device_tags,jdbcType=VARCHAR},
+      <if test="deviceTags != null">
+        #{deviceTags,jdbcType=VARCHAR},
       </if>
-      <if test="product_identification != null and product_identification != ''">
-        #{product_identification,jdbcType=VARCHAR},
+      <if test="productIdentification != null">
+        #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="protocol_type != null and protocol_type != ''">
-        #{protocol_type,jdbcType=VARCHAR},
+      <if test="protocolType != null">
+        #{protocolType,jdbcType=VARCHAR},
       </if>
-      <if test="device_type != null and device_type != ''">
-        #{device_type,jdbcType=VARCHAR},
+      <if test="deviceType != null">
+        #{deviceType,jdbcType=VARCHAR},
       </if>
-      <if test="create_by != null and create_by != ''">
-        #{create_by,jdbcType=VARCHAR},
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
       </if>
-      <if test="create_time != null">
-        #{create_time,jdbcType=TIMESTAMP},
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="update_by != null and update_by != ''">
-        #{update_by,jdbcType=VARCHAR},
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
       </if>
-      <if test="update_time != null">
-        #{update_time,jdbcType=TIMESTAMP},
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
-      <if test="client_id != null and client_id != ''">
-        client_id = #{client_id,jdbcType=VARCHAR},
+      <if test="clientId != null">
+        client_id = #{clientId,jdbcType=VARCHAR},
       </if>
-      <if test="user_name != null and user_name != ''">
-        user_name = #{user_name,jdbcType=VARCHAR},
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
       </if>
-      <if test="password != null and password != ''">
+      <if test="password != null">
         `password` = #{password,jdbcType=VARCHAR},
       </if>
-      <if test="app_id != null and app_id != ''">
-        app_id = #{app_id,jdbcType=VARCHAR},
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
       </if>
-      <if test="auth_mode != null and auth_mode != ''">
-        auth_mode = #{auth_mode,jdbcType=VARCHAR},
+      <if test="authMode != null">
+        auth_mode = #{authMode,jdbcType=VARCHAR},
       </if>
-      <if test="device_identification != null and device_identification != ''">
-        device_identification = #{device_identification,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="device_name != null and device_name != ''">
-        device_name = #{device_name,jdbcType=VARCHAR},
+      <if test="deviceName != null">
+        device_name = #{deviceName,jdbcType=VARCHAR},
       </if>
-      <if test="connector != null and connector != ''">
+      <if test="connector != null">
         connector = #{connector,jdbcType=VARCHAR},
       </if>
-      <if test="device_description != null and device_description != ''">
-        device_description = #{device_description,jdbcType=VARCHAR},
+      <if test="deviceDescription != null">
+        device_description = #{deviceDescription,jdbcType=VARCHAR},
       </if>
-      <if test="device_status != null and device_status != ''">
-        device_status = #{device_status,jdbcType=VARCHAR},
+      <if test="deviceStatus != null">
+        device_status = #{deviceStatus,jdbcType=VARCHAR},
       </if>
-      <if test="connect_status != null and connect_status != ''">
-        connect_status = #{connect_status,jdbcType=VARCHAR},
+      <if test="connectStatus != null">
+        connect_status = #{connectStatus,jdbcType=VARCHAR},
       </if>
-      <if test="is_will != null and is_will != ''">
-        is_will = #{is_will,jdbcType=VARCHAR},
+      <if test="isWill != null">
+        is_will = #{isWill,jdbcType=VARCHAR},
       </if>
-      <if test="device_tags != null and device_tags != ''">
-        device_tags = #{device_tags,jdbcType=VARCHAR},
+      <if test="deviceTags != null">
+        device_tags = #{deviceTags,jdbcType=VARCHAR},
       </if>
-      <if test="product_identification != null and product_identification != ''">
-        product_identification = #{product_identification,jdbcType=VARCHAR},
+      <if test="productIdentification != null">
+        product_identification = #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="protocol_type != null and protocol_type != ''">
-        protocol_type = #{protocol_type,jdbcType=VARCHAR},
+      <if test="protocolType != null">
+        protocol_type = #{protocolType,jdbcType=VARCHAR},
       </if>
-      <if test="device_type != null and device_type != ''">
-        device_type = #{device_type,jdbcType=VARCHAR},
+      <if test="deviceType != null">
+        device_type = #{deviceType,jdbcType=VARCHAR},
       </if>
-      <if test="create_by != null and create_by != ''">
-        create_by = #{create_by,jdbcType=VARCHAR},
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
       </if>
-      <if test="create_time != null">
-        create_time = #{create_time,jdbcType=TIMESTAMP},
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="update_by != null and update_by != ''">
-        update_by = #{update_by,jdbcType=VARCHAR},
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
       </if>
-      <if test="update_time != null">
-        update_time = #{update_time,jdbcType=TIMESTAMP},
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-
-<!--auto shihuan sun  e-mail: 13733918655@163.com on 2021-12-26-->
-  <update id="updateConnect_statusByClient_id">
-    update device
-    set connect_status=#{updatedConnect_status,jdbcType=VARCHAR}
-    <where>
-      <if test="client_id != null and client_id != ''">
-        and client_id=#{client_id,jdbcType=VARCHAR}
-      </if>
-    </where>
-  </update>
-
-<!--auto shihuan sun  e-mail: 13733918655@163.com on 2021-12-26-->
-  <select id="findOneByClient_idAndUser_nameAndPasswordAndDevice_statusAndProtocol_type" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from device
-    <where>
-      <if test="client_id != null and client_id != ''">
-        and client_id=#{client_id,jdbcType=VARCHAR}
-      </if>
-      <if test="user_name != null and user_name != ''">
-        and user_name=#{user_name,jdbcType=VARCHAR}
-      </if>
-      <if test="password != null and password != ''">
-        and `password`=#{password,jdbcType=VARCHAR}
-      </if>
-      <if test="device_status != null and device_status != ''">
-        and device_status=#{device_status,jdbcType=VARCHAR}
-      </if>
-      <if test="protocol_type != null and protocol_type != ''">
-        and protocol_type=#{protocol_type,jdbcType=VARCHAR}
-      </if>
-    </where>
-  </select>
 
 <!--auto shihuan sun  e-mail: 13733918655@163.com on 2021-12-26-->
   <update id="updateConnectStatusByClientId">
@@ -1037,9 +974,6 @@
       <if test="deviceType != null and deviceType != ''">
         and device_type=#{deviceType,jdbcType=VARCHAR}
       </if>
-      <if test="searchValue != null and searchValue != ''">
-        and null=#{searchValue}
-      </if>
       <if test="createBy != null and createBy != ''">
         and create_by=#{createBy,jdbcType=VARCHAR}
       </if>
@@ -1054,9 +988,6 @@
       </if>
       <if test="remark != null and remark != ''">
         and remark=#{remark,jdbcType=VARCHAR}
-      </if>
-      <if test="params != null">
-        and null=#{params}
       </if>
     </where>
   </select>
@@ -1076,7 +1007,7 @@
     select id, client_id, user_name, password, app_id, auth_mode, device_identification, device_name, connector, device_description, device_status, connect_status, is_will, device_tags, product_identification,  protocol_type, device_type, create_by, create_time, update_by, update_time, remark from device
   </sql>
 
-  <select id="selectDeviceList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.Device" resultMap="DeviceResult">
+  <select id="selectDeviceList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.Device" resultMap="BaseResultMap">
     <include refid="selectDeviceVo"/>
     <where>
       <if test="clientId != null  and clientId != ''"> and client_id like concat('%', #{clientId}, '%')</if>
@@ -1092,10 +1023,10 @@
       <if test="deviceType != null  and deviceType != ''"> and device_type = #{deviceType}</if>
       <if test="createTime != null "> and create_time = #{createTime}</if>
     </where>
-    <include refid="OrderByCreateTimeDesc"/>
+    order by create_time desc
   </select>
 
-  <select id="selectDeviceById" parameterType="Long" resultMap="DeviceResult">
+  <select id="selectDeviceById" parameterType="Long" resultMap="BaseResultMap">
     <include refid="selectDeviceVo"/>
     where id = #{id}
   </select>
@@ -1190,7 +1121,7 @@
   </delete>
 
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-02-18-->
-  <select id="findOneByClientId" resultMap="DeviceResult">
+  <select id="findOneByClientId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from device
@@ -1202,7 +1133,7 @@
     </select>
 
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-02-18-->
-  <select id="findOneByClientIdAndDeviceIdentification" resultMap="DeviceResult">
+  <select id="findOneByClientIdAndDeviceIdentification" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>
     from device
@@ -1217,7 +1148,7 @@
   </select>
 
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-02-18-->
-  <select id="findOneByDeviceIdentification" resultMap="DeviceResult">
+  <select id="findOneByDeviceIdentification" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>
     from device
@@ -1229,7 +1160,7 @@
   </select>
 
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-02-18-->
-  <select id="findOneByClientIdOrderByDeviceIdentification" resultMap="DeviceResult">
+  <select id="findOneByClientIdOrderByDeviceIdentification" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>
     from device
@@ -1242,7 +1173,7 @@
   </select>
 
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-02-18-->
-  <select id="findOneByClientIdOrDeviceIdentification" resultMap="DeviceResult">
+  <select id="findOneByClientIdOrDeviceIdentification" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List"/>
     from device
@@ -1268,7 +1199,7 @@
   </select>
 
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-06-10-->
-  <select id="findAllByIdIn" resultMap="DeviceResult">
+  <select id="findAllByIdIn" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from device
@@ -1281,5 +1212,13 @@
                 </foreach>
             </if>
         </where>
+    </select>
+
+<!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-05-->
+  <select id="findAllByProductIdentification" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from device
+        where product_identification=#{productIdentification}
     </select>
 </mapper>
