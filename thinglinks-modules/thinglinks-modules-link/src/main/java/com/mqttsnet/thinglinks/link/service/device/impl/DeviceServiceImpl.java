@@ -383,6 +383,14 @@ public class DeviceServiceImpl implements DeviceService {
 		 return deviceMapper.findAllByIdIn(idCollection);
 	}
 
+	@Override
+	public List<Device> findAllByProductIdentification(String productIdentification){
+		 return deviceMapper.findAllByProductIdentification(productIdentification);
+	}
+
+
+
+
 
 
 
