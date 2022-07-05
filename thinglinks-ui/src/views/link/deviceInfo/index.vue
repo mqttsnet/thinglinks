@@ -58,14 +58,14 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+<!--      <el-col :span="1.5">
         <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
           v-hasPermi="['link:deviceInfo:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
           v-hasPermi="['link:deviceInfo:edit']">修改</el-button>
-      </el-col>
+      </el-col>-->
       <el-col :span="1.5">
         <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
           v-hasPermi="['link:deviceInfo:remove']">删除</el-button>
@@ -111,24 +111,24 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新者" align="center" prop="updateBy" />
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
+<!--      <el-table-column label="更新者" align="center" prop="updateBy" />-->
+<!--      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
         <template slot-scope="scope">
           <span>{{
               parseTime(scope.row.updateTime, "{y}-{m}-{d} {h}:{i}:{s}")
           }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" />
+      </el-table-column>-->
+<!--      <el-table-column label="备注" align="center" prop="remark" />-->
       <el-table-column fixed="right" label="操作" align="center" width="200">
         <template slot-scope="scope">
-          <span style="margin-right:10px">
+<!--          <span style="margin-right:10px">
             <el-tooltip class="item" effect="light" content="修改" placement="top">
               <el-button circle size="mini" type="primary" icon="el-icon-edit" @click="handleUpdate(scope.row)"
                 v-hasPermi="['link:deviceInfo:edit']">
               </el-button>
             </el-tooltip>
-          </span>
+          </span>-->
 
           <span style="margin-right:10px">
             <el-tooltip class="item" effect="light" content="删除" placement="top">
