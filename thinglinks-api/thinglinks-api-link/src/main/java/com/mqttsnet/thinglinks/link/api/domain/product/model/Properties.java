@@ -1,5 +1,5 @@
 /**
-  * Copyright 2021 json.cn 
+  * Copyright 2021 json.cn
   */
 package com.mqttsnet.thinglinks.link.api.domain.product.model;
 
@@ -14,6 +14,7 @@ import lombok.Data;
 @Data
 public class Properties{
     private static final long serialVersionUID = 1L;
+    private Long id;
     private String datatype;
     private String description;
     private String enumlist;
