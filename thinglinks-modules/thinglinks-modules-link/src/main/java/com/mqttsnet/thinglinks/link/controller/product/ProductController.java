@@ -246,7 +246,7 @@ public class ProductController extends BaseController {
         final Object appId = params.get("appId");
         final Object templateId = params.get("templateId");
         final Object status = params.get("status");
-        AjaxResult ajaxResult = productService.productJsonDataAnalysis(JSONObject.parseObject(JSON.toJSONString(content)), appId.toString(), templateId.toString(), status.toString());
+        AjaxResult ajaxResult = productService.productJsonDataAnalysis(JSONObject.parseObject(content.toString()), appId.toString(), templateId.toString(), status.toString());
         return ajaxResult;
     }
 
