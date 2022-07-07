@@ -1,8 +1,8 @@
 package com.mqttsnet.thinglinks.link.controller.product;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
+import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
@@ -136,7 +136,7 @@ public class ProductController extends BaseController {
         if (product != null) {
             BeanUtils.copyBeanProp(productModel, product);
             // 查询服务列表
-            List<ProductServices> productServicesList = productServicesService.findAllByProductIdAndStatus(product.getId(), null);
+            List<ProductServices> productServicesList = productServicesService.findAllByProductIdAndStatus(product.getId(), Constants.ENABLE);
             if (!productServicesList.isEmpty()) {
                 List<Services> services = new ArrayList<>();
                 productServicesList.forEach(item -> {

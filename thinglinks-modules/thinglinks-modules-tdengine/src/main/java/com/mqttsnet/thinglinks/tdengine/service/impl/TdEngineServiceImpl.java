@@ -71,6 +71,11 @@ public class TdEngineServiceImpl implements TdEngineService {
         this.tdEngineMapper.addColumnForSuperTable(superTableName, fieldsVo);
     }
 
+
+    @Override
+    public void dropColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception{
+        this.tdEngineMapper.dropColumnForSuperTable(superTableName, fieldsVo);
+    }
     @Override
     public Long getCountByTimesTamp(SelectDto selectDto) throws Exception{
         Map<String, Long> countMap = this.tdEngineMapper.getCountByTimestamp(selectDto);

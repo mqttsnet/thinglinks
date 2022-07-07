@@ -28,6 +28,8 @@ public interface TdEngineService {
 
     void addColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception;
 
+    void dropColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception;
+
     Long getCountByTimesTamp(SelectDto selectDto) throws Exception;
 
     void initSTableFrame(String msg) throws Exception;
