@@ -106,6 +106,8 @@
                                 type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" range-separator="至"
                                 start-placeholder="开始日期" end-placeholder="结束日期">
                             </el-date-picker>
+                            <el-button style="position: absolute;right:20px" icon="el-icon-refresh"
+                                @click="getShadowData" circle></el-button>
                             <el-tabs v-model="editableTabsValue" type="card">
                                 <el-tab-pane v-for="(value, name, index) in ShadowData" :key="index" :label="name"
                                     :name="String(index + 1)" style="width:100%;height: 100%;">

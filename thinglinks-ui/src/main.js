@@ -45,6 +45,8 @@ AmapVue.config.key = 'e13456422e8fe93451cf2201f4db84bd';//服务平台选择 Web
 AmapVue.config.plugins = [
   'AMap.moveAnimation',
   'AMap.Geocoder',
+  'AMap.AutoComplete',
+  'AMap.PlaceSearch',
   // 在此配置你需要预加载的插件，如果不配置，在使用到的时候会自动异步加载
 ];
 Vue.use(AmapVue);
