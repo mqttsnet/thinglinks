@@ -62,6 +62,28 @@ public class RemoteTdEngineFallbackFactory implements FallbackFactory<RemoteTdEn
             public R<?> getLastData(SelectDto selectDto) {
                 return R.fail("查询最新数据失败:{}", throwable.getMessage());
             }
+
+            /**
+             * 添加列字段
+             *
+             * @param superTableDto
+             * @return
+             */
+            @Override
+            public R<?> addColumnForSuperTable(SuperTableDto superTableDto) {
+                return R.fail("添加列字段失败:{}", throwable.getMessage());
+            }
+
+            /**
+             * 删除列字段
+             *
+             * @param superTableDto
+             * @return
+             */
+            @Override
+            public R<?> dropColumnForSuperTable(SuperTableDto superTableDto) {
+                return R.fail("删除列字段失败:{}", throwable.getMessage());
+            }
         };
     }
 }

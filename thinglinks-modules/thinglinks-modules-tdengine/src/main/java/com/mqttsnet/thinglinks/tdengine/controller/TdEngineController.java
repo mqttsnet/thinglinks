@@ -144,6 +144,42 @@ public class TdEngineController {
     }
 
     /**
+     * 删除列字段
+     * @param superTableDto
+     * @return
+     */
+    @PostMapping("/dropColumnInStb")
+    public R<?> dropColumnForSuperTable(@RequestBody SuperTableDto superTableDto) {
+
+        String superTableName = superTableDto.getSuperTableName();
+        if (StringUtils.isBlank(superTableName)) {
+            return R.fail("invalid operation: superTableName can not be empty");
+        }
+
+        Fields fields = superTableDto.getFields();
+        if (fields == null) {
+            return R.fail("invalid operation: fields can not be empty");
+        }
+
+        try {
+            FieldsVo fieldsVo = FieldsVo.fieldsTranscoding(fields);
+            this.tdEngineService.addColumnForSuperTable(superTableName, fieldsVo);
+            log.info("successful operation: drop column for superTable '" + superTableName + "' success");
+            return R.ok();
+        } catch (UncategorizedSQLException e) {
+            String message = e.getCause().getMessage();
+            try {
+                message = message.substring(message.lastIndexOf("invalid operation"));
+            } catch (Exception ex) {}
+            log.error(message);
+            return R.fail(message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
+    }
+
+    /**
     *@MethodDescription 创建超级表的子表
     *@param tableDto 创建超级表的子表需要的入参的实体类
     *@return R<?>

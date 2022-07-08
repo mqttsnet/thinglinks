@@ -17,6 +17,14 @@ export function getProduct(id) {
   })
 }
 
+// 查询产品管理详细
+export function getProductFull(id) {
+  return request({
+    url: '/link/product/getFullInfo/' + id,
+    method: 'get'
+  })
+}
+
 // 新增产品管理
 export function addProduct(data) {
   return request({

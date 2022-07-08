@@ -1,9 +1,10 @@
 package com.mqttsnet.thinglinks.link.controller.product;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
+import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -12,16 +13,25 @@ import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.Properties;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.Services;
+import com.mqttsnet.thinglinks.link.service.product.ProductPropertiesService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
+import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
 import com.mqttsnet.thinglinks.system.api.RemoteFileService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +51,10 @@ public class ProductController extends BaseController {
     private ProductService productService;
     @Resource
     private RemoteFileService remoteFileService;
+    @Autowired
+    private ProductServicesService productServicesService;
+    @Autowired
+    private ProductPropertiesService productPropertiesService;
 
     /**
      * 通过主键查询单条数据
@@ -55,11 +69,12 @@ public class ProductController extends BaseController {
 
     /**
      * 导入产品模型json数据
-     * @param file json文件
+     *
+     * @param file          json文件
      * @param updateSupport 是否更新已经存在的产品模型数据
-     * @param appId 应用ID
-     * @param templateId  产品模型模板ID
-     * @param status 状态(字典值：启用  停用)
+     * @param appId         应用ID
+     * @param templateId    产品模型模板ID
+     * @param status        状态(字典值：启用  停用)
      * @return AjaxResult
      * @throws Exception
      */
@@ -72,7 +87,7 @@ public class ProductController extends BaseController {
                                         String templateId,
                                         String status
     ) throws Exception {
-        AjaxResult ajaxResult = productService.importProductJson(file,updateSupport,appId,templateId,status);
+        AjaxResult ajaxResult = productService.importProductJson(file, updateSupport, appId, templateId, status);
         //存储产品模型原始文件
 //        final R<SysFile> uploadMessage = remoteFileService.upload(file);
         return ajaxResult;
@@ -83,8 +98,7 @@ public class ProductController extends BaseController {
      */
     @PreAuthorize(hasPermi = "link:product:list")
     @GetMapping("/list")
-    public TableDataInfo list(Product product)
-    {
+    public TableDataInfo list(Product product) {
         startPage();
         List<Product> list = productService.selectProductList(product);
         return getDataTable(list);
@@ -96,8 +110,7 @@ public class ProductController extends BaseController {
     @PreAuthorize(hasPermi = "link:product:export")
     @Log(title = "产品管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Product product) throws IOException
-    {
+    public void export(HttpServletResponse response, Product product) throws IOException {
         List<Product> list = productService.selectProductList(product);
         ExcelUtil<Product> util = new ExcelUtil<Product>(Product.class);
         util.exportExcel(response, list, "产品管理数据");
@@ -108,9 +121,45 @@ public class ProductController extends BaseController {
      */
     @PreAuthorize(hasPermi = "link:product:query")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(productService.selectProductById(id));
+    }
+
+    /**
+     * 获取产品管理详细信息
+     */
+    @PreAuthorize(hasPermi = "link:product:query")
+    @GetMapping(value = "/getFullInfo/{id}")
+    public AjaxResult getFullInfo(@PathVariable("id") Long id) {
+        Product product = productService.selectProductById(id);
+        ProductModel productModel = new ProductModel();
+        if (product != null) {
+            BeanUtils.copyBeanProp(productModel, product);
+            // 查询服务列表
+            List<ProductServices> productServicesList = productServicesService.findAllByProductIdAndStatus(product.getId(), Constants.ENABLE);
+            if (!productServicesList.isEmpty()) {
+                List<Services> services = new ArrayList<>();
+                productServicesList.forEach(item -> {
+                    Services service = new Services();
+                    BeanUtils.copyBeanProp(service, item);
+                    service.setServiceId(String.valueOf(item.getId()));
+                    // 查询服务属性列表
+                    List<ProductProperties> productPropertiesList = productPropertiesService.findAllByServiceId(item.getId());
+                    if (!productPropertiesList.isEmpty()) {
+                        List<Properties> properties = new ArrayList<>();
+                        productPropertiesList.forEach(pp -> {
+                            Properties p = new Properties();
+                            BeanUtils.copyBeanProp(p, pp);
+                            properties.add(p);
+                        });
+                        service.setProperties(properties);
+                    }
+                    services.add(service);
+                });
+                productModel.setServices(services);
+            }
+        }
+        return AjaxResult.success(productModel);
     }
 
     /**
@@ -120,8 +169,7 @@ public class ProductController extends BaseController {
     @PreAuthorize(hasPermi = "link:product:add")
     @Log(title = "产品管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Product product)
-    {
+    public AjaxResult add(@RequestBody Product product) {
         return toAjax(productService.insertProduct(product));
     }
 
@@ -132,8 +180,7 @@ public class ProductController extends BaseController {
     @PreAuthorize(hasPermi = "link:product:edit")
     @Log(title = "产品管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Product product)
-    {
+    public AjaxResult edit(@RequestBody Product product) {
         return toAjax(productService.updateProduct(product));
     }
 
@@ -143,22 +190,21 @@ public class ProductController extends BaseController {
     @PreAuthorize(hasPermi = "link:product:remove")
     @Log(title = "产品管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(productService.deleteProductByIds(ids));
     }
 
 
     /**
-     *校验产品名称是否存在
+     * 校验产品名称是否存在
+     *
      * @param productName
      * @return
      */
     @GetMapping(value = "/validationFindOneByProductName/{productName}")
-    public AjaxResult validationFindOneByProductName(@PathVariable("productName") String productName)
-    {
+    public AjaxResult validationFindOneByProductName(@PathVariable("productName") String productName) {
         Product oneByProductName = productService.findOneByProductName(productName);
-        if (StringUtils.isNull(oneByProductName)){
+        if (StringUtils.isNull(oneByProductName)) {
             AjaxResult.success("产品名称可用");
         }
         return AjaxResult.error("产品名称已存在");
@@ -166,19 +212,20 @@ public class ProductController extends BaseController {
 
     /**
      * 初始化数据模型
-     * @param productIds 产品ID集合
-     * @param initializeOrNot  是否初始化
+     *
+     * @param productIds      产品ID集合
+     * @param initializeOrNot 是否初始化
      * @return
      * @throws Exception
      */
     @PreAuthorize(hasPermi = "link:product:initialize")
     @Log(title = "产品管理", businessType = BusinessType.OTHER)
     @GetMapping(value = "/initializeDataModel/{productIds}/{initializeOrNot}")
-    public AjaxResult initializeDataModel(@PathVariable("productIds") Long[] productIds,@PathVariable("initializeOrNot") Boolean initializeOrNot) throws Exception {
+    public AjaxResult initializeDataModel(@PathVariable("productIds") Long[] productIds, @PathVariable("initializeOrNot") Boolean initializeOrNot) throws Exception {
         try {
-            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel(productIds,initializeOrNot);
+            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel(productIds, initializeOrNot);
             return AjaxResult.success(superTableDataModel);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
         return AjaxResult.error("产品数据异常,请联系管理员");
@@ -186,6 +233,7 @@ public class ProductController extends BaseController {
 
     /**
      * 快捷生成产品模型json数据
+     *
      * @param params (content 模型json数据、appId 应用ID、templateId  产品模型模板ID、status 状态(字典值：启用  停用))
      * @return AjaxResult
      * @throws Exception
@@ -198,7 +246,7 @@ public class ProductController extends BaseController {
         final Object appId = params.get("appId");
         final Object templateId = params.get("templateId");
         final Object status = params.get("status");
-        AjaxResult ajaxResult = productService.productJsonDataAnalysis(JSONObject.parseObject(JSON.toJSONString(content)),appId.toString(),templateId.toString(),status.toString());
+        AjaxResult ajaxResult = productService.productJsonDataAnalysis(JSONObject.parseObject(content.toString()), appId.toString(), templateId.toString(), status.toString());
         return ajaxResult;
     }
 

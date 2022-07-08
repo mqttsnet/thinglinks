@@ -83,4 +83,20 @@ public interface RemoteTdEngineService {
      */
     @PostMapping("/dataOperation/getLastData")
     R<?> getLastData(@Validated @RequestBody SelectDto selectDto) ;
+
+    /**
+     * 添加列字段
+     * @param superTableDto
+     * @return
+     */
+    @PostMapping("/addColumnInStb")
+    R<?> addColumnForSuperTable(@RequestBody SuperTableDto superTableDto);
+
+    /**
+     * 删除列字段
+     * @param superTableDto
+     * @return
+     */
+    @PostMapping("/dropColumnInStb")
+    R<?> dropColumnForSuperTable(@RequestBody SuperTableDto superTableDto);
 }
