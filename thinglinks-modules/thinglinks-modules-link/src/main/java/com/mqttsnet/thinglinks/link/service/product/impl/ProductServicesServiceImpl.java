@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
 
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
@@ -95,12 +96,60 @@ public class ProductServicesServiceImpl implements ProductServicesService{
 		 return productServicesMapper.findAllByProductIdAndServiceNameAndStatus(productId,serviceName,status);
 	}
 
+    /**
+     * 查询产品模型服务
+     *
+     * @param id 产品模型服务主键
+     * @return 产品模型服务
+     */
+    @Override
+    public ProductServices selectProductServicesById(Long id) {
+        return productServicesMapper.selectProductServicesById(id);
+    }
 
+    /**
+     * 查询产品模型服务列表
+     *
+     * @param productServices 产品模型服务
+     * @return 产品模型服务
+     */
+    @Override
+    public List<ProductServices> selectProductServicesList(ProductServices productServices) {
+        return productServicesMapper.selectProductServicesList(productServices);
+    }
 
+    /**
+     * 新增产品模型服务
+     *
+     * @param productServices 产品模型服务
+     * @return 结果
+     */
+    @Override
+    public int insertProductServices(ProductServices productServices) {
+        productServices.setCreateTime(DateUtils.getNowDate());
+        return productServicesMapper.insertProductServices(productServices);
+    }
 
+    /**
+     * 修改产品模型服务
+     *
+     * @param productServices 产品模型服务
+     * @return 结果
+     */
+    @Override
+    public int updateProductServices(ProductServices productServices) {
+        productServices.setUpdateTime(DateUtils.getNowDate());
+        return productServicesMapper.updateProductServices(productServices);
+    }
 
-
-
-
-
+    /**
+     * 批量删除产品模型服务
+     *
+     * @param ids 需要删除的产品模型服务主键
+     * @return 结果
+     */
+    @Override
+    public int deleteProductServicesByIds(Long[] ids) {
+        return productServicesMapper.deleteProductServicesByIds(ids);
+    }
 }
