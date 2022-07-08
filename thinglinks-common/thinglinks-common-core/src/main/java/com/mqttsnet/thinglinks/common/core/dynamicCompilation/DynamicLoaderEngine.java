@@ -86,20 +86,20 @@ public class DynamicLoaderEngine {
             return false;
         }
         
-        return executeMain(loadedClass, out);
+        return executeMain(loadedClass, out,null);
     }
     
-    public static boolean executeMain(DynamicClassLoader classLoader, byte[] classBytes, PrintWriter out) {
+    public static boolean executeMain(DynamicClassLoader classLoader, byte[] classBytes, PrintWriter out,String inparam) {
         Class<?> loadClass = loadClass(classLoader, classBytes, out);
         if (loadClass == null) {
             return false;
         }
         
-        return executeMain(loadClass, out);
+        return executeMain(loadClass, out, inparam);
     }
     
-    public static boolean executeMain(Class<?> loadedClass, PrintWriter out) {
+    public static boolean executeMain(Class<?> loadedClass, PrintWriter out,String inparam) {
         ClassExecutor classExecutor =  new ClassExecutor();
-        return classExecutor.executeMain(loadedClass, out);
+        return classExecutor.executeMain(loadedClass, out,inparam);
     }
 }

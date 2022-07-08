@@ -7,6 +7,7 @@ import com.mqttsnet.thinglinks.common.core.dynamicCompilation.bytecode.Injection
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,11 +29,12 @@ import java.io.PrintWriter;
 public class CompileXcodeController {
     /**
      * 动态编译代码
+     *
      * @param code
      * @throws Exception
      */
     @PostMapping("/dynamicallyXcode")
-    public AjaxResult importProductJson(String code){
+    public AjaxResult importProductJson(@RequestBody String code) {
         try {
             if (code == null || code.length() == 0) {
                 return AjaxResult.error("请输入要编译的代码");
@@ -43,12 +45,11 @@ public class CompileXcodeController {
             byte[] injectedClass = ClassInjector.injectSystem(classBytes);
             InjectionSystem.inject(null, new PrintStream(buffer, true), null);
             DynamicClassLoader classLoader = new DynamicClassLoader(this.getClass().getClassLoader());
-            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out);
-            return new AjaxResult(200,buffer.toString().trim());
+            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out,"");
+            return new AjaxResult(200, buffer.toString().trim());
         } catch (Throwable e) {
-            return new AjaxResult(500,e.getMessage());
+            return new AjaxResult(500, e.getMessage());
         }
     }
-
 
 }

@@ -426,16 +426,16 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void processingDatasTopic(String deviceIdentification, String msg) throws Exception{
-        //协议脚本转换处理
+        //协议脚本转换处理 根据设备找到所属产品
         if (redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+deviceIdentification)){
             String code = redisService.get(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+deviceIdentification);
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintWriter out = new PrintWriter(buffer, true);
-            byte[] classBytes = DynamicLoaderEngine.compile(code, out, null);
+            byte[] classBytes = DynamicLoaderEngine.compile("javacode", out, null);//传入要执行的代码
             byte[] injectedClass = ClassInjector.injectSystem(classBytes);
             InjectionSystem.inject(null, new PrintStream(buffer, true), null);
             DynamicClassLoader classLoader = new DynamicClassLoader(this.getClass().getClassLoader());
-            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out);
+            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out,msg);
             msg= buffer.toString().trim();
         }
         //根据返回的json解析出上报的数据data，所属的服务serviceName，事件发生的时间eventTime

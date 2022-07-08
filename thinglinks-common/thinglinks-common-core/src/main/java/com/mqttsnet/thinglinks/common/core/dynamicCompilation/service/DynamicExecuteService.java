@@ -66,7 +66,7 @@ public class DynamicExecuteService {
             InjectionSystem.inject(null, new PrintStream(buffer, true), null);
 
             DynamicClassLoader dynamicClassLoader = new DynamicClassLoader(pClassLoader);
-            DynamicLoaderEngine.executeMain(dynamicClassLoader, injectedClass, out);
+            DynamicLoaderEngine.executeMain(dynamicClassLoader, injectedClass, out,null);
             
             InjectionSystem.restore();
         }
