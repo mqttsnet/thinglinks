@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询产品服务数据列表
 export function listServices(query) {
   return request({
-    url: '/link/product_services/list',
+    url: '/link/productServices/list',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listServices(query) {
 // 查询产品服务数据详细
 export function getServices(id) {
   return request({
-    url: '/link/product_services/' + id,
+    url: '/link/productServices/' + id,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getServices(id) {
 // 新增产品服务数据
 export function addServices(data) {
   return request({
-    url: '/link/product_services',
+    url: '/link/productServices',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addServices(data) {
 // 修改产品服务数据
 export function updateServices(data) {
   return request({
-    url: '/link/product_services',
+    url: '/link/productServices',
     method: 'put',
     data: data
   })
@@ -38,7 +38,7 @@ export function updateServices(data) {
 // 删除产品服务数据
 export function delServices(id) {
   return request({
-    url: '/link/product_services/' + id,
+    url: '/link/productServices/' + id,
     method: 'delete'
   })
 }

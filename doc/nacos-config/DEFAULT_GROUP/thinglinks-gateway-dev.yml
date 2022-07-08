@@ -81,6 +81,7 @@ spring:
             - Path=/broker/**
           filters:
             - StripPrefix=1
+            - RemoveRequestHeader=Sec-WebSocket-Protocol #移除请求头
         # ProtocolAnalysis服务
         - id: thinglinks-protocolAnalysis
           uri: lb://thinglinks-protocolAnalysis

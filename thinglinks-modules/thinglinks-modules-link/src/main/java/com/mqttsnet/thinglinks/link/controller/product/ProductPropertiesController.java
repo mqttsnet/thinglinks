@@ -18,12 +18,12 @@ import java.io.IOException;
 import java.util.List;
 
 /**
-* (product_properties)表控制层
+* (productProperties)表控制层
 *
 * @author thinglinks
 */
 @RestController
-@RequestMapping("product_properties")
+@RequestMapping("/productProperties")
 public class ProductPropertiesController extends BaseController {
 /**
 * 服务对象
@@ -45,7 +45,7 @@ return productPropertiesService.selectByPrimaryKey(id);
     /**
      * 查询产品模型服务属性列表
      */
-    @PreAuthorize(hasPermi = "link:properties:list")
+    @PreAuthorize(hasPermi = "link:productProperties:list")
     @GetMapping("/list")
     public TableDataInfo list(ProductProperties productProperties) {
         startPage();
@@ -56,7 +56,7 @@ return productPropertiesService.selectByPrimaryKey(id);
     /**
      * 导出产品模型服务属性列表
      */
-    @PreAuthorize(hasPermi = "link:properties:export")
+    @PreAuthorize(hasPermi = "link:productProperties:export")
     @Log(title = "产品模型服务属性", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, ProductProperties productProperties) throws IOException {
@@ -68,7 +68,7 @@ return productPropertiesService.selectByPrimaryKey(id);
     /**
      * 获取产品模型服务属性详细信息
      */
-    @PreAuthorize(hasPermi = "link:properties:query")
+    @PreAuthorize(hasPermi = "link:productProperties:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(productPropertiesService.selectProductPropertiesById(id));
@@ -77,7 +77,7 @@ return productPropertiesService.selectByPrimaryKey(id);
     /**
      * 新增产品模型服务属性
      */
-    @PreAuthorize(hasPermi = "link:properties:add")
+    @PreAuthorize(hasPermi = "link:productProperties:add")
     @Log(title = "产品模型服务属性", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody ProductProperties productProperties) {
@@ -88,7 +88,7 @@ return productPropertiesService.selectByPrimaryKey(id);
     /**
      * 修改产品模型服务属性
      */
-    @PreAuthorize(hasPermi = "link:properties:edit")
+    @PreAuthorize(hasPermi = "link:productProperties:edit")
     @Log(title = "产品模型服务属性", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody ProductProperties productProperties) {
@@ -99,7 +99,7 @@ return productPropertiesService.selectByPrimaryKey(id);
     /**
      * 删除产品模型服务属性
      */
-    @PreAuthorize(hasPermi = "link:properties:remove")
+    @PreAuthorize(hasPermi = "link:productProperties:remove")
     @Log(title = "产品模型服务属性", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {

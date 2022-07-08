@@ -8,10 +8,8 @@ import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
-import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate;
 import com.mqttsnet.thinglinks.link.service.product.ProductTemplateService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,12 +18,12 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * (product_template)表控制层
+ * (productTemplate)表控制层
  *
  * @author thinglinks
  */
 @RestController
-@RequestMapping("product_template")
+@RequestMapping("/productTemplate")
 public class ProductTemplateController extends BaseController {
     /**
      * 服务对象
@@ -47,7 +45,7 @@ public class ProductTemplateController extends BaseController {
     /**
      * 查询产品模板列表
      */
-    @PreAuthorize(hasPermi = "link:product_template:list")
+    @PreAuthorize(hasPermi = "link:productTemplate:list")
     @GetMapping("/list")
     public TableDataInfo list(ProductTemplate productTemplate) {
         startPage();
@@ -58,7 +56,7 @@ public class ProductTemplateController extends BaseController {
     /**
      * 导出产品模板列表
      */
-    @PreAuthorize(hasPermi = "link:product_template:export")
+    @PreAuthorize(hasPermi = "link:productTemplate:export")
     @Log(title = "产品模板", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, ProductTemplate productTemplate) throws IOException {
@@ -70,7 +68,7 @@ public class ProductTemplateController extends BaseController {
     /**
      * 获取产品模板详细信息
      */
-    @PreAuthorize(hasPermi = "link:product_template:query")
+    @PreAuthorize(hasPermi = "link:productTemplate:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(productTemplateService.selectProductTemplateById(id));
@@ -79,7 +77,7 @@ public class ProductTemplateController extends BaseController {
     /**
      * 新增产品模板
      */
-    @PreAuthorize(hasPermi = "link:product_template:add")
+    @PreAuthorize(hasPermi = "link:productTemplate:add")
     @Log(title = "产品模板", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody ProductTemplate productTemplate) {
@@ -90,7 +88,7 @@ public class ProductTemplateController extends BaseController {
     /**
      * 修改产品模板
      */
-    @PreAuthorize(hasPermi = "link:product_template:edit")
+    @PreAuthorize(hasPermi = "link:productTemplate:edit")
     @Log(title = "产品模板", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody ProductTemplate productTemplate) {
@@ -101,7 +99,7 @@ public class ProductTemplateController extends BaseController {
     /**
      * 删除产品模板
      */
-    @PreAuthorize(hasPermi = "link:product_template:remove")
+    @PreAuthorize(hasPermi = "link:productTemplate:remove")
     @Log(title = "产品模板", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {

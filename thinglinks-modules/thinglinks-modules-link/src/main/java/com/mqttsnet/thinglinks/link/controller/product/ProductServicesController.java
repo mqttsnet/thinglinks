@@ -18,12 +18,12 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * (product_services)表控制层
+ * (productServices)表控制层
  *
  * @author thinglinks
  */
 @RestController
-@RequestMapping("product_services")
+@RequestMapping("/productServices")
 public class ProductServicesController extends BaseController {
     /**
      * 服务对象
@@ -45,7 +45,7 @@ public class ProductServicesController extends BaseController {
     /**
      * 查询产品模型服务列表
      */
-    @PreAuthorize(hasPermi = "link:services:list")
+    @PreAuthorize(hasPermi = "link:productServices:list")
     @GetMapping("/list")
     public TableDataInfo list(ProductServices productServices) {
         startPage();
@@ -56,7 +56,7 @@ public class ProductServicesController extends BaseController {
     /**
      * 导出产品模型服务列表
      */
-    @PreAuthorize(hasPermi = "link:services:export")
+    @PreAuthorize(hasPermi = "link:productServices:export")
     @Log(title = "产品模型服务", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, ProductServices productServices) throws IOException {
@@ -68,7 +68,7 @@ public class ProductServicesController extends BaseController {
     /**
      * 获取产品模型服务详细信息
      */
-    @PreAuthorize(hasPermi = "link:services:query")
+    @PreAuthorize(hasPermi = "link:productServices:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(productServicesService.selectProductServicesById(id));
@@ -77,7 +77,7 @@ public class ProductServicesController extends BaseController {
     /**
      * 新增产品模型服务
      */
-    @PreAuthorize(hasPermi = "link:services:add")
+    @PreAuthorize(hasPermi = "link:productServices:add")
     @Log(title = "产品模型服务", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody ProductServices productServices) {
@@ -88,7 +88,7 @@ public class ProductServicesController extends BaseController {
     /**
      * 修改产品模型服务
      */
-    @PreAuthorize(hasPermi = "link:services:edit")
+    @PreAuthorize(hasPermi = "link:productServices:edit")
     @Log(title = "产品模型服务", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody ProductServices productServices) {
@@ -99,7 +99,7 @@ public class ProductServicesController extends BaseController {
     /**
      * 删除产品模型服务
      */
-    @PreAuthorize(hasPermi = "link:services:remove")
+    @PreAuthorize(hasPermi = "link:productServices:remove")
     @Log(title = "产品模型服务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {

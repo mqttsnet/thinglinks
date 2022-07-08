@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询产品属性数据列表
 export function listProperties(query) {
   return request({
-    url: '/link/product_properties/list',
+    url: '/link/productProperties/list',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listProperties(query) {
 // 查询产品属性数据详细
 export function getProperties(id) {
   return request({
-    url: '/link/product_properties/' + id,
+    url: '/link/productProperties/' + id,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getProperties(id) {
 // 新增产品属性数据
 export function addProperties(data) {
   return request({
-    url: '/link/product_properties',
+    url: '/link/productProperties',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addProperties(data) {
 // 修改产品属性数据
 export function updateProperties(data) {
   return request({
-    url: '/link/product_properties',
+    url: '/link/productProperties',
     method: 'put',
     data: data
   })
@@ -38,7 +38,7 @@ export function updateProperties(data) {
 // 删除产品属性数据
 export function delProperties(id) {
   return request({
-    url: '/link/product_properties/' + id,
+    url: '/link/productProperties/' + id,
     method: 'delete'
   })
 }

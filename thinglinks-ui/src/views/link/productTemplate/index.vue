@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import { listTemplate, getTemplate, delTemplate, addTemplate, updateTemplate } from "@/api/link/productTemplate";
+import { listProductTemplate, getProductTemplate, delProductTemplate, addProductTemplate, updateProductTemplate } from "@/api/link/productTemplate";
 
 export default {
   name: "Template",
@@ -181,7 +181,7 @@ export default {
     /** 查询产品模板列表 */
     getList() {
       this.loading = true;
-      listTemplate(this.queryParams).then(response => {
+      listProductTemplate(this.queryParams).then(response => {
         this.templateList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -233,7 +233,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getTemplate(id).then(response => {
+      getProductTemplate(id).then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改产品模板";
@@ -244,13 +244,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateTemplate(this.form).then(response => {
+            updateProductTemplate(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addTemplate(this.form).then(response => {
+            addProductTemplate(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -263,7 +263,7 @@ export default {
     handleDelete(row) {
       const ids = row.id || this.ids;
       this.$modal.confirm('是否确认删除产品模板编号为"' + ids + '"的数据项？').then(function() {
-        return delTemplate(ids);
+        return delProductTemplate(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
