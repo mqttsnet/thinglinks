@@ -29,7 +29,7 @@
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from product_properties
     where id = #{id,jdbcType=BIGINT}
@@ -42,13 +42,13 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into product_properties (`name`, service_id,
-      datatype, description, enumlist, 
-      `max`, maxlength, `method`, 
-      `min`, required, step, 
-      unit, create_by, create_time, 
+      datatype, description, enumlist,
+      `max`, maxlength, `method`,
+      `min`, required, step,
+      unit, create_by, create_time,
       update_by, update_time)
     values (#{name,jdbcType=VARCHAR}, #{serviceId,jdbcType=BIGINT},
-      #{datatype,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{enumlist,jdbcType=VARCHAR}, 
+      #{datatype,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{enumlist,jdbcType=VARCHAR},
       #{max,jdbcType=VARCHAR}, #{maxlength,jdbcType=BIGINT}, #{method,jdbcType=VARCHAR},
       #{min,jdbcType=VARCHAR}, #{required,jdbcType=BIGINT}, #{step,jdbcType=BIGINT},
       #{unit,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
@@ -455,7 +455,7 @@
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.name,jdbcType=VARCHAR}, #{item.serviceId,jdbcType=BIGINT},
-        #{item.datatype,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.enumlist,jdbcType=VARCHAR}, 
+        #{item.datatype,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.enumlist,jdbcType=VARCHAR},
         #{item.max,jdbcType=VARCHAR}, #{item.maxlength,jdbcType=BIGINT}, #{item.method,jdbcType=VARCHAR},
         #{item.min,jdbcType=VARCHAR}, #{item.required,jdbcType=BIGINT}, #{item.step,jdbcType=BIGINT},
         #{item.unit,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
@@ -508,7 +508,7 @@
       #{updateBy,jdbcType=VARCHAR},
       #{updateTime,jdbcType=TIMESTAMP},
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -641,7 +641,7 @@
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -708,4 +708,101 @@
             </if>
         </where>
     </select>
+
+  <sql id="selectProductPropertiesVo">
+    select id, `name`, service_id, datatype, description, enumlist, max, maxlength, method, min, required, step, unit, create_by, create_time, update_by, update_time from product_properties
+  </sql>
+
+  <select id="selectProductPropertiesList" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties" resultMap="BaseResultMap">
+    <include refid="selectProductPropertiesVo"/>
+    <where>
+      <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+      <if test="serviceId != null "> and service_id = #{serviceId}</if>
+      <if test="datatype != null  and datatype != ''"> and datatype = #{datatype}</if>
+      <if test="description != null  and description != ''"> and description = #{description}</if>
+      <if test="enumlist != null  and enumlist != ''"> and enumlist = #{enumlist}</if>
+      <if test="max != null  and max != ''"> and max = #{max}</if>
+      <if test="maxlength != null "> and maxlength = #{maxlength}</if>
+      <if test="method != null  and method != ''"> and method = #{method}</if>
+      <if test="min != null  and min != ''"> and min = #{min}</if>
+      <if test="required != null "> and required = #{required}</if>
+      <if test="step != null "> and step = #{step}</if>
+      <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+    </where>
+  </select>
+
+  <select id="selectProductPropertiesById" parameterType="Long" resultMap="BaseResultMap">
+    <include refid="selectProductPropertiesVo"/>
+    where id = #{id}
+  </select>
+
+  <insert id="insertProductProperties" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties" useGeneratedKeys="true" keyProperty="id">
+    insert into product_properties
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null and name != ''">name,</if>
+      <if test="serviceId != null">service_id,</if>
+      <if test="datatype != null and datatype != ''">datatype,</if>
+      <if test="description != null">description,</if>
+      <if test="enumlist != null">enumlist,</if>
+      <if test="max != null">max,</if>
+      <if test="maxlength != null">maxlength,</if>
+      <if test="method != null">method,</if>
+      <if test="min != null">min,</if>
+      <if test="required != null">required,</if>
+      <if test="step != null">step,</if>
+      <if test="unit != null">unit,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null and name != ''">#{name},</if>
+      <if test="serviceId != null">#{serviceId},</if>
+      <if test="datatype != null and datatype != ''">#{datatype},</if>
+      <if test="description != null">#{description},</if>
+      <if test="enumlist != null">#{enumlist},</if>
+      <if test="max != null">#{max},</if>
+      <if test="maxlength != null">#{maxlength},</if>
+      <if test="method != null">#{method},</if>
+      <if test="min != null">#{min},</if>
+      <if test="required != null">#{required},</if>
+      <if test="step != null">#{step},</if>
+      <if test="unit != null">#{unit},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+    </trim>
+  </insert>
+
+  <update id="updateProductProperties" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties">
+    update product_properties
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="name != null and name != ''">name = #{name},</if>
+      <if test="serviceId != null">service_id = #{serviceId},</if>
+      <if test="datatype != null and datatype != ''">datatype = #{datatype},</if>
+      <if test="description != null">description = #{description},</if>
+      <if test="enumlist != null">enumlist = #{enumlist},</if>
+      <if test="max != null">max = #{max},</if>
+      <if test="maxlength != null">maxlength = #{maxlength},</if>
+      <if test="method != null">method = #{method},</if>
+      <if test="min != null">min = #{min},</if>
+      <if test="required != null">required = #{required},</if>
+      <if test="step != null">step = #{step},</if>
+      <if test="unit != null">unit = #{unit},</if>
+      <if test="createBy != null">create_by = #{createBy},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+      <if test="updateBy != null">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+    </trim>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteProductPropertiesByIds" parameterType="String">
+    delete from product_properties where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

@@ -1,26 +1,28 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
 
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.util.List;
+
 import com.mqttsnet.thinglinks.link.mapper.product.ProductPropertiesMapper;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.service.product.ProductPropertiesService;
+
 /**
-
-* @Description:    java类作用描述
-* @Author:         ShiHuan Sun
-* @E-mail:         13733918655@163.com
-* @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/25$ 23:52$
-* @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/25$ 23:52$
-* @UpdateRemark:   修改内容
-* @Version:        1.0
-
-*/
+ * @Description: java类作用描述
+ * @Author: ShiHuan Sun
+ * @E-mail: 13733918655@163.com
+ * @Website: http://thinglinks.mqttsnet.com
+ * @CreateDate: 2021/12/25$ 23:52$
+ * @UpdateUser: ShiHuan Sun
+ * @UpdateDate: 2021/12/25$ 23:52$
+ * @UpdateRemark: 修改内容
+ * @Version: 1.0
+ */
 @Service
-public class ProductPropertiesServiceImpl implements ProductPropertiesService{
+public class ProductPropertiesServiceImpl implements ProductPropertiesService {
 
     @Resource
     private ProductPropertiesMapper productPropertiesMapper;
@@ -80,12 +82,66 @@ public class ProductPropertiesServiceImpl implements ProductPropertiesService{
         return productPropertiesMapper.batchInsert(list);
     }
 
-	@Override
-	public List<ProductProperties> findAllByServiceId(Long serviceId){
-		 return productPropertiesMapper.findAllByServiceId(serviceId);
-	}
+    @Override
+    public List<ProductProperties> findAllByServiceId(Long serviceId) {
+        return productPropertiesMapper.findAllByServiceId(serviceId);
+    }
 
 
+    /**
+     * 查询产品模型服务属性
+     *
+     * @param id 产品模型服务属性主键
+     * @return 产品模型服务属性
+     */
+    @Override
+    public ProductProperties selectProductPropertiesById(Long id) {
+        return productPropertiesMapper.selectProductPropertiesById(id);
+    }
 
+    /**
+     * 查询产品模型服务属性列表
+     *
+     * @param productProperties 产品模型服务属性
+     * @return 产品模型服务属性
+     */
+    @Override
+    public List<ProductProperties> selectProductPropertiesList(ProductProperties productProperties) {
+        return productPropertiesMapper.selectProductPropertiesList(productProperties);
+    }
 
+    /**
+     * 新增产品模型服务属性
+     *
+     * @param productProperties 产品模型服务属性
+     * @return 结果
+     */
+    @Override
+    public int insertProductProperties(ProductProperties productProperties) {
+        productProperties.setCreateTime(DateUtils.getNowDate());
+        return productPropertiesMapper.insertProductProperties(productProperties);
+    }
+
+    /**
+     * 修改产品模型服务属性
+     *
+     * @param productProperties 产品模型服务属性
+     * @return 结果
+     */
+    @Override
+    public int updateProductProperties(ProductProperties productProperties) {
+        productProperties.setUpdateTime(DateUtils.getNowDate());
+        return productPropertiesMapper.updateProductProperties(productProperties);
+    }
+
+    /**
+     * 批量删除产品模型服务属性
+     *
+     * @param ids 需要删除的产品模型服务属性主键
+     * @return 结果
+     */
+    @Override
+    public int deleteProductPropertiesByIds(Long[] ids) {
+        return productPropertiesMapper.deleteProductPropertiesByIds(ids);
+    }
 }

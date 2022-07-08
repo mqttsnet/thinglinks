@@ -17,12 +17,12 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, service_name, product_id, template_id, `status`, description, create_by, create_time, 
+    id, service_name, product_id, template_id, `status`, description, create_by, create_time,
     update_by, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from product_services
     where id = #{id,jdbcType=BIGINT}
@@ -34,8 +34,8 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into product_services (service_name, product_id, template_id, 
-      `status`, description, create_by, 
+    insert into product_services (service_name, product_id, template_id,
+      `status`, description, create_by,
       create_time, update_by, update_time
       )
     values (#{serviceName,jdbcType=VARCHAR}, #{productId,jdbcType=BIGINT}, #{templateId,jdbcType=BIGINT},
@@ -284,7 +284,7 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into product_services
-    (service_name, product_id, template_id, `status`, description, create_by, create_time, 
+    (service_name, product_id, template_id, `status`, description, create_by, create_time,
       update_by, update_time)
     values
     <foreach collection="list" item="item" separator=",">
@@ -326,7 +326,7 @@
       #{updateBy,jdbcType=VARCHAR},
       #{updateTime,jdbcType=TIMESTAMP},
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -410,7 +410,7 @@
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -491,4 +491,73 @@
             </if>
         </where>
     </select>
+
+  <sql id="selectProductServicesVo">
+    select id, service_name, product_id, template_id, status, description, create_by, create_time, update_by, update_time from product_services
+  </sql>
+
+  <select id="selectProductServicesList" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices" resultMap="BaseResultMap">
+    <include refid="selectProductServicesVo"/>
+    <where>
+      <if test="serviceName != null  and serviceName != ''"> and service_name like concat('%', #{serviceName}, '%')</if>
+      <if test="productId != null "> and product_id = #{productId}</if>
+      <if test="templateId != null "> and template_id = #{templateId}</if>
+      <if test="status != null  and status != ''"> and status = #{status}</if>
+      <if test="description != null  and description != ''"> and description = #{description}</if>
+    </where>
+  </select>
+
+  <select id="selectProductServicesById" parameterType="Long" resultMap="BaseResultMap">
+    <include refid="selectProductServicesVo"/>
+    where id = #{id}
+  </select>
+
+  <insert id="insertProductServices" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices" useGeneratedKeys="true" keyProperty="id">
+    insert into product_services
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="serviceName != null and serviceName != ''">service_name,</if>
+      <if test="productId != null">product_id,</if>
+      <if test="templateId != null">template_id,</if>
+      <if test="status != null and status != ''">status,</if>
+      <if test="description != null">description,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="serviceName != null and serviceName != ''">#{serviceName},</if>
+      <if test="productId != null">#{productId},</if>
+      <if test="templateId != null">#{templateId},</if>
+      <if test="status != null and status != ''">#{status},</if>
+      <if test="description != null">#{description},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+    </trim>
+  </insert>
+
+  <update id="updateProductServices" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices">
+    update product_services
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="serviceName != null and serviceName != ''">service_name = #{serviceName},</if>
+      <if test="productId != null">product_id = #{productId},</if>
+      <if test="templateId != null">template_id = #{templateId},</if>
+      <if test="status != null and status != ''">status = #{status},</if>
+      <if test="description != null">description = #{description},</if>
+      <if test="createBy != null">create_by = #{createBy},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+      <if test="updateBy != null">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+    </trim>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteProductServicesByIds" parameterType="String">
+    delete from product_services where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>
