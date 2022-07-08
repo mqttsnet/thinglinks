@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
+    <el-form v-show="showSearch" :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
       <el-form-item label="产品名称" prop="productName">
         <el-input v-model="queryParams.productName" placeholder="请输入产品名称" clearable size="small"
           @keyup.enter.native="handleQuery" />
@@ -61,6 +61,7 @@
           产品初始化
         </el-button>
       </el-col>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
@@ -723,9 +724,10 @@
                     '.required'
                   " :rules="dialogquick.rules.required">
                     <el-col :span="22">
-<!--                      <el-input v-model="proItem.required" autocomplete="off" placeholder="请输入属性是否必填" />-->
+                      <!--                      <el-input v-model="proItem.required" autocomplete="off" placeholder="请输入属性是否必填" />-->
                       <el-select v-model="proItem.required" placeholder="请选择是否必填">
-                        <el-option v-for="dict in dict.type.link_product_isRequired" :key="dict.value" :label="dict.label" :value="parseInt(dict.value)"/>
+                        <el-option v-for="dict in dict.type.link_product_isRequired" :key="dict.value"
+                          :label="dict.label" :value="parseInt(dict.value)" />
                       </el-select>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
@@ -775,9 +777,10 @@
                     '.method'
                   " :rules="dialogquick.rules.method">
                     <el-col :span="22">
-<!--                      <el-input v-model="proItem.method" autocomplete="off" placeholder="请输入指示访问模式" />-->
+                      <!--                      <el-input v-model="proItem.method" autocomplete="off" placeholder="请输入指示访问模式" />-->
                       <el-select v-model="proItem.method" placeholder="请选择访问模式">
-                        <el-option v-for="dict in methodlist" :key="dict.value" :label="dict.label" :value="dict.value"/>
+                        <el-option v-for="dict in methodlist" :key="dict.value" :label="dict.label"
+                          :value="dict.value" />
                       </el-select>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">

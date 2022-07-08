@@ -135,9 +135,12 @@
                         </el-tab-pane>
                         <el-tab-pane label="自定义Topic" name="second" style="width:100%;height: 100%;">
                             <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                                v-hasPermi="['link:topic:add']" style="margin-bottom='10px'">新增</el-button>
+                                v-hasPermi="['link:topic:add']">新增</el-button>
+                            <el-button style="position: absolute;right:20px" icon="el-icon-refresh" @click="getList"
+                                circle>
+                            </el-button>
                             <el-table v-loading="loading" :data="topicList" @selection-change="handleSelectionChange"
-                                style="width:100%;height:100%" max-height="500">
+                                style="width:100%;height:100%;margin-top: 20px;" max-height="500">
                                 <el-table-column type="selection" width="55" align="center" />
                                 <el-table-column label="id" align="center" prop="id" />
                                 <el-table-column label="设备标识" align="center" prop="deviceIdentification" />
@@ -163,26 +166,30 @@
                 </el-tab-pane>
                 <el-tab-pane label="设备动作" name="fourth" style="width:100%;height: 100%;">
                     <div style="width:100%;height:100%">
-                        <el-table :data="equipmentActionList" style="width: 100%;height: 100%;" max-height="500">
-                            <el-table-column prop="id" label="ID" width="280">
+                        <el-button style="position: absolute;right:20px" icon="el-icon-refresh"
+                            @click="getEquipmentActionList" circle>
+                        </el-button>
+                        <el-table :data="equipmentActionList" style="width: 100%;height: 100%;margin-top: 45px;"
+                            max-height="450">
+                            <el-table-column prop="id" label="ID">
                             </el-table-column>
-                            <el-table-column prop="deviceIdentification" label="设备标识" width="280">
+                            <el-table-column prop="deviceIdentification" label="设备标识">
                             </el-table-column>
-                            <el-table-column prop="message" label="信息" width="280">
+                            <el-table-column prop="message" label="信息">
                             </el-table-column>
-                            <el-table-column prop="actionType" label="操作类型" width="280">
+                            <el-table-column prop="actionType" label="操作类型">
                                 <template slot-scope="scope">
                                     <dict-tag :options="dict.type.link_device_action_type"
                                         :value="scope.row.actionType" />
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="status" label="状态" width="280">
+                            <el-table-column prop="status" label="状态">
                                 <template slot-scope="scope">
                                     <el-button type="success" size="mini" v-text="scope.row.status ? '成功' : '失败'">
                                     </el-button>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="createTime" label="创建时间" width="180">
+                            <el-table-column prop="createTime" label="创建时间">
                             </el-table-column>
                         </el-table>
                         <pagination v-show="actionListTotal > 0" :total="actionListTotal"
@@ -391,6 +398,7 @@ export default {
         },
         //查询设备动作列表
         getEquipmentActionList() {
+            console.log(11);
             this.loading = true;
             // console.log(this.deviceInfo);
             this.queryParams.deviceIdentification = this.deviceInfo.deviceIdentification
