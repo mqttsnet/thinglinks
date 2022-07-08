@@ -39,6 +39,13 @@ module.exports = {
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }
+      },
+      [process.env.VUE_APP_BASE_SOCKETIP]: {
+        target: `frp1.xiaonannet.com:6901`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_SOCKETIP]: ''
+        }
       }
     },
     disableHostCheck: true
