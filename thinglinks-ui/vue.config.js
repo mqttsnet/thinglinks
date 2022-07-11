@@ -41,7 +41,7 @@ module.exports = {
         }
       },
       [process.env.VUE_APP_BASE_SOCKETIP]: {
-        target: `frp1.xiaonannet.com:6901`,
+        target: `127.0.0.1:19100`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_SOCKETIP]: ''

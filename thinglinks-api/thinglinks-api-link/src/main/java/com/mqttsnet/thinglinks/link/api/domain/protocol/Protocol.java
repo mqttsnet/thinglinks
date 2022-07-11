@@ -63,9 +63,9 @@ public class Protocol implements Serializable {
     private String protocolType;
 
     /**
-    * 57dc8c01-bc75-4d41-ac41-e66063a6d025
+    * 协议语言
     */
-    @ApiModelProperty(value="57dc8c01-bc75-4d41-ac41-e66063a6d025")
+    @ApiModelProperty(value="协议语言")
     private String protocolVoice;
 
     /**

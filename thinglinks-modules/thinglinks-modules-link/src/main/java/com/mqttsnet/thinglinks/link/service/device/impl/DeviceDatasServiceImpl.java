@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
 import com.jayway.jsonpath.JsonPath;
 import com.mqttsnet.thinglinks.broker.api.RemotePublishActorService;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
@@ -27,7 +26,6 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.DeviceInfos;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.TopoAddDatas;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-import com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceDatasMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
@@ -553,27 +551,20 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 根据设备找到所属产品 产品的服务及属性 转换出系统能识别的json 找到这个产品的协议内容即Java代码
      */
     public String convert2msg(String deviceIdentification, String msg) {
-        final DeviceInfo oneByDeviceId = deviceInfoService.findOneByDeviceId(deviceIdentification);
-        final Product product = productService.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(oneByDeviceId.getManufacturerId(), oneByDeviceId.getModel(), ProtocolType.MQTT.getValue(), Constants.ENABLE);
-        if (redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + product.getProductIdentification())) {
-            Protocol filter = new Protocol();
-            filter.setProductIdentification(product.getProductIdentification());
-            List<Protocol> protocols = protocolService.selectProtocolList(filter);
-            if (protocols.size() == 0) {
-                log.info("没有找到维护的产品标识");
-                return msg;
-            }
+        if (redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + deviceIdentification)) {
+            String protocolContent = redisService.get(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + deviceIdentification);
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintWriter out = new PrintWriter(buffer, true);
-            byte[] classBytes = DynamicLoaderEngine.compile(protocols.get(0).getContent(), out, null);//传入要执行的代码
+            byte[] classBytes = DynamicLoaderEngine.compile(protocolContent, out, null);//传入要执行的代码
             byte[] injectedClass = ClassInjector.injectSystem(classBytes);
             InjectionSystem.inject(null, new PrintStream(buffer, true), null);
             DynamicClassLoader classLoader = new DynamicClassLoader(this.getClass().getClassLoader());
             DynamicLoaderEngine.executeMain(classLoader, injectedClass, out, msg);
             msg = buffer.toString().trim();
             return msg;
+        } else {
+            return msg;
         }
-        return msg;
     }
 }
 
