@@ -783,4 +783,12 @@
     set `status`=#{updatedStatus,jdbcType=VARCHAR}
     where id=#{id,jdbcType=BIGINT}
   </update>
+
+<!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-11-->
+  <select id="findAllByStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from protocol
+        where `status`=#{status,jdbcType=VARCHAR}
+    </select>
 </mapper>

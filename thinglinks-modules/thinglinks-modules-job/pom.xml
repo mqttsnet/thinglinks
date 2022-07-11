@@ -89,7 +89,14 @@
             <artifactId>thinglinks-common-swagger</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
-        
+
+        <!-- thinglinks API Link -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-api-link</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

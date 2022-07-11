@@ -202,8 +202,28 @@ public class ProtocolServiceImpl implements ProtocolService {
 		 return protocolMapper.updateStatusById(updatedStatus,id);
 	}
 
+    /**
+     * 协议脚本缓存刷新
+     *
+     * @return
+     */
+    @Override
+    public int protocolScriptCacheRefresh() {
+        List<Protocol> protocolList = protocolMapper.findAllByStatus(Constants.ENABLE);
+        for (Protocol protocol : protocolList) {
+            List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
+            for (Device device : deviceList) {
+                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+device.getDeviceIdentification());
+            }
+            protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
+        }
+        return protocolList.size();
+    }
 
-
+	@Override
+	public List<Protocol> findAllByStatus(String status){
+		 return protocolMapper.findAllByStatus(status);
+	}
 
 
 

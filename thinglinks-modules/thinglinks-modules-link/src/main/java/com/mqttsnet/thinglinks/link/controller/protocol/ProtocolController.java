@@ -124,4 +124,14 @@ public class ProtocolController extends BaseController
     {
         return toAjax(protocolService.disable(ids));
     }
+
+    /**
+     * 协议脚本缓存刷新
+     * @return
+     */
+    @GetMapping("/protocolScriptCacheRefresh")
+    public AjaxResult protocolScriptCacheRefresh()
+    {
+        return toAjax(protocolService.protocolScriptCacheRefresh());
+    }
 }

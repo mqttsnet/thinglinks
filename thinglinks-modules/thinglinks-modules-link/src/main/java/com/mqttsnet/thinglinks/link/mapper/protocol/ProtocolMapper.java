@@ -115,6 +115,9 @@ public interface ProtocolMapper {
 
     int updateStatusById(@Param("updatedStatus")String updatedStatus,@Param("id")Long id);
 
+    List<Protocol> findAllByStatus(@Param("status")String status);
+
+
 
 
 

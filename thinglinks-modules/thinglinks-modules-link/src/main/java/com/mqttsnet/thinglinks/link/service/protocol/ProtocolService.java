@@ -104,4 +104,14 @@ public interface ProtocolService {
 	int updateStatusById(String updatedStatus,Long id);
 
 
+    /**
+     * 协议脚本缓存刷新
+     * @return
+     */
+    int protocolScriptCacheRefresh();
+
+
+
+	List<Protocol> findAllByStatus(String status);
+
 }
