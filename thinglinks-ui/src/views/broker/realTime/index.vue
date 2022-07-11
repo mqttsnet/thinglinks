@@ -65,7 +65,7 @@ export default {
       if(typeof(WebSocket) === "undefined") {
         this.$toast.fail("您的浏览器不支持WebSocket");
       }else{
-        let SocketUrl = `ws://${API_CONFIG.devServer.proxy[process.env.VUE_APP_BASE_SOCKETIP].target}${process.env.VUE_APP_BASE_SOCKETIP}/broker/websocket/logging`;
+        let SocketUrl = `ws://${API_CONFIG.devServer.proxy[process.env.VUE_APP_BASE_SOCKETIP].target}/broker/websocket/logging`;
         // 实例化WebSocket
         this.webSocket = new WebSocket(SocketUrl)
         // 监听socket连接
