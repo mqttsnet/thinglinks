@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
 import com.jayway.jsonpath.JsonPath;
 import com.mqttsnet.thinglinks.broker.api.RemotePublishActorService;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
@@ -26,6 +27,7 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.DeviceInfos;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.TopoAddDatas;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceDatasMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
@@ -187,43 +189,43 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
         //边设备上报数据处理
         if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/add")) {
             log.info("Side equipment report data processing,Topic:{},Msg:{}", topic, msg);
-            final String deviceIdentification = SubStringUtil.subStr(topic,12,-9);
+            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -9);
             final String payload = this.processingTopoAddTopic(deviceIdentification, msg);
             final Map<String, Object> param = new HashMap<>();
-            param.put("topic", topic.replace("add","addResponse"));
+            param.put("topic", topic.replace("add", "addResponse"));
             param.put("qos", Integer.valueOf(qos));
             param.put("retain", false);
-            param.put("message",payload);
+            param.put("message", payload);
             remotePublishActorService.sendMessage(param);
-        }else if(topic.startsWith("/v1/devices/") && topic.endsWith("/topo/delete")){
+        } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/delete")) {
             log.info("Side equipment report data processing,Topic:{},Msg:{}", topic, msg);
-            final String deviceIdentification = SubStringUtil.subStr(topic,12,-12);
+            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -12);
             final String payload = this.processingTopoDeleteTopic(deviceIdentification, msg);
             final Map<String, Object> param = new HashMap<>();
-            param.put("topic", topic.replace("delete","deleteResponse"));
+            param.put("topic", topic.replace("delete", "deleteResponse"));
             param.put("qos", Integer.valueOf(qos));
             param.put("retain", false);
-            param.put("message",payload);
+            param.put("message", payload);
             remotePublishActorService.sendMessage(param);
-        }else if(topic.startsWith("/v1/devices/") && topic.endsWith("/topo/update")){
+        } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/update")) {
             log.info("Side equipment report data processing,Topic:{},Msg:{}", topic, msg);
-            final String deviceIdentification = SubStringUtil.subStr(topic,12,-12);
+            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -12);
             final String payload = this.processingTopoUpdateTopic(deviceIdentification, msg);
             final Map<String, Object> param = new HashMap<>();
-            param.put("topic", topic.replace("update","updateResponse"));
+            param.put("topic", topic.replace("update", "updateResponse"));
             param.put("qos", Integer.valueOf(qos));
             param.put("retain", false);
-            param.put("message",payload);
+            param.put("message", payload);
             remotePublishActorService.sendMessage(param);
-        }else if(topic.startsWith("/v1/devices/") && topic.endsWith("/datas")){
+        } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/datas")) {
             log.info("Side equipment report data processing,Topic:{},Msg:{}", topic, msg);
-            final String deviceIdentification = SubStringUtil.subStr(topic,12,-6);
-            this.processingDatasTopic(deviceIdentification,msg);
-        }else if(topic.startsWith("/v1/devices/") && topic.endsWith("/commandResponse")){
+            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -6);
+            this.processingDatasTopic(deviceIdentification, msg);
+        } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/commandResponse")) {
             log.info("Side equipment report data processing,Topic:{},Msg:{}", topic, msg);
-            final String deviceIdentification = SubStringUtil.subStr(topic,12,-16);
-            this.processingTopoCommandResponseTopic(deviceIdentification,msg);
-        }else {
+            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -16);
+            this.processingTopoCommandResponseTopic(deviceIdentification, msg);
+        } else {
             //TODO 其他协议自行扩展
             log.info("Other Topic packets are ignored,Topic:{},Msg:{}", topic, msg);
         }
@@ -237,7 +239,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public String processingTopoAddTopic(String deviceIdentification, String msg) throws Exception{
+    public String processingTopoAddTopic(String deviceIdentification, String msg) throws Exception {
         final TopoAddDatas topoAddDatas = JSONObject.toJavaObject(JSONObject.parseObject(msg), TopoAddDatas.class);
         Map responseMaps = new HashMap<>();
         List<Map<String, Object>> dataList = new ArrayList();
@@ -259,7 +261,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             responseMaps.put("statusDesc", "The side device reports data processing, but the product does not exist.");
             return JSON.toJSONString(responseMaps);
         }
-        for (DeviceInfos deviceInfos: topoAddDatas.getDeviceInfos()) {
+        for (DeviceInfos deviceInfos : topoAddDatas.getDeviceInfos()) {
             final DeviceInfo deviceInfo = new DeviceInfo();
             deviceInfo.setDId(device.getId());
             deviceInfo.setAppId(device.getAppId());
@@ -279,10 +281,10 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 tableDto = new TableDto();
                 tableDto.setDataBaseName(dataBaseName);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
-                String superTableName = product.getProductType()+"_"+product.getProductIdentification()+"_"+productServices.getServiceName();
+                String superTableName = product.getProductType() + "_" + product.getProductIdentification() + "_" + productServices.getServiceName();
                 tableDto.setSuperTableName(superTableName);
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
-                tableDto.setTableName(superTableName+"_"+deviceInfo.getDeviceId());
+                tableDto.setTableName(superTableName + "_" + deviceInfo.getDeviceId());
                 //Tag的处理
                 List<Fields> tagsFieldValues = new ArrayList<>();
                 Fields fields = new Fields();
@@ -293,7 +295,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 if (ctResult.getCode() == 200) {
                     shadowTableNameBuilder.append(tableDto.getTableName()).append(",");
                     log.info("Create SuperTable Success: " + ctResult.getMsg());
-                }else {
+                } else {
                     log.error("Create SuperTable Exception: " + ctResult.getMsg());
                 }
             }
@@ -307,7 +309,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             if (insertSelectiveCount > 0) {
                 responseMap.put("statusCode", 0);
                 responseMap.put("statusDesc", "successful");
-            }else {
+            } else {
                 responseMap.put("statusCode", 1);
                 responseMap.put("statusDesc", "abortive");
                 log.error("Insert DeviceInfo Exception,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
@@ -353,7 +355,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             if (deleteByDeviceIdCount > 0) {
                 responseMap.put("statusCode", 0);
                 responseMap.put("statusDesc", "successful");
-            }else {
+            } else {
                 responseMap.put("statusCode", 1);
                 responseMap.put("statusDesc", "abortive");
                 log.error("Delete DeviceInfo Exception");
@@ -396,16 +398,16 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             if (StringUtils.isNull(deviceInfo)) {
                 log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
             }
-            if ("ONLINE".equals(status)){
+            if ("ONLINE".equals(status)) {
                 deviceInfo.setConnectStatus(DeviceConnectStatus.ONLINE.getValue());
-            }else if ("OFFLINE".equals(status)){
+            } else if ("OFFLINE".equals(status)) {
                 deviceInfo.setConnectStatus(DeviceConnectStatus.OFFLINE.getValue());
             }
             final int updateByPrimaryKeySelectiveCount = deviceInfoService.updateByPrimaryKeySelective(deviceInfo);
             if (updateByPrimaryKeySelectiveCount > 0) {
                 responseMap.put("statusCode", 0);
                 responseMap.put("statusDesc", "successful");
-            }else {
+            } else {
                 responseMap.put("statusCode", 1);
                 responseMap.put("statusDesc", "abortive");
                 log.error("Update DeviceInfo Exception");
@@ -425,19 +427,9 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public void processingDatasTopic(String deviceIdentification, String msg) throws Exception{
-        //协议脚本转换处理 根据设备找到所属产品
-        if (redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+deviceIdentification)){
-            String code = redisService.get(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+deviceIdentification);
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            PrintWriter out = new PrintWriter(buffer, true);
-            byte[] classBytes = DynamicLoaderEngine.compile("javacode", out, null);//传入要执行的代码
-            byte[] injectedClass = ClassInjector.injectSystem(classBytes);
-            InjectionSystem.inject(null, new PrintStream(buffer, true), null);
-            DynamicClassLoader classLoader = new DynamicClassLoader(this.getClass().getClassLoader());
-            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out,msg);
-            msg= buffer.toString().trim();
-        }
+    public void processingDatasTopic(String deviceIdentification, String msg) throws Exception {
+        //协议脚本转换处理
+        msg = convert2msg(deviceIdentification, msg);
         //根据返回的json解析出上报的数据data，所属的服务serviceName，事件发生的时间eventTime
         Map<String, Object> resultMap = StringUtils.jsonToMap(msg);
         List<Map<String, Object>> items = (List<Map<String, Object>>) resultMap.get("devices");
@@ -459,11 +451,11 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 final Object serviceId = serviceData.get("serviceId");
                 final Object eventTime = serviceData.get("eventTime");
                 Map<String, Object> data = StringUtils.jsonToMap(serviceData.get("data").toString());
-                final Product product = productService.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(oneByDeviceId.getManufacturerId(),oneByDeviceId.getModel(), ProtocolType.MQTT.getValue(), Constants.ENABLE);
+                final Product product = productService.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(oneByDeviceId.getManufacturerId(), oneByDeviceId.getModel(), ProtocolType.MQTT.getValue(), Constants.ENABLE);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
-                String superTableName = product.getProductType()+"_"+product.getProductIdentification()+"_"+serviceId.toString();
+                String superTableName = product.getProductType() + "_" + product.getProductIdentification() + "_" + serviceId.toString();
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
-                String tableName = superTableName+"_"+oneByDeviceId.getDeviceId();
+                String tableName = superTableName + "_" + oneByDeviceId.getDeviceId();
                 //从redis根据超级表名称取出超级表表结构信息
                 final Object cacheObject = redisService.getCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName);
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -536,8 +528,8 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 //调用插入方法插入数据
                 final R<?> insertResult = this.remoteTdEngineService.insertData(tableDto);
                 if (insertResult.getCode() == 200) {
-                    log.info("Insert data result: {}",insertResult.getMsg());
-                }else {
+                    log.info("Insert data result: {}", insertResult.getMsg());
+                } else {
                     log.error("Insert data Exception: {}", insertResult.getMsg());
                 }
             }
@@ -556,6 +548,33 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
 
     }
 
+    /**
+     * 协议转换处理
+     * 根据设备找到所属产品 产品的服务及属性 转换出系统能识别的json 找到这个产品的协议内容即Java代码
+     */
+    public String convert2msg(String deviceIdentification, String msg) {
+        final DeviceInfo oneByDeviceId = deviceInfoService.findOneByDeviceId(deviceIdentification);
+        final Product product = productService.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(oneByDeviceId.getManufacturerId(), oneByDeviceId.getModel(), ProtocolType.MQTT.getValue(), Constants.ENABLE);
+        if (redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + product.getProductIdentification())) {
+            Protocol filter = new Protocol();
+            filter.setProductIdentification(product.getProductIdentification());
+            List<Protocol> protocols = protocolService.selectProtocolList(filter);
+            if (protocols.size() == 0) {
+                log.info("没有找到维护的产品标识");
+                return msg;
+            }
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            PrintWriter out = new PrintWriter(buffer, true);
+            byte[] classBytes = DynamicLoaderEngine.compile(protocols.get(0).getContent(), out, null);//传入要执行的代码
+            byte[] injectedClass = ClassInjector.injectSystem(classBytes);
+            InjectionSystem.inject(null, new PrintStream(buffer, true), null);
+            DynamicClassLoader classLoader = new DynamicClassLoader(this.getClass().getClassLoader());
+            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out, msg);
+            msg = buffer.toString().trim();
+            return msg;
+        }
+        return msg;
+    }
 }
 
 
