@@ -145,6 +145,34 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/link/product-detail',
+    component: Layout,
+    hidden: true,
+    permissions: ['link:product:list'],
+    children: [
+      {
+        path: 'product/:productId(\\d+)',
+        component: () => import('@/views/link/product/detail'),
+        name: 'ProductDetail',
+        meta: { title: '产品详情', activeMenu: '/link/product' }
+      }
+    ]
+  },
+  {
+    path: '/link/device-detail',
+    component: Layout,
+    hidden: true,
+    permissions: ['link:device:list'],
+    children: [
+      {
+        path: 'device/:deviceId(\\d+)',
+        component: () => import('@/views/link/device/detail'),
+        name: 'DeviceDetail',
+        meta: { title: '设备详情', activeMenu: '/link/device' }
+      }
+    ]
+  },
+  {
     path: '/monitor/job-log',
     component: Layout,
     hidden: true,

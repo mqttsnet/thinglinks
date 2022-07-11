@@ -231,11 +231,9 @@
     </div>
 </template>
 <script>
-import {
-    getDevice,
-} from "@/api/link/device";
-import { listTopic, getTopic, delTopic, addTopic, updateTopic } from "@/api/link/topic";
-import { listAction } from "@/api/link/action";
+import { getDevice } from "@/api/link/device/device";
+import { listTopic, getTopic, delTopic, addTopic, updateTopic } from "@/api/link/device/topic";
+import { listAction } from "@/api/link/device/action";
 export default {
     dicts: [
         "link_device_connect_status",

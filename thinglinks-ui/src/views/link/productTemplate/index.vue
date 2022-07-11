@@ -92,6 +92,9 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['link:template:remove']"
           >删除</el-button>
+          <el-button v-hasPermi="['link:template:detail']" icon="el-icon-s-operation" size="mini" type="text" @click="handleDetail(scope.row)">
+            详情
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -122,14 +125,22 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+    <!-- 模板服务列表 -->
+    <el-dialog :close-on-click-modal="false" :title="titleProp" :visible.sync="openProp" append-to-body width="900px">
+      <el-scrollbar style="height: 500px">
+        <Services :templateId="this.templateId"></Services>
+      </el-scrollbar>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { listProductTemplate, getProductTemplate, delProductTemplate, addProductTemplate, updateProductTemplate } from "@/api/link/productTemplate";
+import { listProductTemplate, getProductTemplate, delProductTemplate, addProductTemplate, updateProductTemplate } from "@/api/link/product/productTemplate";
+import Services from "@/views/link/product/services";
 
 export default {
   name: "Template",
+  components: {Services},
   data() {
     return {
       // 遮罩层
@@ -150,6 +161,11 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      // 弹出层标题
+      titleProp: "",
+      // 是否显示弹出层
+      openProp: false,
+      templateId: null,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -274,7 +290,12 @@ export default {
       this.download('link/template/export', {
         ...this.queryParams
       }, `template_${new Date().getTime()}.xlsx`)
-    }
+    },
+    handleDetail: function (row) {
+      this.templateId = row.id;
+      this.openProp = true;
+      this.titleProp = "模板服务详情";
+    },
   }
 };
 </script>

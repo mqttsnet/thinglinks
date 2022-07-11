@@ -122,6 +122,9 @@
               @click="initializeTheDataModel(scope.row.id)">
             </el-button>
           </el-tooltip>
+          <el-tooltip class="item" content="产品详情" effect="light" placement="top">
+            <el-button v-hasPermi="['link:product:detail']" circle icon="el-icon-s-operation" size="mini" type="primary" @click="handleProductDetail(scope.row)"></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -821,7 +824,7 @@ import {
   updateProduct,
   generateProductJson,
   initializeDataModel,
-} from "@/api/link/product";
+} from "@/api/link/product/product";
 import { getToken } from "@/utils/auth";
 
 export default {
@@ -1478,6 +1481,10 @@ export default {
       // this.upload.appId = "";
       // this.upload.templateId = "";
       // this.upload.updateSupport = "";
+    },
+    handleProductDetail: function (row) {
+      const productId = row.id;
+      this.$router.push("/link/product-detail/product/" + productId);
     },
   },
 };

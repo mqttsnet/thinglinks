@@ -186,10 +186,11 @@
 
           <span style="margin-right:10px">
             <el-tooltip class="item" effect="light" content="设备详情" placement="top">
-              <router-link :to="{ name: 'deviceDetails', query: { id: scope.row.id } }">
-                <el-button circle size="mini" type="primary" icon="el-icon-s-operation"
-                  v-hasPermi="['link:device:deviceDetails']"></el-button>
-              </router-link>
+<!--              <router-link :to="{ name: 'deviceDetails', query: { id: scope.row.id } }">-->
+<!--                <el-button circle size="mini" type="primary" icon="el-icon-s-operation"-->
+<!--                  v-hasPermi="['link:device:deviceDetails']"></el-button>-->
+<!--              </router-link>-->
+              <el-button v-hasPermi="['link:device:detail']" circle icon="el-icon-s-operation" size="mini" type="primary" @click="handleDeviceDetail(scope.row)"></el-button>
             </el-tooltip>
           </span>
 
@@ -362,7 +363,7 @@ import {
   disconnectDevice,
   validationDeviceIdentification_clientId,
   validationDeviceIdentification_deviceIdentification
-} from "@/api/link/device";
+} from "@/api/link/device/device";
 import mapView from "./mapView";
 export default {
   components: {
@@ -710,6 +711,10 @@ export default {
         },
         `link_device.xlsx`
       );
+    },
+    handleDeviceDetail: function (row) {
+      const deviceId = row.id;
+      this.$router.push("/link/device-detail/device/" + deviceId);
     },
   },
 };

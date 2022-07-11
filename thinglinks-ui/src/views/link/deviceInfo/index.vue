@@ -215,9 +215,7 @@
 
 <script>
 import { listDeviceInfo, getDeviceInfo, delDeviceInfo, addDeviceInfo, updateDeviceInfo } from "@/api/link/deviceInfo";
-import {
-  listDevice,
-} from "@/api/link/device";
+import { listDevice, } from "@/api/link/device/device";
 export default {
   name: "DeviceInfo",
   dicts: ['link_device_connect_status', 'link_deviceInfo_shadow_enable', 'business_data_status'],
