@@ -85,7 +85,7 @@
       </el-table-column>
       <el-table-column label="类名" align="center" prop="className"/>
       <el-table-column label="文件地址" align="center" prop="filePath"/>
-      <el-table-column label="内容" align="center" prop="content"/>
+<!--      <el-table-column label="内容" align="center" prop="content"/>-->
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.business_data_status" :value="scope.row.status"/>
