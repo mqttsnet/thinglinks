@@ -64,10 +64,8 @@ public class LoggingWSServer {
             FileReader fileReader = null;
             while (sessionMap.get(session.getId()) != null) {
                 try {
-                    //日志文件，获取最新的
-//                    fileReader = new FileReader(System.getProperty("user.home") + "/logs/" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/" + applicationName + ".log");
-                    fileReader = new FileReader(System.getProperty("user.dir") + "/logs/thinglinks-broker" + "/" + "info" + ".log");
-
+                    //日志文件，获取最新的如 thinglinks-broker.2022-07-12.log
+                    fileReader = new FileReader(System.getProperty("user.dir") + "/logs/" + applicationName + "all" + "." + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".log");
                     //字符流
                     reader = new BufferedReader(fileReader);
                     Object[] lines = reader.lines().toArray();
