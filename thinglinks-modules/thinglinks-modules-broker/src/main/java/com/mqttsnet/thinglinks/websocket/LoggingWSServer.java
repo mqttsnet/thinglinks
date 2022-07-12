@@ -13,12 +13,9 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -38,8 +35,8 @@ public class LoggingWSServer {
     /**
      * 连接集合
      */
-    private static Map<String, Session> sessionMap = new ConcurrentHashMap<>(3);
-    private static Map<String, Integer> lengthMap = new ConcurrentHashMap<>(3);
+    private static Map<String, Session> sessionMap = new ConcurrentHashMap<>(16);
+    private static Map<String, Integer> lengthMap = new ConcurrentHashMap<>(16);
 
     /**
      * 匹配日期开头加换行，2019-08-12 14:15:04
@@ -58,15 +55,13 @@ public class LoggingWSServer {
 
         //获取日志信息
         asyncTaskExecutor.submit(() -> {
-            log.info("LoggingWebSocketServer 任务开始");
             boolean first = true;
             BufferedReader reader = null;
             FileReader fileReader = null;
             while (sessionMap.get(session.getId()) != null) {
                 try {
                     //日志文件，获取最新的
-//                    fileReader = new FileReader(System.getProperty("user.home") + "/logs/" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/" + applicationName + ".log");
-                    fileReader = new FileReader(System.getProperty("user.dir") + "/logs/thinglinks-broker" + "/" + "info" + ".log");
+                    fileReader = new FileReader(System.getProperty("user.dir") + "/logs/thinglinks-broker" + "/" + "all" + ".log");
 
                     //字符流
                     reader = new BufferedReader(fileReader);
@@ -78,38 +73,6 @@ public class LoggingWSServer {
                     //对日志进行着色，更加美观  PS：注意，这里要根据日志生成规则来操作
                     for (int i = 0; i < copyOfRange.length; i++) {
                         String line = String.valueOf(copyOfRange[i]);
-                        //先转义
-                        line = line.replaceAll("&", "&amp;")
-                                .replaceAll("<", "&lt;")
-                                .replaceAll(">", "&gt;")
-                                .replaceAll("\"", "&quot;");
-
-                        //处理等级
-                        line = line.replace("DEBUG", "<span style='color: blue;'>DEBUG</span>");
-                        line = line.replace("INFO", "<span style='color: green;'>INFO</span>");
-                        line = line.replace("WARN", "<span style='color: orange;'>WARN</span>");
-                        line = line.replace("ERROR", "<span style='color: red;'>ERROR</span>");
-
-                        //处理类名
-                        String[] split = line.split("]");
-                        if (split.length >= 2) {
-                            String[] split1 = split[1].split("-");
-                            if (split1.length >= 2) {
-                                line = split[0] + "]" + "<span style='color: #298a8a;'>" + split1[0] + "</span>" + "-" + split1[1];
-                            }
-                        }
-
-                        // 匹配日期开头加换行，2019-08-12 14:15:04
-                        Matcher m = datePattern.matcher(line);
-                        if (m.find()) {
-                            //找到下标
-                            int start = m.start();
-                            //插入
-                            StringBuilder sb = new StringBuilder(line);
-                            sb.insert(start, "<br/><br/>");
-                            line = sb.toString();
-                        }
-
                         copyOfRange[i] = line;
                     }
 
