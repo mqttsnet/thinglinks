@@ -7,7 +7,7 @@
           background: #000000;
           color: #aaa;
           padding: 10px;
-          margin-top: 10px;
+          margin-top: 80px;
         ">
         <div ref="logContainerDiv" v-html="res" id="logContent" style="width:96%"></div>
       </div>
@@ -89,18 +89,14 @@ export default {
     },
     // 数据接收
     webSocketOnMessage: function (event) {
-      console.log(event.data);
-      // let link = 'socket连接成功';
-      // let userName = "【客户】" + this.$store.state.user.name;
       if (event.data !== '') {
         const res = event.data.split('<br/>');
         let color = "#fff";
-        console.log(res);
         res.forEach(item => {
           if (item.indexOf("INFO") !== -1) {
             color = '#18d035';
           } else if (item.indexOf("DEBUG") !== -1) {
-            color = 'rgb(97, 193, 231)';
+            color = 'rgb(97, 193, 231)'; s
           } else if (item.indexOf("WARN") !== -1) {
             color = 'yellow';
           } else if (item.indexOf("ERROR") !== -1) {
@@ -110,7 +106,7 @@ export default {
           this.res += "<div style='color: " + color + ";font-size: 14px'>" + item + "</div>";
         })
       }
-      this.$refs.logContainerDiv.scrollIntoView({ block: "end" });
+      this.$refs.logContainer.scrollTop = this.$refs.logContainerDiv.scrollHeight;
     },
     // 数据发送
     webSocketSend(Data) {

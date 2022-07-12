@@ -2,8 +2,8 @@
   <div class="app-container">
     <div class="equipment_status">
       <div class="status_num">
-        <img src="https://img.alicdn.com/imgextra/i1/O1CN01NS7aVb1iIfQPQDLTT_!!6000000004390-1-tps-640-640.gif" alt="">
-        <!-- <i class="el-icon-help"></i> -->
+        <img style="width:30%"
+          src="https://img.alicdn.com/imgextra/i1/O1CN01NS7aVb1iIfQPQDLTT_!!6000000004390-1-tps-640-640.gif" alt="">
         <p>：
           <span style="color:#71e2a3">{{ onlineCount }}</span>/
           <span style="color:#ff9292">{{ offlineCount }}</span>/
