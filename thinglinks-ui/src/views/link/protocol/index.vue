@@ -85,7 +85,7 @@
       </el-table-column>
       <el-table-column label="类名" align="center" prop="className"/>
       <el-table-column label="文件地址" align="center" prop="filePath"/>
-<!--      <el-table-column label="内容" align="center" prop="content"/>-->
+      <!--      <el-table-column label="内容" align="center" prop="content"/>-->
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.business_data_status" :value="scope.row.status"/>
@@ -165,8 +165,9 @@
             <el-form-item label="内容">
               <editor v-model="form.content" :min-height="300"/>
             </el-form-item>
-            <el-form-item label="备注" prop="remark" >
-              <el-input v-model="form.remark" :autosize="{ minRows: 2, maxRows: 4}" :row="2"  type="textarea" placeholder="请输入内容"/>
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark" :autosize="{ minRows: 2, maxRows: 4}" :row="2" type="textarea"
+                        placeholder="请输入内容"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -180,7 +181,15 @@
 </template>
 
 <script>
-import {listProtocol, getProtocol, delProtocol, addProtocol, updateProtocol} from "@/api/link/protocol";
+import {
+  listProtocol,
+  getProtocol,
+  delProtocol,
+  addProtocol,
+  updateProtocol,
+  enable,
+  disable
+} from "@/api/link/protocol";
 
 export default {
   name: "Protocol",
@@ -201,6 +210,8 @@ export default {
       total: 0,
       // 协议管理表格数据
       protocolList: [],
+      // 修改状态
+      status: '0',
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -289,13 +300,16 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.form.status = "0";
+      this.status = "1";
       this.open = true;
       this.title = "添加协议管理";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const id = row.id || this.ids
+      const id = row.id || this.ids;
+      this.status = row.status;
       getProtocol(id).then(response => {
         this.form = response.data;
         this.open = true;
@@ -311,16 +325,28 @@ export default {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
+              this.handlestatus();
             });
           } else {
             addProtocol(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
+              this.handlestatus();
             });
           }
         }
       });
+    },
+    /** 启用禁用状态 */
+    handlestatus() {
+      if (this.status != this.form.status) {
+        if(this.form.status=="0"){
+          enable(this.form.id);
+        }else {
+          disable(this.form.id);
+        }
+      }
     },
     /** 删除按钮操作 */
     handleDelete(row) {
