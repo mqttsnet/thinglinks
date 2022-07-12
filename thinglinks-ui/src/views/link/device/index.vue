@@ -2,8 +2,8 @@
   <div class="app-container">
     <div class="equipment_status">
       <div class="status_num">
-        <!-- <img src="assets/icons/status.svg" alt=""> -->
-        <i class="el-icon-help"></i>
+        <img src="https://img.alicdn.com/imgextra/i1/O1CN01NS7aVb1iIfQPQDLTT_!!6000000004390-1-tps-640-640.gif" alt="">
+        <!-- <i class="el-icon-help"></i> -->
         <p>：
           <span style="color:#71e2a3">{{ onlineCount }}</span>/
           <span style="color:#ff9292">{{ offlineCount }}</span>/
@@ -186,11 +186,12 @@
 
           <span style="margin-right:10px">
             <el-tooltip class="item" effect="light" content="设备详情" placement="top">
-<!--              <router-link :to="{ name: 'deviceDetails', query: { id: scope.row.id } }">-->
-<!--                <el-button circle size="mini" type="primary" icon="el-icon-s-operation"-->
-<!--                  v-hasPermi="['link:device:deviceDetails']"></el-button>-->
-<!--              </router-link>-->
-              <el-button v-hasPermi="['link:device:detail']" circle icon="el-icon-s-operation" size="mini" type="primary" @click="handleDeviceDetail(scope.row)"></el-button>
+              <!--              <router-link :to="{ name: 'deviceDetails', query: { id: scope.row.id } }">-->
+              <!--                <el-button circle size="mini" type="primary" icon="el-icon-s-operation"-->
+              <!--                  v-hasPermi="['link:device:deviceDetails']"></el-button>-->
+              <!--              </router-link>-->
+              <el-button v-hasPermi="['link:device:detail']" circle icon="el-icon-s-operation" size="mini"
+                type="primary" @click="handleDeviceDetail(scope.row)"></el-button>
             </el-tooltip>
           </span>
 
