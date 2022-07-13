@@ -9,6 +9,7 @@ import com.mqttsnet.thinglinks.link.mapper.protocol.ProtocolMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.link.service.protocol.ProtocolService;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -165,8 +166,9 @@ public class ProtocolServiceImpl implements ProtocolService {
         List<Protocol> protocolList = protocolMapper.findAllByIdIn(Arrays.asList(ids));
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
+            String content = StringEscapeUtils.unescapeHtml4(protocol.getContent());
             for (Device device : deviceList) {
-                redisService.set(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+device.getDeviceIdentification().toUpperCase(), protocol.getContent());
+                redisService.set(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getDeviceIdentification(), content);
             }
             protocolMapper.updateStatusById(Constants.ENABLE, protocol.getId());
         }
