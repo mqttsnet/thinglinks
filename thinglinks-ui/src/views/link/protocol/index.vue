@@ -163,11 +163,13 @@
           </el-col>
           <el-col :span="11">
             <el-form-item label="内容">
-              <editor v-model="form.content" :min-height="300"/>
+<!--              <editor v-model="form.content" :min-height="300"/>-->
+              <el-input v-model="form.content" :autosize="{ minRows: 4, maxRows: 6}" :row="6" type="textarea"
+                        placeholder="请输入内容"/>
             </el-form-item>
             <el-form-item label="备注" prop="remark">
               <el-input v-model="form.remark" :autosize="{ minRows: 2, maxRows: 4}" :row="2" type="textarea"
-                        placeholder="请输入内容"/>
+                        placeholder="请输入备注"/>
             </el-form-item>
           </el-col>
         </el-row>

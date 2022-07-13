@@ -38,6 +38,7 @@ import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -555,6 +556,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             String protocolContent = redisService.get(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + deviceIdentification);
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintWriter out = new PrintWriter(buffer, true);
+            protocolContent= StringEscapeUtils.unescapeHtml4(protocolContent);
             byte[] classBytes = DynamicLoaderEngine.compile(protocolContent, out, null);//传入要执行的代码
             byte[] injectedClass = ClassInjector.injectSystem(classBytes);
             InjectionSystem.inject(null, new PrintStream(buffer, true), null);
