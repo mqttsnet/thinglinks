@@ -68,9 +68,9 @@
 
     <el-table v-loading="loading" :data="protocolList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="产品标识" align="center" prop="productIdentification"/>
-      <el-table-column label="协议名称" align="center" prop="protocolName"/>
+<!--      <el-table-column label="id" align="center" prop="id" />-->
+      <el-table-column label="产品标识" align="center" prop="productIdentification" width="260" fixed/>
+      <el-table-column label="协议名称" align="center" prop="protocolName" fixed width="240"/>
       <el-table-column label="协议标识" align="center" prop="protocolIdentification"/>
       <el-table-column label="协议版本" align="center" prop="protocolVersion"/>
       <el-table-column label="协议类型" align="center" prop="protocolType">
@@ -97,12 +97,12 @@
           <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新者" align="center" prop="updateBy"/>
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="更新者" align="center" prop="updateBy"/>-->
+<!--      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column label="备注" align="center" prop="remark"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">

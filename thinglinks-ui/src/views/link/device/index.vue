@@ -45,7 +45,7 @@
           @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="设备标识" prop="deviceIdentification">
-        <el-input v-model="queryParams.deviceIdentification" placeholder="请输入设备标识" clearable size="small"
+        <el-input v-model="queryParams.deviceIdentification" placeholder="请输入设备标识(SN)" clearable size="small"
           @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="设备名称" prop="deviceName">
@@ -244,7 +244,7 @@
           <el-col :span="11">
             <el-form-item label="设备标识" prop="deviceIdentification">
               <el-input v-model="form.deviceIdentification" :disabled='set ? true : false'
-                @keyup.native="deviceIdentification" placeholder="请输入设备标识" />
+                @keyup.native="deviceIdentification" placeholder="请输入设备标识(SN)" />
             </el-form-item>
           </el-col>
         </el-row>
