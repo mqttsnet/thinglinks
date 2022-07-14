@@ -70,7 +70,7 @@ public class ProductProperties extends BaseEntity implements Serializable {
 
     */
     @ApiModelProperty(value="指示最大值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑小于等于。,")
-    private String max;
+    private Integer max;
 
     /**
     * 指示字符串长度。仅当dataType为string、DateTime时生效。
@@ -91,7 +91,7 @@ public class ProductProperties extends BaseEntity implements Serializable {
 
     */
     @ApiModelProperty(value="指示最小值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑大于等于。,")
-    private String min;
+    private Integer min;
 
     /**
     * 指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。(字典值link_product_isRequired：0非必填 1必填)。

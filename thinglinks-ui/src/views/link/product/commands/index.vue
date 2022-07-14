@@ -1,27 +1,27 @@
 <template>
   <div class="app-container">
     <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="68px" size="small">
-      <el-form-item label="服务ID" prop="serviceId">
-        <el-input
-          v-model="queryParams.serviceId"
-          clearable
-          placeholder="请输入服务ID"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。" prop="name">
+<!--      <el-form-item label="服务ID" prop="serviceId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.serviceId"-->
+<!--          clearable-->
+<!--          placeholder="请输入服务ID"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+      <el-form-item label="命令名称" prop="name">
         <el-input
           v-model="queryParams.name"
           clearable
-          placeholder="请输入指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。"
+          placeholder="请输入命令名称"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="命令描述。" prop="description">
+      <el-form-item label="命令描述" prop="description">
         <el-input
           v-model="queryParams.description"
           clearable
-          placeholder="请输入命令描述。"
+          placeholder="请输入命令描述"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -40,7 +40,7 @@
           size="mini"
           type="primary"
           @click="handleAdd"
-        >新增</el-button>
+        >新增命令</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -51,7 +51,7 @@
           size="mini"
           type="success"
           @click="handleUpdate"
-        >修改</el-button>
+        >修改命令</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -62,7 +62,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-        >删除</el-button>
+        >删除命令</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -72,17 +72,17 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出</el-button>
+        >导出命令</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="commandsList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55" />
-      <el-table-column align="center" label="命令id" prop="id" />
-      <el-table-column align="center" label="服务ID" prop="serviceId" />
-      <el-table-column align="center" label="指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。" prop="name" />
-      <el-table-column align="center" label="命令描述。" prop="description" />
+<!--      <el-table-column align="center" label="命令id" prop="id" />-->
+<!--      <el-table-column align="center" label="服务ID" prop="serviceId" />-->
+      <el-table-column align="center" label="命令名称" prop="name" />
+      <el-table-column align="center" label="命令描述" prop="description" />
       <el-table-column align="center" class-name="small-padding fixed-width" label="操作">
         <template slot-scope="scope">
           <el-button
@@ -112,16 +112,29 @@
     />
 
     <!-- 添加或修改产品指令数据对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
+    <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="900px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="服务ID" prop="serviceId">
-          <el-input v-model="form.serviceId" placeholder="请输入服务ID" />
+          <el-input v-model="form.serviceId" disabled placeholder="请输入服务ID" />
         </el-form-item>
-        <el-form-item label="指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。" prop="name">
-          <el-input v-model="form.name" placeholder="请输入指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。" />
+        <el-form-item label="命令名字" prop="name">
+          <el-col :span="22">
+            <el-input v-model="form.name" placeholder="请输入命令名字" />
+          </el-col>
+          <el-col :span="2" style="padding-left: 5px">
+            <el-tooltip content="命令名称，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。" effect="light" placement="right">
+              <i class="el-icon-question"/>
+            </el-tooltip>
+          </el-col>
         </el-form-item>
-        <el-form-item label="命令描述。" prop="description">
-          <el-input v-model="form.description" placeholder="请输入命令描述。" />
+        <el-form-item label="命令描述" prop="description">
+          <el-input v-model="form.description" placeholder="请输入命令描述" />
+        </el-form-item>
+        <el-form-item v-if="form.id" label="下发参数">
+          <Requests :commandsId="form.id" :serviceId="form.serviceId"></Requests>
+        </el-form-item>
+        <el-form-item v-if="form.id" label="响应参数">
+          <Response :commandsId="form.id" :serviceId="form.serviceId"></Response>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -133,10 +146,19 @@
 </template>
 
 <script>
-import { listCommands, getCommands, delCommands, addCommands, updateCommands } from "@/api/link/product/productCommands";
+import { listCommands, getCommands, delCommands, addCommands, updateCommands } from "@/api/link/product/commands";
+import Requests from "@/views/link/product/commands/requests";
+import Response from "@/views/link/product/commands/response";
 
 export default {
   name: "Commands",
+  components: {Response, Requests},
+  props: {
+    "serviceId": {
+      type:Number,
+      required:true
+    }
+  },
   data() {
     return {
       // 遮罩层
@@ -173,12 +195,27 @@ export default {
           { required: true, message: "服务ID不能为空", trigger: "blur" }
         ],
         name: [
-          { required: true, message: "指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。不能为空", trigger: "blur" }
+          { required: true, message: "命令名字不能为空", trigger: "blur" },
+          {
+            pattern: /^[A-Za-z0-9_]+$/,
+            message: "英文大小写、数字、下划线，长度[2,50]",
+            trigger: "blur"
+          }
         ],
       }
     };
   },
+  watch: {
+    serviceId(newval, oldval) {
+      if (newval !== oldval) {
+        this.queryParams.serviceId = newval;
+        this.getList();
+      }
+    }
+  },
   created() {
+    if (this.serviceId)
+      this.queryParams.serviceId = this.serviceId;
     this.getList();
   },
   methods: {
@@ -229,8 +266,9 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.form.serviceId = this.serviceId;
       this.open = true;
-      this.title = "添加产品指令数据";
+      this.title = "添加命令";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -239,7 +277,7 @@ export default {
       getCommands(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改产品指令数据";
+        this.title = "修改命令";
       });
     },
     /** 提交按钮 */
@@ -281,3 +319,8 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.pagination-container {
+  height: 50px;
+}
+</style>

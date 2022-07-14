@@ -44,11 +44,11 @@ public class ProductCommandsResponse extends BaseEntity implements Serializable 
     @ApiModelProperty(value="服务ID")
     private Long service_id;
 
-    /**
-    * 是否必填(字典值：是  否)
-    */
-    @ApiModelProperty(value="是否必填(字典值：是  否)")
-    private String is_required;
+    ///**
+    //* 是否必填(字典值：是  否)
+    //*/
+    //@ApiModelProperty(value="是否必填(字典值：是  否)")
+    //private String is_required;
 
     /**
     * 指示数据类型。取值范围：string、int、decimal
@@ -72,21 +72,21 @@ public class ProductCommandsResponse extends BaseEntity implements Serializable 
 仅当dataType为int、decimal时生效，逻辑小于等于。
     */
     @ApiModelProperty(value="指示最大值。,仅当dataType为int、decimal时生效，逻辑小于等于。")
-    private String max;
+    private Integer max;
 
     /**
     * 指示字符串长度。
 仅当dataType为string时生效。
     */
     @ApiModelProperty(value="指示字符串长度。,仅当dataType为string时生效。")
-    private String maxlength;
+    private Integer maxlength;
 
     /**
     * 指示最小值。
 仅当dataType为int、decimal时生效，逻辑大于等于。
     */
     @ApiModelProperty(value="指示最小值。,仅当dataType为int、decimal时生效，逻辑大于等于。")
-    private String min;
+    private Integer min;
 
     /**
     * 命令中参数的描述，不影响实际功能，可配置为空字符串""。
@@ -105,13 +105,13 @@ public class ProductCommandsResponse extends BaseEntity implements Serializable 
 目前本字段是非功能性字段，仅起到描述作用。
     */
     @ApiModelProperty(value="指示本条属性是否必填，取值为0或1，默认取值1（必填）。,目前本字段是非功能性字段，仅起到描述作用。")
-    private String required;
+    private Integer required;
 
     /**
     * 指示步长。
     */
     @ApiModelProperty(value="指示步长。")
-    private String step;
+    private Integer step;
 
     /**
     * 指示单位。
