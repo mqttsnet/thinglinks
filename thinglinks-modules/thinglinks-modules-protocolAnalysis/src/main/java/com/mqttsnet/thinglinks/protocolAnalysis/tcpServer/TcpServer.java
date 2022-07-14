@@ -2,7 +2,6 @@ package com.mqttsnet.thinglinks.protocolAnalysis.tcpServer;
 
 import com.mqttsnet.thinglinks.protocolAnalysis.tcpServer.decoder.DecoderHandler;
 import com.mqttsnet.thinglinks.protocolAnalysis.tcpServer.encoder.EncoderHandler;
-import com.mqttsnet.thinglinks.protocolAnalysis.tcpServer.modbus.HeartBeatHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
@@ -62,7 +61,6 @@ public class TcpServer {
             bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {//绑定通道参数
-                    ch.pipeline().addLast("HeartBeatHandler",new HeartBeatHandler());
                     ch.pipeline().addLast("logging",new LoggingHandler("DEBUG"));//设置log监听器，并且日志级别为debug，方便观察运行流程
                     ch.pipeline().addLast("encode",new EncoderHandler());//编码器。发送消息时候用
                     ch.pipeline().addLast("decode",new DecoderHandler());//解码器，接收消息时候用
