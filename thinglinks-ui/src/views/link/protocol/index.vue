@@ -70,6 +70,7 @@
       <el-table-column type="selection" width="55" align="center"/>
 <!--      <el-table-column label="id" align="center" prop="id" />-->
       <el-table-column label="产品标识" align="center" prop="productIdentification" width="260" fixed/>
+      <el-table-column label="集成应用" align="center" prop="appId" width="100" fixed/>
       <el-table-column label="协议名称" align="center" prop="protocolName" fixed width="240"/>
       <el-table-column label="协议标识" align="center" prop="protocolIdentification"/>
       <el-table-column label="协议版本" align="center" prop="protocolVersion"/>
@@ -126,6 +127,12 @@
           <el-col :span="11">
             <el-form-item label="产品标识" prop="productIdentification">
               <el-input v-model="form.productIdentification" placeholder="请输入产品标识"/>
+            </el-form-item>
+            <el-form-item label="集成应用" prop="appId">
+              <el-select v-model="form.appId" placeholder="请选择集成应用">
+                <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label"
+                           :value="dict.value"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="协议名称" prop="protocolName">
               <el-input v-model="form.protocolName" placeholder="请输入协议名称"/>
@@ -195,7 +202,7 @@ import {
 
 export default {
   name: "Protocol",
-  dicts: ['link_device_protocol_type', 'link_protocol_voice', 'business_data_status'],
+  dicts: ['link_device_protocol_type', 'link_protocol_voice', 'business_data_status',"link_application_type",],
   data() {
     return {
       // 遮罩层
@@ -234,6 +241,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        appId: [{ required: true, message: "应用ID不能为空", trigger: "blur" }],
         productIdentification: [
           {required: true, message: "产品标识不能为空", trigger: "blur"}
         ],
@@ -265,6 +273,7 @@ export default {
     reset() {
       this.form = {
         id: null,
+        appId: null,
         productIdentification: null,
         protocolName: null,
         protocolIdentification: null,
@@ -327,26 +336,26 @@ export default {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
-              this.handlestatus();
+              this.handlestatus(this.form.id);
             });
           } else {
             addProtocol(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
-              this.handlestatus();
+              this.handlestatus(response.data);
             });
           }
         }
       });
     },
     /** 启用禁用状态 */
-    handlestatus() {
+    handlestatus(id) {
       if (this.status != this.form.status) {
         if(this.form.status=="0"){
-          enable(this.form.id);
+          enable(id);//新增的时候没有id
         }else {
-          disable(this.form.id);
+          disable(id);
         }
       }
     },
