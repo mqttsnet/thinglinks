@@ -54,6 +54,16 @@ public class ProductTemplateController extends BaseController {
     }
 
     /**
+     * 查询产品模板列表
+     */
+    @PreAuthorize(hasPermi = "link:productTemplate:list")
+    @GetMapping("/query")
+    public AjaxResult query(ProductTemplate productTemplate) {
+        List<ProductTemplate> list = productTemplateService.selectProductTemplateList(productTemplate);
+        return AjaxResult.success(list);
+    }
+
+    /**
      * 导出产品模板列表
      */
     @PreAuthorize(hasPermi = "link:productTemplate:export")
