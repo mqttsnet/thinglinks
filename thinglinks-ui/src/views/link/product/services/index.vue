@@ -3,7 +3,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['link:services:add']"
+          v-hasPermi="['link:productServices:add']"
           icon="el-icon-plus"
           plain
           size="mini"
@@ -14,7 +14,7 @@
       </el-col>
 <!--      <el-col :span="1.5">-->
 <!--        <el-button-->
-<!--          v-hasPermi="['link:services:edit']"-->
+<!--          v-hasPermi="['link:productServices:edit']"-->
 <!--          :disabled="single"-->
 <!--          icon="el-icon-edit"-->
 <!--          plain-->
@@ -26,7 +26,7 @@
 <!--      </el-col>-->
 <!--      <el-col :span="1.5">-->
 <!--        <el-button-->
-<!--          v-hasPermi="['link:services:remove']"-->
+<!--          v-hasPermi="['link:productServices:remove']"-->
 <!--          :disabled="multiple"-->
 <!--          icon="el-icon-delete"-->
 <!--          plain-->
@@ -38,7 +38,7 @@
 <!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['link:services:export']"
+          v-hasPermi="['link:productServices:export']"
           icon="el-icon-download"
           plain
           size="mini"
@@ -136,7 +136,7 @@
 </template>
 
 <script>
-import {queryServices, getServices, delServices, addServices, updateServices} from "@/api/link/product/services";
+import {queryServices, getServices, delServices, addServices, updateServices} from "@/api/link/product/productServices";
 import Properties from "@/views/link/product/properties";
 import Commands from "@/views/link/product/commands";
 

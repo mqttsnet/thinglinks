@@ -26,7 +26,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['link:properties:add']"
+          v-hasPermi="['link:productProperties:add']"
           icon="el-icon-plus"
           plain
           size="mini"
@@ -37,7 +37,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['link:properties:edit']"
+          v-hasPermi="['link:productProperties:edit']"
           :disabled="single"
           icon="el-icon-edit"
           plain
@@ -49,7 +49,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['link:properties:remove']"
+          v-hasPermi="['link:productProperties:remove']"
           :disabled="multiple"
           icon="el-icon-delete"
           plain
@@ -61,7 +61,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['link:properties:export']"
+          v-hasPermi="['link:productProperties:export']"
           icon="el-icon-download"
           plain
           size="mini"
@@ -103,7 +103,7 @@
       <el-table-column align="center" class-name="small-padding fixed-width" label="操作">
         <template slot-scope="scope">
           <el-button
-            v-hasPermi="['link:properties:edit']"
+            v-hasPermi="['link:productProperties:edit']"
             icon="el-icon-edit"
             size="mini"
             type="text"
@@ -111,7 +111,7 @@
           >修改
           </el-button>
           <el-button
-            v-hasPermi="['link:properties:remove']"
+            v-hasPermi="['link:productProperties:remove']"
             icon="el-icon-delete"
             size="mini"
             type="text"
@@ -261,7 +261,7 @@ import {
   delProperties,
   addProperties,
   updateProperties
-} from "@/api/link/product/properties";
+} from "@/api/link/product/productProperties";
 
 export default {
   name: "Properties",

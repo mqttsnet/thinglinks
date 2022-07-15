@@ -146,7 +146,7 @@
 </template>
 
 <script>
-import { listCommands, getCommands, delCommands, addCommands, updateCommands } from "@/api/link/product/commands";
+import { listCommands, getCommands, delCommands, addCommands, updateCommands } from "@/api/link/product/productCommands";
 import Requests from "@/views/link/product/commands/requests";
 import Response from "@/views/link/product/commands/response";
 

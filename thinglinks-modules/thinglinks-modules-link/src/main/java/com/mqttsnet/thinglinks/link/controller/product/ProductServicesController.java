@@ -54,6 +54,16 @@ public class ProductServicesController extends BaseController {
     }
 
     /**
+     * 查询产品模型服务列表
+     */
+    @PreAuthorize(hasPermi = "link:productServices:list")
+    @GetMapping("/query")
+    public AjaxResult query(ProductServices productServices) {
+        List<ProductServices> list = productServicesService.selectProductServicesList(productServices);
+        return AjaxResult.success(list);
+    }
+
+    /**
      * 导出产品模型服务列表
      */
     @PreAuthorize(hasPermi = "link:productServices:export")

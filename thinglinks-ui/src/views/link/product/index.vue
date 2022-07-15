@@ -730,7 +730,7 @@
 
 <script>
 import { listProduct, getProduct, delProduct, addProduct, updateProduct, generateProductJson, initializeDataModel, } from "@/api/link/product/product";
-import { queryTemplate} from "@/api/link/product/template";
+import { queryTemplate} from "@/api/link/product/productTemplate";
 import { getToken } from "@/utils/auth";
 
 export default {
