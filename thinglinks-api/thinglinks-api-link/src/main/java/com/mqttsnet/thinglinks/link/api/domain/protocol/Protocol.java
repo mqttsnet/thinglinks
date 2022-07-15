@@ -32,6 +32,8 @@ public class Protocol implements Serializable {
     @ApiModelProperty(value="id")
     private Long id;
 
+    @ApiModelProperty(value="应用ID")
+    private String appId;
     /**
     * 产品标识
     */

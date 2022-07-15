@@ -6,6 +6,7 @@
     <!--@Table protocol-->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="product_identification" jdbcType="VARCHAR" property="productIdentification" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="protocol_name" jdbcType="VARCHAR" property="protocolName" />
     <result column="protocol_identification" jdbcType="VARCHAR" property="protocolIdentification" />
     <result column="protocol_version" jdbcType="VARCHAR" property="protocolVersion" />
@@ -23,7 +24,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, product_identification, protocol_name, protocol_identification, protocol_version,
+    id,app_id, product_identification, protocol_name, protocol_identification, protocol_version,
     protocol_type, protocol_voice, class_name, file_path, content, `status`, create_by,
     create_time, update_by, update_time, remark
   </sql>
@@ -41,13 +42,13 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into protocol (product_identification, protocol_name,
+    insert into protocol (product_identification, app_id,protocol_name,
       protocol_identification, protocol_version,
       protocol_type, protocol_voice, class_name,
       file_path, content, `status`,
       create_by, create_time, update_by,
       update_time, remark)
-    values (#{productIdentification,jdbcType=VARCHAR}, #{protocolName,jdbcType=VARCHAR},
+    values (#{productIdentification,jdbcType=VARCHAR},#{appId,jdbcType=VARCHAR}, #{protocolName,jdbcType=VARCHAR},
       #{protocolIdentification,jdbcType=VARCHAR}, #{protocolVersion,jdbcType=VARCHAR},
       #{protocolType,jdbcType=VARCHAR}, #{protocolVoice,jdbcType=VARCHAR}, #{className,jdbcType=VARCHAR},
       #{filePath,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}, #{status,jdbcType=VARCHAR},
@@ -158,6 +159,9 @@
     <set>
       <if test="productIdentification != null">
         product_identification = #{productIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
       </if>
       <if test="protocolName != null">
         protocol_name = #{protocolName,jdbcType=VARCHAR},
@@ -665,7 +669,7 @@
   </insert>
 
   <sql id="selectProtocolVo">
-    select id, product_identification, protocol_name, protocol_identification, protocol_version, protocol_type, protocol_voice, class_name, file_path, content, status, create_by, create_time, update_by, update_time, remark from protocol
+    select id,app_id, product_identification, protocol_name, protocol_identification, protocol_version, protocol_type, protocol_voice, class_name, file_path, content, status, create_by, create_time, update_by, update_time, remark from protocol
   </sql>
 
   <select id="selectProtocolList" parameterType="com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol" resultMap="BaseResultMap">
@@ -693,6 +697,7 @@
     insert into protocol
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="productIdentification != null and productIdentification != ''">product_identification,</if>
+      <if test="appId != null and appId != ''">app_id,</if>
       <if test="protocolName != null">protocol_name,</if>
       <if test="protocolIdentification != null">protocol_identification,</if>
       <if test="protocolVersion != null">protocol_version,</if>
@@ -710,6 +715,9 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="productIdentification != null and productIdentification != ''">#{productIdentification},</if>
+      <if test="appId != null and appId != ''">
+        #{appId},
+      </if>
       <if test="protocolName != null">#{protocolName},</if>
       <if test="protocolIdentification != null">#{protocolIdentification},</if>
       <if test="protocolVersion != null">#{protocolVersion},</if>
@@ -731,6 +739,9 @@
     update protocol
     <trim prefix="SET" suffixOverrides=",">
       <if test="productIdentification != null and productIdentification != ''">product_identification = #{productIdentification},</if>
+      <if test="appId != null and appId != ''">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
       <if test="protocolName != null">protocol_name = #{protocolName},</if>
       <if test="protocolIdentification != null">protocol_identification = #{protocolIdentification},</if>
       <if test="protocolVersion != null">protocol_version = #{protocolVersion},</if>

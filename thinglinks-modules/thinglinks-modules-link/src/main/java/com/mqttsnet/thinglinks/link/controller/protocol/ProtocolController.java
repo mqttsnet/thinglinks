@@ -74,7 +74,7 @@ public class ProtocolController extends BaseController
     public AjaxResult add(@RequestBody Protocol protocol)
     {
         protocol.setCreateBy(SecurityUtils.getUsername());
-        return toAjax(protocolService.insertProtocol(protocol));
+        return AjaxResult.success(protocolService.insertProtocol(protocol));
     }
 
     /**
