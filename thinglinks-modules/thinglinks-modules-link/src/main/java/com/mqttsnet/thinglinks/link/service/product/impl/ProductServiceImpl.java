@@ -12,6 +12,7 @@ import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
@@ -20,7 +21,9 @@ import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.Properties;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.Services;
 import com.mqttsnet.thinglinks.link.mapper.product.ProductMapper;
 import com.mqttsnet.thinglinks.link.service.product.ProductPropertiesService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
@@ -32,7 +35,6 @@ import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -447,6 +449,48 @@ public class ProductServiceImpl implements ProductService{
     public Product selectProductById(Long id)
     {
         return productMapper.selectProductById(id);
+    }
+
+    /**
+     * 查询产品管理 带服务、属性
+     *
+     * @param id 产品管理主键
+     * @return 产品管理
+     */
+    @Override
+    public ProductModel selectFullProductById(Long id) {
+        Product product = selectProductById(id);
+        ProductModel productModel = new ProductModel();
+        if (product != null) {
+            BeanUtils.copyBeanProp(productModel, product);
+            ProductServices find = new ProductServices();
+            find.setProductId(product.getId());
+            find.setStatus(Constants.ENABLE);
+            // 查询服务列表
+            List<ProductServices> productServicesList = productServicesService.selectProductServicesList(find);
+            if (!productServicesList.isEmpty()) {
+                List<Services> services = new ArrayList<>();
+                productServicesList.forEach(ps -> {
+                    Services service = new Services();
+                    BeanUtils.copyBeanProp(service, ps);
+                    service.setServiceId(String.valueOf(ps.getId()));
+                    // 查询服务属性列表
+                    List<ProductProperties> productPropertiesList = productPropertiesService.findAllByServiceId(ps.getId());
+                    if (!productPropertiesList.isEmpty()) {
+                        List<Properties> properties = new ArrayList<>();
+                        productPropertiesList.forEach(pp -> {
+                            Properties p = new Properties();
+                            BeanUtils.copyBeanProp(p, pp);
+                            properties.add(p);
+                        });
+                        service.setProperties(properties);
+                    }
+                    services.add(service);
+                });
+                productModel.setServices(services);
+            }
+        }
+        return productModel;
     }
 
     /**

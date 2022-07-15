@@ -85,6 +85,15 @@ public class ProductTemplateController extends BaseController {
     }
 
     /**
+     * 获取产品模板详细信息 带服务、属性
+     */
+    @PreAuthorize(hasPermi = "link:productTemplate:query")
+    @GetMapping(value = "/getFull/{id}")
+    public AjaxResult getFullInfo(@PathVariable("id") Long id) {
+        return AjaxResult.success(productTemplateService.selectFullProductTemplateById(id));
+    }
+
+    /**
      * 新增产品模板
      */
     @PreAuthorize(hasPermi = "link:productTemplate:add")
