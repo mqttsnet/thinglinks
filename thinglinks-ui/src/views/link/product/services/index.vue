@@ -345,7 +345,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('iot/services/export', {
+      this.download('link/productServices/export', {
         ...this.queryParams
       }, `services_${new Date().getTime()}.xlsx`)
     },

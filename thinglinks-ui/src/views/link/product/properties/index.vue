@@ -523,7 +523,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('iot/properties/export', {
+      this.download('link/productProperties/export', {
         ...this.queryParams
       }, `properties_${new Date().getTime()}.xlsx`)
     }

@@ -415,7 +415,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('link/requests/export', {
+      this.download('link/product/commands/requests/export', {
         ...this.queryParams
       }, `requests_${new Date().getTime()}.xlsx`)
     }

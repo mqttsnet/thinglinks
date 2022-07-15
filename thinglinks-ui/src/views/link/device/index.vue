@@ -720,7 +720,7 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       this.download(
-        "iot/device/export",
+        "link/device/export",
         {
           ...this.queryParams,
         },

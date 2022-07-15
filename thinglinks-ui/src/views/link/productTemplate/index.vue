@@ -69,9 +69,17 @@
     <el-table v-loading="loading" :data="templateList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="应用ID" align="center" prop="appId" />
+      <el-table-column align="center" label="应用ID" prop="appId">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.link_application_type" :value="scope.row.appId"/>
+        </template>
+      </el-table-column>
       <el-table-column label="模板名称" align="center" prop="templateName" />
-      <el-table-column label="状态" align="center" prop="status" />
+      <el-table-column align="center" label="状态" prop="status">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.business_data_status" :value="scope.row.status"/>
+        </template>
+      </el-table-column>
       <el-table-column label="模板描述" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -140,7 +148,7 @@ import Services from "@/views/link/product/services";
 export default {
   name: "Template",
   components: {Services},
-  dicts:["link_application_type"],
+  dicts:["link_application_type","business_data_status"],
   data() {
     return {
       // 遮罩层
@@ -287,7 +295,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('link/template/export', {
+      this.download('link/productTemplate/export', {
         ...this.queryParams
       }, `template_${new Date().getTime()}.xlsx`)
     },

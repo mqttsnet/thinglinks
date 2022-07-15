@@ -312,7 +312,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('iot/commands/export', {
+      this.download('link/product/commands/export', {
         ...this.queryParams
       }, `commands_${new Date().getTime()}.xlsx`)
     }

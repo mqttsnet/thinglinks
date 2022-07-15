@@ -1324,7 +1324,7 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       this.download(
-        "iot/product/export",
+        "link/product/export",
         {
           ...this.queryParams,
         },
@@ -1339,7 +1339,7 @@ export default {
     /** 下载模板操作 */
     importTemplate() {
       this.download(
-        "iot/product/importTemplate",
+        "link/product/importTemplate",
         {
           ...this.queryParams,
         },
