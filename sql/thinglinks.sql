@@ -11,7 +11,7 @@
  Target Server Version : 50734
  File Encoding         : 65001
 
- Date: 29/06/2022 10:08:49
+ Date: 18/07/2022 15:58:30
 */
 
 SET NAMES utf8mb4;
@@ -22,12 +22,12 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_BLOB_TRIGGERS`;
 CREATE TABLE `QRTZ_BLOB_TRIGGERS` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `trigger_name` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
-  `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
-  `blob_data` blob COMMENT '存放持久化Trigger对象',
-  PRIMARY KEY (`sched_name`,`trigger_name`,`trigger_group`) USING BTREE,
-  CONSTRAINT `QRTZ_BLOB_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`)
+                                      `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                                      `trigger_name` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
+                                      `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
+                                      `blob_data` blob COMMENT '存放持久化Trigger对象',
+                                      PRIMARY KEY (`sched_name`,`trigger_name`,`trigger_group`) USING BTREE,
+                                      CONSTRAINT `QRTZ_BLOB_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Blob类型的触发器表';
 
 -- ----------------------------
@@ -41,10 +41,10 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_CALENDARS`;
 CREATE TABLE `QRTZ_CALENDARS` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `calendar_name` varchar(200) NOT NULL COMMENT '日历名称',
-  `calendar` blob NOT NULL COMMENT '存放持久化calendar对象',
-  PRIMARY KEY (`sched_name`,`calendar_name`) USING BTREE
+                                  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                                  `calendar_name` varchar(200) NOT NULL COMMENT '日历名称',
+                                  `calendar` blob NOT NULL COMMENT '存放持久化calendar对象',
+                                  PRIMARY KEY (`sched_name`,`calendar_name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='日历信息表';
 
 -- ----------------------------
@@ -58,13 +58,13 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_CRON_TRIGGERS`;
 CREATE TABLE `QRTZ_CRON_TRIGGERS` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `trigger_name` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
-  `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
-  `cron_expression` varchar(200) NOT NULL COMMENT 'cron表达式',
-  `time_zone_id` varchar(80) DEFAULT NULL COMMENT '时区',
-  PRIMARY KEY (`sched_name`,`trigger_name`,`trigger_group`) USING BTREE,
-  CONSTRAINT `QRTZ_CRON_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`)
+                                      `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                                      `trigger_name` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
+                                      `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
+                                      `cron_expression` varchar(200) NOT NULL COMMENT 'cron表达式',
+                                      `time_zone_id` varchar(80) DEFAULT NULL COMMENT '时区',
+                                      PRIMARY KEY (`sched_name`,`trigger_name`,`trigger_group`) USING BTREE,
+                                      CONSTRAINT `QRTZ_CRON_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Cron类型的触发器表';
 
 -- ----------------------------
@@ -74,7 +74,7 @@ BEGIN;
 INSERT INTO `QRTZ_CRON_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `cron_expression`, `time_zone_id`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME1', 'DEFAULT', '0/10 * * * * ?', 'Asia/Shanghai');
 INSERT INTO `QRTZ_CRON_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `cron_expression`, `time_zone_id`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME2', 'DEFAULT', '0/15 * * * * ?', 'Asia/Shanghai');
 INSERT INTO `QRTZ_CRON_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `cron_expression`, `time_zone_id`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME3', 'DEFAULT', '0/20 * * * * ?', 'Asia/Shanghai');
-INSERT INTO `QRTZ_CRON_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `cron_expression`, `time_zone_id`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME4', 'SYSTEM', '* * * * * ?', 'Asia/Shanghai');
+INSERT INTO `QRTZ_CRON_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `cron_expression`, `time_zone_id`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME4', 'PROTOCOL', '0/5 0 0/23 * * ?', 'Asia/Shanghai');
 COMMIT;
 
 -- ----------------------------
@@ -82,20 +82,20 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_FIRED_TRIGGERS`;
 CREATE TABLE `QRTZ_FIRED_TRIGGERS` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `entry_id` varchar(95) NOT NULL COMMENT '调度器实例id',
-  `trigger_name` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
-  `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
-  `instance_name` varchar(200) NOT NULL COMMENT '调度器实例名',
-  `fired_time` bigint(13) NOT NULL COMMENT '触发的时间',
-  `sched_time` bigint(13) NOT NULL COMMENT '定时器制定的时间',
-  `priority` int(11) NOT NULL COMMENT '优先级',
-  `state` varchar(16) NOT NULL COMMENT '状态',
-  `job_name` varchar(200) DEFAULT NULL COMMENT '任务名称',
-  `job_group` varchar(200) DEFAULT NULL COMMENT '任务组名',
-  `is_nonconcurrent` varchar(1) DEFAULT NULL COMMENT '是否并发',
-  `requests_recovery` varchar(1) DEFAULT NULL COMMENT '是否接受恢复执行',
-  PRIMARY KEY (`sched_name`,`entry_id`) USING BTREE
+                                       `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                                       `entry_id` varchar(95) NOT NULL COMMENT '调度器实例id',
+                                       `trigger_name` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
+                                       `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
+                                       `instance_name` varchar(200) NOT NULL COMMENT '调度器实例名',
+                                       `fired_time` bigint(13) NOT NULL COMMENT '触发的时间',
+                                       `sched_time` bigint(13) NOT NULL COMMENT '定时器制定的时间',
+                                       `priority` int(11) NOT NULL COMMENT '优先级',
+                                       `state` varchar(16) NOT NULL COMMENT '状态',
+                                       `job_name` varchar(200) DEFAULT NULL COMMENT '任务名称',
+                                       `job_group` varchar(200) DEFAULT NULL COMMENT '任务组名',
+                                       `is_nonconcurrent` varchar(1) DEFAULT NULL COMMENT '是否并发',
+                                       `requests_recovery` varchar(1) DEFAULT NULL COMMENT '是否接受恢复执行',
+                                       PRIMARY KEY (`sched_name`,`entry_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='已触发的触发器表';
 
 -- ----------------------------
@@ -109,17 +109,17 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_JOB_DETAILS`;
 CREATE TABLE `QRTZ_JOB_DETAILS` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `job_name` varchar(200) NOT NULL COMMENT '任务名称',
-  `job_group` varchar(200) NOT NULL COMMENT '任务组名',
-  `description` varchar(250) DEFAULT NULL COMMENT '相关介绍',
-  `job_class_name` varchar(250) NOT NULL COMMENT '执行任务类名称',
-  `is_durable` varchar(1) NOT NULL COMMENT '是否持久化',
-  `is_nonconcurrent` varchar(1) NOT NULL COMMENT '是否并发',
-  `is_update_data` varchar(1) NOT NULL COMMENT '是否更新数据',
-  `requests_recovery` varchar(1) NOT NULL COMMENT '是否接受恢复执行',
-  `job_data` blob COMMENT '存放持久化job对象',
-  PRIMARY KEY (`sched_name`,`job_name`,`job_group`) USING BTREE
+                                    `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                                    `job_name` varchar(200) NOT NULL COMMENT '任务名称',
+                                    `job_group` varchar(200) NOT NULL COMMENT '任务组名',
+                                    `description` varchar(250) DEFAULT NULL COMMENT '相关介绍',
+                                    `job_class_name` varchar(250) NOT NULL COMMENT '执行任务类名称',
+                                    `is_durable` varchar(1) NOT NULL COMMENT '是否持久化',
+                                    `is_nonconcurrent` varchar(1) NOT NULL COMMENT '是否并发',
+                                    `is_update_data` varchar(1) NOT NULL COMMENT '是否更新数据',
+                                    `requests_recovery` varchar(1) NOT NULL COMMENT '是否接受恢复执行',
+                                    `job_data` blob COMMENT '存放持久化job对象',
+                                    PRIMARY KEY (`sched_name`,`job_name`,`job_group`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='任务详细信息表';
 
 -- ----------------------------
@@ -129,7 +129,7 @@ BEGIN;
 INSERT INTO `QRTZ_JOB_DETAILS` (`sched_name`, `job_name`, `job_group`, `description`, `job_class_name`, `is_durable`, `is_nonconcurrent`, `is_update_data`, `requests_recovery`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME1', 'DEFAULT', NULL, 'com.mqttsnet.thinglinks.job.util.QuartzDisallowConcurrentExecution', '0', '1', '0', '0', 0xACED0005737200156F72672E71756172747A2E4A6F62446174614D61709FB083E8BFA9B0CB020000787200266F72672E71756172747A2E7574696C732E537472696E674B65794469727479466C61674D61708208E8C3FBC55D280200015A0013616C6C6F77735472616E7369656E74446174617872001D6F72672E71756172747A2E7574696C732E4469727479466C61674D617013E62EAD28760ACE0200025A000564697274794C00036D617074000F4C6A6176612F7574696C2F4D61703B787001737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F4000000000000C7708000000100000000174000F5441534B5F50524F5045525449455373720029636F6D2E6D717474736E65742E7468696E676C696E6B732E6A6F622E646F6D61696E2E5379734A6F6200000000000000010200084C000A636F6E63757272656E747400124C6A6176612F6C616E672F537472696E673B4C000E63726F6E45787072657373696F6E71007E00094C000C696E766F6B6554617267657471007E00094C00086A6F6247726F757071007E00094C00056A6F6249647400104C6A6176612F6C616E672F4C6F6E673B4C00076A6F624E616D6571007E00094C000D6D697366697265506F6C69637971007E00094C000673746174757371007E000978720039636F6D2E6D717474736E65742E7468696E676C696E6B732E636F6D6D6F6E2E636F72652E7765622E646F6D61696E2E42617365456E7469747900000000000000010200074C0008637265617465427971007E00094C000A63726561746554696D657400104C6A6176612F7574696C2F446174653B4C0006706172616D7371007E00034C000672656D61726B71007E00094C000B73656172636856616C756571007E00094C0008757064617465427971007E00094C000A75706461746554696D6571007E000C787074000561646D696E7372000E6A6176612E7574696C2E44617465686A81014B597419030000787077080000017BF357AE9878707400007070707400013174000E302F3130202A202A202A202A203F74001172795461736B2E72794E6F506172616D7374000744454641554C547372000E6A6176612E6C616E672E4C6F6E673B8BE490CC8F23DF0200014A000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B02000078700000000000000001740018E7B3BBE7BB9FE9BB98E8AEA4EFBC88E697A0E58F82EFBC8974000133740001317800);
 INSERT INTO `QRTZ_JOB_DETAILS` (`sched_name`, `job_name`, `job_group`, `description`, `job_class_name`, `is_durable`, `is_nonconcurrent`, `is_update_data`, `requests_recovery`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME2', 'DEFAULT', NULL, 'com.mqttsnet.thinglinks.job.util.QuartzDisallowConcurrentExecution', '0', '1', '0', '0', 0xACED0005737200156F72672E71756172747A2E4A6F62446174614D61709FB083E8BFA9B0CB020000787200266F72672E71756172747A2E7574696C732E537472696E674B65794469727479466C61674D61708208E8C3FBC55D280200015A0013616C6C6F77735472616E7369656E74446174617872001D6F72672E71756172747A2E7574696C732E4469727479466C61674D617013E62EAD28760ACE0200025A000564697274794C00036D617074000F4C6A6176612F7574696C2F4D61703B787001737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F4000000000000C7708000000100000000174000F5441534B5F50524F5045525449455373720029636F6D2E6D717474736E65742E7468696E676C696E6B732E6A6F622E646F6D61696E2E5379734A6F6200000000000000010200084C000A636F6E63757272656E747400124C6A6176612F6C616E672F537472696E673B4C000E63726F6E45787072657373696F6E71007E00094C000C696E766F6B6554617267657471007E00094C00086A6F6247726F757071007E00094C00056A6F6249647400104C6A6176612F6C616E672F4C6F6E673B4C00076A6F624E616D6571007E00094C000D6D697366697265506F6C69637971007E00094C000673746174757371007E000978720039636F6D2E6D717474736E65742E7468696E676C696E6B732E636F6D6D6F6E2E636F72652E7765622E646F6D61696E2E42617365456E7469747900000000000000010200074C0008637265617465427971007E00094C000A63726561746554696D657400104C6A6176612F7574696C2F446174653B4C0006706172616D7371007E00034C000672656D61726B71007E00094C000B73656172636856616C756571007E00094C0008757064617465427971007E00094C000A75706461746554696D6571007E000C787074000561646D696E7372000E6A6176612E7574696C2E44617465686A81014B597419030000787077080000017BF357AE9878707400007070707400013174000E302F3135202A202A202A202A203F74001572795461736B2E7279506172616D7328277279272974000744454641554C547372000E6A6176612E6C616E672E4C6F6E673B8BE490CC8F23DF0200014A000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B02000078700000000000000002740018E7B3BBE7BB9FE9BB98E8AEA4EFBC88E69C89E58F82EFBC8974000133740001317800);
 INSERT INTO `QRTZ_JOB_DETAILS` (`sched_name`, `job_name`, `job_group`, `description`, `job_class_name`, `is_durable`, `is_nonconcurrent`, `is_update_data`, `requests_recovery`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME3', 'DEFAULT', NULL, 'com.mqttsnet.thinglinks.job.util.QuartzDisallowConcurrentExecution', '0', '1', '0', '0', 0xACED0005737200156F72672E71756172747A2E4A6F62446174614D61709FB083E8BFA9B0CB020000787200266F72672E71756172747A2E7574696C732E537472696E674B65794469727479466C61674D61708208E8C3FBC55D280200015A0013616C6C6F77735472616E7369656E74446174617872001D6F72672E71756172747A2E7574696C732E4469727479466C61674D617013E62EAD28760ACE0200025A000564697274794C00036D617074000F4C6A6176612F7574696C2F4D61703B787001737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F4000000000000C7708000000100000000174000F5441534B5F50524F5045525449455373720029636F6D2E6D717474736E65742E7468696E676C696E6B732E6A6F622E646F6D61696E2E5379734A6F6200000000000000010200084C000A636F6E63757272656E747400124C6A6176612F6C616E672F537472696E673B4C000E63726F6E45787072657373696F6E71007E00094C000C696E766F6B6554617267657471007E00094C00086A6F6247726F757071007E00094C00056A6F6249647400104C6A6176612F6C616E672F4C6F6E673B4C00076A6F624E616D6571007E00094C000D6D697366697265506F6C69637971007E00094C000673746174757371007E000978720039636F6D2E6D717474736E65742E7468696E676C696E6B732E636F6D6D6F6E2E636F72652E7765622E646F6D61696E2E42617365456E7469747900000000000000010200074C0008637265617465427971007E00094C000A63726561746554696D657400104C6A6176612F7574696C2F446174653B4C0006706172616D7371007E00034C000672656D61726B71007E00094C000B73656172636856616C756571007E00094C0008757064617465427971007E00094C000A75706461746554696D6571007E000C787074000561646D696E7372000E6A6176612E7574696C2E44617465686A81014B597419030000787077080000017BF357AE9878707400007070707400013174000E302F3230202A202A202A202A203F74003872795461736B2E72794D756C7469706C65506172616D7328277279272C20747275652C20323030304C2C203331362E3530442C203130302974000744454641554C547372000E6A6176612E6C616E672E4C6F6E673B8BE490CC8F23DF0200014A000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B02000078700000000000000003740018E7B3BBE7BB9FE9BB98E8AEA4EFBC88E5A49AE58F82EFBC8974000133740001317800);
-INSERT INTO `QRTZ_JOB_DETAILS` (`sched_name`, `job_name`, `job_group`, `description`, `job_class_name`, `is_durable`, `is_nonconcurrent`, `is_update_data`, `requests_recovery`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME4', 'SYSTEM', NULL, 'com.mqttsnet.thinglinks.job.util.QuartzJobExecution', '0', '0', '0', '0', 0xACED0005737200156F72672E71756172747A2E4A6F62446174614D61709FB083E8BFA9B0CB020000787200266F72672E71756172747A2E7574696C732E537472696E674B65794469727479466C61674D61708208E8C3FBC55D280200015A0013616C6C6F77735472616E7369656E74446174617872001D6F72672E71756172747A2E7574696C732E4469727479466C61674D617013E62EAD28760ACE0200025A000564697274794C00036D617074000F4C6A6176612F7574696C2F4D61703B787001737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F4000000000000C7708000000100000000174000F5441534B5F50524F5045525449455373720029636F6D2E6D717474736E65742E7468696E676C696E6B732E6A6F622E646F6D61696E2E5379734A6F6200000000000000010200084C000A636F6E63757272656E747400124C6A6176612F6C616E672F537472696E673B4C000E63726F6E45787072657373696F6E71007E00094C000C696E766F6B6554617267657471007E00094C00086A6F6247726F757071007E00094C00056A6F6249647400104C6A6176612F6C616E672F4C6F6E673B4C00076A6F624E616D6571007E00094C000D6D697366697265506F6C69637971007E00094C000673746174757371007E000978720039636F6D2E6D717474736E65742E7468696E676C696E6B732E636F6D6D6F6E2E636F72652E7765622E646F6D61696E2E42617365456E7469747900000000000000010200074C0008637265617465427971007E00094C000A63726561746554696D657400104C6A6176612F7574696C2F446174653B4C0006706172616D7371007E00034C000672656D61726B71007E00094C000B73656172636856616C756571007E00094C0008757064617465427971007E00094C000A75706461746554696D6571007E000C78707400056D717474737372000E6A6176612E7574696C2E44617465686A81014B597419030000787077080000017CB6155D9078707400007070707400013074000B2A202A202A202A202A203F74000364646474000653595354454D7372000E6A6176612E6C616E672E4C6F6E673B8BE490CC8F23DF0200014A000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B020000787000000000000000047400016174000130740001307800);
+INSERT INTO `QRTZ_JOB_DETAILS` (`sched_name`, `job_name`, `job_group`, `description`, `job_class_name`, `is_durable`, `is_nonconcurrent`, `is_update_data`, `requests_recovery`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME4', 'PROTOCOL', NULL, 'com.mqttsnet.thinglinks.job.util.QuartzDisallowConcurrentExecution', '0', '1', '0', '0', 0xACED0005737200156F72672E71756172747A2E4A6F62446174614D61709FB083E8BFA9B0CB020000787200266F72672E71756172747A2E7574696C732E537472696E674B65794469727479466C61674D61708208E8C3FBC55D280200015A0013616C6C6F77735472616E7369656E74446174617872001D6F72672E71756172747A2E7574696C732E4469727479466C61674D617013E62EAD28760ACE0200025A000564697274794C00036D617074000F4C6A6176612F7574696C2F4D61703B787001737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F4000000000000C7708000000100000000174000F5441534B5F50524F5045525449455373720029636F6D2E6D717474736E65742E7468696E676C696E6B732E6A6F622E646F6D61696E2E5379734A6F6200000000000000010200084C000A636F6E63757272656E747400124C6A6176612F6C616E672F537472696E673B4C000E63726F6E45787072657373696F6E71007E00094C000C696E766F6B6554617267657471007E00094C00086A6F6247726F757071007E00094C00056A6F6249647400104C6A6176612F6C616E672F4C6F6E673B4C00076A6F624E616D6571007E00094C000D6D697366697265506F6C69637971007E00094C000673746174757371007E000978720039636F6D2E6D717474736E65742E7468696E676C696E6B732E636F6D6D6F6E2E636F72652E7765622E646F6D61696E2E42617365456E7469747900000000000000010200074C0008637265617465427971007E00094C000A63726561746554696D657400104C6A6176612F7574696C2F446174653B4C0006706172616D7371007E00034C000672656D61726B71007E00094C000B73656172636856616C756571007E00094C0008757064617465427971007E00094C000A75706461746554696D6571007E000C787074000561646D696E7372000E6A6176612E7574696C2E44617465686A81014B5974190300007870770800000181EC3D4BA8787074000070707074000131740010302F35203020302F3233202A202A203F74002F6C696E6B50726F746F636F6C5461736B2E70726F746F636F6C5363726970744361636865526566726573685461736B74000850524F544F434F4C7372000E6A6176612E6C616E672E4C6F6E673B8BE490CC8F23DF0200014A000576616C7565787200106A6176612E6C616E672E4E756D62657286AC951D0B94E08B02000078700000000000000004740024E58D8FE8AEAEE8849AE69CACE7BC93E5AD98E588B7E696B0E5AE9AE697B6E4BBBBE58AA174000132740001307800);
 COMMIT;
 
 -- ----------------------------
@@ -137,9 +137,9 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_LOCKS`;
 CREATE TABLE `QRTZ_LOCKS` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `lock_name` varchar(40) NOT NULL COMMENT '悲观锁名称',
-  PRIMARY KEY (`sched_name`,`lock_name`) USING BTREE
+                              `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                              `lock_name` varchar(40) NOT NULL COMMENT '悲观锁名称',
+                              PRIMARY KEY (`sched_name`,`lock_name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='存储的悲观锁信息表';
 
 -- ----------------------------
@@ -155,9 +155,9 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_PAUSED_TRIGGER_GRPS`;
 CREATE TABLE `QRTZ_PAUSED_TRIGGER_GRPS` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
-  PRIMARY KEY (`sched_name`,`trigger_group`) USING BTREE
+                                            `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                                            `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
+                                            PRIMARY KEY (`sched_name`,`trigger_group`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='暂停的触发器表';
 
 -- ----------------------------
@@ -171,18 +171,19 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_SCHEDULER_STATE`;
 CREATE TABLE `QRTZ_SCHEDULER_STATE` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `instance_name` varchar(200) NOT NULL COMMENT '实例名称',
-  `last_checkin_time` bigint(13) NOT NULL COMMENT '上次检查时间',
-  `checkin_interval` bigint(13) NOT NULL COMMENT '检查间隔时间',
-  PRIMARY KEY (`sched_name`,`instance_name`) USING BTREE
+                                        `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                                        `instance_name` varchar(200) NOT NULL COMMENT '实例名称',
+                                        `last_checkin_time` bigint(13) NOT NULL COMMENT '上次检查时间',
+                                        `checkin_interval` bigint(13) NOT NULL COMMENT '检查间隔时间',
+                                        PRIMARY KEY (`sched_name`,`instance_name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='调度器状态表';
 
 -- ----------------------------
 -- Records of QRTZ_SCHEDULER_STATE
 -- ----------------------------
 BEGIN;
-INSERT INTO `QRTZ_SCHEDULER_STATE` (`sched_name`, `instance_name`, `last_checkin_time`, `checkin_interval`) VALUES ('mqttsScheduler', 'localhost1644995400242', 1656328108664, 15000);
+INSERT INTO `QRTZ_SCHEDULER_STATE` (`sched_name`, `instance_name`, `last_checkin_time`, `checkin_interval`) VALUES ('mqttsScheduler', 'localhost1644995400242', 1658131111388, 15000);
+INSERT INTO `QRTZ_SCHEDULER_STATE` (`sched_name`, `instance_name`, `last_checkin_time`, `checkin_interval`) VALUES ('mqttsScheduler', 'xiaonandeMacBook-Pro.local1658107444149', 1658131106291, 15000);
 COMMIT;
 
 -- ----------------------------
@@ -190,14 +191,14 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_SIMPLE_TRIGGERS`;
 CREATE TABLE `QRTZ_SIMPLE_TRIGGERS` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `trigger_name` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
-  `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
-  `repeat_count` bigint(7) NOT NULL COMMENT '重复的次数统计',
-  `repeat_interval` bigint(12) NOT NULL COMMENT '重复的间隔时间',
-  `times_triggered` bigint(10) NOT NULL COMMENT '已经触发的次数',
-  PRIMARY KEY (`sched_name`,`trigger_name`,`trigger_group`) USING BTREE,
-  CONSTRAINT `QRTZ_SIMPLE_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`)
+                                        `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                                        `trigger_name` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
+                                        `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
+                                        `repeat_count` bigint(7) NOT NULL COMMENT '重复的次数统计',
+                                        `repeat_interval` bigint(12) NOT NULL COMMENT '重复的间隔时间',
+                                        `times_triggered` bigint(10) NOT NULL COMMENT '已经触发的次数',
+                                        PRIMARY KEY (`sched_name`,`trigger_name`,`trigger_group`) USING BTREE,
+                                        CONSTRAINT `QRTZ_SIMPLE_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='简单触发器的信息表';
 
 -- ----------------------------
@@ -211,22 +212,22 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_SIMPROP_TRIGGERS`;
 CREATE TABLE `QRTZ_SIMPROP_TRIGGERS` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `trigger_name` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
-  `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
-  `str_prop_1` varchar(512) DEFAULT NULL COMMENT 'String类型的trigger的第一个参数',
-  `str_prop_2` varchar(512) DEFAULT NULL COMMENT 'String类型的trigger的第二个参数',
-  `str_prop_3` varchar(512) DEFAULT NULL COMMENT 'String类型的trigger的第三个参数',
-  `int_prop_1` int(11) DEFAULT NULL COMMENT 'int类型的trigger的第一个参数',
-  `int_prop_2` int(11) DEFAULT NULL COMMENT 'int类型的trigger的第二个参数',
-  `long_prop_1` bigint(20) DEFAULT NULL COMMENT 'long类型的trigger的第一个参数',
-  `long_prop_2` bigint(20) DEFAULT NULL COMMENT 'long类型的trigger的第二个参数',
-  `dec_prop_1` decimal(13,4) DEFAULT NULL COMMENT 'decimal类型的trigger的第一个参数',
-  `dec_prop_2` decimal(13,4) DEFAULT NULL COMMENT 'decimal类型的trigger的第二个参数',
-  `bool_prop_1` varchar(1) DEFAULT NULL COMMENT 'Boolean类型的trigger的第一个参数',
-  `bool_prop_2` varchar(1) DEFAULT NULL COMMENT 'Boolean类型的trigger的第二个参数',
-  PRIMARY KEY (`sched_name`,`trigger_name`,`trigger_group`) USING BTREE,
-  CONSTRAINT `QRTZ_SIMPROP_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`)
+                                         `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                                         `trigger_name` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
+                                         `trigger_group` varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
+                                         `str_prop_1` varchar(512) DEFAULT NULL COMMENT 'String类型的trigger的第一个参数',
+                                         `str_prop_2` varchar(512) DEFAULT NULL COMMENT 'String类型的trigger的第二个参数',
+                                         `str_prop_3` varchar(512) DEFAULT NULL COMMENT 'String类型的trigger的第三个参数',
+                                         `int_prop_1` int(11) DEFAULT NULL COMMENT 'int类型的trigger的第一个参数',
+                                         `int_prop_2` int(11) DEFAULT NULL COMMENT 'int类型的trigger的第二个参数',
+                                         `long_prop_1` bigint(20) DEFAULT NULL COMMENT 'long类型的trigger的第一个参数',
+                                         `long_prop_2` bigint(20) DEFAULT NULL COMMENT 'long类型的trigger的第二个参数',
+                                         `dec_prop_1` decimal(13,4) DEFAULT NULL COMMENT 'decimal类型的trigger的第一个参数',
+                                         `dec_prop_2` decimal(13,4) DEFAULT NULL COMMENT 'decimal类型的trigger的第二个参数',
+                                         `bool_prop_1` varchar(1) DEFAULT NULL COMMENT 'Boolean类型的trigger的第一个参数',
+                                         `bool_prop_2` varchar(1) DEFAULT NULL COMMENT 'Boolean类型的trigger的第二个参数',
+                                         PRIMARY KEY (`sched_name`,`trigger_name`,`trigger_group`) USING BTREE,
+                                         CONSTRAINT `QRTZ_SIMPROP_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='同步机制的行锁表';
 
 -- ----------------------------
@@ -240,78 +241,99 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_TRIGGERS`;
 CREATE TABLE `QRTZ_TRIGGERS` (
-  `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
-  `trigger_name` varchar(200) NOT NULL COMMENT '触发器的名字',
-  `trigger_group` varchar(200) NOT NULL COMMENT '触发器所属组的名字',
-  `job_name` varchar(200) NOT NULL COMMENT 'qrtz_job_details表job_name的外键',
-  `job_group` varchar(200) NOT NULL COMMENT 'qrtz_job_details表job_group的外键',
-  `description` varchar(250) DEFAULT NULL COMMENT '相关介绍',
-  `next_fire_time` bigint(13) DEFAULT NULL COMMENT '上一次触发时间（毫秒）',
-  `prev_fire_time` bigint(13) DEFAULT NULL COMMENT '下一次触发时间（默认为-1表示不触发）',
-  `priority` int(11) DEFAULT NULL COMMENT '优先级',
-  `trigger_state` varchar(16) NOT NULL COMMENT '触发器状态',
-  `trigger_type` varchar(8) NOT NULL COMMENT '触发器的类型',
-  `start_time` bigint(13) NOT NULL COMMENT '开始时间',
-  `end_time` bigint(13) DEFAULT NULL COMMENT '结束时间',
-  `calendar_name` varchar(200) DEFAULT NULL COMMENT '日程表名称',
-  `misfire_instr` smallint(2) DEFAULT NULL COMMENT '补偿执行的策略',
-  `job_data` blob COMMENT '存放持久化job对象',
-  PRIMARY KEY (`sched_name`,`trigger_name`,`trigger_group`) USING BTREE,
-  KEY `sched_name` (`sched_name`,`job_name`,`job_group`) USING BTREE,
-  CONSTRAINT `QRTZ_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `job_name`, `job_group`) REFERENCES `QRTZ_JOB_DETAILS` (`sched_name`, `job_name`, `job_group`)
+                                 `sched_name` varchar(120) NOT NULL COMMENT '调度名称',
+                                 `trigger_name` varchar(200) NOT NULL COMMENT '触发器的名字',
+                                 `trigger_group` varchar(200) NOT NULL COMMENT '触发器所属组的名字',
+                                 `job_name` varchar(200) NOT NULL COMMENT 'qrtz_job_details表job_name的外键',
+                                 `job_group` varchar(200) NOT NULL COMMENT 'qrtz_job_details表job_group的外键',
+                                 `description` varchar(250) DEFAULT NULL COMMENT '相关介绍',
+                                 `next_fire_time` bigint(13) DEFAULT NULL COMMENT '上一次触发时间（毫秒）',
+                                 `prev_fire_time` bigint(13) DEFAULT NULL COMMENT '下一次触发时间（默认为-1表示不触发）',
+                                 `priority` int(11) DEFAULT NULL COMMENT '优先级',
+                                 `trigger_state` varchar(16) NOT NULL COMMENT '触发器状态',
+                                 `trigger_type` varchar(8) NOT NULL COMMENT '触发器的类型',
+                                 `start_time` bigint(13) NOT NULL COMMENT '开始时间',
+                                 `end_time` bigint(13) DEFAULT NULL COMMENT '结束时间',
+                                 `calendar_name` varchar(200) DEFAULT NULL COMMENT '日程表名称',
+                                 `misfire_instr` smallint(2) DEFAULT NULL COMMENT '补偿执行的策略',
+                                 `job_data` blob COMMENT '存放持久化job对象',
+                                 PRIMARY KEY (`sched_name`,`trigger_name`,`trigger_group`) USING BTREE,
+                                 KEY `sched_name` (`sched_name`,`job_name`,`job_group`) USING BTREE,
+                                 CONSTRAINT `QRTZ_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `job_name`, `job_group`) REFERENCES `QRTZ_JOB_DETAILS` (`sched_name`, `job_name`, `job_group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='触发器详细信息表';
 
 -- ----------------------------
 -- Records of QRTZ_TRIGGERS
 -- ----------------------------
 BEGIN;
-INSERT INTO `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `job_name`, `job_group`, `description`, `next_fire_time`, `prev_fire_time`, `priority`, `trigger_state`, `trigger_type`, `start_time`, `end_time`, `calendar_name`, `misfire_instr`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME1', 'DEFAULT', 'TASK_CLASS_NAME1', 'DEFAULT', NULL, 1646107160000, -1, 5, 'PAUSED', 'CRON', 1646107155000, 0, NULL, 2, '');
-INSERT INTO `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `job_name`, `job_group`, `description`, `next_fire_time`, `prev_fire_time`, `priority`, `trigger_state`, `trigger_type`, `start_time`, `end_time`, `calendar_name`, `misfire_instr`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME2', 'DEFAULT', 'TASK_CLASS_NAME2', 'DEFAULT', NULL, 1646107170000, -1, 5, 'PAUSED', 'CRON', 1646107157000, 0, NULL, 2, '');
-INSERT INTO `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `job_name`, `job_group`, `description`, `next_fire_time`, `prev_fire_time`, `priority`, `trigger_state`, `trigger_type`, `start_time`, `end_time`, `calendar_name`, `misfire_instr`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME3', 'DEFAULT', 'TASK_CLASS_NAME3', 'DEFAULT', NULL, 1646107160000, -1, 5, 'PAUSED', 'CRON', 1646107158000, 0, NULL, 2, '');
-INSERT INTO `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `job_name`, `job_group`, `description`, `next_fire_time`, `prev_fire_time`, `priority`, `trigger_state`, `trigger_type`, `start_time`, `end_time`, `calendar_name`, `misfire_instr`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME4', 'SYSTEM', 'TASK_CLASS_NAME4', 'SYSTEM', NULL, 1646107159000, -1, 5, 'ERROR', 'CRON', 1646107159000, 0, NULL, 0, '');
+INSERT INTO `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `job_name`, `job_group`, `description`, `next_fire_time`, `prev_fire_time`, `priority`, `trigger_state`, `trigger_type`, `start_time`, `end_time`, `calendar_name`, `misfire_instr`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME1', 'DEFAULT', 'TASK_CLASS_NAME1', 'DEFAULT', NULL, 1658107450000, -1, 5, 'PAUSED', 'CRON', 1658107446000, 0, NULL, 2, '');
+INSERT INTO `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `job_name`, `job_group`, `description`, `next_fire_time`, `prev_fire_time`, `priority`, `trigger_state`, `trigger_type`, `start_time`, `end_time`, `calendar_name`, `misfire_instr`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME2', 'DEFAULT', 'TASK_CLASS_NAME2', 'DEFAULT', NULL, 1658107455000, -1, 5, 'PAUSED', 'CRON', 1658107447000, 0, NULL, 2, '');
+INSERT INTO `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `job_name`, `job_group`, `description`, `next_fire_time`, `prev_fire_time`, `priority`, `trigger_state`, `trigger_type`, `start_time`, `end_time`, `calendar_name`, `misfire_instr`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME3', 'DEFAULT', 'TASK_CLASS_NAME3', 'DEFAULT', NULL, 1658107460000, -1, 5, 'PAUSED', 'CRON', 1658107448000, 0, NULL, 2, '');
+INSERT INTO `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`, `job_name`, `job_group`, `description`, `next_fire_time`, `prev_fire_time`, `priority`, `trigger_state`, `trigger_type`, `start_time`, `end_time`, `calendar_name`, `misfire_instr`, `job_data`) VALUES ('mqttsScheduler', 'TASK_CLASS_NAME4', 'PROTOCOL', 'TASK_CLASS_NAME4', 'PROTOCOL', NULL, 1658156400000, -1, 5, 'WAITING', 'CRON', 1658107449000, 0, NULL, 1, '');
 COMMIT;
 
+-- ----------------------------
+-- Table structure for casbin_rule
+-- ----------------------------
+DROP TABLE IF EXISTS `casbin_rule`;
+CREATE TABLE `casbin_rule` (
+                               `id` int(11) NOT NULL AUTO_INCREMENT,
+                               `ptype` varchar(100) NOT NULL,
+                               `v0` varchar(100) DEFAULT NULL,
+                               `v1` varchar(100) DEFAULT NULL,
+                               `v2` varchar(100) DEFAULT NULL,
+                               `v3` varchar(100) DEFAULT NULL,
+                               `v4` varchar(100) DEFAULT NULL,
+                               `v5` varchar(100) DEFAULT NULL,
+                               PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of casbin_rule
+-- ----------------------------
+BEGIN;
+COMMIT;
 
 -- ----------------------------
 -- Table structure for device
 -- ----------------------------
 DROP TABLE IF EXISTS `device`;
 CREATE TABLE `device` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `client_id` varchar(255) NOT NULL COMMENT '客户端标识',
-  `user_name` varchar(255) NOT NULL COMMENT '用户名',
-  `password` varchar(255) NOT NULL COMMENT '密码',
-  `app_id` varchar(64) NOT NULL COMMENT '应用ID',
-  `auth_mode` varchar(255) DEFAULT NULL COMMENT '认证方式',
-  `device_identification` varchar(100) NOT NULL COMMENT '设备标识',
-  `device_name` varchar(255) NOT NULL COMMENT '设备名称',
-  `connector` varchar(255) DEFAULT NULL COMMENT '连接实例',
-  `device_description` varchar(255) DEFAULT NULL COMMENT '设备描述',
-  `device_status` varchar(255) NOT NULL COMMENT '设备状态： 启用 || 禁用',
-  `connect_status` varchar(255) DEFAULT NULL COMMENT '连接状态 : 在线：ONLINE || 离线：OFFLINE || 未连接：INIT',
-  `is_will` varchar(255) DEFAULT NULL COMMENT '是否遗言',
-  `device_tags` varchar(255) DEFAULT NULL COMMENT '设备标签',
-  `product_identification` varchar(255) NOT NULL COMMENT '产品标识',
-  `protocol_type` varchar(255) NOT NULL COMMENT '产品协议类型 ：mqtt || coap || modbus || http',
-  `device_type` varchar(255) DEFAULT NULL COMMENT '设备类型',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `device_id` (`device_identification`) USING BTREE COMMENT '设备标识',
-  KEY `client_id` (`client_id`) USING BTREE COMMENT '客户端标识'
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COMMENT='边设备档案信息表';
+                          `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                          `client_id` varchar(255) NOT NULL COMMENT '客户端标识',
+                          `user_name` varchar(255) NOT NULL COMMENT '用户名',
+                          `password` varchar(255) NOT NULL COMMENT '密码',
+                          `app_id` varchar(64) NOT NULL COMMENT '应用ID',
+                          `auth_mode` varchar(255) DEFAULT NULL COMMENT '认证方式',
+                          `device_identification` varchar(100) NOT NULL COMMENT '设备标识',
+                          `device_name` varchar(255) NOT NULL COMMENT '设备名称',
+                          `connector` varchar(255) DEFAULT NULL COMMENT '连接实例',
+                          `device_description` varchar(255) DEFAULT NULL COMMENT '设备描述',
+                          `device_status` varchar(255) NOT NULL COMMENT '设备状态： 启用 || 禁用',
+                          `connect_status` varchar(255) DEFAULT NULL COMMENT '连接状态 : 在线：ONLINE || 离线：OFFLINE || 未连接：INIT',
+                          `is_will` varchar(255) DEFAULT NULL COMMENT '是否遗言',
+                          `device_tags` varchar(255) DEFAULT NULL COMMENT '设备标签',
+                          `product_identification` varchar(255) NOT NULL COMMENT '产品标识',
+                          `protocol_type` varchar(255) NOT NULL COMMENT '产品协议类型 ：mqtt || coap || modbus || http',
+                          `device_type` varchar(255) DEFAULT NULL COMMENT '设备类型',
+                          `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                          `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                          `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                          `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                          `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                          PRIMARY KEY (`id`) USING BTREE,
+                          KEY `device_id` (`device_identification`) USING BTREE COMMENT '设备标识',
+                          KEY `client_id` (`client_id`) USING BTREE COMMENT '客户端标识'
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COMMENT='边设备档案信息表';
 
 -- ----------------------------
 -- Records of device
 -- ----------------------------
 BEGIN;
-INSERT INTO `device` (`id`, `client_id`, `user_name`, `password`, `app_id`, `auth_mode`, `device_identification`, `device_name`, `connector`, `device_description`, `device_status`, `connect_status`, `is_will`, `device_tags`, `product_identification`, `protocol_type`, `device_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (7, '123', '123', '123', 'thinglinks', 'default', '123', '123', '127.0.0.1:11883', '123', 'ENABLE', 'ONLINE', NULL, NULL, '603600f731c64af5ba1b85aeb767361a', 'MQTT', 'GATEWAY', 'admin', '2022-06-27 18:10:35', '', '2022-06-27 18:10:35', NULL);
-INSERT INTO `device` (`id`, `client_id`, `user_name`, `password`, `app_id`, `auth_mode`, `device_identification`, `device_name`, `connector`, `device_description`, `device_status`, `connect_status`, `is_will`, `device_tags`, `product_identification`, `protocol_type`, `device_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (15, '12345', '12345', '12345', 'thinglinks', 'default', '12345', 'test设备', '127.0.0.1:11883', '测试设备', 'ENABLE', 'OFFLINE', NULL, NULL, '603600f731c64af5ba1b85aeb767361a', 'MQTT', 'GATEWAY', 'admin', '2022-05-09 10:50:59', '', '2022-05-09 10:50:59', NULL);
-INSERT INTO `device` (`id`, `client_id`, `user_name`, `password`, `app_id`, `auth_mode`, `device_identification`, `device_name`, `connector`, `device_description`, `device_status`, `connect_status`, `is_will`, `device_tags`, `product_identification`, `protocol_type`, `device_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (16, '1212', '121', '12', 'thinglinks', 'default', '12', '12', '127.0.0.1:11883', '12', 'ENABLE', 'INIT', NULL, '12', '760ed36fd22342238acbf002f0dedc1a', 'MQTT', 'COMMON', 'admin', '2022-06-24 17:48:47', '', '2022-06-24 17:48:47', NULL);
-INSERT INTO `device` (`id`, `client_id`, `user_name`, `password`, `app_id`, `auth_mode`, `device_identification`, `device_name`, `connector`, `device_description`, `device_status`, `connect_status`, `is_will`, `device_tags`, `product_identification`, `protocol_type`, `device_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (17, '3232312212212', '23', '1212', 'thinglinks', 'default', '212', '121', '127.0.0.1:11883', '21', 'ENABLE', 'INIT', NULL, '121', '760ed36fd22342238acbf002f0dedc1a', 'MQTT', 'COMMON', 'admin', '2022-06-24 17:52:20', '', '2022-06-24 17:52:20', NULL);
+INSERT INTO `device` (`id`, `client_id`, `user_name`, `password`, `app_id`, `auth_mode`, `device_identification`, `device_name`, `connector`, `device_description`, `device_status`, `connect_status`, `is_will`, `device_tags`, `product_identification`, `protocol_type`, `device_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (22, 'yltest99', '13808215318', '123456', 'thinglinks', 'default', 'yltest99', '测试设备', '127.0.0.1:11883', NULL, 'ENABLE', 'INIT', NULL, 'test', 'c69cae31d9eb456db31eceebf8a4e0f4', 'MQTT', 'COMMON', 'admin', '2022-07-13 14:09:57', '', '2022-07-13 14:09:57', NULL);
+INSERT INTO `device` (`id`, `client_id`, `user_name`, `password`, `app_id`, `auth_mode`, `device_identification`, `device_name`, `connector`, `device_description`, `device_status`, `connect_status`, `is_will`, `device_tags`, `product_identification`, `protocol_type`, `device_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (23, '24E124126B122724', 'admin', '123456', 'thinglinks', 'default', '24e124126b122724', 'co2-1', '127.0.0.1:11883', NULL, 'ENABLE', 'INIT', NULL, NULL, '0d6f540f643c46cb83df6758e090236d', 'MQTT', 'COMMON', 'admin', '2022-07-13 18:00:22', '', '2022-07-13 18:00:22', '别删');
+INSERT INTO `device` (`id`, `client_id`, `user_name`, `password`, `app_id`, `auth_mode`, `device_identification`, `device_name`, `connector`, `device_description`, `device_status`, `connect_status`, `is_will`, `device_tags`, `product_identification`, `protocol_type`, `device_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (24, '0000000065E071E4', 'admin', '123456', 'thinglinks', 'default', '0000000065e071e4', 'wsd-1', '127.0.0.1:11883', NULL, 'ENABLE', 'INIT', NULL, NULL, '82325a1de5e84ea88f332f3dbc10f6d5', 'MQTT', 'COMMON', 'admin', '2022-07-13 18:00:28', 'admin', '2022-07-13 18:00:28', '别删');
+INSERT INTO `device` (`id`, `client_id`, `user_name`, `password`, `app_id`, `auth_mode`, `device_identification`, `device_name`, `connector`, `device_description`, `device_status`, `connect_status`, `is_will`, `device_tags`, `product_identification`, `protocol_type`, `device_type`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (25, 'getway180', 'admin', '123456', 'thinglinks', 'default', '24E124FFFEF542E2', 'wg-01', '127.0.0.1:11883', NULL, 'ENABLE', 'OFFLINE', NULL, NULL, '82325a1de5e84ea88f332f3dbc10f6d5', 'MQTT', 'COMMON', 'admin', '2022-07-15 16:47:36', 'admin', '2022-07-15 16:47:36', '别删');
 COMMIT;
 
 -- ----------------------------
@@ -319,15 +341,15 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `device_action`;
 CREATE TABLE `device_action` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `device_identification` varchar(255) DEFAULT NULL COMMENT '设备标识',
-  `action_type` varchar(255) DEFAULT NULL COMMENT '动作类型',
-  `message` longtext COMMENT '内容信息',
-  `status` varchar(255) DEFAULT NULL COMMENT '状态',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `device_id` (`device_identification`) USING BTREE COMMENT '设备标识'
-) ENGINE=InnoDB AUTO_INCREMENT=447 DEFAULT CHARSET=utf8 COMMENT='设备动作数据';
+                                 `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                 `device_identification` varchar(255) DEFAULT NULL COMMENT '设备标识',
+                                 `action_type` varchar(255) DEFAULT NULL COMMENT '动作类型',
+                                 `message` longtext COMMENT '内容信息',
+                                 `status` varchar(255) DEFAULT NULL COMMENT '状态',
+                                 `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                 PRIMARY KEY (`id`) USING BTREE,
+                                 KEY `device_id` (`device_identification`) USING BTREE COMMENT '设备标识'
+) ENGINE=InnoDB AUTO_INCREMENT=508 DEFAULT CHARSET=utf8 COMMENT='设备动作数据';
 
 -- ----------------------------
 -- Records of device_action
@@ -383,6 +405,67 @@ INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `mess
 INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (444, '123', 'OFFLINE', 'Device Disconnection', 'success', '2022-06-27 18:10:44');
 INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (445, '123', 'OFFLINE', 'Device Disconnection', 'success', '2022-06-27 18:10:45');
 INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (446, '123', 'ONLINE', 'Device Connection', 'success', '2022-06-27 18:10:47');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (447, '123', 'ONLINE', 'Device Connection', 'success', '2022-07-05 15:27:04');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (448, '123', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-05 15:34:43');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (449, '123', 'ONLINE', 'Device Connection', 'success', '2022-07-05 15:57:15');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (450, '123', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-05 16:09:40');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (451, '123', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-05 16:23:38');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (452, '123', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-05 16:54:12');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (453, '123', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-05 16:54:12');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (454, '123', 'ONLINE', 'Device Connection', 'success', '2022-07-05 16:54:12');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (455, '123', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-05 16:54:12');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (456, '123', 'ONLINE', 'Device Connection', 'success', '2022-07-05 16:54:12');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (457, '123', 'ONLINE', 'Device Connection', 'success', '2022-07-05 16:54:12');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (458, '123', 'ONLINE', 'Device Connection', 'success', '2022-07-05 16:54:12');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (459, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-06 17:13:55');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (460, '12345', 'OFFLINE', 'Device Disconnection', 'success', '2022-07-06 17:19:55');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (461, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-06 17:20:26');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (462, '12345', 'OFFLINE', 'Device Disconnection', 'success', '2022-07-06 17:20:26');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (463, '12345', 'OFFLINE', 'Device Disconnection', 'success', '2022-07-08 11:48:24');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (464, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-08 11:48:25');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (465, 'A', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-08 14:29:38');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (466, 'A', 'ONLINE', 'Device Connection', 'success', '2022-07-08 15:09:08');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (467, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-11 14:53:53');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (468, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-11 18:15:05');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (469, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-12 15:15:56');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (470, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-12 15:37:01');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (471, 'A', 'ONLINE', 'Device Connection', 'success', '2022-07-12 16:10:38');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (472, 'getaway179', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-12 18:22:26');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (473, 'getaway179', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-12 18:22:26');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (474, 'getaway179', 'ONLINE', 'Device Connection', 'success', '2022-07-12 18:22:26');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (475, 'getaway179', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-12 18:22:26');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (476, 'A', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-12 18:36:07');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (477, 'A', 'ONLINE', 'Device Connection', 'success', '2022-07-12 18:39:37');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (478, 'A', 'ONLINE', 'Device Connection', 'success', '2022-07-13 09:14:36');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (479, '24e124126b122724', 'ONLINE', NULL, '0', '2022-07-13 10:29:11');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (480, 'yltest99', 'ONLINE', NULL, '0', '2022-07-13 14:12:55');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (481, 'yltest99', 'OFFLINE', NULL, '0', '2022-07-13 14:12:58');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (482, 'A', 'ONLINE', 'Device Connection', 'success', '2022-07-13 14:40:06');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (483, 'A', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-13 14:40:06');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (484, 'A', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-13 15:32:05');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (485, 'A', 'ONLINE', 'Device Connection', 'success', '2022-07-13 15:32:05');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (486, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-13 16:42:56');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (487, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-13 16:42:56');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (488, 'A', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-13 16:42:56');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (489, '12345', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-13 16:42:57');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (490, '12345', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-13 16:42:57');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (491, 'A', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-13 16:42:58');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (492, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-13 16:42:58');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (493, 'A', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-13 16:42:58');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (494, '12345', 'ONLINE', 'Device Connection', 'success', '2022-07-13 16:42:59');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (495, 'A', 'ONLINE', 'Device Connection', 'success', '2022-07-13 16:42:59');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (496, 'A', 'ONLINE', 'Device Connection', 'success', '2022-07-14 08:43:31');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (497, 'A', 'ONLINE', 'Device Connection', 'success', '2022-07-14 09:48:58');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (498, 'A', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-14 09:49:00');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (499, 'getaway179', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-15 14:53:08');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (500, 'getaway179', 'ONLINE', 'Device Connection', 'success', '2022-07-15 14:53:08');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (501, 'getaway179', 'ONLINE', 'Device Connection', 'success', '2022-07-15 14:53:08');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (502, 'getway180', 'ONLINE', 'Device Connection', 'success', '2022-07-15 14:53:08');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (503, 'getaway179', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-15 14:53:08');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (504, 'getway180', 'OFFLINE', 'Device Disconnection', 'failure', '2022-07-15 14:55:26');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (505, 'getway180', 'ONLINE', 'Device Connection', 'success', '2022-07-15 15:03:53');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (506, 'getway180', 'OFFLINE', 'Device Disconnection', 'success', '2022-07-15 16:43:28');
+INSERT INTO `device_action` (`id`, `device_identification`, `action_type`, `message`, `status`, `create_time`) VALUES (507, 'getway180', 'ONLINE', 'Device Connection', 'success', '2022-07-15 16:43:29');
 COMMIT;
 
 -- ----------------------------
@@ -390,16 +473,16 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `device_datas`;
 CREATE TABLE `device_datas` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `device_identification` varchar(255) DEFAULT NULL COMMENT '设备标识',
-  `message_id` varchar(255) DEFAULT NULL COMMENT '消息ID',
-  `topic` varchar(255) DEFAULT NULL COMMENT 'topic',
-  `message` longtext COMMENT '内容信息',
-  `status` varchar(255) DEFAULT NULL COMMENT '状态',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `message_id` (`message_id`) USING BTREE COMMENT '消息标识',
-  KEY `device_id` (`device_identification`) USING BTREE COMMENT '设备标识'
+                                `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                `device_identification` varchar(255) DEFAULT NULL COMMENT '设备标识',
+                                `message_id` varchar(255) DEFAULT NULL COMMENT '消息ID',
+                                `topic` varchar(255) DEFAULT NULL COMMENT 'topic',
+                                `message` longtext COMMENT '内容信息',
+                                `status` varchar(255) DEFAULT NULL COMMENT '状态',
+                                `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                PRIMARY KEY (`id`) USING BTREE,
+                                UNIQUE KEY `message_id` (`message_id`) USING BTREE COMMENT '消息标识',
+                                KEY `device_id` (`device_identification`) USING BTREE COMMENT '设备标识'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='设备消息';
 
 -- ----------------------------
@@ -413,34 +496,31 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `device_info`;
 CREATE TABLE `device_info` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `d_id` bigint(20) NOT NULL COMMENT '边设备档案主键',
-  `app_id` varchar(64) NOT NULL COMMENT '应用ID',
-  `node_id` varchar(256) DEFAULT NULL COMMENT '设备自身的唯一标识',
-  `node_name` varchar(256) DEFAULT NULL COMMENT '设备名称',
-  `device_id` varchar(256) DEFAULT NULL COMMENT '平台生成的设备唯一标识',
-  `description` varchar(256) DEFAULT NULL COMMENT '设备描述',
-  `manufacturer_id` varchar(256) DEFAULT NULL COMMENT '厂商ID',
-  `model` varchar(256) DEFAULT NULL COMMENT '设备型号',
-  `connect_status` varchar(20) DEFAULT NULL COMMENT '子设备连接状态 : 在线：ONLINE || 离线：OFFLINE || 未连接：INIT',
-  `shadow_enable` tinyint(1) DEFAULT '1' COMMENT '是否支持设备影子TRUE:1、FALSE :0',
-  `shadow_table_name` varchar(2048) DEFAULT NULL COMMENT '设备影子数据表名(多个英文逗号分割)',
-  `status` varchar(10) NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`id`) USING BTREE
+                               `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+                               `d_id` bigint(20) NOT NULL COMMENT '边设备档案主键',
+                               `app_id` varchar(64) NOT NULL COMMENT '应用ID',
+                               `node_id` varchar(256) DEFAULT NULL COMMENT '设备自身的唯一标识',
+                               `node_name` varchar(256) DEFAULT NULL COMMENT '设备名称',
+                               `device_id` varchar(256) DEFAULT NULL COMMENT '平台生成的设备唯一标识',
+                               `description` varchar(256) DEFAULT NULL COMMENT '设备描述',
+                               `manufacturer_id` varchar(256) DEFAULT NULL COMMENT '厂商ID',
+                               `model` varchar(256) DEFAULT NULL COMMENT '设备型号',
+                               `connect_status` varchar(20) DEFAULT NULL COMMENT '子设备连接状态 : 在线：ONLINE || 离线：OFFLINE || 未连接：INIT',
+                               `shadow_enable` tinyint(1) DEFAULT '1' COMMENT '是否支持设备影子TRUE:1、FALSE :0',
+                               `shadow_table_name` varchar(2048) DEFAULT NULL COMMENT '设备影子数据表名(多个英文逗号分割)',
+                               `status` varchar(10) NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
+                               `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                               `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                               `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                               `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                               `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                               PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4540 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='子设备档案表';
 
 -- ----------------------------
 -- Records of device_info
 -- ----------------------------
 BEGIN;
-INSERT INTO `device_info` (`id`, `d_id`, `app_id`, `node_id`, `node_name`, `device_id`, `description`, `manufacturer_id`, `model`, `connect_status`, `shadow_enable`, `shadow_table_name`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4532, 7, 'thinglinks', 'MN012', '温度计', '87ba80dbdb4d4f97ad8be1f7ec78e812', '测温', 'TestUtf8ManuId', 'NBIoTDevice', 'INIT', 1, 'COMMON_603600f731c64af5ba1b85aeb767361a_service1_87ba80dbdb4d4f97ad8be1f7ec78e812,COMMON_603600f731c64af5ba1b85aeb767361a_service2_87ba80dbdb4d4f97ad8be1f7ec78e812', '0', 'admin', '2022-05-07 15:11:22', '', '2022-05-07 15:11:22', NULL);
-INSERT INTO `device_info` (`id`, `d_id`, `app_id`, `node_id`, `node_name`, `device_id`, `description`, `manufacturer_id`, `model`, `connect_status`, `shadow_enable`, `shadow_table_name`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4533, 7, 'thinglinks', 'MN012', '温度计', '2bfc52fea7aa43abaf7fbd4811626a9c', '测温', 'TestUtf8ManuId', 'NBIoTDevice', 'INIT', 1, NULL, '0', 'admin', '2022-05-07 15:16:15', '', '2022-05-07 15:16:15', NULL);
-INSERT INTO `device_info` (`id`, `d_id`, `app_id`, `node_id`, `node_name`, `device_id`, `description`, `manufacturer_id`, `model`, `connect_status`, `shadow_enable`, `shadow_table_name`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4534, 7, 'thinglinks', 'MN01200001', '温度计测试设备', 'ea1b1b5dde8d428cbd53284604a237f8', '测温', 'TestUtf8ManuId', 'NBIoTDevice', 'INIT', 1, 'COMMON_603600f731c64af5ba1b85aeb767361a_service1_ea1b1b5dde8d428cbd53284604a237f8,COMMON_603600f731c64af5ba1b85aeb767361a_service2_ea1b1b5dde8d428cbd53284604a237f8', '0', 'admin', '2022-05-07 18:41:01', '', '2022-05-07 18:41:01', NULL);
 INSERT INTO `device_info` (`id`, `d_id`, `app_id`, `node_id`, `node_name`, `device_id`, `description`, `manufacturer_id`, `model`, `connect_status`, `shadow_enable`, `shadow_table_name`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4535, 15, 'thinglinks', 'MN01200001', '温度计测试设备', 'f2713217b24747d0a02908bd12bbe658', '测温', 'TestUtf8ManuId', 'NBIoTDevice', 'INIT', 1, 'COMMON_603600f731c64af5ba1b85aeb767361a_service1_f2713217b24747d0a02908bd12bbe658,COMMON_603600f731c64af5ba1b85aeb767361a_service2_f2713217b24747d0a02908bd12bbe658', '0', 'admin', '2022-05-09 09:45:53', '', '2022-05-09 09:45:53', NULL);
 INSERT INTO `device_info` (`id`, `d_id`, `app_id`, `node_id`, `node_name`, `device_id`, `description`, `manufacturer_id`, `model`, `connect_status`, `shadow_enable`, `shadow_table_name`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4536, 15, 'thinglinks', 'MN01200001', '温度计测试设备', '1532a311ce554052936f64f3dd3fff88', '测温', 'TestUtf8ManuId', 'NBIoTDevice', 'ONLINE', 1, 'COMMON_603600f731c64af5ba1b85aeb767361a_service1_1532a311ce554052936f64f3dd3fff88,COMMON_603600f731c64af5ba1b85aeb767361a_service2_1532a311ce554052936f64f3dd3fff88', '0', 'admin', '2022-05-09 09:47:23', '', '2022-05-09 09:47:23', NULL);
 INSERT INTO `device_info` (`id`, `d_id`, `app_id`, `node_id`, `node_name`, `device_id`, `description`, `manufacturer_id`, `model`, `connect_status`, `shadow_enable`, `shadow_table_name`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4537, 15, 'thinglinks', 'MN01200001', '温度计测试设备', '9e7304729f894edf861a226f7bcf1487', '测温', 'TestUtf8ManuId', 'NBIoTDevice', 'INIT', 1, NULL, '0', 'admin', '2022-05-09 14:14:46', '', '2022-05-09 14:14:46', NULL);
@@ -453,20 +533,20 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `device_location`;
 CREATE TABLE `device_location` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `device_identification` varchar(100) NOT NULL COMMENT '设备标识',
-  `latitude` decimal(10,7) NOT NULL COMMENT '纬度',
-  `longitude` decimal(10,7) NOT NULL COMMENT '经度',
-  `full_name` varchar(500) NOT NULL COMMENT '位置名称',
-  `province_code` varchar(50) NOT NULL COMMENT '省,直辖市编码',
-  `city_code` varchar(50) NOT NULL COMMENT '市编码',
-  `region_code` varchar(50) NOT NULL COMMENT '区县',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`id`) USING BTREE
+                                   `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT '主键',
+                                   `device_identification` varchar(100) NOT NULL COMMENT '设备标识',
+                                   `latitude` decimal(10,7) NOT NULL COMMENT '纬度',
+                                   `longitude` decimal(10,7) NOT NULL COMMENT '经度',
+                                   `full_name` varchar(500) NOT NULL COMMENT '位置名称',
+                                   `province_code` varchar(50) NOT NULL COMMENT '省,直辖市编码',
+                                   `city_code` varchar(50) NOT NULL COMMENT '市编码',
+                                   `region_code` varchar(50) NOT NULL COMMENT '区县',
+                                   `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                                   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                   `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                   `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                   `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                                   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='设备位置表';
 
 -- ----------------------------
@@ -480,19 +560,19 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `device_topic`;
 CREATE TABLE `device_topic` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `device_identification` varchar(100) NOT NULL COMMENT '设备标识',
-  `type` varchar(255) DEFAULT NULL COMMENT '类型(0:基础Topic,1:自定义Topic)',
-  `topic` varchar(100) DEFAULT NULL COMMENT 'topic',
-  `publisher` varchar(255) DEFAULT NULL COMMENT '发布者',
-  `subscriber` varchar(255) DEFAULT NULL COMMENT '订阅者',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COMMENT='设备Topic数据表';
+                                `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                `device_identification` varchar(100) NOT NULL COMMENT '设备标识',
+                                `type` varchar(255) DEFAULT NULL COMMENT '类型(0:基础Topic,1:自定义Topic)',
+                                `topic` varchar(100) DEFAULT NULL COMMENT 'topic',
+                                `publisher` varchar(255) DEFAULT NULL COMMENT '发布者',
+                                `subscriber` varchar(255) DEFAULT NULL COMMENT '订阅者',
+                                `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                                `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                                `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                                PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8 COMMENT='设备Topic数据表';
 
 -- ----------------------------
 -- Records of device_topic
@@ -519,6 +599,69 @@ INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `pub
 INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (21, '123', '1', '123123', '123123', '123123', 'admin', '2022-06-27 16:42:20', '', '2022-06-27 16:42:20', '123123');
 INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (24, '123', '1', '123132', '123132', '13132', 'admin', '2022-06-27 16:42:20', '', '2022-06-27 16:42:20', '123123');
 INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (26, '123', '1', '123123', '123123', '123123', 'admin', '2022-06-27 16:42:20', '', '2022-06-27 16:42:20', '123123');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (27, '1楼温度网关', '0', '/v1/devices/1楼温度网关/command', '边设备', '物联网平台', 'admin', '2022-07-08 12:07:53', '', '2022-07-08 12:07:53', '物联网平台给设备或边设备下发命令');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (28, '1楼温度网关', '0', '/v1/devices/1楼温度网关/topo/update', '边设备', '物联网平台', 'admin', '2022-07-08 12:07:53', '', '2022-07-08 12:07:53', '边设备更新子设备状态');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (29, '1楼温度网关', '0', '/v1/devices/1楼温度网关/topo/updateResponse', '物联网平台', '边设备', 'admin', '2022-07-08 12:07:54', '', '2022-07-08 12:07:54', '物联网平台返回的更新子设备状态的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (30, '1楼温度网关', '0', '/v1/devices/1楼温度网关/topo/addResponse', '物联网平台', '边设备', 'admin', '2022-07-08 12:07:54', '', '2022-07-08 12:07:54', '物联网平台返回的添加子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (31, '1楼温度网关', '0', '/v1/devices/1楼温度网关/topo/delete', '边设备', '物联网平台', 'admin', '2022-07-08 12:07:54', '', '2022-07-08 12:07:54', '边设备删除子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (32, '1楼温度网关', '0', '/v1/devices/1楼温度网关/topo/deleteResponse', '物联网平台', '边设备', 'admin', '2022-07-08 12:07:54', '', '2022-07-08 12:07:54', '物联网平台返回的删除子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (33, '1楼温度网关', '0', '/v1/devices/1楼温度网关/datas', '边设备', '物联网平台', 'admin', '2022-07-08 12:07:54', '', '2022-07-08 12:07:54', '边设备上报数据');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (34, '1楼温度网关', '0', '/v1/devices/1楼温度网关/topo/add', '边设备', '物联网平台', 'admin', '2022-07-08 12:07:54', '', '2022-07-08 12:07:54', '边设备添加子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (35, '1楼温度网关', '0', '/v1/devices/1楼温度网关/commandResponse', '边设备', '物联网平台', 'admin', '2022-07-08 12:07:54', '', '2022-07-08 12:07:54', '边设备返回给物联网平台的命令响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (36, '1楼co2网关', '0', '/v1/devices/1楼co2网关/topo/addResponse', '物联网平台', '边设备', 'admin', '2022-07-08 12:08:40', '', '2022-07-08 12:08:40', '物联网平台返回的添加子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (37, '1楼co2网关', '0', '/v1/devices/1楼co2网关/topo/update', '边设备', '物联网平台', 'admin', '2022-07-08 12:08:40', '', '2022-07-08 12:08:40', '边设备更新子设备状态');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (38, '1楼co2网关', '0', '/v1/devices/1楼co2网关/commandResponse', '边设备', '物联网平台', 'admin', '2022-07-08 12:08:41', '', '2022-07-08 12:08:41', '边设备返回给物联网平台的命令响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (39, '1楼co2网关', '0', '/v1/devices/1楼co2网关/topo/updateResponse', '物联网平台', '边设备', 'admin', '2022-07-08 12:08:41', '', '2022-07-08 12:08:41', '物联网平台返回的更新子设备状态的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (40, '1楼co2网关', '0', '/v1/devices/1楼co2网关/command', '边设备', '物联网平台', 'admin', '2022-07-08 12:08:41', '', '2022-07-08 12:08:41', '物联网平台给设备或边设备下发命令');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (41, '1楼co2网关', '0', '/v1/devices/1楼co2网关/topo/delete', '边设备', '物联网平台', 'admin', '2022-07-08 12:08:41', '', '2022-07-08 12:08:41', '边设备删除子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (42, '1楼co2网关', '0', '/v1/devices/1楼co2网关/datas', '边设备', '物联网平台', 'admin', '2022-07-08 12:08:41', '', '2022-07-08 12:08:41', '边设备上报数据');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (43, '1楼co2网关', '0', '/v1/devices/1楼co2网关/topo/add', '边设备', '物联网平台', 'admin', '2022-07-08 12:08:41', '', '2022-07-08 12:08:41', '边设备添加子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (44, '1楼co2网关', '0', '/v1/devices/1楼co2网关/topo/deleteResponse', '物联网平台', '边设备', 'admin', '2022-07-08 12:08:41', '', '2022-07-08 12:08:41', '物联网平台返回的删除子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (45, 'wsd001', '0', '/v1/devices/wsd001/topo/update', '边设备', '物联网平台', 'admin', '2022-07-12 16:40:51', '', '2022-07-12 16:40:51', '边设备更新子设备状态');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (46, 'wsd001', '0', '/v1/devices/wsd001/topo/updateResponse', '物联网平台', '边设备', 'admin', '2022-07-12 16:40:51', '', '2022-07-12 16:40:51', '物联网平台返回的更新子设备状态的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (47, 'wsd001', '0', '/v1/devices/wsd001/commandResponse', '边设备', '物联网平台', 'admin', '2022-07-12 16:40:51', '', '2022-07-12 16:40:51', '边设备返回给物联网平台的命令响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (48, 'wsd001', '0', '/v1/devices/wsd001/datas', '边设备', '物联网平台', 'admin', '2022-07-12 16:40:51', '', '2022-07-12 16:40:51', '边设备上报数据');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (49, 'wsd001', '0', '/v1/devices/wsd001/topo/add', '边设备', '物联网平台', 'admin', '2022-07-12 16:40:51', '', '2022-07-12 16:40:51', '边设备添加子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (50, 'wsd001', '0', '/v1/devices/wsd001/topo/delete', '边设备', '物联网平台', 'admin', '2022-07-12 16:40:51', '', '2022-07-12 16:40:51', '边设备删除子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (51, 'wsd001', '0', '/v1/devices/wsd001/topo/deleteResponse', '物联网平台', '边设备', 'admin', '2022-07-12 16:40:51', '', '2022-07-12 16:40:51', '物联网平台返回的删除子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (52, 'wsd001', '0', '/v1/devices/wsd001/command', '边设备', '物联网平台', 'admin', '2022-07-12 16:40:51', '', '2022-07-12 16:40:51', '物联网平台给设备或边设备下发命令');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (53, 'wsd001', '0', '/v1/devices/wsd001/topo/addResponse', '物联网平台', '边设备', 'admin', '2022-07-12 16:40:51', '', '2022-07-12 16:40:51', '物联网平台返回的添加子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (54, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/deleteResponse', '物联网平台', '边设备', 'admin', '2022-07-13 09:25:17', '', '2022-07-13 09:25:17', '物联网平台返回的删除子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (55, '24E124126B122724', '0', '/v1/devices/24E124126B122724/datas', '边设备', '物联网平台', 'admin', '2022-07-13 09:25:17', '', '2022-07-13 09:25:17', '边设备上报数据');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (56, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/delete', '边设备', '物联网平台', 'admin', '2022-07-13 09:25:17', '', '2022-07-13 09:25:17', '边设备删除子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (57, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/add', '边设备', '物联网平台', 'admin', '2022-07-13 09:25:17', '', '2022-07-13 09:25:17', '边设备添加子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (58, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/update', '边设备', '物联网平台', 'admin', '2022-07-13 09:25:17', '', '2022-07-13 09:25:17', '边设备更新子设备状态');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (59, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/updateResponse', '物联网平台', '边设备', 'admin', '2022-07-13 09:25:17', '', '2022-07-13 09:25:17', '物联网平台返回的更新子设备状态的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (60, '24E124126B122724', '0', '/v1/devices/24E124126B122724/commandResponse', '边设备', '物联网平台', 'admin', '2022-07-13 09:25:17', '', '2022-07-13 09:25:17', '边设备返回给物联网平台的命令响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (61, '24E124126B122724', '0', '/v1/devices/24E124126B122724/command', '边设备', '物联网平台', 'admin', '2022-07-13 09:25:17', '', '2022-07-13 09:25:17', '物联网平台给设备或边设备下发命令');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (62, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/addResponse', '物联网平台', '边设备', 'admin', '2022-07-13 09:25:17', '', '2022-07-13 09:25:17', '物联网平台返回的添加子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (63, 'yltest99', '0', '/v1/devices/yltest99/topo/deleteResponse', '物联网平台', '边设备', 'admin', '2022-07-13 14:09:57', '', '2022-07-13 14:09:57', '物联网平台返回的删除子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (64, 'yltest99', '0', '/v1/devices/yltest99/topo/addResponse', '物联网平台', '边设备', 'admin', '2022-07-13 14:09:57', '', '2022-07-13 14:09:57', '物联网平台返回的添加子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (65, 'yltest99', '0', '/v1/devices/yltest99/commandResponse', '边设备', '物联网平台', 'admin', '2022-07-13 14:09:57', '', '2022-07-13 14:09:57', '边设备返回给物联网平台的命令响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (66, 'yltest99', '0', '/v1/devices/yltest99/command', '边设备', '物联网平台', 'admin', '2022-07-13 14:09:57', '', '2022-07-13 14:09:57', '物联网平台给设备或边设备下发命令');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (67, 'yltest99', '0', '/v1/devices/yltest99/topo/updateResponse', '物联网平台', '边设备', 'admin', '2022-07-13 14:09:57', '', '2022-07-13 14:09:57', '物联网平台返回的更新子设备状态的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (68, 'yltest99', '0', '/v1/devices/yltest99/topo/delete', '边设备', '物联网平台', 'admin', '2022-07-13 14:09:57', '', '2022-07-13 14:09:57', '边设备删除子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (69, 'yltest99', '0', '/v1/devices/yltest99/topo/update', '边设备', '物联网平台', 'admin', '2022-07-13 14:09:58', '', '2022-07-13 14:09:58', '边设备更新子设备状态');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (70, 'yltest99', '0', '/v1/devices/yltest99/datas', '边设备', '物联网平台', 'admin', '2022-07-13 14:09:58', '', '2022-07-13 14:09:58', '边设备上报数据');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (71, 'yltest99', '0', '/v1/devices/yltest99/topo/add', '边设备', '物联网平台', 'admin', '2022-07-13 14:09:58', '', '2022-07-13 14:09:58', '边设备添加子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (72, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/deleteResponse', '物联网平台', '边设备', 'admin', '2022-07-13 15:13:27', '', '2022-07-13 15:13:27', '物联网平台返回的删除子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (73, '24E124126B122724', '0', '/v1/devices/24E124126B122724/datas', '边设备', '物联网平台', 'admin', '2022-07-13 15:13:27', '', '2022-07-13 15:13:27', '边设备上报数据');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (74, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/delete', '边设备', '物联网平台', 'admin', '2022-07-13 15:13:27', '', '2022-07-13 15:13:27', '边设备删除子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (75, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/add', '边设备', '物联网平台', 'admin', '2022-07-13 15:13:27', '', '2022-07-13 15:13:27', '边设备添加子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (76, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/update', '边设备', '物联网平台', 'admin', '2022-07-13 15:13:27', '', '2022-07-13 15:13:27', '边设备更新子设备状态');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (77, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/updateResponse', '物联网平台', '边设备', 'admin', '2022-07-13 15:13:27', '', '2022-07-13 15:13:27', '物联网平台返回的更新子设备状态的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (78, '24E124126B122724', '0', '/v1/devices/24E124126B122724/commandResponse', '边设备', '物联网平台', 'admin', '2022-07-13 15:13:27', '', '2022-07-13 15:13:27', '边设备返回给物联网平台的命令响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (79, '24E124126B122724', '0', '/v1/devices/24E124126B122724/command', '边设备', '物联网平台', 'admin', '2022-07-13 15:13:27', '', '2022-07-13 15:13:27', '物联网平台给设备或边设备下发命令');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (80, '24E124126B122724', '0', '/v1/devices/24E124126B122724/topo/addResponse', '物联网平台', '边设备', 'admin', '2022-07-13 15:13:27', '', '2022-07-13 15:13:27', '物联网平台返回的添加子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (81, '0000000065E071E4', '0', '/v1/devices/0000000065E071E4/topo/updateResponse', '物联网平台', '边设备', 'admin', '2022-07-13 15:14:48', '', '2022-07-13 15:14:48', '物联网平台返回的更新子设备状态的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (82, '0000000065E071E4', '0', '/v1/devices/0000000065E071E4/topo/deleteResponse', '物联网平台', '边设备', 'admin', '2022-07-13 15:14:48', '', '2022-07-13 15:14:48', '物联网平台返回的删除子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (83, '0000000065E071E4', '0', '/v1/devices/0000000065E071E4/topo/add', '边设备', '物联网平台', 'admin', '2022-07-13 15:14:49', '', '2022-07-13 15:14:49', '边设备添加子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (84, '0000000065E071E4', '0', '/v1/devices/0000000065E071E4/topo/update', '边设备', '物联网平台', 'admin', '2022-07-13 15:14:49', '', '2022-07-13 15:14:49', '边设备更新子设备状态');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (85, '0000000065E071E4', '0', '/v1/devices/0000000065E071E4/command', '边设备', '物联网平台', 'admin', '2022-07-13 15:14:49', '', '2022-07-13 15:14:49', '物联网平台给设备或边设备下发命令');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (86, '0000000065E071E4', '0', '/v1/devices/0000000065E071E4/topo/addResponse', '物联网平台', '边设备', 'admin', '2022-07-13 15:14:49', '', '2022-07-13 15:14:49', '物联网平台返回的添加子设备的响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (87, '0000000065E071E4', '0', '/v1/devices/0000000065E071E4/topo/delete', '边设备', '物联网平台', 'admin', '2022-07-13 15:14:49', '', '2022-07-13 15:14:49', '边设备删除子设备');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (88, '0000000065E071E4', '0', '/v1/devices/0000000065E071E4/commandResponse', '边设备', '物联网平台', 'admin', '2022-07-13 15:14:49', '', '2022-07-13 15:14:49', '边设备返回给物联网平台的命令响应');
+INSERT INTO `device_topic` (`id`, `device_identification`, `type`, `topic`, `publisher`, `subscriber`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (89, '0000000065E071E4', '0', '/v1/devices/0000000065E071E4/datas', '边设备', '物联网平台', 'admin', '2022-07-13 15:14:49', '', '2022-07-13 15:14:49', '边设备上报数据');
 COMMIT;
 
 -- ----------------------------
@@ -526,28 +669,28 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `gen_table`;
 CREATE TABLE `gen_table` (
-  `table_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '编号',
-  `table_name` varchar(200) DEFAULT '' COMMENT '表名称',
-  `table_comment` varchar(500) DEFAULT '' COMMENT '表描述',
-  `sub_table_name` varchar(64) DEFAULT NULL COMMENT '关联子表的表名',
-  `sub_table_fk_name` varchar(64) DEFAULT NULL COMMENT '子表关联的外键名',
-  `class_name` varchar(100) DEFAULT '' COMMENT '实体类名称',
-  `tpl_category` varchar(200) DEFAULT 'crud' COMMENT '使用的模板（crud单表操作 tree树表操作）',
-  `package_name` varchar(100) DEFAULT NULL COMMENT '生成包路径',
-  `module_name` varchar(30) DEFAULT NULL COMMENT '生成模块名',
-  `business_name` varchar(30) DEFAULT NULL COMMENT '生成业务名',
-  `function_name` varchar(50) DEFAULT NULL COMMENT '生成功能名',
-  `function_author` varchar(50) DEFAULT NULL COMMENT '生成功能作者',
-  `gen_type` char(1) DEFAULT '0' COMMENT '生成代码方式（0zip压缩包 1自定义路径）',
-  `gen_path` varchar(200) DEFAULT '/' COMMENT '生成路径（不填默认项目路径）',
-  `options` varchar(1000) DEFAULT NULL COMMENT '其它生成选项',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`table_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='代码生成业务表';
+                             `table_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '编号',
+                             `table_name` varchar(200) DEFAULT '' COMMENT '表名称',
+                             `table_comment` varchar(500) DEFAULT '' COMMENT '表描述',
+                             `sub_table_name` varchar(64) DEFAULT NULL COMMENT '关联子表的表名',
+                             `sub_table_fk_name` varchar(64) DEFAULT NULL COMMENT '子表关联的外键名',
+                             `class_name` varchar(100) DEFAULT '' COMMENT '实体类名称',
+                             `tpl_category` varchar(200) DEFAULT 'crud' COMMENT '使用的模板（crud单表操作 tree树表操作）',
+                             `package_name` varchar(100) DEFAULT NULL COMMENT '生成包路径',
+                             `module_name` varchar(30) DEFAULT NULL COMMENT '生成模块名',
+                             `business_name` varchar(30) DEFAULT NULL COMMENT '生成业务名',
+                             `function_name` varchar(50) DEFAULT NULL COMMENT '生成功能名',
+                             `function_author` varchar(50) DEFAULT NULL COMMENT '生成功能作者',
+                             `gen_type` char(1) DEFAULT '0' COMMENT '生成代码方式（0zip压缩包 1自定义路径）',
+                             `gen_path` varchar(200) DEFAULT '/' COMMENT '生成路径（不填默认项目路径）',
+                             `options` varchar(1000) DEFAULT NULL COMMENT '其它生成选项',
+                             `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                             `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                             `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                             `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                             `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                             PRIMARY KEY (`table_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='代码生成业务表';
 
 -- ----------------------------
 -- Records of gen_table
@@ -559,6 +702,10 @@ INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_n
 INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`, `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`, `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (7, 'casbin_rule', 'CAS规则策略配置表', NULL, NULL, 'CasbinRule', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'casbinRule', 'CAS规则管理', 'thinglinks', '0', '/', '{\"parentMenuId\":\"1061\"}', 'admin', '2022-06-16 17:19:58', '', '2022-06-17 11:09:44', NULL);
 INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`, `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`, `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (8, 'device_topic', '设备Topic数据表', '', '', 'DeviceTopic', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'topic', '设备Topic数据', 'thinglinks', '0', '/', '{\"treeCode\":\"device_identification\",\"parentMenuId\":1076}', 'admin', '2022-06-17 16:41:13', '', '2022-06-17 16:57:24', NULL);
 INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`, `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`, `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (9, 'device_action', '设备动作数据', NULL, NULL, 'DeviceAction', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'action', '设备动作数据', 'thinglinks', '0', '/', '{\"parentMenuId\":\"1076\"}', 'admin', '2022-06-17 17:38:20', '', '2022-06-17 17:46:18', NULL);
+INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`, `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`, `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (10, 'device_location', '设备位置表', NULL, NULL, 'DeviceLocation', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'device_location', '设备位置', 'lvwshuai', '0', '/', '{\"parentMenuId\":\"1062\"}', 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36', NULL);
+INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`, `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`, `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (11, 'product_template', '产品模板', NULL, NULL, 'ProductTemplate', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'product_template', '产品模板', 'thinglinks', '0', '/', '{\"parentMenuId\":1061}', 'admin', '2022-06-30 20:03:00', '', '2022-07-08 18:33:57', NULL);
+INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`, `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`, `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (12, 'protocol', '协议信息表', NULL, NULL, 'Protocol', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'protocol', '协议管理', 'thinglinks', '0', '/', '{\"parentMenuId\":\"1061\"}', 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13', '协议管理');
+INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`, `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`, `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (13, 'rule', '规则信息表', NULL, NULL, 'Rule', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'rule', '规则信息', 'thinglinks', '0', '/', NULL, 'admin', '2022-07-15 17:47:01', '', NULL, NULL);
 COMMIT;
 
 -- ----------------------------
@@ -566,30 +713,30 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `gen_table_column`;
 CREATE TABLE `gen_table_column` (
-  `column_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '编号',
-  `table_id` varchar(64) DEFAULT NULL COMMENT '归属表编号',
-  `column_name` varchar(200) DEFAULT NULL COMMENT '列名称',
-  `column_comment` varchar(500) DEFAULT NULL COMMENT '列描述',
-  `column_type` varchar(100) DEFAULT NULL COMMENT '列类型',
-  `java_type` varchar(500) DEFAULT NULL COMMENT 'JAVA类型',
-  `java_field` varchar(200) DEFAULT NULL COMMENT 'JAVA字段名',
-  `is_pk` char(1) DEFAULT NULL COMMENT '是否主键（1是）',
-  `is_increment` char(1) DEFAULT NULL COMMENT '是否自增（1是）',
-  `is_required` char(1) DEFAULT NULL COMMENT '是否必填（1是）',
-  `is_insert` char(1) DEFAULT NULL COMMENT '是否为插入字段（1是）',
-  `is_edit` char(1) DEFAULT NULL COMMENT '是否编辑字段（1是）',
-  `is_list` char(1) DEFAULT NULL COMMENT '是否列表字段（1是）',
-  `is_query` char(1) DEFAULT NULL COMMENT '是否查询字段（1是）',
-  `query_type` varchar(200) DEFAULT 'EQ' COMMENT '查询方式（等于、不等于、大于、小于、范围）',
-  `html_type` varchar(200) DEFAULT NULL COMMENT '显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）',
-  `dict_type` varchar(200) DEFAULT '' COMMENT '字典类型',
-  `sort` int(11) DEFAULT NULL COMMENT '排序',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`column_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8 COMMENT='代码生成业务表字段';
+                                    `column_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '编号',
+                                    `table_id` varchar(64) DEFAULT NULL COMMENT '归属表编号',
+                                    `column_name` varchar(200) DEFAULT NULL COMMENT '列名称',
+                                    `column_comment` varchar(500) DEFAULT NULL COMMENT '列描述',
+                                    `column_type` varchar(100) DEFAULT NULL COMMENT '列类型',
+                                    `java_type` varchar(500) DEFAULT NULL COMMENT 'JAVA类型',
+                                    `java_field` varchar(200) DEFAULT NULL COMMENT 'JAVA字段名',
+                                    `is_pk` char(1) DEFAULT NULL COMMENT '是否主键（1是）',
+                                    `is_increment` char(1) DEFAULT NULL COMMENT '是否自增（1是）',
+                                    `is_required` char(1) DEFAULT NULL COMMENT '是否必填（1是）',
+                                    `is_insert` char(1) DEFAULT NULL COMMENT '是否为插入字段（1是）',
+                                    `is_edit` char(1) DEFAULT NULL COMMENT '是否编辑字段（1是）',
+                                    `is_list` char(1) DEFAULT NULL COMMENT '是否列表字段（1是）',
+                                    `is_query` char(1) DEFAULT NULL COMMENT '是否查询字段（1是）',
+                                    `query_type` varchar(200) DEFAULT 'EQ' COMMENT '查询方式（等于、不等于、大于、小于、范围）',
+                                    `html_type` varchar(200) DEFAULT NULL COMMENT '显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）',
+                                    `dict_type` varchar(200) DEFAULT '' COMMENT '字典类型',
+                                    `sort` int(11) DEFAULT NULL COMMENT '排序',
+                                    `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                                    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                    `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                    `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                                    PRIMARY KEY (`column_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8 COMMENT='代码生成业务表字段';
 
 -- ----------------------------
 -- Records of gen_table_column
@@ -679,6 +826,54 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (138, '9', 'message', '内容信息', 'longtext', 'String', 'message', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'textarea', '', 4, 'admin', '2022-06-17 17:38:21', '', '2022-06-17 17:46:18');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (139, '9', 'status', '状态', 'varchar(255)', 'String', 'status', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'radio', '', 5, 'admin', '2022-06-17 17:38:21', '', '2022-06-17 17:46:18');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (140, '9', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ', 'datetime', '', 6, 'admin', '2022-06-17 17:38:21', '', '2022-06-17 17:46:19');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (141, '10', 'id', '主键', 'bigint(19)', 'Long', 'id', '1', '1', NULL, '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (142, '10', 'device_identification', '设备标识', 'varchar(100)', 'String', 'deviceIdentification', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (143, '10', 'latitude', '纬度', 'decimal(10,7)', 'BigDecimal', 'latitude', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (144, '10', 'longitude', '经度', 'decimal(10,7)', 'BigDecimal', 'longitude', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (145, '10', 'full_name', '位置名称', 'varchar(500)', 'String', 'fullName', '0', '0', '1', '1', '1', '1', '1', 'LIKE', 'textarea', '', 5, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (146, '10', 'province_code', '省,直辖市编码', 'varchar(50)', 'String', 'provinceCode', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (147, '10', 'city_code', '市编码', 'varchar(50)', 'String', 'cityCode', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (148, '10', 'region_code', '区县', 'varchar(50)', 'String', 'regionCode', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (149, '10', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ', 'input', '', 9, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:37');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (150, '10', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ', 'datetime', '', 10, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:37');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (151, '10', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ', 'input', '', 11, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:37');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (152, '10', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ', 'datetime', '', 12, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:37');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (153, '10', 'remark', '备注', 'varchar(500)', 'String', 'remark', '0', '0', NULL, '1', '1', '1', NULL, 'EQ', 'textarea', '', 13, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:37');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (154, '11', 'id', 'id', 'bigint(19)', 'Long', 'id', '1', '1', NULL, '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2022-06-30 20:03:00', '', '2022-07-08 18:33:58');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (155, '11', 'app_id', '应用ID', 'varchar(64)', 'String', 'appId', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (156, '11', 'template_name', '产品模板名称:自定义，支持中文、英文大小写、数字、下划线和中划线', 'varchar(255)', 'String', 'templateName', '0', '0', '1', '1', '1', '1', '1', 'LIKE', 'input', '', 3, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (157, '11', 'status', '状态(字典值：启用  停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'radio', '', 4, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (158, '11', 'remark', '产品模型模板描述', 'varchar(255)', 'String', 'remark', '0', '0', NULL, '1', '1', '1', NULL, 'EQ', 'input', '', 5, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (159, '11', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ', 'input', '', 6, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (160, '11', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ', 'datetime', '', 7, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (161, '11', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ', 'input', '', 8, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (162, '11', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ', 'datetime', '', 9, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (163, '12', 'id', 'id', 'bigint(19)', 'Long', 'id', '1', '1', NULL, '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (164, '12', 'product_identification', '产品标识', 'varchar(100)', 'String', 'productIdentification', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (165, '12', 'protocol_name', '协议名称', 'varchar(255)', 'String', 'protocolName', '0', '0', NULL, '1', '1', '1', '1', 'LIKE', 'input', '', 3, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (166, '12', 'protocol_identification', '协议标识', 'varchar(255)', 'String', 'protocolIdentification', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (167, '12', 'protocol_version', '协议版本', 'varchar(255)', 'String', 'protocolVersion', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (168, '12', 'protocol_type', '协议类型 ：mqtt || coap || modbus || http', 'varchar(255)', 'String', 'protocolType', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'select', 'link_device_protocol_type', 6, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (169, '12', 'protocol_voice', '协议语言', 'varchar(255)', 'String', 'protocolVoice', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'select', 'link_ protocol_voice', 7, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (170, '12', 'class_name', '类名', 'varchar(255)', 'String', 'className', '0', '0', NULL, '1', '1', '1', NULL, 'LIKE', 'input', '', 8, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:14');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (171, '12', 'file_path', '文件地址', 'varchar(255)', 'String', 'filePath', '0', '0', NULL, '1', '1', '1', NULL, 'EQ', 'input', '', 9, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:14');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (172, '12', 'content', '内容', 'text', 'String', 'content', '0', '0', NULL, '1', '1', '1', NULL, 'EQ', 'editor', '', 10, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:14');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (173, '12', 'status', '状态(字典值：0启用  1停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'select', 'business_data_status', 11, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (174, '12', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, '1', NULL, 'EQ', 'input', '', 12, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (175, '12', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, '1', NULL, 'EQ', 'datetime', '', 13, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (176, '12', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', '1', NULL, 'EQ', 'input', '', 14, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (177, '12', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', '1', NULL, 'EQ', 'datetime', '', 15, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (178, '12', 'remark', '备注', 'varchar(500)', 'String', 'remark', '0', '0', NULL, '1', '1', '1', NULL, 'EQ', 'textarea', '', 16, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (179, '13', 'id', '主键', 'bigint(1)', 'Integer', 'id', '1', '1', NULL, '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2022-07-15 17:47:02', '', NULL);
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (180, '13', 'app_id', '应用ID', 'varchar(64)', 'String', 'appId', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2022-07-15 17:47:02', '', NULL);
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (181, '13', 'rule_name', '规则名称', 'varchar(255)', 'String', 'ruleName', '0', '0', '1', '1', '1', '1', '1', 'LIKE', 'input', '', 3, 'admin', '2022-07-15 17:47:02', '', NULL);
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (182, '13', 'cron_expression', '生效时间', 'varchar(50)', 'String', 'cronExpression', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2022-07-15 17:47:02', '', NULL);
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (183, '13', 'status', '状态(字典值：0启用  1停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'radio', '', 5, 'admin', '2022-07-15 17:47:02', '', NULL);
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (184, '13', 'remark', '规则描述，可以为空', 'varchar(255)', 'String', 'remark', '0', '0', NULL, '1', '1', '1', NULL, 'EQ', 'input', '', 6, 'admin', '2022-07-15 17:47:02', '', NULL);
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (185, '13', 'create_by', '创建人', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ', 'input', '', 7, 'admin', '2022-07-15 17:47:02', '', NULL);
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (186, '13', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ', 'datetime', '', 8, 'admin', '2022-07-15 17:47:03', '', NULL);
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (187, '13', 'update_by', '更新人', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ', 'input', '', 9, 'admin', '2022-07-15 17:47:03', '', NULL);
+INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`, `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`, `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (188, '13', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ', 'datetime', '', 10, 'admin', '2022-07-15 17:47:03', '', NULL);
 COMMIT;
 
 -- ----------------------------
@@ -686,36 +881,37 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `app_id` varchar(64) NOT NULL COMMENT '应用ID',
-  `template_id` bigint(19) DEFAULT NULL COMMENT '产品模型模板',
-  `product_name` varchar(255) NOT NULL COMMENT '产品名称:自定义，支持中文、英文大小写、数字、下划线和中划线',
-  `product_identification` varchar(100) NOT NULL COMMENT '产品标识',
-  `product_type` varchar(255) NOT NULL COMMENT '支持以下两种产品类型•COMMON：普通产品，需直连设备。\r\n•GATEWAY：网关产品，可挂载子设备。\r\n',
-  `manufacturer_id` varchar(255) NOT NULL COMMENT '厂商ID:支持英文大小写，数字，下划线和中划线',
-  `manufacturer_name` varchar(255) NOT NULL COMMENT '厂商名称 :支持中文、英文大小写、数字、下划线和中划线',
-  `model` varchar(255) NOT NULL COMMENT '产品型号，建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线\r\n',
-  `data_format` varchar(255) NOT NULL COMMENT '数据格式，默认为JSON无需修改。',
-  `device_type` varchar(255) NOT NULL COMMENT '设备类型:支持英文大小写、数字、下划线和中划线\r\n',
-  `protocol_type` varchar(255) NOT NULL COMMENT '设备接入平台的协议类型，默认为MQTT无需修改。\r\n ',
-  `status` varchar(10) NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
-  `remark` varchar(255) DEFAULT NULL COMMENT '产品描述',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `manufacturer_id` (`manufacturer_id`) USING BTREE COMMENT '厂商ID索引'
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COMMENT='产品模型';
+                           `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                           `app_id` varchar(64) NOT NULL COMMENT '应用ID',
+                           `template_id` bigint(19) DEFAULT NULL COMMENT '产品模型模板',
+                           `product_name` varchar(255) NOT NULL COMMENT '产品名称:自定义，支持中文、英文大小写、数字、下划线和中划线',
+                           `product_identification` varchar(100) NOT NULL COMMENT '产品标识',
+                           `product_type` varchar(255) NOT NULL COMMENT '支持以下两种产品类型•COMMON：普通产品，需直连设备。\r\n•GATEWAY：网关产品，可挂载子设备。\r\n',
+                           `manufacturer_id` varchar(255) NOT NULL COMMENT '厂商ID:支持英文大小写，数字，下划线和中划线',
+                           `manufacturer_name` varchar(255) NOT NULL COMMENT '厂商名称 :支持中文、英文大小写、数字、下划线和中划线',
+                           `model` varchar(255) NOT NULL COMMENT '产品型号，建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线\r\n',
+                           `data_format` varchar(255) NOT NULL COMMENT '数据格式，默认为JSON无需修改。',
+                           `device_type` varchar(255) NOT NULL COMMENT '设备类型:支持英文大小写、数字、下划线和中划线\r\n',
+                           `protocol_type` varchar(255) NOT NULL COMMENT '设备接入平台的协议类型，默认为MQTT无需修改。\r\n ',
+                           `status` varchar(10) NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
+                           `remark` varchar(255) DEFAULT NULL COMMENT '产品描述',
+                           `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                           `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                           `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                           `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                           PRIMARY KEY (`id`) USING BTREE,
+                           KEY `manufacturer_id` (`manufacturer_id`) USING BTREE COMMENT '厂商ID索引'
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8 COMMENT='产品模型';
 
 -- ----------------------------
 -- Records of product
 -- ----------------------------
 BEGIN;
-INSERT INTO `product` (`id`, `app_id`, `template_id`, `product_name`, `product_identification`, `product_type`, `manufacturer_id`, `manufacturer_name`, `model`, `data_format`, `device_type`, `protocol_type`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (28, 'thinglinks', NULL, 'product_n', '603600f731c64af5ba1b85aeb767361a', 'COMMON', 'TestUtf8ManuId', 'HZYB', 'NBIoTDevice', 'JSON', 'WaterMeter', 'HTTP', '0', '', 'admin', '2022-05-06 12:54:23', 'thinglinks', '2022-05-26 20:12:49');
-INSERT INTO `product` (`id`, `app_id`, `template_id`, `product_name`, `product_identification`, `product_type`, `manufacturer_id`, `manufacturer_name`, `model`, `data_format`, `device_type`, `protocol_type`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (32, 'thinglinks', 1234, '测试震动传感器', '760ed36fd22342238acbf002f0dedc1a', 'COMMON', 'TestVibrationSensor', 'vibrationSensor', 'WifiSensor', 'JSON', 'sensor', 'MQTT', '0', '震动传感器', 'admin', '2022-06-24 17:21:11', '', '2022-06-24 17:21:11');
-INSERT INTO `product` (`id`, `app_id`, `template_id`, `product_name`, `product_identification`, `product_type`, `manufacturer_id`, `manufacturer_name`, `model`, `data_format`, `device_type`, `protocol_type`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (33, 'thinglinks', 321, '123', '36d71f61dedd453e99f5feabb8e0197d', 'COMMON', '123', '123', '123', 'JSON', 'Default', 'MQTT', '0', '123', 'admin', '2022-06-26 19:56:15', '', '2022-06-26 19:56:15');
-INSERT INTO `product` (`id`, `app_id`, `template_id`, `product_name`, `product_identification`, `product_type`, `manufacturer_id`, `manufacturer_name`, `model`, `data_format`, `device_type`, `protocol_type`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (34, 'thinglinks', 123, '312', '01ca9bdc522c44d6b21ae89bda6fe179', 'COMMON', '213', '312', '321', 'JSON', 'Default', 'MQTT', '0', '321', 'admin', '2022-06-26 20:02:06', '', '2022-06-26 20:02:06');
+INSERT INTO `product` (`id`, `app_id`, `template_id`, `product_name`, `product_identification`, `product_type`, `manufacturer_id`, `manufacturer_name`, `model`, `data_format`, `device_type`, `protocol_type`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (35, 'thinglinks', NULL, '微气象', '22e5c7c012784b15ab7f768508eeb043', 'COMMON', 'TestUtf8ManuId', 'thinglinks', '01QX', 'JSON', 'MicroWeather', 'MQTT', '0', '微气象检测装置', 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:46');
+INSERT INTO `product` (`id`, `app_id`, `template_id`, `product_name`, `product_identification`, `product_type`, `manufacturer_id`, `manufacturer_name`, `model`, `data_format`, `device_type`, `protocol_type`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (36, 'thinglinks', NULL, 'quick', '04253d5701624eb1afbdfcca6bf7668d', 'COMMON', 'quick', 'quick', 'quick', 'JSON', 'quick', 'MQTT', '0', 'quick', 'admin', '2022-07-06 11:34:50', '', '2022-07-06 11:34:48');
+INSERT INTO `product` (`id`, `app_id`, `template_id`, `product_name`, `product_identification`, `product_type`, `manufacturer_id`, `manufacturer_name`, `model`, `data_format`, `device_type`, `protocol_type`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (37, 'thinglinks', NULL, '这是bj测试产品', '82325a1de5e84ea88f332f3dbc10f6d5', 'COMMON', 'bj001', 'bj001', 'wsd', 'JSON', 'cgq', 'MQTT', '0', '', 'admin', '2022-07-12 16:25:01', '', '2022-07-12 16:25:01');
+INSERT INTO `product` (`id`, `app_id`, `template_id`, `product_name`, `product_identification`, `product_type`, `manufacturer_id`, `manufacturer_name`, `model`, `data_format`, `device_type`, `protocol_type`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (38, 'thinglinks', NULL, 'co2', '0d6f540f643c46cb83df6758e090236d', 'COMMON', 'bj001', 'bj001', 'co2', 'JSON', 'cgq', 'MQTT', '0', '', 'admin', '2022-07-12 16:35:29', '', '2022-07-12 16:35:29');
+INSERT INTO `product` (`id`, `app_id`, `template_id`, `product_name`, `product_identification`, `product_type`, `manufacturer_id`, `manufacturer_name`, `model`, `data_format`, `device_type`, `protocol_type`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (39, 'thinglinks', NULL, 'YL测试', 'c69cae31d9eb456db31eceebf8a4e0f4', 'COMMON', '1111', '111', '111', 'hex', '1111', 'MQTT', '1', NULL, 'admin', '2022-07-13 14:05:35', 'admin', '2022-07-14 09:47:14');
 COMMIT;
 
 -- ----------------------------
@@ -723,16 +919,16 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `product_commands`;
 CREATE TABLE `product_commands` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT '命令id',
-  `service_id` bigint(19) NOT NULL COMMENT '服务ID',
-  `name` varchar(255) NOT NULL COMMENT '指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。\r\n支持英文大小写、数字及下划线，长度[2,50]。\r\n',
-  `description` varchar(255) DEFAULT NULL COMMENT '命令描述。',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `service_id` (`service_id`) USING BTREE
+                                    `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT '命令id',
+                                    `service_id` bigint(19) NOT NULL COMMENT '服务ID',
+                                    `name` varchar(255) NOT NULL COMMENT '指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。\r\n支持英文大小写、数字及下划线，长度[2,50]。\r\n',
+                                    `description` varchar(255) DEFAULT NULL COMMENT '命令描述。',
+                                    `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                                    `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                                    `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                    PRIMARY KEY (`id`) USING BTREE,
+                                    KEY `service_id` (`service_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='产品模型设备服务命令表';
 
 -- ----------------------------
@@ -746,27 +942,26 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `product_commands_requests`;
 CREATE TABLE `product_commands_requests` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `service_id` bigint(19) NOT NULL COMMENT '服务ID',
-  `commands_id` bigint(19) NOT NULL COMMENT '命令ID',
-  `is_required` varchar(10) NOT NULL COMMENT '是否必填(字典值：是  否)',
-  `datatype` varchar(255) NOT NULL COMMENT '指示数据类型。取值范围：string、int、decimal\r\n',
-  `enumlist` varchar(255) DEFAULT NULL COMMENT '指示枚举值。\r\n如开关状态status可有如下取值\r\n"enumList" : ["OPEN","CLOSE"]\r\n目前本字段是非功能性字段，仅起到描述作用。建议准确定义。\r\n',
-  `max` varchar(255) DEFAULT NULL COMMENT '指示最大值。\r\n仅当dataType为int、decimal时生效，逻辑小于等于。',
-  `maxlength` varchar(255) DEFAULT NULL COMMENT '指示字符串长度。\r\n仅当dataType为string时生效。',
-  `min` varchar(255) DEFAULT NULL COMMENT '指示最小值。\r\n仅当dataType为int、decimal时生效，逻辑大于等于。',
-  `parameter_description` varchar(255) DEFAULT NULL COMMENT '命令中参数的描述，不影响实际功能，可配置为空字符串""。',
-  `parameter_name` varchar(255) DEFAULT NULL COMMENT '命令中参数的名字。',
-  `required` varchar(255) DEFAULT NULL COMMENT '指示本条属性是否必填，取值为0或1，默认取值1（必填）。\r\n目前本字段是非功能性字段，仅起到描述作用。',
-  `step` varchar(255) DEFAULT NULL COMMENT '指示步长。',
-  `unit` varchar(255) DEFAULT NULL COMMENT '指示单位。\r\n取值根据参数确定，如：\r\n•温度单位：“C”或“K”\r\n•百分比单位：“%”\r\n•压强单位：“Pa”或“kPa”\r\n',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `commands_id` (`commands_id`) USING BTREE,
-  KEY `service_id` (`service_id`) USING BTREE
+                                             `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                             `service_id` bigint(19) NOT NULL COMMENT '服务ID',
+                                             `commands_id` bigint(19) NOT NULL COMMENT '命令ID',
+                                             `datatype` varchar(255) NOT NULL COMMENT '指示数据类型。取值范围：string、int、decimal\r\n',
+                                             `enumlist` varchar(255) DEFAULT NULL COMMENT '指示枚举值。\r\n如开关状态status可有如下取值\r\n"enumList" : ["OPEN","CLOSE"]\r\n目前本字段是非功能性字段，仅起到描述作用。建议准确定义。\r\n',
+                                             `max` varchar(255) DEFAULT NULL COMMENT '指示最大值。\r\n仅当dataType为int、decimal时生效，逻辑小于等于。',
+                                             `maxlength` varchar(255) DEFAULT NULL COMMENT '指示字符串长度。\r\n仅当dataType为string时生效。',
+                                             `min` varchar(255) DEFAULT NULL COMMENT '指示最小值。\r\n仅当dataType为int、decimal时生效，逻辑大于等于。',
+                                             `parameter_description` varchar(255) DEFAULT NULL COMMENT '命令中参数的描述，不影响实际功能，可配置为空字符串""。',
+                                             `parameter_name` varchar(255) DEFAULT NULL COMMENT '命令中参数的名字。',
+                                             `required` varchar(255) NOT NULL COMMENT '指示本条属性是否必填，取值为0或1，默认取值1（必填）。\r\n目前本字段是非功能性字段，仅起到描述作用。',
+                                             `step` varchar(255) DEFAULT NULL COMMENT '指示步长。',
+                                             `unit` varchar(255) DEFAULT NULL COMMENT '指示单位。\r\n取值根据参数确定，如：\r\n•温度单位：“C”或“K”\r\n•百分比单位：“%”\r\n•压强单位：“Pa”或“kPa”\r\n',
+                                             `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                                             `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                                             `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                             `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                             PRIMARY KEY (`id`) USING BTREE,
+                                             KEY `commands_id` (`commands_id`) USING BTREE,
+                                             KEY `service_id` (`service_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='产品模型设备下发服务命令属性表';
 
 -- ----------------------------
@@ -780,27 +975,26 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `product_commands_response`;
 CREATE TABLE `product_commands_response` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `commands_id` bigint(19) NOT NULL COMMENT '命令ID',
-  `service_id` bigint(19) DEFAULT NULL COMMENT '服务ID',
-  `is_required` varchar(10) NOT NULL COMMENT '是否必填(字典值：是  否)',
-  `datatype` varchar(255) NOT NULL COMMENT '指示数据类型。取值范围：string、int、decimal\r\n',
-  `enumlist` varchar(255) DEFAULT NULL COMMENT '指示枚举值。\r\n如开关状态status可有如下取值\r\n"enumList" : ["OPEN","CLOSE"]\r\n目前本字段是非功能性字段，仅起到描述作用。建议准确定义。\r\n',
-  `max` varchar(255) DEFAULT NULL COMMENT '指示最大值。\r\n仅当dataType为int、decimal时生效，逻辑小于等于。',
-  `maxlength` varchar(255) DEFAULT NULL COMMENT '指示字符串长度。\r\n仅当dataType为string时生效。',
-  `min` varchar(255) DEFAULT NULL COMMENT '指示最小值。\r\n仅当dataType为int、decimal时生效，逻辑大于等于。',
-  `parameter_description` varchar(255) DEFAULT NULL COMMENT '命令中参数的描述，不影响实际功能，可配置为空字符串""。',
-  `parameter_name` varchar(255) DEFAULT NULL COMMENT '命令中参数的名字。',
-  `required` varchar(255) DEFAULT NULL COMMENT '指示本条属性是否必填，取值为0或1，默认取值1（必填）。\r\n目前本字段是非功能性字段，仅起到描述作用。',
-  `step` varchar(255) DEFAULT NULL COMMENT '指示步长。',
-  `unit` varchar(255) DEFAULT NULL COMMENT '指示单位。\r\n取值根据参数确定，如：\r\n•温度单位：“C”或“K”\r\n•百分比单位：“%”\r\n•压强单位：“Pa”或“kPa”\r\n',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `commands_id` (`commands_id`) USING BTREE,
-  KEY `service_id` (`service_id`) USING BTREE
+                                             `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                             `commands_id` bigint(19) NOT NULL COMMENT '命令ID',
+                                             `service_id` bigint(19) DEFAULT NULL COMMENT '服务ID',
+                                             `datatype` varchar(255) NOT NULL COMMENT '指示数据类型。取值范围：string、int、decimal\r\n',
+                                             `enumlist` varchar(255) DEFAULT NULL COMMENT '指示枚举值。\r\n如开关状态status可有如下取值\r\n"enumList" : ["OPEN","CLOSE"]\r\n目前本字段是非功能性字段，仅起到描述作用。建议准确定义。\r\n',
+                                             `max` varchar(255) DEFAULT NULL COMMENT '指示最大值。\r\n仅当dataType为int、decimal时生效，逻辑小于等于。',
+                                             `maxlength` varchar(255) DEFAULT NULL COMMENT '指示字符串长度。\r\n仅当dataType为string时生效。',
+                                             `min` varchar(255) DEFAULT NULL COMMENT '指示最小值。\r\n仅当dataType为int、decimal时生效，逻辑大于等于。',
+                                             `parameter_description` varchar(255) DEFAULT NULL COMMENT '命令中参数的描述，不影响实际功能，可配置为空字符串""。',
+                                             `parameter_name` varchar(255) DEFAULT NULL COMMENT '命令中参数的名字。',
+                                             `required` varchar(255) NOT NULL COMMENT '指示本条属性是否必填，取值为0或1，默认取值1（必填）。\r\n目前本字段是非功能性字段，仅起到描述作用。',
+                                             `step` varchar(255) DEFAULT NULL COMMENT '指示步长。',
+                                             `unit` varchar(255) DEFAULT NULL COMMENT '指示单位。\r\n取值根据参数确定，如：\r\n•温度单位：“C”或“K”\r\n•百分比单位：“%”\r\n•压强单位：“Pa”或“kPa”\r\n',
+                                             `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                                             `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                                             `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                             `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                             PRIMARY KEY (`id`) USING BTREE,
+                                             KEY `commands_id` (`commands_id`) USING BTREE,
+                                             KEY `service_id` (`service_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='产品模型设备响应服务命令属性表';
 
 -- ----------------------------
@@ -814,26 +1008,26 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `product_properties`;
 CREATE TABLE `product_properties` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT '属性id',
-  `name` varchar(255) NOT NULL COMMENT '指示属性名称。',
-  `service_id` bigint(19) NOT NULL COMMENT '服务ID',
-  `datatype` varchar(255) NOT NULL COMMENT '指示数据类型：取值范围：string、int、decimal（float和double都可以使用此类型）、DateTime、jsonObject上报数据时，复杂类型数据格式如下：\r\n•DateTime:yyyyMMdd’T’HHmmss’Z’如:20151212T121212Z•jsonObject：自定义json结构体，平台不理解只透传\r\n',
-  `description` varchar(255) DEFAULT NULL COMMENT '属性描述，不影响实际功能，可配置为空字符串""。',
-  `enumlist` varchar(255) DEFAULT NULL COMMENT '指示枚举值:如开关状态status可有如下取值"enumList" : ["OPEN","CLOSE"]目前本字段是非功能性字段，仅起到描述作用。建议准确定义。\r\n',
-  `max` varchar(255) DEFAULT NULL COMMENT '指示最大值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑小于等于。\r\n',
-  `maxlength` bigint(19) DEFAULT NULL COMMENT '指示字符串长度。仅当dataType为string、DateTime时生效。\r\n',
-  `method` varchar(255) DEFAULT NULL COMMENT '指示访问模式。R:可读；W:可写；E属性值更改时上报数据取值范围：R、RW、RE、RWE\r\n',
-  `min` varchar(255) DEFAULT NULL COMMENT '指示最小值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑大于等于。\r\n',
-  `required` int(2) DEFAULT NULL COMMENT '指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。(字典值link_product_isRequired：0非必填 1必填)\r\n',
-  `step` int(9) DEFAULT NULL COMMENT '指示步长。',
-  `unit` varchar(255) DEFAULT NULL COMMENT '指示单位。支持长度不超过50。\r\n取值根据参数确定，如：\r\n•温度单位：“C”或“K”\r\n•百分比单位：“%”\r\n•压强单位：“Pa”或“kPa”\r\n',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `service_id` (`service_id`) USING BTREE COMMENT '服务ID'
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8 COMMENT='产品模型服务属性表';
+                                      `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT '属性id',
+                                      `name` varchar(255) NOT NULL COMMENT '指示属性名称。',
+                                      `service_id` bigint(19) NOT NULL COMMENT '服务ID',
+                                      `datatype` varchar(255) NOT NULL COMMENT '指示数据类型：取值范围：string、int、decimal（float和double都可以使用此类型）、DateTime、jsonObject上报数据时，复杂类型数据格式如下：\r\n•DateTime:yyyyMMdd’T’HHmmss’Z’如:20151212T121212Z•jsonObject：自定义json结构体，平台不理解只透传\r\n',
+                                      `description` varchar(255) DEFAULT NULL COMMENT '属性描述，不影响实际功能，可配置为空字符串""。',
+                                      `enumlist` varchar(255) DEFAULT NULL COMMENT '指示枚举值:如开关状态status可有如下取值"enumList" : ["OPEN","CLOSE"]目前本字段是非功能性字段，仅起到描述作用。建议准确定义。\r\n',
+                                      `max` varchar(255) DEFAULT NULL COMMENT '指示最大值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑小于等于。\r\n',
+                                      `maxlength` bigint(19) DEFAULT NULL COMMENT '指示字符串长度。仅当dataType为string、DateTime时生效。\r\n',
+                                      `method` varchar(255) DEFAULT NULL COMMENT '指示访问模式。R:可读；W:可写；E属性值更改时上报数据取值范围：R、RW、RE、RWE\r\n',
+                                      `min` varchar(255) DEFAULT NULL COMMENT '指示最小值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑大于等于。\r\n',
+                                      `required` int(2) DEFAULT NULL COMMENT '指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。(字典值link_product_isRequired：0非必填 1必填)\r\n',
+                                      `step` int(9) DEFAULT NULL COMMENT '指示步长。',
+                                      `unit` varchar(255) DEFAULT NULL COMMENT '指示单位。支持长度不超过50。\r\n取值根据参数确定，如：\r\n•温度单位：“C”或“K”\r\n•百分比单位：“%”\r\n•压强单位：“Pa”或“kPa”\r\n',
+                                      `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                                      `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                                      `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                      `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                      PRIMARY KEY (`id`) USING BTREE,
+                                      KEY `service_id` (`service_id`) USING BTREE COMMENT '服务ID'
+) ENGINE=InnoDB AUTO_INCREMENT=126 DEFAULT CHARSET=utf8 COMMENT='产品模型服务属性表';
 
 -- ----------------------------
 -- Records of product_properties
@@ -874,6 +1068,64 @@ INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `descr
 INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (65, '123', 44, 'string', '123', '123', '123', 4093, '123', '123', 0, 0, '123', 'admin', '2022-06-28 13:52:52', '', '2022-06-28 13:52:52');
 INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (66, '321', 45, 'string', '321', '321', '321', 4093, '312', '321', 0, 0, '213', 'admin', '2022-06-28 13:52:52', '', '2022-06-28 13:52:52');
 INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (67, '12', 46, 'string', '12', '12', '121', 12, '12', '12', 0, 12, '12', 'admin', '2022-06-28 20:47:43', '', '2022-06-28 20:47:43');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (68, 'timestamp', 47, 'timestamp', '采集时间', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (69, 'acc_x', 47, 'decimal', 'x向数据', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (70, 'acc_y', 47, 'decimal', 'y向数据', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (71, 'acc_z', 47, 'decimal', 'z向数据', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (72, 'model', 47, 'string', '传感器型号', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (73, 'version', 47, 'string', '固件版本', NULL, '65536', 10, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (74, 'sample_frequency', 47, 'int', '采样频率', NULL, '10000', 10, 'R', '0', 1, 1, 'S', 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (75, 'object_temperature', 47, 'decimal', '物体温度', NULL, '1000', 10, 'R', '0', 1, 1, '°C', 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (76, 'battery_voltage', 47, 'decimal', '电池电压', NULL, '10000', 10, 'R', '0', 1, 1, 'KW', 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (77, 'timestamp', 48, 'timestamp', '采集时间', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (78, 'total_files', 48, 'int', '总包数', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (79, 'upload_speed', 48, 'decimal', '上传速度', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:35:10', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (80, 'wifi_rssi', 48, 'int', 'wifi_rssi', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:35:10', '', '2022-06-30 15:35:07');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (81, 'timestamp', 49, 'timestamp', '采集时间', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:44:54', '', '2022-06-30 15:44:52');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (82, 'acc_x', 49, 'decimal', 'x向数据', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:44:54', '', '2022-06-30 15:44:52');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (83, 'acc_y', 49, 'decimal', 'y向数据', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:44:54', '', '2022-06-30 15:44:52');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (84, 'acc_z', 49, 'decimal', 'z向数据', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:44:54', '', '2022-06-30 15:44:52');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (85, 'model', 49, 'string', '传感器型号', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:44:54', '', '2022-06-30 15:44:52');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (86, 'version', 49, 'string', '固件版本', NULL, '65536', 10, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:44:54', '', '2022-06-30 15:44:52');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (87, 'sample_frequency', 49, 'int', '采样频率', NULL, '10000', 10, 'R', '0', 1, 1, 'S', 'admin', '2022-06-30 15:44:55', '', '2022-06-30 15:44:52');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (88, 'object_temperature', 49, 'decimal', '物体温度', NULL, '1000', 10, 'R', '0', 1, 1, '°C', 'admin', '2022-06-30 15:44:55', '', '2022-06-30 15:44:52');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (89, 'battery_voltage', 49, 'decimal', '电池电压', NULL, '10000', 10, 'R', '0', 1, 1, 'KW', 'admin', '2022-06-30 15:44:55', '', '2022-06-30 15:44:52');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (90, 'timestamp', 50, 'timestamp', '采集时间', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:44:55', '', '2022-06-30 15:44:52');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (91, 'total_files', 50, 'int', '总包数', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:44:55', '', '2022-06-30 15:44:53');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (92, 'upload_speed', 50, 'decimal', '上传速度', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:44:55', '', '2022-06-30 15:44:53');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (93, 'wifi_rssi', 50, 'int', 'wifi_rssi', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:44:55', '', '2022-06-30 15:44:53');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (94, 'timestamp', 51, 'timestamp', '采集时间', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (95, 'acc_x', 51, 'decimal', 'x向数据', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (96, 'acc_y', 51, 'decimal', 'y向数据', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (97, 'acc_z', 51, 'decimal', 'z向数据', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (98, 'model', 51, 'string', '传感器型号', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (99, 'version', 51, 'string', '固件版本', NULL, '65536', 10, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (100, 'sample_frequency', 51, 'int', '采样频率', NULL, '10000', 10, 'R', '0', 1, 1, 'S', 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (101, 'object_temperature', 51, 'decimal', '物体温度', NULL, '1000', 10, 'R', '0', 1, 1, '°C', 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (102, 'battery_voltage', 51, 'decimal', '电池电压', NULL, '10000', 10, 'R', '0', 1, 1, 'KW', 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (103, 'timestamp', 52, 'timestamp', '采集时间', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (104, 'total_files', 52, 'int', '总包数', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (105, 'upload_speed', 52, 'decimal', '上传速度', NULL, '65536', 16374, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (106, 'wifi_rssi', 52, 'int', 'wifi_rssi', NULL, '65536', 255, 'R', '0', 1, 1, NULL, 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (107, 'deviceCode', 53, 'string', '设备编号', NULL, '65536', 10, 'RW', '0', 1, 1, NULL, 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (108, 'averageWindSpeed10min', 53, 'decimal', '10分钟平均风速', NULL, '65536', 10, 'RW', '0', 1, NULL, 'm/s', 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (109, 'maxWindSpeed', 53, 'decimal', '最大风速', NULL, '65536', 10, 'RW', '0', 1, NULL, 'm/s', 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (110, 'extremeWindSpeed', 53, 'decimal', '极大风速', NULL, '65536', 10, 'RW', '0', 1, NULL, 'm/s', 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (111, 'standardWindSpeed', 53, 'decimal', '标准风速', NULL, '65536', 10, 'RW', '0', 1, NULL, 'm/s', 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (112, 'airTemperature', 53, 'decimal', '气温浮点', NULL, '65536', 10, 'RW', '0', 1, NULL, '℃', 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (113, 'humidity', 53, 'int', '湿度', NULL, '65536', 10, 'RW', '0', 1, NULL, '%RH', 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (114, 'airPressure', 53, 'decimal', '气压', NULL, '65536', 10, 'RW', '0', 1, NULL, 'hPa', 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (115, 'precipitation', 53, 'decimal', '降雨量', NULL, '65536', 10, 'RW', '0', 1, NULL, 'mm', 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (116, 'precipitationIntensity', 53, 'decimal', '降水强度', NULL, '65536', 10, 'RW', '0', 1, NULL, 'mm/min', 'admin', '2022-07-05 17:55:48', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (117, 'radiationIntensity', 53, 'int', '光辐射度', NULL, '65536', 10, 'RW', '0', 1, NULL, 'W/m2', 'admin', '2022-07-05 17:55:48', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (118, 'collectTime', 53, 'timestamp', '采集时间', NULL, '65536', 10, 'RW', '0', 1, NULL, NULL, 'admin', '2022-07-05 17:55:48', '', '2022-07-05 17:55:47');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (119, 'quick', 54, 'string', NULL, NULL, '0', 2, 'R', '0', 0, 1, NULL, 'admin', '2022-07-06 11:34:50', '', '2022-07-06 11:34:48');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (120, '温度', 56, 'int', '1', NULL, '80', 0, 'R', '40', 1, 0, '°', 'admin', '2022-07-12 16:25:01', '', '2022-07-12 16:25:01');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (121, '氧气浓度', 57, 'int', NULL, NULL, '2000', 0, 'R', '0', 1, 0, 'hpm', 'admin', '2022-07-12 16:35:29', '', '2022-07-12 16:35:29');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (122, 'w00000', 58, 'decimal', '污水', NULL, '100', NULL, 'RE', '0', 0, 1, NULL, 'admin', '2022-07-13 13:56:31', '', '2022-07-13 13:56:32');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (123, 'w01001', 58, 'decimal', 'pH 值', NULL, '100', NULL, 'RE', '0', 0, 1, NULL, 'admin', '2022-07-13 13:56:51', '', '2022-07-13 13:56:51');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (124, 'w00000', 60, 'decimal', '污水', NULL, '10', NULL, 'RE', '0', 0, 1, NULL, 'admin', '2022-07-13 14:06:37', '', '2022-07-13 14:06:36');
+INSERT INTO `product_properties` (`id`, `name`, `service_id`, `datatype`, `description`, `enumlist`, `max`, `maxlength`, `method`, `min`, `required`, `step`, `unit`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (125, 'w01001', 60, 'decimal', 'pH 值', NULL, '100', NULL, 'RE', '0', 0, 1, NULL, 'admin', '2022-07-13 14:06:53', '', '2022-07-13 14:06:53');
 COMMIT;
 
 -- ----------------------------
@@ -881,19 +1133,19 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `product_services`;
 CREATE TABLE `product_services` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT '服务id',
-  `service_name` varchar(255) NOT NULL COMMENT '服务名称:支持英文大小写、数字、下划线和中划线\r\n',
-  `product_id` bigint(19) DEFAULT NULL COMMENT '产品ID',
-  `template_id` bigint(19) DEFAULT NULL COMMENT '产品模型模板ID',
-  `status` varchar(10) NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
-  `description` varchar(255) DEFAULT NULL COMMENT '服务的描述信息:文本描述，不影响实际功能，可配置为空字符串""。\r\n',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `product_id` (`product_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8 COMMENT='产品模型服务表';
+                                    `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT '服务id',
+                                    `service_name` varchar(255) NOT NULL COMMENT '服务名称:支持英文大小写、数字、下划线和中划线\r\n',
+                                    `product_id` bigint(19) DEFAULT NULL COMMENT '产品ID',
+                                    `template_id` bigint(19) DEFAULT NULL COMMENT '产品模型模板ID',
+                                    `status` varchar(10) NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
+                                    `description` varchar(255) DEFAULT NULL COMMENT '服务的描述信息:文本描述，不影响实际功能，可配置为空字符串""。\r\n',
+                                    `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                                    `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                                    `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                    PRIMARY KEY (`id`) USING BTREE,
+                                    KEY `product_id` (`product_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8 COMMENT='产品模型服务表';
 
 -- ----------------------------
 -- Records of product_services
@@ -910,6 +1162,20 @@ INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id
 INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (44, '123', 33, NULL, '0', '123', 'admin', '2022-06-26 19:56:15', '', '2022-06-26 19:56:15');
 INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (45, '312', 34, NULL, '0', '312', 'admin', '2022-06-26 20:02:06', '', '2022-06-26 20:02:06');
 INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (46, '12', 35, NULL, '0', '12', 'admin', '2022-06-28 20:47:43', '', '2022-06-28 20:47:43');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (47, 'service1', 35, NULL, '0', '震动传感器遥测数据指标', 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (48, 'service2', 35, NULL, '0', '震动传感器网络数据指标', 'admin', '2022-06-30 15:35:09', '', '2022-06-30 15:35:07');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (49, 'service1', 36, NULL, '0', '震动传感器遥测数据指标', 'admin', '2022-06-30 15:44:54', '', '2022-06-30 15:44:52');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (50, 'service2', 36, NULL, '0', '震动传感器网络数据指标', 'admin', '2022-06-30 15:44:55', '', '2022-06-30 15:44:52');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (51, 'service1', 37, NULL, '0', '震动传感器遥测数据指标', 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (52, 'service2', 37, NULL, '0', '震动传感器网络数据指标', 'admin', '2022-06-30 15:47:56', '', '2022-06-30 15:47:54');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (53, 'weather1', 35, NULL, '0', '微气象传感器1', 'admin', '2022-07-05 17:55:47', '', '2022-07-05 17:55:46');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (54, 'quick', 36, NULL, '0', NULL, 'admin', '2022-07-06 11:34:50', '', '2022-07-06 11:34:48');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (55, '12312321', NULL, 1, '0', NULL, 'admin', '2022-07-11 14:42:32', '', '2022-07-11 14:42:30');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (56, 'wsdser', 37, NULL, '0', NULL, 'admin', '2022-07-12 16:25:01', '', '2022-07-12 16:25:01');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (57, 'co2ser', 38, NULL, '0', NULL, 'admin', '2022-07-12 16:35:29', '', '2022-07-12 16:35:29');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (58, 'water', NULL, 2, '0', '废水', 'admin', '2022-07-13 13:54:20', '', '2022-07-13 13:54:20');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (59, 'gas', NULL, 2, '0', '废气', 'admin', '2022-07-13 13:54:29', '', '2022-07-13 13:54:29');
+INSERT INTO `product_services` (`id`, `service_name`, `product_id`, `template_id`, `status`, `description`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (60, 'water', 39, NULL, '0', NULL, 'admin', '2022-07-13 14:06:04', '', '2022-07-13 14:06:03');
 COMMIT;
 
 -- ----------------------------
@@ -917,20 +1183,173 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `product_template`;
 CREATE TABLE `product_template` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `app_id` varchar(64) NOT NULL COMMENT '应用ID',
-  `template_name` varchar(255) NOT NULL COMMENT '产品模板名称:自定义，支持中文、英文大小写、数字、下划线和中划线',
-  `status` varchar(10) NOT NULL COMMENT '状态(字典值：启用  停用)',
-  `remark` varchar(255) DEFAULT NULL COMMENT '产品模型模板描述',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='产品模板';
+                                    `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                    `app_id` varchar(64) NOT NULL COMMENT '应用ID',
+                                    `template_name` varchar(255) NOT NULL COMMENT '产品模板名称:自定义，支持中文、英文大小写、数字、下划线和中划线',
+                                    `status` varchar(10) NOT NULL COMMENT '状态(字典值：启用  停用)',
+                                    `remark` varchar(255) DEFAULT NULL COMMENT '产品模型模板描述',
+                                    `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                                    `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                                    `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                    PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='产品模板';
 
 -- ----------------------------
 -- Records of product_template
+-- ----------------------------
+BEGIN;
+INSERT INTO `product_template` (`id`, `app_id`, `template_name`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (1, 'thinglinks', '212', '0', '212', 'admin', '2022-07-15 10:10:44', 'admin', '2022-07-15 10:10:45');
+INSERT INTO `product_template` (`id`, `app_id`, `template_name`, `status`, `remark`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (2, 'thinglinks', 'HJ212-2017', '0', 'HJ212-2017', 'admin', '2022-07-13 14:02:09', 'admin', '2022-07-13 14:02:09');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for protocol
+-- ----------------------------
+DROP TABLE IF EXISTS `protocol`;
+CREATE TABLE `protocol` (
+                            `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                            `app_id` varchar(64) NOT NULL COMMENT '应用ID',
+                            `product_identification` varchar(100) NOT NULL COMMENT '产品标识',
+                            `protocol_name` varchar(255) DEFAULT NULL COMMENT '协议名称',
+                            `protocol_identification` varchar(255) DEFAULT NULL COMMENT '协议标识',
+                            `protocol_version` varchar(255) DEFAULT NULL COMMENT '协议版本',
+                            `protocol_type` varchar(255) DEFAULT NULL COMMENT '协议类型 ：mqtt || coap || modbus || http',
+                            `protocol_voice` varchar(255) DEFAULT NULL COMMENT '协议语言',
+                            `class_name` varchar(255) DEFAULT NULL COMMENT '类名',
+                            `file_path` varchar(255) DEFAULT NULL COMMENT '文件地址',
+                            `content` text COMMENT '内容',
+                            `status` varchar(10) NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
+                            `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                            `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                            `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                            `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                            `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                            PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='协议信息表';
+
+-- ----------------------------
+-- Records of protocol
+-- ----------------------------
+BEGIN;
+INSERT INTO `protocol` (`id`, `app_id`, `product_identification`, `protocol_name`, `protocol_identification`, `protocol_version`, `protocol_type`, `protocol_voice`, `class_name`, `file_path`, `content`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, 'thinglinks', '82325a1de5e84ea88f332f3dbc10f6d5', '温湿度产品协议转换', '22', '22', 'MQTT', 'java', '222', '222', 'import com.alibaba.fastjson.JSONArray;\nimport com.alibaba.fastjson.JSONObject;\n\nimport javax.xml.bind.annotation.adapters.HexBinaryAdapter;\nimport java.math.BigInteger;\nimport java.util.Date;\n\npublic class newtest {\n    public static void main(String[] args) throws Exception {\n        String injson = \"\";\n\n        if (args != null && args.length != 0) {\n            injson = args[0];\n        }\n        JSONObject parsejson = JSONObject.parseObject(injson);\n        System.out.println(Convert2SystemJSON(parsejson));\n    }\n    public static String Convert2SystemJSON(JSONObject injsonobj) throws Exception {\n        String hexdata = injsonobj.get(\"data\").toString();\n        byte[] bt = java.util.Base64.getDecoder().decode(hexdata);\n        JSONObject data = hex2wsdjsonobj(bt);\n\n        JSONArray services = new JSONArray();\n        JSONObject server = new JSONObject();\n        server.put(\"serviceId\", \"serdsd123\");\n        server.put(\"data\", data);\n        server.put(\"eventTime\", new Date());\n        services.add(server);\n\n        JSONObject dev = new JSONObject();\n        dev.put(\"deviceId\", injsonobj.get(\"devEui\"));\n        dev.put(\"services\", services);\n        JSONArray devices = new JSONArray();\n        devices.add(dev);\n\n        JSONObject root = new JSONObject();\n        root.put(\"devices\", devices);\n        return root.toJSONString();\n    }\n\n    /**\n     * 十六进制转换成10进制 负数也能转换\n     */\n    public static int hex16convert2(String hex) throws Exception {\n        if (hex.length() != 4) {\n            throw new Exception(\"必须是4个长度\");\n        }\n        int bit1 = Integer.parseInt(hex.substring(0, 1), 16);\n        if (bit1 &lt; 8)\n        {\n            return Integer.parseInt(hex, 16);\n        } else {\n            return new BigInteger(\"FFFF\" + hex, 16).intValue();\n        }\n    }\n\n    /**\n     * 温湿度解码\n     */\n    private static JSONObject hex2wsdjsonobj(byte[] bt) throws Exception {\n        javax.xml.bind.annotation.adapters.HexBinaryAdapter hexBinaryAdapter = new HexBinaryAdapter();\n        JSONObject data = new JSONObject();\n        String temp = hexBinaryAdapter.marshal(new byte[]{bt[2]});\n        String temp2 = hexBinaryAdapter.marshal(new byte[]{bt[3]});\n        String changtemp = change(temp, temp2);\n        data.put(\"temperature\", hex16convert2(changtemp) * 0.01);\n        temp = hexBinaryAdapter.marshal(new byte[]{bt[4]});\n        temp2 = hexBinaryAdapter.marshal(new byte[]{bt[5]});\n        changtemp = change(temp, temp2);\n        data.put(\"humidity\", hex16convert2(changtemp) * 0.01);\n        temp = hexBinaryAdapter.marshal(new byte[]{bt[8]});\n        temp2 = hexBinaryAdapter.marshal(new byte[]{bt[9]});\n        changtemp = change(temp, temp2);\n        data.put(\"battery\", hex16convert2(changtemp));\n        return data;\n    }\n\n    public static String change(String first, String end) {\n        return end + first;\n    }\n}\n', '0', 'admin', '2022-07-11 15:55:22', 'admin', '2022-07-14 17:12:21', '温湿度产品协议转换样例');
+INSERT INTO `protocol` (`id`, `app_id`, `product_identification`, `protocol_name`, `protocol_identification`, `protocol_version`, `protocol_type`, `protocol_voice`, `class_name`, `file_path`, `content`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2, '', '0d6f540f643c46cb83df6758e090236d', 'co2协议转换', '1', '1', 'MQTT', 'java', '1', '1', 'import com.alibaba.fastjson.JSONArray;\nimport com.alibaba.fastjson.JSONObject;\n\nimport javax.xml.bind.annotation.adapters.HexBinaryAdapter;\nimport java.util.Date;\n\npublic class co2test {\n    public static void main(String[] args) throws Exception {\n        String injson = \"\";\n\n        if (args != null && args.length != 0) {\n            injson = args[0];\n        }\n        JSONObject parsejson = JSONObject.parseObject(injson);\n        System.out.println(Convert2SystemJSON(parsejson));\n    }\n    public static String Convert2SystemJSON(JSONObject injsonobj) throws Exception {\n        String hexdata = injsonobj.get(\"data\").toString();\n        byte[] bt = java.util.Base64.getDecoder().decode(hexdata);\n        JSONObject data = hex2co2jsonobj(bt);\n\n        JSONArray services = new JSONArray();\n        JSONObject server = new JSONObject();\n        server.put(\"serviceId\", \"serdsd123\");\n        server.put(\"data\", data);\n        server.put(\"eventTime\", new Date());\n        services.add(server);\n\n        JSONObject dev = new JSONObject();\n        dev.put(\"deviceId\",  injsonobj.get(\"devEUI\").toString());\n        dev.put(\"services\", services);\n        JSONArray devices = new JSONArray();\n        devices.add(dev);\n\n        JSONObject root = new JSONObject();\n        root.put(\"devices\", devices);\n        return root.toJSONString();\n    }\n \n    private static JSONObject hex2co2jsonobj(byte[] bt) throws Exception {\n        javax.xml.bind.annotation.adapters.HexBinaryAdapter hexBinaryAdapter = new HexBinaryAdapter();\n        String hex=hexBinaryAdapter.marshal(bt);\n        JSONObject data = new JSONObject();\n        for (int i = 0; i &lt; hex.length(); i++) {\n            String td = hex.substring(i, i + 2);\n            String type = hex.substring(i + 2, i + 4); \n            if (td.equals(\"01\") && type.equals(\"75\")) {\n                data.put(\"battery\", Integer.parseInt(hex.substring(i + 4, i + 6), 16));\n            } \n            else if (td.equals(\"03\") && type.equals(\"67\")) { \n                String temp = change(hex.substring(i + 4, i + 6), hex.substring(i + 6, i + 8));\n                data.put(\"temperature\", Integer.parseInt(temp, 16) * 0.1);\n                i = i + 7;\n            } \n            else if (td.equals(\"04\") && type.equals(\"68\")) {\n                data.put(\"humidity\", Integer.parseInt(hex.substring(i + 4, i + 6), 16) / 2);\n                i = i + 5;\n            } \n            else if (td.equals(\"05\") && type.toLowerCase().equals(\"7d\")) {\n                String temp = change(hex.substring(i + 4, i + 6), hex.substring(i + 6, i + 8));\n                data.put(\"co2\", Integer.parseInt(temp, 16));\n                i = i + 7;\n            } \n            else if (td.equals(\"06\") && type.equals(\"73\")) {\n                String temp = change(hex.substring(i + 4, i + 6), hex.substring(i + 6, i + 8));\n                data.put(\"pressure\",Integer.parseInt(temp, 16) * 0.1);\n                i = i + 7;\n            } else {\n                break;\n            }\n        }\n        return data;\n    }\n\n    public static String change(String first, String end) {\n        return end + first;\n    }\n}\n', '0', 'admin', '2022-07-13 09:26:32', 'admin', '2022-07-14 16:58:23', 'co2协议转换样例');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for rule
+-- ----------------------------
+DROP TABLE IF EXISTS `rule`;
+CREATE TABLE `rule` (
+                        `id` bigint(1) NOT NULL AUTO_INCREMENT COMMENT '主键',
+                        `app_id` varchar(64) NOT NULL COMMENT '应用ID',
+                        `rule_name` varchar(255) NOT NULL COMMENT '规则名称',
+                        `cron_expression` varchar(50) DEFAULT NULL COMMENT '定时触发表达式',
+                        `status` varchar(10) NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
+                        `remark` varchar(255) DEFAULT NULL COMMENT '规则描述，可以为空',
+                        `create_by` varchar(64) DEFAULT NULL COMMENT '创建人',
+                        `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                        `update_by` varchar(64) DEFAULT NULL COMMENT '更新人',
+                        `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                        PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='规则信息表';
+
+-- ----------------------------
+-- Records of rule
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for rule_alarm
+-- ----------------------------
+DROP TABLE IF EXISTS `rule_alarm`;
+CREATE TABLE `rule_alarm` (
+                              `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '规则告警ID',
+                              `rule_id` bigint(20) DEFAULT NULL COMMENT '规则ID',
+                              `rule_alarm_name` varchar(255) DEFAULT NULL COMMENT '告警规则名称',
+                              `rule_alarm_status` int(10) DEFAULT NULL COMMENT '告警状态0 未启动  1运行中',
+                              `rule_alarm_remark` varchar(255) DEFAULT NULL COMMENT '告警规则描述',
+                              `rule_level` int(10) DEFAULT NULL COMMENT '告警级别',
+                              `notice_type` int(10) DEFAULT NULL COMMENT '通知方式',
+                              `create_by` varchar(64) DEFAULT NULL COMMENT '创建人',
+                              `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                              `update_by` varchar(64) DEFAULT NULL COMMENT '更新人',
+                              `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                              PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='规则告警表';
+
+-- ----------------------------
+-- Records of rule_alarm
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for rule_alarm_list
+-- ----------------------------
+DROP TABLE IF EXISTS `rule_alarm_list`;
+CREATE TABLE `rule_alarm_list` (
+                                   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+                                   `alarm_time` datetime DEFAULT NULL COMMENT '告警时间',
+                                   `alarm_name` varchar(255) DEFAULT NULL COMMENT '告警名称',
+                                   `alarm_level` int(10) DEFAULT NULL COMMENT '告警级别',
+                                   `alarm_describe` varchar(255) DEFAULT NULL COMMENT '告警描述',
+                                   `processing_result` int(10) DEFAULT NULL COMMENT '处理结果 0 未处理 1已处理',
+                                   `processing_opinions` varchar(255) DEFAULT NULL COMMENT '处理意见',
+                                   `alarm_content` varchar(500) DEFAULT NULL COMMENT '告警内容',
+                                   `processing_people` varchar(64) DEFAULT NULL COMMENT '处理人',
+                                   `processing_time` datetime DEFAULT NULL COMMENT '处理时间',
+                                   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='告警列表';
+
+-- ----------------------------
+-- Records of rule_alarm_list
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for rule_trigger
+-- ----------------------------
+DROP TABLE IF EXISTS `rule_trigger`;
+CREATE TABLE `rule_trigger` (
+                                `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '规则触发器主键',
+                                `rule_id` bigint(20) NOT NULL COMMENT '规则ID',
+                                `trigger_code` varchar(255) DEFAULT NULL COMMENT '触发器编码',
+                                `product_id` bigint(20) DEFAULT NULL COMMENT '产品ID',
+                                `device_id` bigint(20) DEFAULT NULL COMMENT '设备ID',
+                                `trigger_type` int(10) DEFAULT NULL COMMENT '触发器类型 0（属性触发）1（事件触发）2（上下线触发）',
+                                `create_by` varchar(64) DEFAULT NULL COMMENT '创建人',
+                                `create_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+                                `update_by` varchar(64) DEFAULT NULL COMMENT '更新人',
+                                `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='规则触发器';
+
+-- ----------------------------
+-- Records of rule_trigger
+-- ----------------------------
+BEGIN;
+COMMIT;
+
+-- ----------------------------
+-- Table structure for rule_trigger_info
+-- ----------------------------
+DROP TABLE IF EXISTS `rule_trigger_info`;
+CREATE TABLE `rule_trigger_info` (
+                                     `id` bigint(20) NOT NULL COMMENT '主键',
+                                     `rule_trigger_id` bigint(20) DEFAULT NULL COMMENT '规则触发器ID',
+                                     `product_services_id` bigint(20) DEFAULT NULL COMMENT '产品服务ID',
+                                     `product_properties_id` bigint(20) DEFAULT NULL COMMENT '产品服务属性ID',
+                                     `comparison_mode` varchar(255) DEFAULT NULL COMMENT '比较模式\r\n<\r\n<=\r\n>\r\n>=\r\n==\r\n!=\r\nin\r\nbetween',
+                                     `comparison_value` varchar(255) DEFAULT NULL COMMENT '比较值\r\n\r\nbetween类型传值例子  [10,15] 必须是两位，且数字不能重复\r\n判断数据是否处于一个离散的取值范围内，例如输入[1,2,3,4]，取值范围是1、2、3、4四个值，如果比较值类型为float(double)，两个float（double）型数值相差在0.000001范围内即为相等',
+                                     `data_aging` varchar(50) DEFAULT NULL COMMENT '数据时效（单位：秒）',
+                                     PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='规则触发器比较策略表';
+
+-- ----------------------------
+-- Records of rule_trigger_info
 -- ----------------------------
 BEGIN;
 COMMIT;
@@ -940,17 +1359,17 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_config`;
 CREATE TABLE `sys_config` (
-  `config_id` int(5) NOT NULL AUTO_INCREMENT COMMENT '参数主键',
-  `config_name` varchar(100) DEFAULT '' COMMENT '参数名称',
-  `config_key` varchar(100) DEFAULT '' COMMENT '参数键名',
-  `config_value` varchar(500) DEFAULT '' COMMENT '参数键值',
-  `config_type` char(1) DEFAULT 'N' COMMENT '系统内置（Y是 N否）',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`config_id`) USING BTREE
+                              `config_id` int(5) NOT NULL AUTO_INCREMENT COMMENT '参数主键',
+                              `config_name` varchar(100) DEFAULT '' COMMENT '参数名称',
+                              `config_key` varchar(100) DEFAULT '' COMMENT '参数键名',
+                              `config_value` varchar(500) DEFAULT '' COMMENT '参数键值',
+                              `config_type` char(1) DEFAULT 'N' COMMENT '系统内置（Y是 N否）',
+                              `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                              `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                              `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                              `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                              `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                              PRIMARY KEY (`config_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='参数配置表';
 
 -- ----------------------------
@@ -968,21 +1387,21 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_dept`;
 CREATE TABLE `sys_dept` (
-  `dept_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '部门id',
-  `parent_id` bigint(20) DEFAULT '0' COMMENT '父部门id',
-  `ancestors` varchar(50) DEFAULT '' COMMENT '祖级列表',
-  `dept_name` varchar(30) DEFAULT '' COMMENT '部门名称',
-  `order_num` int(4) DEFAULT '0' COMMENT '显示顺序',
-  `leader` varchar(20) DEFAULT NULL COMMENT '负责人',
-  `phone` varchar(11) DEFAULT NULL COMMENT '联系电话',
-  `email` varchar(50) DEFAULT NULL COMMENT '邮箱',
-  `status` char(1) DEFAULT '0' COMMENT '部门状态（0正常 1停用）',
-  `del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`dept_id`) USING BTREE
+                            `dept_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '部门id',
+                            `parent_id` bigint(20) DEFAULT '0' COMMENT '父部门id',
+                            `ancestors` varchar(50) DEFAULT '' COMMENT '祖级列表',
+                            `dept_name` varchar(30) DEFAULT '' COMMENT '部门名称',
+                            `order_num` int(4) DEFAULT '0' COMMENT '显示顺序',
+                            `leader` varchar(20) DEFAULT NULL COMMENT '负责人',
+                            `phone` varchar(11) DEFAULT NULL COMMENT '联系电话',
+                            `email` varchar(50) DEFAULT NULL COMMENT '邮箱',
+                            `status` char(1) DEFAULT '0' COMMENT '部门状态（0正常 1停用）',
+                            `del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+                            `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                            `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                            PRIMARY KEY (`dept_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='部门表';
 
 -- ----------------------------
@@ -1006,22 +1425,22 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_dict_data`;
 CREATE TABLE `sys_dict_data` (
-  `dict_code` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '字典编码',
-  `dict_sort` int(4) DEFAULT '0' COMMENT '字典排序',
-  `dict_label` varchar(100) DEFAULT '' COMMENT '字典标签',
-  `dict_value` varchar(100) DEFAULT '' COMMENT '字典键值',
-  `dict_type` varchar(100) DEFAULT '' COMMENT '字典类型',
-  `css_class` varchar(100) DEFAULT NULL COMMENT '样式属性（其他样式扩展）',
-  `list_class` varchar(100) DEFAULT NULL COMMENT '表格回显样式',
-  `is_default` char(1) DEFAULT 'N' COMMENT '是否默认（Y是 N否）',
-  `status` char(1) DEFAULT '0' COMMENT '状态（0正常 1停用）',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`dict_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='字典数据表';
+                                 `dict_code` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '字典编码',
+                                 `dict_sort` int(4) DEFAULT '0' COMMENT '字典排序',
+                                 `dict_label` varchar(100) DEFAULT '' COMMENT '字典标签',
+                                 `dict_value` varchar(100) DEFAULT '' COMMENT '字典键值',
+                                 `dict_type` varchar(100) DEFAULT '' COMMENT '字典类型',
+                                 `css_class` varchar(100) DEFAULT NULL COMMENT '样式属性（其他样式扩展）',
+                                 `list_class` varchar(100) DEFAULT NULL COMMENT '表格回显样式',
+                                 `is_default` char(1) DEFAULT 'N' COMMENT '是否默认（Y是 N否）',
+                                 `status` char(1) DEFAULT '0' COMMENT '状态（0正常 1停用）',
+                                 `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                                 `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                 `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                 `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                                 `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                                 PRIMARY KEY (`dict_code`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='字典数据表';
 
 -- ----------------------------
 -- Records of sys_dict_data
@@ -1095,6 +1514,8 @@ INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`, `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (69, 0, 'decimal', 'decimal', 'link_product_datatype', NULL, 'default', 'N', '0', 'admin', '2022-06-24 18:43:28', '', NULL, NULL);
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`, `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (70, 0, 'timestamp', 'timestamp', 'link_product_datatype', NULL, 'default', 'N', '0', 'admin', '2022-06-24 18:43:58', '', NULL, NULL);
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`, `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (71, 0, 'json', 'json', 'link_product_datatype', NULL, 'default', 'N', '0', 'admin', '2022-06-24 18:44:08', '', NULL, NULL);
+INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`, `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (72, 0, 'java', 'java', 'link_protocol_voice', NULL, 'default', 'N', '0', 'admin', '2022-07-04 11:17:07', '', NULL, 'java');
+INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`, `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (73, 3, '协议管理', 'PROTOCOL', 'sys_job_group', NULL, 'default', 'N', '0', 'admin', '2022-07-11 15:48:55', 'admin', '2022-07-11 15:49:22', '协议管理');
 COMMIT;
 
 -- ----------------------------
@@ -1102,18 +1523,18 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_dict_type`;
 CREATE TABLE `sys_dict_type` (
-  `dict_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '字典主键',
-  `dict_name` varchar(100) DEFAULT '' COMMENT '字典名称',
-  `dict_type` varchar(100) DEFAULT '' COMMENT '字典类型',
-  `status` char(1) DEFAULT '0' COMMENT '状态（0正常 1停用）',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`dict_id`) USING BTREE,
-  UNIQUE KEY `dict_type` (`dict_type`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='字典类型表';
+                                 `dict_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '字典主键',
+                                 `dict_name` varchar(100) DEFAULT '' COMMENT '字典名称',
+                                 `dict_type` varchar(100) DEFAULT '' COMMENT '字典类型',
+                                 `status` char(1) DEFAULT '0' COMMENT '状态（0正常 1停用）',
+                                 `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                                 `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                 `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                 `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                                 `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                                 PRIMARY KEY (`dict_id`) USING BTREE,
+                                 UNIQUE KEY `dict_type` (`dict_type`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='字典类型表';
 
 -- ----------------------------
 -- Records of sys_dict_type
@@ -1146,6 +1567,7 @@ INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `cre
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (25, '设备影子状态', 'link_deviceInfo_shadow_enable', '0', 'admin', '2022-06-21 11:27:39', '', NULL, '是否支设备影子');
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (26, '业务数据状态', 'business_data_status', '0', 'admin', '2022-06-21 14:25:45', '', NULL, '业务数据状态标识（0启用  1停用）');
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (27, '指示数据类型', 'link_product_datatype', '0', 'admin', '2022-06-24 18:41:39', '', NULL, '产品模型指示数据类型');
+INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (28, '协议语言', 'link_protocol_voice', '0', 'admin', '2022-07-04 11:16:20', 'admin', '2022-07-04 17:09:29', '协议管理-支持的协议脚本语言');
 COMMIT;
 
 -- ----------------------------
@@ -1153,21 +1575,21 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_job`;
 CREATE TABLE `sys_job` (
-  `job_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '任务ID',
-  `job_name` varchar(64) NOT NULL DEFAULT '' COMMENT '任务名称',
-  `job_group` varchar(64) NOT NULL DEFAULT 'DEFAULT' COMMENT '任务组名',
-  `invoke_target` varchar(500) NOT NULL COMMENT '调用目标字符串',
-  `cron_expression` varchar(255) DEFAULT '' COMMENT 'cron执行表达式',
-  `misfire_policy` varchar(20) DEFAULT '3' COMMENT '计划执行错误策略（1立即执行 2执行一次 3放弃执行）',
-  `concurrent` char(1) DEFAULT '1' COMMENT '是否并发执行（0允许 1禁止）',
-  `status` char(1) DEFAULT '0' COMMENT '状态（0正常 1暂停）',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT '' COMMENT '备注信息',
-  PRIMARY KEY (`job_id`,`job_name`,`job_group`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='定时任务调度表';
+                           `job_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '任务ID',
+                           `job_name` varchar(64) NOT NULL DEFAULT '' COMMENT '任务名称',
+                           `job_group` varchar(64) NOT NULL DEFAULT 'DEFAULT' COMMENT '任务组名',
+                           `invoke_target` varchar(500) NOT NULL COMMENT '调用目标字符串',
+                           `cron_expression` varchar(255) DEFAULT '' COMMENT 'cron执行表达式',
+                           `misfire_policy` varchar(20) DEFAULT '3' COMMENT '计划执行错误策略（1立即执行 2执行一次 3放弃执行）',
+                           `concurrent` char(1) DEFAULT '1' COMMENT '是否并发执行（0允许 1禁止）',
+                           `status` char(1) DEFAULT '0' COMMENT '状态（0正常 1暂停）',
+                           `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                           `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                           `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                           `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                           `remark` varchar(500) DEFAULT '' COMMENT '备注信息',
+                           PRIMARY KEY (`job_id`,`job_name`,`job_group`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='定时任务调度表';
 
 -- ----------------------------
 -- Records of sys_job
@@ -1176,6 +1598,7 @@ BEGIN;
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`, `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, '系统默认（无参）', 'DEFAULT', 'ryTask.ryNoParams', '0/10 * * * * ?', '3', '1', '1', 'admin', '2021-09-17 18:40:15', 'mqtts', '2021-10-25 03:09:23', '');
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`, `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2, '系统默认（有参）', 'DEFAULT', 'ryTask.ryParams(\'ry\')', '0/15 * * * * ?', '3', '1', '1', 'admin', '2021-09-17 18:40:15', '', NULL, '');
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`, `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (3, '系统默认（多参）', 'DEFAULT', 'ryTask.ryMultipleParams(\'ry\', true, 2000L, 316.50D, 100)', '0/20 * * * * ?', '3', '1', '1', 'admin', '2021-09-17 18:40:15', '', NULL, '');
+INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`, `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '0/5 0 0/23 * * ?', '2', '1', '0', 'admin', '2022-07-11 15:50:49', 'admin', '2022-07-11 15:57:17', '');
 COMMIT;
 
 -- ----------------------------
@@ -1183,21 +1606,35 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_job_log`;
 CREATE TABLE `sys_job_log` (
-  `job_log_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '任务日志ID',
-  `job_name` varchar(64) NOT NULL COMMENT '任务名称',
-  `job_group` varchar(64) NOT NULL COMMENT '任务组名',
-  `invoke_target` varchar(500) NOT NULL COMMENT '调用目标字符串',
-  `job_message` varchar(500) DEFAULT NULL COMMENT '日志信息',
-  `status` char(1) DEFAULT '0' COMMENT '执行状态（0正常 1失败）',
-  `exception_info` varchar(2000) DEFAULT '' COMMENT '异常信息',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  PRIMARY KEY (`job_log_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='定时任务调度日志表';
+                               `job_log_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '任务日志ID',
+                               `job_name` varchar(64) NOT NULL COMMENT '任务名称',
+                               `job_group` varchar(64) NOT NULL COMMENT '任务组名',
+                               `invoke_target` varchar(500) NOT NULL COMMENT '调用目标字符串',
+                               `job_message` varchar(500) DEFAULT NULL COMMENT '日志信息',
+                               `status` char(1) DEFAULT '0' COMMENT '执行状态（0正常 1失败）',
+                               `exception_info` varchar(2000) DEFAULT '' COMMENT '异常信息',
+                               `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                               PRIMARY KEY (`job_log_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='定时任务调度日志表';
 
 -- ----------------------------
 -- Records of sys_job_log
 -- ----------------------------
 BEGIN;
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (1, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：1280毫秒', '0', '', '2022-07-11 15:52:32');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (2, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：10035毫秒', '0', '', '2022-07-11 15:54:30');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (3, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：515毫秒', '0', '', '2022-07-11 15:56:01');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (4, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：92毫秒', '0', '', '2022-07-11 15:56:05');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (5, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：64毫秒', '0', '', '2022-07-11 15:56:10');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (6, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：51毫秒', '0', '', '2022-07-11 15:56:15');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (7, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：632毫秒', '0', '', '2022-07-11 15:56:45');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (8, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：56毫秒', '0', '', '2022-07-11 15:56:47');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (9, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：249毫秒', '0', '', '2022-07-11 15:56:51');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (10, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：110毫秒', '0', '', '2022-07-11 15:56:56');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (11, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：75毫秒', '0', '', '2022-07-11 15:57:01');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (12, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：120毫秒', '0', '', '2022-07-11 15:57:06');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (13, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：140毫秒', '0', '', '2022-07-11 15:57:13');
+INSERT INTO `sys_job_log` (`job_log_id`, `job_name`, `job_group`, `invoke_target`, `job_message`, `status`, `exception_info`, `create_time`) VALUES (14, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '协议脚本缓存刷新定时任务 总共耗时：98毫秒', '0', '', '2022-07-11 15:57:16');
 COMMIT;
 
 -- ----------------------------
@@ -1205,14 +1642,14 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_logininfor`;
 CREATE TABLE `sys_logininfor` (
-  `info_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '访问ID',
-  `user_name` varchar(50) DEFAULT '' COMMENT '用户账号',
-  `ipaddr` varchar(128) DEFAULT '' COMMENT '登录IP地址',
-  `status` char(1) DEFAULT '0' COMMENT '登录状态（0成功 1失败）',
-  `msg` varchar(255) DEFAULT '' COMMENT '提示信息',
-  `access_time` datetime DEFAULT NULL COMMENT '访问时间',
-  PRIMARY KEY (`info_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统访问记录';
+                                  `info_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '访问ID',
+                                  `user_name` varchar(50) DEFAULT '' COMMENT '用户账号',
+                                  `ipaddr` varchar(128) DEFAULT '' COMMENT '登录IP地址',
+                                  `status` char(1) DEFAULT '0' COMMENT '登录状态（0成功 1失败）',
+                                  `msg` varchar(255) DEFAULT '' COMMENT '提示信息',
+                                  `access_time` datetime DEFAULT NULL COMMENT '访问时间',
+                                  PRIMARY KEY (`info_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=259 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统访问记录';
 
 -- ----------------------------
 -- Records of sys_logininfor
@@ -1327,6 +1764,155 @@ INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`,
 INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (107, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-29 08:49:17');
 INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (108, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-06-29 09:17:04');
 INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (109, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-29 09:17:21');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (110, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-29 10:10:55');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (111, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-06-29 11:15:16');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (112, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-29 11:16:21');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (113, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-29 12:12:23');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (114, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-06-29 16:21:28');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (115, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-29 16:22:06');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (116, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-06-29 22:32:49');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (117, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-06-29 22:33:03');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (118, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-06-29 22:38:30');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (119, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-06-29 22:38:45');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (120, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-29 22:39:43');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (121, 'admin', '127.0.0.1', '0', '退出成功', '2022-06-29 22:42:39');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (122, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-29 22:42:52');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (123, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-30 11:38:16');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (124, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-30 12:48:27');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (125, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-30 13:55:22');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (126, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-30 15:29:29');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (127, 'admin', '127.0.0.1', '0', '登录成功', '2022-06-30 15:44:51');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (128, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-01 11:13:24');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (129, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-01 14:24:04');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (130, 'admin', '127.0.0.1', '0', '退出成功', '2022-07-01 16:01:44');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (131, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-01 16:01:55');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (132, 'admin', '127.0.0.1', '0', '退出成功', '2022-07-01 17:35:39');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (133, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-01 17:35:53');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (134, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-04 09:04:59');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (135, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-04 11:02:36');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (136, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-04 11:36:01');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (137, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-04 15:34:46');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (138, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 15:36:24');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (139, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 15:36:40');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (140, 'ThingLinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 15:41:19');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (141, 'ThingLinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 15:41:43');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (142, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 15:42:43');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (143, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:03:07');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (144, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:07:11');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (145, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:07:52');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (146, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:08:24');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (147, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:09:09');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (148, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:34:25');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (149, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:35:15');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (150, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:36:54');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (151, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:38:01');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (152, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:39:28');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (153, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:40:00');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (154, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:42:35');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (155, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-04 16:43:40');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (156, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-05 11:04:01');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (157, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-05 17:03:04');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (158, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-05 17:03:28');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (159, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-06 08:14:53');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (160, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-06 09:06:55');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (161, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-06 10:09:53');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (162, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-06 14:44:44');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (163, 'admin', '127.0.0.1', '0', '退出成功', '2022-07-06 14:51:37');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (164, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-06 14:51:43');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (165, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-07 08:10:04');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (166, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-07 14:09:55');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (167, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-07 14:11:52');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (168, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-07 14:13:19');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (169, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-07 14:15:13');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (170, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-07 14:15:32');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (171, 'xuzhigang', '127.0.0.1', '1', '用户密码错误', '2022-07-07 14:15:49');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (172, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-07 14:17:56');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (173, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-07 14:23:44');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (174, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-07 14:24:07');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (175, 'xuzhigang', '127.0.0.1', '0', '登录成功', '2022-07-07 14:25:21');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (176, 'xuzhigang', '127.0.0.1', '0', '退出成功', '2022-07-07 14:26:01');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (177, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-07 14:27:32');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (178, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-07 14:42:49');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (179, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-07 17:47:05');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (180, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-08 10:28:11');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (181, 'admin', '111.202.125.69', '1', '用户密码错误', '2022-07-08 14:37:37');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (182, 'admin', '111.202.125.69', '1', '用户密码错误', '2022-07-08 14:37:59');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (183, 'admin', '111.202.125.69', '0', '登录成功', '2022-07-08 14:38:14');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (184, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-08 14:42:11');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (185, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-08 15:36:39');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (186, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-08 18:26:58');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (187, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-08 18:35:14');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (188, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-08 18:36:41');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (189, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-11 11:10:27');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (190, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-11 14:26:31');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (191, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-11 19:35:09');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (192, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-12 11:00:30');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (193, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-12 14:47:30');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (194, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-12 16:18:56');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (195, 'admin', '127.0.0.1', '0', '退出成功', '2022-07-12 16:24:11');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (196, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-12 16:24:30');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (197, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-12 16:31:17');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (198, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-12 18:02:39');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (199, 'admin', '127.0.0.1', '0', '退出成功', '2022-07-12 18:05:41');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (200, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-12 18:06:35');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (201, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-13 08:22:24');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (202, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-13 08:55:31');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (203, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-13 09:23:27');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (204, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-13 09:58:35');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (205, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-13 10:23:12');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (206, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-13 10:24:17');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (207, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-13 10:25:48');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (208, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-13 10:26:32');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (209, 'admin', '127.0.0.1', '0', '退出成功', '2022-07-13 10:50:03');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (210, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-13 10:50:28');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (211, 'admin', '127.0.0.1', '0', '退出成功', '2022-07-13 14:23:53');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (212, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-13 14:24:12');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (213, '2', '127.0.0.1', '1', '用户密码不在指定范围', '2022-07-13 15:42:40');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (214, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-13 15:43:30');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (215, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-13 15:45:09');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (216, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-13 15:49:40');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (217, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-13 15:56:02');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (218, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-13 15:56:56');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (219, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-14 09:35:06');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (220, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-14 09:35:26');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (221, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-14 09:35:34');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (222, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-14 09:35:49');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (223, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-14 09:36:53');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (224, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-14 09:37:15');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (225, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-14 09:38:03');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (226, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-14 09:41:55');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (227, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-14 15:22:34');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (228, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-14 16:52:33');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (229, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-14 16:52:45');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (230, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-14 16:52:55');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (231, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-14 16:58:14');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (232, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-14 16:58:30');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (233, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-15 08:40:49');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (234, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-15 09:37:46');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (235, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-15 10:54:48');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (236, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-15 15:35:07');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (237, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-15 17:30:09');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (238, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-15 17:30:45');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (239, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-15 17:30:57');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (240, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-15 17:34:09');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (241, 'thinglinks', '127.0.0.1', '1', '用户密码错误', '2022-07-15 17:34:41');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (242, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-15 17:44:33');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (243, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-15 17:44:57');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (244, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-15 17:45:18');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (245, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-16 16:25:34');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (246, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-16 17:22:20');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (247, 'admin', '127.0.0.1', '0', '退出成功', '2022-07-16 17:47:02');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (248, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-16 17:47:13');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (249, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-18 09:25:37');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (250, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-18 10:19:33');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (251, 'admin', '127.0.0.1', '0', '退出成功', '2022-07-18 10:22:35');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (252, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-18 10:23:41');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (253, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-18 10:26:20');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (254, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-18 10:28:38');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (255, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-18 10:31:37');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (256, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-18 10:37:12');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (257, 'admin', '127.0.0.1', '1', '用户密码错误', '2022-07-18 10:40:31');
+INSERT INTO `sys_logininfor` (`info_id`, `user_name`, `ipaddr`, `status`, `msg`, `access_time`) VALUES (258, 'admin', '127.0.0.1', '0', '登录成功', '2022-07-18 15:02:29');
 COMMIT;
 
 -- ----------------------------
@@ -1334,27 +1920,27 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_menu`;
 CREATE TABLE `sys_menu` (
-  `menu_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
-  `menu_name` varchar(50) NOT NULL COMMENT '菜单名称',
-  `parent_id` bigint(20) DEFAULT '0' COMMENT '父菜单ID',
-  `order_num` int(4) DEFAULT '0' COMMENT '显示顺序',
-  `path` varchar(200) DEFAULT '' COMMENT '路由地址',
-  `component` varchar(255) DEFAULT NULL COMMENT '组件路径',
-  `query` varchar(255) DEFAULT NULL COMMENT '路由参数',
-  `is_frame` int(1) DEFAULT '1' COMMENT '是否为外链（0是 1否）',
-  `is_cache` int(1) DEFAULT '0' COMMENT '是否缓存（0缓存 1不缓存）',
-  `menu_type` char(1) DEFAULT '' COMMENT '菜单类型（M目录 C菜单 F按钮）',
-  `visible` char(1) DEFAULT '0' COMMENT '菜单状态（0显示 1隐藏）',
-  `status` char(1) DEFAULT '0' COMMENT '菜单状态（0正常 1停用）',
-  `perms` varchar(100) DEFAULT NULL COMMENT '权限标识',
-  `icon` varchar(100) DEFAULT '#' COMMENT '菜单图标',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT '' COMMENT '备注',
-  PRIMARY KEY (`menu_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1106 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='菜单权限表';
+                            `menu_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
+                            `menu_name` varchar(50) NOT NULL COMMENT '菜单名称',
+                            `parent_id` bigint(20) DEFAULT '0' COMMENT '父菜单ID',
+                            `order_num` int(4) DEFAULT '0' COMMENT '显示顺序',
+                            `path` varchar(200) DEFAULT '' COMMENT '路由地址',
+                            `component` varchar(255) DEFAULT NULL COMMENT '组件路径',
+                            `query` varchar(255) DEFAULT NULL COMMENT '路由参数',
+                            `is_frame` int(1) DEFAULT '1' COMMENT '是否为外链（0是 1否）',
+                            `is_cache` int(1) DEFAULT '0' COMMENT '是否缓存（0缓存 1不缓存）',
+                            `menu_type` char(1) DEFAULT '' COMMENT '菜单类型（M目录 C菜单 F按钮）',
+                            `visible` char(1) DEFAULT '0' COMMENT '菜单状态（0显示 1隐藏）',
+                            `status` char(1) DEFAULT '0' COMMENT '菜单状态（0正常 1停用）',
+                            `perms` varchar(100) DEFAULT NULL COMMENT '权限标识',
+                            `icon` varchar(100) DEFAULT '#' COMMENT '菜单图标',
+                            `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                            `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                            `remark` varchar(500) DEFAULT '' COMMENT '备注',
+                            PRIMARY KEY (`menu_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1125 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='菜单权限表';
 
 -- ----------------------------
 -- Records of sys_menu
@@ -1363,7 +1949,7 @@ BEGIN;
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1, '系统管理', 0, 1, 'system', NULL, '', 1, 0, 'M', '0', '0', '', 'system', 'admin', '2021-09-17 18:39:58', '', NULL, '系统管理目录');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (2, '系统监控', 0, 2, 'monitor', NULL, '', 1, 0, 'M', '0', '0', '', 'monitor', 'admin', '2021-09-17 18:39:58', '', NULL, '系统监控目录');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (3, '系统工具', 0, 3, 'tool', NULL, '', 1, 0, 'M', '0', '0', '', 'tool', 'admin', '2021-09-17 18:39:58', '', NULL, '系统工具目录');
-INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4, 'ThingLinks官网', 0, 6, 'http://thinglinks.mqttsnet.com', NULL, '', 0, 0, 'M', '0', '0', '', 'guide', 'admin', '2021-09-17 18:39:59', 'admin', '2022-05-05 14:06:18', 'mqtts官网地址');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (4, 'ThingLinks官网', 0, 7, 'http://thinglinks.mqttsnet.com', NULL, '', 0, 0, 'M', '0', '0', '', 'guide', 'admin', '2021-09-17 18:39:59', 'admin', '2022-07-08 19:18:07', 'mqtts官网地址');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (100, '用户管理', 1, 1, 'user', 'system/user/index', '', 1, 0, 'C', '0', '0', 'system:user:list', 'user', 'admin', '2021-09-17 18:39:59', '', NULL, '用户管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (101, '角色管理', 1, 2, 'role', 'system/role/index', '', 1, 0, 'C', '0', '0', 'system:role:list', 'peoples', 'admin', '2021-09-17 18:39:59', '', NULL, '角色管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (102, '菜单管理', 1, 3, 'menu', 'system/menu/index', '', 1, 0, 'C', '0', '0', 'system:menu:list', 'tree-table', 'admin', '2021-09-17 18:39:59', '', NULL, '菜单管理菜单');
@@ -1444,13 +2030,13 @@ INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1059, '预览代码', 115, 4, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:preview', '#', 'admin', '2021-09-17 18:40:04', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1060, '生成代码', 115, 5, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code', '#', 'admin', '2021-09-17 18:40:04', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1061, '设备集成', 0, 4, 'link', NULL, NULL, 1, 0, 'M', '0', '0', '', 'client', 'admin', '2021-10-21 17:14:32', 'admin', '2021-10-21 17:14:54', '');
-INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1062, '设备管理', 1061, 1, 'device', 'link/device/index', NULL, 1, 0, 'C', '0', '0', 'link:device:list', 'slider', 'admin', '2021-10-21 17:27:48', 'admin', '2022-02-09 16:03:23', '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1062, '设备管理', 1061, 3, 'device', 'link/device/index', NULL, 1, 0, 'C', '0', '0', 'link:device:list', 'slider', 'admin', '2021-10-21 17:27:48', 'admin', '2022-07-08 11:29:43', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1063, '设备查询', 1062, 1, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:device:query', '#', 'admin', '2021-10-21 17:35:09', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1064, '设备新增', 1062, 2, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:device:add', '#', 'admin', '2021-10-21 17:35:39', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1065, '设备修改', 1062, 3, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:device:edit', '#', 'admin', '2021-10-21 17:36:00', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1066, '设备删除', 1062, 4, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:device:remove', '#', 'admin', '2021-10-21 17:36:21', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1067, '设备导出', 1062, 5, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:device:export', '#', 'admin', '2021-10-21 17:36:41', '', NULL, '');
-INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1068, '产品管理', 1061, 3, 'product', 'link/product/index', NULL, 1, 0, 'C', '0', '0', 'link:product:list', 'nested', 'thinglinks', '2022-02-09 15:56:11', 'admin', '2022-06-21 11:03:54', '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1068, '产品管理', 1061, 1, 'product', 'link/product/index', NULL, 1, 0, 'C', '0', '0', 'link:product:list', 'nested', 'thinglinks', '2022-02-09 15:56:11', 'admin', '2022-07-08 11:29:20', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1069, '产品管理查询', 1068, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:product:query', '#', 'admin', '2022-02-09 16:58:42', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1070, '产品管理新增', 1068, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:product:add', '#', 'admin', '2022-02-09 16:58:42', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1071, '产品管理修改', 1068, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:product:edit', '#', 'admin', '2022-02-09 16:58:42', '', NULL, '');
@@ -1459,10 +2045,10 @@ INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1074, '断开连接', 1062, 6, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:device:disconnect', '#', 'admin', '2022-03-08 16:17:36', 'admin', '2022-03-08 16:17:53', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1075, '产品管理导入', 1068, 6, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:product:import', '#', 'admin', '2022-03-25 18:04:07', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1076, '设备详情', 1062, 7, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:device:deviceDetails', '#', 'admin', '2022-05-04 18:20:08', 'admin', '2022-06-22 10:02:31', '');
-INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1077, '设备监控', 0, 5, 'tdengine', NULL, NULL, 1, 0, 'M', '0', '0', NULL, 'online', 'admin', '2022-05-05 14:06:11', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1077, '设备监控', 0, 6, 'tdengine', NULL, NULL, 1, 0, 'M', '0', '0', '', 'online', 'admin', '2022-05-05 14:06:11', 'admin', '2022-07-08 19:17:56', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1078, '设备影子', 1077, 1, 'tdengine', 'tdengine/shadow/index', NULL, 1, 0, 'C', '0', '0', 'tdengine:shadow:list', 'server', 'admin', '2022-05-05 14:09:20', 'admin', '2022-06-21 11:16:01', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1079, '快捷生成', 1068, 7, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:product:generate', '#', 'admin', '2022-05-13 14:23:43', '', NULL, '');
-INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1080, 'CAS规则管理', 1061, 4, 'casbinRule', 'link/casbinRule/index', NULL, 1, 0, 'C', '0', '0', 'link:casbinRule:list', 'lock', 'admin', '2022-06-16 18:29:45', 'admin', '2022-06-21 11:04:07', 'CAS规则管理菜单');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1080, 'CAS规则管理', 1061, 6, 'casbinRule', 'link/casbinRule/index', NULL, 1, 0, 'C', '0', '0', 'link:casbinRule:list', 'lock', 'admin', '2022-06-16 18:29:45', 'admin', '2022-07-08 18:36:49', 'CAS规则管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1081, 'CAS规则管理查询', 1080, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:casbinRule:query', '#', 'admin', '2022-06-16 18:29:45', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1082, 'CAS规则管理新增', 1080, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:casbinRule:add', '#', 'admin', '2022-06-16 18:29:46', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1083, 'CAS规则管理修改', 1080, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:casbinRule:edit', '#', 'admin', '2022-06-16 18:29:46', '', NULL, '');
@@ -1480,14 +2066,30 @@ INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1095, '设备动作数据修改', 1092, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:action:edit', '#', 'admin', '2022-06-17 17:47:32', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1096, '设备动作数据删除', 1092, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:action:remove', '#', 'admin', '2022-06-17 17:47:32', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1097, '设备动作数据导出', 1092, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:action:export', '#', 'admin', '2022-06-17 17:47:32', '', NULL, '');
-INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1098, '子设备管理', 1061, 2, 'deviceInfo', 'link/deviceInfo/index', NULL, 1, 0, 'C', '0', '0', 'link:deviceInfo:list', 'cascader', 'admin', '2022-06-21 10:48:04', 'admin', '2022-06-21 11:05:01', '子设备管理菜单');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1098, '子设备管理', 1061, 4, 'deviceInfo', 'link/deviceInfo/index', NULL, 1, 0, 'C', '0', '0', 'link:deviceInfo:list', 'cascader', 'admin', '2022-06-21 10:48:04', 'admin', '2022-07-08 11:29:59', '子设备管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1099, '子设备管理查询', 1098, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:deviceInfo:query', '#', 'admin', '2022-06-21 10:48:05', '', NULL, '');
-INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1100, '子设备管理新增', 1098, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:deviceInfo:add', '#', 'admin', '2022-06-21 10:48:05', '', NULL, '');
-INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1101, '子设备管理修改', 1098, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:deviceInfo:edit', '#', 'admin', '2022-06-21 10:48:05', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1102, '子设备管理删除', 1098, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:deviceInfo:remove', '#', 'admin', '2022-06-21 10:48:05', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1103, '子设备管理导出', 1098, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:deviceInfo:export', '#', 'admin', '2022-06-21 10:48:05', '', NULL, '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1104, '初始化模型', 1068, 8, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:product:initialize', '#', 'admin', '2022-06-24 18:27:08', 'admin', '2022-06-24 18:27:57', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1105, '子设备影子', 1098, 6, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:deviceInfo:shadow', '#', 'admin', '2022-06-27 16:13:35', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1107, '协议管理', 1061, 5, 'protocol', 'link/protocol/index', NULL, 1, 0, 'C', '0', '0', 'link:protocol:list', 'example', 'admin', '2022-07-04 11:05:44', 'admin', '2022-07-08 18:36:00', '协议管理菜单');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1108, '协议管理查询', 1107, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:protocol:query', '#', 'admin', '2022-07-04 11:05:44', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1109, '协议管理新增', 1107, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:protocol:add', '#', 'admin', '2022-07-04 11:05:44', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1110, '协议管理修改', 1107, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:protocol:edit', '#', 'admin', '2022-07-04 11:05:44', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1111, '协议管理删除', 1107, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:protocol:remove', '#', 'admin', '2022-07-04 11:05:44', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1112, '协议管理导出', 1107, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:protocol:export', '#', 'admin', '2022-07-04 11:05:44', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1113, '协议管理启用', 1107, 6, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:protocol:enable', '#', 'admin', '2022-07-05 11:08:28', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1114, '协议管理停用', 1107, 7, '', NULL, NULL, 1, 0, 'F', '0', '0', 'link:protocol:disable', '#', 'admin', '2022-07-05 11:09:06', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1115, '产品模板', 1061, 2, 'productTemplate', 'link/productTemplate/index', NULL, 1, 0, 'C', '0', '0', 'link:productTemplate:list', 'exit-fullscreen', 'admin', '2022-07-08 18:35:08', 'admin', '2022-07-08 18:40:48', '产品模板菜单');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1116, '产品模板查询', 1115, 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:product_template:query', '#', 'admin', '2022-07-08 18:35:08', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1117, '产品模板新增', 1115, 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:product_template:add', '#', 'admin', '2022-07-08 18:35:08', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1118, '产品模板修改', 1115, 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:product_template:edit', '#', 'admin', '2022-07-08 18:35:08', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1119, '产品模板删除', 1115, 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:product_template:remove', '#', 'admin', '2022-07-08 18:35:08', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1120, '产品模板导出', 1115, 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'link:product_template:export', '#', 'admin', '2022-07-08 18:35:08', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1121, '设备调试', 0, 5, 'broker', NULL, NULL, 1, 0, 'M', '0', '0', NULL, 'bug', 'admin', '2022-07-08 19:12:34', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1122, '实时日志', 1121, 1, 'broker', 'broker/realTime/index', NULL, 1, 0, 'C', '0', '0', 'broker:realTime:list', 'time-range', 'admin', '2022-07-08 19:17:33', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1123, '命令下发', 1121, 2, 'broker:sendMsg:list', 'broker/sendMsg/index', NULL, 1, 0, 'C', '0', '0', 'broker:sendMsg:list', 'post', 'admin', '2022-07-13 08:24:51', 'admin', '2022-07-13 08:25:58', '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES (1124, '规则引擎', 1061, 7, 'ruleEngine', NULL, NULL, 1, 0, 'M', '0', '0', NULL, 'swagger', 'admin', '2022-07-13 11:23:03', '', NULL, '');
 COMMIT;
 
 -- ----------------------------
@@ -1495,17 +2097,17 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_notice`;
 CREATE TABLE `sys_notice` (
-  `notice_id` int(4) NOT NULL AUTO_INCREMENT COMMENT '公告ID',
-  `notice_title` varchar(50) NOT NULL COMMENT '公告标题',
-  `notice_type` char(1) NOT NULL COMMENT '公告类型（1通知 2公告）',
-  `notice_content` longblob COMMENT '公告内容',
-  `status` char(1) DEFAULT '0' COMMENT '公告状态（0正常 1关闭）',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`notice_id`) USING BTREE
+                              `notice_id` int(4) NOT NULL AUTO_INCREMENT COMMENT '公告ID',
+                              `notice_title` varchar(50) NOT NULL COMMENT '公告标题',
+                              `notice_type` char(1) NOT NULL COMMENT '公告类型（1通知 2公告）',
+                              `notice_content` longblob COMMENT '公告内容',
+                              `status` char(1) DEFAULT '0' COMMENT '公告状态（0正常 1关闭）',
+                              `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                              `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                              `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                              `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                              `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+                              PRIMARY KEY (`notice_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='通知公告表';
 
 -- ----------------------------
@@ -1521,29 +2123,357 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_oper_log`;
 CREATE TABLE `sys_oper_log` (
-  `oper_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '日志主键',
-  `title` varchar(50) DEFAULT '' COMMENT '模块标题',
-  `business_type` int(2) DEFAULT '0' COMMENT '业务类型（0其它 1新增 2修改 3删除）',
-  `method` varchar(100) DEFAULT '' COMMENT '方法名称',
-  `request_method` varchar(10) DEFAULT '' COMMENT '请求方式',
-  `operator_type` int(1) DEFAULT '0' COMMENT '操作类别（0其它 1后台用户 2手机端用户）',
-  `oper_name` varchar(50) DEFAULT '' COMMENT '操作人员',
-  `dept_name` varchar(50) DEFAULT '' COMMENT '部门名称',
-  `oper_url` varchar(255) DEFAULT '' COMMENT '请求URL',
-  `oper_ip` varchar(128) DEFAULT '' COMMENT '主机地址',
-  `oper_location` varchar(255) DEFAULT '' COMMENT '操作地点',
-  `oper_param` varchar(2000) DEFAULT '' COMMENT '请求参数',
-  `json_result` varchar(2000) DEFAULT '' COMMENT '返回参数',
-  `status` int(1) DEFAULT '0' COMMENT '操作状态（0正常 1异常）',
-  `error_msg` varchar(2000) DEFAULT '' COMMENT '错误消息',
-  `oper_time` datetime DEFAULT NULL COMMENT '操作时间',
-  PRIMARY KEY (`oper_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=317 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志记录';
+                                `oper_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '日志主键',
+                                `title` varchar(50) DEFAULT '' COMMENT '模块标题',
+                                `business_type` int(2) DEFAULT '0' COMMENT '业务类型（0其它 1新增 2修改 3删除）',
+                                `method` varchar(100) DEFAULT '' COMMENT '方法名称',
+                                `request_method` varchar(10) DEFAULT '' COMMENT '请求方式',
+                                `operator_type` int(1) DEFAULT '0' COMMENT '操作类别（0其它 1后台用户 2手机端用户）',
+                                `oper_name` varchar(50) DEFAULT '' COMMENT '操作人员',
+                                `dept_name` varchar(50) DEFAULT '' COMMENT '部门名称',
+                                `oper_url` varchar(255) DEFAULT '' COMMENT '请求URL',
+                                `oper_ip` varchar(128) DEFAULT '' COMMENT '主机地址',
+                                `oper_location` varchar(255) DEFAULT '' COMMENT '操作地点',
+                                `oper_param` varchar(2000) DEFAULT '' COMMENT '请求参数',
+                                `json_result` varchar(2000) DEFAULT '' COMMENT '返回参数',
+                                `status` int(1) DEFAULT '0' COMMENT '操作状态（0正常 1异常）',
+                                `error_msg` varchar(2000) DEFAULT '' COMMENT '错误消息',
+                                `oper_time` datetime DEFAULT NULL COMMENT '操作时间',
+                                PRIMARY KEY (`oper_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=645 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='操作日志记录';
 
 -- ----------------------------
 -- Records of sys_oper_log
 -- ----------------------------
 BEGIN;
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (317, '产品管理', 0, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.initializeDataModel()', 'GET', 1, 'admin', NULL, '/product/initializeDataModel/34/true', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-29 10:18:21');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (318, '设备管理', 3, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.remove()', 'DELETE', 1, 'admin', NULL, '/device/7', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-29 11:24:46');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (319, '设备管理', 2, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.edit()', 'PUT', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"121\",\"deviceType\":\"COMMON\",\"clientId\":\"3232312212212\",\"connectStatus\":\"INIT\",\"deviceDescription\":\"21\",\"productIdentification\":\"760ed36fd22342238acbf002f0dedc1a\",\"updateTime\":1656514232230,\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"23-1\",\"deviceName\":\"121\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"createBy\":\"admin\",\"password\":\"1212\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1656064340000,\"updateBy\":\"admin\",\"appId\":\"thinglinks\",\"id\":17,\"deviceIdentification\":\"212\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-29 22:50:33');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (320, '产品管理', 0, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.initializeDataModel()', 'GET', 1, 'admin', NULL, '/product/initializeDataModel/34/true', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-30 14:06:50');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (321, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"产品模型已存在,无需上传\",\"code\":500}', 0, NULL, '2022-06-30 15:31:33');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (322, '产品管理', 3, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.remove()', 'DELETE', 1, 'admin', NULL, '/product/32', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-30 15:34:54');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (323, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-30 15:35:08');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (324, '产品管理', 3, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.remove()', 'DELETE', 1, 'admin', NULL, '/product/35', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-30 15:39:58');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (325, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-30 15:44:53');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (326, '产品管理', 3, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.remove()', 'DELETE', 1, 'admin', NULL, '/product/36', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-30 15:47:44');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (327, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-30 15:47:54');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (328, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"产品模型已存在,无需上传\",\"code\":500}', 0, NULL, '2022-06-30 15:48:47');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (329, '产品管理', 3, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.remove()', 'DELETE', 1, 'admin', NULL, '/product/37', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-30 15:54:07');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (330, '产品管理', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.generateProductJson()', 'POST', 1, 'admin', NULL, '/product/generateProductJson', '127.0.0.1', '', '{\"appId\":\"thinglinks\",\"templateId\":\"\",\"status\":\"0\",\"content\":\"{}\"}', NULL, 1, 'can not cast to JSONObject.', '2022-06-30 15:54:29');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (331, '代码生成', 6, 'com.mqttsnet.thinglinks.gen.controller.GenController.importTableSave()', 'POST', 1, 'admin', NULL, '/gen/importTable', '127.0.0.1', '', 'device_location', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-30 16:54:18');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (332, '代码生成', 6, 'com.mqttsnet.thinglinks.gen.controller.GenController.importTableSave()', 'POST', 1, 'admin', NULL, '/gen/importTable', '127.0.0.1', '', 'product_template', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-06-30 20:03:01');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (333, '菜单管理', 1, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.add()', 'POST', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"skill\",\"orderNum\":\"6\",\"menuName\":\"协议管理\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"protocol\",\"component\":\"link/protocol/index\",\"createBy\":\"admin\",\"children\":[],\"isFrame\":\"1\",\"menuType\":\"C\",\"perms\":\"link:protocol:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-01 16:07:36');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (334, '菜单管理', 3, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.remove()', 'DELETE', 1, 'admin', NULL, '/menu/1106', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-01 17:39:13');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (335, '代码生成', 6, 'com.mqttsnet.thinglinks.gen.controller.GenController.importTableSave()', 'POST', 1, 'admin', NULL, '/gen/importTable', '127.0.0.1', '', 'protocol', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-04 09:05:20');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (336, '代码生成', 8, 'com.mqttsnet.thinglinks.gen.controller.GenController.batchGenCode()', 'GET', 1, 'admin', NULL, '/gen/batchGenCode', '127.0.0.1', '', NULL, NULL, 0, NULL, '2022-07-04 09:06:32');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (337, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"example\",\"orderNum\":\"1\",\"menuName\":\"协议管理\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"protocol\",\"component\":\"link/protocol/index\",\"children\":[],\"createTime\":1656903944000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1107,\"menuType\":\"C\",\"perms\":\"link:protocol:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-04 11:07:08');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (338, '字典类型', 1, 'com.mqttsnet.thinglinks.system.controller.SysDictTypeController.add()', 'POST', 1, 'admin', NULL, '/dict/type', '127.0.0.1', '', '{\"createBy\":\"admin\",\"dictName\":\"协议语言\",\"remark\":\"协议管理-支持的协议脚本语言\",\"params\":{},\"dictType\":\"link_ protocol_voice\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-04 11:16:20');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (339, '字典数据', 1, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.add()', 'POST', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"java\",\"listClass\":\"default\",\"dictSort\":0,\"remark\":\"java\",\"params\":{},\"dictType\":\"link_ protocol_voice\",\"dictLabel\":\"java\",\"createBy\":\"admin\",\"default\":false,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-04 11:17:07');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (340, '代码生成', 8, 'com.mqttsnet.thinglinks.gen.controller.GenController.batchGenCode()', 'GET', 1, 'admin', NULL, '/gen/batchGenCode', '127.0.0.1', '', NULL, NULL, 0, NULL, '2022-07-04 11:23:27');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (341, '字典类型', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictTypeController.edit()', 'PUT', 1, 'admin', NULL, '/dict/type', '127.0.0.1', '', '{\"createBy\":\"admin\",\"createTime\":1656904580000,\"updateBy\":\"admin\",\"dictName\":\"协议语言\",\"remark\":\"协议管理-支持的协议脚本语言\",\"dictId\":28,\"params\":{},\"dictType\":\"link_protocol_voice\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-04 17:09:29');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (342, '字典类型', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictTypeController.edit()', 'PUT', 1, 'admin', NULL, '/dict/type', '127.0.0.1', '', '{\"createBy\":\"admin\",\"createTime\":1656904580000,\"updateBy\":\"admin\",\"dictName\":\"协议语言\",\"remark\":\"协议管理-支持的协议脚本语言\",\"dictId\":28,\"params\":{},\"dictType\":\"link_protocol_voice\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-04 17:09:30');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (343, '产品管理', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.generateProductJson()', 'POST', 1, 'admin', NULL, '/product/generateProductJson', '127.0.0.1', '', '{\"appId\":\"thinglinks\",\"templateId\":\"\",\"status\":0,\"content\":\"{\\\"appId\\\":\\\"thinglinks\\\",\\\"dataFormat\\\":\\\"JSON\\\",\\\"deviceType\\\":\\\"demo\\\",\\\"manufacturerId\\\":\\\"quickadd\\\",\\\"manufacturerName\\\":\\\"快捷导入\\\",\\\"model\\\":\\\"quick\\\",\\\"productName\\\":\\\"快捷导入\\\",\\\"productType\\\":\\\"COMMON\\\",\\\"protocolType\\\":\\\"MQTT\\\",\\\"remark\\\":\\\"\\\",\\\"templateId\\\":\\\"\\\",\\\"services\\\":[{\\\"commands\\\":[],\\\"description\\\":\\\"\\\",\\\"serviceId\\\":\\\"quickadd_serv\\\",\\\"properties\\\":[{\\\"datatype\\\":\\\"string\\\",\\\"description\\\":\\\"\\\",\\\"enumlist\\\":\\\"1\\\",\\\"max\\\":\\\"2\\\",\\\"maxlength\\\":2,\\\"min\\\":\\\"1\\\",\\\"name\\\":\\\"acc_x\\\",\\\"required\\\":0,\\\"step\\\":1,\\\"unit\\\":\\\"\\\",\\\"method\\\":\\\"R\\\"}]}]}\"}', NULL, 1, 'can not cast to JSONObject.', '2022-07-04 17:15:31');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (344, '产品管理', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.generateProductJson()', 'POST', 1, 'admin', NULL, '/product/generateProductJson', '127.0.0.1', '', '{\"appId\":\"thinglinks\",\"templateId\":\"\",\"status\":0,\"content\":\"{\\\"appId\\\":\\\"thinglinks\\\",\\\"dataFormat\\\":\\\"JSON\\\",\\\"deviceType\\\":\\\"demo\\\",\\\"manufacturerId\\\":\\\"quickadd\\\",\\\"manufacturerName\\\":\\\"快捷导入\\\",\\\"model\\\":\\\"quick\\\",\\\"productName\\\":\\\"快捷导入\\\",\\\"productType\\\":\\\"COMMON\\\",\\\"protocolType\\\":\\\"MQTT\\\",\\\"remark\\\":\\\"\\\",\\\"templateId\\\":\\\"\\\",\\\"services\\\":[{\\\"commands\\\":[],\\\"description\\\":\\\"\\\",\\\"serviceId\\\":\\\"quickadd_serv\\\",\\\"properties\\\":[{\\\"datatype\\\":\\\"string\\\",\\\"description\\\":\\\"\\\",\\\"enumlist\\\":\\\"1\\\",\\\"max\\\":\\\"2\\\",\\\"maxlength\\\":2,\\\"min\\\":\\\"1\\\",\\\"name\\\":\\\"acc_x\\\",\\\"required\\\":0,\\\"step\\\":1,\\\"unit\\\":\\\"\\\",\\\"method\\\":\\\"R\\\"}]}]}\"}', NULL, 1, 'can not cast to JSONObject.', '2022-07-04 17:16:14');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (345, '产品管理', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.generateProductJson()', 'POST', 1, 'admin', NULL, '/product/generateProductJson', '127.0.0.1', '', '{\"appId\":\"thinglinks\",\"templateId\":\"\",\"status\":0,\"content\":\"{\\\"appId\\\":\\\"thinglinks\\\",\\\"dataFormat\\\":\\\"JSON\\\",\\\"deviceType\\\":\\\"demo\\\",\\\"manufacturerId\\\":\\\"quickadd\\\",\\\"manufacturerName\\\":\\\"快捷导入\\\",\\\"model\\\":\\\"quick\\\",\\\"productName\\\":\\\"快捷导入\\\",\\\"productType\\\":\\\"COMMON\\\",\\\"protocolType\\\":\\\"MQTT\\\",\\\"remark\\\":\\\"\\\",\\\"templateId\\\":\\\"\\\",\\\"services\\\":[{\\\"commands\\\":[],\\\"description\\\":\\\"\\\",\\\"serviceId\\\":\\\"quickadd_serv\\\",\\\"properties\\\":[{\\\"datatype\\\":\\\"string\\\",\\\"description\\\":\\\"\\\",\\\"enumlist\\\":\\\"1\\\",\\\"max\\\":\\\"2\\\",\\\"maxlength\\\":2,\\\"min\\\":\\\"1\\\",\\\"name\\\":\\\"acc_x\\\",\\\"required\\\":0,\\\"step\\\":1,\\\"unit\\\":\\\"\\\",\\\"method\\\":\\\"R\\\"}]}]}\"}', NULL, 1, 'not close json text, token : :', '2022-07-04 17:23:39');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (346, '产品管理', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.generateProductJson()', 'POST', 1, 'admin', NULL, '/product/generateProductJson', '127.0.0.1', '', '{\"appId\":\"thinglinks\",\"templateId\":\"thinglinks\",\"status\":0,\"content\":\"{\\\"appId\\\":\\\"thinglinks\\\",\\\"dataFormat\\\":\\\"JSON\\\",\\\"deviceType\\\":\\\"quickadd\\\",\\\"manufacturerId\\\":\\\"quickadd\\\",\\\"manufacturerName\\\":\\\"quickadd\\\",\\\"model\\\":\\\"quickadd\\\",\\\"productName\\\":\\\"快捷生成\\\",\\\"productType\\\":\\\"COMMON\\\",\\\"protocolType\\\":\\\"MQTT\\\",\\\"remark\\\":\\\"\\\",\\\"templateId\\\":\\\"thinglinks\\\",\\\"services\\\":[{\\\"commands\\\":[],\\\"description\\\":\\\"\\\",\\\"serviceId\\\":\\\"quickadd\\\",\\\"properties\\\":[{\\\"datatype\\\":\\\"string\\\",\\\"description\\\":\\\"a\\\",\\\"enumlist\\\":\\\"a\\\",\\\"max\\\":\\\"2\\\",\\\"maxlength\\\":1,\\\"min\\\":\\\"2\\\",\\\"name\\\":\\\"acc_x\\\",\\\"required\\\":0,\\\"step\\\":1,\\\"unit\\\":\\\"\\\",\\\"method\\\":\\\"R\\\"}]}]}\"}', NULL, 1, 'not close json text, token : :', '2022-07-04 17:24:46');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (347, '菜单管理', 1, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.add()', 'POST', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"orderNum\":\"6\",\"menuName\":\"协议管理启用\",\"params\":{},\"parentId\":1107,\"isCache\":\"0\",\"createBy\":\"admin\",\"children\":[],\"isFrame\":\"1\",\"menuType\":\"F\",\"perms\":\"link:protocol:enable\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-05 11:08:28');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (348, '菜单管理', 1, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.add()', 'POST', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"orderNum\":\"7\",\"menuName\":\"协议管理停用\",\"params\":{},\"parentId\":1107,\"isCache\":\"0\",\"createBy\":\"admin\",\"children\":[],\"isFrame\":\"1\",\"menuType\":\"F\",\"perms\":\"link:protocol:disable\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-05 11:09:06');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (349, '菜单管理', 3, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.remove()', 'DELETE', 1, 'admin', NULL, '/menu/1100', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-05 14:38:22');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (350, '菜单管理', 3, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.remove()', 'DELETE', 1, 'admin', NULL, '/menu/1101', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-05 14:38:28');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (351, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-07-05 17:34:02');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (352, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-07-05 17:38:54');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (353, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-07-05 17:41:26');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (354, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-07-05 17:43:30');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (355, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"{datatype:dateTime=Invalid product: Invalid dataType,must be one of [int、decimal、string、binary、bool、timestamp、json]}\",\"code\":500}', 0, NULL, '2022-07-05 17:47:51');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (356, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"{datatype:dateTime=Invalid product: Invalid dataType,must be one of [int、decimal、string、binary、bool、timestamp、json]}\",\"code\":500}', 0, NULL, '2022-07-05 17:54:23');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (357, '产品管理', 6, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.importProductJson()', 'POST', 1, 'admin', NULL, '/product/importProductJsonFile', '127.0.0.1', '', 'false thinglinks  0', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-05 17:55:49');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (358, '子设备管理', 3, 'com.mqttsnet.thinglinks.link.controller.device.DeviceInfoController.remove()', 'DELETE', 1, 'admin', NULL, '/deviceInfo/4532,4533,4534', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-05 18:37:47');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (359, '产品管理', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.generateProductJson()', 'POST', 1, 'admin', NULL, '/product/generateProductJson', '127.0.0.1', '', '{\"appId\":\"thinglinks\",\"templateId\":\"thinglinks\",\"status\":0,\"content\":\"{\\\"appId\\\":\\\"thinglinks\\\",\\\"dataFormat\\\":\\\"JSON\\\",\\\"deviceType\\\":\\\"quick\\\",\\\"manufacturerId\\\":\\\"quick\\\",\\\"manufacturerName\\\":\\\"quick\\\",\\\"model\\\":\\\"quick\\\",\\\"productName\\\":\\\"quick\\\",\\\"productType\\\":\\\"COMMON\\\",\\\"protocolType\\\":\\\"MQTT\\\",\\\"remark\\\":\\\"quick\\\",\\\"templateId\\\":\\\"thinglinks\\\",\\\"services\\\":[{\\\"commands\\\":[],\\\"description\\\":\\\"\\\",\\\"serviceId\\\":\\\"quick\\\",\\\"properties\\\":[{\\\"datatype\\\":\\\"string\\\",\\\"description\\\":\\\"quick\\\",\\\"enumlist\\\":\\\"11\\\",\\\"max\\\":\\\"2\\\",\\\"maxlength\\\":0,\\\"min\\\":\\\"3\\\",\\\"name\\\":\\\"quick\\\",\\\"required\\\":0,\\\"step\\\":1,\\\"unit\\\":\\\"\\\",\\\"method\\\":\\\"R\\\"}]}]}\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-07-06 11:32:54');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (360, '产品管理', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.generateProductJson()', 'POST', 1, 'admin', NULL, '/product/generateProductJson', '127.0.0.1', '', '{\"appId\":\"thinglinks\",\"templateId\":\"\",\"status\":0,\"content\":\"{\\\"appId\\\":\\\"thinglinks\\\",\\\"dataFormat\\\":\\\"JSON\\\",\\\"deviceType\\\":\\\"quick\\\",\\\"manufacturerId\\\":\\\"quick\\\",\\\"manufacturerName\\\":\\\"quick\\\",\\\"model\\\":\\\"quick\\\",\\\"productName\\\":\\\"quick\\\",\\\"productType\\\":\\\"COMMON\\\",\\\"protocolType\\\":\\\"MQTT\\\",\\\"remark\\\":\\\"quick\\\",\\\"templateId\\\":\\\"\\\",\\\"services\\\":[{\\\"commands\\\":[],\\\"description\\\":\\\"\\\",\\\"serviceId\\\":\\\"quick\\\",\\\"properties\\\":[{\\\"datatype\\\":\\\"string\\\",\\\"description\\\":\\\"\\\",\\\"enumlist\\\":\\\"\\\",\\\"max\\\":\\\"0\\\",\\\"maxlength\\\":2,\\\"min\\\":\\\"0\\\",\\\"name\\\":\\\"quick\\\",\\\"required\\\":0,\\\"step\\\":1,\\\"unit\\\":\\\"\\\",\\\"method\\\":\\\"R\\\"}]}]}\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-06 11:34:48');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (361, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"query\":\"\",\"icon\":\"guide\",\"orderNum\":\"6\",\"menuName\":\"ThingLinks官网\",\"params\":{},\"parentId\":0,\"isCache\":\"0\",\"path\":\"http://thinglinks.mqttsnet.com\",\"children\":[],\"createTime\":1631875199000,\"updateBy\":\"admin\",\"isFrame\":\"0\",\"menuId\":4,\"menuType\":\"M\",\"perms\":\"\",\"status\":\"1\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-07 14:37:42');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (362, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"1\",\"query\":\"\",\"icon\":\"guide\",\"orderNum\":\"6\",\"menuName\":\"ThingLinks官网\",\"params\":{},\"parentId\":0,\"isCache\":\"0\",\"path\":\"http://thinglinks.mqttsnet.com\",\"children\":[],\"createTime\":1631875199000,\"updateBy\":\"admin\",\"isFrame\":\"0\",\"menuId\":4,\"menuType\":\"M\",\"perms\":\"\",\"status\":\"1\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-07 14:37:46');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (363, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"123\",\"filePath\":\"123\",\"productIdentification\":\"123\",\"className\":\"123\",\"remark\":\"123\",\"protocolType\":\"MQTT\",\"content\":\"123\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-08T10:44:56.836\",\"protocolName\":\"123\",\"protocolVersion\":\"123\",\"id\":1,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 10:44:58');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (364, '协议管理', 2, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.edit()', 'PUT', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"22\",\"filePath\":\"222\",\"productIdentification\":\"22\",\"className\":\"222\",\"remark\":\"222\",\"updateTime\":\"2022-07-08T10:53:57.599\",\"protocolType\":\"MQTT\",\"content\":\"222\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-08T10:44:57\",\"protocolName\":\"22\",\"updateBy\":\"admin\",\"protocolVersion\":\"22\",\"id\":1,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 10:53:57');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (365, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"nested\",\"orderNum\":\"1\",\"menuName\":\"产品管理\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"product\",\"component\":\"link/product/index\",\"children\":[],\"createTime\":1644393371000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1068,\"menuType\":\"C\",\"perms\":\"link:product:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 11:29:21');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (366, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"example\",\"orderNum\":\"2\",\"menuName\":\"协议管理\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"protocol\",\"component\":\"link/protocol/index\",\"children\":[],\"createTime\":1656903944000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1107,\"menuType\":\"C\",\"perms\":\"link:protocol:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 11:29:33');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (367, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"slider\",\"orderNum\":\"3\",\"menuName\":\"设备管理\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"device\",\"component\":\"link/device/index\",\"children\":[],\"createTime\":1634808468000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1062,\"menuType\":\"C\",\"perms\":\"link:device:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 11:29:43');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (368, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"cascader\",\"orderNum\":\"4\",\"menuName\":\"子设备管理\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"deviceInfo\",\"component\":\"link/deviceInfo/index\",\"children\":[],\"createTime\":1655779684000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1098,\"menuType\":\"C\",\"perms\":\"link:deviceInfo:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 11:29:59');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (369, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:10');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (370, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:10');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (371, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:10');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (372, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:10');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (373, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:10');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (374, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (375, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (376, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (377, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (378, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:17');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (379, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:17');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (380, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:17');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (381, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:17');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (382, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:18');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (383, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:18');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (384, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:18');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (385, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:18');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (386, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:18');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (387, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:18');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (388, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:18');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (389, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:18');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (390, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:19');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (391, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:19');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (392, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:19');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (393, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:19');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (394, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:19');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (395, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:19');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (396, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:20');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (397, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:20');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (398, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:20');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (399, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:20');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (400, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:28');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (401, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:07:28');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (402, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceType\":\"GATEWAY\",\"clientId\":\"1楼温度网关\",\"connectStatus\":\"INIT\",\"productIdentification\":\"04253d5701624eb1afbdfcca6bf7668d\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"admin\",\"deviceName\":\"1楼温度网关\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"createBy\":\"admin\",\"password\":\"123456\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1657253274474,\"appId\":\"thinglinks\",\"id\":18,\"deviceIdentification\":\"1楼温度网关\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 12:07:54');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (403, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:05');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (404, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:05');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (405, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:05');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (406, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:05');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (407, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:06');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (408, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:06');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (409, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:06');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (410, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:06');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (411, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:06');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (412, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:08');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (413, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-07-08 12:08:08');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (414, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-07-08 12:08:09');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (415, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-07-08 12:08:09');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (416, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E5%BA%A6%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-07-08 12:08:09');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (417, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E6%B8%A9%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (418, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (419, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (420, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (421, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:12');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (422, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:12');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (423, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E5%86%B2%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:12');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (424, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E5%86%B2%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:12');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (425, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:13');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (426, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BC%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:13');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (427, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BCc%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:13');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (428, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BCco%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:14');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (429, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BCco2%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:14');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (430, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BCco2%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:15');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (431, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BCco2%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:15');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (432, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BCco2%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:16');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (433, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1%E6%A5%BCco2%E7%BD%91%E5%85%B3', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-08 12:08:16');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (434, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceType\":\"GATEWAY\",\"clientId\":\"1楼co2网关\",\"connectStatus\":\"INIT\",\"productIdentification\":\"04253d5701624eb1afbdfcca6bf7668d\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"admin\",\"deviceName\":\"1楼co2网关\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"createBy\":\"admin\",\"password\":\"123456\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1657253321460,\"appId\":\"thinglinks\",\"id\":19,\"deviceIdentification\":\"1楼co2网关\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 12:08:41');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (435, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"#\",\"orderNum\":\"2\",\"menuName\":\"产品模板\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"product_template\",\"component\":\"link/product_template/index\",\"children\":[],\"createTime\":1657276508000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1115,\"menuType\":\"C\",\"perms\":\"link:product_template:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 18:35:47');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (436, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"example\",\"orderNum\":\"5\",\"menuName\":\"协议管理\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"protocol\",\"component\":\"link/protocol/index\",\"children\":[],\"createTime\":1656903944000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1107,\"menuType\":\"C\",\"perms\":\"link:protocol:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 18:35:59');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (437, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"example\",\"orderNum\":\"5\",\"menuName\":\"协议管理\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"protocol\",\"component\":\"link/protocol/index\",\"children\":[],\"createTime\":1656903944000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1107,\"menuType\":\"C\",\"perms\":\"link:protocol:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 18:36:00');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (438, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"exit-fullscreen\",\"orderNum\":\"2\",\"menuName\":\"产品模板\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"product_template\",\"component\":\"link/product_template/index\",\"children\":[],\"createTime\":1657276508000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1115,\"menuType\":\"C\",\"perms\":\"link:product_template:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 18:36:35');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (439, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"lock\",\"orderNum\":\"6\",\"menuName\":\"CAS规则管理\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"casbinRule\",\"component\":\"link/casbinRule/index\",\"children\":[],\"createTime\":1655375385000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1080,\"menuType\":\"C\",\"perms\":\"link:casbinRule:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 18:36:49');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (440, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"1\",\"query\":\"\",\"icon\":\"guide\",\"orderNum\":\"6\",\"menuName\":\"ThingLinks官网\",\"params\":{},\"parentId\":0,\"isCache\":\"0\",\"path\":\"http://thinglinks.mqttsnet.com\",\"children\":[],\"createTime\":1631875199000,\"updateBy\":\"admin\",\"isFrame\":\"0\",\"menuId\":4,\"menuType\":\"M\",\"perms\":\"\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 18:37:03');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (441, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"query\":\"\",\"icon\":\"guide\",\"orderNum\":\"6\",\"menuName\":\"ThingLinks官网\",\"params\":{},\"parentId\":0,\"isCache\":\"0\",\"path\":\"http://thinglinks.mqttsnet.com\",\"children\":[],\"createTime\":1631875199000,\"updateBy\":\"admin\",\"isFrame\":\"0\",\"menuId\":4,\"menuType\":\"M\",\"perms\":\"\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 18:37:09');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (442, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"exit-fullscreen\",\"orderNum\":\"2\",\"menuName\":\"产品模板\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"productTemplate\",\"component\":\"link/productTemplate/index\",\"children\":[],\"createTime\":1657276508000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1115,\"menuType\":\"C\",\"perms\":\"link:productTemplate:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 18:40:48');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (443, '产品模板', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductTemplateController.add()', 'POST', 1, 'admin', NULL, '/productTemplate', '127.0.0.1', '', '{\"createBy\":\"admin\",\"createTime\":1657277860736,\"templateName\":\"212\",\"appId\":\"12\",\"remark\":\"212\",\"id\":1,\"params\":{},\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 18:57:42');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (444, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"online\",\"orderNum\":\"6\",\"menuName\":\"设备监控\",\"params\":{},\"parentId\":0,\"isCache\":\"0\",\"path\":\"tdengine\",\"children\":[],\"createTime\":1651730771000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1077,\"menuType\":\"M\",\"perms\":\"\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 19:11:53');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (445, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"online\",\"orderNum\":\"7\",\"menuName\":\"设备监控\",\"params\":{},\"parentId\":0,\"isCache\":\"0\",\"path\":\"tdengine\",\"children\":[],\"createTime\":1651730771000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1077,\"menuType\":\"M\",\"perms\":\"\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 19:11:57');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (446, '菜单管理', 1, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.add()', 'POST', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"bug\",\"orderNum\":\"5\",\"menuName\":\"设备调试\",\"params\":{},\"parentId\":0,\"isCache\":\"0\",\"path\":\"broker\",\"createBy\":\"admin\",\"children\":[],\"isFrame\":\"1\",\"menuType\":\"M\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 19:12:34');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (447, '菜单管理', 1, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.add()', 'POST', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"time-range\",\"orderNum\":\"1\",\"menuName\":\"实时日志\",\"params\":{},\"parentId\":1121,\"isCache\":\"0\",\"path\":\"broker\",\"component\":\"broker/realTime/index\",\"createBy\":\"admin\",\"children\":[],\"isFrame\":\"1\",\"menuType\":\"C\",\"perms\":\"broker:realTime:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 19:17:33');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (448, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"online\",\"orderNum\":\"6\",\"menuName\":\"设备监控\",\"params\":{},\"parentId\":0,\"isCache\":\"0\",\"path\":\"tdengine\",\"children\":[],\"createTime\":1651730771000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1077,\"menuType\":\"M\",\"perms\":\"\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 19:17:56');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (449, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"query\":\"\",\"icon\":\"guide\",\"orderNum\":\"7\",\"menuName\":\"ThingLinks官网\",\"params\":{},\"parentId\":0,\"isCache\":\"0\",\"path\":\"http://thinglinks.mqttsnet.com\",\"children\":[],\"createTime\":1631875199000,\"updateBy\":\"admin\",\"isFrame\":\"0\",\"menuId\":4,\"menuType\":\"M\",\"perms\":\"\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-08 19:18:07');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (450, '产品模型服务', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductServicesController.add()', 'POST', 1, 'admin', NULL, '/productServices', '127.0.0.1', '', '{\"params\":{},\"serviceName\":\"12312321\",\"templateId\":1,\"createBy\":\"admin\",\"createTime\":1657521752242,\"id\":55,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-11 14:42:31');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (451, '字典数据', 1, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.add()', 'POST', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"protocol\",\"listClass\":\"default\",\"dictSort\":3,\"params\":{},\"dictType\":\"sys_job_group\",\"dictLabel\":\"协议管理\",\"createBy\":\"admin\",\"default\":false,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-11 15:48:55');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (452, '字典数据', 2, 'com.mqttsnet.thinglinks.system.controller.SysDictDataController.edit()', 'PUT', 1, 'admin', NULL, '/dict/data', '127.0.0.1', '', '{\"dictValue\":\"PROTOCOL\",\"listClass\":\"default\",\"dictSort\":3,\"remark\":\"协议管理\",\"params\":{},\"dictType\":\"sys_job_group\",\"dictLabel\":\"协议管理\",\"createBy\":\"admin\",\"default\":false,\"isDefault\":\"N\",\"createTime\":1657525735000,\"dictCode\":73,\"updateBy\":\"admin\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-11 15:49:23');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (453, '定时任务', 1, 'com.mqttsnet.thinglinks.job.controller.SysJobController.add()', 'POST', 1, 'admin', NULL, '/job', '127.0.0.1', '', '{\"jobName\":\"协议脚本缓存刷新定时任务\",\"concurrent\":\"1\",\"jobGroup\":\"PROTOCOL\",\"params\":{},\"cronExpression\":\"0/10 * * * * ?\",\"jobId\":4,\"createBy\":\"admin\",\"nextValidTime\":1657525860000,\"invokeTarget\":\"linkProtocol.protocolScriptCacheRefreshTask\",\"misfirePolicy\":\"1\",\"status\":\"1\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-11 15:50:51');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (454, '定时任务', 2, 'com.mqttsnet.thinglinks.job.controller.SysJobController.edit()', 'PUT', 1, 'admin', NULL, '/job', '127.0.0.1', '', '{\"jobName\":\"协议脚本缓存刷新定时任务\",\"concurrent\":\"1\",\"remark\":\"\",\"jobGroup\":\"PROTOCOL\",\"params\":{},\"cronExpression\":\"0/10 * * * * ?\",\"jobId\":4,\"createBy\":\"admin\",\"nextValidTime\":1657525950000,\"createTime\":1657525849000,\"updateBy\":\"admin\",\"invokeTarget\":\"linkProtocolTask.protocolScriptCacheRefreshTask\",\"misfirePolicy\":\"1\",\"status\":\"1\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-11 15:52:25');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (455, '定时任务', 2, 'com.mqttsnet.thinglinks.job.controller.SysJobController.changeStatus()', 'PUT', 1, 'admin', NULL, '/job/changeStatus', '127.0.0.1', '', '{\"params\":{},\"jobId\":4,\"misfirePolicy\":\"0\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-11 15:52:30');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (456, '定时任务', 2, 'com.mqttsnet.thinglinks.job.controller.SysJobController.run()', 'PUT', 1, 'admin', NULL, '/job/run', '127.0.0.1', '', '{\"jobGroup\":\"PROTOCOL\",\"params\":{},\"jobId\":4,\"misfirePolicy\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-11 15:54:19');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (457, '定时任务', 2, 'com.mqttsnet.thinglinks.job.controller.SysJobController.edit()', 'PUT', 1, 'admin', NULL, '/job', '127.0.0.1', '', '{\"jobName\":\"协议脚本缓存刷新定时任务\",\"concurrent\":\"1\",\"remark\":\"\",\"jobGroup\":\"PROTOCOL\",\"params\":{},\"cronExpression\":\"0/5 * * * * ?\",\"jobId\":4,\"createBy\":\"admin\",\"nextValidTime\":1657526160000,\"createTime\":1657525849000,\"updateBy\":\"admin\",\"invokeTarget\":\"linkProtocolTask.protocolScriptCacheRefreshTask\",\"misfirePolicy\":\"2\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-11 15:55:58');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (458, '定时任务', 2, 'com.mqttsnet.thinglinks.job.controller.SysJobController.edit()', 'PUT', 1, 'admin', NULL, '/job', '127.0.0.1', '', '{\"jobName\":\"协议脚本缓存刷新定时任务\",\"concurrent\":\"1\",\"remark\":\"\",\"jobGroup\":\"PROTOCOL\",\"params\":{},\"cronExpression\":\"0/5 * * * * ?\",\"jobId\":4,\"createBy\":\"admin\",\"nextValidTime\":1657526160000,\"createTime\":1657525849000,\"updateBy\":\"admin\",\"invokeTarget\":\"linkProtocolTask.protocolScriptCacheRefreshTask\",\"misfirePolicy\":\"2\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-11 15:55:59');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (459, '定时任务', 2, 'com.mqttsnet.thinglinks.job.controller.SysJobController.edit()', 'PUT', 1, 'admin', NULL, '/job', '127.0.0.1', '', '{\"jobName\":\"协议脚本缓存刷新定时任务\",\"concurrent\":\"1\",\"remark\":\"\",\"jobGroup\":\"PROTOCOL\",\"params\":{},\"cronExpression\":\"0/5 0 0/23 * * ?\",\"jobId\":4,\"createBy\":\"admin\",\"nextValidTime\":1657551600000,\"createTime\":1657525849000,\"updateBy\":\"admin\",\"invokeTarget\":\"linkProtocolTask.protocolScriptCacheRefreshTask\",\"misfirePolicy\":\"2\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-11 15:57:20');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (460, '协议管理', 2, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.edit()', 'PUT', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"22\",\"filePath\":\"222\",\"productIdentification\":\"22\",\"className\":\"222\",\"remark\":\"222\",\"updateTime\":\"2022-07-12T16:20:11.254\",\"protocolType\":\"MQTT\",\"content\":\"222\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-11T15:55:22\",\"protocolName\":\"22\",\"updateBy\":\"admin\",\"protocolVersion\":\"22\",\"id\":1,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 16:20:20');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (461, '协议管理', 2, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.edit()', 'PUT', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"22\",\"filePath\":\"222\",\"productIdentification\":\"22\",\"className\":\"222\",\"remark\":\"222\",\"updateTime\":\"2022-07-12T16:21:03.793\",\"protocolType\":\"MQTT\",\"content\":\"222\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-11T15:55:22\",\"protocolName\":\"22\",\"updateBy\":\"admin\",\"protocolVersion\":\"22\",\"id\":1,\"status\":\"1\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 16:21:03');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (462, '产品管理', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.generateProductJson()', 'POST', 1, 'admin', NULL, '/product/generateProductJson', '127.0.0.1', '', '{\"appId\":\"thinglinks\",\"templateId\":\"\",\"status\":0,\"content\":\"{\\\"appId\\\":\\\"thinglinks\\\",\\\"dataFormat\\\":\\\"JSON\\\",\\\"deviceType\\\":\\\"cgq\\\",\\\"manufacturerId\\\":\\\"bj001\\\",\\\"manufacturerName\\\":\\\"bj001\\\",\\\"model\\\":\\\"wsd\\\",\\\"productName\\\":\\\"这是bj测试产品\\\",\\\"productType\\\":\\\"COMMON\\\",\\\"protocolType\\\":\\\"MQTT\\\",\\\"remark\\\":\\\"\\\",\\\"templateId\\\":\\\"\\\",\\\"services\\\":[{\\\"commands\\\":[],\\\"description\\\":\\\"\\\",\\\"serviceId\\\":\\\"wsdser\\\",\\\"properties\\\":[{\\\"datatype\\\":\\\"int\\\",\\\"description\\\":\\\"1\\\",\\\"enumlist\\\":\\\"\\\",\\\"max\\\":\\\"80\\\",\\\"maxlength\\\":0,\\\"min\\\":\\\"40\\\",\\\"name\\\":\\\"温度\\\",\\\"required\\\":1,\\\"step\\\":0,\\\"unit\\\":\\\"°\\\",\\\"method\\\":\\\"R\\\"}]}]}\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 16:25:02');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (463, '协议管理', 2, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.edit()', 'PUT', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"22\",\"filePath\":\"222\",\"productIdentification\":\"82325a1de5e84ea88f332f3dbc10f6d5\",\"className\":\"222\",\"remark\":\"222\",\"updateTime\":\"2022-07-12T16:31:32.215\",\"protocolType\":\"MQTT\",\"content\":\"222\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-11T15:55:22\",\"protocolName\":\"22\",\"updateBy\":\"admin\",\"protocolVersion\":\"22\",\"id\":1,\"status\":\"1\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 16:31:32');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (464, '产品管理', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.generateProductJson()', 'POST', 1, 'admin', NULL, '/product/generateProductJson', '127.0.0.1', '', '{\"appId\":\"thinglinks\",\"templateId\":\"\",\"status\":0,\"content\":\"{\\\"appId\\\":\\\"thinglinks\\\",\\\"dataFormat\\\":\\\"JSON\\\",\\\"deviceType\\\":\\\"cgq\\\",\\\"manufacturerId\\\":\\\"bj001\\\",\\\"manufacturerName\\\":\\\"bj001\\\",\\\"model\\\":\\\"co2\\\",\\\"productName\\\":\\\"co2\\\",\\\"productType\\\":\\\"COMMON\\\",\\\"protocolType\\\":\\\"MQTT\\\",\\\"remark\\\":\\\"\\\",\\\"templateId\\\":\\\"\\\",\\\"services\\\":[{\\\"commands\\\":[],\\\"description\\\":\\\"\\\",\\\"serviceId\\\":\\\"co2ser\\\",\\\"properties\\\":[{\\\"datatype\\\":\\\"int\\\",\\\"description\\\":\\\"\\\",\\\"enumlist\\\":\\\"\\\",\\\"max\\\":\\\"2000\\\",\\\"maxlength\\\":0,\\\"min\\\":\\\"0\\\",\\\"name\\\":\\\"氧气浓度\\\",\\\"required\\\":1,\\\"step\\\":0,\\\"unit\\\":\\\"hpm\\\",\\\"method\\\":\\\"R\\\"}]}]}\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 16:35:29');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (465, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/w', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-12 16:39:52');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (466, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/wsd', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-12 16:39:52');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (467, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/wsd', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-12 16:39:52');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (468, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/wsd1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-12 16:39:53');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (469, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/0000000065E071E4', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-12 16:40:03');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (470, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/0000000065E071E4', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-12 16:40:03');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (471, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceType\":\"COMMON\",\"clientId\":\"0000000065E071E4\",\"connectStatus\":\"INIT\",\"productIdentification\":\"82325a1de5e84ea88f332f3dbc10f6d5\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"admin\",\"deviceName\":\"wsd001\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"createBy\":\"admin\",\"password\":\"123456\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1657615251095,\"appId\":\"thinglinks\",\"id\":20,\"deviceIdentification\":\"wsd001\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 16:40:52');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (472, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceType\":\"COMMON\",\"clientId\":\"0000000065E071E4\",\"productIdentification\":\"82325a1de5e84ea88f332f3dbc10f6d5\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"admin\",\"deviceName\":\"wsd001\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"password\":\"123456\",\"connector\":\"127.0.0.1:11883\",\"appId\":\"thinglinks\",\"deviceIdentification\":\"wsd001\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-07-12 16:44:51');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (473, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/65E071E4', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-12 16:45:29');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (474, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceType\":\"COMMON\",\"clientId\":\"65E071E4\",\"productIdentification\":\"82325a1de5e84ea88f332f3dbc10f6d5\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"admin\",\"deviceName\":\"wsd001\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"password\":\"123456\",\"connector\":\"127.0.0.1:11883\",\"appId\":\"thinglinks\",\"deviceIdentification\":\"wsd001\"}', '{\"msg\":\"操作失败\",\"code\":500}', 0, NULL, '2022-07-12 16:45:31');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (475, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/0000000065E071E4', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-07-12 16:45:45');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (476, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/0000000065E071E4', '127.0.0.1', '', NULL, '{\"msg\":\"clientId已存在\",\"code\":500}', 0, NULL, '2022-07-12 16:45:45');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (477, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 17:23:19');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (478, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 17:24:33');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (479, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 17:25:37');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (480, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 17:27:17');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (481, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 17:27:40');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (482, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 17:34:24');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (483, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 17:44:06');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (484, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 17:44:49');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (485, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 17:46:13');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (486, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 17:46:28');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (487, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 18:02:24');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (488, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-12 18:02:35');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (489, '菜单管理', 1, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.add()', 'POST', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"post\",\"orderNum\":\"2\",\"menuName\":\"命令下发\",\"params\":{},\"parentId\":1121,\"isCache\":\"0\",\"path\":\"broker:sendMsg:list\",\"createBy\":\"admin\",\"children\":[],\"isFrame\":\"1\",\"menuType\":\"M\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 08:24:52');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (490, '菜单管理', 2, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.edit()', 'PUT', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"post\",\"orderNum\":\"2\",\"menuName\":\"命令下发\",\"params\":{},\"parentId\":1121,\"isCache\":\"0\",\"path\":\"broker:sendMsg:list\",\"component\":\"broker/sendMsg/index\",\"children\":[],\"createTime\":1657671891000,\"updateBy\":\"admin\",\"isFrame\":\"1\",\"menuId\":1123,\"menuType\":\"C\",\"perms\":\"broker:sendMsg:list\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 08:25:58');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (491, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/c', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 09:24:44');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (492, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/co', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 09:24:45');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (493, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/co2', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 09:24:46');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (494, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/co2B122724', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 09:24:50');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (495, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/co2B122724', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 09:24:50');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (496, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceType\":\"COMMON\",\"clientId\":\"co2B122724\",\"connectStatus\":\"INIT\",\"productIdentification\":\"0d6f540f643c46cb83df6758e090236d\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"admin\",\"deviceName\":\"co2-1\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"createBy\":\"admin\",\"password\":\"123456\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1657675517306,\"appId\":\"thinglinks\",\"id\":21,\"deviceIdentification\":\"24E124126B122724\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 09:25:17');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (497, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"productIdentification\":\"0d6f540f643c46cb83df6758e090236d\",\"createBy\":\"admin\",\"createTime\":\"2022-07-13T09:26:31.677\",\"protocolName\":\"co2协议转换\",\"id\":2,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 09:26:32');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (498, '协议管理', 2, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.edit()', 'PUT', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"productIdentification\":\"0d6f540f643c46cb83df6758e090236d\",\"updateTime\":\"2022-07-13T09:26:39.392\",\"createBy\":\"admin\",\"createTime\":\"2022-07-13T09:26:32\",\"protocolName\":\"co2协议转换\",\"updateBy\":\"admin\",\"id\":2,\"status\":\"1\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 09:26:39');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (499, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 09:26:39');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (500, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 09:33:01');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (501, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 09:35:35');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (502, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 09:35:40');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (503, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:20:14');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (504, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:20:16');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (505, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:20:21');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (506, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:20:26');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (507, '设备动作数据', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceActionController.add()', 'POST', 1, 'admin', NULL, '/action', '127.0.0.1', '', '{\"actionType\":\"ONLINE\",\"createTime\":\"2022-07-13T10:29:10.867\",\"id\":479,\"deviceIdentification\":\"24e124126b122724\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:29:12');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (508, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:51:10');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (509, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:51:17');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (510, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:51:27');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (511, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:51:57');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (512, 'CAS规则管理', 1, 'com.mqttsnet.thinglinks.link.controller.casbinRule.CasbinRuleController.add()', 'POST', 1, 'admin', NULL, '/casbinRule', '127.0.0.1', '', '{\"ptype\":\"MQTT\",\"params\":{},\"v0\":\"3\",\"id\":1,\"v2\":\"PUBLISH\",\"v3\":\"allow\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:53:16');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (513, 'CAS规则管理', 3, 'com.mqttsnet.thinglinks.link.controller.casbinRule.CasbinRuleController.remove()', 'DELETE', 1, 'admin', NULL, '/casbinRule/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:54:06');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (514, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:56:30');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (515, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 10:56:36');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (516, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:09:12');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (517, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:09:16');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (518, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:09:27');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (519, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:09:31');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (520, '菜单管理', 1, 'com.mqttsnet.thinglinks.system.controller.SysMenuController.add()', 'POST', 1, 'admin', NULL, '/menu', '127.0.0.1', '', '{\"visible\":\"0\",\"icon\":\"swagger\",\"orderNum\":\"7\",\"menuName\":\"规则引擎\",\"params\":{},\"parentId\":1061,\"isCache\":\"0\",\"path\":\"ruleEngine\",\"createBy\":\"admin\",\"children\":[],\"isFrame\":\"1\",\"menuType\":\"M\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:23:03');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (521, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:39:49');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (522, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:39:55');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (523, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:40:22');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (524, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:40:26');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (525, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:51:49');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (526, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:51:52');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (527, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:52:51');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (528, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:52:54');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (529, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:53:31');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (530, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 11:53:34');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (531, '产品模板', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductTemplateController.add()', 'POST', 1, 'admin', NULL, '/productTemplate', '127.0.0.1', '', '{\"createBy\":\"admin\",\"createTime\":1657691624656,\"templateName\":\"HJ212-2017废水\",\"appId\":\"HJ212_WATER\",\"remark\":\"HJ212-2017废水\",\"id\":2,\"params\":{},\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 13:53:45');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (532, '产品模板', 2, 'com.mqttsnet.thinglinks.link.controller.product.ProductTemplateController.edit()', 'PUT', 1, 'admin', NULL, '/productTemplate', '127.0.0.1', '', '{\"createBy\":\"admin\",\"createTime\":1657691625000,\"templateName\":\"HJ212-2017\",\"updateBy\":\"admin\",\"appId\":\"HJ212_2017\",\"remark\":\"HJ212-2017\",\"updateTime\":1657691646000,\"id\":2,\"params\":{},\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 13:54:07');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (533, '产品模型服务', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductServicesController.add()', 'POST', 1, 'admin', NULL, '/productServices', '127.0.0.1', '', '{\"description\":\"废水\",\"params\":{},\"serviceName\":\"water\",\"templateId\":2,\"createBy\":\"admin\",\"createTime\":1657691660071,\"id\":58,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 13:54:20');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (534, '产品模型服务', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductServicesController.add()', 'POST', 1, 'admin', NULL, '/productServices', '127.0.0.1', '', '{\"description\":\"废气\",\"params\":{},\"serviceName\":\"gas\",\"templateId\":2,\"createBy\":\"admin\",\"createTime\":1657691668867,\"id\":59,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 13:54:29');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (535, '产品模型服务属性', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductPropertiesController.add()', 'POST', 1, 'admin', NULL, '/productProperties', '127.0.0.1', '', '{\"method\":\"RE\",\"max\":\"100\",\"description\":\"污水\",\"params\":{},\"required\":0,\"createBy\":\"admin\",\"min\":\"0\",\"createTime\":1657691791392,\"datatype\":\"decimal\",\"name\":\"w00000\",\"step\":1,\"id\":122,\"serviceId\":58}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 13:56:32');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (536, '产品模型服务属性', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductPropertiesController.add()', 'POST', 1, 'admin', NULL, '/productProperties', '127.0.0.1', '', '{\"method\":\"RE\",\"max\":\"100\",\"description\":\"pH 值\",\"params\":{},\"required\":0,\"createBy\":\"admin\",\"min\":\"0\",\"createTime\":1657691810926,\"datatype\":\"decimal\",\"name\":\"w01001\",\"step\":1,\"id\":123,\"serviceId\":58}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 13:56:51');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (537, '产品管理', 3, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.remove()', 'DELETE', 1, 'admin', NULL, '/product/28', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 13:57:08');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (538, '产品管理', 3, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.remove()', 'DELETE', 1, 'admin', NULL, '/product/33', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 13:57:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (539, '产品管理', 3, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.remove()', 'DELETE', 1, 'admin', NULL, '/product/34', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 13:57:13');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (540, '产品模板', 2, 'com.mqttsnet.thinglinks.link.controller.product.ProductTemplateController.edit()', 'PUT', 1, 'admin', NULL, '/productTemplate', '127.0.0.1', '', '{\"createBy\":\"admin\",\"createTime\":1657691646000,\"templateName\":\"HJ212-2017\",\"updateBy\":\"admin\",\"appId\":\"thinglinks\",\"remark\":\"HJ212-2017\",\"updateTime\":1657692129000,\"id\":2,\"params\":{},\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:02:09');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (541, '产品管理', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.add()', 'POST', 1, 'admin', NULL, '/product', '127.0.0.1', '', '{\"deviceType\":\"1111\",\"dataFormat\":\"hex\",\"manufacturerName\":\"111\",\"manufacturerId\":\"1111\",\"productIdentification\":\"c69cae31d9eb456db31eceebf8a4e0f4\",\"protocolType\":\"MQTT\",\"params\":{},\"productName\":\"11\",\"createBy\":\"admin\",\"createTime\":1657692335355,\"appId\":\"thinglinks\",\"model\":\"111\",\"id\":39,\"productType\":\"COMMON\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:05:36');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (542, '产品模型服务', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductServicesController.add()', 'POST', 1, 'admin', NULL, '/productServices', '127.0.0.1', '', '{\"productId\":39,\"params\":{},\"serviceName\":\"water\",\"createBy\":\"admin\",\"createTime\":1657692363616,\"id\":60,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:06:03');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (543, '产品模型服务属性', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductPropertiesController.add()', 'POST', 1, 'admin', NULL, '/productProperties', '127.0.0.1', '', '{\"method\":\"RE\",\"max\":\"10\",\"description\":\"污水\",\"params\":{},\"required\":0,\"createBy\":\"admin\",\"min\":\"0\",\"createTime\":1657692396754,\"datatype\":\"decimal\",\"name\":\"w00000\",\"step\":1,\"id\":124,\"serviceId\":60}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:06:37');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (544, '产品模型服务属性', 1, 'com.mqttsnet.thinglinks.link.controller.product.ProductPropertiesController.add()', 'POST', 1, 'admin', NULL, '/productProperties', '127.0.0.1', '', '{\"method\":\"RE\",\"max\":\"100\",\"description\":\"pH 值\",\"params\":{},\"required\":0,\"createBy\":\"admin\",\"min\":\"0\",\"createTime\":1657692413149,\"datatype\":\"decimal\",\"name\":\"w01001\",\"step\":1,\"id\":125,\"serviceId\":60}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:06:53');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (545, '设备管理', 3, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.remove()', 'DELETE', 1, 'admin', NULL, '/device/16', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:07:46');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (546, '设备管理', 3, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.remove()', 'DELETE', 1, 'admin', NULL, '/device/21,15,20,19,18,17', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:07:55');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (547, '产品管理', 2, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.edit()', 'PUT', 1, 'admin', NULL, '/product', '127.0.0.1', '', '{\"deviceType\":\"1111\",\"dataFormat\":\"hex\",\"manufacturerName\":\"111\",\"manufacturerId\":\"1111\",\"productIdentification\":\"c69cae31d9eb456db31eceebf8a4e0f4\",\"updateTime\":1657692518199,\"protocolType\":\"MQTT\",\"params\":{},\"productName\":\"YL测试\",\"createBy\":\"admin\",\"createTime\":1657692335000,\"updateBy\":\"admin\",\"appId\":\"thinglinks\",\"model\":\"111\",\"id\":39,\"productType\":\"COMMON\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:08:38');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (548, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/y', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:08:51');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (549, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yl', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:08:51');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (550, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/ylte', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:08:51');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (551, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/ylte', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:08:52');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (552, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yltes', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:08:52');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (553, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yltest', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:08:52');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (554, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yltest', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:08:55');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (555, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/y', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:09:06');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (556, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yl', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:09:07');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (557, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/ylte', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:09:09');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (558, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yltes', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:09:09');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (559, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/ylte', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:09:10');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (560, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yltest', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:09:10');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (561, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yltest9', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:09:13');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (562, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yltest99', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:09:13');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (563, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yltest99', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:09:34');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (564, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/yltest99', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 14:09:34');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (565, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceTags\":\"test\",\"deviceType\":\"COMMON\",\"clientId\":\"yltest99\",\"connectStatus\":\"INIT\",\"productIdentification\":\"c69cae31d9eb456db31eceebf8a4e0f4\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"13808215318\",\"deviceName\":\"测试设备\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"createBy\":\"admin\",\"password\":\"123456\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1657692597292,\"appId\":\"thinglinks\",\"id\":22,\"deviceIdentification\":\"yltest99\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:09:58');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (566, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.disconnect()', 'POST', 1, 'admin', NULL, '/device/disconnect/22', '127.0.0.1', '', '[22]', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:10:41');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (567, '设备动作数据', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceActionController.add()', 'POST', 1, 'admin', NULL, '/action', '127.0.0.1', '', '{\"actionType\":\"ONLINE\",\"createTime\":\"2022-07-13T14:12:54.530\",\"id\":480,\"deviceIdentification\":\"yltest99\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:12:55');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (568, '设备动作数据', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceActionController.add()', 'POST', 1, 'admin', NULL, '/action', '127.0.0.1', '', '{\"actionType\":\"OFFLINE\",\"createTime\":\"2022-07-13T14:12:58.267\",\"id\":481,\"deviceIdentification\":\"yltest99\",\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:12:58');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (569, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:56:46');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (570, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:56:48');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (571, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:56:59');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (572, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 14:57:04');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (573, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:06:16');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (574, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:06:19');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (575, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:06:41');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (576, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:06:51');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (577, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:07:54');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (578, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:08:00');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (579, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:08:24');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (580, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:08:27');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (581, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:10:20');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (582, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:10:44');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (583, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/24E124126B122724', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 15:12:30');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (584, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/24E124126B122724', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 15:12:30');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (585, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceType\":\"COMMON\",\"clientId\":\"24E124126B122724\",\"connectStatus\":\"INIT\",\"productIdentification\":\"0d6f540f643c46cb83df6758e090236d\",\"remark\":\"别删\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"admin\",\"deviceName\":\"co2-1\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"createBy\":\"admin\",\"password\":\"123456\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1657696407139,\"appId\":\"thinglinks\",\"id\":23,\"deviceIdentification\":\"24E124126B122724\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:13:27');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (586, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/0000000065E071E4', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 15:14:15');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (587, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/0000000065E071E4', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-13 15:14:15');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (588, '设备管理', 1, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.add()', 'POST', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceType\":\"COMMON\",\"clientId\":\"0000000065E071E4\",\"connectStatus\":\"INIT\",\"productIdentification\":\"0d6f540f643c46cb83df6758e090236d\",\"remark\":\"别删\",\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"admin\",\"deviceName\":\"wsd-1\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"createBy\":\"admin\",\"password\":\"123456\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1657696489021,\"appId\":\"thinglinks\",\"id\":24,\"deviceIdentification\":\"0000000065E071E4\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:14:49');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (589, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:18:03');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (590, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:18:06');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (591, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:18:10');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (592, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 15:18:14');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (593, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 16:52:47');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (594, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 16:52:56');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (595, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:09:08');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (596, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:09:42');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (597, '设备管理', 2, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.edit()', 'PUT', 1, 'admin', NULL, '/device', '127.0.0.1', '', '{\"deviceType\":\"COMMON\",\"clientId\":\"0000000065E071E4\",\"connectStatus\":\"INIT\",\"productIdentification\":\"82325a1de5e84ea88f332f3dbc10f6d5\",\"remark\":\"别删\",\"updateTime\":1657703418375,\"protocolType\":\"MQTT\",\"params\":{},\"userName\":\"admin\",\"deviceName\":\"wsd-1\",\"deviceStatus\":\"ENABLE\",\"authMode\":\"default\",\"createBy\":\"admin\",\"password\":\"123456\",\"connector\":\"127.0.0.1:11883\",\"createTime\":1657696489000,\"updateBy\":\"admin\",\"appId\":\"thinglinks\",\"id\":24,\"deviceIdentification\":\"0000000065E071E4\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:10:18');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (598, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:10:33');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (599, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:10:37');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (600, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:27:47');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (601, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:27:49');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (602, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:37:48');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (603, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:38:07');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (604, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:39:19');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (605, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:40:48');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (606, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:45:35');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (607, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:47:08');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (608, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:48:07');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (609, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:48:33');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (610, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:59:27');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (611, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:59:27');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (612, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.disable()', 'GET', 1, 'admin', NULL, '/protocol/disable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 17:59:33');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (613, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/1', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 18:01:02');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (614, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/2', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-13 18:01:17');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (615, '产品管理', 2, 'com.mqttsnet.thinglinks.link.controller.product.ProductController.edit()', 'PUT', 1, 'admin', NULL, '/product', '127.0.0.1', '', '{\"deviceType\":\"1111\",\"dataFormat\":\"hex\",\"manufacturerName\":\"111\",\"manufacturerId\":\"1111\",\"productIdentification\":\"c69cae31d9eb456db31eceebf8a4e0f4\",\"updateTime\":1657763233980,\"protocolType\":\"MQTT\",\"params\":{},\"productName\":\"YL测试\",\"createBy\":\"admin\",\"createTime\":1657692335000,\"updateBy\":\"admin\",\"appId\":\"thinglinks\",\"model\":\"111\",\"id\":39,\"productType\":\"COMMON\",\"status\":\"1\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 09:47:15');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (616, '设备管理', 0, 'com.mqttsnet.thinglinks.link.controller.device.DeviceController.validationFindOneByClientId()', 'GET', 1, 'admin', NULL, '/device/validationFindOneByClientId/1', '127.0.0.1', '', NULL, '{\"msg\":\"clientId可用\",\"code\":200}', 0, NULL, '2022-07-14 13:18:55');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (617, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"2\",\"filePath\":\"23\",\"productIdentification\":\"123\",\"className\":\"3\",\"remark\":\"23\",\"protocolType\":\"MQTT\",\"content\":\"3\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:19:07.939\",\"protocolName\":\"12\",\"appId\":\"thinglinks\",\"protocolVersion\":\"23\",\"id\":3,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:19:08');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (618, '协议管理', 3, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.remove()', 'DELETE', 1, 'admin', NULL, '/protocol/3', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:19:16');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (619, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"2\",\"filePath\":\"2\",\"productIdentification\":\"123\",\"className\":\"2\",\"remark\":\"2\",\"protocolType\":\"MQTT\",\"content\":\"2\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:19:27.843\",\"protocolName\":\"123\",\"appId\":\"thinglinks\",\"protocolVersion\":\"2\",\"id\":4,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:19:27');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (620, '协议管理', 3, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.remove()', 'DELETE', 1, 'admin', NULL, '/protocol/4', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:21:50');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (621, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"123\",\"filePath\":\"123\",\"productIdentification\":\"24\",\"className\":\"123\",\"remark\":\"312\",\"protocolType\":\"MQTT\",\"content\":\"12\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:23:10.471\",\"protocolName\":\"123\",\"appId\":\"thinglinks\",\"protocolVersion\":\"123\",\"id\":5,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:23:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (622, '协议管理', 3, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.remove()', 'DELETE', 1, 'admin', NULL, '/protocol/5', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:23:32');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (623, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"123\",\"filePath\":\"2\",\"productIdentification\":\"12\",\"className\":\"1\",\"remark\":\"22\",\"protocolType\":\"MQTT\",\"content\":\"22\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:23:43.121\",\"protocolName\":\"123\",\"appId\":\"thinglinks\",\"protocolVersion\":\"12\",\"id\":6,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:23:43');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (624, '协议管理', 3, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.remove()', 'DELETE', 1, 'admin', NULL, '/protocol/6', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:24:03');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (625, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"22\",\"filePath\":\"2\",\"productIdentification\":\"12\",\"className\":\"2\",\"remark\":\"2\",\"protocolType\":\"MQTT\",\"content\":\"2\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:24:13.287\",\"protocolName\":\"12\",\"appId\":\"thinglinks\",\"protocolVersion\":\"2\",\"id\":7,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:24:13');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (626, '协议管理', 3, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.remove()', 'DELETE', 1, 'admin', NULL, '/protocol/7', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:27:54');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (627, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"1\",\"filePath\":\"1\",\"productIdentification\":\"1\",\"className\":\"1\",\"remark\":\"1\",\"protocolType\":\"MQTT\",\"content\":\"1\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:28:11.403\",\"protocolName\":\"1\",\"appId\":\"thinglinks\",\"protocolVersion\":\"1\",\"id\":8,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:28:11');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (628, '协议管理', 3, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.remove()', 'DELETE', 1, 'admin', NULL, '/protocol/8', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:28:39');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (629, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"1\",\"filePath\":\"1\",\"productIdentification\":\"1\",\"className\":\"1\",\"remark\":\"1\",\"protocolType\":\"MQTT\",\"content\":\"1\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:28:48.998\",\"protocolName\":\"1\",\"appId\":\"thinglinks\",\"protocolVersion\":\"1\",\"id\":9,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:28:49');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (630, '协议管理', 3, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.remove()', 'DELETE', 1, 'admin', NULL, '/protocol/9', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:45:00');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (631, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"1\",\"filePath\":\"1\",\"productIdentification\":\"1\",\"className\":\"1\",\"remark\":\"1\",\"protocolType\":\"MQTT\",\"content\":\"1\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:45:08.064\",\"protocolName\":\"1\",\"appId\":\"thinglinks\",\"protocolVersion\":\"1\",\"id\":10,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:45:08');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (632, '协议管理', 3, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.remove()', 'DELETE', 1, 'admin', NULL, '/protocol/10', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:45:29');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (633, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"1\",\"filePath\":\"1\",\"productIdentification\":\"1\",\"className\":\"1\",\"remark\":\"1\",\"protocolType\":\"MQTT\",\"content\":\"1\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:45:41.156\",\"protocolName\":\"1\",\"appId\":\"thinglinks\",\"protocolVersion\":\"1\",\"id\":11,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:46:16');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (634, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"1\",\"filePath\":\"1\",\"productIdentification\":\"1\",\"className\":\"1\",\"remark\":\"1\",\"protocolType\":\"MQTT\",\"content\":\"1\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:49:58.867\",\"protocolName\":\"1\",\"appId\":\"thinglinks\",\"protocolVersion\":\"1\",\"id\":12,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200,\"data\":12}', 0, NULL, '2022-07-14 17:50:00');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (635, '协议管理', 3, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.remove()', 'DELETE', 1, 'admin', NULL, '/protocol/11,12', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:52:24');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (636, '协议管理', 1, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.add()', 'POST', 1, 'admin', NULL, '/protocol', '127.0.0.1', '', '{\"protocolIdentification\":\"1\",\"filePath\":\"1\",\"productIdentification\":\"1\",\"className\":\"1\",\"remark\":\"1\",\"protocolType\":\"MQTT\",\"content\":\"1\",\"createBy\":\"admin\",\"protocolVoice\":\"java\",\"createTime\":\"2022-07-14T17:52:33.868\",\"protocolName\":\"1\",\"appId\":\"thinglinks\",\"protocolVersion\":\"1\",\"id\":13,\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200,\"data\":13}', 0, NULL, '2022-07-14 17:52:33');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (637, '协议管理', 4, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.enable()', 'GET', 1, 'admin', NULL, '/protocol/enable/13', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:52:53');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (638, '协议管理', 3, 'com.mqttsnet.thinglinks.link.controller.protocol.ProtocolController.remove()', 'DELETE', 1, 'admin', NULL, '/protocol/13', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-14 17:53:05');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (639, '产品模板', 2, 'com.mqttsnet.thinglinks.link.controller.product.ProductTemplateController.edit()', 'PUT', 1, 'admin', NULL, '/productTemplate', '127.0.0.1', '', '{\"createBy\":\"admin\",\"createTime\":1657277861000,\"templateName\":\"212\",\"updateBy\":\"admin\",\"appId\":\"thinglinks\",\"remark\":\"212\",\"updateTime\":1657851045000,\"id\":1,\"params\":{},\"status\":\"0\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-15 10:10:45');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (640, '代码生成', 6, 'com.mqttsnet.thinglinks.gen.controller.GenController.importTableSave()', 'POST', 1, 'admin', NULL, '/gen/importTable', '127.0.0.1', '', 'rule', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-15 17:47:04');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (641, '代码生成', 8, 'com.mqttsnet.thinglinks.gen.controller.GenController.batchGenCode()', 'GET', 1, 'admin', NULL, '/gen/batchGenCode', '127.0.0.1', '', NULL, NULL, 0, NULL, '2022-07-15 17:47:25');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (642, '代码生成', 8, 'com.mqttsnet.thinglinks.gen.controller.GenController.batchGenCode()', 'GET', 1, 'admin', NULL, '/gen/batchGenCode', '127.0.0.1', '', NULL, NULL, 0, NULL, '2022-07-15 17:47:41');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (643, '在线用户', 7, 'com.mqttsnet.thinglinks.system.controller.SysUserOnlineController.forceLogout()', 'DELETE', 1, 'admin', NULL, '/online/3d3a2da0-4524-440d-8109-d84ecf609bdb', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-18 10:29:53');
+INSERT INTO `sys_oper_log` (`oper_id`, `title`, `business_type`, `method`, `request_method`, `operator_type`, `oper_name`, `dept_name`, `oper_url`, `oper_ip`, `oper_location`, `oper_param`, `json_result`, `status`, `error_msg`, `oper_time`) VALUES (644, '在线用户', 7, 'com.mqttsnet.thinglinks.system.controller.SysUserOnlineController.forceLogout()', 'DELETE', 1, 'admin', NULL, '/online/10a910de-92b2-4971-b509-694b901e0283', '127.0.0.1', '', NULL, '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2022-07-18 10:29:55');
 COMMIT;
 
 -- ----------------------------
@@ -1551,17 +2481,17 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_post`;
 CREATE TABLE `sys_post` (
-  `post_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '岗位ID',
-  `post_code` varchar(64) NOT NULL COMMENT '岗位编码',
-  `post_name` varchar(50) NOT NULL COMMENT '岗位名称',
-  `post_sort` int(4) NOT NULL COMMENT '显示顺序',
-  `status` char(1) NOT NULL COMMENT '状态（0正常 1停用）',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`post_id`) USING BTREE
+                            `post_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '岗位ID',
+                            `post_code` varchar(64) NOT NULL COMMENT '岗位编码',
+                            `post_name` varchar(50) NOT NULL COMMENT '岗位名称',
+                            `post_sort` int(4) NOT NULL COMMENT '显示顺序',
+                            `status` char(1) NOT NULL COMMENT '状态（0正常 1停用）',
+                            `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                            `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                            `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                            PRIMARY KEY (`post_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='岗位信息表';
 
 -- ----------------------------
@@ -1579,21 +2509,21 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_role`;
 CREATE TABLE `sys_role` (
-  `role_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '角色ID',
-  `role_name` varchar(30) NOT NULL COMMENT '角色名称',
-  `role_key` varchar(100) NOT NULL COMMENT '角色权限字符串',
-  `role_sort` int(4) NOT NULL COMMENT '显示顺序',
-  `data_scope` char(1) DEFAULT '1' COMMENT '数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限）',
-  `menu_check_strictly` tinyint(1) DEFAULT '1' COMMENT '菜单树选择项是否关联显示',
-  `dept_check_strictly` tinyint(1) DEFAULT '1' COMMENT '部门树选择项是否关联显示',
-  `status` char(1) NOT NULL COMMENT '角色状态（0正常 1停用）',
-  `del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`role_id`) USING BTREE
+                            `role_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '角色ID',
+                            `role_name` varchar(30) NOT NULL COMMENT '角色名称',
+                            `role_key` varchar(100) NOT NULL COMMENT '角色权限字符串',
+                            `role_sort` int(4) NOT NULL COMMENT '显示顺序',
+                            `data_scope` char(1) DEFAULT '1' COMMENT '数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限）',
+                            `menu_check_strictly` tinyint(1) DEFAULT '1' COMMENT '菜单树选择项是否关联显示',
+                            `dept_check_strictly` tinyint(1) DEFAULT '1' COMMENT '部门树选择项是否关联显示',
+                            `status` char(1) NOT NULL COMMENT '角色状态（0正常 1停用）',
+                            `del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+                            `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                            `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                            `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                            PRIMARY KEY (`role_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='角色信息表';
 
 -- ----------------------------
@@ -1610,9 +2540,9 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_role_dept`;
 CREATE TABLE `sys_role_dept` (
-  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
-  `dept_id` bigint(20) NOT NULL COMMENT '部门ID',
-  PRIMARY KEY (`role_id`,`dept_id`) USING BTREE
+                                 `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+                                 `dept_id` bigint(20) NOT NULL COMMENT '部门ID',
+                                 PRIMARY KEY (`role_id`,`dept_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='角色和部门关联表';
 
 -- ----------------------------
@@ -1636,9 +2566,9 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_role_menu`;
 CREATE TABLE `sys_role_menu` (
-  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
-  `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
-  PRIMARY KEY (`role_id`,`menu_id`) USING BTREE
+                                 `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+                                 `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
+                                 PRIMARY KEY (`role_id`,`menu_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='角色和菜单关联表';
 
 -- ----------------------------
@@ -1758,26 +2688,26 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_user`;
 CREATE TABLE `sys_user` (
-  `user_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `dept_id` bigint(20) DEFAULT NULL COMMENT '部门ID',
-  `user_name` varchar(30) NOT NULL COMMENT '用户账号',
-  `nick_name` varchar(30) NOT NULL COMMENT '用户昵称',
-  `user_type` varchar(2) DEFAULT '00' COMMENT '用户类型（00系统用户）',
-  `email` varchar(50) DEFAULT '' COMMENT '用户邮箱',
-  `phonenumber` varchar(11) DEFAULT '' COMMENT '手机号码',
-  `sex` char(1) DEFAULT '0' COMMENT '用户性别（0男 1女 2未知）',
-  `avatar` varchar(100) DEFAULT '' COMMENT '头像地址',
-  `password` varchar(100) DEFAULT '' COMMENT '密码',
-  `status` char(1) DEFAULT '0' COMMENT '帐号状态（0正常 1停用）',
-  `del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
-  `login_ip` varchar(128) DEFAULT '' COMMENT '最后登录IP',
-  `login_date` datetime DEFAULT NULL COMMENT '最后登录时间',
-  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`user_id`) USING BTREE
+                            `user_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+                            `dept_id` bigint(20) DEFAULT NULL COMMENT '部门ID',
+                            `user_name` varchar(30) NOT NULL COMMENT '用户账号',
+                            `nick_name` varchar(30) NOT NULL COMMENT '用户昵称',
+                            `user_type` varchar(2) DEFAULT '00' COMMENT '用户类型（00系统用户）',
+                            `email` varchar(50) DEFAULT '' COMMENT '用户邮箱',
+                            `phonenumber` varchar(11) DEFAULT '' COMMENT '手机号码',
+                            `sex` char(1) DEFAULT '0' COMMENT '用户性别（0男 1女 2未知）',
+                            `avatar` varchar(100) DEFAULT '' COMMENT '头像地址',
+                            `password` varchar(100) DEFAULT '' COMMENT '密码',
+                            `status` char(1) DEFAULT '0' COMMENT '帐号状态（0正常 1停用）',
+                            `del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+                            `login_ip` varchar(128) DEFAULT '' COMMENT '最后登录IP',
+                            `login_date` datetime DEFAULT NULL COMMENT '最后登录时间',
+                            `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                            `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+                            `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                            PRIMARY KEY (`user_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1002 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='用户信息表';
 
 -- ----------------------------
@@ -1796,9 +2726,9 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_user_post`;
 CREATE TABLE `sys_user_post` (
-  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
-  `post_id` bigint(20) NOT NULL COMMENT '岗位ID',
-  PRIMARY KEY (`user_id`,`post_id`) USING BTREE
+                                 `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+                                 `post_id` bigint(20) NOT NULL COMMENT '岗位ID',
+                                 PRIMARY KEY (`user_id`,`post_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='用户与岗位关联表';
 
 -- ----------------------------
@@ -1815,9 +2745,9 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_user_role`;
 CREATE TABLE `sys_user_role` (
-  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
-  `role_id` bigint(20) NOT NULL COMMENT '角色ID',
-  PRIMARY KEY (`user_id`,`role_id`) USING BTREE
+                                 `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+                                 `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+                                 PRIMARY KEY (`user_id`,`role_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='用户和角色关联表';
 
 -- ----------------------------
@@ -1835,18 +2765,18 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `td_createStable_record`;
 CREATE TABLE `td_createStable_record` (
-  `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `table_name` varchar(255) NOT NULL COMMENT '表名',
-  `sql_message` longtext COMMENT 'SQL报文',
-  `execute_status` varchar(10) NOT NULL COMMENT '执行状态(成功 || 失败)',
-  `execute_result` varchar(10) NOT NULL COMMENT '执行结果详情',
-  `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
-  `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`id`),
-  KEY `table_name` (`table_name`) USING HASH COMMENT '超级表名'
+                                          `id` bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                          `table_name` varchar(255) NOT NULL COMMENT '表名',
+                                          `sql_message` longtext COMMENT 'SQL报文',
+                                          `execute_status` varchar(10) NOT NULL COMMENT '执行状态(成功 || 失败)',
+                                          `execute_result` varchar(10) NOT NULL COMMENT '执行结果详情',
+                                          `create_by` varchar(64) DEFAULT 'ununited' COMMENT '创建者',
+                                          `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                          `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+                                          `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                          `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+                                          PRIMARY KEY (`id`),
+                                          KEY `table_name` (`table_name`) USING HASH COMMENT '超级表名'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='TDengine创建超级表记录';
 
 -- ----------------------------

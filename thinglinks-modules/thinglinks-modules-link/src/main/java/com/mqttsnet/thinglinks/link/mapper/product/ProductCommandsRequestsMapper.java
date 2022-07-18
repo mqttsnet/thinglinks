@@ -1,11 +1,10 @@
 package com.mqttsnet.thinglinks.link.mapper.product;
 
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommandsRequests;
-
-import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @Description: java类作用描述
@@ -109,14 +108,6 @@ public interface ProductCommandsRequestsMapper {
      * @return 结果
      */
     int updateProductCommandsRequests(ProductCommandsRequests productCommandsRequests);
-
-    /**
-     * 删除产品模型设备下发服务命令属性
-     *
-     * @param id 产品模型设备下发服务命令属性主键
-     * @return 结果
-     */
-    int deleteProductCommandsRequestsById(Long id);
 
     /**
      * 批量删除产品模型设备下发服务命令属性

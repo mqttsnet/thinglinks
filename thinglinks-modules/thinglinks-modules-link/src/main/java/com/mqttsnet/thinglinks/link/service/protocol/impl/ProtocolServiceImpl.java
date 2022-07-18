@@ -192,7 +192,7 @@ public class ProtocolServiceImpl implements ProtocolService {
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             for (Device device : deviceList) {
-                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getDeviceIdentification());
+                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
             }
             protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
         }
@@ -220,7 +220,7 @@ public class ProtocolServiceImpl implements ProtocolService {
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             for (Device device : deviceList) {
-                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getDeviceIdentification());
+                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
             }
             protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
         }

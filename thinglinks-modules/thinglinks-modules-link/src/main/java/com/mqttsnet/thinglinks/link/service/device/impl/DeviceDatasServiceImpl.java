@@ -38,7 +38,6 @@ import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -552,8 +551,8 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 根据设备找到所属产品 产品的服务及属性 转换出系统能识别的json 找到这个产品的协议内容即Java代码
      */
     public String convert2msg(String deviceIdentification, String msg) {
-        if (redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + deviceIdentification)) {
-            String protocolContent = redisService.get(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + deviceIdentification);
+        if (redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification)) {
+            String protocolContent = redisService.get(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification);
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintWriter out = new PrintWriter(buffer, true);
             byte[] classBytes = DynamicLoaderEngine.compile(protocolContent, out, null);//传入要执行的代码

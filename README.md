@@ -80,7 +80,9 @@ com.mqttsnet.thinglinks
 
 系统工具：表单构建、代码生成、系统接口
 
-设备集成：设备管理（支持MQTT协议、TCP-IP协议设备接入）
+设备集成：设备管理（支持MQTT协议、TCP-IP协议设备接入）、子设备管理、产品管理、协议管理、
+
+设备调试：实时日志、命令下发
 
 规则引擎消息转发：支持KAFKA节点、HTTP节点、PREDICATE节点、ROCKET_MQ节点、RABBIT_MQ节点、MYSQL节点、MQTT节点、TOPIC节点、LOG节点
 
@@ -92,21 +94,17 @@ com.mqttsnet.thinglinks
 
 演示地址：http://thinglinks.mqttsnet.com/
 
-[相关技术资料及话题](https://bbs.csdn.net/forums/thinglinks)
-
 ## 功能开发计划
 
 *、设备管理页面展示优化(实现中)
 
-*、产品管理(服务属性告警指标配置实现中)
-
-*、协议管理、触发器(实现中)
+*、产品管理优化(服务属性告警指标配置实现中)
 
 *、Docker容器化部署(实现中)
 
-*、规则引擎可视化（规划中）
+*、规则引擎-设备联动（实现中）
 
-*、告警列表
+*、告警管理（钉钉推送、邮件推送等）
 
 *、大屏展示（客户端、消息发布订阅、告警）
 
@@ -182,6 +180,6 @@ MQTT客户端C库: thinglinks-mqtt-c
 
 [感谢JetBrains官方提供免费 IDEA License](https://www.jetbrains.com)
 
-## 交流社区（二维码失效后可以添加作者WX: xiaonannet 邀请进群，备注：thinglinks）
+## 交流社区（添加作者WX: xiaonannet 邀请进微信群，备注：thinglinks）
 
-![image](doc/imgs/wxsq.jpg)
+[相关技术资料及话题](https://bbs.csdn.net/forums/thinglinks)

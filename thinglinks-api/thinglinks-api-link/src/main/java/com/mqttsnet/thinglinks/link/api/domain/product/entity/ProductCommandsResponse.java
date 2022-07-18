@@ -3,9 +3,9 @@ package com.mqttsnet.thinglinks.link.api.domain.product.entity;
 import com.mqttsnet.thinglinks.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
 
@@ -42,7 +42,7 @@ public class ProductCommandsResponse extends BaseEntity implements Serializable 
     * 服务ID
     */
     @ApiModelProperty(value="服务ID")
-    private Long service_id;
+    private Long serviceId;
 
     ///**
     //* 是否必填(字典值：是  否)
