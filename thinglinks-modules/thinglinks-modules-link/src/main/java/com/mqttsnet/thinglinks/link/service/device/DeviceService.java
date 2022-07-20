@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.link.service.device;
 
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.DeviceModel;
 
 import java.util.Collection;
 import java.util.List;
@@ -69,18 +70,18 @@ public interface DeviceService {
     /**
      * 新增设备管理
      *
-     * @param device 设备管理
+     * @param deviceModel 设备管理
      * @return 结果
      */
-    public int insertDevice(Device device)throws Exception;
+    public int insertDevice(DeviceModel deviceModel)throws Exception;
 
     /**
      * 修改设备管理
      *
-     * @param device 设备管理
+     * @param deviceModel 设备管理
      * @return 结果
      */
-    public int updateDevice(Device device);
+    public int updateDevice(DeviceModel deviceModel) throws Exception;
 
     /**
      * 批量删除设备管理
@@ -156,6 +157,11 @@ public interface DeviceService {
 
 	List<Device> findAllByProductIdentification(String productIdentification);
 
-
+    /**
+     * 查询设备详细信息
+     * @param id
+     * @return
+     */
+    public DeviceModel selectDeviceModelById(Long id);
 }
 

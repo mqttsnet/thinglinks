@@ -1,12 +1,14 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
+import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
-import java.util.List;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceLocationMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceLocationService;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Description: java类作用描述
@@ -114,6 +116,7 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     @Override
     public int insertDeviceLocation(DeviceLocation deviceLocation)
     {
+        deviceLocation.setCreateBy(SecurityUtils.getUsername());
         deviceLocation.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceLocationMapper.insertDeviceLocation(deviceLocation);
     }
@@ -127,6 +130,7 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     @Override
     public int updateDeviceLocation(DeviceLocation deviceLocation)
     {
+        deviceLocation.setUpdateBy(SecurityUtils.getUsername());
         deviceLocation.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceLocationMapper.updateDeviceLocation(deviceLocation);
     }
@@ -142,6 +146,14 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     {
         return deviceLocationMapper.deleteDeviceLocationByIds(ids);
     }
+
+	@Override
+	public DeviceLocation findOneByDeviceIdentification(String deviceIdentification){
+		 return deviceLocationMapper.findOneByDeviceIdentification(deviceIdentification);
+	}
+
+
+
 }
 
 

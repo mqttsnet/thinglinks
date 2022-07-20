@@ -10,13 +10,11 @@ import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
-import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.DeviceModel;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
-import com.mqttsnet.thinglinks.system.api.domain.SysUser;
-import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,9 +40,6 @@ public class DeviceController extends BaseController {
     private DeviceService deviceService;
     @Autowired
     private ProductService productService;
-    @Autowired
-    private TokenService tokenService;
-
     /**
      * 查询设备管理列表
      */
@@ -86,12 +81,10 @@ public class DeviceController extends BaseController {
     @GetMapping(value = { "/", "/{id}" })
     public AjaxResult getInfo(@PathVariable(value = "id", required = false) Long id)
     {
-        LoginUser loginUser = tokenService.getLoginUser();
-        SysUser sysUser = loginUser.getSysUser();
         AjaxResult ajax = AjaxResult.success();
         if (StringUtils.isNotNull(id))
         {
-            ajax.put(AjaxResult.DATA_TAG,deviceService.selectDeviceById(id));
+            ajax.put(AjaxResult.DATA_TAG,deviceService.selectDeviceModelById(id));
             ajax.put("products", productService.selectProductList(new Product()));
         }else {
             ajax.put("products", productService.selectProductList(new Product()));
@@ -106,10 +99,10 @@ public class DeviceController extends BaseController {
     @PreAuthorize(hasPermi = "link:device:add")
     @Log(title = "设备管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Device device)
+    public AjaxResult add(@RequestBody DeviceModel deviceModel)
     {
         try {
-            return toAjax(deviceService.insertDevice(device));
+            return toAjax(deviceService.insertDevice(deviceModel));
         }catch (Exception e){
             return AjaxResult.error(e.getMessage());
         }
@@ -122,9 +115,12 @@ public class DeviceController extends BaseController {
     @PreAuthorize(hasPermi = "link:device:edit")
     @Log(title = "设备管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Device device)
-    {
-        return toAjax(deviceService.updateDevice(device));
+    public AjaxResult edit(@RequestBody DeviceModel deviceModel) {
+        try {
+            return toAjax(deviceService.updateDevice(deviceModel));
+        }catch (Exception e){
+            return AjaxResult.error(e.getMessage());
+        }
     }
 
     /**

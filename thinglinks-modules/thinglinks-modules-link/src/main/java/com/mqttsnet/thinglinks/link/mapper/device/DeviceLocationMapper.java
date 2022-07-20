@@ -1,10 +1,10 @@
 package com.mqttsnet.thinglinks.link.mapper.device;
 
-import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
-import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @Description: java类作用描述
@@ -116,4 +116,8 @@ public interface DeviceLocationMapper {
      * @return 结果
      */
     public int deleteDeviceLocationByIds(Long[] ids);
+
+    DeviceLocation findOneByDeviceIdentification(@Param("deviceIdentification")String deviceIdentification);
+
+
 }
