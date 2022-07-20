@@ -2,23 +2,23 @@
   <div class="app-container" style="width: 500px">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="Topic" prop="topic">
-        <el-input v-model="form.topic" placeholder="请输入topic"/>
+        <el-input v-model="form.topic" placeholder="请输入topic" />
       </el-form-item>
       <el-form-item label="QoS等级" prop="qos">
         <el-select v-model="form.qos" placeholder="请选择QoS等级">
-          <el-option label="QoS0 至多一次" value="0"/>
-          <el-option label="QoS1 至少一次" value="1"/>
-          <el-option label="QoS2 确保只有一次" value="2"/>
+          <el-option label="QoS0 至多一次" value="0" />
+          <el-option label="QoS1 至少一次" value="1" />
+          <el-option label="QoS2 确保只有一次" value="2" />
         </el-select>
       </el-form-item>
       <el-form-item label="是否保留" prop="retain">
         <el-select disabled v-model="form.retain" placeholder="是否保留消息">
-          <el-option label="否" value="false"/>
-          <el-option label="是" value="true"/>
+          <el-option label="否" value="false" />
+          <el-option label="是" value="true" />
         </el-select>
       </el-form-item>
       <el-form-item label="消息" prop="message">
-        <el-input v-model="form.message" placeholder="请输入内容" type="textarea"/>
+        <el-input v-model="form.message" placeholder="请输入内容" type="textarea" />
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import {sendMsg} from "@/api/broker/publish";
+import { sendMsg } from "@/api/broker/publish";
 
 export default {
   name: "sendMsg",
@@ -40,7 +40,7 @@ export default {
       // 表单校验
       rules: {
         topic: [
-          {required: true, message: "Topic不能为空", trigger: "blur"}
+          { required: true, message: "Topic不能为空", trigger: "blur" }
         ],
       }
     }
@@ -79,5 +79,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

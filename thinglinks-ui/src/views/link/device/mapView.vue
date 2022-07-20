@@ -85,14 +85,14 @@ export default {
                 // 关键字对应的行政区级别，country表示国家
                 level: 'country',
                 //  显示下级行政区级数，1表示返回下一级行政区
-                subdistrict: 3,
+                subdistrict: 4,
                 extensions: "base",
             })
             // 搜索所有省/直辖市信息
             let _this = this
             districtSearch.search('中国', function (status, result) {
                 // 查询成功时，result即为对应的行政区信息
-                console.log(result.districtList[0].districtList);
+                // console.log(result.districtList[0].districtList);
                 result.districtList[0].districtList.map((province) => {
                     let provinceMap = new Map();
                     provinceMap.value = province.name;   //区域编号
@@ -215,6 +215,7 @@ export default {
                 if (status === 'complete' && result.info === 'OK') {
                     if (result && result.regeocode) {
                         that.address = result.regeocode.formattedAddress
+                        this.$emit("locationAddress", result.regeocode);
                     } else {
                         this.$emit("locationFail", "地址查询位置失败,请检查地址是否正确");
                     }
