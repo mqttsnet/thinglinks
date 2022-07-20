@@ -36,4 +36,9 @@ public class ServiceNameConstants
      * Tdengine服务的serviceid
      */
     public static final String THINGLINKS_TDENGINE = "thinglinks-tdengine";
+
+    /**
+     * Rule服务的serviceid
+     */
+    public static final String THINGLINKS_RULE = "thinglinks-rule";
 }
