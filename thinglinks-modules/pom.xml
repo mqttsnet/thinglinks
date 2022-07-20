@@ -17,6 +17,7 @@
         <module>thinglinks-modules-link</module>
         <module>thinglinks-modules-broker</module>
         <module>thinglinks-modules-protocolAnalysis</module>
+        <module>thinglinks-modules-rule</module>
     </modules>
 
     <artifactId>thinglinks-modules</artifactId>
