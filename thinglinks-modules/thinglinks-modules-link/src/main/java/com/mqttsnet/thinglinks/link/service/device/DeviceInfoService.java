@@ -110,6 +110,11 @@ public interface DeviceInfoService {
 
 	List<DeviceInfo> findAllByIdInAndStatus(Collection<Long> idCollection, String status);
 
+
+
+	List<DeviceInfo> findAllByIdIn(Collection<Long> idCollection);
+
+
 }
 
 
