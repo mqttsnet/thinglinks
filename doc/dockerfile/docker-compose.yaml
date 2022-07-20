@@ -178,7 +178,7 @@ services:
       - thinglinks-redis
       - thinglinks-mysql
   thinglinks-modules-protocolAnalysis:
-    container_name: thinglinks-modules-protocolAnalysis
+    container_name: thinglinks-modules-protocolanalysis
     build:
       context: ./thinglinks/protocolAnalysis
       dockerfile: Dockerfile
