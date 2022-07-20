@@ -126,7 +126,7 @@ public interface DeviceInfoMapper {
     List<DeviceInfo> findAllByIdInAndStatus(@Param("idCollection")Collection<Long> idCollection,@Param("status")String status);
 
 
-
+    List<DeviceInfo> findAllByIdIn(@Param("idCollection")Collection<Long> idCollection);
 
 
 

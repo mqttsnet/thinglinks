@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>thinglinks</artifactId>
+        <groupId>com.mqttsnet</groupId>
+        <version>${thinglinks.version}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>thinglinks-modules-rule</artifactId>
+
+    <properties>
+        <!--suppress UnresolvedMavenProperty -->
+        <thinglinks.lib.package.url>${project.parent.parent.basedir}\doc\dockerfile\thinglinks\lib\</thinglinks.lib.package.url>
+        <!--打包目录-->
+        <!--suppress UnresolvedMavenProperty -->
+        <thinglinks.package.url>${project.parent.parent.basedir}\doc\dockerfile\thinglinks\rule\jar</thinglinks.package.url>
+        <!--启动类目录-->
+        <thinglinks.mainClass.url>com.mqttsnet.thinglinks.rule.ThingLinksRuleApplication</thinglinks.mainClass.url>
+    </properties>
+
+    <dependencies>
+
+        <!-- SpringCloud Alibaba Nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+
+        <!-- SpringCloud Alibaba Nacos Config -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <!-- SpringCloud Alibaba Sentinel -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
+        <!-- SpringBoot Actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Swagger UI -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${swagger.fox.version}</version>
+        </dependency>
+
+        <!-- Mysql Connector -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!-- thinglinks Common DataSource -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-datasource</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Common DataScope -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-datascope</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Common Log -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-log</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Common Swagger -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-swagger</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+    </dependencies>
+</project>

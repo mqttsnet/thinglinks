@@ -10,6 +10,6 @@ RUN mkdir -p /www/wwwroot/thinglinks/thinglinks-server
 # 指定路径
 WORKDIR /www/wwwroot/thinglinks/thinglinks-server
 # 复制jar文件到路径
-COPY ./jar/thinglinks-modules-tdengine-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/thinglinks-server/tdengine/tdengine.jar
-# 启动TDengine服务
-ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/tdengine.jar"]
+COPY ./jar/thinglinks-modules-rule-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/thinglinks-server/rule/rule.jar
+# 启动系统模块
+ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/rule.jar"]

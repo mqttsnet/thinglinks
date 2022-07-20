@@ -58,6 +58,7 @@ com.mqttsnet.thinglinks
 │       └── thinglinks-modules-link                        // Link服务 [19305]
 │       └── thinglinks-modules-broker                      // broker服务 [19306]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
 │       └── thinglinks-modules-protocolAnalysis            // 协议解析服务 [19307]、[TCP-IP:18901]、[UDP-IP:18902]
+        └── thinglinks-modules-rule                        // 规则模块 [19308]
 ├── thinglinks-registry         // 注册中心微应用
 ├── thinglinks-visual          // 图形化管理模块
 │       └── thinglinks-visual-monitor                      // 监控中心 [19400]
