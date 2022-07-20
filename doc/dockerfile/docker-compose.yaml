@@ -177,7 +177,7 @@ services:
     links:
       - thinglinks-redis
       - thinglinks-mysql
-  thinglinks-modules-protocolAnalysis:
+  thinglinks-modules-protocolanalysis:
     container_name: thinglinks-modules-protocolanalysis
     build:
       context: ./thinglinks/protocolAnalysis
