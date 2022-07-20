@@ -267,13 +267,13 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
+        <el-row style="display: flex;justify-content: center;">
           <el-col :span="22">
             <mapView @locationChange="locationChange" @locationFail="locationFail" ref="mapView"></mapView>
           </el-col>
         </el-row>
 
-        <el-row>
+        <el-row style="margin-top: 15px;">
           <el-col :span="11">
             <el-form-item label="纬度" prop="latitude">
               <el-input v-model="form.latitude" placeholder="请输入纬度" />
