@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.link.service.protocol.impl;
 
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
+import com.mqttsnet.thinglinks.common.core.exception.ServiceException;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
@@ -9,6 +10,7 @@ import com.mqttsnet.thinglinks.link.mapper.protocol.ProtocolMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.link.service.protocol.ProtocolService;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -123,7 +125,11 @@ public class ProtocolServiceImpl implements ProtocolService {
     @Override
     public int insertProtocol(Protocol protocol) {
         protocol.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
-        return protocolMapper.insertProtocol(protocol);
+        int iexe = protocolMapper.insertProtocol(protocol);
+        if (iexe != 1) {
+            throw new ServiceException("执行插入失败",1000);
+        }
+        return Integer.parseInt(protocol.getId().toString());
     }
 
     /**
@@ -149,10 +155,10 @@ public class ProtocolServiceImpl implements ProtocolService {
         return protocolMapper.deleteProtocolByIds(ids);
     }
 
-	@Override
-	public Protocol findOneByProductIdentificationAndProtocolTypeAndStatus(String productIdentification,String protocolType,String status){
-		 return protocolMapper.findOneByProductIdentificationAndProtocolTypeAndStatus(productIdentification,protocolType,status);
-	}
+    @Override
+    public Protocol findOneByProductIdentificationAndProtocolTypeAndStatus(String productIdentification, String protocolType, String status) {
+        return protocolMapper.findOneByProductIdentificationAndProtocolTypeAndStatus(productIdentification, protocolType, status);
+    }
 
     /**
      * 批量启用协议管理
@@ -165,8 +171,9 @@ public class ProtocolServiceImpl implements ProtocolService {
         List<Protocol> protocolList = protocolMapper.findAllByIdIn(Arrays.asList(ids));
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
+            String content = StringEscapeUtils.unescapeHtml4(protocol.getContent());
             for (Device device : deviceList) {
-                redisService.set(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+device.getDeviceIdentification(), protocol.getContent());
+                redisService.set(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getDeviceIdentification(), content);
             }
             protocolMapper.updateStatusById(Constants.ENABLE, protocol.getId());
         }
@@ -185,22 +192,22 @@ public class ProtocolServiceImpl implements ProtocolService {
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             for (Device device : deviceList) {
-                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+device.getDeviceIdentification());
+                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
             }
             protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
         }
         return protocolList.size();
     }
 
-	@Override
-	public List<Protocol> findAllByIdIn(Collection<Long> idCollection){
-		 return protocolMapper.findAllByIdIn(idCollection);
-	}
+    @Override
+    public List<Protocol> findAllByIdIn(Collection<Long> idCollection) {
+        return protocolMapper.findAllByIdIn(idCollection);
+    }
 
-	@Override
-	public int updateStatusById(String updatedStatus,Long id){
-		 return protocolMapper.updateStatusById(updatedStatus,id);
-	}
+    @Override
+    public int updateStatusById(String updatedStatus, Long id) {
+        return protocolMapper.updateStatusById(updatedStatus, id);
+    }
 
     /**
      * 协议脚本缓存刷新
@@ -213,20 +220,17 @@ public class ProtocolServiceImpl implements ProtocolService {
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             for (Device device : deviceList) {
-                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT+device.getDeviceIdentification());
+                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
             }
             protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
         }
         return protocolList.size();
     }
 
-	@Override
-	public List<Protocol> findAllByStatus(String status){
-		 return protocolMapper.findAllByStatus(status);
-	}
-
-
-
+    @Override
+    public List<Protocol> findAllByStatus(String status) {
+        return protocolMapper.findAllByStatus(status);
+    }
 
 
 }

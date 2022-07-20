@@ -32,7 +32,7 @@
           size="mini"
           type="primary"
           @click="handleAdd"
-        >新增
+        >新增属性
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -44,7 +44,7 @@
           size="mini"
           type="success"
           @click="handleUpdate"
-        >修改
+        >修改属性
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -56,7 +56,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-        >删除
+        >删除属性
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -67,7 +67,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
+        >导出属性
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -75,22 +75,31 @@
 
     <el-table v-loading="loading" :data="propertiesList" @selection-change="handleSelectionChange">
       <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="属性id" prop="id"/>
+<!--      <el-table-column align="center" label="属性id" prop="id"/>-->
       <!--      <el-table-column align="center" label="服务ID" prop="serviceId"/>-->
       <el-table-column align="center" label="属性名称" prop="name"/>
-      <el-table-column align="center" label="属性描述" prop="description"/>
       <el-table-column align="center" label="数据类型" prop="datatype"/>
-      <el-table-column align="center" label="字符串长度" prop="maxlength"/>
-      <el-table-column align="center" label="最小值" prop="min"/>
-      <el-table-column align="center" label="最大值" prop="max"/>
-      <el-table-column align="center" label="是否必填" prop="required">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_product_isRequired" :value="scope.row.required"/>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="步长" prop="step"/>
-      <el-table-column align="center" label="单位" prop="unit"/>
-      <el-table-column align="center" label="访问模式" prop="method"/>
+      <el-table-column align="center" label="访问方式" prop="method"/>
+      <el-table-column align="center" label="属性描述" prop="description"/>
+      <!--      <el-table-column align="center" label="字符串长度" prop="maxlength"/>-->
+      <!--      <el-table-column align="center" label="最小值" prop="min"/>-->
+      <!--      <el-table-column align="center" label="最大值" prop="max"/>-->
+<!--      <el-table-column align="center" label="数据定义">-->
+<!--        <template slot-scope="scope">-->
+<!--          <span-->
+<!--            v-if="scope.row.datatype === 'int' || scope.row.datatype === 'decimal'">取值范围：{{-->
+<!--              scope.row.min-->
+<!--            }} ~ {{ scope.row.max }}</span>-->
+<!--          <span v-else-if="scope.row.datatype === 'string'">字符串长度：{{ scope.row.maxlength }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+      <!--      <el-table-column align="center" label="是否必填" prop="required">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <dict-tag :options="dict.type.link_product_isRequired" :value="scope.row.required"/>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      <el-table-column align="center" label="步长" prop="step"/>-->
+<!--      <el-table-column align="center" label="单位" prop="unit"/>-->
       <el-table-column align="center" class-name="small-padding fixed-width" label="操作">
         <template slot-scope="scope">
           <el-button
@@ -122,7 +131,7 @@
     />
 
     <!-- 添加或修改产品属性数据对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body width="700px">
+    <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="700px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="服务ID" prop="serviceId">
           <el-input v-model="form.serviceId" disabled placeholder="请输入服务ID"/>
@@ -138,53 +147,100 @@
             </el-tooltip>
           </el-col>
         </el-form-item>
-        <el-form-item label="数据类型" prop="datatype">
-          <el-select v-model="form.datatype" placeholder="请选择数据类型" @change="changeDataType">
-            <el-option v-for="item in dict.type.link_product_datatype" :key="item.value" :label="item.label"
-                       :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否必填" prop="required">
-          <el-select v-model="form.required" placeholder="请选择是否必填">
-            <el-option v-for="item in dict.type.link_product_isRequired" :key="item.value" :label="item.label"
-                       :value="parseInt(item.value)">
-            </el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item label="属性描述" prop="description">
           <el-input v-model="form.description" placeholder="请输入属性描述，不影响实际功能，可配置为空字符串" type="textarea"/>
         </el-form-item>
-        <el-form-item label="枚举值">
-          <el-input v-model="form.enumlist"
-                    placeholder="请输入指示枚举值:如开关状态status可有如下取值'enumList' : ['OPEN','CLOSE'] 目前本字段是非功能性字段，仅起到描述作用。建议准确定义。"/>
-        </el-form-item>
-        <el-form-item v-if="this.show===1" label="字符串长度" prop="maxlength">
-          <el-input v-model="form.maxlength" placeholder="请输入指示字符串长度。仅当dataType为string、DateTime时生效。"/>
-        </el-form-item>
-        <el-form-item v-if="this.show===2" label="最小值" prop="min">
-          <el-input v-model="form.min" placeholder="请输入指示最小值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑大于等于。"/>
-        </el-form-item>
-        <el-form-item v-if="this.show===2" label="最大值" prop="max">
-          <el-input v-model="form.max" placeholder="请输入指示最大值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑小于等于。"/>
-        </el-form-item>
-        <el-form-item v-if="this.show===2" label="步长" prop="step">
-          <el-input v-model="form.step" placeholder="请输入指示步长"/>
-        </el-form-item>
-        <el-form-item label="单位" prop="unit">
-          <el-input v-model="form.unit" placeholder="请输入指示单位。支持长度不超过50。取值根据参数确定，如：•温度单位：C或K•百分比单位：%•压强单位：Pa或kPa"/>
-        </el-form-item>
-        <el-form-item label="访问模式" prop="method">
-          <el-col :span="22">
-          <el-select v-model="form.method" placeholder="请选择访问模式">
-            <el-option v-for="item in methodList" :key="item.value" :label="item.label"
-                       :value="item.value">
-            </el-option>
+        <el-form-item label="数据类型" prop="datatype">
+          <el-select v-model="form.datatype" placeholder="请选择数据类型">
+            <el-option v-for="item in dict.type.link_product_datatype" :key="item.value" :label="item.label" :value="item.value"/>
           </el-select>
+        </el-form-item>
+        <el-form-item label="访问权限" prop="method">
+          <el-col :span="22">
+            <el-radio-group v-model="form.method">
+              <el-radio-button v-for="item in methodList" :key="item.value" :label="item.value">{{item.label}}</el-radio-button>
+            </el-radio-group>
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip content="请输入指示访问模式。R:可读；W:可写；E属性值更改时上报数据取值范围：R、RW、RE、RWE" effect="light"
-                        placement="right">
+            <el-tooltip content="请输入指示访问模式。R:可读；W:可写；E属性值更改时上报数据取值范围：R、RW、RE、RWE" effect="light" placement="right">
+              <i class="el-icon-question"/>
+            </el-tooltip>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="是否必填" prop="required">
+          <el-radio-group v-model="form.required">
+            <el-radio-button v-for="item in dict.type.link_product_isRequired" :label="parseInt(item.value)">{{item.label}}</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item v-if="form.datatype==='string'||form.datatype==='binary'" label="长度" prop="maxlength">
+          <el-col :span="22">
+           <el-input v-model="form.maxlength" placeholder="请输入字符串长度"/>
+          </el-col>
+          <el-col :span="2" style="padding-left: 5px">
+            <el-tooltip content="请输入字符串长度。输入值大于等于0、小于等于2147483647的数字。" effect="light" placement="right">
+              <i class="el-icon-question"/>
+            </el-tooltip>
+          </el-col>
+        </el-form-item>
+        <!--        <el-form-item label="枚举值">-->
+        <!--          <el-input v-model="form.enumlist" placeholder="枚举值间通过英文逗号分隔"/>-->
+        <!--        </el-form-item>-->
+        <el-form-item v-if="form.datatype==='enum'||form.datatype==='string'" label="枚举项">
+          <div>
+            <el-col :span="10">
+              <el-tooltip content="支持整型" effect="light" placement="top">
+                <i class="el-icon-question">参数值</i>
+              </el-tooltip>
+            </el-col>
+            <el-col :span="2" style="text-align: center">&nbsp;</el-col>
+            <el-col :span="10">
+              <el-tooltip content="支持中文、英文大小写、日文、数字，不超过20个字符" effect="light" placement="top">
+                <i class="el-icon-question">参数描述</i>
+              </el-tooltip>
+            </el-col>
+          </div>
+          <div v-for="(item, index) in form.enums" :key="index" class="clearfix" style="margin-bottom: 22px;">
+            <el-col :span="10">
+              <el-form-item :prop="'enums.'+ index +'.enumValue'" :rules="rules.enumValue" label="" label-width="0px">
+                <el-input v-model="item.enumValue" placeholder="编号如'0'"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="2" style="text-align: center">-</el-col>
+            <el-col :span="10">
+              <el-form-item :prop="'enums.'+ index +'.enumText'" :rules="rules.enumText" label="" label-width="0px">
+                <el-input v-model="item.enumText" placeholder="对该枚举项的描述"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="2"><a href="javascript:void(0);" @click="removeAttrEnum(item)">删除</a></el-col>
+          </div>
+        </el-form-item>
+        <el-form-item v-if="form.datatype==='enum'||form.datatype==='string'" >
+          <el-tooltip content="最多添加100项" effect="light" placement="top">
+            <a href="javascript:void(0)" @click="addAttrEnum"><i class="el-icon-plus"></i>添加枚举项</a>
+          </el-tooltip>
+        </el-form-item>
+        <el-form-item v-if="form.datatype==='int'||form.datatype==='decimal'" label="取值范围" prop="min">
+          <el-col :span="10">
+            <el-form-item label="" prop="min">
+              <el-input v-model="form.min" placeholder="请输入最小值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑大于等于。"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="2" style="text-align: center">-</el-col>
+          <el-col :span="10">
+            <el-form-item label="" prop="max">
+              <el-input v-model="form.max" placeholder="请输入最大值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑小于等于。"/>
+            </el-form-item>
+          </el-col>
+        </el-form-item>
+        <el-form-item v-if="form.datatype==='int'||form.datatype==='decimal'" label="步长" prop="step">
+          <el-input v-model="form.step" placeholder="请输入步长"/>
+        </el-form-item>
+        <el-form-item v-if="form.datatype==='int'||form.datatype==='decimal'" label="单位" prop="unit">
+          <el-col :span="22">
+            <el-input v-model="form.unit" placeholder="请输入单位。支持长度不超过50。"/>
+          </el-col>
+          <el-col :span="2" style="padding-left: 5px">
+            <el-tooltip content="请输入单位。支持长度不超过50。取值根据参数确定，如：•温度单位：C或K•百分比单位：%•压强单位：Pa或kPa" effect="light" placement="right">
               <i class="el-icon-question"/>
             </el-tooltip>
           </el-col>
@@ -209,7 +265,12 @@ import {
 
 export default {
   name: "Properties",
-  props: ["serviceId"],
+  props: {
+    "serviceId": {
+      type:Number,
+      required:true
+    }
+  },
   dicts: ["link_product_datatype", "link_product_isRequired"],
   data() {
     return {
@@ -231,8 +292,6 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
-      // 数据类型切换对应的显示
-      show: null,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -242,29 +301,29 @@ export default {
         datatype: null,
         description: null,
         enumlist: null,
+        min: null,
         max: null,
         maxlength: null,
         method: null,
-        min: null,
         required: null,
         step: null,
         unit: null,
       },
       methodList: [
-        { value: "R", label: "可读" },
-        { value: "RW", label: "读写" },
-        { value: "RE", label: "可读上报" },
-        { value: "RWE", label: "读写上报" }
+        {value: "R", label: "可读"},
+        {value: "RW", label: "读写"},
+        {value: "RE", label: "可读上报"},
+        {value: "RWE", label: "读写上报"}
       ],
       // 表单参数
-      form: {},
+      form: { },
       // 表单校验
       rules: {
         serviceId: [
           {required: true, message: "服务ID不能为空", trigger: "blur"}
         ],
         name: [
-          {required: true, message: "属性名称。不能为空", trigger: "blur"},
+          {required: true, message: "属性名称不能为空", trigger: "blur"},
           {min: 2, max: 50, message: '属性名称长度必须介于 2 和 50 之间', trigger: 'blur'},
           {
             pattern: /^[a-z0-9_]+$/,
@@ -283,14 +342,16 @@ export default {
             trigger: "blur"
           }
         ],
-        max: [
+        min: [
+          {required: true, message: "最小值不能为空", trigger: "blur"},
           {
             pattern: /^[0-9]+$/,
             message: "请输入合法数字",
             trigger: "blur"
           }
         ],
-        min: [
+        max: [
+          {required: true, message: "最大值不能为空", trigger: "blur"},
           {
             pattern: /^[0-9]+$/,
             message: "请输入合法数字",
@@ -298,7 +359,6 @@ export default {
           }
         ],
         step: [
-          {required: true, message: "请输入指示步长", trigger: "blur"},
           {
             pattern: /^[0-9]+$/,
             message: "请输入合法数字",
@@ -306,6 +366,17 @@ export default {
           }
         ],
         required: [{required: true, message: "是否必须不能为空", trigger: "blur"},],
+        enumValue: [
+          {required: true, message: "枚举值不能为空", trigger: "blur"},
+          {
+            pattern: /^[0-9]+$/,
+            message: "请输入合法数字",
+            trigger: "blur"
+          }
+        ],
+        enumText: [
+          {required: true, message: "枚举描述不能为空", trigger: "blur"},
+        ],
       }
     };
   },
@@ -332,23 +403,18 @@ export default {
         this.loading = false;
       });
     },
-    changeDataType(value) {
-      switch (value) {
-        case "string":
-          this.show = 1;
-          break;
-        case "binary":
-          this.show = 1;
-          break;
-        case "int":
-          this.show = 2;
-          break;
-        case "decimal":
-          this.show = 2;
-          break;
-        default:
-          this.show = null;
-          break;
+    removeAttrEnum(item) {
+      let index = this.form.enums.indexOf(item)
+      if (index !== -1) {
+        this.form.enums.splice(index, 1)
+      }
+    },
+    addAttrEnum() {
+      if (this.form.enums.length < 100) {
+        this.form.enums.push({
+          enumValue: '',
+          enumText: ''
+        });
       }
     },
     // 取消按钮
@@ -365,17 +431,18 @@ export default {
         datatype: null,
         description: null,
         enumlist: null,
-        max: null,
+        min: 0,
+        max: 65535,
         maxlength: null,
         method: null,
-        min: null,
-        required: null,
+        required: 1,
         step: null,
         unit: null,
         createBy: null,
         createTime: null,
         updateBy: null,
-        updateTime: null
+        updateTime: null,
+        enums: []
       };
       this.resetForm("form");
     },
@@ -401,7 +468,7 @@ export default {
       this.form.serviceId = this.serviceId;
       this.form.required = 0;
       this.open = true;
-      this.title = "添加产品属性数据";
+      this.title = "添加属性";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -409,12 +476,22 @@ export default {
       const id = row.id || this.ids
       getProperties(id).then(response => {
         this.form = response.data;
+        this.$set(this.form, "enums", [])
+        try {
+          if (this.form.enumlist)
+            this.$set(this.form, "enums", JSON.parse(this.form.enumlist))
+        } catch {
+
+        }
         this.open = true;
-        this.title = "修改产品属性数据";
+        this.title = "修改属性";
       });
     },
     /** 提交按钮 */
     submitForm() {
+      if (this.form.enums && this.form.enums.length > 0) {
+        this.form.enumlist = JSON.stringify(this.form.enums);
+      }
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
@@ -446,10 +523,15 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('iot/properties/export', {
+      this.download('link/productProperties/export', {
         ...this.queryParams
       }, `properties_${new Date().getTime()}.xlsx`)
     }
   }
 };
 </script>
+<style lang="scss" scoped>
+.pagination-container {
+  height: 50px;
+}
+</style>

@@ -1,114 +1,107 @@
 <template>
   <div v-if="productInfo" class="app-container">
-    <div class="device_status">
-      <div class="device_attribute">
-        <p>
-          <span>厂商ID</span>
-          <span>{{ productInfo.manufacturerId }}</span>
-        </p>
-        <p>
-          <span>产品状态</span>
-          <span><dict-tag :options="dict.type.business_data_status" :value="productInfo.status"/></span>
-        </p>
+    <el-row>
+      <div class="chart-wrapper">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span class="dm-bold">{{ productInfo.productName }}</span>
+            <span class="dmc-sub-title dm-pl8">   ID: {{ productInfo.productIdentification }}</span>
+            <span class="dmc-sub-title dmc-dev-amount"> 注册设备数: <span style="color: #526ECC;">0</span></span>
+            <el-button v-hasPermi="['link:product:edit']" icon="el-icon-edit" plain size="mini" style="float: right;" type="danger" @click="handleUpdate">
+              更新产品信息
+            </el-button>
+          </div>
+          <el-form>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="产品名称：">{{ productInfo.productName }}</el-form-item>
+                <el-form-item label="设备类型：">{{ productInfo.deviceType }}</el-form-item>
+                <el-form-item label="数据格式：">{{ productInfo.dataFormat }}</el-form-item>
+                <el-form-item label="厂商名称：">{{ productInfo.manufacturerName }}</el-form-item>
+                <el-form-item label="产品描述：">{{ productInfo.remark }}</el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="应用ID："><dict-tag :options="dict.type.link_application_type" :value="productInfo.appId"/></el-form-item>
+                <el-form-item label="协议类型：">{{ productInfo.protocolType }}</el-form-item>
+                <el-form-item label="产品状态："><dict-tag :options="dict.type.business_data_status" :value="productInfo.status"/></el-form-item>
+                <el-form-item label="厂商ID：">{{ productInfo.manufacturerId }}</el-form-item>
+                <el-form-item label="创建时间：">{{ productInfo.createTime }}</el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-card>
       </div>
-      <div class="device_attribute">
-        <p>
-          <span>产品型号 </span>
-          <span>{{ productInfo.model }}</span>
-        </p>
-        <p>
-          <span></span>
-          <span>
-          </span>
-        </p>
+    </el-row>
+    <el-row>
+      <div class="chart-wrapper">
+        <el-card class="box-card">
+          <el-tabs v-model="activeName">
+          <el-tab-pane label="模型定义" name="first" style="width:100%;height: 100%;">
+            <div v-if="this.productId" style="width:100%;height:100%">
+              <Services :productId="this.productId"></Services>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="设备调试" name="second">
+            <Device :appId="productInfo.appId" :productIdentification="productInfo.productIdentification"></Device>
+          </el-tab-pane>
+        </el-tabs>
+        </el-card>
       </div>
-      <div class="device_attribute">
-        <p>
-          <span>设备类型</span>
-          <span>
-            {{productInfo.deviceType}}
-          </span>
-        </p>
-        <p>
-          <span>设备管理数量</span>
-          <span>
+    </el-row>
 
-          </span>
-        </p>
+    <!-- 添加或修改产品管理对话框 -->
+    <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="500px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-form-item label="产品名称" prop="productName">
+          <el-col :span="22">
+            <el-input v-model="form.productName" placeholder="请输入产品名称" />
+          </el-col>
+          <el-col :span="2" style="padding-left: 5px">
+            <el-tooltip class="item" content="自定义，支持中文、英文大小写、数字、下划线和中划线" effect="light" placement="right-start">
+              <i class="el-icon-question" />
+            </el-tooltip>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="厂商ID" prop="manufacturerId">
+          <el-col :span="22">
+            <el-input v-model="form.manufacturerId" placeholder="请输入厂商ID" />
+          </el-col>
+          <el-col :span="2" style="padding-left: 5px">
+            <el-tooltip class="item" content="支持英文大小写，数字，下划线和中划线" effect="light" placement="right-start">
+              <i class="el-icon-question" />
+            </el-tooltip>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="厂商名称" prop="manufacturerName">
+          <el-col :span="22">
+            <el-input v-model="form.manufacturerName" placeholder="请输入厂商名称" />
+          </el-col>
+          <el-col :span="2" style="padding-left: 5px">
+            <el-tooltip class="item" content="支持英文大小写，数字，下划线和中划线" effect="light" placement="right-start">
+              <i class="el-icon-question" />
+            </el-tooltip>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="产品描述" prop="remark">
+          <el-input v-model="form.remark" placeholder="请输入产品描述" type="textarea" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
       </div>
-    </div>
-    <div class="detail">
-      <el-tabs v-model="activeName">
-        <el-tab-pane label="基本信息" name="first">
-          <div class="device_attribute">
-            <p>
-              <span>产品名称</span>
-              <span>{{ productInfo.productName }}</span>
-            </p>
-            <p>
-              <span>创建者</span>
-              <span>{{ productInfo.createBy }}</span>
-            </p>
-            <p>
-              <span>更新者</span>
-              <span>{{ productInfo.updateBy }}</span>
-            </p>
-            <p>
-              <span>产品标识</span>
-              <span>{{ productInfo.productIdentification }}</span>
-            </p>
-            <p>
-              <span>应用ID</span>
-              <span><dict-tag :options="dict.type.link_application_type" :value="productInfo.appId"/></span>
-            </p>
-            <p>
-              <span>产品描述</span>
-              <span>{{ productInfo.remark }}</span>
-            </p>
-          </div>
-          <div class="device_attribute">
-            <p>
-              <span>厂商名称</span>
-              <span>{{productInfo.manufacturerName}}</span>
-            </p>
-            <p>
-              <span>创建时间</span>
-              <span>{{ productInfo.createTime }}</span>
-            </p>
-            <p>
-              <span>更新时间</span>
-              <span>{{ productInfo.updateTime }}</span>
-            </p>
-            <p>
-              <span>产品协议类型</span>
-              <span>{{ productInfo.protocolType }}</span>
-            </p>
-            <p>
-              <span>产品模板</span>
-              <span><dict-tag :options="dict.type.link_application_type" :value="productInfo.templateId"/></span>
-            </p>
-            <p>
-              <span></span>
-              <span></span>
-            </p>
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="服务列表" name="second" style="width:100%;height: 100%;">
-          <div style="width:100%;height:100%">
-            <Services :productId="this.productId"></Services>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
-    </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
-import {getProduct} from "@/api/link/product/product";
+import { getProduct, updateProduct} from "@/api/link/product/product";
 import Services from "@/views/link/product/services";
+import Device from "@/views/link/device";
 
 export default {
   name: "product-detail",
-  components: {Services},
+  components: {Device, Services},
   dicts: [
     "link_application_type",
     "link_product_device_type",
@@ -123,7 +116,43 @@ export default {
       //table切换
       activeName: 'first',
       productId: null,
-      productInfo: null
+      productInfo: null,
+      title: null,
+      open: false,
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {
+        productName: [
+          { required: true, message: "产品名称不能为空", trigger: "blur" },
+          { min: 2, max: 64, message: '产品名称长度必须介于 2 和 64 之间', trigger: 'blur' },
+          {
+            //pattern: /^(?!_)(?!.*?_$)(?!-)(?!.*?-$)[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
+            //message: "中文、英文大小写、数字、下划线和中划线，不能以下划线中划线开头和结尾，长度[2,64]",
+            pattern: /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
+            message: "中文、英文大小写、数字、下划线和中划线，长度[2,64]",
+            trigger: "blur"
+          }
+        ],
+        manufacturerId: [
+          { required: true, message: "厂商ID不能为空", trigger: "blur" },
+          { min: 2, max: 50, message: '厂商ID长度必须介于 2 和 50 之间', trigger: 'blur' },
+          {
+            pattern: /^[a-zA-Z0-9_-]+$/,
+            message: "英文大小写、数字、下划线和中划线，长度[2,50]",
+            trigger: "blur"
+          }
+        ],
+        manufacturerName: [
+          { required: true, message: "厂商名称不能为空", trigger: "blur" },
+          { min: 2, max: 64, message: '厂商名称长度必须介于 2 和 64 之间', trigger: 'blur' },
+          {
+            pattern: /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
+            message: "中文、英文大小写、数字、下划线和中划线，长度[2,64]",
+            trigger: "blur"
+          }
+        ],
+      },
     }
   },
   watch: {
@@ -144,112 +173,81 @@ export default {
       getProduct(this.productId).then(res => {
         this.productInfo = res.data
       })
-    }
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        id: null,
+        productName: null,
+        manufacturerId: null,
+        manufacturerName: null,
+        remark: null,
+      };
+      this.resetForm("form");
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      this.form = this.productInfo
+      this.open = true;
+      this.title = "修改产品";
+    },
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs["form"].validate((valid) => {
+        if (valid) {
+          if (this.form.id != null) {
+            updateProduct(this.form).then((response) => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getDetail();
+            });
+          }
+        }
+      });
+    },
   }
 }
 </script>
 <style lang="scss" scoped>
-.device_status {
-  width: 100%;
-  margin: 0 0 10px 10px;
-  padding: 20px 30px;
-  background: #F8F8F9;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
+.chart-wrapper {
+  background: #fff;
+  //padding: 16px 16px 0;
+  margin-bottom: 16px;
+}
+.box-card .el-form-item {
+  margin-bottom: 0px;
+}
+
+@media (max-width: 1024px) {
+  .chart-wrapper {
+    padding: 8px;
+  }
+}
+
+.dmc-sub-title {
+  font-size: .75rem;
+  color: #8a8e99;
+}
+.dm-font16 {
+  margin-left: .5rem;
+  padding-left: .5rem;
+  border-left: 1px solid #dfe1e6;
+}
+.dm-bold {
   font-weight: 700;
-  color: #515a6e;
 }
-
-.device_status .status {
-  width: 20%;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
+.dm-p18 {
+  padding-left: .5rem!important;
 }
-
-.device_attribute {
-  width: 30%;
-
-  p {
-    width: 100%;
-    display: flex;
-    align-items: center;
-
-    span:first-child {
-      display: block;
-      width: 20%;
-    }
-  }
-}
-
-.detail {
-  width: 100%;
-  height: 100%;
-  margin: 0 0 10px 10px;
-  padding: 20px 30px;
-  background: #F8F8F9;
-  font-size: 14px;
-  font-weight: 700;
-  color: #515a6e;
-
-  .el-tabs {
-    height: 100%;
-
-    .el-tab-pane {
-      width: 80%;
-      height: 300px;
-      display: flex;
-      justify-content: space-between;
-
-      .el-tabs {
-        .el-tab-pane {
-          display: block;
-        }
-      }
-
-      .device_attribute {
-        width: 35%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-
-        p {
-          width: 100%;
-          display: flex;
-          align-items: center;
-
-          span:first-child {
-            display: block;
-            width: 30%;
-          }
-        }
-      }
-    }
-  }
-
-}
-
-.demo-input-suffix {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-
-  span {
-    width: 30%;
-    text-align: end;
-  }
-
-  .el-input,
-  .el-select {
-    width: 50%;
-  }
-}
-
-.pagination-container {
-  height: 50px;
+.dmc-dev-amount {
+  margin-left: .5rem;
+  padding-left: .5rem;
+  border-left: 1px solid #dfe1e6;
 }
 </style>

@@ -1,28 +1,5 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="68px" size="small">
-      <el-form-item label="服务名称" prop="serviceName">
-        <el-input
-          v-model="queryParams.serviceName"
-          clearable
-          placeholder="请输入服务名称"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="服务描述" prop="description">
-        <el-input
-          v-model="queryParams.description"
-          clearable
-          placeholder="请输入服务的描述信息"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -32,33 +9,33 @@
           size="mini"
           type="primary"
           @click="handleAdd"
-        >新增
+        >新增服务
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['link:productServices:edit']"
-          :disabled="single"
-          icon="el-icon-edit"
-          plain
-          size="mini"
-          type="success"
-          @click="handleUpdate"
-        >修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['link:productServices:remove']"
-          :disabled="multiple"
-          icon="el-icon-delete"
-          plain
-          size="mini"
-          type="danger"
-          @click="handleDelete"
-        >删除
-        </el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          v-hasPermi="['link:productServices:edit']"-->
+<!--          :disabled="single"-->
+<!--          icon="el-icon-edit"-->
+<!--          plain-->
+<!--          size="mini"-->
+<!--          type="success"-->
+<!--          @click="handleUpdate"-->
+<!--        >修改服务-->
+<!--        </el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          v-hasPermi="['link:productServices:remove']"-->
+<!--          :disabled="multiple"-->
+<!--          icon="el-icon-delete"-->
+<!--          plain-->
+<!--          size="mini"-->
+<!--          type="danger"-->
+<!--          @click="handleDelete"-->
+<!--        >删除服务-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['link:productServices:export']"
@@ -67,59 +44,61 @@
           size="mini"
           type="warning"
           @click="handleExport"
-        >导出
+        >导出服务
         </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+<!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
+    </el-row>
+    <el-row :gutter="20">
+      <!--服务列表-->
+      <el-col :span="4" :xs="24">
+        <div class="head-container">
+          <el-row>
+            <span>服务列表</span>
+            <div style="float:right">
+              <el-tooltip class="item" content="添加" effect="dark" placement="top">
+                <el-button circle icon="el-icon-plus" size="mini" @click="handleAdd()" />
+              </el-tooltip>
+              <el-tooltip class="item" content="刷新" effect="dark" placement="top">
+                <el-button circle icon="el-icon-refresh" size="mini" @click="getList()" />
+              </el-tooltip>
+            </div>
+          </el-row>
+        </div>
+        <div class="head-container">
+          <el-input
+            v-model="serviceName"
+            clearable
+            placeholder="请输入服务名称"
+            prefix-icon="el-icon-search"
+            size="small"
+            style="margin-bottom: 20px"
+          />
+        </div>
+        <div class="head-container">
+          <el-tree
+            ref="tree"
+            :data="serviceOptions"
+            :expand-on-click-node="false"
+            :filter-node-method="filterNode"
+            :props="defaultProps"
+            default-expand-all
+            node-key="id"
+            @node-click="handleNodeClick"
+          />
+        </div>
+      </el-col>
+      <!--属性、命令列表-->
+      <el-col v-if="this.serviceId" :span="20" :xs="24">
+        <!--属性列表-->
+        <Properties :serviceId="this.serviceId"></Properties>
+        <!--命令列表-->
+        <Commands :serviceId="this.serviceId"></Commands>
+      </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="servicesList" @selection-change="handleSelectionChange">
-      <el-table-column align="center" type="selection" width="55"/>
-      <el-table-column align="center" label="服务id" prop="id"/>
-      <el-table-column align="center" label="产品ID" prop="productId"/>
-      <el-table-column align="center" label="产品模板ID" prop="templateId"/>
-      <el-table-column align="center" label="服务名称" prop="serviceName"/>
-      <el-table-column align="center" label="状态" prop="status">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.business_data_status" :value="scope.row.status"/>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="服务描述" prop="description"/>
-      <el-table-column align="center" class-name="small-padding fixed-width" label="操作">
-        <template slot-scope="scope">
-          <el-button
-            v-hasPermi="['link:productServices:edit']"
-            icon="el-icon-edit"
-            size="mini"
-            type="text"
-            @click="handleUpdate(scope.row)"
-          >修改
-          </el-button>
-          <el-button
-            v-hasPermi="['link:productServices:remove']"
-            icon="el-icon-delete"
-            size="mini"
-            type="text"
-            @click="handleDelete(scope.row)"
-          >删除
-          </el-button>
-          <el-button v-hasPermi="['link:product:detail']" icon="el-icon-s-operation" size="mini" type="text" @click="handleDetail(scope.row)">
-            详情
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination
-      v-show="total>0"
-      :limit.sync="queryParams.pageSize"
-      :page.sync="queryParams.pageNum"
-      :total="total"
-      @pagination="getList"
-    />
-
     <!-- 添加或修改产品服务数据对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body width="500px">
+    <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item v-if="productId" label="产品ID" prop="productId">
           <el-input v-model="form.productId" disabled placeholder="请输入产品ID"/>
@@ -132,14 +111,20 @@
             <el-input v-model="form.serviceName" autocomplete="off" placeholder="请输入服务名称"/>
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip content="指示属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
-                        placement="right">
+            <el-tooltip content="属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light" placement="right">
               <i class="el-icon-question"/>
             </el-tooltip>
           </el-col>
         </el-form-item>
         <el-form-item label="服务描述" prop="description">
-          <el-input v-model="form.description" placeholder="请输入服务的描述信息:文本描述，不影响实际功能，可配置为空字符串。" type="textarea"/>
+          <el-col :span="22">
+            <el-input v-model="form.description" placeholder="请输入服务的描述信息" type="textarea"/>
+          </el-col>
+          <el-col :span="2" style="padding-left: 5px">
+            <el-tooltip content="请输入服务的描述信息:文本描述，不影响实际功能，可配置为空字符串。" effect="light" placement="right">
+              <i class="el-icon-question"/>
+            </el-tooltip>
+          </el-col>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -147,22 +132,17 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-    <!-- 服务属性详情 -->
-    <el-dialog :close-on-click-modal="false" :title="titleProp" :visible.sync="openProp" append-to-body width="900px">
-      <el-scrollbar style="height: 500px">
-        <Properties :serviceId="this.serviceId"></Properties>
-      </el-scrollbar>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import {listServices, getServices, delServices, addServices, updateServices} from "@/api/link/product/productServices";
+import {queryServices, getServices, delServices, addServices, updateServices} from "@/api/link/product/productServices";
 import Properties from "@/views/link/product/properties";
+import Commands from "@/views/link/product/commands";
 
 export default {
   name: "Services",
-  components: {Properties},
+  components: {Commands, Properties},
   props: ["productId", "templateId"],
   dicts: ["business_data_status"],
   data() {
@@ -181,6 +161,7 @@ export default {
       total: 0,
       // 产品服务数据表格数据
       servicesList: [],
+      serviceOptions: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -190,6 +171,7 @@ export default {
       // 是否显示弹出层
       openProp: false,
       serviceId: null,
+      serviceName: null,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -199,6 +181,10 @@ export default {
         templateId: null,
         status: null,
         description: null,
+      },
+      defaultProps: {
+        children: "children",
+        label: "label"
       },
       // 表单参数
       form: {},
@@ -231,6 +217,10 @@ export default {
         this.queryParams.templateId = newval;
         this.getList();
       }
+    },
+    // 根据服务名称服务列表
+    serviceName(val) {
+      this.$refs.tree.filter(val);
     }
   },
   created() {
@@ -244,11 +234,28 @@ export default {
     /** 查询产品服务数据列表 */
     getList() {
       this.loading = true;
-      listServices(this.queryParams).then(response => {
-        this.servicesList = response.rows;
-        this.total = response.total;
-        this.loading = false;
+      this.serviceOptions = [];
+      queryServices(this.queryParams).then(res => {
+        let index = 0;
+        res.data.forEach(item => {
+          this.serviceOptions.push({
+            id: item.id,
+            label: item.serviceName
+          })
+          if (index === 0 )
+            this.serviceId = item.id
+          index++;
+        })
       });
+    },
+    // 筛选节点
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
+    // 节点单击事件
+    handleNodeClick(data) {
+      this.serviceId = data.id;
     },
     // 取消按钮
     cancel() {
@@ -293,10 +300,7 @@ export default {
       this.form.productId = this.productId;
       this.form.templateId = this.templateId;
       this.open = true;
-      if (this.productId)
-        this.title = "添加产品服务数据";
-      if (this.templateId)
-        this.title = "添加模板服务数据";
+      this.title = "添加服务";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -305,10 +309,7 @@ export default {
       getServices(id).then(response => {
         this.form = response.data;
         this.open = true;
-        if (this.productId)
-          this.title = "修改产品服务数据";
-        if (this.templateId)
-          this.title = "修改模板服务数据";
+        this.title = "修改服务";
       });
     },
     /** 提交按钮 */
@@ -344,14 +345,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('iot/services/export', {
+      this.download('link/productServices/export', {
         ...this.queryParams
       }, `services_${new Date().getTime()}.xlsx`)
-    },
-    handleDetail: function (row) {
-      this.serviceId = row.id;
-      this.openProp = true;
-      this.titleProp = "服务属性列表";
     },
   }
 };
@@ -359,5 +355,18 @@ export default {
 <style lang="scss" scoped>
 .pagination-container {
   height: 50px;
+}
+>>> .el-tree-node .el-tree-node.is-checked{
+  background: #F2F2F2 !important;
+}
+>>> .el-tree-node.is-current{
+  background: transparent !important;
+}
+
+>>> .el-tree-node__content:hover{
+  background: transparent !important;
+}
+>>> .el-tree-node:focus>.el-tree-node__content{
+  background: transparent;
 }
 </style>

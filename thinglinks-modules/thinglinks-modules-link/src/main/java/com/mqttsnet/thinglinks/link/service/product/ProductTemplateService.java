@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.link.service.product;
 import java.util.List;
 
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductTemplateModel;
 
 /**
  * @Description: java类作用描述
@@ -47,6 +48,14 @@ public interface ProductTemplateService {
      * @return 产品模板
      */
     public ProductTemplate selectProductTemplateById(Long id);
+
+    /**
+     * 查询产品模板 带服务、属性
+     *
+     * @param id 产品模板主键
+     * @return 产品模板
+     */
+    ProductTemplateModel selectFullProductTemplateById(Long id);
 
     /**
      * 查询产品模板列表

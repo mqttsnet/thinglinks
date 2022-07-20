@@ -159,6 +159,20 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/link/template-detail',
+    component: Layout,
+    hidden: true,
+    permissions: ['link:productTemplate:list'],
+    children: [
+      {
+        path: 'template/:templateId(\\d+)',
+        component: () => import('@/views/link/productTemplate/detail'),
+        name: 'TemplateDetail',
+        meta: { title: '模板详情', activeMenu: '/link/productTemplate' }
+      }
+    ]
+  },
+  {
     path: '/link/device-detail',
     component: Layout,
     hidden: true,

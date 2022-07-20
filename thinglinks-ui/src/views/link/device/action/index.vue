@@ -293,7 +293,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('iot/action/export', {
+      this.download('link/action/export', {
         ...this.queryParams
       }, `link_action.xlsx`)
     }

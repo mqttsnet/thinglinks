@@ -1,9 +1,17 @@
 import request from '@/utils/request'
 
-// 查询产品服务数据列表
+// 查询产品服务数据列表 带分页
 export function listServices(query) {
   return request({
     url: '/link/productServices/list',
+    method: 'get',
+    params: query
+  })
+}
+// 查询产品服务数据列表
+export function queryServices(query) {
+  return request({
+    url: '/link/productServices/query',
     method: 'get',
     params: query
   })

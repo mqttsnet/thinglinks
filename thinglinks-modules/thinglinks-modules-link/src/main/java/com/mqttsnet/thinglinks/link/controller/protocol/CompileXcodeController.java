@@ -34,7 +34,7 @@ public class CompileXcodeController {
      * @throws Exception
      */
     @PostMapping("/dynamicallyXcode")
-    public AjaxResult importProductJson(@RequestBody String code) {
+    public AjaxResult importProductJson(@RequestBody String code,@RequestBody String inparam) {
         try {
             if (code == null || code.length() == 0) {
                 return AjaxResult.error("请输入要编译的代码");
@@ -45,7 +45,7 @@ public class CompileXcodeController {
             byte[] injectedClass = ClassInjector.injectSystem(classBytes);
             InjectionSystem.inject(null, new PrintStream(buffer, true), null);
             DynamicClassLoader classLoader = new DynamicClassLoader(this.getClass().getClassLoader());
-            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out,"");
+            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out,inparam);
             return new AjaxResult(200, buffer.toString().trim());
         } catch (Throwable e) {
             return new AjaxResult(500, e.getMessage());

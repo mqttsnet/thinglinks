@@ -1,8 +1,19 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
 
+import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductTemplateModel;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.Properties;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.Services;
+import com.mqttsnet.thinglinks.link.service.product.ProductPropertiesService;
+import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate;
 import com.mqttsnet.thinglinks.link.mapper.product.ProductTemplateMapper;
@@ -25,6 +36,10 @@ public class ProductTemplateServiceImpl implements ProductTemplateService{
 
     @Resource
     private ProductTemplateMapper productTemplateMapper;
+    @Autowired
+    private ProductServicesService productServicesService;
+    @Autowired
+    private ProductPropertiesService productPropertiesService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -90,6 +105,48 @@ public class ProductTemplateServiceImpl implements ProductTemplateService{
     @Override
     public ProductTemplate selectProductTemplateById(Long id) {
         return productTemplateMapper.selectProductTemplateById(id);
+    }
+
+    /**
+     * 查询产品模板 带服务、属性
+     *
+     * @param id 产品模板主键
+     * @return 产品模板
+     */
+    @Override
+    public ProductTemplateModel selectFullProductTemplateById(Long id) {
+        ProductTemplate productTemplate = selectProductTemplateById(id);
+        ProductTemplateModel productTemplateModel = new ProductTemplateModel();
+        if (productTemplate != null) {
+            BeanUtils.copyBeanProp(productTemplateModel, productTemplate);
+            ProductServices find = new ProductServices();
+            find.setTemplateId(productTemplate.getId());
+            find.setStatus(Constants.ENABLE);
+            // 查询服务列表
+            List<ProductServices> productServicesList = productServicesService.selectProductServicesList(find);
+            if (!productServicesList.isEmpty()) {
+                List<Services> services = new ArrayList<>();
+                productServicesList.forEach(ps -> {
+                    Services service = new Services();
+                    BeanUtils.copyBeanProp(service, ps);
+                    service.setServiceId(String.valueOf(ps.getId()));
+                    // 查询服务属性列表
+                    List<ProductProperties> productPropertiesList = productPropertiesService.findAllByServiceId(ps.getId());
+                    if (!productPropertiesList.isEmpty()) {
+                        List<Properties> properties = new ArrayList<>();
+                        productPropertiesList.forEach(pp -> {
+                            Properties p = new Properties();
+                            BeanUtils.copyBeanProp(p, pp);
+                            properties.add(p);
+                        });
+                        service.setProperties(properties);
+                    }
+                    services.add(service);
+                });
+                productTemplateModel.setServices(services);
+            }
+        }
+        return productTemplateModel;
     }
 
     /**

@@ -2,12 +2,9 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="应用ID" prop="appId">
-        <el-input
-          v-model="queryParams.appId"
-          placeholder="请输入应用ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-select v-model="queryParams.appId" placeholder="请选择应用ID">
+          <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label" :value="dict.value"/>
+        </el-select>
       </el-form-item>
       <el-form-item label="模板名称" prop="templateName">
         <el-input
@@ -31,7 +28,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['link:template:add']"
+          v-hasPermi="['link:productTemplate:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -42,7 +39,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['link:template:edit']"
+          v-hasPermi="['link:productTemplate:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -53,7 +50,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['link:template:remove']"
+          v-hasPermi="['link:productTemplate:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -63,7 +60,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['link:template:export']"
+          v-hasPermi="['link:productTemplate:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -72,9 +69,17 @@
     <el-table v-loading="loading" :data="templateList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="应用ID" align="center" prop="appId" />
+      <el-table-column align="center" label="应用ID" prop="appId">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.link_application_type" :value="scope.row.appId"/>
+        </template>
+      </el-table-column>
       <el-table-column label="模板名称" align="center" prop="templateName" />
-      <el-table-column label="状态" align="center" prop="status" />
+      <el-table-column align="center" label="状态" prop="status">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.business_data_status" :value="scope.row.status"/>
+        </template>
+      </el-table-column>
       <el-table-column label="模板描述" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -83,16 +88,16 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['link:template:edit']"
+            v-hasPermi="['link:productTemplate:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['link:template:remove']"
+            v-hasPermi="['link:productTemplate:remove']"
           >删除</el-button>
-          <el-button v-hasPermi="['link:template:detail']" icon="el-icon-s-operation" size="mini" type="text" @click="handleDetail(scope.row)">
+          <el-button v-hasPermi="['link:productTemplate:detail']" icon="el-icon-s-operation" size="mini" type="text" @click="handleDetail(scope.row)">
             详情
           </el-button>
         </template>
@@ -111,13 +116,15 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="应用ID" prop="appId">
-          <el-input v-model="form.appId" placeholder="请输入应用ID" />
+          <el-select v-model="form.appId" placeholder="请选择应用ID">
+            <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label" :value="dict.value"/>
+          </el-select>
         </el-form-item>
         <el-form-item label="模板名称" prop="templateName">
           <el-input v-model="form.templateName" placeholder="请输入产品模板名称:自定义，支持中文、英文大小写、数字、下划线和中划线" />
         </el-form-item>
         <el-form-item label="模板描述" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入产品模型模板描述" />
+          <el-input v-model="form.remark" placeholder="请输入产品模型模板描述" type="textarea" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -141,6 +148,7 @@ import Services from "@/views/link/product/services";
 export default {
   name: "Template",
   components: {Services},
+  dicts:["link_application_type","business_data_status"],
   data() {
     return {
       // 遮罩层
@@ -287,14 +295,16 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('link/template/export', {
+      this.download('link/productTemplate/export', {
         ...this.queryParams
       }, `template_${new Date().getTime()}.xlsx`)
     },
     handleDetail: function (row) {
-      this.templateId = row.id;
-      this.openProp = true;
-      this.titleProp = "模板服务详情";
+      // this.templateId = row.id;
+      // this.openProp = true;
+      // this.titleProp = "模板服务详情";
+      const templateId = row.id;
+      this.$router.push("/link/template-detail/template/" + templateId);
     },
   }
 };

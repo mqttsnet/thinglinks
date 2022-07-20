@@ -17,6 +17,14 @@ export function getProductTemplate(id) {
   })
 }
 
+// 查询产品模板详细
+export function getProductTemplateFull(id) {
+  return request({
+    url: '/link/productTemplate/getFull/' + id,
+    method: 'get'
+  })
+}
+
 // 新增产品模板
 export function addProductTemplate(data) {
   return request({

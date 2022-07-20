@@ -54,6 +54,16 @@ public class ProductTemplateController extends BaseController {
     }
 
     /**
+     * 查询产品模板列表
+     */
+    @PreAuthorize(hasPermi = "link:productTemplate:list")
+    @GetMapping("/query")
+    public AjaxResult query(ProductTemplate productTemplate) {
+        List<ProductTemplate> list = productTemplateService.selectProductTemplateList(productTemplate);
+        return AjaxResult.success(list);
+    }
+
+    /**
      * 导出产品模板列表
      */
     @PreAuthorize(hasPermi = "link:productTemplate:export")
@@ -72,6 +82,15 @@ public class ProductTemplateController extends BaseController {
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(productTemplateService.selectProductTemplateById(id));
+    }
+
+    /**
+     * 获取产品模板详细信息 带服务、属性
+     */
+    @PreAuthorize(hasPermi = "link:productTemplate:query")
+    @GetMapping(value = "/getFull/{id}")
+    public AjaxResult getFullInfo(@PathVariable("id") Long id) {
+        return AjaxResult.success(productTemplateService.selectFullProductTemplateById(id));
     }
 
     /**

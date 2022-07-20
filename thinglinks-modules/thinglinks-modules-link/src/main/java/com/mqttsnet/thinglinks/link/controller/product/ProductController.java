@@ -2,9 +2,7 @@ package com.mqttsnet.thinglinks.link.controller.product;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
-import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
-import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -13,25 +11,17 @@ import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
-import com.mqttsnet.thinglinks.link.api.domain.product.model.Properties;
-import com.mqttsnet.thinglinks.link.api.domain.product.model.Services;
-import com.mqttsnet.thinglinks.link.service.product.ProductPropertiesService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
-import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
 import com.mqttsnet.thinglinks.system.api.RemoteFileService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,10 +41,6 @@ public class ProductController extends BaseController {
     private ProductService productService;
     @Resource
     private RemoteFileService remoteFileService;
-    @Autowired
-    private ProductServicesService productServicesService;
-    @Autowired
-    private ProductPropertiesService productPropertiesService;
 
     /**
      * 通过主键查询单条数据
@@ -131,34 +117,7 @@ public class ProductController extends BaseController {
     @PreAuthorize(hasPermi = "link:product:query")
     @GetMapping(value = "/getFullInfo/{id}")
     public AjaxResult getFullInfo(@PathVariable("id") Long id) {
-        Product product = productService.selectProductById(id);
-        ProductModel productModel = new ProductModel();
-        if (product != null) {
-            BeanUtils.copyBeanProp(productModel, product);
-            // 查询服务列表
-            List<ProductServices> productServicesList = productServicesService.findAllByProductIdAndStatus(product.getId(), Constants.ENABLE);
-            if (!productServicesList.isEmpty()) {
-                List<Services> services = new ArrayList<>();
-                productServicesList.forEach(item -> {
-                    Services service = new Services();
-                    BeanUtils.copyBeanProp(service, item);
-                    service.setServiceId(String.valueOf(item.getId()));
-                    // 查询服务属性列表
-                    List<ProductProperties> productPropertiesList = productPropertiesService.findAllByServiceId(item.getId());
-                    if (!productPropertiesList.isEmpty()) {
-                        List<Properties> properties = new ArrayList<>();
-                        productPropertiesList.forEach(pp -> {
-                            Properties p = new Properties();
-                            BeanUtils.copyBeanProp(p, pp);
-                            properties.add(p);
-                        });
-                        service.setProperties(properties);
-                    }
-                    services.add(service);
-                });
-                productModel.setServices(services);
-            }
-        }
+        ProductModel productModel = productService.selectFullProductById(id);
         return AjaxResult.success(productModel);
     }
 

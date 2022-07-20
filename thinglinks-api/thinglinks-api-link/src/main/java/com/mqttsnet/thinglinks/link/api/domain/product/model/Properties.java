@@ -18,13 +18,12 @@ public class Properties{
     private String datatype;
     private String description;
     private String enumlist;
-    private String max;
+    private Integer max;
     private Integer maxlength;
     private String method;
-    private String min;
+    private Integer min;
     private String name;
     private Integer required;
     private Integer step;
     private String unit;
-
 }

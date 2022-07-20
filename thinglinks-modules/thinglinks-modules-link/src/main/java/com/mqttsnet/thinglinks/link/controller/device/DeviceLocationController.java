@@ -8,10 +8,8 @@ import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
-import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import com.mqttsnet.thinglinks.link.service.device.DeviceLocationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,12 +18,12 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * (device_location)表控制层
+ * (deviceLocation)表控制层
  *
  * @author xxxxx
  */
 @RestController
-@RequestMapping("device_location")
+@RequestMapping("deviceLocation")
 public class DeviceLocationController extends BaseController {
     /**
      * 服务对象
@@ -47,7 +45,7 @@ public class DeviceLocationController extends BaseController {
     /**
      * 查询设备位置列表
      */
-    @PreAuthorize(hasPermi = "link:device_location:list")
+    @PreAuthorize(hasPermi = "link:deviceLocation:list")
     @GetMapping("/list")
     public TableDataInfo list(DeviceLocation deviceLocation)
     {
@@ -59,7 +57,7 @@ public class DeviceLocationController extends BaseController {
     /**
      * 导出设备位置列表
      */
-    @PreAuthorize(hasPermi = "link:device_location:export")
+    @PreAuthorize(hasPermi = "link:deviceLocation:export")
     @Log(title = "设备位置", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, DeviceLocation deviceLocation) throws IOException
@@ -72,7 +70,7 @@ public class DeviceLocationController extends BaseController {
     /**
      * 获取设备位置详细信息
      */
-    @PreAuthorize(hasPermi = "link:device_location:query")
+    @PreAuthorize(hasPermi = "link:deviceLocation:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -82,7 +80,7 @@ public class DeviceLocationController extends BaseController {
     /**
      * 新增设备位置
      */
-    @PreAuthorize(hasPermi = "link:device_location:add")
+    @PreAuthorize(hasPermi = "link:deviceLocation:add")
     @Log(title = "设备位置", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody DeviceLocation deviceLocation)
@@ -94,7 +92,7 @@ public class DeviceLocationController extends BaseController {
     /**
      * 修改设备位置
      */
-    @PreAuthorize(hasPermi = "link:device_location:edit")
+    @PreAuthorize(hasPermi = "link:deviceLocation:edit")
     @Log(title = "设备位置", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody DeviceLocation deviceLocation)
@@ -106,7 +104,7 @@ public class DeviceLocationController extends BaseController {
     /**
      * 删除设备位置
      */
-    @PreAuthorize(hasPermi = "link:device_location:remove")
+    @PreAuthorize(hasPermi = "link:deviceLocation:remove")
     @Log(title = "设备位置", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

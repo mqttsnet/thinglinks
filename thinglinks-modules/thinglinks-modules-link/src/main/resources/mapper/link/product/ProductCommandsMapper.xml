@@ -19,7 +19,7 @@
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from product_commands
     where id = #{id,jdbcType=BIGINT}
@@ -31,11 +31,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into product_commands (service_id, `name`, description, 
-      create_by, create_time, update_by, 
+    insert into product_commands (service_id, `name`, description,
+      create_by, create_time, update_by,
       update_time)
-    values (#{service_id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
-      #{create_by,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP}, #{update_by,jdbcType=VARCHAR}, 
+    values (#{service_id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+      #{create_by,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP}, #{update_by,jdbcType=VARCHAR},
       #{update_time,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true">
@@ -238,8 +238,8 @@
     (service_id, `name`, description, create_by, create_time, update_by, update_time)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.service_id,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, 
-        #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP}, #{item.update_by,jdbcType=VARCHAR}, 
+      (#{item.service_id,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR},
+        #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP}, #{item.update_by,jdbcType=VARCHAR},
         #{item.update_time,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
@@ -271,7 +271,7 @@
       #{update_by,jdbcType=VARCHAR},
       #{update_time,jdbcType=TIMESTAMP},
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -341,7 +341,7 @@
         #{update_time,jdbcType=TIMESTAMP},
       </if>
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -369,4 +369,76 @@
       </if>
     </trim>
   </insert>
+
+  <resultMap type="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" id="ProductCommandsResult">
+    <result property="id"    column="id"    />
+    <result property="serviceId"    column="service_id"    />
+    <result property="name"    column="name"    />
+    <result property="description"    column="description"    />
+    <result property="createBy"    column="create_by"    />
+    <result property="createTime"    column="create_time"    />
+    <result property="updateBy"    column="update_by"    />
+    <result property="updateTime"    column="update_time"    />
+  </resultMap>
+
+  <sql id="selectProductCommandsVo">
+    select id, service_id, name, description, create_by, create_time, update_by, update_time from product_commands
+  </sql>
+
+  <select id="selectProductCommandsList" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" resultMap="ProductCommandsResult">
+    <include refid="selectProductCommandsVo"/>
+    <where>
+      <if test="serviceId != null "> and service_id = #{serviceId}</if>
+      <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+      <if test="description != null  and description != ''"> and description = #{description}</if>
+    </where>
+  </select>
+
+  <select id="selectProductCommandsById" parameterType="Long" resultMap="ProductCommandsResult">
+    <include refid="selectProductCommandsVo"/>
+    where id = #{id}
+  </select>
+
+  <insert id="insertProductCommands" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true" keyProperty="id">
+    insert into product_commands
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="serviceId != null">service_id,</if>
+      <if test="name != null and name != ''">name,</if>
+      <if test="description != null">description,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="serviceId != null">#{serviceId},</if>
+      <if test="name != null and name != ''">#{name},</if>
+      <if test="description != null">#{description},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+    </trim>
+  </insert>
+
+  <update id="updateProductCommands" parameterType="ProductCommands">
+    update product_commands
+    <trim prefix="SET" suffixOverrides=",">
+      <if test="serviceId != null">service_id = #{serviceId},</if>
+      <if test="name != null and name != ''">name = #{name},</if>
+      <if test="description != null">description = #{description},</if>
+      <if test="createBy != null">create_by = #{createBy},</if>
+      <if test="createTime != null">create_time = #{createTime},</if>
+      <if test="updateBy != null">update_by = #{updateBy},</if>
+      <if test="updateTime != null">update_time = #{updateTime},</if>
+    </trim>
+    where id = #{id}
+  </update>
+
+  <delete id="deleteProductCommandsByIds" parameterType="String">
+    delete from product_commands where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

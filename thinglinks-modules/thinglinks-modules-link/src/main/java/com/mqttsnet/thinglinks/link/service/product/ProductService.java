@@ -5,6 +5,7 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,6 +82,14 @@ public interface ProductService{
      * @return 产品管理
      */
     public Product selectProductById(Long id);
+
+    /**
+     * 查询产品管理 带服务、属性
+     *
+     * @param id 产品管理主键
+     * @return 产品管理
+     */
+    public ProductModel selectFullProductById(Long id);
 
     /**
      * 查询产品管理列表
