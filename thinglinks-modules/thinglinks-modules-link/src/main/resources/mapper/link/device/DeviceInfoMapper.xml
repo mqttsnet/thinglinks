@@ -742,4 +742,16 @@
     </foreach>
     and `status`=#{status,jdbcType=VARCHAR}
   </select>
+
+<!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-20-->
+  <select id="findAllByIdIn" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from device_info
+    where id in
+    <foreach item="item" index="index" collection="idCollection"
+             open="(" separator="," close=")">
+      #{item,jdbcType=BIGINT}
+    </foreach>
+  </select>
 </mapper>

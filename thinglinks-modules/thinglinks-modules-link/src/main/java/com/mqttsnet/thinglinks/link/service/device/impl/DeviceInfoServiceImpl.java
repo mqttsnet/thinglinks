@@ -1,5 +1,7 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.mqttsnet.thinglinks.broker.api.RemotePublishActorService;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,6 +45,9 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     private DeviceService deviceService;
     @Resource
     private RemoteTdEngineService remoteTdEngineService;
+
+    @Resource
+    private RemotePublishActorService remotePublishActorService;
 
     @Value("${spring.datasource.dynamic.datasource.master.dbName:thinglinks}")
     private String dataBaseName;
@@ -170,7 +176,39 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     @Override
     public int deleteDeviceInfoByIds(Long[] ids)
     {
-        return deviceInfoMapper.deleteDeviceInfoByIds(ids);
+        AtomicReference<Integer> deleteCount = new AtomicReference<>(0);
+        deviceInfoMapper.findAllByIdIn(Arrays.asList(ids)).forEach(deviceInfo -> {
+            Map responseMaps = new HashMap<>();
+            List<Map<String, Object>> dataList = new ArrayList();
+            responseMaps.put("mid", 1);
+            responseMaps.put("statusCode", 0);
+            responseMaps.put("statusDesc", "successful");
+            responseMaps.put("data", dataList);
+            final int deleteByDeviceIdCount = this.deleteByDeviceId(deviceInfo.getDeviceId());
+            Map responseMap = new HashMap<>();
+            if (deleteByDeviceIdCount > 0) {
+                responseMap.put("statusCode", 0);
+                responseMap.put("statusDesc", "successful");
+                deleteCount.getAndSet(deleteCount.get() + 1);
+            } else {
+                responseMap.put("statusCode", 1);
+                responseMap.put("statusDesc", "abortive");
+                log.error("Delete DeviceInfo Exception");
+            }
+            responseMap.put("deviceId", deviceInfo.getDeviceId());
+            dataList.add(responseMap);
+            Device device = deviceService.findOneById(deviceInfo.getDId());
+            if (StringUtils.isNotNull(device)) {
+                final Map<String, Object> param = new HashMap<>();
+                param.put("topic", "/v1/devices/"+device.getDeviceIdentification()+"/topo/deleteResponse");
+                param.put("qos", 2);
+                param.put("retain", false);
+                param.put("message", JSON.toJSONString(responseMaps));
+                remotePublishActorService.sendMessage(param);
+            }
+            responseMaps.clear();
+        });
+        return deleteCount.get();
     }
 
     /**
@@ -244,6 +282,14 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
 	public List<DeviceInfo> findAllByIdInAndStatus(Collection<Long> idCollection, String status){
 		 return deviceInfoMapper.findAllByIdInAndStatus(idCollection,status);
 	}
+
+	@Override
+	public List<DeviceInfo> findAllByIdIn(Collection<Long> idCollection){
+		 return deviceInfoMapper.findAllByIdIn(idCollection);
+	}
+
+
+
 
 
 
