@@ -9,13 +9,17 @@ import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.DeviceModel;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
+import com.mqttsnet.thinglinks.link.service.device.DeviceLocationService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceTopicService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -53,6 +57,9 @@ public class DeviceServiceImpl implements DeviceService {
     private RemotePublishActorService remotePublishActorService;
     @Autowired
     private DeviceTopicService deviceTopicService;
+
+    @Autowired
+    private DeviceLocationService deviceLocationService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -191,22 +198,24 @@ public class DeviceServiceImpl implements DeviceService {
     /**
      * 新增设备管理
      *
-     * @param device 设备管理
+     * @param deviceModel 设备管理
      * @return 结果
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public int insertDevice(Device device)throws Exception {
-        Device oneByClientIdAndDeviceIdentification = deviceMapper.findOneByClientIdOrDeviceIdentification(device.getClientId(), device.getDeviceIdentification());
-        if(StringUtils.isNotNull(oneByClientIdAndDeviceIdentification)){
-            return 0;
-        }
-        device.setConnectStatus(DeviceConnectStatus.INIT.getValue());
+    public int insertDevice(DeviceModel deviceModel)throws Exception {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
+        Device device = new Device();
+        BeanUtils.copyProperties(deviceModel,device);
+        Device oneByClientIdAndDeviceIdentification = deviceMapper.findOneByClientIdOrDeviceIdentification(device.getClientId(), device.getDeviceIdentification());
+        if(StringUtils.isNotNull(oneByClientIdAndDeviceIdentification)){
+            throw new Exception("设备编号或者设备标识已存在");
+        }
+        device.setConnectStatus(DeviceConnectStatus.INIT.getValue());
         device.setCreateBy(sysUser.getUserName());
         device.setCreateTime(DateUtils.getNowDate());
-        final int insertDeviceCount = deviceMapper.insertDevice(device);
+        final int insertDeviceCount = deviceMapper.insertOrUpdateSelective(device);
         //基础TOPIC处理
         Map<String, String> topicMap = new HashMap<>();
         topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/add","边设备添加子设备");
@@ -219,6 +228,11 @@ public class DeviceServiceImpl implements DeviceService {
         topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/command","物联网平台给设备或边设备下发命令");
         topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/commandResponse","边设备返回给物联网平台的命令响应");
         if (insertDeviceCount>0){
+            //设备位置信息存储
+            DeviceLocation deviceLocation = new DeviceLocation();
+            BeanUtils.copyProperties(deviceModel.getDeviceLocation(),deviceLocation);
+            deviceLocationService.insertOrUpdateSelective(deviceLocation);
+            //设备基础Topic数据存储
             for(Map.Entry<String,String> entry : topicMap.entrySet()) {
                 DeviceTopic deviceTopic = new DeviceTopic();
                 deviceTopic.setDeviceIdentification(device.getDeviceIdentification());
@@ -248,16 +262,25 @@ public class DeviceServiceImpl implements DeviceService {
     /**
      * 修改设备管理
      *
-     * @param device 设备管理
+     * @param deviceModel 设备管理
      * @return 结果
      */
     @Override
-    public int updateDevice(Device device)
-    {
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    public int updateDevice(DeviceModel deviceModel) throws Exception {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
+        Device device = new Device();
+        BeanUtils.copyProperties(deviceModel,device);
         device.setUpdateTime(DateUtils.getNowDate());
         device.setUpdateBy(sysUser.getUserName());
+        final int insertDeviceCount = deviceMapper.insertOrUpdateSelective(device);
+        if (insertDeviceCount>0){
+            //设备位置信息存储
+            DeviceLocation deviceLocation = new DeviceLocation();
+            BeanUtils.copyProperties(deviceModel.getDeviceLocation(),deviceLocation);
+            deviceLocationService.insertOrUpdateSelective(deviceLocation);
+        }
         return deviceMapper.updateDevice(device);
     }
 
@@ -388,11 +411,19 @@ public class DeviceServiceImpl implements DeviceService {
 		 return deviceMapper.findAllByProductIdentification(productIdentification);
 	}
 
-
-
-
-
-
+    /**
+     * 查询设备详细信息
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public DeviceModel selectDeviceModelById(Long id) {
+        DeviceModel deviceModel = new DeviceModel();
+        BeanUtils.copyProperties(this.selectDeviceById(id), deviceModel);
+        deviceModel.setDeviceLocation(deviceLocationService.findOneByDeviceIdentification(deviceModel.getDeviceIdentification()));
+        return deviceModel;
+    }
 
 
 }

@@ -57,18 +57,6 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${swagger.fox.version}</version>
         </dependency>
-		
-        <!-- Quartz -->
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.mchange</groupId>
-                    <artifactId>c3p0</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         
         <!-- Mysql Connector -->
         <dependency>
@@ -80,6 +68,13 @@
         <dependency>
             <groupId>com.mqttsnet</groupId>
             <artifactId>thinglinks-common-log</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Common Job -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-job</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
         
@@ -94,6 +89,20 @@
         <dependency>
             <groupId>com.mqttsnet</groupId>
             <artifactId>thinglinks-api-link</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Api Job -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-api-job</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Api Rule -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-api-rule</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
 

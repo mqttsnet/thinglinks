@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * @ClassDescription:
+ * @ClassDescription: 时序数据库服务降级处理
  * @ClassName: RemoteTdEngineFallbackFactory
  * @Author: thinglinks
  * @Date: 2021-12-31 11:00:59

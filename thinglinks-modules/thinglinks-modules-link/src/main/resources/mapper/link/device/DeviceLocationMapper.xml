@@ -536,4 +536,12 @@
       #{id}
     </foreach>
   </delete>
+
+<!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-20-->
+  <select id="findOneByDeviceIdentification" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from device_location
+        where device_identification=#{deviceIdentification,jdbcType=VARCHAR}
+    </select>
 </mapper>

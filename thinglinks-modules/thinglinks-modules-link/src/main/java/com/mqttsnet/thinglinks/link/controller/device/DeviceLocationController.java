@@ -18,9 +18,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * (deviceLocation)表控制层
+ * 设备位置信息Controller
  *
- * @author xxxxx
+ * @author thinglinks
  */
 @RestController
 @RequestMapping("deviceLocation")

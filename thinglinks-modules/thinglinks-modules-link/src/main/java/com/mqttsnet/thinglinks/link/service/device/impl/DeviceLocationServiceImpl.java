@@ -1,12 +1,19 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
+import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
+import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
-import java.util.List;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceLocationMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceLocationService;
+import com.mqttsnet.thinglinks.system.api.domain.SysUser;
+import com.mqttsnet.thinglinks.system.api.model.LoginUser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Description: java类作用描述
@@ -25,6 +32,9 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     @Resource
     private DeviceLocationMapper deviceLocationMapper;
 
+    @Autowired
+    private TokenService tokenService;
+
     @Override
     public int deleteByPrimaryKey(Long id) {
         return deviceLocationMapper.deleteByPrimaryKey(id);
@@ -42,6 +52,15 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
 
     @Override
     public int insertOrUpdateSelective(DeviceLocation record) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        if (StringUtils.isEmpty(String.valueOf(record.getId()))){
+            record.setCreateBy(sysUser.getUserName());
+            record.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
+        }else {
+            record.setUpdateBy(sysUser.getUserName());
+            record.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
+        }
         return deviceLocationMapper.insertOrUpdateSelective(record);
     }
 
@@ -114,6 +133,7 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     @Override
     public int insertDeviceLocation(DeviceLocation deviceLocation)
     {
+        deviceLocation.setCreateBy(SecurityUtils.getUsername());
         deviceLocation.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceLocationMapper.insertDeviceLocation(deviceLocation);
     }
@@ -127,6 +147,7 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     @Override
     public int updateDeviceLocation(DeviceLocation deviceLocation)
     {
+        deviceLocation.setUpdateBy(SecurityUtils.getUsername());
         deviceLocation.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceLocationMapper.updateDeviceLocation(deviceLocation);
     }
@@ -142,6 +163,14 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     {
         return deviceLocationMapper.deleteDeviceLocationByIds(ids);
     }
+
+	@Override
+	public DeviceLocation findOneByDeviceIdentification(String deviceIdentification){
+		 return deviceLocationMapper.findOneByDeviceIdentification(deviceIdentification);
+	}
+
+
+
 }
 
 

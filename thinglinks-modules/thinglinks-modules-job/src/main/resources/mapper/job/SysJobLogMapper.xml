@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mqttsnet.thinglinks.job.mapper.SysJobLogMapper">
 
-	<resultMap type="SysJobLog" id="SysJobLogResult">
+	<resultMap type="com.mqttsnet.thinglinks.job.api.domain.SysJobLog" id="SysJobLogResult">
 		<id     property="jobLogId"       column="job_log_id"      />
 		<result property="jobName"        column="job_name"        />
 		<result property="jobGroup"       column="job_group"       />
@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		from sys_job_log
     </sql>
 	
-	<select id="selectJobLogList" parameterType="SysJobLog" resultMap="SysJobLogResult">
+	<select id="selectJobLogList" parameterType="com.mqttsnet.thinglinks.job.api.domain.SysJobLog" resultMap="SysJobLogResult">
 		<include refid="selectJobLogVo"/>
 		<where>
 			<if test="jobName != null and jobName != ''">
@@ -68,7 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         truncate table sys_job_log
     </update>
  	
- 	<insert id="insertJobLog" parameterType="SysJobLog">
+ 	<insert id="insertJobLog" parameterType="com.mqttsnet.thinglinks.job.api.domain.SysJobLog">
  		insert into sys_job_log(
  			<if test="jobLogId != null and jobLogId != 0">job_log_id,</if>
  			<if test="jobName != null and jobName != ''">job_name,</if>

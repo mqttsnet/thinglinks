@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.job.mapper;
 
 import java.util.List;
-import com.mqttsnet.thinglinks.job.domain.SysJob;
+import com.mqttsnet.thinglinks.job.api.domain.SysJob;
 
 /**
  * 调度任务信息 数据层

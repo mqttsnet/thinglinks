@@ -78,6 +78,11 @@ public interface DeviceLocationService {
      * @return 结果
      */
     public int deleteDeviceLocationByIds(Long[] ids);
+
+
+
+	DeviceLocation findOneByDeviceIdentification(String deviceIdentification);
+
 }
 
 
