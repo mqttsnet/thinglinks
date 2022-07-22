@@ -1,99 +1,85 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['link:productServices:add']"
-          icon="el-icon-plus"
-          plain
-          size="mini"
-          type="primary"
-          @click="handleAdd"
-        >新增服务
-        </el-button>
-      </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          v-hasPermi="['link:productServices:edit']"-->
-<!--          :disabled="single"-->
-<!--          icon="el-icon-edit"-->
-<!--          plain-->
-<!--          size="mini"-->
-<!--          type="success"-->
-<!--          @click="handleUpdate"-->
-<!--        >修改服务-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          v-hasPermi="['link:productServices:remove']"-->
-<!--          :disabled="multiple"-->
-<!--          icon="el-icon-delete"-->
-<!--          plain-->
-<!--          size="mini"-->
-<!--          type="danger"-->
-<!--          @click="handleDelete"-->
-<!--        >删除服务-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['link:productServices:export']"
-          icon="el-icon-download"
-          plain
-          size="mini"
-          type="warning"
-          @click="handleExport"
-        >导出服务
-        </el-button>
-      </el-col>
-<!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
-    </el-row>
     <el-row :gutter="20">
       <!--服务列表-->
-      <el-col :span="4" :xs="24">
-        <div class="head-container">
-          <el-row>
-            <span>服务列表</span>
-            <div style="float:right">
-              <el-tooltip class="item" content="添加" effect="dark" placement="top">
-                <el-button circle icon="el-icon-plus" size="mini" @click="handleAdd()" />
+      <el-col :span="5" :xs="24">
+        <el-card class="box-card" :body-style="{ padding: '10px 20px' }">
+          <div slot="header" class="clearfix">
+            <el-row>
+              <span style="font-weight: 700;font-size: 15px;">服务列表</span>
+              <el-tooltip class="item" content="刷新" effect="light" placement="top">
+                <i class="el-icon-refresh" size="mini" @click="getList()" style="float: right; padding: 3px 0"></i>
               </el-tooltip>
-              <el-tooltip class="item" content="刷新" effect="dark" placement="top">
-                <el-button circle icon="el-icon-refresh" size="mini" @click="getList()" />
+            </el-row>
+          </div>
+          <div class="head-container">
+            <el-row :gutter="10" class="mb8">
+              <el-col :span="1.5">
+                <el-tooltip class="item" effect="light" content="新增服务" placement="top">
+                  <el-button v-hasPermi="['link:productServices:add']" icon="el-icon-plus" circle size="mini"
+                    type="primary" @click="handleAdd">
+                  </el-button>
+                </el-tooltip>
+              </el-col>
+              <el-col :span="1.5">
+                <el-tooltip class="item" effect="light" content="修改服务" placement="right">
+                  <el-button v-hasPermi="['link:productServices:edit']" :disabled="single" icon="el-icon-edit" circle
+                    size="mini" type="success" @click="handleUpdate">
+                  </el-button>
+                </el-tooltip>
+              </el-col>
+              <el-col :span="1.5">
+                <el-tooltip class="item" effect="light" content="删除服务" placement="right">
+                  <el-button v-hasPermi="['link:productServices:remove']" :disabled="multiple" icon="el-icon-delete"
+                    circle size="mini" type="danger" @click="handleDelete">
+                  </el-button>
+                </el-tooltip>
+              </el-col>
+              <el-col :span="1.5">
+                <el-tooltip class="item" effect="light" content="导出服务" placement="top">
+                  <el-button v-hasPermi="['link:productServices:export']" icon="el-icon-download" circle size="mini"
+                    type="warning" @click="handleExport">
+                  </el-button>
+                </el-tooltip>
+              </el-col>
+              <el-col :span="1.5">
+                <el-tooltip class="item" effect="light" content="搜索" placement="top">
+                  <el-button v-hasPermi="['link:productServices:export']" icon="el-icon-search" circle size="mini"
+                    @click="searchFalg = !searchFalg">
+                  </el-button>
+                </el-tooltip>
+              </el-col>
+              <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
+            </el-row>
+            <el-row v-if="searchFalg">
+              <div class="head-input">
+                <el-input v-model="serviceName" clearable placeholder="请输入服务名称" prefix-icon="el-icon-search"
+                  size="small" style="margin-bottom: 5px" />
+              </div>
+            </el-row>
+            <el-row>
+              <el-tooltip class="item" effect="light" content="Right Center 提示文字" placement="right">
+                <el-tree ref="tree" :data="serviceOptions" :expand-on-click-node="false" :highlight-current="true"
+                  :filter-node-method="filterNode" :props="defaultProps" default-expand-all node-key="id"
+                  @node-click="handleNodeClick" />
               </el-tooltip>
-            </div>
-          </el-row>
-        </div>
-        <div class="head-container">
-          <el-input
-            v-model="serviceName"
-            clearable
-            placeholder="请输入服务名称"
-            prefix-icon="el-icon-search"
-            size="small"
-            style="margin-bottom: 20px"
-          />
-        </div>
-        <div class="head-container">
-          <el-tree
-            ref="tree"
-            :data="serviceOptions"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            :props="defaultProps"
-            default-expand-all
-            node-key="id"
-            @node-click="handleNodeClick"
-          />
-        </div>
+            </el-row>
+          </div>
+        </el-card>
+
       </el-col>
       <!--属性、命令列表-->
-      <el-col v-if="this.serviceId" :span="20" :xs="24">
-        <!--属性列表-->
-        <Properties :serviceId="this.serviceId"></Properties>
-        <!--命令列表-->
-        <Commands :serviceId="this.serviceId"></Commands>
+      <el-col v-if="this.serviceId" :span="19" :xs="24">
+        <el-tabs v-model="activeName" type="border-card">
+          <el-tab-pane label="属性列表" name="first">
+            <!--属性列表-->
+            <Properties :serviceId="this.serviceId"></Properties>
+          </el-tab-pane>
+          <el-tab-pane label="命令列表" name="second">
+            <!--命令列表-->
+            <Commands :serviceId="this.serviceId"></Commands>
+          </el-tab-pane>
+        </el-tabs>
       </el-col>
     </el-row>
 
@@ -101,28 +87,29 @@
     <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item v-if="productId" label="产品ID" prop="productId">
-          <el-input v-model="form.productId" disabled placeholder="请输入产品ID"/>
+          <el-input v-model="form.productId" disabled placeholder="请输入产品ID" />
         </el-form-item>
         <el-form-item v-if="templateId" label="产品模板ID" prop="templateId">
-          <el-input v-model="form.templateId" disabled placeholder="请输入产品模型模板ID"/>
+          <el-input v-model="form.templateId" disabled placeholder="请输入产品模型模板ID" />
         </el-form-item>
         <el-form-item label="服务名称" prop="serviceName">
           <el-col :span="22">
-            <el-input v-model="form.serviceName" autocomplete="off" placeholder="请输入服务名称"/>
+            <el-input v-model="form.serviceName" autocomplete="off" placeholder="请输入服务名称" />
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip content="属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light" placement="right">
-              <i class="el-icon-question"/>
+            <el-tooltip content="属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
+              placement="right">
+              <i class="el-icon-question" />
             </el-tooltip>
           </el-col>
         </el-form-item>
         <el-form-item label="服务描述" prop="description">
           <el-col :span="22">
-            <el-input v-model="form.description" placeholder="请输入服务的描述信息" type="textarea"/>
+            <el-input v-model="form.description" placeholder="请输入服务的描述信息" type="textarea" />
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
             <el-tooltip content="请输入服务的描述信息:文本描述，不影响实际功能，可配置为空字符串。" effect="light" placement="right">
-              <i class="el-icon-question"/>
+              <i class="el-icon-question" />
             </el-tooltip>
           </el-col>
         </el-form-item>
@@ -136,17 +123,21 @@
 </template>
 
 <script>
-import {queryServices, getServices, delServices, addServices, updateServices} from "@/api/link/product/productServices";
+import { queryServices, getServices, delServices, addServices, updateServices } from "@/api/link/product/productServices";
 import Properties from "@/views/link/product/properties";
 import Commands from "@/views/link/product/commands";
 
 export default {
   name: "Services",
-  components: {Commands, Properties},
+  components: { Commands, Properties },
   props: ["productId", "templateId"],
   dicts: ["business_data_status"],
   data() {
     return {
+      //search组件切换
+      searchFalg: false,
+      //tab切换
+      activeName: "first",
       // 遮罩层
       loading: true,
       // 选中数组
@@ -191,8 +182,8 @@ export default {
       // 表单校验
       rules: {
         serviceName: [
-          {required: true, message: "服务名称不能为空", trigger: "blur"},
-          {min: 2, max: 50, message: '服务名称长度必须介于 2 和 50 之间', trigger: 'blur'},
+          { required: true, message: "服务名称不能为空", trigger: "blur" },
+          { min: 2, max: 50, message: '服务名称长度必须介于 2 和 50 之间', trigger: 'blur' },
           {
             pattern: /^[a-z0-9_]+$/,
             message: "英文小写、数字、下划线，长度[2,50]",
@@ -200,7 +191,7 @@ export default {
           }
         ],
         status: [
-          {required: true, message: "状态不能为空", trigger: "blur"}
+          { required: true, message: "状态不能为空", trigger: "blur" }
         ],
       }
     };
@@ -242,7 +233,7 @@ export default {
             id: item.id,
             label: item.serviceName
           })
-          if (index === 0 )
+          if (index === 0)
             this.serviceId = item.id
           index++;
         })
@@ -353,20 +344,27 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.app-container {
+  padding: 0 10px 10px 10px;
+}
+
 .pagination-container {
   height: 50px;
 }
->>> .el-tree-node .el-tree-node.is-checked{
+
+>>>.el-tree-node .el-tree-node.is-checked {
   background: #F2F2F2 !important;
 }
->>> .el-tree-node.is-current{
+
+>>>.el-tree-node.is-current {
   background: transparent !important;
 }
 
->>> .el-tree-node__content:hover{
+>>>.el-tree-node__content:hover {
   background: transparent !important;
 }
->>> .el-tree-node:focus>.el-tree-node__content{
+
+>>>.el-tree-node:focus>.el-tree-node__content {
   background: transparent;
 }
 </style>

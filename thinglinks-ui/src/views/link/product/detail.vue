@@ -5,25 +5,36 @@
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span class="dm-bold">{{ productInfo.productName }}</span>
-            <span class="dmc-sub-title dm-pl8">   ID: {{ productInfo.productIdentification }}</span>
+            <span class="dmc-sub-title dm-pl8"> ID: {{ productInfo.productIdentification }}</span>
             <span class="dmc-sub-title dmc-dev-amount"> 注册设备数: <span style="color: #526ECC;">0</span></span>
-            <el-button v-hasPermi="['link:product:edit']" icon="el-icon-edit" plain size="mini" style="float: right;" type="danger" @click="handleUpdate">
+            <el-button v-hasPermi="['link:product:edit']" icon="el-icon-edit" plain size="mini" style="float: right;"
+              type="danger" @click="handleUpdate">
               更新产品信息
             </el-button>
           </div>
           <el-form>
-            <el-row>
-              <el-col :span="12">
+            <el-row style="display: flex;justify-content: space-around;">
+              <el-col :span="10">
                 <el-form-item label="产品名称：">{{ productInfo.productName }}</el-form-item>
                 <el-form-item label="设备类型：">{{ productInfo.deviceType }}</el-form-item>
+              </el-col>
+              <el-col :span="10">
                 <el-form-item label="数据格式：">{{ productInfo.dataFormat }}</el-form-item>
                 <el-form-item label="厂商名称：">{{ productInfo.manufacturerName }}</el-form-item>
+              </el-col>
+              <el-col :span="10">
+                <el-form-item label="应用ID：">
+                  <dict-tag :options="dict.type.link_application_type" :value="productInfo.appId" />
+                </el-form-item>
                 <el-form-item label="产品描述：">{{ productInfo.remark }}</el-form-item>
               </el-col>
-              <el-col :span="12">
-                <el-form-item label="应用ID："><dict-tag :options="dict.type.link_application_type" :value="productInfo.appId"/></el-form-item>
+              <el-col :span="10">
                 <el-form-item label="协议类型：">{{ productInfo.protocolType }}</el-form-item>
-                <el-form-item label="产品状态："><dict-tag :options="dict.type.business_data_status" :value="productInfo.status"/></el-form-item>
+                <el-form-item label="产品状态：">
+                  <dict-tag :options="dict.type.business_data_status" :value="productInfo.status" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="10">
                 <el-form-item label="厂商ID：">{{ productInfo.manufacturerId }}</el-form-item>
                 <el-form-item label="创建时间：">{{ productInfo.createTime }}</el-form-item>
               </el-col>
@@ -36,15 +47,15 @@
       <div class="chart-wrapper">
         <el-card class="box-card">
           <el-tabs v-model="activeName">
-          <el-tab-pane label="模型定义" name="first" style="width:100%;height: 100%;">
-            <div v-if="this.productId" style="width:100%;height:100%">
-              <Services :productId="this.productId"></Services>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="设备调试" name="second">
-            <Device :appId="productInfo.appId" :productIdentification="productInfo.productIdentification"></Device>
-          </el-tab-pane>
-        </el-tabs>
+            <el-tab-pane label="模型定义" name="first" style="width:100%;height: 100%;">
+              <div v-if="this.productId" style="width:100%;height:100%">
+                <Services :productId="this.productId"></Services>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="设备调试" name="second">
+              <img src="@/assets/images/设备调试.jpg" alt="">
+            </el-tab-pane>
+          </el-tabs>
         </el-card>
       </div>
     </el-row>
@@ -95,13 +106,12 @@
   </div>
 </template>
 <script>
-import { getProduct, updateProduct} from "@/api/link/product/product";
+import { getProduct, updateProduct } from "@/api/link/product/product";
 import Services from "@/views/link/product/services";
-import Device from "@/views/link/device";
 
 export default {
   name: "product-detail",
-  components: {Device, Services},
+  components: { Services },
   dicts: [
     "link_application_type",
     "link_product_device_type",
@@ -220,6 +230,7 @@ export default {
   //padding: 16px 16px 0;
   margin-bottom: 16px;
 }
+
 .box-card .el-form-item {
   margin-bottom: 0px;
 }
@@ -234,17 +245,21 @@ export default {
   font-size: .75rem;
   color: #8a8e99;
 }
+
 .dm-font16 {
   margin-left: .5rem;
   padding-left: .5rem;
   border-left: 1px solid #dfe1e6;
 }
+
 .dm-bold {
   font-weight: 700;
 }
+
 .dm-p18 {
-  padding-left: .5rem!important;
+  padding-left: .5rem !important;
 }
+
 .dmc-dev-amount {
   margin-left: .5rem;
   padding-left: .5rem;

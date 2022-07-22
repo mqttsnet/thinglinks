@@ -5,20 +5,24 @@
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span class="dm-bold">{{ templateInfo.templateName }}</span>
-            <span class="dmc-sub-title dm-pl8">   ID: {{ templateInfo.id }}</span>
+            <span class="dmc-sub-title dm-pl8"> ID: {{ templateInfo.id }}</span>
           </div>
           <el-form>
-            <el-row>
-              <el-col :span="12">
+            <el-row style="display: flex;justify-content: space-around;">
+              <el-col :span="10">
                 <el-form-item label="模板名称：">{{ templateInfo.templateName }}</el-form-item>
-                <el-form-item label="应用ID："><dict-tag :options="dict.type.link_application_type" :value="templateInfo.appId"/></el-form-item>
-                <el-form-item label="模板描述：">{{ templateInfo.remark }}</el-form-item>
+                <el-form-item label="应用ID：">
+                  <dict-tag :options="dict.type.link_application_type" :value="templateInfo.appId" />
+                </el-form-item>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="10">
                 <el-form-item label="模板状态：">
-                  <dict-tag :options="dict.type.business_data_status" :value="templateInfo.status"/>
+                  <dict-tag :options="dict.type.business_data_status" :value="templateInfo.status" />
                 </el-form-item>
                 <el-form-item label="创建时间：">{{ templateInfo.createTime }}</el-form-item>
+              </el-col>
+              <el-col :span="10">
+                <el-form-item label="模板描述：">{{ templateInfo.remark }}</el-form-item>
               </el-col>
             </el-row>
           </el-form>
@@ -36,12 +40,12 @@
 </template>
 
 <script>
-import {getProductTemplate} from "@/api/link/product/productTemplate";
+import { getProductTemplate } from "@/api/link/product/productTemplate";
 import Services from "@/views/link/product/services";
 
 export default {
   name: "template-detail",
-  components: {Services},
+  components: { Services },
   dicts: [
     "link_application_type",
     "business_data_status"
@@ -75,6 +79,7 @@ export default {
   //padding: 16px 16px 0;
   margin-bottom: 16px;
 }
+
 .box-card .el-form-item {
   margin-bottom: 0px;
 }
@@ -89,17 +94,21 @@ export default {
   font-size: .75rem;
   color: #8a8e99;
 }
+
 .dm-font16 {
   margin-left: .5rem;
   padding-left: .5rem;
   border-left: 1px solid #dfe1e6;
 }
+
 .dm-bold {
   font-weight: 700;
 }
+
 .dm-p18 {
-  padding-left: .5rem!important;
+  padding-left: .5rem !important;
 }
+
 .dmc-dev-amount {
   margin-left: .5rem;
   padding-left: .5rem;

@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="equipment_status">
       <div class="status_num">
-        <img style="width: 40%;"
+        <img style="width: 35%;"
           src="https://img.alicdn.com/imgextra/i1/O1CN01NS7aVb1iIfQPQDLTT_!!6000000004390-1-tps-640-640.gif" alt="">
         <p>：
           <span style="color:#71e2a3">{{ onlineCount }}</span>/
@@ -131,7 +131,7 @@
     </el-row>
 
     <el-table v-loading="loading" :data="deviceList" @selection-change="handleSelectionChange">
-      <el-table-column align="center" type="selection" width="55" />
+      <el-table-column align="center" type="selection" width="50" />
       <el-table-column align="center" label="id" prop="id" />
       <el-table-column align="center" label="设备标识" prop="deviceIdentification" width="180" />
       <el-table-column align="center" label="客户端标识" prop="clientId" width="180" />
@@ -205,7 +205,7 @@
 
     <!-- 添加或修改设备档案对话框 -->
     <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="40%">
-      <el-form ref="form" :model="form" label-width="120px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="11">
             <el-form-item label="客户端标识" prop="clientId">
@@ -278,12 +278,12 @@
         <el-row style="margin-top: 15px;">
           <el-col :span="11">
             <el-form-item label="纬度" prop="latitude">
-              <el-input v-model="form.latitude" placeholder="请输入纬度" />
+              <el-input v-model="deviceLocation.latitude" placeholder="请输入纬度" />
             </el-form-item>
           </el-col>
           <el-col :span="11">
             <el-form-item label="经度" prop="longitude">
-              <el-input v-model="form.longitude" placeholder="请输入经度" />
+              <el-input v-model="deviceLocation.longitude" placeholder="请输入经度" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -430,8 +430,10 @@ export default {
         deviceType: null,
       },
       // 表单参数
-      form: {
-        deviceLocation: {}
+      form: {},
+      deviceLocation: {
+        latitude: null,
+        longitude: null
       },
       // 表单校验
       rules: {
@@ -453,12 +455,6 @@ export default {
         ],
         deviceName: [
           { required: true, message: "设备名称不能为空", trigger: "blur" },
-        ],
-        latitude: [
-          { required: true, message: "纬度不能为空", trigger: "blur" },
-        ],
-        longitude: [
-          { required: true, message: "经度不能为空", trigger: "blur" },
         ],
         connector: [
           { required: true, message: "连接实例不能为空", trigger: "change" },
@@ -487,7 +483,9 @@ export default {
       check: {
         clientId: false,
         deviceIdentification: false
-      }
+      },
+      //经纬度信息
+      lonLat: [],
     };
   },
   watch: {
@@ -570,18 +568,16 @@ export default {
       }
     },
     locationChange(e) {
-      this.form.longitude = e[0];
-      this.form.latitude = e[1];
-      console.log(this.form);
+      console.log(e);
+      this.deviceLocation.longitude = e[0] * 1;
+      this.deviceLocation.latitude = e[1] * 1;
     },
     locationAddress(e) {
       console.log(e);
-      let deviceLocation = {};
-      deviceLocation.provinceCode = e.addressComponent.adcode
-      deviceLocation.cityCode = e.addressComponent.citycode
-      deviceLocation.regionCode = e.addressComponent.district
-      deviceLocation.fullName = e.formattedAddress
-      this.form.deviceLocation = deviceLocation
+      this.deviceLocation.provinceCode = e.addressComponent.adcode
+      this.deviceLocation.cityCode = e.addressComponent.citycode
+      this.deviceLocation.regionCode = e.addressComponent.district
+      this.deviceLocation.fullName = e.formattedAddress
     },
     locationFail(message) {
       this.$message({
@@ -618,8 +614,6 @@ export default {
         authMode: null,
         deviceIdentification: null,
         deviceName: null,
-        latitude: null,
-        longitude: null,
         connector: null,
         deviceDescription: null,
         deviceStatus: null,
@@ -635,6 +629,10 @@ export default {
         updateTime: null,
         remark: null,
       };
+      this.deviceLocation = {
+        latitude: null,
+        longitude: null
+      }
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -668,8 +666,12 @@ export default {
       this.open = true;
       this.title = "添加设备档案";
       getDevice(null).then(response => {
-        console.log(response);
+        // console.log(response);
         this.productOptions = response.products;
+      })
+      this.$nextTick(() => {
+        this.$refs.mapView.initMap();
+        this.$refs.mapView.address = '';
       })
     },
     /** 修改按钮操作 */
@@ -682,30 +684,36 @@ export default {
       this.set = true;
       const id = row.id || this.ids;
       getDevice(id).then((response) => {
+        console.log(response);
         this.form = response.data;
+        if (response.data.deviceLocation) {
+          this.lonLat = [response.data.deviceLocation.longitude, response.data.deviceLocation.latitude]
+        }
         this.open = true;
         this.title = "修改设备档案";
       });
+      this.$nextTick(() => {
+        this.$refs.mapView.initMap();
+        this.$refs.mapView.regeoCode(this.lonLat.join(','));
+      })
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != null) {
-            this.form.deviceLocation.longitude = this.form.longitude
-            this.form.deviceLocation.latitude = this.form.latitude
-            delete this.form.longitude
-            delete this.form.latitude
+            this.deviceLocation.deviceIdentification = this.form.deviceIdentification
+            this.form.deviceLocation = this.deviceLocation
+            console.log(this.form);
             updateDevice(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.form.deviceLocation.longitude = this.form.longitude
-            this.form.deviceLocation.latitude = this.form.latitude
-            delete this.form.longitude
-            delete this.form.latitude
+            this.deviceLocation.deviceIdentification = this.form.deviceIdentification
+            this.form.deviceLocation = this.deviceLocation
+            console.log(this.form);
             addDevice(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
