@@ -1,11 +1,11 @@
 package com.mqttsnet.thinglinks.job.service;
 
-import java.util.List;
-
-import com.mqttsnet.thinglinks.job.domain.SysJobLog;
+import com.mqttsnet.thinglinks.job.api.domain.SysJobLog;
 import com.mqttsnet.thinglinks.job.mapper.SysJobLogMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 定时任务调度日志信息 服务层

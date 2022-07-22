@@ -1,18 +1,9 @@
-package com.mqttsnet.thinglinks.job.util;
+package com.mqttsnet.thinglinks.job.utils;
 
 import com.mqttsnet.thinglinks.common.core.constant.ScheduleConstants;
 import com.mqttsnet.thinglinks.common.core.exception.job.TaskException;
-import com.mqttsnet.thinglinks.job.domain.SysJob;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.CronTrigger;
-import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerKey;
+import com.mqttsnet.thinglinks.job.api.domain.SysJob;
+import org.quartz.*;
 
 /**
  * 定时任务工具类

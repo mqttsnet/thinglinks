@@ -1,8 +1,7 @@
-package com.mqttsnet.thinglinks.job.util;
+package com.mqttsnet.thinglinks.job.utils;
 
+import com.mqttsnet.thinglinks.job.api.domain.SysJob;
 import org.quartz.JobExecutionContext;
-
-import com.mqttsnet.thinglinks.job.domain.SysJob;
 
 /**
  * 定时任务处理（允许并发执行）

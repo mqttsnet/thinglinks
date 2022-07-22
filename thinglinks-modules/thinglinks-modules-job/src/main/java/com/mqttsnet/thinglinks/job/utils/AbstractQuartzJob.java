@@ -1,20 +1,20 @@
-package com.mqttsnet.thinglinks.job.util;
-
-import java.util.Date;
+package com.mqttsnet.thinglinks.job.utils;
 
 import com.mqttsnet.thinglinks.common.core.constant.ScheduleConstants;
 import com.mqttsnet.thinglinks.common.core.utils.ExceptionUtil;
 import com.mqttsnet.thinglinks.common.core.utils.SpringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
-import com.mqttsnet.thinglinks.job.domain.SysJob;
-import com.mqttsnet.thinglinks.job.domain.SysJobLog;
+import com.mqttsnet.thinglinks.job.api.domain.SysJob;
+import com.mqttsnet.thinglinks.job.api.domain.SysJobLog;
 import com.mqttsnet.thinglinks.job.service.ISysJobLogService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 /**
  * 抽象quartz调用

@@ -41,4 +41,9 @@ public class ServiceNameConstants
      * Rule服务的serviceid
      */
     public static final String THINGLINKS_RULE = "thinglinks-rule";
+
+    /**
+     * Job服务的serviceid
+     */
+    public static final String THINGLINKS_JOB = "thinglinks-job";
 }

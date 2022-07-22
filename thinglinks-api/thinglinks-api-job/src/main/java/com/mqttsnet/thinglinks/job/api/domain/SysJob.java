@@ -1,17 +1,17 @@
-package com.mqttsnet.thinglinks.job.domain;
+package com.mqttsnet.thinglinks.job.api.domain;
 
-import java.util.Date;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mqttsnet.thinglinks.common.core.annotation.Excel;
 import com.mqttsnet.thinglinks.common.core.constant.ScheduleConstants;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.BaseEntity;
-import com.mqttsnet.thinglinks.job.util.CronUtils;
+import com.mqttsnet.thinglinks.common.job.utils.CronUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.util.Date;
 
 /**
  * 定时任务调度表 sys_job
