@@ -30,6 +30,7 @@ public class RemoteJobFallbackFactory implements FallbackFactory<RemoteJobServic
 
 
             /**
+             * 新增任务
              * @param job
              * @return AjaxResult
              * @throws TaskException
@@ -38,6 +39,56 @@ public class RemoteJobFallbackFactory implements FallbackFactory<RemoteJobServic
             @Override
             public AjaxResult add(SysJob job) throws SchedulerException, TaskException {
                 return AjaxResult.error("新增任务失败:" + throwable.getMessage());
+            }
+
+            /**
+             * 获取定时任务详细信息
+             *
+             * @param jobId
+             */
+            @Override
+            public AjaxResult getInfo(Long jobId) {
+                return AjaxResult.error("获取定时任务详细信息失败:" + throwable.getMessage());
+            }
+
+            /**
+             * 修改定时任务
+             *
+             * @param job
+             */
+            @Override
+            public AjaxResult edit(SysJob job) throws SchedulerException, TaskException {
+                return AjaxResult.error("修改定时任务失败:" + throwable.getMessage());
+            }
+
+            /**
+             * 定时任务状态修改
+             *
+             * @param job
+             */
+            @Override
+            public AjaxResult changeStatus(SysJob job) throws SchedulerException {
+                return AjaxResult.error("定时任务状态修改失败:" + throwable.getMessage());
+            }
+
+            /**
+             * 定时任务立即执行一次
+             *
+             * @param job
+             */
+            @Override
+            public AjaxResult run(SysJob job) throws SchedulerException {
+                return AjaxResult.error("定时任务立即执行一次失败:" + throwable.getMessage());
+            }
+
+            /**
+             * 删除定时任务
+             *
+             * @param jobIds
+             */
+            @Override
+            public AjaxResult remove(Long[] jobIds) throws SchedulerException, TaskException {
+                return AjaxResult.error("删除定时任务失败:" + throwable.getMessage());
             }
         };
     }
