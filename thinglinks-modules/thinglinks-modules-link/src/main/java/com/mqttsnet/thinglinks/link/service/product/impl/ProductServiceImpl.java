@@ -110,7 +110,7 @@ public class ProductServiceImpl implements ProductService{
     public int insertOrUpdate(Product record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (StringUtils.isEmpty(String.valueOf(record.getId()))){
+        if (record.getId() == null){
             record.setCreateBy(sysUser.getUserName());
             record.setCreateTime(DateUtils.getNowDate());
         }else {
@@ -124,7 +124,7 @@ public class ProductServiceImpl implements ProductService{
     public int insertOrUpdateSelective(Product record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (StringUtils.isEmpty(String.valueOf(record.getId()))){
+        if (record.getId() == null){
             record.setCreateBy(sysUser.getUserName());
             record.setCreateTime(DateUtils.getNowDate());
         }else {

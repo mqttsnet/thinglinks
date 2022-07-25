@@ -79,7 +79,7 @@ public class DeviceServiceImpl implements DeviceService {
     public int insertOrUpdate(Device record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (StringUtils.isEmpty(String.valueOf(record.getId()))){
+        if (record.getId() == null){
             record.setCreateBy(sysUser.getUserName());
             record.setCreateTime(DateUtils.getNowDate());
         }else {
@@ -93,7 +93,7 @@ public class DeviceServiceImpl implements DeviceService {
     public int insertOrUpdateSelective(Device record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (StringUtils.isEmpty(String.valueOf(record.getId()))){
+        if (record.getId() == null){
             record.setCreateBy(sysUser.getUserName());
             record.setCreateTime(DateUtils.getNowDate());
         }else {
