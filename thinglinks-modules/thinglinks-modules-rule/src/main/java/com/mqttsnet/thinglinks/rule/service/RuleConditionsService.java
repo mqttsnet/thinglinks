@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.rule.service;
 
 import java.util.List;
+
 import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
 
 /**
@@ -25,6 +26,8 @@ public interface RuleConditionsService {
     int insertSelective(RuleConditions record);
 
     RuleConditions selectByPrimaryKey(Long id);
+
+    List<RuleConditions> selectByRuleId(Long ruleId);
 
     int updateByPrimaryKeySelective(RuleConditions record);
 

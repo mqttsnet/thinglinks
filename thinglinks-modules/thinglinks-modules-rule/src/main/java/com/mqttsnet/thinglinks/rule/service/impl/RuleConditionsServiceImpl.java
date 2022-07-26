@@ -53,6 +53,11 @@ public class RuleConditionsServiceImpl implements RuleConditionsService {
     }
 
     @Override
+    public List<RuleConditions> selectByRuleId(Long ruleId) {
+        return ruleConditionsMapper.selectByRuleId(ruleId);
+    }
+
+    @Override
     public int updateByPrimaryKeySelective(RuleConditions record) {
         return ruleConditionsMapper.updateByPrimaryKeySelective(record);
     }

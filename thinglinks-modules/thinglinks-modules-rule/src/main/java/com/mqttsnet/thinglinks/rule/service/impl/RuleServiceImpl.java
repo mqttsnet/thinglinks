@@ -28,6 +28,11 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
+    public Rule selectByRuleIdentification(String ruleIdentification) {
+        return ruleMapper.sel;
+    }
+
+    @Override
     public int insert(Rule record) {
         return ruleMapper.insert(record);
     }

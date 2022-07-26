@@ -1,7 +1,9 @@
 package com.mqttsnet.thinglinks.rule.mapper;
 
 import com.mqttsnet.thinglinks.rule.api.domain.Rule;
+
 import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -22,6 +24,14 @@ public interface RuleMapper {
      * @return deleteCount
      */
     int deleteByPrimaryKey(Long id);
+
+    /**
+     * 根据规则标识查询规则信息
+     *
+     * @param ruleIdentification
+     * @return
+     */
+    Rule selectByRuleIdentification(String ruleIdentification);
 
     /**
      * insert record to table
