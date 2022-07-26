@@ -1,8 +1,7 @@
 package com.mqttsnet.thinglinks.link.service.product;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
@@ -164,7 +163,7 @@ public interface ProductService{
      * @return
      * @throws Exception
      */
-    List<SuperTableDto> createSuperTableDataModel(Long[] productIds,Boolean InitializeOrNot)throws Exception;
+    List<SuperTableDto> createSuperTableDataModel(Long[] productIds,Boolean InitializeOrNot);
 
 
 

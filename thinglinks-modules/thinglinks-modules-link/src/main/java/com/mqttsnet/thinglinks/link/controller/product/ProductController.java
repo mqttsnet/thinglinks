@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.link.controller.product;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -9,6 +10,8 @@ import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
+import com.mqttsnet.thinglinks.common.redis.service.RedisLockRunResult;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
@@ -16,6 +19,7 @@ import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.RemoteFileService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * (product)产品表控制层
@@ -41,6 +46,8 @@ public class ProductController extends BaseController {
     private ProductService productService;
     @Resource
     private RemoteFileService remoteFileService;
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 通过主键查询单条数据
@@ -180,9 +187,9 @@ public class ProductController extends BaseController {
     @PreAuthorize(hasPermi = "link:product:initialize")
     @Log(title = "产品管理", businessType = BusinessType.OTHER)
     @GetMapping(value = "/initializeDataModel/{productIds}/{initializeOrNot}")
-    public AjaxResult initializeDataModel(@PathVariable("productIds") Long[] productIds, @PathVariable("initializeOrNot") Boolean initializeOrNot) throws Exception {
+    public AjaxResult initializeDataModel(@PathVariable("productIds") Long[] productIds, @PathVariable("initializeOrNot") Boolean initializeOrNot) {
         try {
-            final List<SuperTableDto> superTableDataModel = productService.createSuperTableDataModel(productIds, initializeOrNot);
+            RedisLockRunResult<List<SuperTableDto>> superTableDataModel = redisService.tryLockAndRun(CacheConstants.PRODUCT_INITIALIZEDATAMODEL, 10L, 20L, TimeUnit.SECONDS, () -> productService.createSuperTableDataModel(productIds, initializeOrNot));
             return AjaxResult.success(superTableDataModel);
         } catch (Exception e) {
             log.error(e.getMessage());

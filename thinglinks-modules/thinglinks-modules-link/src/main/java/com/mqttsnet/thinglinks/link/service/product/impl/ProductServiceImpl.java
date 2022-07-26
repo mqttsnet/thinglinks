@@ -596,7 +596,7 @@ public class ProductServiceImpl implements ProductService{
      */
     @Async
     @Override
-    public List<SuperTableDto> createSuperTableDataModel(Long[] productIds,Boolean InitializeOrNot)throws Exception{
+    public List<SuperTableDto> createSuperTableDataModel(Long[] productIds,Boolean InitializeOrNot){
         List<SuperTableDto> superTableDtoList = new ArrayList<>();
         List<Product>  productList = new ArrayList<>();
         if (null==productIds) {

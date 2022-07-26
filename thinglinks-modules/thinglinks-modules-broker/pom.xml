@@ -72,6 +72,13 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
+        <!-- thinglinks Common Log -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-log</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
         <!-- TODO  https://github.com/quickmsg/smqtt  V1.1.5版本（切勿自行更新）   -->
         <dependency>
             <groupId>io.github.quickmsg</groupId>

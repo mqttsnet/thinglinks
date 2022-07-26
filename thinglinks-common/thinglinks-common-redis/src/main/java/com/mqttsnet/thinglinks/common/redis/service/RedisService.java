@@ -1,6 +1,8 @@
 package com.mqttsnet.thinglinks.common.redis.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.*;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * spring redis 工具类
@@ -23,10 +26,148 @@ public class RedisService
     @Autowired
     public RedisTemplate redisTemplate;
 
+    @Autowired
+    private RedissonClient redissonClient;
+
     //分布式锁参数
     private static final Long RELEASE_SUCCESS = 1L;
     private static final String RELEASE_LOCK_LUA_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
 
+
+    /**
+     * 非阻塞获取锁并执行
+     *
+     * @param key      锁的key
+     * @param expire   锁的最大存活时间
+     * @param timeUnit 时间单位
+     * @param action   需要执行的方法(无返回值)
+     * @return false未获取到锁(未获取到锁则方法不执行) true获取到锁了并执行完成(执行失败,由方法内部去消化)
+     */
+    public boolean tryLockAndRun(String key, long expire, TimeUnit timeUnit, Runnable action) {
+        return tryLockAndRun(key, 0, expire, timeUnit, action);
+    }
+
+    /**
+     * 非阻塞获取锁并执行,等待时间为毫秒
+     *
+     * @param key    锁的key
+     * @param expire 锁的最大存活时间
+     * @param action 需要执行的方法(无返回值)
+     * @return false未获取到锁(未获取到锁则方法不执行) true获取到锁了并执行完成(执行失败,由方法内部去消化)
+     */
+    public boolean tryLockAndRun(String key, long expire, Runnable action) {
+        return tryLockAndRun(key, 0, expire, TimeUnit.MILLISECONDS, action);
+    }
+
+    /**
+     * 阻塞获取锁并执行
+     *
+     * @param key      锁的key
+     * @param expire   锁的最大存活时间
+     * @param timeUnit 时间单位
+     * @param waitTime 阻塞等待锁的时间
+     * @param action   需要执行的方法(无返回值)
+     * @return false未获取到锁(未获取到锁则方法不执行) true获取到锁了并执行完成(执行失败,由方法内部去消化,或者抛出异常)
+     */
+    public boolean tryLockAndRun(String key, long waitTime, long expire, TimeUnit timeUnit, Runnable action) {
+        RLock lock = redissonClient.getLock(key);
+        try {
+            if (lock.tryLock(waitTime, expire, timeUnit)) {
+                try {
+                    action.run();
+                    return true;
+                } finally {
+                    lock.unlock();
+                }
+            } else {
+                return false;
+            }
+        } catch (InterruptedException e) {
+            log.error(String.join("InterruptedException tryLockAndRun,key:%s", key),e);
+            Thread.currentThread().interrupt();
+        }
+        return false;
+
+    }
+
+    /**
+     * 非阻塞获取锁,如果已经被其它任务锁了则直接返回,不等待
+     * 无参有返回值方法,可以使用 ()->{return->x+y} x为外部参数,y为外部参数  这种方法传参
+     * 例如
+     * public Integer run(String key,Integer x,Integer y){
+     * redisLock.tryLockAndRun(key,10,10,TimeUnit.SECONDS,()->{
+     * return x+y;
+     * })
+     * }
+     *
+     * @param key      锁的key
+     * @param expire   锁的最大存活时间
+     * @param timeUnit 时间单位
+     * @param action   需要执行的方法
+     * @param <R>      方法返回值
+     * @return
+     */
+    public <R> RedisLockRunResult<R> tryLockAndRun(String key, long expire, TimeUnit timeUnit, Supplier<R> action) {
+        return tryLockAndRun(key, 0, expire, timeUnit, action);
+    }
+
+    /**
+     * 非阻塞获取锁,如果已经被其它任务锁了则直接返回,不等待
+     * 无参有返回值方法,可以使用 ()->{return->x+y} x为外部参数,y为外部参数  这种方法传参
+     * 例如
+     * public Integer run(String key,Integer x,Integer y){
+     * redisLock.tryLockAndRun(key,10,10,TimeUnit.SECONDS,()->{
+     * return x+y;
+     * })
+     * }
+     *
+     * @param key    锁的key
+     * @param expire 锁的最大存活时间 毫秒
+     * @param action 需要执行的方法
+     * @param <R>    方法返回值
+     * @return
+     */
+    public <R> RedisLockRunResult<R> tryLockAndRun(String key, long expire, Supplier<R> action) {
+        return tryLockAndRun(key, 0, expire, TimeUnit.MILLISECONDS, action);
+    }
+
+    /**
+     * 阻塞获取锁,如果已经被其它任务锁了则等待waitTime
+     * 无参有返回值方法,可以使用 ()->{return->x+y} x为外部参数,y为外部参数  这种方法传参
+     * 例如
+     * public Integer run(String key,Integer x,Integer y){
+     * redisLock.tryLockAndRun(key,10,10,TimeUnit.SECONDS,()->{
+     * return x+y;
+     * })
+     * }
+     *
+     * @param key      锁的key
+     * @param waitTime 阻塞等待锁的时间
+     * @param expire   锁的最大存活时间
+     * @param timeUnit 时间单位
+     * @param action   需要执行的方法
+     * @param <R>      方法返回值
+     * @return
+     */
+    public <R> RedisLockRunResult<R> tryLockAndRun(String key, long waitTime, long expire, TimeUnit timeUnit, Supplier<R> action) {
+        RLock lock = redissonClient.getLock(key);
+        try {
+            if (lock.tryLock(waitTime, expire, timeUnit)) {
+                try {
+                    return RedisLockRunResult.buildSuccess(action.get());
+                } finally {
+                    lock.unlock();
+                }
+            } else {
+                log.warn(String.join("tryLock not get Lock,key:%s", key));
+                return RedisLockRunResult.buildGetLockErr();
+            }
+        } catch (InterruptedException e) {
+            log.error(String.join("InterruptedException tryLockAndRun,key:%s", key),e);
+            Thread.currentThread().interrupt();
+        }
+        return RedisLockRunResult.buildGetLockErr();
+    }
 
     /**
      * 判断资源是否已经被锁定
