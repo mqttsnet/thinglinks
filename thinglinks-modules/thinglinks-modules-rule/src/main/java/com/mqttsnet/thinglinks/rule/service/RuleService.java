@@ -17,6 +17,8 @@ public interface RuleService {
 
     int deleteByPrimaryKey(Long id);
 
+    Rule selectByRuleIdentification(String ruleIdentification);
+
     int insert(Rule record);
 
     int insertOrUpdate(Rule record);

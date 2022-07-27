@@ -19,16 +19,25 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, app_id, rule_identification, rule_name, job_id, `status`, triggering, remark, 
+    id, app_id, rule_identification, rule_name, job_id, `status`, triggering, remark,
     create_by, create_time, update_by, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from `rule`
     where id = #{id,jdbcType=BIGINT}
   </select>
+
+  <select id="selectByRuleIdentification" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from `rule`
+    where rule_identification = #{ruleIdentification,jdbcType=VARCHAR}
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     <!--@mbg.generated-->
     delete from `rule`
@@ -36,13 +45,13 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.Rule" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into `rule` (app_id, rule_identification, rule_name, 
-      job_id, `status`, triggering, 
-      remark, create_by, create_time, 
+    insert into `rule` (app_id, rule_identification, rule_name,
+      job_id, `status`, triggering,
+      remark, create_by, create_time,
       update_by, update_time)
-    values (#{appId,jdbcType=VARCHAR}, #{ruleIdentification,jdbcType=VARCHAR}, #{ruleName,jdbcType=VARCHAR}, 
-      #{jobId,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, #{triggering,jdbcType=BIGINT}, 
-      #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+    values (#{appId,jdbcType=VARCHAR}, #{ruleIdentification,jdbcType=VARCHAR}, #{ruleName,jdbcType=VARCHAR},
+      #{jobId,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, #{triggering,jdbcType=BIGINT},
+      #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
       #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.Rule" useGeneratedKeys="true">
@@ -330,13 +339,13 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into `rule`
-    (app_id, rule_identification, rule_name, job_id, `status`, triggering, remark, create_by, 
+    (app_id, rule_identification, rule_name, job_id, `status`, triggering, remark, create_by,
       create_time, update_by, update_time)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.appId,jdbcType=VARCHAR}, #{item.ruleIdentification,jdbcType=VARCHAR}, #{item.ruleName,jdbcType=VARCHAR}, 
-        #{item.jobId,jdbcType=BIGINT}, #{item.status,jdbcType=VARCHAR}, #{item.triggering,jdbcType=BIGINT}, 
-        #{item.remark,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+      (#{item.appId,jdbcType=VARCHAR}, #{item.ruleIdentification,jdbcType=VARCHAR}, #{item.ruleName,jdbcType=VARCHAR},
+        #{item.jobId,jdbcType=BIGINT}, #{item.status,jdbcType=VARCHAR}, #{item.triggering,jdbcType=BIGINT},
+        #{item.remark,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
         #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
@@ -376,7 +385,7 @@
       #{updateBy,jdbcType=VARCHAR},
       #{updateTime,jdbcType=TIMESTAMP},
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -474,7 +483,7 @@
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},

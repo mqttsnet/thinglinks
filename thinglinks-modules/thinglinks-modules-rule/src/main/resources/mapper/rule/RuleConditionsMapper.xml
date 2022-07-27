@@ -20,17 +20,27 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, rule_id, condition_type, device_identification, product_identification, service_id, 
-    properties_id, comparison_mode, comparison_value, create_time, create_by, update_by, 
+    id, rule_id, condition_type, device_identification, product_identification, service_id,
+    properties_id, comparison_mode, comparison_value, create_time, create_by, update_by,
     update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from rule_conditions
     where id = #{id,jdbcType=BIGINT}
   </select>
+
+  <select id="selectByRuleId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from rule_conditions
+    where rule_id = #{ruleId,jdbcType=BIGINT}
+  </select>
+
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     <!--@mbg.generated-->
     delete from rule_conditions
@@ -38,15 +48,15 @@
   </delete>
   <insert id="insert" parameterType="com.mqttsnet.thinglinks.rule.api.domain.RuleConditions">
     <!--@mbg.generated-->
-    insert into rule_conditions (id, rule_id, condition_type, 
-      device_identification, product_identification, 
-      service_id, properties_id, comparison_mode, 
-      comparison_value, create_time, create_by, 
+    insert into rule_conditions (id, rule_id, condition_type,
+      device_identification, product_identification,
+      service_id, properties_id, comparison_mode,
+      comparison_value, create_time, create_by,
       update_by, update_time)
-    values (#{id,jdbcType=BIGINT}, #{ruleId,jdbcType=BIGINT}, #{conditionType,jdbcType=BIGINT}, 
-      #{deviceIdentification,jdbcType=VARCHAR}, #{productIdentification,jdbcType=VARCHAR}, 
-      #{serviceId,jdbcType=BIGINT}, #{propertiesId,jdbcType=BIGINT}, #{comparisonMode,jdbcType=VARCHAR}, 
-      #{comparisonValue,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=BIGINT}, #{ruleId,jdbcType=BIGINT}, #{conditionType,jdbcType=BIGINT},
+      #{deviceIdentification,jdbcType=VARCHAR}, #{productIdentification,jdbcType=VARCHAR},
+      #{serviceId,jdbcType=BIGINT}, #{propertiesId,jdbcType=BIGINT}, #{comparisonMode,jdbcType=VARCHAR},
+      #{comparisonValue,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR},
       #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.mqttsnet.thinglinks.rule.api.domain.RuleConditions">
@@ -362,15 +372,15 @@
   <insert id="batchInsert" parameterType="map">
     <!--@mbg.generated-->
     insert into rule_conditions
-    (id, rule_id, condition_type, device_identification, product_identification, service_id, 
-      properties_id, comparison_mode, comparison_value, create_time, create_by, update_by, 
+    (id, rule_id, condition_type, device_identification, product_identification, service_id,
+      properties_id, comparison_mode, comparison_value, create_time, create_by, update_by,
       update_time)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.id,jdbcType=BIGINT}, #{item.ruleId,jdbcType=BIGINT}, #{item.conditionType,jdbcType=BIGINT}, 
-        #{item.deviceIdentification,jdbcType=VARCHAR}, #{item.productIdentification,jdbcType=VARCHAR}, 
-        #{item.serviceId,jdbcType=BIGINT}, #{item.propertiesId,jdbcType=BIGINT}, #{item.comparisonMode,jdbcType=VARCHAR}, 
-        #{item.comparisonValue,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+      (#{item.id,jdbcType=BIGINT}, #{item.ruleId,jdbcType=BIGINT}, #{item.conditionType,jdbcType=BIGINT},
+        #{item.deviceIdentification,jdbcType=VARCHAR}, #{item.productIdentification,jdbcType=VARCHAR},
+        #{item.serviceId,jdbcType=BIGINT}, #{item.propertiesId,jdbcType=BIGINT}, #{item.comparisonMode,jdbcType=VARCHAR},
+        #{item.comparisonValue,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
         #{item.createBy,jdbcType=VARCHAR}, #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}
         )
     </foreach>
@@ -378,28 +388,28 @@
   <insert id="insertOrUpdate" parameterType="com.mqttsnet.thinglinks.rule.api.domain.RuleConditions">
     <!--@mbg.generated-->
     insert into rule_conditions
-    (id, rule_id, condition_type, device_identification, product_identification, service_id, 
-      properties_id, comparison_mode, comparison_value, create_time, create_by, update_by, 
+    (id, rule_id, condition_type, device_identification, product_identification, service_id,
+      properties_id, comparison_mode, comparison_value, create_time, create_by, update_by,
       update_time)
     values
-    (#{id,jdbcType=BIGINT}, #{ruleId,jdbcType=BIGINT}, #{conditionType,jdbcType=BIGINT}, 
-      #{deviceIdentification,jdbcType=VARCHAR}, #{productIdentification,jdbcType=VARCHAR}, 
-      #{serviceId,jdbcType=BIGINT}, #{propertiesId,jdbcType=BIGINT}, #{comparisonMode,jdbcType=VARCHAR}, 
-      #{comparisonValue,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR}, 
+    (#{id,jdbcType=BIGINT}, #{ruleId,jdbcType=BIGINT}, #{conditionType,jdbcType=BIGINT},
+      #{deviceIdentification,jdbcType=VARCHAR}, #{productIdentification,jdbcType=VARCHAR},
+      #{serviceId,jdbcType=BIGINT}, #{propertiesId,jdbcType=BIGINT}, #{comparisonMode,jdbcType=VARCHAR},
+      #{comparisonValue,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR},
       #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
-    on duplicate key update 
-    id = #{id,jdbcType=BIGINT}, 
-    rule_id = #{ruleId,jdbcType=BIGINT}, 
-    condition_type = #{conditionType,jdbcType=BIGINT}, 
-    device_identification = #{deviceIdentification,jdbcType=VARCHAR}, 
-    product_identification = #{productIdentification,jdbcType=VARCHAR}, 
-    service_id = #{serviceId,jdbcType=BIGINT}, 
-    properties_id = #{propertiesId,jdbcType=BIGINT}, 
-    comparison_mode = #{comparisonMode,jdbcType=VARCHAR}, 
-    comparison_value = #{comparisonValue,jdbcType=VARCHAR}, 
-    create_time = #{createTime,jdbcType=TIMESTAMP}, 
-    create_by = #{createBy,jdbcType=VARCHAR}, 
-    update_by = #{updateBy,jdbcType=VARCHAR}, 
+    on duplicate key update
+    id = #{id,jdbcType=BIGINT},
+    rule_id = #{ruleId,jdbcType=BIGINT},
+    condition_type = #{conditionType,jdbcType=BIGINT},
+    device_identification = #{deviceIdentification,jdbcType=VARCHAR},
+    product_identification = #{productIdentification,jdbcType=VARCHAR},
+    service_id = #{serviceId,jdbcType=BIGINT},
+    properties_id = #{propertiesId,jdbcType=BIGINT},
+    comparison_mode = #{comparisonMode,jdbcType=VARCHAR},
+    comparison_value = #{comparisonValue,jdbcType=VARCHAR},
+    create_time = #{createTime,jdbcType=TIMESTAMP},
+    create_by = #{createBy,jdbcType=VARCHAR},
+    update_by = #{updateBy,jdbcType=VARCHAR},
     update_time = #{updateTime,jdbcType=TIMESTAMP}
   </insert>
   <insert id="insertOrUpdateSelective" parameterType="com.mqttsnet.thinglinks.rule.api.domain.RuleConditions">
@@ -488,7 +498,7 @@
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},

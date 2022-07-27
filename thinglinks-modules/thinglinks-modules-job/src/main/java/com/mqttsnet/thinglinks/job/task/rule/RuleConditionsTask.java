@@ -1,11 +1,8 @@
 package com.mqttsnet.thinglinks.job.task.rule;
 
-import com.mqttsnet.thinglinks.job.api.RemoteJobService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * @program: thinglinks
@@ -19,8 +16,8 @@ import javax.annotation.Resource;
 @Slf4j
 public class RuleConditionsTask {
 
-    @Resource
-    private RemoteJobService remoteJobService;
+//    @Resource
+//    private RemoteJobService remoteJobService;
 
 
     /**

@@ -2,7 +2,6 @@ package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
-import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceLocationMapper;
@@ -54,7 +53,7 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     public int insertOrUpdateSelective(DeviceLocation record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (StringUtils.isEmpty(String.valueOf(record.getId()))){
+        if (record.getId() == null){
             record.setCreateBy(sysUser.getUserName());
             record.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         }else {

@@ -1,7 +1,9 @@
 package com.mqttsnet.thinglinks.rule.mapper;
 
 import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
+
 import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -50,6 +52,14 @@ public interface RuleConditionsMapper {
      * @return object by primary key
      */
     RuleConditions selectByPrimaryKey(Long id);
+
+    /**
+     * 根据规则id查询规则条件集合
+     *
+     * @param ruleId
+     * @return
+     */
+    List<RuleConditions> selectByRuleId(Long ruleId);
 
     /**
      * update record selective
