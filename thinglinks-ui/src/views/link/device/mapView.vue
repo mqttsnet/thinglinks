@@ -175,6 +175,7 @@ export default {
                     // 定义点标记对象
                     position: new window.AMap.LngLat(lnglat[0], lnglat[1]),
                 });
+                console.log(this.projectMapMarker);
                 // 把拿到的经纬度转化为地址信息
                 this.map.add(this.projectMapMarker);// 添加点标记在地图上
                 this.map.setCenter(lnglat);

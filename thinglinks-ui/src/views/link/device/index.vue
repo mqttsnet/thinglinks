@@ -512,6 +512,7 @@ export default {
   },
   methods: {
     opened() {
+      this.$refs.mapView.initMap();
       this.$refs.mapView.address = '';
       if (this.form.id !== null) {
         this.$nextTick(() => {
