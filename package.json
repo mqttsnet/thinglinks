@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@amap/amap-jsapi-loader": "^1.0.1",
-    "prismjs": "^1.28.0",
-    "vue-prism-editor": "^1.3.0"
-  }
-}
