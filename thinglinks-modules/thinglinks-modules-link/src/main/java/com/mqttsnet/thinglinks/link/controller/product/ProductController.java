@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -189,7 +190,7 @@ public class ProductController extends BaseController {
     @GetMapping(value = "/initializeDataModel/{productIds}/{initializeOrNot}")
     public AjaxResult initializeDataModel(@PathVariable("productIds") Long[] productIds, @PathVariable("initializeOrNot") Boolean initializeOrNot) {
         try {
-            RedisLockRunResult<List<SuperTableDto>> superTableDataModel = redisService.tryLockAndRun(CacheConstants.PRODUCT_INITIALIZEDATAMODEL, 10L, 20L, TimeUnit.SECONDS, () -> productService.createSuperTableDataModel(productIds, initializeOrNot));
+            RedisLockRunResult<List<SuperTableDto>> superTableDataModel = redisService.tryLockAndRun(CacheConstants.PRODUCT_INITIALIZEDATAMODEL, Arrays.toString(productIds), 10L, 20L, TimeUnit.SECONDS, () -> productService.createSuperTableDataModel(productIds, initializeOrNot));
             return AjaxResult.success(superTableDataModel);
         } catch (Exception e) {
             log.error(e.getMessage());

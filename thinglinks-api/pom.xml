@@ -14,6 +14,8 @@
         <module>thinglinks-api-monitor</module>
         <module>thinglinks-api-tdengine</module>
         <module>thinglinks-api-broker</module>
+        <module>thinglinks-api-job</module>
+        <module>thinglinks-api-rule</module>
     </modules>
 
     <artifactId>thinglinks-api</artifactId>
