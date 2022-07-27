@@ -40,11 +40,11 @@ public class NoRepeatSubmitAop {
             String key = SecurityUtils.getToken() + "-" + request.getServletPath();
             log.info("newToken:{}", key);
             if (!redisService.hasKey(Constants.RESUBMIT_URL_KEY+key)) {// 如果缓存中有这个url视为重复提交
-                redisService.setCacheObject(Constants.RESUBMIT_URL_KEY+key, pjp.toString(), 3000L, TimeUnit.MILLISECONDS);
+                redisService.setCacheObject(Constants.RESUBMIT_URL_KEY+key, pjp.toString(), 10L, TimeUnit.SECONDS);
                 return pjp.proceed();
             } else {
-                log.error("请勿重复提交");
-                return AjaxResult.error("请勿重复提交");
+                log.error("请勿频繁操作，请稍后再试！");
+                return AjaxResult.error("请勿频繁操作，请稍后再试！");
             }
         } catch (Throwable e) {
             e.printStackTrace();
