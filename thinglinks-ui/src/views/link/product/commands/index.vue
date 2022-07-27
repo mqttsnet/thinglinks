@@ -1,29 +1,19 @@
 <template>
   <div class="app-container">
     <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="68px" size="small">
-<!--      <el-form-item label="服务ID" prop="serviceId">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.serviceId"-->
-<!--          clearable-->
-<!--          placeholder="请输入服务ID"-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
+      <!--      <el-form-item label="服务ID" prop="serviceId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.serviceId"-->
+      <!--          clearable-->
+      <!--          placeholder="请输入服务ID"-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="命令名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          clearable
-          placeholder="请输入命令名称"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.name" clearable placeholder="请输入命令名称" @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="命令描述" prop="description">
-        <el-input
-          v-model="queryParams.description"
-          clearable
-          placeholder="请输入命令描述"
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.description" clearable placeholder="请输入命令描述" @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
@@ -33,102 +23,61 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['link:commands:add']"
-          icon="el-icon-plus"
-          plain
-          size="mini"
-          type="primary"
-          @click="handleAdd"
-        >新增命令</el-button>
+        <el-button v-hasPermi="['link:commands:add']" icon="el-icon-plus" plain size="mini" type="primary"
+          @click="handleAdd">新增命令</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['link:commands:edit']"
-          :disabled="single"
-          icon="el-icon-edit"
-          plain
-          size="mini"
-          type="success"
-          @click="handleUpdate"
-        >修改命令</el-button>
+        <el-button v-hasPermi="['link:commands:edit']" :disabled="single" icon="el-icon-edit" plain size="mini"
+          type="success" @click="handleUpdate">修改命令</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['link:commands:remove']"
-          :disabled="multiple"
-          icon="el-icon-delete"
-          plain
-          size="mini"
-          type="danger"
-          @click="handleDelete"
-        >删除命令</el-button>
+        <el-button v-hasPermi="['link:commands:remove']" :disabled="multiple" icon="el-icon-delete" plain size="mini"
+          type="danger" @click="handleDelete">删除命令</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['link:commands:export']"
-          icon="el-icon-download"
-          plain
-          size="mini"
-          type="warning"
-          @click="handleExport"
-        >导出命令</el-button>
+        <el-button v-hasPermi="['link:commands:export']" icon="el-icon-download" plain size="mini" type="warning"
+          @click="handleExport">导出命令</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="commandsList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="commandsList" @selection-change="handleSelectionChange" max-height="250px">
       <el-table-column align="center" type="selection" width="55" />
-<!--      <el-table-column align="center" label="命令id" prop="id" />-->
-<!--      <el-table-column align="center" label="服务ID" prop="serviceId" />-->
+      <!--      <el-table-column align="center" label="命令id" prop="id" />-->
+      <!--      <el-table-column align="center" label="服务ID" prop="serviceId" />-->
       <el-table-column align="center" label="命令名称" prop="name" />
       <el-table-column align="center" label="命令描述" prop="description" />
       <el-table-column align="center" class-name="small-padding fixed-width" label="操作">
         <template slot-scope="scope">
-          <el-button
-            v-hasPermi="['link:commands:edit']"
-            icon="el-icon-edit"
-            size="mini"
-            type="text"
-            @click="handleUpdate(scope.row)"
-          >修改</el-button>
-          <el-button
-            v-hasPermi="['link:commands:remove']"
-            icon="el-icon-delete"
-            size="mini"
-            type="text"
-            @click="handleDelete(scope.row)"
-          >删除</el-button>
+          <el-button v-hasPermi="['link:commands:edit']" icon="el-icon-edit" size="mini" type="text"
+            @click="handleUpdate(scope.row)">修改</el-button>
+          <el-button v-hasPermi="['link:commands:remove']" icon="el-icon-delete" size="mini" type="text"
+            @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :limit.sync="queryParams.pageSize"
-      :page.sync="queryParams.pageNum"
-      :total="total"
-      @pagination="getList"
-    />
+    <pagination v-show="total > 0" :limit.sync="queryParams.pageSize" :page.sync="queryParams.pageNum" :total="total"
+      @pagination="getList" />
 
     <!-- 添加或修改产品指令数据对话框 -->
-    <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="900px">
+    <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width='700px'>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="服务ID" prop="serviceId">
-          <el-input v-model="form.serviceId" disabled placeholder="请输入服务ID" />
-        </el-form-item>
         <el-form-item label="命令名字" prop="name">
-          <el-col :span="22">
+          <el-col :span="23">
             <el-input v-model="form.name" placeholder="请输入命令名字" />
           </el-col>
-          <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip content="命令名称，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。" effect="light" placement="right">
-              <i class="el-icon-question"/>
+          <el-col :span="1" style="padding-left: 5px">
+            <el-tooltip content="命令名称，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。"
+              effect="light" placement="right">
+              <i class="el-icon-question" />
             </el-tooltip>
           </el-col>
         </el-form-item>
         <el-form-item label="命令描述" prop="description">
-          <el-input v-model="form.description" placeholder="请输入命令描述" />
+          <el-col :span="23">
+            <el-input v-model="form.description" type="textarea" placeholder="请输入命令描述" />
+          </el-col>
         </el-form-item>
         <el-form-item v-if="form.id" label="下发参数">
           <Requests :commandsId="form.id" :serviceId="form.serviceId"></Requests>
@@ -152,11 +101,11 @@ import Response from "@/views/link/product/commands/response";
 
 export default {
   name: "Commands",
-  components: {Response, Requests},
+  components: { Response, Requests },
   props: {
     "serviceId": {
-      type:Number,
-      required:true
+      type: Number,
+      required: true
     }
   },
   data() {
@@ -260,7 +209,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -303,12 +252,12 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除产品指令数据编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除产品指令数据编号为"' + ids + '"的数据项？').then(function () {
         return delCommands(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => { });
     },
     /** 导出按钮操作 */
     handleExport() {

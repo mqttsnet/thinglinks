@@ -37,7 +37,7 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="propertiesList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="propertiesList" @selection-change="handleSelectionChange" max-height="250px">
       <el-table-column align="center" type="selection" width="55" />
       <!--      <el-table-column align="center" label="属性id" prop="id"/>-->
       <!--      <el-table-column align="center" label="服务ID" prop="serviceId"/>-->
@@ -81,123 +81,153 @@
 
     <!-- 添加或修改产品属性数据对话框 -->
     <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="700px">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="服务ID" prop="serviceId">
-          <el-input v-model="form.serviceId" disabled placeholder="请输入服务ID" />
-        </el-form-item>
-        <el-form-item label="属性名称" prop="name">
-          <el-col :span="22">
-            <el-input v-model="form.name" autocomplete="off" placeholder="请输入指示属性名称" />
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px" size="medium">
+        <el-row>
+          <div class="disply">
+            <div class="small">
+              <el-form-item label="属性名称" prop="name">
+                <el-col :span="20">
+                  <el-input v-model="form.name" autocomplete="off" placeholder="请输入指示属性名称" />
+                </el-col>
+                <el-col :span="2" style="padding-left: 5px">
+                  <el-tooltip content="指示属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
+                    placement="right">
+                    <i class="el-icon-question" />
+                  </el-tooltip>
+                </el-col>
+              </el-form-item>
+            </div>
+            <div class="small">
+              <el-form-item label="数据类型" prop="datatype">
+                <el-col :span="20">
+                  <el-select v-model="form.datatype" placeholder="请选择数据类型">
+                    <el-option v-for="item in dict.type.link_product_datatype" :key="item.value" :label="item.label"
+                      :value="item.value" />
+                  </el-select>
+                </el-col>
+              </el-form-item>
+            </div>
+          </div>
+        </el-row>
+        <el-row>
+          <el-col :span="14">
+            <el-form-item label="访问权限" prop="method">
+              <el-radio-group v-model="form.method" size="small">
+                <el-radio-button v-for="item in methodList" :key="item.value" :label="item.value">{{ item.label }}
+                </el-radio-button>
+              </el-radio-group>
+              <el-tooltip content="请输入指示访问模式。R:可读；W:可写；E属性值更改时上报数据取值范围：R、RW、RE、RWE" effect="light" placement="right">
+                <i class="el-icon-question" />
+              </el-tooltip>
+            </el-form-item>
           </el-col>
-          <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip content="指示属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
-              placement="right">
-              <i class="el-icon-question" />
-            </el-tooltip>
+          <el-col :span="10">
+
           </el-col>
-        </el-form-item>
-        <el-form-item label="属性描述" prop="description">
-          <el-input v-model="form.description" placeholder="请输入属性描述，不影响实际功能，可配置为空字符串" type="textarea" />
-        </el-form-item>
-        <el-form-item label="数据类型" prop="datatype">
-          <el-select v-model="form.datatype" placeholder="请选择数据类型">
-            <el-option v-for="item in dict.type.link_product_datatype" :key="item.value" :label="item.label"
-              :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="访问权限" prop="method">
-          <el-col :span="22">
-            <el-radio-group v-model="form.method">
-              <el-radio-button v-for="item in methodList" :key="item.value" :label="item.value">{{ item.label }}
-              </el-radio-button>
-            </el-radio-group>
-          </el-col>
-          <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip content="请输入指示访问模式。R:可读；W:可写；E属性值更改时上报数据取值范围：R、RW、RE、RWE" effect="light" placement="right">
-              <i class="el-icon-question" />
-            </el-tooltip>
-          </el-col>
-        </el-form-item>
-        <el-form-item label="是否必填" prop="required">
-          <el-radio-group v-model="form.required">
-            <el-radio-button v-for="item in dict.type.link_product_isRequired" :label="parseInt(item.value)">
-              {{ item.label }}</el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item v-if="form.datatype === 'string' || form.datatype === 'binary'" label="长度" prop="maxlength">
-          <el-col :span="22">
-            <el-input v-model="form.maxlength" placeholder="请输入字符串长度" />
-          </el-col>
-          <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip content="请输入字符串长度。输入值大于等于0、小于等于2147483647的数字。" effect="light" placement="right">
-              <i class="el-icon-question" />
-            </el-tooltip>
-          </el-col>
-        </el-form-item>
-        <!--        <el-form-item label="枚举值">-->
-        <!--          <el-input v-model="form.enumlist" placeholder="枚举值间通过英文逗号分隔"/>-->
-        <!--        </el-form-item>-->
+        </el-row>
+        <el-row>
+          <div class="disply">
+            <div class="small">
+              <el-form-item label="是否必填" prop="required" size="small">
+                <el-radio-group v-model="form.required">
+                  <el-radio-button v-for="item in dict.type.link_product_isRequired" :label="parseInt(item.value)">
+                    {{ item.label }}</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+            </div>
+            <div class="small">
+              <el-form-item v-if="form.datatype === 'string' || form.datatype === 'binary'" label="长度" prop="maxlength">
+                <el-col :span="20">
+                  <el-input v-model="form.maxlength" placeholder="请输入字符串长度" />
+                </el-col>
+                <el-col :span="1">
+                  <el-tooltip content="请输入字符串长度。输入值大于等于0、小于等于2147483647的数字。" effect="light" placement="right">
+                    <i class="el-icon-question" />
+                  </el-tooltip>
+                </el-col>
+              </el-form-item>
+            </div>
+          </div>
+        </el-row>
         <el-form-item v-if="form.datatype === 'enum' || form.datatype === 'string'" label="枚举项">
           <div>
-            <el-col :span="10">
-              <el-tooltip content="支持整型" effect="light" placement="top">
-                <i class="el-icon-question">参数值</i>
-              </el-tooltip>
-            </el-col>
-            <el-col :span="2" style="text-align: center">&nbsp;</el-col>
-            <el-col :span="10">
-              <el-tooltip content="支持中文、英文大小写、日文、数字，不超过20个字符" effect="light" placement="top">
-                <i class="el-icon-question">参数描述</i>
-              </el-tooltip>
-            </el-col>
+            <el-button type="primary" icon="el-icon-plus" size="mini" plain @click="addAttrEnum">添加枚举项
+            </el-button>
+            &nbsp;
+            <el-tooltip content="最多添加100项。参数值：支持整型；参数描述：支持中文、英文大小写、日文、数字，不超过20个字符；" effect="light" placement="right">
+              <!-- <a href="javascript:void(0)" @click="addAttrEnum"><i class="el-icon-plus"></i></a> -->
+              <i class="el-icon-question"></i>
+            </el-tooltip>
           </div>
-          <div v-for="(item, index) in form.enums" :key="index" class="clearfix" style="margin-bottom: 22px;">
+          <div v-for="(item, index) in form.enums" :key="index" class="clearfix" style="margin: 11px 0 11px -10px;">
             <el-col :span="10">
               <el-form-item :prop="'enums.' + index + '.enumValue'" :rules="rules.enumValue" label="" label-width="0px">
                 <el-input v-model="item.enumValue" placeholder="编号如'0'" />
               </el-form-item>
             </el-col>
-            <el-col :span="2" style="text-align: center">-</el-col>
+            <el-col :span="1" style="text-align: center">-</el-col>
             <el-col :span="10">
               <el-form-item :prop="'enums.' + index + '.enumText'" :rules="rules.enumText" label="" label-width="0px">
                 <el-input v-model="item.enumText" placeholder="对该枚举项的描述" />
               </el-form-item>
             </el-col>
-            <el-col :span="2"><a href="javascript:void(0);" @click="removeAttrEnum(item)">删除</a></el-col>
+            <el-col :span="1">
+              <!-- <a href="javascript:void(0);" ></a> -->
+              <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="removeAttrEnum(item)">
+              </el-button>
+            </el-col>
           </div>
         </el-form-item>
-        <el-form-item v-if="form.datatype === 'enum' || form.datatype === 'string'">
-          <el-tooltip content="最多添加100项" effect="light" placement="top">
-            <a href="javascript:void(0)" @click="addAttrEnum"><i class="el-icon-plus"></i>添加枚举项</a>
-          </el-tooltip>
-        </el-form-item>
-        <el-form-item v-if="form.datatype === 'int' || form.datatype === 'decimal'" label="取值范围" prop="min">
-          <el-col :span="10">
-            <el-form-item label="" prop="min">
-              <el-input v-model="form.min" placeholder="请输入最小值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑大于等于。" />
+        <!--        <el-form-item label="枚举值">-->
+        <!--          <el-input v-model="form.enumlist" placeholder="枚举值间通过英文逗号分隔"/>-->
+        <!--        </el-form-item>-->
+
+        <div class="disply">
+          <el-form-item v-if="form.datatype === 'int' || form.datatype === 'decimal'" label="取值范围" prop="min">
+            <el-col :span="10">
+              <el-form-item label="" prop="min">
+                <el-input v-model="form.min" placeholder="请输入最小值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑大于等于。" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="2" style="text-align: center">-</el-col>
+            <el-col :span="10">
+              <el-form-item label="" prop="max">
+                <el-input v-model="form.max" placeholder="请输入最大值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑小于等于。" />
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+        </div>
+        <el-row>
+          <div class="disply">
+            <div class="small">
+              <el-form-item v-if="form.datatype === 'int' || form.datatype === 'decimal'" label="单位" prop="unit">
+                <el-col :span="20">
+                  <el-input v-model="form.unit" placeholder="支持长度不超过50。" />
+                </el-col>
+                <el-col :span="2" style="padding-left: 5px">
+                  <el-tooltip content="请输入单位。支持长度不超过50。取值根据参数确定，如：•温度单位：C或K•百分比单位：%•压强单位：Pa或kPa" effect="light"
+                    placement="right">
+                    <i class="el-icon-question" />
+                  </el-tooltip>
+                </el-col>
+              </el-form-item>
+            </div>
+            <div class="small">
+              <el-form-item v-if="form.datatype === 'int' || form.datatype === 'decimal'" label="步长" prop="step">
+                <el-col :span="20">
+                  <el-input v-model="form.step" placeholder="请输入步长" />
+                </el-col>
+              </el-form-item>
+            </div>
+          </div>
+        </el-row>
+        <el-row>
+          <el-col :span="23">
+            <el-form-item label="属性描述" prop="description">
+              <el-input v-model="form.description" placeholder="请输入属性描述，不影响实际功能，可配置为空字符串" type="textarea" />
             </el-form-item>
           </el-col>
-          <el-col :span="2" style="text-align: center">-</el-col>
-          <el-col :span="10">
-            <el-form-item label="" prop="max">
-              <el-input v-model="form.max" placeholder="请输入最大值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑小于等于。" />
-            </el-form-item>
-          </el-col>
-        </el-form-item>
-        <el-form-item v-if="form.datatype === 'int' || form.datatype === 'decimal'" label="步长" prop="step">
-          <el-input v-model="form.step" placeholder="请输入步长" />
-        </el-form-item>
-        <el-form-item v-if="form.datatype === 'int' || form.datatype === 'decimal'" label="单位" prop="unit">
-          <el-col :span="22">
-            <el-input v-model="form.unit" placeholder="请输入单位。支持长度不超过50。" />
-          </el-col>
-          <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip content="请输入单位。支持长度不超过50。取值根据参数确定，如：•温度单位：C或K•百分比单位：%•压强单位：Pa或kPa" effect="light"
-              placement="right">
-              <i class="el-icon-question" />
-            </el-tooltip>
-          </el-col>
-        </el-form-item>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -215,7 +245,7 @@ import {
   addProperties,
   updateProperties
 } from "@/api/link/product/productProperties";
-
+//获取地图信息
 export default {
   name: "Properties",
   props: {
@@ -486,5 +516,15 @@ export default {
 <style lang="scss" scoped>
 .pagination-container {
   height: 50px;
+}
+
+.disply {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .small {
+    width: calc(50% - 5px);
+  }
 }
 </style>
