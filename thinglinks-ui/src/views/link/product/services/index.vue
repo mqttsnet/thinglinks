@@ -61,7 +61,7 @@
               <el-tooltip class="item" effect="light" content="Right Center 提示文字" placement="right">
                 <el-tree ref="tree" :data="serviceOptions" :expand-on-click-node="false" :highlight-current="true"
                   :filter-node-method="filterNode" :props="defaultProps" default-expand-all node-key="id"
-                  @node-click="handleNodeClick" />
+                  @node-click="handleNodeClick" show-checkbox @check="handleSelectionChange" />
               </el-tooltip>
             </el-row>
           </div>
@@ -86,12 +86,6 @@
     <!-- 添加或修改产品服务数据对话框 -->
     <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item v-if="productId" label="产品ID" prop="productId">
-          <el-input v-model="form.productId" disabled placeholder="请输入产品ID" />
-        </el-form-item>
-        <el-form-item v-if="templateId" label="产品模板ID" prop="templateId">
-          <el-input v-model="form.templateId" disabled placeholder="请输入产品模型模板ID" />
-        </el-form-item>
         <el-form-item label="服务名称" prop="serviceName">
           <el-col :span="22">
             <el-input v-model="form.serviceName" autocomplete="off" placeholder="请输入服务名称" />
@@ -280,10 +274,10 @@ export default {
       this.handleQuery();
     },
     // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
+    handleSelectionChange(target, Selected) {
+      this.ids = Selected.checkedNodes.map(item => item.id)
+      this.single = Selected.checkedNodes.length !== 1
+      this.multiple = !Selected.checkedNodes.length
     },
     /** 新增按钮操作 */
     handleAdd() {

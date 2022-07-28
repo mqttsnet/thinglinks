@@ -38,6 +38,7 @@ export default {
             loading: false,
             tips: [],
             locationValue: [],
+            Province: [],
             options: [],
             projectMapMarker: undefined,
             map: undefined,
@@ -54,7 +55,6 @@ export default {
     methods: {
         //地图初始化
         initMap() {
-            console.log(this.lonLatValue);
             AMapLoader.load({
                 key: "e13456422e8fe93451cf2201f4db84bd", // 申请好的Web端开发者Key，首次调用 load 时必填
                 version: "2.0", // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
@@ -90,7 +90,8 @@ export default {
                 let _this = this
                 districtSearch.search('中国', function (status, result) {
                     // 查询成功时，result即为对应的行政区信息
-                    // console.log(result.districtList[0].districtList);
+                    console.log(result.districtList[0].districtList);
+                    _this.Province = result.districtList[0].districtList
                     result.districtList[0].districtList.map((province) => {
                         let provinceMap = new Map();
                         provinceMap.value = province.name;   //区域编号
@@ -162,34 +163,38 @@ export default {
             }
         },
         regeoCode(lonLatValue) {
-            let lnglat = lonLatValue.split(",");
-            this.$emit("locationChange", lnglat);
-            if (this.projectMapMarker !== undefined) {
-                // 如果点标记已存在则先移除原点
-                this.map.remove(this.projectMapMarker);
-                this.lonLat = "";
+            if (lonLatValue) {
+                let lnglat = lonLatValue.split(",");
+                this.$emit("locationChange", lnglat);
+                if (this.projectMapMarker !== undefined) {
+                    // 如果点标记已存在则先移除原点
+                    this.map.remove(this.projectMapMarker);
+                    this.lonLat = "";
+                }
+                this.projectMapMarker = new window.AMap.Marker({
+                    // 定义点标记对象
+                    position: new window.AMap.LngLat(lnglat[0], lnglat[1]),
+                });
+                console.log(this.projectMapMarker);
+                // 把拿到的经纬度转化为地址信息
+                this.map.add(this.projectMapMarker);// 添加点标记在地图上
+                this.map.setCenter(lnglat);
+                this.map.setZoom(13);
+                this.projectMapMarker.setPosition(lnglat);
+                this.getAddress(lnglat)
             }
-            this.projectMapMarker = new window.AMap.Marker({
-                // 定义点标记对象
-                position: new window.AMap.LngLat(lnglat[0], lnglat[1]),
-            });
-            // 把拿到的经纬度转化为地址信息
-            this.map.add(this.projectMapMarker);// 添加点标记在地图上
-            this.map.setCenter(lnglat);
-            this.map.setZoom(13);
-            this.projectMapMarker.setPosition(lnglat);
-            this.getAddress(lnglat)
         },
-        // 获取地址
+        // 获取地址 
         getAddress(lnglat) {
             const that = this
             that.geocoder.getAddress(lnglat, (status, result) => {
-                console.log(result);
+                // console.log(result);
                 let resp = result.regeocode.addressComponent
                 that.locationValue = [resp.province, resp.city, resp.district,]
                 if (status === 'complete' && result.info === 'OK') {
                     if (result && result.regeocode) {
                         that.address = result.regeocode.formattedAddress
+                        console.log(result.regeocode);
                         this.$emit("locationAddress", result.regeocode);
                     } else {
                         this.$emit("locationFail", "地址查询位置失败,请检查地址是否正确");

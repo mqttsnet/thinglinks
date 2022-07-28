@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.controller.protocol;
 
+import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -68,6 +69,7 @@ public class ProtocolController extends BaseController
     /**
      * 新增协议管理
      */
+    @NoRepeatSubmit
     @PreAuthorize(hasPermi = "link:protocol:add")
     @Log(title = "协议管理", businessType = BusinessType.INSERT)
     @PostMapping
@@ -105,6 +107,7 @@ public class ProtocolController extends BaseController
      * @param ids
      * @return
      */
+    @NoRepeatSubmit
     @PreAuthorize(hasPermi = "link:protocol:enable")
     @Log(title = "协议管理", businessType = BusinessType.GRANT)
     @GetMapping("/enable/{ids}")
@@ -117,6 +120,7 @@ public class ProtocolController extends BaseController
      * @param ids
      * @return
      */
+    @NoRepeatSubmit
     @PreAuthorize(hasPermi = "link:protocol:disable")
     @Log(title = "协议管理", businessType = BusinessType.GRANT)
     @GetMapping("/disable/{ids}")
@@ -129,6 +133,7 @@ public class ProtocolController extends BaseController
      * 协议脚本缓存刷新
      * @return
      */
+    @NoRepeatSubmit
     @GetMapping("/protocolScriptCacheRefresh")
     public AjaxResult protocolScriptCacheRefresh()
     {

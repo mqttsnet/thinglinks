@@ -204,7 +204,8 @@
       @pagination="getList" />
 
     <!-- 添加或修改设备档案对话框 -->
-    <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="40%">
+    <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="40%"
+      @opened="opened" @closed="closed">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="11">
@@ -510,6 +511,20 @@ export default {
     this.getList();
   },
   methods: {
+    opened() {
+      this.$refs.mapView.initMap();
+      this.$refs.mapView.address = '';
+      if (this.form.id !== null) {
+        this.$nextTick(() => {
+          this.$refs.mapView.regeoCode(this.lonLat.join(','));
+        })
+      }
+    },
+    closed() {
+      this.reset()
+      this.$refs.mapView.initMap();
+      this.$refs.mapView.address = ''
+    },
     //客户端标识校验
     clientId() {
       validationDeviceIdentification_clientId(this.form.clientId).then(res => {
@@ -568,12 +583,11 @@ export default {
       }
     },
     locationChange(e) {
-      console.log(e);
       this.deviceLocation.longitude = e[0] * 1;
       this.deviceLocation.latitude = e[1] * 1;
     },
     locationAddress(e) {
-      console.log(e);
+      // console.log(this.$refs.mapView.options);
       this.deviceLocation.provinceCode = e.addressComponent.adcode
       this.deviceLocation.cityCode = e.addressComponent.citycode
       this.deviceLocation.regionCode = e.addressComponent.district
@@ -668,10 +682,7 @@ export default {
       getDevice(null).then(response => {
         // console.log(response);
         this.productOptions = response.products;
-      })
-      this.$nextTick(() => {
-        this.$refs.mapView.initMap();
-        this.$refs.mapView.address = '';
+
       })
     },
     /** 修改按钮操作 */
@@ -684,18 +695,15 @@ export default {
       this.set = true;
       const id = row.id || this.ids;
       getDevice(id).then((response) => {
-        console.log(response);
         this.form = response.data;
-        if (response.data.deviceLocation) {
+        if (response.data.deviceLocation !== null) {
           this.lonLat = [response.data.deviceLocation.longitude, response.data.deviceLocation.latitude]
+        } else {
+          this.lonLat = []
         }
         this.open = true;
         this.title = "修改设备档案";
       });
-      this.$nextTick(() => {
-        this.$refs.mapView.initMap();
-        this.$refs.mapView.regeoCode(this.lonLat.join(','));
-      })
     },
     /** 提交按钮 */
     submitForm() {
@@ -703,6 +711,7 @@ export default {
         if (valid) {
           if (this.form.id != null) {
             this.deviceLocation.deviceIdentification = this.form.deviceIdentification
+            this.deviceLocation.id = this.form.id
             this.form.deviceLocation = this.deviceLocation
             console.log(this.form);
             updateDevice(this.form).then((response) => {
@@ -712,6 +721,7 @@ export default {
             });
           } else {
             this.deviceLocation.deviceIdentification = this.form.deviceIdentification
+            this.deviceLocation.id = this.form.id
             this.form.deviceLocation = this.deviceLocation
             console.log(this.form);
             addDevice(this.form).then((response) => {
