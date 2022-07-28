@@ -37,5 +37,5 @@ public interface TdEngineService {
 
     List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception;
 
-    List<Map<String, Object>> getLastDataByTags(TagsSelectDao tagsSelectDao);
+    Map<String, Map<String, Object>> getLastDataByTags(TagsSelectDao tagsSelectDao);
 }
