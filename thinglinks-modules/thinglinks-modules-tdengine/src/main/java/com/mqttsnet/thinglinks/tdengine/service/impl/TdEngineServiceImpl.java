@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.*;
+import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
 import com.mqttsnet.thinglinks.tdengine.mapper.TdEngineMapper;
 import com.mqttsnet.thinglinks.tdengine.service.TdEngineService;
 import lombok.extern.slf4j.Slf4j;
@@ -140,6 +141,22 @@ public class TdEngineServiceImpl implements TdEngineService {
     @Override
     public List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception{
         List<Map<String, Object>> maps = this.tdEngineMapper.getLastData(selectDto);
+        for (Map<String, Object> map : maps) {
+            Map<String, Object> filterMap = map.entrySet()
+                    .stream()
+                    .filter(entry -> entry.getValue() != null)
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
+        return maps;
+    }
+
+    /**
+     * @param tagsSelectDao
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> getLastDataByTags(TagsSelectDao tagsSelectDao) {
+        List<Map<String, Object>> maps = this.tdEngineMapper.getLastDataByTags(tagsSelectDao);
         for (Map<String, Object> map : maps) {
             Map<String, Object> filterMap = map.entrySet()
                     .stream()

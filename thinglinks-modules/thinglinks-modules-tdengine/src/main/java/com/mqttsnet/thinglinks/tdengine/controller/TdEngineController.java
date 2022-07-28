@@ -4,6 +4,7 @@ import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.tdengine.api.domain.*;
+import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
 import com.mqttsnet.thinglinks.tdengine.service.TdEngineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -288,6 +289,28 @@ public class TdEngineController {
     public R<?> getLastData(@Validated @RequestBody SelectDto selectDto) {
         try {
             return R.ok(this.tdEngineService.getLastData(selectDto));
+        }catch (UncategorizedSQLException e) {
+            String message = e.getCause().getMessage();
+            try {
+                message = message.substring(message.lastIndexOf("invalid operation"));
+            } catch (Exception ex) {}
+            log.error(message);
+            return R.fail(message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
+    }
+
+    /**
+     * @MethodDescription 根据超级表查询包含Tags的最新数据集合
+     * @param tagsSelectDao
+     * @return R<?>
+     */
+    @PostMapping("/getLastDataByTags")
+    public R<?> getLastDataByTags(@Validated @RequestBody TagsSelectDao tagsSelectDao) {
+        try {
+            return R.ok(this.tdEngineService.getLastDataByTags(tagsSelectDao));
         }catch (UncategorizedSQLException e) {
             String message = e.getCause().getMessage();
             try {
