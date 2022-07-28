@@ -285,4 +285,9 @@
             resultType="Map">
         select last(*) from #{dataBaseName}.#{tableName}
     </select>
+
+    <select id="getLastDataByTags" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao"
+            resultType="Map">
+        select last(*) from #{dataBaseName}.#{stableName} group by ${tags}
+    </select>
 </mapper>

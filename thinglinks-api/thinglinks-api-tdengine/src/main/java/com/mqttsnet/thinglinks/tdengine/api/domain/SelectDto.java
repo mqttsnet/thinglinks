@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class SelectDto {
 
-    @NotBlank(message = "invalid operation: tableName can not be empty")
+    @NotBlank(message = "invalid operation: dataBaseName can not be empty")
     private String dataBaseName;
 
     @NotBlank(message = "invalid operation: tableName can not be empty")

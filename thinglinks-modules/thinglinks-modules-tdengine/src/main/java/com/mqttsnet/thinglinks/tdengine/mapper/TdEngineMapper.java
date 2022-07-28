@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.tdengine.mapper;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.FieldsVo;
+import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -55,4 +56,6 @@ public interface TdEngineMapper {
     Integer checkTableExists(@Param("dataBaseName") String dataBaseName, @Param("tableName")String tableName);
 
     List<Map<String, Object>> getLastData(SelectDto selectDto);
+
+    List<Map<String, Object>> getLastDataByTags(TagsSelectDao tagsSelectDao);
 }
