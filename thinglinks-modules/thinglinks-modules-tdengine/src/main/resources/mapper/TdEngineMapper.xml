@@ -291,15 +291,15 @@
         select last(*) from #{dataBaseName}.#{stableName} group by ${tagsName}
     </select>
     
-    <select id="getHistoryData" resultType="java.util.Map" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.SelectVisualDto">
+    <select id="getHistoryData" resultType="java.util.Map" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.visual.SelectVisualDto">
         SELECT #{fieldName},ts
         FROM #{dataBaseName}.#{tableName} WHERE ts BETWEEN #{startTime} AND #{endTime} LIMIT #{num}
     </select>
-    <select id="getRealtimeData" resultType="java.util.Map" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.SelectVisualDto">
+    <select id="getRealtimeData" resultType="java.util.Map" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.visual.SelectVisualDto">
         SELECT #{fieldName},ts
         FROM #{dataBaseName}.#{tableName} LIMIT #{num}
     </select>
-    <select id="getAggregateData" resultType="java.util.Map" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.SelectVisualDto">
+    <select id="getAggregateData" resultType="java.util.Map" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.visual.SelectVisualDto">
         SELECT #{aggregate}(${fieldName})
         FROM #{dataBaseName}.#{tableName} WHERE ts BETWEEN #{startTime} AND #{endTime} interval(${interval}) LIMIT #{num}
     </select>
