@@ -4,7 +4,7 @@ import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.tdengine.api.domain.*;
-import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
+import com.mqttsnet.thinglinks.tdengine.api.domain.visual.SelectVisualDto;
 import com.mqttsnet.thinglinks.tdengine.service.TdEngineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
