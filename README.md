@@ -187,5 +187,9 @@ MQTT客户端C库: thinglinks-mqtt-c
 
 [相关技术资料及话题](https://bbs.csdn.net/forums/thinglinks)
 
+## issues
+[issues](https://bbs.csdn.net/forums/thinglinks?typeId=95305)
+
+
 
 ## ThingLinks开源平台遵循 [Apache License, Version 2.0](License) 协议。 允许商业使用，但务必保留类作者、Copyright 信息。
