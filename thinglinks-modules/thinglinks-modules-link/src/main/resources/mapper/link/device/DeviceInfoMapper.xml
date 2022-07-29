@@ -754,4 +754,12 @@
       #{item,jdbcType=BIGINT}
     </foreach>
   </select>
+
+<!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-29-->
+  <select id="findAllByStatus" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from device_info
+    where `status`=#{status,jdbcType=VARCHAR}
+  </select>
 </mapper>
