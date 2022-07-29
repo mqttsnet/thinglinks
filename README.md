@@ -192,4 +192,5 @@ MQTT客户端C库: thinglinks-mqtt-c
 
 
 
-## ThingLinks开源平台遵循 [Apache License, Version 2.0](License) 协议。 允许商业使用，但务必保留类作者、Copyright 信息。
+## 版权使用说明
+ThingLinks开源平台遵循 [Apache License, Version 2.0](License) 协议。 允许商业使用，但务必保留类作者、Copyright 信息。
