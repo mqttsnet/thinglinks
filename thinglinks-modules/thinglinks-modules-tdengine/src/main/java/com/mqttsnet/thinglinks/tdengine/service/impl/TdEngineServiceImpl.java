@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -140,13 +141,31 @@ public class TdEngineServiceImpl implements TdEngineService {
     @Override
     public List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception{
         List<Map<String, Object>> maps = this.tdEngineMapper.getLastData(selectDto);
-        for (Map<String, Object> map : maps) {
-            Map<String, Object> filterMap = map.entrySet()
-                    .stream()
-                    .filter(entry -> entry.getValue() != null)
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        }
+//        for (Map<String, Object> map : maps) {
+//            Map<String, Object> filterMap = map.entrySet()
+//                    .stream()
+//                    .filter(entry -> entry.getValue() != null)
+//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+//        }
         return maps;
+    }
+
+    /**
+     * @param tagsSelectDao
+     * @return
+     */
+    @Override
+    public Map<String, Map<String, Object>> getLastDataByTags(TagsSelectDao tagsSelectDao) {
+        List<Map<String, Object>> maps = this.tdEngineMapper.getLastDataByTags(tagsSelectDao);
+        Map<String, Map<String, Object>> objectHashMap = new HashMap<>();
+        for (Map<String, Object> map : maps) {
+//            Map<String, Object> filterMap = map.entrySet()
+//                    .stream()
+//                    .filter(entry -> entry.getValue() != null)
+//                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            objectHashMap.put(map.get(tagsSelectDao.getTagsName()).toString(),map);
+        }
+        return objectHashMap;
     }
 
 
