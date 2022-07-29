@@ -4,15 +4,26 @@ import com.alibaba.fastjson.JSON;
 import com.mqttsnet.thinglinks.broker.api.RemotePublishActorService;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceInfoMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
+import com.mqttsnet.thinglinks.link.service.product.ProductService;
+import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
+import com.mqttsnet.thinglinks.system.api.domain.SysUser;
+import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
+import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
+import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +54,12 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     private DeviceInfoMapper deviceInfoMapper;
     @Autowired
     private DeviceService deviceService;
+    @Autowired
+    private TokenService tokenService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private ProductServicesService productServicesService;
     @Resource
     private RemoteTdEngineService remoteTdEngineService;
 
@@ -150,7 +167,13 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     @Override
     public int insertDeviceInfo(DeviceInfo deviceInfo)
     {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        deviceInfo.setCreateBy(sysUser.getUserName());
         deviceInfo.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
+        deviceInfo.setDeviceId(UUID.getUUID());
+        deviceInfo.setConnectStatus(DeviceConnectStatus.INIT.getValue());
+        deviceInfo.setShadowEnable(true);
         return deviceInfoMapper.insertDeviceInfo(deviceInfo);
     }
 
@@ -163,6 +186,9 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     @Override
     public int updateDeviceInfo(DeviceInfo deviceInfo)
     {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        deviceInfo.setUpdateBy(sysUser.getUserName());
         deviceInfo.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceInfoMapper.updateDeviceInfo(deviceInfo);
     }
@@ -174,8 +200,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
      * @return 结果
      */
     @Override
-    public int deleteDeviceInfoByIds(Long[] ids)
-    {
+    public int deleteDeviceInfoByIds(Long[] ids) {
         AtomicReference<Integer> deleteCount = new AtomicReference<>(0);
         deviceInfoMapper.findAllByIdIn(Arrays.asList(ids)).forEach(deviceInfo -> {
             Map responseMaps = new HashMap<>();
@@ -288,11 +313,70 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
 		 return deviceInfoMapper.findAllByIdIn(idCollection);
 	}
 
+    /**
+     * 刷新子设备数据模型
+     * @param idCollection
+     * @return
+     */
+    @Override
+    public Boolean refreshDeviceInfoDataModel(Collection<Long> idCollection) {
+        List<DeviceInfo> allByIdInAndStatus = null;
+        if (StringUtils.isNotEmpty(idCollection)) {
+            allByIdInAndStatus = deviceInfoMapper.findAllByIdInAndStatus(idCollection, Constants.ENABLE);
+        }else {
+            allByIdInAndStatus = deviceInfoMapper.findAllByStatus(Constants.ENABLE);
+        }
+        allByIdInAndStatus.forEach(item->{
+            final Device device = deviceService.findOneById(item.getDId());
+            if (StringUtils.isNull(device)) {
+                log.error("刷新子设备数据模型失败，子设备不存在");
+                return;
+            }
+            final Product product = productService.findOneByProductIdentificationAndProtocolType(device.getProductIdentification(), device.getProtocolType());
+            if (StringUtils.isNull(product)) {
+                log.error("刷新子设备数据模型失败，子设备产品不存在");
+                return;
+            }
+            StringBuilder shadowTableNameBuilder = new StringBuilder();
+            // 新增设备管理成功后，创建TD普通表
+            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), Constants.ENABLE);
+            TableDto tableDto;
+            for (ProductServices productServices : allByProductIdAndStatus) {
+                tableDto = new TableDto();
+                tableDto.setDataBaseName(dataBaseName);
+                //超级表命名规则 : 产品类型_产品标识_服务名称
+                String superTableName = product.getProductType() + "_" + product.getProductIdentification() + "_" + productServices.getServiceName();
+                tableDto.setSuperTableName(superTableName);
+                //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
+                tableDto.setTableName(superTableName + "_" + item.getDeviceId());
+                //Tag的处理
+                List<Fields> tagsFieldValues = new ArrayList<>();
+                Fields fields = new Fields();
+                fields.setFieldValue(device.getDeviceIdentification());
+                tagsFieldValues.add(fields);
+                tableDto.setTagsFieldValues(tagsFieldValues);
+                final R<?> ctResult = remoteTdEngineService.createTable(tableDto);
+                if (ctResult.getCode() == 200) {
+                    shadowTableNameBuilder.append(tableDto.getTableName()).append(",");
+                    log.info("Create SuperTable Success: " + ctResult.getMsg());
+                } else {
+                    log.error("Create SuperTable Exception: " + ctResult.getMsg());
+                }
+            }
+            if (shadowTableNameBuilder.length() > 0) {
+                item.setShadowTableName(shadowTableNameBuilder.substring(0, shadowTableNameBuilder.length() - 1));
+            }
+            shadowTableNameBuilder.replace(0, shadowTableNameBuilder.length(), "");
+            item.setCreateBy(device.getCreateBy());
+            deviceInfoMapper.insertSelective(item);
+        });
+        return true;
+    }
 
-
-
-
-
+	@Override
+	public List<DeviceInfo> findAllByStatus(String status){
+		 return deviceInfoMapper.findAllByStatus(status);
+	}
 
 
 }

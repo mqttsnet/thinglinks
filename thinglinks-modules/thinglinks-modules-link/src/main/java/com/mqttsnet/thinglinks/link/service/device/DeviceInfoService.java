@@ -115,6 +115,17 @@ public interface DeviceInfoService {
 	List<DeviceInfo> findAllByIdIn(Collection<Long> idCollection);
 
 
+    /**
+     * 刷新子设备数据模型
+     * @param idCollection
+     * @return
+     */
+    public Boolean refreshDeviceInfoDataModel(Collection<Long> idCollection);
+
+
+
+	List<DeviceInfo> findAllByStatus(String status);
+
 }
 
 
