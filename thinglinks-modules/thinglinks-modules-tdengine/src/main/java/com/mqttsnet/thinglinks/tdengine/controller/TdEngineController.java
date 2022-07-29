@@ -302,6 +302,39 @@ public class TdEngineController {
         }
     }
 
+
+    /**
+     * @param selectVisualDto
+     * @return R<?>
+     * @MethodDescription 可视化数据  返回格式，时间，数值列
+     * 历史数据 SELECT voltage ,ts FROM test.meters where ts between '2017-07-14 02:40:00.000' and '2017-07-14 02:40:00.001' LIMIT [topnums]
+     * ts > now - 24h;
+     * 实时数据 select col from table LIMIT [topnums]
+     * 聚合数据 select [avg/max/sum/count..](col) from table where ts between '2017-07-14 02:40:00.000' and '2017-07-14 02:40:00.001' group by col LIMIT [topnums]
+     */
+    @PostMapping("/getVisualizeData")
+    public R<?> getVisualizeData(@Validated @RequestBody SelectVisualDto selectVisualDto) {
+        try {
+            if (selectVisualDto.getType() == 0) {//查询历史
+                return R.ok(this.tdEngineService.getHistoryData(selectVisualDto));
+            }else if(selectVisualDto.getType() == 1) {//查询实时
+                return R.ok(this.tdEngineService.getRealtimeData(selectVisualDto));
+            }else {//查询聚合
+                return R.ok(this.tdEngineService.getAggregateData(selectVisualDto));
+            }
+        } catch (UncategorizedSQLException e) {
+            String message = e.getCause().getMessage();
+            try {
+                message = message.substring(message.lastIndexOf("invalid operation"));
+            } catch (Exception ex) {
+            }
+            log.error(message);
+            return R.fail(message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
+    }
     /**
      * @MethodDescription 根据超级表查询包含Tags的最新数据集合
      * @param tagsSelectDao
