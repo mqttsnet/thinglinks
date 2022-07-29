@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -96,7 +97,7 @@ public class DeviceInfoController extends BaseController
     @PreAuthorize(hasPermi = "link:deviceInfo:remove")
     @Log(title = "子设备管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
+    public AjaxResult remove(@PathVariable("ids") Long[] ids)
     {
         return toAjax(deviceInfoService.deleteDeviceInfoByIds(ids));
     }
@@ -115,4 +116,16 @@ public class DeviceInfoController extends BaseController
         final Object endTime = params.get("endTime");
         return AjaxResult.success(deviceInfoService.getDeviceInfoShadow(ids.toString(), startTime.toString(), endTime.toString()));
     }
+
+    /**
+     * 刷新子设备数据模型
+     * @param ids
+     * @return
+     */
+    @GetMapping("/refreshDeviceInfoDataModel")
+    public AjaxResult refreshDeviceInfoDataModel(@RequestParam(name = "ids",required = false) Long[] ids)
+    {
+        return toAjax(deviceInfoService.refreshDeviceInfoDataModel(Arrays.asList(ids)));
+    }
+
 }

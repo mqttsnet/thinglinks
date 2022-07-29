@@ -128,6 +128,8 @@ public interface DeviceInfoMapper {
 
     List<DeviceInfo> findAllByIdIn(@Param("idCollection")Collection<Long> idCollection);
 
+    List<DeviceInfo> findAllByStatus(@Param("status")String status);
+
 
 
 
