@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="equipment_status">
       <div class="status_num">
-        <img style="width: 35%;"
+        <img style="width:80px;"
           src="https://img.alicdn.com/imgextra/i1/O1CN01NS7aVb1iIfQPQDLTT_!!6000000004390-1-tps-640-640.gif" alt="">
         <p>：
           <span style="color:#71e2a3">{{ onlineCount }}</span>/
@@ -512,10 +512,10 @@ export default {
   },
   methods: {
     opened() {
-      this.$refs.mapView.initMap();
       this.$refs.mapView.address = '';
       if (this.form.id !== null) {
         this.$nextTick(() => {
+          console.log(222);
           this.$refs.mapView.regeoCode(this.lonLat.join(','));
         })
       }
@@ -682,7 +682,6 @@ export default {
       getDevice(null).then(response => {
         // console.log(response);
         this.productOptions = response.products;
-
       })
     },
     /** 修改按钮操作 */

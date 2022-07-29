@@ -138,7 +138,7 @@
             <div class="small">
               <el-form-item v-if="form.datatype === 'string' || form.datatype === 'binary'" label="长度" prop="maxlength">
                 <el-col :span="20">
-                  <el-input v-model="form.maxlength" placeholder="请输入字符串长度" />
+                  <el-input type="number" v-model="form.maxlength" placeholder="请输入字符串长度" />
                 </el-col>
                 <el-col :span="1">
                   <el-tooltip content="请输入字符串长度。输入值大于等于0、小于等于2147483647的数字。" effect="light" placement="right">

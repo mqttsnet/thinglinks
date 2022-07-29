@@ -4,7 +4,7 @@
             <div>
                 <span>省/市/区</span>
                 <el-cascader style="width: 64%;" placeholder="请输入省市区信息" filterable clearable v-model="locationValue"
-                    :options="options" :props="{ checkStrictly: false }">
+                    :options="options" :props="{ checkStrictly: false }" @expand-change="loction">
                 </el-cascader>
             </div>
             <div>
@@ -42,7 +42,6 @@ export default {
             options: [],
             projectMapMarker: undefined,
             map: undefined,
-            isMap: true,
             geocoder: null,
             center: [116.397428, 39.90923],
         };
@@ -51,8 +50,12 @@ export default {
     },
     mounted() {
         this.initMap();
+        console.log(111);
     },
     methods: {
+        loction(data) {
+            console.log(data);
+        },
         //地图初始化
         initMap() {
             AMapLoader.load({
@@ -67,19 +70,19 @@ export default {
                 ],
             }).then(() => {
                 var chartDom = this.$refs.asd;
-                this.map = new window.AMap.Map(chartDom, {
+                this.map = new AMap.Map(chartDom, {
                     resizeEnable: true,
                     zoom: 13, //地图显示的缩放级别
                     keyboardEnable: false,
                     center: this.center,
                 });
                 this.map.on("click", this.mapClick);
-                this.geocoder = new window.AMap.Geocoder({
+                this.geocoder = new AMap.Geocoder({
                     city: "010", //城市设为北京，默认：“全国”
                     radius: 500, //范围，默认：500
                     extensions: 'all'
                 })
-                let districtSearch = new window.AMap.DistrictSearch({
+                let districtSearch = new AMap.DistrictSearch({
                     // 关键字对应的行政区级别，country表示国家
                     level: 'country',
                     //  显示下级行政区级数，1表示返回下一级行政区
@@ -127,12 +130,12 @@ export default {
                 // console.log(this.locationValue, query, queryValue);
                 this.loading = true;
                 const that = this;
-                window.AMap.plugin("AMap.AutoComplete", function () {
+                AMap.plugin("AMap.AutoComplete", function () {
                     // 实例化Autocomplete
                     const autoOptions = {
                         city: "全国",
                     };
-                    const autoComplete = new window.AMap.AutoComplete(autoOptions);
+                    const autoComplete = new AMap.AutoComplete(autoOptions);
                     autoComplete.search(queryValue, function (status, result) {
                         let res = result.tips || []; // 搜索成功时，result即是对应的匹配数据
                         that.tips = res.filter((item) => {
@@ -163,6 +166,8 @@ export default {
             }
         },
         regeoCode(lonLatValue) {
+            console.log(333);
+            console.log(this.projectMapMarker);
             if (lonLatValue) {
                 let lnglat = lonLatValue.split(",");
                 this.$emit("locationChange", lnglat);
@@ -171,12 +176,13 @@ export default {
                     this.map.remove(this.projectMapMarker);
                     this.lonLat = "";
                 }
-                this.projectMapMarker = new window.AMap.Marker({
+                this.projectMapMarker = new AMap.Marker({
                     // 定义点标记对象
-                    position: new window.AMap.LngLat(lnglat[0], lnglat[1]),
+                    position: new AMap.LngLat(lnglat[0], lnglat[1]),
                 });
                 console.log(this.projectMapMarker);
                 // 把拿到的经纬度转化为地址信息
+                console.log(this.map);
                 this.map.add(this.projectMapMarker);// 添加点标记在地图上
                 this.map.setCenter(lnglat);
                 this.map.setZoom(13);
@@ -184,7 +190,7 @@ export default {
                 this.getAddress(lnglat)
             }
         },
-        // 获取地址 
+        // 获取地址
         getAddress(lnglat) {
             const that = this
             that.geocoder.getAddress(lnglat, (status, result) => {
