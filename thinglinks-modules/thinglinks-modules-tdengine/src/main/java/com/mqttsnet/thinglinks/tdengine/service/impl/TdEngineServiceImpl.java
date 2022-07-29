@@ -169,4 +169,22 @@ public class TdEngineServiceImpl implements TdEngineService {
     }
 
 
+    @Override
+    public List<Map<String, Object>> getHistoryData(SelectVisualDto selectVisualDto) {
+        List<Map<String, Object>> maps = this.tdEngineMapper.getHistoryData(selectVisualDto);
+        return maps;
+    }
+
+    @Override
+    public List<Map<String, Object>> getRealtimeData(SelectVisualDto selectVisualDto) {
+        List<Map<String, Object>> maps = this.tdEngineMapper.getRealtimeData(selectVisualDto);
+        return maps;
+    }
+
+    @Override
+    public List<Map<String, Object>> getAggregateData(SelectVisualDto selectVisualDto) {
+        List<Map<String, Object>> maps = this.tdEngineMapper.getAggregateData(selectVisualDto);
+        return maps;
+    }
+
 }

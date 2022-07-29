@@ -57,5 +57,11 @@ public interface TdEngineMapper {
 
     List<Map<String, Object>> getLastData(SelectDto selectDto);
 
+    List<Map<String, Object>> getHistoryData(SelectVisualDto selectVisualDto);
+
+    List<Map<String, Object>> getRealtimeData(SelectVisualDto selectVisualDto);
+
+    List<Map<String, Object>> getAggregateData(SelectVisualDto selectVisualDto);
+    
     List<Map<String, Object>> getLastDataByTags(TagsSelectDao tagsSelectDao);
 }
