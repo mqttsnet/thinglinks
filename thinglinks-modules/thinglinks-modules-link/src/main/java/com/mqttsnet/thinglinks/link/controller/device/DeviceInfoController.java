@@ -8,12 +8,14 @@ import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfoParams;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -73,10 +75,9 @@ public class DeviceInfoController extends BaseController
     @PreAuthorize(hasPermi = "link:deviceInfo:add")
     @Log(title = "子设备管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody DeviceInfo deviceInfo)
+    public AjaxResult add(@RequestBody @Valid DeviceInfoParams deviceInfoParams)
     {
-        deviceInfo.setCreateBy(SecurityUtils.getUsername());
-        return toAjax(deviceInfoService.insertDeviceInfo(deviceInfo));
+        return toAjax(deviceInfoService.insertDeviceInfo(deviceInfoParams));
     }
 
     /**
@@ -85,10 +86,9 @@ public class DeviceInfoController extends BaseController
     @PreAuthorize(hasPermi = "link:deviceInfo:edit")
     @Log(title = "子设备管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody DeviceInfo deviceInfo)
+    public AjaxResult edit(@RequestBody @Valid DeviceInfoParams deviceInfoParams)
     {
-        deviceInfo.setUpdateBy(SecurityUtils.getUsername());
-        return toAjax(deviceInfoService.updateDeviceInfo(deviceInfo));
+        return toAjax(deviceInfoService.updateDeviceInfo(deviceInfoParams));
     }
 
     /**

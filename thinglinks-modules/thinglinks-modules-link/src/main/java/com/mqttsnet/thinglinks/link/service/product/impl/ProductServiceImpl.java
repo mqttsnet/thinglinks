@@ -600,9 +600,9 @@ public class ProductServiceImpl implements ProductService{
         List<SuperTableDto> superTableDtoList = new ArrayList<>();
         List<Product>  productList = new ArrayList<>();
         if (null==productIds) {
-            productList = this.findAllByStatus(Constants.ENABLE);
+            productList = productMapper.findAllByStatus(Constants.ENABLE);
         }else {
-            productList = this.findAllByIdInAndStatus(Arrays.asList(productIds),Constants.ENABLE);
+            productList = productMapper.findAllByIdInAndStatus(Arrays.asList(productIds),Constants.ENABLE);
         }
         SuperTableDto superTableDto;
         loop:

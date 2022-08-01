@@ -21,7 +21,7 @@ import com.mqttsnet.thinglinks.common.core.utils.SubStringUtil;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.DeviceInfos;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.TopoAddDatas;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;

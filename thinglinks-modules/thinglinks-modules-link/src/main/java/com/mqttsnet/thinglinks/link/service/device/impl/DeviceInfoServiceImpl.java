@@ -10,7 +10,8 @@ import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfoParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceInfoMapper;
@@ -161,12 +162,14 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     /**
      * 新增子设备管理
      *
-     * @param deviceInfo 子设备管理
+     * @param deviceInfoParams 子设备管理
      * @return 结果
      */
     @Override
-    public int insertDeviceInfo(DeviceInfo deviceInfo)
+    public int insertDeviceInfo(DeviceInfoParams deviceInfoParams)
     {
+        DeviceInfo deviceInfo = new DeviceInfo();
+        deviceInfo.convertEntity(deviceInfoParams);
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         deviceInfo.setCreateBy(sysUser.getUserName());
@@ -180,12 +183,14 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     /**
      * 修改子设备管理
      *
-     * @param deviceInfo 子设备管理
+     * @param deviceInfoParams 子设备管理
      * @return 结果
      */
     @Override
-    public int updateDeviceInfo(DeviceInfo deviceInfo)
+    public int updateDeviceInfo(DeviceInfoParams deviceInfoParams)
     {
+        DeviceInfo deviceInfo = deviceInfoMapper.selectByPrimaryKey(deviceInfoParams.getId());
+        deviceInfo.convertEntity(deviceInfoParams);
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         deviceInfo.setUpdateBy(sysUser.getUserName());
