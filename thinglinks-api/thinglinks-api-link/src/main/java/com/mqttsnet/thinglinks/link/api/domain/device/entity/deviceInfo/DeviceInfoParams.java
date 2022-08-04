@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @program: thinglinks
@@ -27,14 +28,8 @@ public class DeviceInfoParams {
     /**
      * 边设备主键
      */
-    @NotBlank(message = "边设备主键不能为空")
-    private Long dId;
-
-    /**
-     * 边设备唯一标识
-     */
-    @NotBlank(message = "设备唯一标识不能为空")
-    private String edgeDevicesIdentification;
+    @NotNull(message = "边设备主键不能为空")
+    private Long did;
 
     /**
      * 应用ID

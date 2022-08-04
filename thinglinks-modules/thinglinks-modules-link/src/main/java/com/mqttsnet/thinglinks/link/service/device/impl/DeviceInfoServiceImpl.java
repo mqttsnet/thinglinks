@@ -153,7 +153,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     {
         List<DeviceInfo> deviceInfoList = deviceInfoMapper.selectDeviceInfoList(deviceInfo);
         deviceInfoList.forEach(deviceInfo1 -> {
-            Device oneById = deviceService.findOneById(deviceInfo1.getDId());
+            Device oneById = deviceService.findOneById(deviceInfo1.getDid());
             deviceInfo1.setEdgeDevicesIdentification(StringUtils.isNotNull(oneById)?oneById.getDeviceIdentification():"");
         });
         return deviceInfoList;
@@ -227,7 +227,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
             }
             responseMap.put("deviceId", deviceInfo.getDeviceId());
             dataList.add(responseMap);
-            Device device = deviceService.findOneById(deviceInfo.getDId());
+            Device device = deviceService.findOneById(deviceInfo.getDid());
             if (StringUtils.isNotNull(device)) {
                 final Map<String, Object> param = new HashMap<>();
                 param.put("topic", "/v1/devices/"+device.getDeviceIdentification()+"/topo/deleteResponse");
@@ -332,7 +332,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
             allByIdInAndStatus = deviceInfoMapper.findAllByStatus(Constants.ENABLE);
         }
         allByIdInAndStatus.forEach(item->{
-            final Device device = deviceService.findOneById(item.getDId());
+            final Device device = deviceService.findOneById(item.getDid());
             if (StringUtils.isNull(device)) {
                 log.error("刷新子设备数据模型失败，子设备不存在");
                 return;

@@ -261,7 +261,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
         }
         for (DeviceInfos deviceInfos : topoAddDatas.getDeviceInfos()) {
             final DeviceInfo deviceInfo = new DeviceInfo();
-            deviceInfo.setDId(device.getId());
+            deviceInfo.setDid(device.getId());
             deviceInfo.setAppId(device.getAppId());
             deviceInfo.setNodeId(deviceInfos.getNodeId());
             deviceInfo.setNodeName(deviceInfos.getName());

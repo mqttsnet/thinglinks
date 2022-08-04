@@ -543,5 +543,6 @@
         <include refid="Base_Column_List"/>
         from device_location
         where device_identification=#{deviceIdentification,jdbcType=VARCHAR}
+        GROUP BY device_identification
     </select>
 </mapper>

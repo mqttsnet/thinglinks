@@ -37,7 +37,7 @@ public class DeviceInfo implements Serializable {
     * 边设备主键
     */
     @ApiModelProperty(value="边设备主键")
-    private Long dId;
+    private Long did;
 
     /**
      * 边设备唯一标识

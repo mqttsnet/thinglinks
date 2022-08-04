@@ -188,7 +188,7 @@ MQTT客户端C库: thinglinks-mqtt-c
 [相关技术资料及话题](https://bbs.csdn.net/forums/thinglinks)
 
 ## issues
-[issues](https://bbs.csdn.net/forums/thinglinks?typeId=95305)
+[issues](https://github.com/mqttsnet/thinglinks/issues)
 
 
 
