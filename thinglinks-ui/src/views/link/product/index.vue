@@ -93,22 +93,6 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="产品描述" prop="remark" width="180" />
-      <el-table-column align="center" label="创建者" prop="createBy" />
-      <el-table-column align="center" label="创建时间" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{
-              parseTime(scope.row.createTime, "{y}-{m}-{d} {h}:{i}:{s}")
-          }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="更新者" prop="updateBy" />
-      <el-table-column align="center" label="更新时间" prop="updateTime" width="180">
-        <template slot-scope="scope">
-          <span>{{
-              parseTime(scope.row.updateTime, "{y}-{m}-{d} {h}:{i}:{s}")
-          }}</span>
-        </template>
-      </el-table-column>
       <el-table-column align="center" fixed="right" label="操作" width="200">
         <template slot-scope="scope">
           <el-tooltip class="item" content="复制" effect="light" placement="top">

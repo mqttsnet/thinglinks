@@ -2,11 +2,18 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="98px">
       <el-form-item label="边设备" prop="dId">
-        <el-select v-model="queryParams.dId" placeholder="请输入边设备" @keyup.enter.native="handleQuery">
-          <el-option v-for="item in deviceList" :key="item.value" :label="item.label"
-            :value="item.deviceIdentification">
+        <!-- <el-select v-model="queryParams.dId" placeholder="请输入边设备" @keyup.enter.native="handleQuery">
+          <el-option v-for="item in deviceList" :key="item.value" :label="item.deviceIdentification" :value="item.id">
           </el-option>
-        </el-select>
+        </el-select> -->
+        <div v-if="this.form.did">
+          <el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleQuery(tag)">
+            {{ edgeDevicesIdentification }}
+          </el-tag>
+        </div>
+        <el-button v-if="!this.form.did" type="primary" icon="el-icon-plus" size="mini" plain @click="drawer = !drawer">
+          边设备信息
+        </el-button>
       </el-form-item>
       <el-form-item label="应用ID" prop="appId">
         <el-input v-model="queryParams.appId" placeholder="请输入应用ID" clearable size="small"
@@ -74,6 +81,11 @@
         </el-button>
       </el-col>
       <el-col :span="1.5">
+        <el-button plain icon="el-icon-refresh" size="mini" type="primary" @click="initializeTheDataModel">
+          产品初始化
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
         <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
           v-hasPermi="['link:deviceInfo:export']">导出
         </el-button>
@@ -107,23 +119,6 @@
           <dict-tag :options="dict.type.business_data_status" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="创建者" align="center" prop="createBy" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{
-              parseTime(scope.row.createTime, "{y}-{m}-{d} {h}:{i}:{s}")
-          }}</span>
-        </template>
-      </el-table-column>
-      <!--      <el-table-column label="更新者" align="center" prop="updateBy" />-->
-      <!--      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
-        <template slot-scope="scope">
-          <span>{{
-              parseTime(scope.row.updateTime, "{y}-{m}-{d} {h}:{i}:{s}")
-          }}</span>
-        </template>
-      </el-table-column>-->
-      <!--      <el-table-column label="备注" align="center" prop="remark" />-->
       <el-table-column fixed="right" label="操作" align="center" width="200">
         <template slot-scope="scope">
           <span style="margin-right:10px">
@@ -141,7 +136,13 @@
               </el-button>
             </el-tooltip>
           </span>
-
+          <span style="margin-right:10px">
+            <el-tooltip class="item" content="产品初始化" effect="light" placement="top">
+              <el-button circle icon="el-icon-refresh" size="mini" type="primary"
+                @click="initializeTheDataModel(scope.row)">
+              </el-button>
+            </el-tooltip>
+          </span>
           <span style="margin-right:10px">
             <el-tooltip class="item" effect="light" content="设备影子" placement="top">
               <router-link :to="{ name: 'equipmentShadow', query: { id: scope.row.id } }">
@@ -149,7 +150,6 @@
               </router-link>
             </el-tooltip>
           </span>
-
         </template>
       </el-table-column>
     </el-table>
@@ -158,78 +158,145 @@
       @pagination="getList" />
 
     <!-- 添加或修改子设备管理对话框 -->
-    <el-dialog :title="title" :close-on-click-modal="false" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :close-on-click-modal="false" :visible.sync="open" width="40%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="边设备" prop="dId">
-          <el-select v-model="form.dId" placeholder="请选择边设备">
-            <el-option v-for="item in deviceList" :key="item.value" :label="item.label"
-              :value="item.deviceIdentification">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="应用ID" prop="appId">
-          <el-input v-model="form.appId" :disabled='set ? true : false' placeholder="请输入应用ID" />
-        </el-form-item>
-        <el-form-item label="设备唯一标识" prop="nodeId">
-          <el-input v-model="form.nodeId" :disabled='set ? true : false' placeholder="请输入设备唯一标识" />
-        </el-form-item>
-        <el-form-item label="设备名称" prop="nodeName">
-          <el-input v-model="form.nodeName" placeholder="请输入设备名称" />
-        </el-form-item>
-        <el-form-item label="子设备标识" prop="deviceId">
-          <el-input v-model="form.deviceId" :disabled='set ? true : false' placeholder="请输入子设备标识" />
-        </el-form-item>
-        <el-form-item label="设备描述" prop="description">
-          <el-input v-model="form.description" placeholder="请输入设备描述" />
-        </el-form-item>
-        <el-form-item label="厂商ID" prop="manufacturerId">
-          <el-input v-model="form.manufacturerId" :disabled='set ? true : false' placeholder="请输入厂商ID" />
-        </el-form-item>
-        <el-form-item label="设备型号" prop="model">
-          <el-input v-model="form.model" :disabled='set ? true : false' placeholder="请输入设备型号" />
-        </el-form-item>
-        <el-form-item label="连接状态" prop="connectStatus">
-          <el-select v-model="form.connectStatus" placeholder="请选择连接状态">
-            <el-option v-for="dict in dict.type.link_device_connect_status" :key="dict.value" :label="dict.label"
-              :value="dict.value"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否支持设备影子" prop="shadowEnable">
-          <el-select v-model="form.shadowEnable" placeholder="请选择是否支持设备影子">
-            <el-option v-for="dict in dict.type.link_deviceInfo_shadow_enable" :key="dict.value" :label="dict.label"
-              :value="parseInt(dict.value)"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="设备影子数据表名" prop="shadowTableName">
-          <el-input v-model="form.shadowTableName" placeholder="请输入设备影子数据表名" />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="form.status" placeholder="请选择状态(字典值：0启用  1停用)">
-            <el-option v-for="dict in dict.type.business_data_status" :key="dict.value" :label="dict.label"
-              :value="dict.value"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
+        <el-row style="display: flex;justify-content: space-between;">
+          <el-col :span="10">
+            <el-form-item label="边设备" prop="did">
+              <div v-if="this.form.did">
+                <el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false"
+                  @close="handleClose(tag)">
+                  {{ edgeDevicesIdentification }}
+                </el-tag>
+              </div>
+              <el-button v-if="!this.form.did" type="primary" icon="el-icon-plus" size="mini" plain
+                @click="drawer = !drawer">边设备信息
+              </el-button>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="应用ID" prop="appId">
+              <el-input v-model="form.appId" :disabled='set ? true : false' placeholder="请输入应用ID" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="display: flex;justify-content: space-between;">
+          <el-col :span="10">
+            <el-form-item label="设备唯一标识" prop="nodeId">
+              <el-input v-model="form.nodeId" :disabled='set ? true : false' placeholder="请输入设备唯一标识" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="设备名称" prop="nodeName">
+              <el-input v-model="form.nodeName" placeholder="请输入设备名称" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="display: flex;justify-content: space-between;">
+          <el-col :span="10">
+            <el-form-item label="子设备标识" prop="deviceId">
+              <el-input v-model="form.deviceId" :disabled='set ? true : false' placeholder="请输入子设备标识" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="设备描述" prop="description">
+              <el-input v-model="form.description" placeholder="请输入设备描述" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="display: flex;justify-content: space-between;">
+          <el-col :span="10">
+            <el-form-item label="厂商ID" prop="manufacturerId">
+              <el-input v-model="form.manufacturerId" :disabled='set ? true : false' placeholder="请输入厂商ID" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="设备型号" prop="model">
+              <el-input v-model="form.model" :disabled='set ? true : false' placeholder="请输入设备型号" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="display: flex;justify-content: space-between;">
+          <el-col :span="10">
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="form.status" placeholder="请选择状态(字典值：0启用  1停用)">
+                <el-option v-for="dict in dict.type.business_data_status" :key="dict.value" :label="dict.label"
+                  :value="dict.value"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10">
+            <el-form-item label="是否支持设备影子" prop="shadowEnable">
+              <el-select v-model="form.shadowEnable" placeholder="请选择是否支持设备影子">
+                <el-option v-for="dict in dict.type.link_deviceInfo_shadow_enable" :key="dict.value" :label="dict.label"
+                  :value="dict.value"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="display: flex;justify-content: space-between;">
+          <el-col :span="22">
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+    <el-drawer title="边设备信息" :visible.sync="drawer" :before-close="handleClose">
+      <el-row>
+        <el-table highlight-current-row v-loading="loading" :data="deviceList" @row-click="deviceListItem">
+          <el-table-column align="center" label="id" prop="id" />
+          <el-table-column align="center" label="设备标识" prop="deviceIdentification" />
+          <el-table-column align="center" label="客户端标识" prop="clientId" />
+        </el-table>
+        <pagination v-show="deviceTotal > 0" :limit.sync="queryParamsD.pageSize" :page.sync="queryParamsD.pageNum"
+          :total="deviceTotal" @pagination="getDeviceList" />
+      </el-row>
+      <el-row style="padding:20px 30px">
+        <el-button type="primary" @click="drawer = !drawer; getDid()">确 定</el-button>
+        <el-button @click="drawer = !drawer; setDid()">取 消</el-button>
+      </el-row>
+    </el-drawer>
   </div>
 </template>
-
 <script>
-import { listDeviceInfo, getDeviceInfo, delDeviceInfo, addDeviceInfo, updateDeviceInfo } from "@/api/link/deviceInfo";
+import { listDeviceInfo, getDeviceInfo, delDeviceInfo, addDeviceInfo, updateDeviceInfo, refreshDeviceInfoDataModel } from "@/api/link/deviceInfo";
 import { listDevice, } from "@/api/link/device/device";
-
 export default {
   name: "DeviceInfo",
   dicts: ['link_device_connect_status', 'link_deviceInfo_shadow_enable', 'business_data_status'],
   data() {
     return {
+      // 设备档案表格数据
+      deviceTotal: 0,
+      did: '',
+      oldDid: '',
+      edgeDevicesIdentification: '',
+      oldEdgeDevicesIdentification: "",
+      dynamicTags: [],
+      deviceList: [],
+      drawer: false,
+      // 边设备查询参数
+      queryParamsD: {
+        pageNum: 1,
+        pageSize: 10,
+        clientId: null,
+        deviceIdentification: null,
+        deviceName: null,
+        connector: null,
+        deviceStatus: null,
+        connectStatus: null,
+        isWill: null,
+        deviceTags: null,
+        productIdentification: null,
+        protocolType: null,
+        deviceType: null,
+      },
       set: false,//修改禁用标识
       // 高级搜索切换
       advancedSearch: false,
@@ -289,9 +356,47 @@ export default {
   },
   created() {
     this.getList();
-    this.getDeviceList()
+    this.getDeviceList();
   },
   methods: {
+    //初始化数据模型
+    initializeTheDataModel(row) {
+      const ids = row.id || this.ids;
+      this.$modal
+        .confirm('是否初始化"' + ids + '"的数据项？')
+        .then(function () {
+          console.log(ids);
+          return refreshDeviceInfoDataModel(ids);
+        })
+        .then(() => {
+          this.getList()
+          this.$modal.msgSuccess("初始化成功");
+        })
+        .catch(() => { });
+    },
+    handleClose(tag) {
+      this.form.did = ''
+      this.edgeDevicesIdentification = ''
+      this.dynamicTags = [];
+    },
+    setDid() {
+      this.form.did = this.oldDid
+      console.log(this.oldEdgeDevicesIdentification);
+      this.edgeDevicesIdentification = this.oldEdgeDevicesIdentification
+      this.dynamicTags = [this.edgeDevicesIdentification]
+    },
+    getDid() {
+      if (this.did) {
+        this.form.did = this.did
+        this.oldDid = this.form.did
+        this.dynamicTags = [this.edgeDevicesIdentification]
+        this.oldEdgeDevicesIdentification = this.edgeDevicesIdentification
+      }
+    },
+    deviceListItem(row) {
+      this.did = row.id
+      this.edgeDevicesIdentification = row.deviceIdentification
+    },
     // 高级搜索切换显示隐藏
     advancedSearch_toggle() {
       this.advancedSearch = !this.advancedSearch;
@@ -304,9 +409,11 @@ export default {
     },
     /** 查询设备档案列表 */
     getDeviceList() {
-      listDevice(this.queryParams).then((response) => {
-        console.log(response);
+      this.loading = true;
+      listDevice(this.queryParamsD).then((response) => {
         this.deviceList = response.data.device.rows;
+        this.deviceTotal = response.data.device.total;
+        this.loading = false;
       });
     },
     /** 查询子设备管理列表 */
@@ -323,12 +430,14 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+      this.edgeDevicesIdentification = ''
+      this.dynamicTags = []
     },
     // 表单重置
     reset() {
       this.form = {
         id: null,
-        dId: null,
+        did: null,
         appId: null,
         nodeId: null,
         nodeName: null,
@@ -368,6 +477,8 @@ export default {
     handleAdd() {
       this.set = false
       this.reset();
+      this.form.did = ''
+      this.edgeDevicesIdentification = ''
       this.open = true;
       this.title = "添加子设备管理";
     },
@@ -377,8 +488,12 @@ export default {
       this.set = true;
       const id = row.id || this.ids
       getDeviceInfo(id).then(response => {
-        console.log(response);
+        console.log(response.data);
         this.form = response.data;
+        this.oldDid = this.form.did
+        this.edgeDevicesIdentification = response.data.edgeDevicesIdentification
+        this.oldEdgeDevicesIdentification = response.data.edgeDevicesIdentification
+        this.dynamicTags = [this.edgeDevicesIdentification]
         this.open = true;
         this.title = "修改子设备管理";
       });
@@ -386,6 +501,7 @@ export default {
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
+        console.log(this.form);
         if (valid) {
           if (this.form.id != null) {
             updateDeviceInfo(this.form).then(response => {
