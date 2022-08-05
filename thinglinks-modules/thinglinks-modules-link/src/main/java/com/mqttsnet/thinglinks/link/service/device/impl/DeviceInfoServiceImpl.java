@@ -139,7 +139,12 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     @Override
     public DeviceInfo selectDeviceInfoById(Long id)
     {
-        return deviceInfoMapper.selectDeviceInfoById(id);
+        DeviceInfo deviceInfo = deviceInfoMapper.selectDeviceInfoById(id);
+        if (StringUtils.isNotNull(deviceInfo)) {
+            Device oneById = deviceService.findOneById(deviceInfo.getDid());
+            deviceInfo.setEdgeDevicesIdentification(StringUtils.isNotNull(oneById)?oneById.getDeviceIdentification():"");
+        }
+        return deviceInfo;
     }
 
     /**
