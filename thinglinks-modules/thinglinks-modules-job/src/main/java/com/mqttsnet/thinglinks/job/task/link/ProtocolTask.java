@@ -30,8 +30,13 @@ public class ProtocolTask {
     public void protocolScriptCacheRefreshTask() {
         StopWatch watch = new StopWatch();
         watch.start();
+        if (log.isInfoEnabled()) {
+            log.info("协议脚本缓存刷新定时任务开始");
+        }
         AjaxResult ajaxResult = remoteProtocolService.protocolScriptCacheRefresh();
         watch.stop();
-        log.info("协议脚本缓存刷新定时任务执行成功 ! Time Elapsed (millisecond): {}",watch.getTime());
+        if (log.isInfoEnabled()) {
+            log.info("协议脚本缓存刷新定时任务结束，耗时(millisecond)：{}", watch.getTime());
+        }
     }
 }

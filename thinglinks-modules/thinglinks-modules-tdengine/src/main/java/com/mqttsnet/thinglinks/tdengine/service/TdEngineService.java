@@ -5,6 +5,7 @@ import com.mqttsnet.thinglinks.tdengine.api.domain.FieldsVo;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
+import com.mqttsnet.thinglinks.tdengine.api.domain.visual.SelectVisualDto;
 
 import java.util.List;
 import java.util.Map;
@@ -38,4 +39,10 @@ public interface TdEngineService {
     List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception;
 
     Map<String, Map<String, Object>> getLastDataByTags(TagsSelectDao tagsSelectDao);
+    
+    List<Map<String, Object>> getHistoryData(SelectVisualDto selectVisualDto);
+
+    List<Map<String, Object>> getRealtimeData(SelectVisualDto selectVisualDto);
+
+    List<Map<String, Object>> getAggregateData(SelectVisualDto selectVisualDto);
 }

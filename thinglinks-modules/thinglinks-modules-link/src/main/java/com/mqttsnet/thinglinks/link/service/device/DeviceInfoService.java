@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.link.service.device;
 
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfoParams;
 
 import java.util.Collection;
 import java.util.List;
@@ -67,18 +68,18 @@ public interface DeviceInfoService {
     /**
      * 新增子设备管理
      *
-     * @param deviceInfo 子设备管理
+     * @param deviceInfoParams
      * @return 结果
      */
-    public int insertDeviceInfo(DeviceInfo deviceInfo);
+    public int insertDeviceInfo(DeviceInfoParams deviceInfoParams);
 
     /**
      * 修改子设备管理
      *
-     * @param deviceInfo 子设备管理
+     * @param deviceInfoParams 子设备管理
      * @return 结果
      */
-    public int updateDeviceInfo(DeviceInfo deviceInfo);
+    public int updateDeviceInfo(DeviceInfoParams deviceInfoParams);
 
     /**
      * 批量删除子设备管理
@@ -114,6 +115,17 @@ public interface DeviceInfoService {
 
 	List<DeviceInfo> findAllByIdIn(Collection<Long> idCollection);
 
+
+    /**
+     * 刷新子设备数据模型
+     * @param idCollection
+     * @return
+     */
+    public Boolean refreshDeviceInfoDataModel(Collection<Long> idCollection);
+
+
+
+	List<DeviceInfo> findAllByStatus(String status);
 
 }
 

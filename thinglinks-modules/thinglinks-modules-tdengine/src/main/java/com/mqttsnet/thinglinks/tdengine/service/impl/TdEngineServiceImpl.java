@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.*;
+import com.mqttsnet.thinglinks.tdengine.api.domain.visual.SelectVisualDto;
 import com.mqttsnet.thinglinks.tdengine.mapper.TdEngineMapper;
 import com.mqttsnet.thinglinks.tdengine.service.TdEngineService;
 import lombok.extern.slf4j.Slf4j;
@@ -168,5 +169,23 @@ public class TdEngineServiceImpl implements TdEngineService {
         return objectHashMap;
     }
 
+
+    @Override
+    public List<Map<String, Object>> getHistoryData(SelectVisualDto selectVisualDto) {
+        List<Map<String, Object>> maps = this.tdEngineMapper.getHistoryData(selectVisualDto);
+        return maps;
+    }
+
+    @Override
+    public List<Map<String, Object>> getRealtimeData(SelectVisualDto selectVisualDto) {
+        List<Map<String, Object>> maps = this.tdEngineMapper.getRealtimeData(selectVisualDto);
+        return maps;
+    }
+
+    @Override
+    public List<Map<String, Object>> getAggregateData(SelectVisualDto selectVisualDto) {
+        List<Map<String, Object>> maps = this.tdEngineMapper.getAggregateData(selectVisualDto);
+        return maps;
+    }
 
 }

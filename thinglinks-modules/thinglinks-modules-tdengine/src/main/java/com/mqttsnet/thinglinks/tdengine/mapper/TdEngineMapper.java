@@ -1,9 +1,10 @@
 package com.mqttsnet.thinglinks.tdengine.mapper;
 
+import com.mqttsnet.thinglinks.tdengine.api.domain.FieldsVo;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
-import com.mqttsnet.thinglinks.tdengine.api.domain.FieldsVo;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
+import com.mqttsnet.thinglinks.tdengine.api.domain.visual.SelectVisualDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -57,5 +58,11 @@ public interface TdEngineMapper {
 
     List<Map<String, Object>> getLastData(SelectDto selectDto);
 
+    List<Map<String, Object>> getHistoryData(SelectVisualDto selectVisualDto);
+
+    List<Map<String, Object>> getRealtimeData(SelectVisualDto selectVisualDto);
+
+    List<Map<String, Object>> getAggregateData(SelectVisualDto selectVisualDto);
+    
     List<Map<String, Object>> getLastDataByTags(TagsSelectDao tagsSelectDao);
 }

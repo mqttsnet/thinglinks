@@ -1,5 +1,7 @@
-package com.mqttsnet.thinglinks.link.api.domain.device.entity;
+package com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -35,7 +37,7 @@ public class DeviceInfo implements Serializable {
     * 边设备主键
     */
     @ApiModelProperty(value="边设备主键")
-    private Long dId;
+    private Long did;
 
     /**
      * 边设备唯一标识
@@ -50,9 +52,9 @@ public class DeviceInfo implements Serializable {
     private String appId;
 
     /**
-    * 设备自身的唯一标识
+    * 设备节点ID
     */
-    @ApiModelProperty(value="设备自身的唯一标识")
+    @ApiModelProperty(value="设备节点ID")
     private String nodeId;
 
     /**
@@ -62,9 +64,9 @@ public class DeviceInfo implements Serializable {
     private String nodeName;
 
     /**
-    * 平台生成的设备唯一标识
+    * 子设备唯一标识
     */
-    @ApiModelProperty(value="平台生成的设备唯一标识")
+    @ApiModelProperty(value="子设备唯一标识")
     private String deviceId;
 
     /**
@@ -138,6 +140,10 @@ public class DeviceInfo implements Serializable {
     */
     @ApiModelProperty(value="备注")
     private String remark;
+
+    public void convertEntity(DeviceInfoParams deviceInfoParams){
+        BeanUtil.copyProperties(deviceInfoParams, this, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+    }
 
     private static final long serialVersionUID = 1L;
 }

@@ -29,7 +29,7 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public Rule selectByRuleIdentification(String ruleIdentification) {
-        return ruleMapper.sel;
+        return ruleMapper.selectByRuleIdentification(ruleIdentification);
     }
 
     @Override
