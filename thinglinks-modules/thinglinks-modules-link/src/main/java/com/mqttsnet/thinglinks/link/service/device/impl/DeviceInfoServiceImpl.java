@@ -14,6 +14,7 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceIn
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfoParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.api.linkUtils;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceInfoMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
@@ -350,10 +351,10 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
                 tableDto = new TableDto();
                 tableDto.setDataBaseName(dataBaseName);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
-                String superTableName = product.getProductType() + "_" + product.getProductIdentification() + "_" + productServices.getServiceName();
+                String superTableName = linkUtils.getSuperTableName(product.getProductType(),product.getProductIdentification(),productServices.getServiceName());
                 tableDto.setSuperTableName(superTableName);
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
-                tableDto.setTableName(superTableName + "_" + item.getDeviceId());
+                tableDto.setTableName(linkUtils.getSubTableName(superTableName,item.getDeviceId()));
                 //Tag的处理
                 List<Fields> tagsFieldValues = new ArrayList<>();
                 Fields fields = new Fields();
