@@ -122,8 +122,8 @@ public class DeviceInfoController extends BaseController
      * @return
      */
     @PreAuthorize(hasPermi = "link:deviceInfo:initialize")
-    @GetMapping("/refreshDeviceInfoDataModel")
-    public AjaxResult refreshDeviceInfoDataModel(@RequestParam(name = "ids",required = false) Long[] ids)
+    @GetMapping("/refreshDeviceInfoDataModel/{ids}")
+    public AjaxResult refreshDeviceInfoDataModel(@PathVariable("ids") Long[] ids)
     {
         return toAjax(deviceInfoService.refreshDeviceInfoDataModel(Arrays.asList(ids)));
     }
