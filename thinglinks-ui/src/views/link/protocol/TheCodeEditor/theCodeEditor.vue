@@ -4,7 +4,7 @@
         </prism-editor>
     </div>
 </template>
- 
+
 <script>
 import { PrismEditor } from 'vue-prism-editor'
 import 'vue-prism-editor/dist/prismeditor.min.css'
@@ -16,12 +16,17 @@ export default {
     props: {
         CodeEditor: {
             type: String,
-            default: ""
+            default: ''
         }
     },
     name: 'CodeEditor1',
     components: {
         PrismEditor
+    },
+    watch: {
+        code(newVal) {
+            this.$emit('codeValue', newVal)
+        }
     },
     data: () => ({
         // 双向绑定编辑器内容值属性
@@ -43,7 +48,7 @@ export default {
     }
 }
 </script>
- 
+
 <style lang="css" scoped>
 /* required class */
 .my-editor {

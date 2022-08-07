@@ -99,6 +99,14 @@ export default {
     }
   },
   watch: {
+    provinceValue(newVal) {
+      console.log(111);
+      console.log(this.provinceValue);
+      this.provincE(newVal)
+    },
+    // cityValue() {
+    //   this.areaE()
+    // },
   },
   mounted() {
     this.TheMap();
