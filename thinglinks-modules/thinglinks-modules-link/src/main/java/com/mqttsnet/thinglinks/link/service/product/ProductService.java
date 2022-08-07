@@ -83,6 +83,14 @@ public interface ProductService{
     public Product selectProductById(Long id);
 
     /**
+     * 查询产品管理
+     *
+     * @param productIdentification 标识
+     * @return 产品管理
+     */
+    public Product selectByProductIdentification(String productIdentification);
+
+    /**
      * 查询产品管理 带服务、属性
      *
      * @param id 产品管理主键

@@ -30,10 +30,20 @@ public interface RemoteDeviceService {
 
     /**
      * 客户端身份认证
+     *
      * @param params
      * @return
      */
     @PostMapping("/device/clientAuthentication")
     public R<Boolean> clientAuthentication(@RequestBody Map<String, Object> params);
+
+    /**
+     * 查询产品下的设备标识
+     *
+     * @param productIdentification
+     * @return
+     */
+    @GetMapping("/device/selectByProductIdentification")
+    public R<?> selectByProductIdentification(String productIdentification);
 
 }

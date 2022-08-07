@@ -379,6 +379,11 @@ public class DeviceServiceImpl implements DeviceService {
 		 return deviceMapper.countDistinctClientIdByConnectStatus(connectStatus);
 	}
 
+    @Override
+    public List<String> selectByProductIdentification(String productIdentification) {
+        return deviceMapper.selectByProductIdentification(productIdentification);
+    }
+
     /**
      * 客户端身份认证
      * @param clientIdentifier 客户端

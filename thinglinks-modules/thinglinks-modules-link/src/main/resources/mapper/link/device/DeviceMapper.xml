@@ -29,8 +29,8 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, client_id, user_name, `password`, app_id, auth_mode, device_identification, device_name, 
-    connector, device_description, device_status, connect_status, is_will, device_tags, 
+    id, client_id, user_name, `password`, app_id, auth_mode, device_identification, device_name,
+    connector, device_description, device_status, connect_status, is_will, device_tags,
     product_identification, protocol_type, device_type, create_by, create_time,
     update_by, update_time, remark
   </sql>
@@ -1221,4 +1221,13 @@
         from device
         where product_identification=#{productIdentification}
     </select>
+
+  <select id="selectByProductIdentification" resultType="String">
+    select
+    device_identification
+    from device
+    where product_identification=#{productIdentification}
+  </select>
+
+
 </mapper>

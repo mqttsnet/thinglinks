@@ -13,6 +13,7 @@ import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
+import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
 import com.mqttsnet.thinglinks.tdengine.api.factory.RemoteTdEngineFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
@@ -44,21 +45,21 @@ public interface RemoteTdEngineService {
     R<?> createSuperTable(@Validated @RequestBody SuperTableDto superTableDto);
 
     /**
-     *@MethodDescription 创建超级表的子表
-     *@param tableDto 创建超级表的子表需要的入参的实体类
-     *@return R
-     *@author thinglinks
-     *@Date 2021/12/27 11:06
+     * @param tableDto 创建超级表的子表需要的入参的实体类
+     * @return R
+     * @MethodDescription 创建超级表的子表
+     * @author thinglinks
+     * @Date 2021/12/27 11:06
      */
     @PostMapping("/dataOperation/createTb")
     R<?> createTable(@Validated @RequestBody TableDto tableDto);
 
     /**
-     *@MethodDescription 插入数据
-     *@param tableDto 插入数据需要的入参的实体类
-     *@return R
-     *@author thinglinks
-     *@Date 2022/1/10 14:44
+     * @param tableDto 插入数据需要的入参的实体类
+     * @return R
+     * @MethodDescription 插入数据
+     * @author thinglinks
+     * @Date 2022/1/10 14:44
      */
     @PostMapping("/dataOperation/insertData")
     R<?> insertData(@Validated @RequestBody TableDto tableDto);
@@ -67,25 +68,34 @@ public interface RemoteTdEngineService {
     R<?> addColumnInStb(@RequestBody SuperTableDto superTableDto);
 
     /**
-     *@MethodDescription 根据时间戳查询数据
-     *@param selectDto 查询数据需要的入参的实体类
-     *@return R
-     *@author thinglinks
-     *@Date 2022/1/10 14:44
+     * @param selectDto 查询数据需要的入参的实体类
+     * @return R
+     * @MethodDescription 根据时间戳查询数据
+     * @author thinglinks
+     * @Date 2022/1/10 14:44
      */
     @PostMapping("/dataOperation/getDataByTimestamp")
     R<?> getDataByTimestamp(@Validated @RequestBody SelectDto selectDto);
 
     /**
-     * @MethodDescription 查询最新数据
      * @param selectDto
      * @return
+     * @MethodDescription 查询最新数据
      */
     @PostMapping("/dataOperation/getLastData")
-    R<?> getLastData(@Validated @RequestBody SelectDto selectDto) ;
+    R<?> getLastData(@Validated @RequestBody SelectDto selectDto);
+
+    /**
+     * 查询最新的数据带标签
+     * @param tagsSelectDao
+     * @return
+     */
+    @PostMapping("/dataOperation/getLastDataByTags")
+    public R<?> getLastDataByTags(@Validated @RequestBody TagsSelectDao tagsSelectDao);
 
     /**
      * 添加列字段
+     *
      * @param superTableDto
      * @return
      */
@@ -94,6 +104,7 @@ public interface RemoteTdEngineService {
 
     /**
      * 删除列字段
+     *
      * @param superTableDto
      * @return
      */

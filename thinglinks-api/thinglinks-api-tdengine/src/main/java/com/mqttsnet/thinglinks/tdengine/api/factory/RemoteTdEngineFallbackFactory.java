@@ -5,6 +5,7 @@ import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
+import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -25,8 +26,7 @@ public class RemoteTdEngineFallbackFactory implements FallbackFactory<RemoteTdEn
     @Override
     public RemoteTdEngineService create(Throwable throwable) {
         log.error("TDengine服务调用失败:{}", throwable.getMessage());
-        return new RemoteTdEngineService()
-        {
+        return new RemoteTdEngineService() {
 
             @Override
             public R<?> createDataBase(String databaseName) {
@@ -63,10 +63,15 @@ public class RemoteTdEngineFallbackFactory implements FallbackFactory<RemoteTdEn
                 return R.fail("查询最新数据失败:{}", throwable.getMessage());
             }
 
+            @Override
+            public R<?> getLastDataByTags(TagsSelectDao tagsSelectDao) {
+                return R.fail("查询最新数据失败:{}", throwable.getMessage());
+            }
+
             /**
              * 添加列字段
              *
-             * @param superTableDto
+             * @param ·superTableDto
              * @return
              */
             @Override
