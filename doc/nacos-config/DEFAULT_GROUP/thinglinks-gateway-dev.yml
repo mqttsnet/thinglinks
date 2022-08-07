@@ -89,6 +89,13 @@ spring:
             - Path=/protocolAnalysis/**
           filters:
             - StripPrefix=1
+      # rule服务
+        - id: thinglinks-rule
+          uri: lb://thinglinks-rule
+          predicates:
+            - Path=/rule/**
+          filters:
+            - StripPrefix=1
 
 # 安全配置
 security:

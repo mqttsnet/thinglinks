@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mqttsnet.thinglinks.link.mapper.device.DeviceInfoMapper">
-  <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo">
+  <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo">
     <!--@mbg.generated-->
     <!--@Table device_info-->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="d_id" jdbcType="BIGINT" property="dId" />
+    <result column="d_id" jdbcType="BIGINT" property="did" />
     <result column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="node_id" jdbcType="VARCHAR" property="nodeId" />
     <result column="node_name" jdbcType="VARCHAR" property="nodeName" />
@@ -44,7 +44,7 @@
     delete from device_info
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device_info (d_id, app_id, node_id, 
       node_name, device_id, description, 
@@ -52,18 +52,18 @@
       shadow_enable, shadow_table_name, `status`, 
       create_by, create_time, update_by, 
       update_time, remark)
-    values (#{dId,jdbcType=BIGINT}, #{appId,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR}, 
+    values (#{did,jdbcType=BIGINT}, #{appId,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR}, 
       #{nodeName,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{manufacturerId,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{connectStatus,jdbcType=VARCHAR}, 
       #{shadowEnable,jdbcType=BOOLEAN}, #{shadowTableName,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
       #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="dId != null">
+      <if test="did != null">
         d_id,
       </if>
       <if test="appId != null">
@@ -116,8 +116,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="dId != null">
-        #{dId,jdbcType=BIGINT},
+      <if test="did != null">
+        #{did,jdbcType=BIGINT},
       </if>
       <if test="appId != null">
         #{appId,jdbcType=VARCHAR},
@@ -169,12 +169,12 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo">
+  <update id="updateByPrimaryKeySelective" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo">
     <!--@mbg.generated-->
     update device_info
     <set>
-      <if test="dId != null">
-        d_id = #{dId,jdbcType=BIGINT},
+      <if test="did != null">
+        d_id = #{did,jdbcType=BIGINT},
       </if>
       <if test="appId != null">
         app_id = #{appId,jdbcType=VARCHAR},
@@ -227,10 +227,10 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo">
+  <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo">
     <!--@mbg.generated-->
     update device_info
-    set d_id = #{dId,jdbcType=BIGINT},
+    set d_id = #{did,jdbcType=BIGINT},
       app_id = #{appId,jdbcType=VARCHAR},
       node_id = #{nodeId,jdbcType=VARCHAR},
       node_name = #{nodeName,jdbcType=VARCHAR},
@@ -255,7 +255,7 @@
     <trim prefix="set" suffixOverrides=",">
       <trim prefix="d_id = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.dId,jdbcType=BIGINT}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.did,jdbcType=BIGINT}
         </foreach>
       </trim>
       <trim prefix="app_id = case" suffix="end,">
@@ -352,7 +352,7 @@
       update_by, update_time, remark)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.dId,jdbcType=BIGINT}, #{item.appId,jdbcType=VARCHAR}, #{item.nodeId,jdbcType=VARCHAR}, 
+      (#{item.did,jdbcType=BIGINT}, #{item.appId,jdbcType=VARCHAR}, #{item.nodeId,jdbcType=VARCHAR}, 
         #{item.nodeName,jdbcType=VARCHAR}, #{item.deviceId,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, 
         #{item.manufacturerId,jdbcType=VARCHAR}, #{item.model,jdbcType=VARCHAR}, #{item.connectStatus,jdbcType=VARCHAR}, 
         #{item.shadowEnable,jdbcType=BOOLEAN}, #{item.shadowTableName,jdbcType=VARCHAR}, 
@@ -361,7 +361,7 @@
         )
     </foreach>
   </insert>
-  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" useGeneratedKeys="true">
+  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -391,7 +391,7 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      #{dId,jdbcType=BIGINT},
+      #{did,jdbcType=BIGINT},
       #{appId,jdbcType=VARCHAR},
       #{nodeId,jdbcType=VARCHAR},
       #{nodeName,jdbcType=VARCHAR},
@@ -414,7 +414,7 @@
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
-      d_id = #{dId,jdbcType=BIGINT},
+      d_id = #{did,jdbcType=BIGINT},
       app_id = #{appId,jdbcType=VARCHAR},
       node_id = #{nodeId,jdbcType=VARCHAR},
       node_name = #{nodeName,jdbcType=VARCHAR},
@@ -433,14 +433,14 @@
       remark = #{remark,jdbcType=VARCHAR},
     </trim>
   </insert>
-  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" useGeneratedKeys="true">
+  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into device_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
       </if>
-      <if test="dId != null">
+      <if test="did != null">
         d_id,
       </if>
       <if test="appId != null">
@@ -497,8 +497,8 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="dId != null">
-        #{dId,jdbcType=BIGINT},
+      <if test="did != null">
+        #{did,jdbcType=BIGINT},
       </if>
       <if test="appId != null">
         #{appId,jdbcType=VARCHAR},
@@ -554,8 +554,8 @@
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
-      <if test="dId != null">
-        d_id = #{dId,jdbcType=BIGINT},
+      <if test="did != null">
+        d_id = #{did,jdbcType=BIGINT},
       </if>
       <if test="appId != null">
         app_id = #{appId,jdbcType=VARCHAR},
@@ -630,10 +630,10 @@
         </where>
     </select>
 
-  <select id="selectDeviceInfoList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" resultMap="BaseResultMap">
+  <select id="selectDeviceInfoList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo" resultMap="BaseResultMap">
     <include refid="selectDeviceInfoVo"/>
     <where>
-      <if test="dId != null "> and d_id = #{dId}</if>
+      <if test="did != null "> and d_id = #{did}</if>
       <if test="appId != null  and appId != ''"> and app_id = #{appId}</if>
       <if test="nodeId != null  and nodeId != ''"> and node_id = #{nodeId}</if>
       <if test="nodeName != null  and nodeName != ''"> and node_name like concat('%', #{nodeName}, '%')</if>
@@ -653,10 +653,10 @@
     where id = #{id}
   </select>
 
-  <insert id="insertDeviceInfo" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo" useGeneratedKeys="true" keyProperty="id">
+  <insert id="insertDeviceInfo" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo" useGeneratedKeys="true" keyProperty="id">
     insert into device_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="dId != null">d_id,</if>
+      <if test="did != null">d_id,</if>
       <if test="appId != null and appId != ''">app_id,</if>
       <if test="nodeId != null">node_id,</if>
       <if test="nodeName != null">node_name,</if>
@@ -675,7 +675,7 @@
       <if test="remark != null">remark,</if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="dId != null">#{dId},</if>
+      <if test="did != null">#{did},</if>
       <if test="appId != null and appId != ''">#{appId},</if>
       <if test="nodeId != null">#{nodeId},</if>
       <if test="nodeName != null">#{nodeName},</if>
@@ -695,10 +695,10 @@
     </trim>
   </insert>
 
-  <update id="updateDeviceInfo" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceInfo">
+  <update id="updateDeviceInfo" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo">
     update device_info
     <trim prefix="SET" suffixOverrides=",">
-      <if test="dId != null">d_id = #{dId},</if>
+      <if test="did != null">d_id = #{did},</if>
       <if test="appId != null and appId != ''">app_id = #{appId},</if>
       <if test="nodeId != null">node_id = #{nodeId},</if>
       <if test="nodeName != null">node_name = #{nodeName},</if>
@@ -753,5 +753,13 @@
              open="(" separator="," close=")">
       #{item,jdbcType=BIGINT}
     </foreach>
+  </select>
+
+<!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-29-->
+  <select id="findAllByStatus" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from device_info
+    where `status`=#{status,jdbcType=VARCHAR}
   </select>
 </mapper>

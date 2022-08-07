@@ -17,7 +17,7 @@ spring:
     nacos:
       discovery:
         # 配置中心地址
-        server-addr: 49.235.122.136:8848
+        server-addr: 127.0.0.1:8848
         #命名空间
         namespace: 05545134-ed4b-4647-89ff-f83bed4db8f2
       config:

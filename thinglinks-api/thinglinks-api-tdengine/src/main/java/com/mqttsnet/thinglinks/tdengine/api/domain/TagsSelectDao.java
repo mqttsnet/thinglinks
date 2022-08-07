@@ -3,7 +3,6 @@ package com.mqttsnet.thinglinks.tdengine.api.domain;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import java.util.List;
 
 /**
  * @program: thinglinks
@@ -22,8 +21,8 @@ public class TagsSelectDao {
     @NotBlank(message = "invalid operation: stableName can not be empty")
     private String stableName;
 
-    @NotBlank(message = "invalid operation: tags can not be empty")
-    private List<String> tags;
+    @NotBlank(message = "invalid operation: tagsName can not be empty")
+    private String tagsName;
 
     //    @NotNull(message = "invalid operation: startTime can not be null")
     private Long startTime;

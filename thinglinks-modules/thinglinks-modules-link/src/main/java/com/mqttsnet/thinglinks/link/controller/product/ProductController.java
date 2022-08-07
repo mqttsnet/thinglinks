@@ -180,7 +180,7 @@ public class ProductController extends BaseController {
      * @return
      * @throws Exception
      */
-    @NoRepeatSubmit
+//    @NoRepeatSubmit
     @PreAuthorize(hasPermi = "link:product:initialize")
     @Log(title = "产品管理", businessType = BusinessType.OTHER)
     @GetMapping(value = "/initializeDataModel/{productIds}/{initializeOrNot}")

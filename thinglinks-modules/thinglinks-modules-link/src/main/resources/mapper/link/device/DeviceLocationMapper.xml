@@ -543,5 +543,101 @@
         <include refid="Base_Column_List"/>
         from device_location
         where device_identification=#{deviceIdentification,jdbcType=VARCHAR}
+        GROUP BY device_identification
     </select>
+
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update device_location
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="device_identification = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.deviceIdentification != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.deviceIdentification,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="latitude = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.latitude != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.latitude,jdbcType=DECIMAL}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="longitude = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.longitude != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.longitude,jdbcType=DECIMAL}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="full_name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.fullName != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.fullName,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="province_code = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.provinceCode != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.provinceCode,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="city_code = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.cityCode != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.cityCode,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="region_code = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.regionCode != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.regionCode,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="create_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createBy != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateBy != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="remark = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.remark != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.remark,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=BIGINT}
+    </foreach>
+  </update>
 </mapper>

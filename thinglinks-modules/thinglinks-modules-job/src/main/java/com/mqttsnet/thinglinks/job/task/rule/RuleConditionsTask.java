@@ -26,8 +26,13 @@ public class RuleConditionsTask {
     public void parsingRuleConditions(String params) {
         StopWatch watch = new StopWatch();
         watch.start();
+        if (log.isInfoEnabled()) {
+            log.info("解析规则条件定时任务开始，参数：{}", params);
+        }
         //TODO 解析规则条件定时任务执行处理
         watch.stop();
-        log.info("解析规则条件定时任务执行成功 ! Time Elapsed (millisecond): {}",watch.getTime());
+        if (log.isInfoEnabled()) {
+            log.info("解析规则条件定时任务结束，耗时(millisecond)：{}", watch.getTime());
+        }
     }
 }

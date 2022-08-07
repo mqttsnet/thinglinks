@@ -130,7 +130,8 @@
             <div class="small">
               <el-form-item label="是否必填" prop="required" size="small">
                 <el-radio-group v-model="form.required">
-                  <el-radio-button v-for="item in dict.type.link_product_isRequired" :label="parseInt(item.value)">
+                  <el-radio-button v-for="item in dict.type.link_product_isRequired" :key="item.value"
+                    :label="parseInt(item.value)">
                     {{ item.label }}</el-radio-button>
                 </el-radio-group>
               </el-form-item>
@@ -138,7 +139,7 @@
             <div class="small">
               <el-form-item v-if="form.datatype === 'string' || form.datatype === 'binary'" label="长度" prop="maxlength">
                 <el-col :span="20">
-                  <el-input v-model="form.maxlength" placeholder="请输入字符串长度" />
+                  <el-input type="number" v-model="form.maxlength" placeholder="请输入字符串长度" @change="min" />
                 </el-col>
                 <el-col :span="1">
                   <el-tooltip content="请输入字符串长度。输入值大于等于0、小于等于2147483647的数字。" effect="light" placement="right">
@@ -155,7 +156,6 @@
             </el-button>
             &nbsp;
             <el-tooltip content="最多添加100项。参数值：支持整型；参数描述：支持中文、英文大小写、日文、数字，不超过20个字符；" effect="light" placement="right">
-              <!-- <a href="javascript:void(0)" @click="addAttrEnum"><i class="el-icon-plus"></i></a> -->
               <i class="el-icon-question"></i>
             </el-tooltip>
           </div>
@@ -172,16 +172,11 @@
               </el-form-item>
             </el-col>
             <el-col :span="1">
-              <!-- <a href="javascript:void(0);" ></a> -->
               <el-button type="danger" icon="el-icon-delete" size="mini" circle @click="removeAttrEnum(item)">
               </el-button>
             </el-col>
           </div>
         </el-form-item>
-        <!--        <el-form-item label="枚举值">-->
-        <!--          <el-input v-model="form.enumlist" placeholder="枚举值间通过英文逗号分隔"/>-->
-        <!--        </el-form-item>-->
-
         <div class="disply">
           <el-form-item v-if="form.datatype === 'int' || form.datatype === 'decimal'" label="取值范围" prop="min">
             <el-col :span="10">
@@ -318,7 +313,7 @@ export default {
           { required: true, message: "数据类型不能为空", trigger: "change" }
         ],
         maxlength: [
-          { required: true, message: "字符串长度不能为空", trigger: "blur" },
+          { required: true, message: "长度不能为空，且只能为正整数", trigger: "blur" },
           {
             pattern: /^[0-9]+$/,
             message: "请输入合法数字",
@@ -377,6 +372,11 @@ export default {
     this.getList();
   },
   methods: {
+    min() {
+      if (this.form.maxlength < 0) {
+        this.form.maxlength = 0
+      }
+    },
     /** 查询产品属性数据列表 */
     getList() {
       this.loading = true;

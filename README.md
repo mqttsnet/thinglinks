@@ -186,3 +186,11 @@ MQTT客户端C库: thinglinks-mqtt-c
 ## 交流社区（添加作者WX: xiaonannet 邀请进微信群，备注：thinglinks）
 
 [相关技术资料及话题](https://bbs.csdn.net/forums/thinglinks)
+
+## issues
+[issues](https://github.com/mqttsnet/thinglinks/issues)
+
+
+
+## 版权使用说明
+ThingLinks开源平台遵循 [Apache License, Version 2.0](License) 协议。 允许商业使用，但务必保留类作者、Copyright 信息。
