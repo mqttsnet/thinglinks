@@ -88,14 +88,14 @@ public interface DeviceMapper {
      * @Param: updatedConnect_status 设备状态值
      * client_id 客户端ID
      */
-    int updateConnectStatusByClientId(@Param("updatedConnectStatus")String updatedConnectStatus,@Param("clientId")String clientId);
+    int updateConnectStatusByClientId(@Param("updatedConnectStatus") String updatedConnectStatus, @Param("clientId") String clientId);
 
-    Device findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(@Param("clientId")String clientId,@Param("userName")String userName,@Param("password")String password,@Param("deviceStatus")String deviceStatus,@Param("protocolType")String protocolType);
+    Device findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(@Param("clientId") String clientId, @Param("userName") String userName, @Param("password") String password, @Param("deviceStatus") String deviceStatus, @Param("protocolType") String protocolType);
 
 
     List<Device> findByAll(Device device);
 
-    Device findOneById(@Param("id")Long id);
+    Device findOneById(@Param("id") Long id);
 
     /**
      * 查询设备管理
@@ -145,26 +145,25 @@ public interface DeviceMapper {
      */
     public int deleteDeviceByIds(Long[] ids);
 
-    Device findOneByClientId(@Param("clientId")String clientId);
+    Device findOneByClientId(@Param("clientId") String clientId);
 
-    Device findOneByClientIdAndDeviceIdentification(@Param("clientId")String clientId,@Param("deviceIdentification")String deviceIdentification);
+    Device findOneByClientIdAndDeviceIdentification(@Param("clientId") String clientId, @Param("deviceIdentification") String deviceIdentification);
 
-    Device findOneByDeviceIdentification(@Param("deviceIdentification")String deviceIdentification);
+    Device findOneByDeviceIdentification(@Param("deviceIdentification") String deviceIdentification);
 
-    Device findOneByClientIdOrderByDeviceIdentification(@Param("clientId")String clientId);
+    Device findOneByClientIdOrderByDeviceIdentification(@Param("clientId") String clientId);
 
-	Device findOneByClientIdOrDeviceIdentification(@Param("clientId")String clientId,@Param("deviceIdentification")String deviceIdentification);
-
-
-    Long countDistinctClientIdByConnectStatus(@Param("connectStatus")String connectStatus);
-
-    List<Device> findAllByIdIn(@Param("idCollection")Collection<Long> idCollection);
+    Device findOneByClientIdOrDeviceIdentification(@Param("clientId") String clientId, @Param("deviceIdentification") String deviceIdentification);
 
 
-    List<Device> findAllByProductIdentification(@Param("productIdentification")String productIdentification);
+    Long countDistinctClientIdByConnectStatus(@Param("connectStatus") String connectStatus);
+
+    List<String> selectByProductIdentification(@Param("productIdentification") String productIdentification);
+
+    List<Device> findAllByIdIn(@Param("idCollection") Collection<Long> idCollection);
 
 
-
+    List<Device> findAllByProductIdentification(@Param("productIdentification") String productIdentification);
 
 
 }

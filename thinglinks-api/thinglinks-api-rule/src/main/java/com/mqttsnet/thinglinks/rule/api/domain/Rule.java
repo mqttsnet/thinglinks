@@ -65,7 +65,7 @@ public class Rule implements Serializable {
      * 触发机制（0:全部，1:任意一个）
      */
     @ApiModelProperty(value = "触发机制（0:全部，1:任意一个）")
-    private Long triggering;
+    private Integer triggering;
 
     /**
      * 规则描述，可以为空

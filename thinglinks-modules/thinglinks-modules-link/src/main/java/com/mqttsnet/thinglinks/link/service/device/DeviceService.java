@@ -42,13 +42,13 @@ public interface DeviceService {
 
     int batchInsert(List<Device> list);
 
-	int updateConnectStatusByClientId(String updatedConnectStatus,String clientId);
+    int updateConnectStatusByClientId(String updatedConnectStatus, String clientId);
 
-	Device findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(String clientId,String userName,String password,String deviceStatus,String protocolType);
+    Device findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(String clientId, String userName, String password, String deviceStatus, String protocolType);
 
-	List<Device> findByAll(Device device);
+    List<Device> findByAll(Device device);
 
-	Device findOneById(Long id);
+    Device findOneById(Long id);
 
 
     /**
@@ -73,7 +73,7 @@ public interface DeviceService {
      * @param deviceModel 设备管理
      * @return 结果
      */
-    public int insertDevice(DeviceModel deviceModel)throws Exception;
+    public int insertDevice(DeviceModel deviceModel) throws Exception;
 
     /**
      * 修改设备管理
@@ -100,28 +100,24 @@ public interface DeviceService {
     public int deleteDeviceById(Long id);
 
 
-
-	Device findOneByClientId(String clientId);
-
+    Device findOneByClientId(String clientId);
 
 
-	Device findOneByClientIdAndDeviceIdentification(String clientId,String deviceIdentification);
+    Device findOneByClientIdAndDeviceIdentification(String clientId, String deviceIdentification);
 
 
-
-	Device findOneByDeviceIdentification(String deviceIdentification);
-
+    Device findOneByDeviceIdentification(String deviceIdentification);
 
 
-	Device findOneByClientIdOrderByDeviceIdentification(String clientId);
+    Device findOneByClientIdOrderByDeviceIdentification(String clientId);
 
 
-
-	Device findOneByClientIdOrDeviceIdentification(String clientId,String deviceIdentification);
+    Device findOneByClientIdOrDeviceIdentification(String clientId, String deviceIdentification);
 
 
     /**
      * 设备信息缓存失效
+     *
      * @param clientId
      * @return
      */
@@ -129,36 +125,44 @@ public interface DeviceService {
 
     /**
      * 批量断开设备连接端口
+     *
      * @param ids
      * @return
      */
     Boolean disconnect(Long[] ids);
 
 
+    Long countDistinctClientIdByConnectStatus(String connectStatus);
 
-	Long countDistinctClientIdByConnectStatus(String connectStatus);
+    /**
+     * 根据产品标识查询所属的设备标识
+     *
+     * @param productIdentification
+     * @return
+     */
+    List<String> selectByProductIdentification(String productIdentification);
 
     /**
      * 客户端身份认证
+     *
      * @param clientIdentifier 客户端
-     * @param username 用户名
-     * @param password 密码
-     * @param deviceStatus 设备状态
-     * @param protocolType 协议类型
+     * @param username         用户名
+     * @param password         密码
+     * @param deviceStatus     设备状态
+     * @param protocolType     协议类型
      * @return
      */
     Boolean clientAuthentication(String clientIdentifier, String username, String password, String deviceStatus, String protocolType);
 
 
-
-	List<Device> findAllByIdIn(Collection<Long> idCollection);
-
+    List<Device> findAllByIdIn(Collection<Long> idCollection);
 
 
-	List<Device> findAllByProductIdentification(String productIdentification);
+    List<Device> findAllByProductIdentification(String productIdentification);
 
     /**
      * 查询设备详细信息
+     *
      * @param id
      * @return
      */

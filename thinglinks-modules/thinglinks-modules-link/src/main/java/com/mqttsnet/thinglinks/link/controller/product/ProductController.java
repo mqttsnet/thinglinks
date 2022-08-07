@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.link.controller.product;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
+import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -54,6 +55,17 @@ public class ProductController extends BaseController {
     @GetMapping("/selectOne")
     public Product selectOne(Long id) {
         return productService.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 通过主产品标识查询产品
+     *
+     * @param productIdentification 产品标识
+     * @return 单条数据
+     */
+    @GetMapping("/selectByProductIdentification")
+    public R<?> selectByProductIdentification(String productIdentification) {
+        return R.ok(productService.selectByProductIdentification(productIdentification));
     }
 
     /**

@@ -41,7 +41,7 @@ public class RuleConditions implements Serializable {
      * 条件类型(0:匹配设备触发、1:指定设备触发、2:按策略定时触发)
      */
     @ApiModelProperty(value = "条件类型(0:匹配设备触发、1:指定设备触发、2:按策略定时触发)")
-    private Long conditionType;
+    private Integer conditionType;
 
     /**
      * 设备标识
