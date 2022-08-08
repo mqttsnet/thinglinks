@@ -93,18 +93,6 @@
           <dict-tag :options="dict.type.business_data_status" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="创建者" align="center" prop="createBy" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <!--      <el-table-column label="更新者" align="center" prop="updateBy"/>-->
-      <!--      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">-->
-      <!--        <template slot-scope="scope">-->
-      <!--          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d}') }}</span>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -198,17 +186,26 @@
           </el-col>
         </el-row>
         <el-row style="display: flex;justify-content: space-around;">
-          <el-col :span="24">
-            <el-form-item label="内容">
-              <!-- <editor v-model="form.content" :min-height="300" /> -->
-              <!-- <el-input v-model="form.content" :autosize="{ minRows: 4, maxRows: 6 }" :row="6" type="textarea"
-                placeholder="请输入内容" /> -->
-              <theCodeEditor ref="CodeEditor" :CodeEditor="CodeEditor"></theCodeEditor>
+          <el-col :span="23" style="padding: 0 10px ;box-sizing: border-box;">
+            <el-form-item label="脚本内容">
+              <theCodeEditor ref="CodeEditor" :CodeEditor="CodeEditor" @codeValue="codeValue"></theCodeEditor>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
-          <el-col :span="24">
+        <el-row style="display: flex;justify-content: space-around;">
+          <el-col :span="23" style="padding: 0 10px ;box-sizing: border-box;">
+            <el-form-item label="脚本入参">
+              <el-input style="width: 80%;" v-model="inParameter" :autosize="{ minRows: 2, maxRows: 4 }" :row="2"
+                type="textarea" placeholder="请输入脚本入参" />
+              <el-button type="info" size="mini" :disabled="this.form.content && this.inParameter ? false : true" round
+                style="margin: 10px 32px;" @click="runTheCheck">
+                编译运行
+              </el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="display: flex;justify-content: space-around;">
+          <el-col :span="23" style="padding: 0 10px ;box-sizing: border-box;">
             <el-form-item label="备注" prop="remark">
               <el-input v-model="form.remark" :autosize="{ minRows: 2, maxRows: 4 }" :row="2" type="textarea"
                 placeholder="请输入备注" />
@@ -232,7 +229,8 @@ import {
   addProtocol,
   updateProtocol,
   enable,
-  disable
+  disable,
+  dynamicallyXcode
 } from "@/api/link/protocol";
 import theCodeEditor from "./TheCodeEditor/theCodeEditor"
 export default {
@@ -243,6 +241,8 @@ export default {
   },
   data() {
     return {
+      //入参
+      inParameter: "",
       //代码编辑器
       CodeEditor: "",
       // 遮罩层
@@ -295,6 +295,21 @@ export default {
     this.getList();
   },
   methods: {
+    //运行校验
+    runTheCheck() {
+      console.log(this.form.content, this.inParameter);
+      let data = {
+        code: String(this.form.content),
+        inparam: String(this.inParameter)
+      }
+      console.log(JSON.stringify(data));
+      dynamicallyXcode(JSON.stringify(data)).then(res => {
+        console.log(res);
+      });
+    },
+    codeValue(e) {
+      this.form.content = e
+    },
     opedned() {
       if (this.form.id != null) {
         this.$refs.CodeEditor.code = this.form.content

@@ -8,7 +8,7 @@
         </p>
         <p>
           <span>设备状态</span>
-          <dict-tag :options="dict.type.link_device_connect_status" :value="deviceInfo.connectStatus"/>
+          <dict-tag :options="dict.type.link_device_connect_status" :value="deviceInfo.connectStatus" />
         </p>
       </div>
       <div class="device_attribute">
@@ -74,7 +74,7 @@
             <p>
               <span>设备类型</span>
               <span>
-                <dict-tag :options="dict.type.link_device_device_type" :value="deviceInfo.deviceType"/>
+                <dict-tag :options="dict.type.link_device_device_type" :value="deviceInfo.deviceType" />
               </span>
             </p>
             <p>
@@ -110,13 +110,13 @@
   </div>
 </template>
 <script>
-import {getDevice} from "@/api/link/device/device";
+import { getDevice } from "@/api/link/device/device";
 import Topic from "@/views/link/device/topic";
 import Action from "@/views/link/device/action";
 
 export default {
   name: "device-detail",
-  components: {Action, Topic},
+  components: { Action, Topic },
   dicts: [
     "link_device_device_type",
     "link_device_connect_status",

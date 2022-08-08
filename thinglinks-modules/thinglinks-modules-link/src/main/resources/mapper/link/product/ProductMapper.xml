@@ -25,8 +25,8 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, app_id, template_id, product_name, product_identification, product_type, manufacturer_id, 
-    manufacturer_name, model, data_format, device_type, protocol_type, `status`, remark, 
+    id, app_id, template_id, product_name, product_identification, product_type, manufacturer_id,
+    manufacturer_name, model, data_format, device_type, protocol_type, `status`, remark,
     create_by, create_time, update_by, update_time
   </sql>
   <sql id="OrderByCreateTimeDesc">
@@ -34,7 +34,7 @@
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from product
     where id = #{id,jdbcType=BIGINT}
@@ -46,11 +46,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into product (app_id, template_id, product_name, 
-      product_identification, product_type, manufacturer_id, 
-      manufacturer_name, model, data_format, 
-      device_type, protocol_type, `status`, 
-      remark, create_by, create_time, 
+    insert into product (app_id, template_id, product_name,
+      product_identification, product_type, manufacturer_id,
+      manufacturer_name, model, data_format,
+      device_type, protocol_type, `status`,
+      remark, create_by, create_time,
       update_by, update_time)
     values (#{appId,jdbcType=VARCHAR}, #{templateId,jdbcType=BIGINT}, #{productName,jdbcType=VARCHAR},
       #{productIdentification,jdbcType=VARCHAR}, #{productType,jdbcType=VARCHAR}, #{manufacturerId,jdbcType=VARCHAR},
@@ -476,8 +476,8 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into product
-    (app_id, template_id, product_name, product_identification, product_type, manufacturer_id, 
-      manufacturer_name, model, data_format, device_type, protocol_type, `status`, remark, 
+    (app_id, template_id, product_name, product_identification, product_type, manufacturer_id,
+      manufacturer_name, model, data_format, device_type, protocol_type, `status`, remark,
       create_by, create_time, update_by, update_time)
     values
     <foreach collection="list" item="item" separator=",">
@@ -538,7 +538,7 @@
       #{updateBy,jdbcType=VARCHAR},
       #{updateTime,jdbcType=TIMESTAMP},
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -678,7 +678,7 @@
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
-    on duplicate key update 
+    on duplicate key update
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -756,6 +756,15 @@
     from product
     where id = #{id}
   </select>
+
+  <select id="selectByProductIdentification" parameterType="String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from product
+    where product_identification = #{productIdentification}
+  </select>
+
+
 
   <insert id="insertProduct" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product" useGeneratedKeys="true" keyProperty="id">
     insert into product

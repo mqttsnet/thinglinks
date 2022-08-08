@@ -2,9 +2,9 @@
   <div class="app-container">
     <div class="equipment_status">
       <div class="status_num">
-        <img style="width:80px;"
-          src="https://img.alicdn.com/imgextra/i1/O1CN01NS7aVb1iIfQPQDLTT_!!6000000004390-1-tps-640-640.gif" alt="">
-        <p>：
+        <img src="@/assets/logo/deviceManagement.gif" alt="">
+        <p>
+          ：
           <span style="color:#71e2a3">{{ onlineCount }}</span>/
           <span style="color:#ff9292">{{ offlineCount }}</span>/
           <span style="color:#EEB422">{{ initCount }}</span>/
@@ -164,14 +164,6 @@
           <dict-tag :options="dict.type.link_device_connect_status" :value="scope.row.connectStatus" />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="创建者" prop="createBy" />
-      <el-table-column align="center" label="创建时间" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{
-              parseTime(scope.row.createTime, "{y}-{m}-{d} {h}:{i}:{s}")
-          }}</span>
-        </template>
-      </el-table-column>
       <el-table-column fixed="right" label="操作" width="150">
         <template slot-scope="scope">
           <span style="margin-right:10px">
@@ -188,10 +180,6 @@
           </span>
           <span style="margin-right:10px">
             <el-tooltip class="item" content="设备详情" effect="light" placement="top">
-              <!--              <router-link :to="{ name: 'deviceDetails', query: { id: scope.row.id } }">-->
-              <!--                <el-button circle size="mini" type="primary" icon="el-icon-s-operation"-->
-              <!--                           v-hasPermi="['link:device:deviceDetails']"></el-button>-->
-              <!--              </router-link>-->
               <el-button v-hasPermi="['link:device:detail']" circle icon="el-icon-s-operation" size="mini"
                 type="primary" @click="handleDeviceDetail(scope.row)"></el-button>
             </el-tooltip>
@@ -269,26 +257,12 @@
           </el-col>
         </el-row>
         <el-row style="display: flex;justify-content: center;">
-          <el-col :span="22">
+          <el-col :span="24">
             <mapView ref="mapView" @locationChange="locationChange" @locationAddress="locationAddress"
               @locationFail="locationFail">
             </mapView>
           </el-col>
         </el-row>
-
-        <el-row style="margin-top: 15px;">
-          <el-col :span="11">
-            <el-form-item label="纬度" prop="latitude">
-              <el-input v-model="deviceLocation.latitude" placeholder="请输入纬度" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="经度" prop="longitude">
-              <el-input v-model="deviceLocation.longitude" placeholder="请输入经度" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
         <el-row>
           <el-col :span="11">
             <el-form-item label="设备描述" prop="deviceDescription">
@@ -512,17 +486,19 @@ export default {
   },
   methods: {
     opened() {
-      this.$refs.mapView.address = '';
       if (this.form.id !== null) {
         this.$nextTick(() => {
-          console.log(222);
-          this.$refs.mapView.regeoCode(this.lonLat.join(','));
+          this.$refs.mapView.TheMap(this.lonLat.join(','));
+        })
+      } else {
+        this.$nextTick(() => {
+          this.$refs.mapView.TheMap();
         })
       }
     },
     closed() {
       this.reset()
-      this.$refs.mapView.initMap();
+      this.$refs.mapView.TheMap();
       this.$refs.mapView.address = ''
     },
     //客户端标识校验
@@ -587,7 +563,7 @@ export default {
       this.deviceLocation.latitude = e[1] * 1;
     },
     locationAddress(e) {
-      // console.log(this.$refs.mapView.options);
+      console.log(e);
       this.deviceLocation.provinceCode = e.addressComponent.adcode
       this.deviceLocation.cityCode = e.addressComponent.citycode
       this.deviceLocation.regionCode = e.addressComponent.district
@@ -680,7 +656,6 @@ export default {
       this.open = true;
       this.title = "添加设备档案";
       getDevice(null).then(response => {
-        // console.log(response);
         this.productOptions = response.products;
       })
     },
@@ -791,28 +766,17 @@ export default {
   justify-content: space-around;
   font-size: 14px;
   font-weight: 700;
-  color: #515a6e;
-
+  color: #515a6e
 }
 
 .equipment_status .status_num {
-  width: 12%;
+  width: 20%;
   display: flex;
   font-size: 18px;
   align-items: center;
 
-  i {
-    font-size: 25px;
-    width: 40px;
-    height: 40px;
-    border: 1px #ccc dashed;
-    text-align: center;
-    line-height: 38px;
-    border-radius: 50%;
-  }
-
   img {
-    width: 20%;
+    width: 30%;
   }
 }
 

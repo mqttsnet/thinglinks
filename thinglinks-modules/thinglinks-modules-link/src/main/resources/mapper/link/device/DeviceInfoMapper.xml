@@ -5,7 +5,7 @@
     <!--@mbg.generated-->
     <!--@Table device_info-->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="d_id" jdbcType="BIGINT" property="dId" />
+    <result column="d_id" jdbcType="BIGINT" property="did" />
     <result column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="node_id" jdbcType="VARCHAR" property="nodeId" />
     <result column="node_name" jdbcType="VARCHAR" property="nodeName" />
@@ -52,7 +52,7 @@
       shadow_enable, shadow_table_name, `status`, 
       create_by, create_time, update_by, 
       update_time, remark)
-    values (#{dId,jdbcType=BIGINT}, #{appId,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR}, 
+    values (#{did,jdbcType=BIGINT}, #{appId,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR}, 
       #{nodeName,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{manufacturerId,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{connectStatus,jdbcType=VARCHAR}, 
       #{shadowEnable,jdbcType=BOOLEAN}, #{shadowTableName,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
@@ -63,7 +63,7 @@
     <!--@mbg.generated-->
     insert into device_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="dId != null">
+      <if test="did != null">
         d_id,
       </if>
       <if test="appId != null">
@@ -116,8 +116,8 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="dId != null">
-        #{dId,jdbcType=BIGINT},
+      <if test="did != null">
+        #{did,jdbcType=BIGINT},
       </if>
       <if test="appId != null">
         #{appId,jdbcType=VARCHAR},
@@ -173,8 +173,8 @@
     <!--@mbg.generated-->
     update device_info
     <set>
-      <if test="dId != null">
-        d_id = #{dId,jdbcType=BIGINT},
+      <if test="did != null">
+        d_id = #{did,jdbcType=BIGINT},
       </if>
       <if test="appId != null">
         app_id = #{appId,jdbcType=VARCHAR},
@@ -230,7 +230,7 @@
   <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo">
     <!--@mbg.generated-->
     update device_info
-    set d_id = #{dId,jdbcType=BIGINT},
+    set d_id = #{did,jdbcType=BIGINT},
       app_id = #{appId,jdbcType=VARCHAR},
       node_id = #{nodeId,jdbcType=VARCHAR},
       node_name = #{nodeName,jdbcType=VARCHAR},
@@ -255,7 +255,7 @@
     <trim prefix="set" suffixOverrides=",">
       <trim prefix="d_id = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.dId,jdbcType=BIGINT}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.did,jdbcType=BIGINT}
         </foreach>
       </trim>
       <trim prefix="app_id = case" suffix="end,">
@@ -352,7 +352,7 @@
       update_by, update_time, remark)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.dId,jdbcType=BIGINT}, #{item.appId,jdbcType=VARCHAR}, #{item.nodeId,jdbcType=VARCHAR}, 
+      (#{item.did,jdbcType=BIGINT}, #{item.appId,jdbcType=VARCHAR}, #{item.nodeId,jdbcType=VARCHAR}, 
         #{item.nodeName,jdbcType=VARCHAR}, #{item.deviceId,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, 
         #{item.manufacturerId,jdbcType=VARCHAR}, #{item.model,jdbcType=VARCHAR}, #{item.connectStatus,jdbcType=VARCHAR}, 
         #{item.shadowEnable,jdbcType=BOOLEAN}, #{item.shadowTableName,jdbcType=VARCHAR}, 
@@ -391,7 +391,7 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      #{dId,jdbcType=BIGINT},
+      #{did,jdbcType=BIGINT},
       #{appId,jdbcType=VARCHAR},
       #{nodeId,jdbcType=VARCHAR},
       #{nodeName,jdbcType=VARCHAR},
@@ -414,7 +414,7 @@
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
-      d_id = #{dId,jdbcType=BIGINT},
+      d_id = #{did,jdbcType=BIGINT},
       app_id = #{appId,jdbcType=VARCHAR},
       node_id = #{nodeId,jdbcType=VARCHAR},
       node_name = #{nodeName,jdbcType=VARCHAR},
@@ -440,7 +440,7 @@
       <if test="id != null">
         id,
       </if>
-      <if test="dId != null">
+      <if test="did != null">
         d_id,
       </if>
       <if test="appId != null">
@@ -497,8 +497,8 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="dId != null">
-        #{dId,jdbcType=BIGINT},
+      <if test="did != null">
+        #{did,jdbcType=BIGINT},
       </if>
       <if test="appId != null">
         #{appId,jdbcType=VARCHAR},
@@ -554,8 +554,8 @@
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
-      <if test="dId != null">
-        d_id = #{dId,jdbcType=BIGINT},
+      <if test="did != null">
+        d_id = #{did,jdbcType=BIGINT},
       </if>
       <if test="appId != null">
         app_id = #{appId,jdbcType=VARCHAR},
@@ -633,7 +633,7 @@
   <select id="selectDeviceInfoList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo" resultMap="BaseResultMap">
     <include refid="selectDeviceInfoVo"/>
     <where>
-      <if test="dId != null "> and d_id = #{dId}</if>
+      <if test="did != null "> and d_id = #{did}</if>
       <if test="appId != null  and appId != ''"> and app_id = #{appId}</if>
       <if test="nodeId != null  and nodeId != ''"> and node_id = #{nodeId}</if>
       <if test="nodeName != null  and nodeName != ''"> and node_name like concat('%', #{nodeName}, '%')</if>
@@ -656,7 +656,7 @@
   <insert id="insertDeviceInfo" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo" useGeneratedKeys="true" keyProperty="id">
     insert into device_info
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="dId != null">d_id,</if>
+      <if test="did != null">d_id,</if>
       <if test="appId != null and appId != ''">app_id,</if>
       <if test="nodeId != null">node_id,</if>
       <if test="nodeName != null">node_name,</if>
@@ -675,7 +675,7 @@
       <if test="remark != null">remark,</if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="dId != null">#{dId},</if>
+      <if test="did != null">#{did},</if>
       <if test="appId != null and appId != ''">#{appId},</if>
       <if test="nodeId != null">#{nodeId},</if>
       <if test="nodeName != null">#{nodeName},</if>
@@ -698,7 +698,7 @@
   <update id="updateDeviceInfo" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo">
     update device_info
     <trim prefix="SET" suffixOverrides=",">
-      <if test="dId != null">d_id = #{dId},</if>
+      <if test="did != null">d_id = #{did},</if>
       <if test="appId != null and appId != ''">app_id = #{appId},</if>
       <if test="nodeId != null">node_id = #{nodeId},</if>
       <if test="nodeName != null">node_name = #{nodeName},</if>

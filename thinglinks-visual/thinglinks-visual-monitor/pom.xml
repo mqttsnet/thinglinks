@@ -22,7 +22,7 @@
         <!--suppress UnresolvedMavenProperty -->
         <thinglinks.package.url>${project.parent.parent.basedir}\doc\dockerfile\thinglinks\monitor\jar</thinglinks.package.url>
         <!--启动类目录-->
-        <thinglinks.mainClass.url>com.mqttsnet.thinglinks.collection.ThingLinksCollectionApplication</thinglinks.mainClass.url>
+        <thinglinks.mainClass.url>com.mqttsnet.thinglinks.monitor.ThingLinksMonitorApplication</thinglinks.mainClass.url>
     </properties>
 
     <dependencies>

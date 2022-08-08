@@ -88,6 +88,14 @@ public interface ProductMapper {
     public Product selectProductById(Long id);
 
     /**
+     * 查询产品管理
+     *
+     * @param productIdentification 产品标识
+     * @return 产品管理
+     */
+    public Product selectByProductIdentification(String productIdentification);
+
+    /**
      * 查询产品管理列表
      *
      * @param product 产品管理

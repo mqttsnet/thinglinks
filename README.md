@@ -81,7 +81,7 @@ com.mqttsnet.thinglinks
 
 系统工具：表单构建、代码生成、系统接口
 
-设备集成：设备管理（支持MQTT协议、TCP-IP协议设备接入）、子设备管理、产品管理、协议管理、
+设备集成：设备管理（支持MQTT协议、TCP-IP协议设备接入）、子设备管理、产品管理、协议管理、规则引擎（设备联动）
 
 设备调试：实时日志、命令下发
 
@@ -188,7 +188,7 @@ MQTT客户端C库: thinglinks-mqtt-c
 [相关技术资料及话题](https://bbs.csdn.net/forums/thinglinks)
 
 ## issues
-[issues](https://bbs.csdn.net/forums/thinglinks?typeId=95305)
+[issues](https://github.com/mqttsnet/thinglinks/issues)
 
 
 

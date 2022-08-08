@@ -1,6 +1,5 @@
 package com.mqttsnet.thinglinks.link.controller.device;
 
-import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -122,8 +121,9 @@ public class DeviceInfoController extends BaseController
      * @param ids
      * @return
      */
-    @GetMapping("/refreshDeviceInfoDataModel")
-    public AjaxResult refreshDeviceInfoDataModel(@RequestParam(name = "ids",required = false) Long[] ids)
+    @PreAuthorize(hasPermi = "link:deviceInfo:initialize")
+    @GetMapping("/refreshDeviceInfoDataModel/{ids}")
+    public AjaxResult refreshDeviceInfoDataModel(@PathVariable("ids") Long[] ids)
     {
         return toAjax(deviceInfoService.refreshDeviceInfoDataModel(Arrays.asList(ids)));
     }

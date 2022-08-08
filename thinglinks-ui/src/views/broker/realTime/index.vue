@@ -33,6 +33,7 @@ export default {
     return {
       webSocket: null,
       res: "",
+      flag: 1
     };
   },
   mounted() {
@@ -89,7 +90,7 @@ export default {
     },
     // 数据接收
     webSocketOnMessage: function (event) {
-      console.log(event.data);
+      // console.log(event.data);
       if (event.data !== '') {
         const res = event.data.split('<br/>');
         let color = "#fff";
@@ -103,11 +104,13 @@ export default {
           } else if (item.indexOf("ERROR") !== -1) {
             color = 'red';
           }
-          // console.log(color);
           this.res += "<div style='color: " + color + ";font-size: 14px'>" + item + "</div>";
         })
       }
-      this.$refs.logContainer.scrollTop = this.$refs.logContainerDiv.scrollHeight;
+      if (this.flag <= 2) {
+        this.$refs.logContainer.scrollTop = this.$refs.logContainerDiv.scrollHeight;
+        this.flag++
+      }
     },
     // 数据发送
     webSocketSend(Data) {

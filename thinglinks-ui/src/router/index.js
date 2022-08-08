@@ -187,6 +187,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/link/rule-detail',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'rule/addRule',
+        component: () => import('@/views/rule/deviceLinkage/addRule'),
+        name: 'addRule',
+        meta: { title: '规则创建', activeMenu: '/link/rule' }
+      }
+    ]
+  },
+  {
     path: '/monitor/job-log',
     component: Layout,
     hidden: true,

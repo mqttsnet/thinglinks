@@ -53,23 +53,21 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 /**
-
-* @Description:    产品模型业务层
-* @Author:         ShiHuan Sun
-* @E-mail:         13733918655@163.com
-* @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/25$ 23:52$
-* @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/25$ 23:52$
-* @UpdateRemark:   修改内容
-* @Version:        1.0
-
-*/
+ * @Description: 产品模型业务层
+ * @Author: ShiHuan Sun
+ * @E-mail: 13733918655@163.com
+ * @Website: http://thinglinks.mqttsnet.com
+ * @CreateDate: 2021/12/25$ 23:52$
+ * @UpdateUser: ShiHuan Sun
+ * @UpdateDate: 2021/12/25$ 23:52$
+ * @UpdateRemark: 修改内容
+ * @Version: 1.0
+ */
 @Service
 @Slf4j
 @RefreshScope
 @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductMapper productMapper;
@@ -110,10 +108,10 @@ public class ProductServiceImpl implements ProductService{
     public int insertOrUpdate(Product record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (record.getId() == null){
+        if (record.getId() == null) {
             record.setCreateBy(sysUser.getUserName());
             record.setCreateTime(DateUtils.getNowDate());
-        }else {
+        } else {
             record.setUpdateTime(DateUtils.getNowDate());
             record.setUpdateBy(sysUser.getUserName());
         }
@@ -124,10 +122,10 @@ public class ProductServiceImpl implements ProductService{
     public int insertOrUpdateSelective(Product record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (record.getId() == null){
+        if (record.getId() == null) {
             record.setCreateBy(sysUser.getUserName());
             record.setCreateTime(DateUtils.getNowDate());
-        }else {
+        } else {
             record.setUpdateTime(DateUtils.getNowDate());
             record.setUpdateBy(sysUser.getUserName());
         }
@@ -184,16 +182,16 @@ public class ProductServiceImpl implements ProductService{
     /**
      * 产品模型文件导入
      *
-     * @param file json文件
+     * @param file          json文件
      * @param updateSupport 是否更新已经存在的产品模型数据
-     * @param appId 应用ID
-     * @param templateId  产品模型模板ID
-     * @param status 状态(字典值：启用  停用)
+     * @param appId         应用ID
+     * @param templateId    产品模型模板ID
+     * @param status        状态(字典值：启用  停用)
      * @return AjaxResult
      * @throws Exception
      */
     @Override
-    public AjaxResult importProductJson(MultipartFile file,Boolean updateSupport,String appId,String templateId,String status) throws Exception {
+    public AjaxResult importProductJson(MultipartFile file, Boolean updateSupport, String appId, String templateId, String status) throws Exception {
         // 首先校验json格式
         List<String> jsonType = Lists.newArrayList("json");
         // 获取文件名，带后缀
@@ -231,15 +229,15 @@ public class ProductServiceImpl implements ProductService{
     /**
      * 解析产品模型数据
      *
-     * @param content 产品模型数据
-     * @param appId 应用ID
-     * @param templateId  产品模型模板ID
-     * @param status 状态(字典值：启用  停用)
+     * @param content    产品模型数据
+     * @param appId      应用ID
+     * @param templateId 产品模型模板ID
+     * @param status     状态(字典值：启用  停用)
      * @return 解析结果
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public AjaxResult productJsonDataAnalysis(JSONObject content,String appId,String templateId,String status) throws Exception{
+    public AjaxResult productJsonDataAnalysis(JSONObject content, String appId, String templateId, String status) throws Exception {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         try {
@@ -263,7 +261,7 @@ public class ProductServiceImpl implements ProductService{
             String remark = JsonPath.read(content, "$.remark");
             //验证产品模型是否存在
             Product oneByManufacturerIdAndModelAndDeviceType = productMapper.findOneByManufacturerIdAndModelAndDeviceType(manufacturerId, model, deviceType);
-            if (StringUtils.isNotNull(oneByManufacturerIdAndModelAndDeviceType)){
+            if (StringUtils.isNotNull(oneByManufacturerIdAndModelAndDeviceType)) {
                 return AjaxResult.error("产品模型已存在,无需上传");
             }
             //验证properties数据格式
@@ -286,17 +284,17 @@ public class ProductServiceImpl implements ProductService{
                         || "bool".equals(item) || "timestamp".equals(item) || "json".equals(item);
                 list.add(flag);
                 if (list.contains(false)) {
-                    log.error("datatype:"+item,"Invalid product: Invalid dataType,must be one of [int、decimal、string、binary、bool、timestamp、json]");
-                    parsingErrorMessages.put("datatype:"+item,"Invalid product: Invalid dataType,must be one of [int、decimal、string、binary、bool、timestamp、json]");
+                    log.error("datatype:" + item, "Invalid product: Invalid dataType,must be one of [int、decimal、string、binary、bool、timestamp、json]");
+                    parsingErrorMessages.put("datatype:" + item, "Invalid product: Invalid dataType,must be one of [int、decimal、string、binary、bool、timestamp、json]");
                 }
             });
-            if (!parsingErrorMessages.isEmpty()){
+            if (!parsingErrorMessages.isEmpty()) {
                 return AjaxResult.error(parsingErrorMessages.toString());
             }
             //服务属性解析处理
             Product product = new Product();
             product.setAppId(appId);
-            if (StringUtils.isNotEmpty(templateId)){
+            if (StringUtils.isNotEmpty(templateId)) {
                 product.setTemplateId(Long.valueOf(templateId));
             }
             product.setProductName(productName);
@@ -313,7 +311,7 @@ public class ProductServiceImpl implements ProductService{
             product.setCreateBy(sysUser.getUserName());
             product.setCreateTime(DateUtils.getNowDate());
             final int insertProduct = productMapper.insertProduct(product);
-            if (insertProduct==0){
+            if (insertProduct == 0) {
                 return AjaxResult.error("Product model storage error");
             }
             //添加服务数据
@@ -328,7 +326,7 @@ public class ProductServiceImpl implements ProductService{
                 productServices.setCreateBy(sysUser.getUserName());
                 productServices.setCreateTime(DateUtils.getNowDate());
                 final int insertSelective = productServicesService.insertSelective(productServices);
-                if (insertSelective==0) {
+                if (insertSelective == 0) {
                     throw new RuntimeException("Service capability Data storage fails");
                 }
                 //添加属性数据
@@ -336,7 +334,7 @@ public class ProductServiceImpl implements ProductService{
                 for (int j = 0; j < properties.size(); j++) {
                     JSONObject propertie = properties.getJSONObject(j);
                     ProductProperties productProperties = new ProductProperties();
-                    BeanUtils.copyProperties(propertie.toJavaObject(Properties.class),productProperties);
+                    BeanUtils.copyProperties(propertie.toJavaObject(Properties.class), productProperties);
                     productProperties.setServiceId(productServices.getId());
                     productProperties.setCreateBy(sysUser.getUserName());
                     productProperties.setCreateTime(DateUtils.getNowDate());
@@ -344,8 +342,8 @@ public class ProductServiceImpl implements ProductService{
                 }
             }
             //解析入库成功创建TD超级表及子表
-            this.createSuperTable(product,services);
-        }catch (Exception e){
+            this.createSuperTable(product, services);
+        } catch (Exception e) {
             log.error(e.getMessage());
             return AjaxResult.error("操作失败");
         }
@@ -354,6 +352,7 @@ public class ProductServiceImpl implements ProductService{
 
     /**
      * 根据产品模型创建超级表
+     *
      * @param product
      * @param services
      * @return
@@ -361,7 +360,7 @@ public class ProductServiceImpl implements ProductService{
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public AjaxResult createSuperTable(Product product,JSONArray services) throws Exception{
+    public AjaxResult createSuperTable(Product product, JSONArray services) throws Exception {
         //构建超级表入参对象
         SuperTableDto superTableDto = new SuperTableDto();
         try {
@@ -369,7 +368,7 @@ public class ProductServiceImpl implements ProductService{
             for (int i = 0; i < services.size(); i++) {
                 JSONObject service = services.getJSONObject(i);
                 //超级表名称命名规则:产品类型_产品标识_服务名称
-                String superTableName = product.getProductType()+"_"+product.getProductIdentification()+"_"+service.getString("serviceId");
+                String superTableName = product.getProductType() + "_" + product.getProductIdentification() + "_" + service.getString("serviceId");
                 //设置数据库名称和超级表名称
                 superTableDto.setDataBaseName(dataBaseName);
                 superTableDto.setSuperTableName(superTableName);
@@ -424,17 +423,17 @@ public class ProductServiceImpl implements ProductService{
                     log.error("Create SuperTable Exception: " + cstResult.getMsg());
                     continue loop;
                 }
-                log.info("Create SuperTable Result: {}",cstResult.getCode());
+                log.info("Create SuperTable Result: {}", cstResult.getCode());
                 //将之前存在redis里的同样的名称的超级表的表结构信息删除
-                if (redisService.hasKey(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName)) {
-                    redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName);
+                if (redisService.hasKey(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
+                    redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName);
                 }
                 //在redis里存入新的超级表对的表结构信息
                 redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
-                log.info("缓存超级表数据模型:{}",JSON.toJSONString(superTableDto));
+                log.info("缓存超级表数据模型:{}", JSON.toJSONString(superTableDto));
             }
-        }catch (Exception e){
-         log.error(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
         return AjaxResult.success("操作成功");
     }
@@ -446,9 +445,13 @@ public class ProductServiceImpl implements ProductService{
      * @return 产品管理
      */
     @Override
-    public Product selectProductById(Long id)
-    {
+    public Product selectProductById(Long id) {
         return productMapper.selectProductById(id);
+    }
+
+    @Override
+    public Product selectByProductIdentification(String productIdentification) {
+        return productMapper.selectByProductIdentification(productIdentification);
     }
 
     /**
@@ -500,8 +503,7 @@ public class ProductServiceImpl implements ProductService{
      * @return 产品管理
      */
     @Override
-    public List<Product> selectProductList(Product product)
-    {
+    public List<Product> selectProductList(Product product) {
         return productMapper.selectProductList(product);
     }
 
@@ -512,10 +514,9 @@ public class ProductServiceImpl implements ProductService{
      * @return 结果
      */
     @Override
-    public int insertProduct(Product product)
-    {
+    public int insertProduct(Product product) {
         Product oneByProductName = productMapper.findOneByProductName(product.getProductName());
-        if(StringUtils.isNotNull(oneByProductName)){
+        if (StringUtils.isNotNull(oneByProductName)) {
             return 0;
         }
         product.setProductIdentification(UUID.getUUID());
@@ -533,8 +534,7 @@ public class ProductServiceImpl implements ProductService{
      * @return 结果
      */
     @Override
-    public int updateProduct(Product product)
-    {
+    public int updateProduct(Product product) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         product.setUpdateTime(DateUtils.getNowDate());
@@ -549,8 +549,7 @@ public class ProductServiceImpl implements ProductService{
      * @return 结果
      */
     @Override
-    public int deleteProductByIds(Long[] ids)
-    {
+    public int deleteProductByIds(Long[] ids) {
         return productMapper.deleteProductByIds(ids);
     }
 
@@ -561,70 +560,70 @@ public class ProductServiceImpl implements ProductService{
      * @return 结果
      */
     @Override
-    public int deleteProductById(Long id)
-    {
+    public int deleteProductById(Long id) {
         return productMapper.deleteProductById(id);
     }
 
-	@Override
-	public Product findOneByProductName(String productName){
-		 return productMapper.findOneByProductName(productName);
-	}
+    @Override
+    public Product findOneByProductName(String productName) {
+        return productMapper.findOneByProductName(productName);
+    }
 
-	@Override
-	public List<Product> selectByManufacturerIdAndModelAndDeviceType(String manufacturerId,String model,String deviceType){
-		 return productMapper.selectByManufacturerIdAndModelAndDeviceType(manufacturerId,model,deviceType);
-	}
+    @Override
+    public List<Product> selectByManufacturerIdAndModelAndDeviceType(String manufacturerId, String model, String deviceType) {
+        return productMapper.selectByManufacturerIdAndModelAndDeviceType(manufacturerId, model, deviceType);
+    }
 
-	@Override
-	public Product findOneByManufacturerIdAndModelAndDeviceType(String manufacturerId,String model,String deviceType){
-		 return productMapper.findOneByManufacturerIdAndModelAndDeviceType(manufacturerId,model,deviceType);
-	}
+    @Override
+    public Product findOneByManufacturerIdAndModelAndDeviceType(String manufacturerId, String model, String deviceType) {
+        return productMapper.findOneByManufacturerIdAndModelAndDeviceType(manufacturerId, model, deviceType);
+    }
 
-	@Override
-	public List<Product> findAllByStatus(String status){
-		 return productMapper.findAllByStatus(status);
-	}
+    @Override
+    public List<Product> findAllByStatus(String status) {
+        return productMapper.findAllByStatus(status);
+    }
 
 
     /**
      * 初始化生成超级表模型
-     * @param productIds 产品ID集合  productIds==null 初始化所有产品:productIds!=null 初始化指定产品
-     * @param InitializeOrNot  是否初始化
+     *
+     * @param productIds      产品ID集合  productIds==null 初始化所有产品:productIds!=null 初始化指定产品
+     * @param InitializeOrNot 是否初始化
      * @return
      * @throws Exception
      */
     @Async
     @Override
-    public List<SuperTableDto> createSuperTableDataModel(Long[] productIds,Boolean InitializeOrNot){
+    public List<SuperTableDto> createSuperTableDataModel(Long[] productIds, Boolean InitializeOrNot) {
         List<SuperTableDto> superTableDtoList = new ArrayList<>();
-        List<Product>  productList = new ArrayList<>();
-        if (null==productIds) {
+        List<Product> productList = new ArrayList<>();
+        if (null == productIds) {
             productList = productMapper.findAllByStatus(Constants.ENABLE);
-        }else {
-            productList = productMapper.findAllByIdInAndStatus(Arrays.asList(productIds),Constants.ENABLE);
+        } else {
+            productList = productMapper.findAllByIdInAndStatus(Arrays.asList(productIds), Constants.ENABLE);
         }
         SuperTableDto superTableDto;
         loop:
         for (Product product : productList) {
             List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), Constants.ENABLE);
-            if(StringUtils.isEmpty(allByProductIdAndStatus)){
+            if (StringUtils.isEmpty(allByProductIdAndStatus)) {
                 continue;
             }
             for (ProductServices productServices : allByProductIdAndStatus) {
                 superTableDto = new SuperTableDto();
-                if(StringUtils.isNull(productServices)){
+                if (StringUtils.isNull(productServices)) {
                     continue loop;
                 }
                 //超级表名称命名规则:产品类型_产品标识_服务名称
-                String superTableName = product.getProductType()+"_"+product.getProductIdentification()+"_"+productServices.getServiceName();
+                String superTableName = product.getProductType() + "_" + product.getProductIdentification() + "_" + productServices.getServiceName();
                 //设置数据库名称和超级表名称
                 superTableDto.setDataBaseName(dataBaseName);
                 superTableDto.setSuperTableName(superTableName);
                 //构建超级表的表结构字段列表
                 List<ProductProperties> allByServiceId = productPropertiesService.findAllByServiceId(productServices.getId());
                 //如果服务下属性值为空，没必要为该服务创建超级表，跳过该循环，进入下个服务
-                if(StringUtils.isNull(allByServiceId)){
+                if (StringUtils.isNull(allByServiceId)) {
                     continue loop;
                 }
                 //构建超级表的表结构字段列表
@@ -666,20 +665,20 @@ public class ProductServiceImpl implements ProductService{
                 //设置超级表标签字段列表
                 superTableDto.setTagsFields(tagsFields);
                 //将之前存在redis里的同样的名称的超级表的表结构信息删除
-                if (redisService.hasKey(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName)) {
-                    redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS+superTableName);
+                if (redisService.hasKey(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
+                    redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName);
                 }
                 //在redis里存入新的超级表对的表结构信息
                 redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
-                log.info("缓存超级表数据模型:{}",JSON.toJSONString(superTableDto));
+                log.info("缓存超级表数据模型:{}", JSON.toJSONString(superTableDto));
                 superTableDtoList.add(superTableDto);
-                if (InitializeOrNot){
+                if (InitializeOrNot) {
                     //推送RocketMq消息初始化超级表
                     MQMessage mqMessage = new MQMessage();
                     mqMessage.setTopic(ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE);
                     final JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("type","create");
-                    jsonObject.put("msg",JSON.toJSONString(superTableDto));
+                    jsonObject.put("type", "create");
+                    jsonObject.put("msg", JSON.toJSONString(superTableDto));
                     mqMessage.setMessage(jsonObject.toJSONString());
                     rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
                 }
@@ -688,36 +687,25 @@ public class ProductServiceImpl implements ProductService{
         return superTableDtoList;
     }
 
-	@Override
-	public Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(String manufacturerId,String model,String protocolType,String status){
-		 return productMapper.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(manufacturerId,model,protocolType,status);
-	}
+    @Override
+    public Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(String manufacturerId, String model, String protocolType, String status) {
+        return productMapper.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(manufacturerId, model, protocolType, status);
+    }
 
-	@Override
-	public Product findOneByIdAndStatus(Long id,String status){
-		 return productMapper.findOneByIdAndStatus(id,status);
-	}
+    @Override
+    public Product findOneByIdAndStatus(Long id, String status) {
+        return productMapper.findOneByIdAndStatus(id, status);
+    }
 
-	@Override
-	public Product findOneByProductIdentificationAndProtocolType(String productIdentification,String protocolType){
-		 return productMapper.findOneByProductIdentificationAndProtocolType(productIdentification,protocolType);
-	}
+    @Override
+    public Product findOneByProductIdentificationAndProtocolType(String productIdentification, String protocolType) {
+        return productMapper.findOneByProductIdentificationAndProtocolType(productIdentification, protocolType);
+    }
 
-	@Override
-	public List<Product> findAllByIdInAndStatus(Collection<Long> idCollection, String status){
-		 return productMapper.findAllByIdInAndStatus(idCollection,status);
-	}
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public List<Product> findAllByIdInAndStatus(Collection<Long> idCollection, String status) {
+        return productMapper.findAllByIdInAndStatus(idCollection, status);
+    }
 
 
 }
