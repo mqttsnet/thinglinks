@@ -302,10 +302,10 @@ export default {
         code: String(this.form.content),
         inparam: String(this.inParameter)
       }
-      console.log(data);
-      // dynamicallyXcode(data).then(res => {
-      //   console.log(res);
-      // });
+      console.log(JSON.stringify(data));
+      dynamicallyXcode(JSON.stringify(data)).then(res => {
+        console.log(res);
+      });
     },
     codeValue(e) {
       this.form.content = e
