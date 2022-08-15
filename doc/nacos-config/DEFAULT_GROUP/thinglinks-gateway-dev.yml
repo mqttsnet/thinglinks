@@ -116,15 +116,9 @@ security:
       - /auth/register
       - /*/v2/api-docs
       - /csrf
-      #MQTT消息推动接口
-      - /broker/publish
-      #设备认证接口
-      - /link/device/findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType
-      #更新设备在线状态
-      - /link/device/updateConnectStatusByClientId
-      #更新设备在线状态
-      - /link/device/updateConnectStatusByClientId
-      #新增设备消息
-      - /link/device/datas/add
-      #新增设备动作
-      - /link/device/action/add
+      #MQTT消息推送接口
+      - /broker/publish/sendMessage
+      #Broker WebSocket推送日志
+      - /broker/websocket/logging
+      #客户端身份认证接口
+      - /link/device/clientAuthentication
