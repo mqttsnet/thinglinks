@@ -41,6 +41,7 @@ import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -163,6 +164,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      *
      * @param thinglinksMessage
      */
+    @Async("linkAsync")
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void insertBaseDatas(JSONObject thinglinksMessage) throws Exception {

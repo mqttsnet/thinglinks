@@ -9,6 +9,7 @@ import com.mqttsnet.thinglinks.tdengine.mapper.TdEngineMapper;
 import com.mqttsnet.thinglinks.tdengine.service.TdEngineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -51,11 +52,13 @@ public class TdEngineServiceImpl implements TdEngineService {
         this.tdEngineMapper.createTable(tableDto);
     }
 
+    @Async("tdengineAsync")
     @Override
     public void insertData(TableDto tableDto) throws Exception{
         this.tdEngineMapper.insertData(tableDto);
     }
 
+    @Async("tdengineAsync")
     @Override
     public List<Map<String, Object>> selectByTimesTamp(SelectDto selectDto) throws Exception{
         List<Map<String, Object>> maps = this.tdEngineMapper.selectByTimestamp(selectDto);
@@ -94,6 +97,7 @@ public class TdEngineServiceImpl implements TdEngineService {
      * @param tableName tableName 可以为超级表名或普通表名
      * @return
      */
+    @Async("tdengineAsync")
     public boolean checkTableExists(String dataBaseName,String tableName) throws Exception{
         try {
             Integer count = tdEngineMapper.checkTableExists(dataBaseName, tableName);
@@ -104,6 +108,7 @@ public class TdEngineServiceImpl implements TdEngineService {
         }
     }
 
+    @Async("tdengineAsync")
     @Override
     public void initSTableFrame(String msg) throws Exception {
         final SuperTableDto superTableDto = JSONObject.toJavaObject(JSONObject.parseObject(msg), SuperTableDto.class);
@@ -139,6 +144,7 @@ public class TdEngineServiceImpl implements TdEngineService {
      * @param selectDto
      * @return
      */
+    @Async("tdengineAsync")
     @Override
     public List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception{
         List<Map<String, Object>> maps = this.tdEngineMapper.getLastData(selectDto);
@@ -155,6 +161,7 @@ public class TdEngineServiceImpl implements TdEngineService {
      * @param tagsSelectDao
      * @return
      */
+    @Async("tdengineAsync")
     @Override
     public Map<String, Map<String, Object>> getLastDataByTags(TagsSelectDao tagsSelectDao) {
         List<Map<String, Object>> maps = this.tdEngineMapper.getLastDataByTags(tagsSelectDao);
