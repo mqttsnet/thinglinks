@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.link.api.domain.device.entity.model;
+package com.mqttsnet.thinglinks.link.api.domain.device.model;
 
 import lombok.Data;
 

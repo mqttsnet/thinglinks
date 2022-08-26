@@ -5,6 +5,7 @@ import com.mqttsnet.thinglinks.broker.api.RemotePublishActorService;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
@@ -367,7 +368,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
                 tagsFieldValues.add(fields);
                 tableDto.setTagsFieldValues(tagsFieldValues);
                 final R<?> ctResult = remoteTdEngineService.createTable(tableDto);
-                if (ctResult.getCode() == 200) {
+                if (ctResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     shadowTableNameBuilder.append(tableDto.getTableName()).append(",");
                     log.info("Create SuperTable Success: " + ctResult.getMsg());
                 } else {
