@@ -11,7 +11,7 @@ import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.DeviceModel;
+import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
@@ -104,9 +104,9 @@ public class DeviceController extends BaseController {
     @PreAuthorize(hasPermi = "link:device:add")
     @Log(title = "设备管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody DeviceModel deviceModel) {
+    public AjaxResult add(@RequestBody DeviceParams deviceParams) {
         try {
-            return toAjax(deviceService.insertDevice(deviceModel));
+            return toAjax(deviceService.insertDevice(deviceParams));
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
@@ -119,9 +119,9 @@ public class DeviceController extends BaseController {
     @PreAuthorize(hasPermi = "link:device:edit")
     @Log(title = "设备管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody DeviceModel deviceModel) {
+    public AjaxResult edit(@RequestBody DeviceParams deviceParams) {
         try {
-            return toAjax(deviceService.updateDevice(deviceModel));
+            return toAjax(deviceService.updateDevice(deviceParams));
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
