@@ -21,7 +21,7 @@
 
 ## 核心特性
 
-支持统一产品模型管理,多种设备,多种厂家,统一设备连接管理,多协议适配(TCP,MQTT,UDP,CoAP,HTTP等)。
+支持统一产品模型管理,多种设备,多种厂家,统一设备连接管理,多协议适配(MQTT,WebSocket,TCP,UDP,CoAP,HTTP等)。
 
 灵活的规则引擎,设备告警,消息通知,数据转发。
 
@@ -69,10 +69,6 @@ com.mqttsnet.thinglinks
 
 ![](doc/imgs/overallArchitecture.png)
 
-## 设备集成LINK架构
-
-![](doc/imgs/link.png)
-
 ## 核心功能列表
 
 系统管理：用户管理、角色管理、菜单管理、部门管理、岗位管理、字典管理、参数设置、通知公告、日志管理
@@ -81,7 +77,7 @@ com.mqttsnet.thinglinks
 
 系统工具：表单构建、代码生成、系统接口
 
-设备集成：设备管理（支持MQTT协议、TCP-IP协议设备接入）、子设备管理、产品管理、协议管理、规则引擎（设备联动）
+设备集成：设备管理（支持MQTT协议、WebSocket协议、TCP-IP协议设备接入）、子设备管理、产品管理、协议管理、规则引擎（设备联动）
 
 设备调试：实时日志、命令下发
 
@@ -97,17 +93,13 @@ com.mqttsnet.thinglinks
 
 ## 功能开发计划
 
-*、设备管理页面展示优化(实现中)
+*、规则引擎-设备联动(实现中)
 
-*、产品管理优化(服务属性告警指标配置实现中)
+*、APP移动端-我的设备(实现中)
 
-*、Docker容器化部署(实现中)
+*、告警管理（钉钉推送、邮件推送等）(规划中)
 
-*、规则引擎-设备联动（实现中）
-
-*、告警管理（钉钉推送、邮件推送等）
-
-*、大屏展示（客户端、消息发布订阅、告警）
+*、大屏展示（客户端、消息发布订阅、告警）（规划中）
 
 ## 演示图
 
@@ -166,6 +158,11 @@ com.mqttsnet.thinglinks
 如果你有兴趣参与项目开发，请联系mqttsnet团队邮箱: mqttsnet@163.com 
 
 ## 友情链接
+
+thinglinks基于UniApp开发的轻量级移动端: thinglinks-app
+
+- [Github](https://github.com/mqttsnet/thinglinks-app)
+- [Gitee](https://gitee.com/mqttsnet/thinglinks-app)
 
 本平台高效MQTT Broker采用: SMQTT
 

@@ -5,16 +5,18 @@
 
 
 ## TDengine 服务端版本及搭建
-### 推荐版本  tdengine/tdengine:2.6.0.10
-### TDengine官方搭建教程：https://www.taosdata.com/docs/cn/v2.0/getting-started/docker
+### 推荐版本  tdengine/tdengine:3.0.0.0
+### TDengine官方搭建教程：https://www.taosdata.com/docs/cn/v3.0/getting-started/docker
 
 # #### 安装TDengine
 # 1. 拉取镜像文件
-docker pull tdengine/tdengine:2.6.0.10
+docker pull tdengine/tdengine:3.0.0.0
 # 2. 创建运行容器
-docker run -d --name thinglinks-tdengine  -v /home/taos/log:/var/log/taos -v /home/taos/data:/var/lib/taos  -p 6030-6049:6030-6049 -p 6030-6049:6030-6049/udp tdengine/tdengine:2.6.0.10
+docker run -d --name thinglinks-tdengine  -v /home/taos/log:/var/log/taos -v /home/taos/data:/var/lib/taos  -p 6030-6049:6030-6049 -p 6030-6049:6030-6049/udp tdengine/tdengine:3.0.0.0
 # 3. 指定thinglinks库生成一亿条测试数据
 taosBenchmark -d thinglinks -y -M -S 600000
+# 4.客户端连接工具
+TDengineGUI
 
 ### 配置 application.properties
 ```properties

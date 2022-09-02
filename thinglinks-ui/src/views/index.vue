@@ -48,9 +48,7 @@
         </p>
         <br>
         <h5>
-          <p>
-            <img  src="@/assets/images/index/device-flow.png" alt="device-flow">
-          </p>
+          待更新
         </h5>
       </el-col>
     </el-row>

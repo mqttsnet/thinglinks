@@ -44,3 +44,18 @@ management:
     web:
       exposure:
         include: '*'
+
+#线程池总线资源配置
+threadBus:
+  pool:
+    #核心线程数（默认线程数）
+    core-pool-size: 8
+    #最大线程数
+    max-pool-size: 16
+    #允许线程空闲时间（单位：默认为秒）
+    keep-alive-time: 60
+    #缓冲队列大小
+    queue-capacity: 1000
+    #线程池名前缀
+    thread-name-prefix: thinglinksAsync-
+

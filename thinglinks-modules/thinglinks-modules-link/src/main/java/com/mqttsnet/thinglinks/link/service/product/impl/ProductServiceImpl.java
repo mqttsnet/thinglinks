@@ -8,6 +8,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
+import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
@@ -419,7 +420,7 @@ public class ProductServiceImpl implements ProductService {
                 superTableDto.setTagsFields(tagsFields);
                 R<?> cstResult = remoteTdEngineService.createSuperTable(superTableDto);
                 //创建超级表报错，打印报错信息，并跳过该循环，继续为下个服务创建表
-                if (cstResult.getCode() != 200) {
+                if (cstResult.getCode() != ResultEnum.SUCCESS.getCode()) {
                     log.error("Create SuperTable Exception: " + cstResult.getMsg());
                     continue loop;
                 }

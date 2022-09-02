@@ -9,6 +9,7 @@ import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,6 +32,7 @@ public class DeviceActionMessageConsumer implements RocketMQListener {
     @Autowired
     private DeviceDatasService deviceDatasService;
 
+    @Async("linkAsync")
     @Override
     public void onMessage(Object message) {
         assert message!=null:"message cannot be empty";

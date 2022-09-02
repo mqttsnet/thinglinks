@@ -23,6 +23,9 @@
     id, device_identification, latitude, longitude, full_name, province_code, city_code,
     region_code, create_by, create_time, update_by, update_time, remark
   </sql>
+  <sql id="Latest_Data">
+    order by update_time desc limit 1
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select
@@ -543,8 +546,8 @@
         <include refid="Base_Column_List"/>
         from device_location
         where device_identification=#{deviceIdentification,jdbcType=VARCHAR}
-        GROUP BY device_identification
-    </select>
+        <include refid="Latest_Data"/>
+  </select>
 
   <update id="updateBatchSelective" parameterType="java.util.List">
     <!--@mbg.generated-->

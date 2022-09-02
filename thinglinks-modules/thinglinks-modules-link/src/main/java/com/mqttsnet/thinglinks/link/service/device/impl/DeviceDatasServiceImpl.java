@@ -14,6 +14,7 @@ import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicLoaderEngin
 import com.mqttsnet.thinglinks.common.core.dynamicCompilation.bytecode.InjectionSystem;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
 import com.mqttsnet.thinglinks.common.core.enums.ProtocolType;
+import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
@@ -22,8 +23,8 @@ import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.DeviceInfos;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.model.TopoAddDatas;
+import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceInfos;
+import com.mqttsnet.thinglinks.link.api.domain.device.model.TopoAddDatas;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.api.linkUtils;
@@ -41,6 +42,7 @@ import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -163,6 +165,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      *
      * @param thinglinksMessage
      */
+    @Async("linkAsync")
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void insertBaseDatas(JSONObject thinglinksMessage) throws Exception {
@@ -291,7 +294,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 tagsFieldValues.add(fields);
                 tableDto.setTagsFieldValues(tagsFieldValues);
                 final R<?> ctResult = remoteTdEngineService.createTable(tableDto);
-                if (ctResult.getCode() == 200) {
+                if (ctResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     shadowTableNameBuilder.append(tableDto.getTableName()).append(",");
                     log.info("Create SuperTable Success: " + ctResult.getMsg());
                 } else {
@@ -526,7 +529,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 tableDto.setTagsFieldValues(tagsFieldsStream);
                 //调用插入方法插入数据
                 final R<?> insertResult = this.remoteTdEngineService.insertData(tableDto);
-                if (insertResult.getCode() == 200) {
+                if (insertResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     log.info("Insert data result: {}", insertResult.getMsg());
                 } else {
                     log.error("Insert data Exception: {}", insertResult.getMsg());
