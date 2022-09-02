@@ -247,60 +247,34 @@
       </div>
     </el-dialog>
     <el-drawer title="边设备信息" :visible.sync="drawer" :before-close="handleClose">
-      <el-row>
-        <el-table ref="myTable" highlight-current-row v-loading="loading" :data="deviceList"
-          @row-click="deviceListItem">
-          <el-table-column align="center" label="id" prop="id" />
-          <el-table-column align="center" label="设备标识" prop="deviceIdentification" />
-          <el-table-column align="center" label="客户端标识" prop="clientId" />
-        </el-table>
-        <pagination v-show="deviceTotal > 0" :limit.sync="queryParamsD.pageSize" :page.sync="queryParamsD.pageNum"
-          :total="deviceTotal" @pagination="getDeviceList" />
-      </el-row>
-      <el-row style="padding:20px 30px">
-        <el-button type="primary" @click="drawer = !drawer; confirm()">确 定</el-button>
-        <el-button @click="drawer = !drawer; cancelD()">取 消</el-button>
-      </el-row>
+      <!-- /                    123123123131231231233123 -->
+      <deviceList :search="search"></deviceList>
     </el-drawer>
   </div>
 </template>
 <script>
 import { listDeviceInfo, getDeviceInfo, delDeviceInfo, addDeviceInfo, updateDeviceInfo, refreshDeviceInfoDataModel } from "@/api/link/deviceInfo";
-import { listDevice, } from "@/api/link/device/device";
+import deviceList from "./deviceList.vue";
 export default {
   name: "DeviceInfo",
   dicts: ['link_device_connect_status', 'link_deviceInfo_shadow_enable', 'business_data_status'],
+  components: {
+    deviceList
+  },
   data() {
     return {
       // 设备档案表格数据
       search: false,
       searchValue: "",
       oldSearchValue: '',
-      deviceTotal: 0,
-      did: '',
+      // did: '',
       oldDid: '',
       edgeDevicesIdentification: '',
       oldEdgeDevicesIdentification: "",
-      dynamicTags: [],
       deviceList: [],
       drawer: false,
-      // 边设备查询参数
-      queryParamsD: {
-        pageNum: 1,
-        pageSize: 10,
-        clientId: null,
-        deviceIdentification: null,
-        deviceName: null,
-        connector: null,
-        deviceStatus: null,
-        connectStatus: null,
-        isWill: null,
-        deviceTags: null,
-        productIdentification: null,
-        protocolType: null,
-        deviceType: null,
-      },
-      set: false,//修改禁用标识
+      //修改禁用标识
+      set: false,
       // 高级搜索切换
       advancedSearch: false,
       // 高级搜索icon
@@ -359,43 +333,16 @@ export default {
   },
   created() {
     this.getList();
-    this.getDeviceList();
   },
   methods: {
+    // AddOrSet(e) {
+    //   console.log(e);
+    // },
     handleClose(tag) {
       if (this.search) {
         this.queryParams.did = ''
       } else {
         this.form.did = ''
-      }
-    },
-    confirm() {
-      if (this.search) {
-        this.searchValue = this.oldSearchValue
-        this.queryParams.did = this.oldDid
-        this.dynamicTags = [this.searchValue]
-      } else {
-        this.form.did = this.oldDid
-        this.edgeDevicesIdentification = this.oldEdgeDevicesIdentification
-        this.dynamicTags = [this.edgeDevicesIdentification]
-      }
-    },
-    cancelD() {
-      if (this.search) {
-        this.queryParams.did = this.oldDid
-        this.dynamicTags = [this.searchValue]
-      } else {
-        this.form.did = this.oldDid
-        this.dynamicTags = [this.edgeDevicesIdentification]
-      }
-    },
-    deviceListItem(row) {
-      if (this.search) {
-        this.oldDid = row.id
-        this.oldSearchValue = row.deviceIdentification
-      } else {
-        this.oldDid = row.id
-        this.oldEdgeDevicesIdentification = row.deviceIdentification
       }
     },
     //初始化数据模型
@@ -422,15 +369,6 @@ export default {
       } else {
         this.icon = "el-icon-arrow-down";
       }
-    },
-    /** 查询设备档案列表 */
-    getDeviceList() {
-      this.loading = true;
-      listDevice(this.queryParamsD).then((response) => {
-        this.deviceList = response.data.device.rows;
-        this.deviceTotal = response.data.device.total;
-        this.loading = false;
-      });
     },
     /** 查询子设备管理列表 */
     getList() {
