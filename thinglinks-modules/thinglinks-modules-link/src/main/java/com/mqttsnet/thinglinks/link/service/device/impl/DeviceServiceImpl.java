@@ -17,7 +17,7 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-import com.mqttsnet.thinglinks.link.api.linkUtils;
+import com.mqttsnet.thinglinks.common.core.utils.tdengine.TdUtils;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceLocationService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
@@ -372,7 +372,7 @@ public class DeviceServiceImpl implements DeviceService {
         //设备信息缓存失效 删除缓存 更新数据库设备状态
         if(StringUtils.isNotNull(oneByClientId)){
             //删除缓存
-            redisService.delete(Constants.DEVICE_RECORD_KEY+clientId);
+            redisService.delete(Constants.DEVICE_RECORD_KEY+oneByClientId.getDeviceIdentification());
             //更新数据库设备状态
             Device device = new Device();
             device.setId(oneByClientId.getId());
@@ -426,7 +426,7 @@ public class DeviceServiceImpl implements DeviceService {
         final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, username, password, deviceStatus, protocolType);
         if (Optional.ofNullable(device).isPresent()) {
             //缓存设备信息
-            redisService.setCacheObject(Constants.DEVICE_RECORD_KEY+device.getClientId(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(Constants.DEVICE_RECORD_KEY+device.getDeviceIdentification(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             //更改设备在线状态为在线
             this.updateConnectStatusByClientId(DeviceConnectStatus.ONLINE.getValue(),clientIdentifier);
             return true;
@@ -475,10 +475,10 @@ public class DeviceServiceImpl implements DeviceService {
             tableDto = new TableDto();
             tableDto.setDataBaseName(dataBaseName);
             //超级表命名规则 : 产品类型_产品标识_服务名称
-            String superTableName = linkUtils.getSuperTableName(product.getProductType(),product.getProductIdentification(),productServices.getServiceName());
+            String superTableName = TdUtils.getSuperTableName(product.getProductType(),product.getProductIdentification(),productServices.getServiceName());
             tableDto.setSuperTableName(superTableName);
             //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
-            tableDto.setTableName(linkUtils.getSubTableName(superTableName,device.getDeviceIdentification()));
+            tableDto.setTableName(TdUtils.getSubTableName(superTableName,device.getDeviceIdentification()));
             //Tag的处理
             List<Fields> tagsFieldValues = new ArrayList<>();
             Fields fields = new Fields();

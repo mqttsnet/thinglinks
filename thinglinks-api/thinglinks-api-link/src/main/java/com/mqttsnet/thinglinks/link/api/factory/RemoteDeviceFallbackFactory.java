@@ -31,12 +31,23 @@ public class RemoteDeviceFallbackFactory implements FallbackFactory<RemoteDevice
 
             @Override
             public R<Boolean> clientAuthentication(@RequestBody Map<String, Object> params) {
-                return R.fail("客户端身份认证:" + throwable.getMessage());
+                return R.fail("客户端身份认证失败:" + throwable.getMessage());
             }
 
             @Override
             public R<?> selectByProductIdentification(String productIdentification) {
-                return R.fail("查询产品下的设备标识:" + throwable.getMessage());
+                return R.fail("查询产品下的设备标识失败:" + throwable.getMessage());
+            }
+
+            /**
+             * 根据客户端标识获取设备信息
+             *
+             * @param clientId
+             * @return
+             */
+            @Override
+            public R<Device> findOneByClientId(String clientId) {
+                return R.fail("查询产品下的设备标识失败:" + throwable.getMessage());
             }
         };
     }

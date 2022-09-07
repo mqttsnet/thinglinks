@@ -2,11 +2,13 @@ package com.mqttsnet.thinglinks.link.api;
 
 import com.mqttsnet.thinglinks.common.core.constant.ServiceNameConstants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.factory.RemoteDeviceFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
@@ -45,5 +47,14 @@ public interface RemoteDeviceService {
      */
     @GetMapping("/device/selectByProductIdentification")
     public R<?> selectByProductIdentification(String productIdentification);
+
+
+    /**
+     * 根据客户端标识获取设备信息
+     * @param clientId
+     * @return
+     */
+    @GetMapping("/device/findOneByClientId")
+    public R<Device> findOneByClientId(String clientId);
 
 }

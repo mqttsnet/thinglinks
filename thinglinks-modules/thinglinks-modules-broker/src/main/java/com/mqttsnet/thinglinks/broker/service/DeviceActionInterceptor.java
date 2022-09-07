@@ -1,10 +1,12 @@
 package com.mqttsnet.thinglinks.broker.service;
 
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
+import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceActionService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import io.github.quickmsg.common.channel.MqttChannel;
 import io.github.quickmsg.common.config.Configuration;
 import io.github.quickmsg.common.context.ReceiveContext;
@@ -78,7 +80,13 @@ public class DeviceActionInterceptor implements Interceptor {
             //TODO MQTT设备心跳处理
             List<MqttMessageType> mqttMessageType = Collections.singletonList(MqttMessageType.PINGREQ);
             if (!smqttMessage.getIsCluster() && mqttMessageType.contains(message.fixedHeader().messageType())) {
-                DeviceActionInterceptor.redisService.expire(Constants.DEVICE_RECORD_KEY+mqttChannel.getClientIdentifier(),60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+                R<Device> deviceServiceOneByClientId = deviceService.findOneByClientId(mqttChannel.getClientIdentifier());
+                if (null != deviceServiceOneByClientId.getData() ) {
+                    Device device = deviceServiceOneByClientId.getData();
+                    //缓存设备信息
+                    DeviceActionInterceptor.redisService.setCacheObject(Constants.DEVICE_RECORD_KEY+device.getClientId(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+//                    DeviceActionInterceptor.redisService.expire(Constants.DEVICE_RECORD_KEY+device.getDeviceIdentification(),60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+                }
             }
             return invocation.proceed(); // 放行
         } catch (Exception e) {
