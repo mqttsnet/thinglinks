@@ -380,7 +380,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
             }
             shadowTableNameBuilder.replace(0, shadowTableNameBuilder.length(), "");
             item.setCreateBy(device.getCreateBy());
-            deviceInfoMapper.insertSelective(item);
+            deviceInfoMapper.updateByPrimaryKeySelective(item);
         });
         return true;
     }
