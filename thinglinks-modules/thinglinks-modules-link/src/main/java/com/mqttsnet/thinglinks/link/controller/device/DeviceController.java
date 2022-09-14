@@ -213,5 +213,15 @@ public class DeviceController extends BaseController {
         return certificationStatus ? ResponseEntity.ok().body(AjaxResult.success("认证成功")) : ResponseEntity.status(403).body(AjaxResult.error("认证失败"));
     }
 
+    /**
+     * 根据客户端标识获取设备信息
+     * @param clientId
+     * @return
+     */
+    @GetMapping("/findOneByClientId")
+    public R<Device> findOneByClientId(String clientId) {
+        return R.ok(deviceService.findOneByClientId(clientId));
+    }
+
 
 }

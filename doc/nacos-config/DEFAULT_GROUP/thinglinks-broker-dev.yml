@@ -81,7 +81,7 @@ seata:
       server-addr: 127.0.0.1:8848
       namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
 
-#smqtt配置文件V1.1.4
+#smqtt配置文件V1.1.5
 smqtt:
   logLevel: INFO # 系统日志
   tcp: # tcp配置
@@ -121,7 +121,7 @@ smqtt:
     ssl: # ssl配置
       enable: false
     admin: # Broker后台管理配置
-      enable: false  # 开关
+      enable: true  # 开关
       username: thinglinks # 访问用户名
       password: thinglinks # 访问密码
   auth:

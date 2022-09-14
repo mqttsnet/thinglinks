@@ -1,6 +1,6 @@
-package com.mqttsnet.thinglinks.link.api;
+package com.mqttsnet.thinglinks.common.core.utils.tdengine;
 
-public class linkUtils {
+public class TdUtils {
     /**
      * 创建子表名
      * @param supTbName 超级表名

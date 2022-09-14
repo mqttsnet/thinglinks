@@ -13,6 +13,7 @@ import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicClassLoader
 import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicLoaderEngine;
 import com.mqttsnet.thinglinks.common.core.dynamicCompilation.bytecode.InjectionSystem;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceType;
 import com.mqttsnet.thinglinks.common.core.enums.ProtocolType;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
@@ -27,7 +28,7 @@ import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceInfos;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.TopoAddDatas;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-import com.mqttsnet.thinglinks.link.api.linkUtils;
+import com.mqttsnet.thinglinks.common.core.utils.tdengine.TdUtils;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceDatasMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
@@ -283,10 +284,10 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 tableDto = new TableDto();
                 tableDto.setDataBaseName(dataBaseName);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
-                String superTableName = linkUtils.getSuperTableName(product.getProductType(),product.getProductIdentification(),productServices.getServiceName());
+                String superTableName = TdUtils.getSuperTableName(product.getProductType(),product.getProductIdentification(),productServices.getServiceName());
                 tableDto.setSuperTableName(superTableName);
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
-                tableDto.setTableName(linkUtils.getSubTableName(superTableName,deviceInfo.getDeviceId()));
+                tableDto.setTableName(TdUtils.getSubTableName(superTableName,deviceInfo.getDeviceId()));
                 //Tag的处理
                 List<Fields> tagsFieldValues = new ArrayList<>();
                 Fields fields = new Fields();
@@ -437,10 +438,34 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
         List<Map<String, Object>> items = (List<Map<String, Object>>) resultMap.get("devices");
         for (Map<String, Object> item : items) {
             final Object deviceId = item.get("deviceId");
-            final DeviceInfo oneByDeviceId = deviceInfoService.findOneByDeviceId(deviceId.toString());
-            if (StringUtils.isNull(oneByDeviceId)) {
-                log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
-                continue;
+            Device device = null;
+            if (redisService.hasKey(Constants.DEVICE_RECORD_KEY + deviceIdentification)){
+                device = redisService.getCacheObject(Constants.DEVICE_RECORD_KEY + deviceIdentification);
+            }else {
+                device = deviceService.findOneByDeviceIdentification(deviceIdentification);
+                if (StringUtils.isNotNull(device)){
+                    redisService.setCacheObject(Constants.DEVICE_RECORD_KEY + deviceIdentification,device);
+                }else {
+                    log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+                    continue;
+                }
+            }
+            String manufacturerId = "";
+            String model = "";
+            if (device.getDeviceType().equals(DeviceType.GATEWAY.getValue())){
+                final DeviceInfo oneByDeviceId = deviceInfoService.findOneByDeviceId(deviceId.toString());
+                if (StringUtils.isNull(oneByDeviceId)) {
+                    log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+                    continue;
+                }
+                //获取设备的厂商ID和型号
+                manufacturerId = oneByDeviceId.getManufacturerId();
+                model = oneByDeviceId.getModel();
+            }else if (device.getDeviceType().equals(DeviceType.COMMON.getValue())){
+                // TODO 优化取redis产品信息
+                Product product = productService.selectByProductIdentification(device.getProductIdentification());
+                manufacturerId = product.getManufacturerId();
+                model = product.getModel();
             }
             final JSONArray services = JSON.parseArray(item.get("services").toString());
             //如果设备上报的数据为空，不需要存，跳过该循环，进入下个循环
@@ -453,11 +478,11 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 final Object serviceId = serviceData.get("serviceId");
                 final Object eventTime = serviceData.get("eventTime");
                 Map<String, Object> data = StringUtils.jsonToMap(serviceData.get("data").toString());
-                final Product product = productService.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(oneByDeviceId.getManufacturerId(), oneByDeviceId.getModel(), ProtocolType.MQTT.getValue(), Constants.ENABLE);
+                final Product product = productService.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(manufacturerId, model, ProtocolType.MQTT.getValue(), Constants.ENABLE);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
                 String superTableName = product.getProductType() + "_" + product.getProductIdentification() + "_" + serviceId.toString();
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
-                String tableName = superTableName + "_" + oneByDeviceId.getDeviceId();
+                String tableName = superTableName + "_" + deviceId.toString();
                 //从redis根据超级表名称取出超级表表结构信息
                 final Object cacheObject = redisService.getCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName);
                 ObjectMapper objectMapper = new ObjectMapper();
