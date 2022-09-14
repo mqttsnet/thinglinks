@@ -25,6 +25,7 @@
         <spring-boot-admin.version>2.5.2</spring-boot-admin.version>
         <spring-boot.mybatis>2.2.0</spring-boot.mybatis>
         <swagger.fox.version>3.0.0</swagger.fox.version>
+        <swagger.ui.version>2.9.2</swagger.ui.version>
         <swagger.core.version>1.6.2</swagger.core.version>
         <tobato.version>1.27.2</tobato.version>
         <kaptcha.version>2.3.2</kaptcha.version>
