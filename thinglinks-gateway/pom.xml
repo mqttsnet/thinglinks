@@ -88,11 +88,11 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${swagger.ui.version}</version>
         </dependency>
-        <!-- thinglinks Common Swagger -->
+
         <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-swagger</artifactId>
-            <version>${thinglinks.version}</version>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${swagger.fox.version}</version>
         </dependency>
 
     </dependencies>
