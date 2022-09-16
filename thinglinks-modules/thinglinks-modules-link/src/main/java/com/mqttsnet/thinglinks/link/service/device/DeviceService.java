@@ -5,6 +5,7 @@ import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 设备管理业务层接口
@@ -167,5 +168,15 @@ public interface DeviceService {
      * @return
      */
     public DeviceParams selectDeviceModelById(Long id);
+
+    /**
+     * 查询普通设备影子数据
+     *
+     * @param ids 需要查询的普通设备id
+     * @param startTime 开始时间 格式：yyyy-MM-dd HH:mm:ss
+     * @param endTime 结束时间 格式：yyyy-MM-dd HH:mm:ss
+     * @return 普通设备影子数据
+     */
+    public Map<String, List<Map<String, Object>>> getDeviceShadow(String ids, String startTime, String endTime);
 }
 
