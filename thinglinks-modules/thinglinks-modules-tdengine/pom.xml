@@ -81,7 +81,7 @@
         <dependency>
             <groupId>com.taosdata.jdbc</groupId>
             <artifactId>taos-jdbcdriver</artifactId>
-            <version>3.0.0</version>
+            <version>${tdEngine.version}</version>
         </dependency>
 
         <!-- thinglinks Common Datasource -->
