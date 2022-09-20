@@ -14,7 +14,6 @@ import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
@@ -44,7 +43,6 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @Description: 设备管理业务层接口实现类
@@ -480,6 +478,10 @@ public class DeviceServiceImpl implements DeviceService {
         Map<String, List<Map<String, Object>>> map = new HashMap<>();
         devices.forEach(device -> {
             Product product = productService.selectByProductIdentification(device.getProductIdentification());
+            if (StringUtils.isNull(product)) {
+                log.error("查询普通设备影子数据失败，设备对应的产品不存在");
+                return;
+            }
             List<ProductServices> productServicesLis  = productServicesService.findAllByProductIdAndStatus(product.getId(),Constants.ENABLE);
             if (StringUtils.isNull(productServicesLis)) {
                 log.error("查询普通设备影子数据失败，普通设备services不存在");

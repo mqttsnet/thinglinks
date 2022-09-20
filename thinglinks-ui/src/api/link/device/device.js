@@ -67,3 +67,12 @@ export function validationDeviceIdentification_deviceIdentification(deviceIdenti
     method: 'get'
   })
 }
+
+// 查询普通设备影子数据
+export function getDeviceShadow(data) {
+  return request({
+    url: '/link/shadow/getDeviceShadow',
+    method: 'post',
+    data: data
+  })
+}

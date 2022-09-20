@@ -100,17 +100,53 @@
             <Topic :deviceIdentification="this.deviceIdentification"></Topic>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="设备动作" name="fourth" style="width:100%;height: 100%;">
+        <el-tab-pane label="设备动作" name="third" style="width:100%;height: 100%;">
           <div style="width:100%;height:100%">
             <Action :deviceIdentification="this.deviceIdentification"></Action>
           </div>
+        </el-tab-pane>
+        <el-tab-pane v-if="shadowShow" label="设备影子" name="fourth" style="width:100%;height: 100%;">
+          <el-tabs v-model="shadowActiveName" style="width:100%;height: 100%;">
+            <el-tab-pane label="列表" name="first" style="width:100%;height:100%;">
+              <el-date-picker @change="timeControls" style="margin-bottom: 10px;" v-model="value1"
+                              type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" range-separator="至"
+                              start-placeholder="开始日期" end-placeholder="结束日期">
+              </el-date-picker>
+              <el-button style="position: absolute;right:20px" icon="el-icon-refresh"
+                         @click="getShadowData" circle></el-button>
+              <el-tabs v-model="editableTabsValue" type="card">
+                <el-tab-pane v-for="(value, name, index) in ShadowData" :key="index" :label="name"
+                             :name="String(index + 1)" style="width:100%;height: 100%;">
+                  <el-table v-if="JSON.stringify(value) !== '[]'" :data="value" style="width: 100%"
+                            max-height="450" :fit="true">
+                    <el-table-column prop="index" label="序号" style="width: 25%">
+                      <template slot-scope="scope">
+                        {{ scope.$index + 1 }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column v-for="(ShadowValue, ShadowName, index1) in value[0]"
+                                     :key="index1" :label="ShadowName" :prop="ShadowName" style="width: 25%">
+                    </el-table-column>
+                  </el-table>
+                </el-tab-pane>
+              </el-tabs>
+            </el-tab-pane>
+            <el-tab-pane label="JSON" name="second" style="width: 100%;height:100%">
+              <el-button size="medium" style="margin: 10px 0 10px 0" type="primary" @click="decoration">
+                格式化
+              </el-button>
+              <el-input class="textJson" type="textarea" style="width:100%" :autosize="{ minRows: 5 }"
+                        resize="none" :value="detailJSON" placeholder="无内容">
+              </el-input>
+            </el-tab-pane>
+          </el-tabs>
         </el-tab-pane>
       </el-tabs>
     </div>
   </div>
 </template>
 <script>
-import { getDevice } from "@/api/link/device/device";
+import { getDevice,getDeviceShadow } from "@/api/link/device/device";
 import Topic from "@/views/link/device/topic";
 import Action from "@/views/link/device/action";
 
@@ -130,6 +166,21 @@ export default {
       deviceIdentification: null,
       //设备详细
       deviceInfo: {},
+      //table切换
+      shadowActiveName: "first",
+      editableTabsValue: '1',
+      //影子数据
+      ShadowData: {},
+      //json数据转换
+      detailJSON: "",
+      shadowShow: false,
+      value1: [],
+      // 查询子设备影子数据
+      data: {
+        ids: "",
+        startTime: "",
+        endTime: "",
+      },
     }
   },
   created() {
@@ -139,12 +190,68 @@ export default {
       this.getDetail()
     }
   },
+  watch: {
+    activeName(value) {
+      if (value === 'fourth') {
+        this.data.ids = this.deviceId
+        this.getShadowData()
+      }
+    },
+  },
   methods: {
+    timeControls() {
+      this.data.startTime = this.value1[0]
+      this.data.endTime = this.value1[1]
+      this.getShadowData()
+    },
+    // 查询子设备影子数据
+    getShadowData() {
+      this.loading = true
+      getDeviceShadow(this.data).then(res => {
+        console.log(res.data);
+        this.ShadowData = res.data
+        this.detailJSON = JSON.stringify(res.data)
+        this.loading = false
+      })
+    },
+    //验证json并格式化
+    decoration() {
+      if (this.isJSON(this.detailJSON)) {
+        const jdata = JSON.stringify(
+          JSON.parse(this.detailJSON),
+          null,
+          4
+        );
+        this.detailJSON = jdata;
+      } else {
+        this.$toast.fail("不是正确的json格式");
+      }
+    },
+    isJSON(str) {
+      if (typeof str === "string") {
+        try {
+          var obj = JSON.parse(str);
+          if (typeof obj === "object" && obj) {
+            return true;
+          } else {
+            return false;
+          }
+        } catch (e) {
+          this.$toast.fail("不是json");
+          return false;
+        }
+      }
+    },
     //设备详情
     getDetail() {
       getDevice(this.deviceId).then((response) => {
         this.deviceInfo = response.data
         this.deviceIdentification = response.data.deviceIdentification
+        if(response.data.deviceType == 'COMMON'){
+          this.shadowShow = true;
+        }else {
+          this.shadowShow = false;
+        }
       })
     },
     //密码切换
