@@ -80,7 +80,7 @@
       <el-col :span="1.5">
         <el-button plain icon="el-icon-refresh" size="mini" type="primary" :disabled="multiple"
           @click="initializeTheDataModel">
-          产品初始化
+          设备初始化
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -135,7 +135,7 @@
             </el-tooltip>
           </span>
           <span style="margin-right:10px">
-            <el-tooltip class="item" content="产品初始化" effect="light" placement="top">
+            <el-tooltip class="item" content="设备初始化" effect="light" placement="top">
               <el-button circle icon="el-icon-refresh" size="mini" type="primary"
                 @click="initializeTheDataModel(scope.row)">
               </el-button>
