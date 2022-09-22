@@ -49,10 +49,10 @@ public class DeviceController extends BaseController {
     @PreAuthorize(hasPermi = "link:device:list")
     @GetMapping("/list")
     public R<Map<String, Object>> list(Device device) {
-        startPage();
         final Map<String, Object> results = new HashMap<>();
+        Map<String, List<Device>> connectStatusCollect = deviceService.selectDeviceList(device).parallelStream().collect(Collectors.groupingBy(Device::getConnectStatus));
+        startPage();
         List<Device> list = deviceService.selectDeviceList(device);
-        Map<String, List<Device>> connectStatusCollect = list.parallelStream().collect(Collectors.groupingBy(Device::getConnectStatus));
         //查询设备数据
         results.put("device", getDataTable(list));
         //统计设备在线数量
