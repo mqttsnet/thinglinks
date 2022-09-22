@@ -16,6 +16,7 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 设备管理Controller
@@ -50,14 +52,15 @@ public class DeviceController extends BaseController {
         startPage();
         final Map<String, Object> results = new HashMap<>();
         List<Device> list = deviceService.selectDeviceList(device);
+        Map<String, List<Device>> connectStatusCollect = list.parallelStream().collect(Collectors.groupingBy(Device::getConnectStatus));
         //查询设备数据
         results.put("device", getDataTable(list));
         //统计设备在线数量
-        results.put("onlineCount", deviceService.countDistinctClientIdByConnectStatus(DeviceConnectStatus.ONLINE.getValue()));
+        results.put("onlineCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()))?connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()).size():0);
         //统计设备离线数量
-        results.put("offlineCount", deviceService.countDistinctClientIdByConnectStatus(DeviceConnectStatus.OFFLINE.getValue()));
+        results.put("offlineCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()))?connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()).size():0);
         //统计设备初始化数量
-        results.put("initCount", deviceService.countDistinctClientIdByConnectStatus(DeviceConnectStatus.INIT.getValue()));
+        results.put("initCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()))?connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()).size():0);
         return R.ok(results);
     }
 
