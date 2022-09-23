@@ -5,14 +5,12 @@ import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicClassLoader
 import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicLoaderEngine;
 import com.mqttsnet.thinglinks.common.core.dynamicCompilation.bytecode.InjectionSystem;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
-import com.mqttsnet.thinglinks.link.api.domain.protocol.CompileXcodeParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -29,22 +27,23 @@ import java.io.PrintWriter;
 @RequestMapping("/protocolCompileXcode")
 @Slf4j
 public class CompileXcodeController {
+
     /**
      * 动态编译代码
-     *
-     * @param compileXcodeParams
-     * @throws Exception
+     * @param code
+     * @param inparam
+     * @return
      */
     @PostMapping("/dynamicallyXcode")
-    public AjaxResult importProductJson(@RequestBody @Valid CompileXcodeParams compileXcodeParams) {
+    public AjaxResult importProductJson(@NotBlank(message = "脚本方法块不能为空") String code,@NotBlank(message = "脚本方法块入参不能为空") String inparam) {
         try {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintWriter out = new PrintWriter(buffer, true);
-            byte[] classBytes = DynamicLoaderEngine.compile(compileXcodeParams.getCode(), out, null);
+            byte[] classBytes = DynamicLoaderEngine.compile(code, out, null);
             byte[] injectedClass = ClassInjector.injectSystem(classBytes);
             InjectionSystem.inject(null, new PrintStream(buffer, true), null);
             DynamicClassLoader classLoader = new DynamicClassLoader(this.getClass().getClassLoader());
-            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out,compileXcodeParams.getInparam());
+            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out,inparam);
             return AjaxResult.success(buffer.toString().trim());
         } catch (Throwable e) {
             return AjaxResult.error(e.getMessage());
