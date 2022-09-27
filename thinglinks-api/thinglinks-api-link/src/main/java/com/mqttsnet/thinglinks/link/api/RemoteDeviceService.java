@@ -5,10 +5,7 @@ import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.factory.RemoteDeviceFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -54,7 +51,7 @@ public interface RemoteDeviceService {
      * @param clientId
      * @return
      */
-    @GetMapping("/device/findOneByClientId")
+    @PostMapping("/device/findOneByClientId")
     public R<Device> findOneByClientId(String clientId);
 
 }

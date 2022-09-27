@@ -28,6 +28,7 @@ import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -456,6 +457,68 @@ public class DeviceServiceImpl implements DeviceService {
         BeanUtils.copyProperties(this.selectDeviceById(id), deviceParams);
         deviceParams.setDeviceLocation(deviceLocationService.findOneByDeviceIdentification(deviceParams.getDeviceIdentification()));
         return deviceParams;
+    }
+
+    /**
+     * 查询普通设备影子数据
+     *
+     * @param ids 需要查询的普通设备id
+     * @param startTime 开始时间 格式：yyyy-MM-dd HH:mm:ss
+     * @param endTime 结束时间 格式：yyyy-MM-dd HH:mm:ss
+     * @return 普通设备影子数据
+     */
+    @Override
+    public Map<String, List<Map<String, Object>>> getDeviceShadow(String ids, String startTime, String endTime) {
+        List<Long> idCollection = Arrays.stream(ids.split(",")).mapToLong(Long::parseLong).boxed().collect(Collectors.toList());
+        List<Device> devices = deviceMapper.findAllByIdInAndStatus(idCollection, "ENABLE");
+        if (StringUtils.isNull(devices)) {
+            log.error("查询普通设备影子数据失败，普通设备不存在");
+            return null;
+        }
+        Map<String, List<Map<String, Object>>> map = new HashMap<>();
+        devices.forEach(device -> {
+            Product product = productService.selectByProductIdentification(device.getProductIdentification());
+            if (StringUtils.isNull(product)) {
+                log.error("查询普通设备影子数据失败，设备对应的产品不存在");
+                return;
+            }
+            List<ProductServices> productServicesLis  = productServicesService.findAllByProductIdAndStatus(product.getId(),Constants.ENABLE);
+            if (StringUtils.isNull(productServicesLis)) {
+                log.error("查询普通设备影子数据失败，普通设备services不存在");
+                return;
+            }
+            productServicesLis.forEach(productServices -> {
+                String superTableName = TdUtils.getSuperTableName(product.getProductType(),product.getProductIdentification(),productServices.getServiceName());
+                String shadowTableName = TdUtils.getSubTableName(superTableName,device.getClientId());
+                SelectDto selectDto = new SelectDto();
+                selectDto.setDataBaseName(dataBaseName);
+                selectDto.setTableName(shadowTableName);
+                if (StringUtils.isNotEmpty(startTime) && StringUtils.isNotEmpty(endTime)) {
+                    selectDto.setFieldName("ts");
+                    selectDto.setStartTime(DateUtils.localDateTime2Millis(DateUtils.dateToLocalDateTime(DateUtils.strToDate(startTime))));
+                    selectDto.setEndTime(DateUtils.localDateTime2Millis(DateUtils.dateToLocalDateTime(DateUtils.strToDate(endTime))));
+                    R<?> dataByTimestamp = remoteTdEngineService.getDataByTimestamp(selectDto);
+                    if (StringUtils.isNull(dataByTimestamp)) {
+                        log.error("查询普通设备影子数据失败，普通设备影子数据不存在");
+                    }else {
+                        map.put(shadowTableName, (List<Map<String, Object>>) dataByTimestamp.getData());
+                        log.info("查询普通设备影子数据成功，普通设备影子数据：{}", dataByTimestamp.getData());
+
+                    }
+                }else{
+                    R<?> lastData = remoteTdEngineService.getLastData(selectDto);
+                    if (StringUtils.isNull(lastData)) {
+                        log.error("查询普通设备影子数据失败，普通设备影子数据不存在");
+                    }else {
+                        map.put(shadowTableName, (List<Map<String, Object>>) lastData.getData());
+                        log.info("查询普通设备影子数据成功，普通设备影子数据：{}", lastData.getData());
+
+                    }
+                }
+
+            });
+        });
+        return map;
     }
 
     /**
