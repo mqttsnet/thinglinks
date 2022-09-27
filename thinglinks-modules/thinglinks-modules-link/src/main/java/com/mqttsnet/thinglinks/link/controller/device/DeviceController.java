@@ -221,8 +221,8 @@ public class DeviceController extends BaseController {
      * @param clientId
      * @return
      */
-    @GetMapping("/findOneByClientId")
-    public R<Device> findOneByClientId(String clientId) {
+    @PostMapping("/findOneByClientId")
+    public R<Device> findOneByClientId(@RequestBody String clientId) {
         return R.ok(deviceService.findOneByClientId(clientId));
     }
 

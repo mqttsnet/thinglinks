@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -80,7 +81,8 @@ public class DeviceActionInterceptor implements Interceptor {
             //TODO MQTT设备心跳处理
             List<MqttMessageType> mqttMessageType = Collections.singletonList(MqttMessageType.PINGREQ);
             if (!smqttMessage.getIsCluster() && mqttMessageType.contains(message.fixedHeader().messageType())) {
-                R<Device> deviceServiceOneByClientId = deviceService.findOneByClientId(mqttChannel.getClientIdentifier());
+                CompletableFuture<R<Device>> comp = CompletableFuture.supplyAsync(() -> DeviceActionInterceptor.deviceService.findOneByClientId(mqttChannel.getClientIdentifier()));
+                R<Device> deviceServiceOneByClientId =  comp.get();
                 if (null != deviceServiceOneByClientId.getData() ) {
                     Device device = deviceServiceOneByClientId.getData();
                     //缓存设备信息
