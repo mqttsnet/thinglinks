@@ -148,7 +148,7 @@
       @pagination="getList" />
 
     <!-- 添加或修改子设备管理对话框 -->
-    <el-dialog :destroy-on-close='true' :close='close' :title="title" :close-on-click-modal="false" :visible.sync="open"
+    <el-dialog :destroy-on-close='true' :title="title" :close-on-click-modal="false" :visible.sync="open"
       width="50%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-row style="display: flex;justify-content: space-between;">
@@ -322,7 +322,6 @@
     created() {
       this.getList();
     },
-
     methods: {
       //搜索设备时网关id
       searchDecive(did) {
