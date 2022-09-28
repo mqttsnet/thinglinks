@@ -1,16 +1,8 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch">
-      <el-form-item label="边设备唯一标识" prop="did" label-width="120px">
-        <div v-if="this.queryParams.did">
-          <el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleClose(tag)">
-            {{ searchValue }}
-          </el-tag>
-        </div>
-        <el-button v-if="!this.queryParams.did" type="primary" icon="el-icon-plus" size="mini" plain
-          @click="drawer = !drawer; search = true">
-          边设备信息
-        </el-button>
+      <el-form-item label="选择网关设备" prop="did" label-width="120px">
+        <deviceList :flag="flag" @searchDecive='searchDecive'></deviceList>
       </el-form-item>
       <el-form-item label="子设备唯一标识" prop="nodeId" label-width="182px">
         <el-input v-model="queryParams.nodeId" placeholder="请输入设备唯一标识" clearable size="small"
@@ -63,7 +55,7 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd();flag=2"
           v-hasPermi="['link:deviceInfo:add']">新增
         </el-button>
       </el-col>
@@ -121,7 +113,7 @@
         <template slot-scope="scope">
           <span style="margin-right:10px">
             <el-tooltip class="item" effect="light" content="修改" placement="top">
-              <el-button circle size="mini" type="primary" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+              <el-button circle size="mini" type="primary" icon="el-icon-edit" @click="handleUpdate(scope.row);flag=3"
                 v-hasPermi="['link:deviceInfo:edit']">
               </el-button>
             </el-tooltip>
@@ -156,21 +148,14 @@
       @pagination="getList" />
 
     <!-- 添加或修改子设备管理对话框 -->
-    <el-dialog :title="title" :close-on-click-modal="false" :visible.sync="open" width="40%" append-to-body
-      @closed="search = false">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :destroy-on-close='true' :close='close' :title="title" :close-on-click-modal="false" :visible.sync="open"
+      width="50%" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-row style="display: flex;justify-content: space-between;">
           <el-col :span="10">
-            <el-form-item label="边设备" prop="did">
-              <div v-if="this.form.did">
-                <el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false"
-                  @close="handleClose(tag)">
-                  {{ edgeDevicesIdentification }}
-                </el-tag>
-              </div>
-              <el-button v-if="!this.form.did" type="primary" icon="el-icon-plus" size="mini" plain
-                @click="drawer = !drawer">边设备信息
-              </el-button>
+            <el-form-item label="选择网关设备" prop="did">
+              <deviceList ref="DeviceList" @setDecive='setDecive' @addDecive='addDecive' :flag="flag" :set_did='did'
+                :set_edgeDevicesIdentification='edgeDevicesIdentification'></deviceList>
             </el-form-item>
           </el-col>
           <el-col :span="10">
@@ -217,8 +202,8 @@
         </el-row>
         <el-row style="display: flex;justify-content: space-between;">
           <el-col :span="10">
-            <el-form-item label="状态" prop="status">
-              <el-select v-model="form.status" placeholder="请选择状态(字典值：0启用  1停用)">
+            <el-form-item label="设备状态" prop="status">
+              <el-select style='width:100%' v-model="form.status" placeholder="请选择状态(字典值：0启用  1停用)">
                 <el-option v-for="dict in dict.type.business_data_status" :key="dict.value" :label="dict.label"
                   :value="dict.value"></el-option>
               </el-select>
@@ -226,7 +211,7 @@
           </el-col>
           <el-col :span="10">
             <el-form-item label="是否支持设备影子" prop="shadowEnable">
-              <el-select v-model="form.shadowEnable" placeholder="请选择是否支持设备影子">
+              <el-select style='width:100%' v-model="form.shadowEnable" placeholder="请选择是否支持设备影子">
                 <el-option v-for="dict in dict.type.link_deviceInfo_shadow_enable" :key="dict.value" :label="dict.label"
                   :value="dict.value"></el-option>
               </el-select>
@@ -246,254 +231,262 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-    <el-drawer title="边设备信息" :visible.sync="drawer" :before-close="handleClose">
-      <!-- /                    123123123131231231233123 -->
-      <deviceList :search="search"></deviceList>
-    </el-drawer>
   </div>
 </template>
 <script>
-import { listDeviceInfo, getDeviceInfo, delDeviceInfo, addDeviceInfo, updateDeviceInfo, refreshDeviceInfoDataModel } from "@/api/link/deviceInfo";
-import deviceList from "./deviceList.vue";
-export default {
-  name: "DeviceInfo",
-  dicts: ['link_device_connect_status', 'link_deviceInfo_shadow_enable', 'business_data_status'],
-  components: {
-    deviceList
-  },
-  data() {
-    return {
-      // 设备档案表格数据
-      search: false,
-      searchValue: "",
-      oldSearchValue: '',
-      // did: '',
-      oldDid: '',
-      edgeDevicesIdentification: '',
-      oldEdgeDevicesIdentification: "",
-      deviceList: [],
-      drawer: false,
-      //修改禁用标识
-      set: false,
-      // 高级搜索切换
-      advancedSearch: false,
-      // 高级搜索icon
-      icon: "el-icon-arrow-down",
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 子设备管理表格数据
-      deviceInfoList: [],
-      deviceList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        did: null,
-        appId: null,
-        nodeId: null,
-        nodeName: null,
-        deviceId: null,
-        description: null,
-        manufacturerId: null,
-        model: null,
-        connectStatus: null,
-        shadowEnable: null,
-        shadowTableName: null,
-        status: null,
-      },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {
-        did: [
-          { required: true, message: "边设备不能为空", trigger: "blur" }
-        ],
-        appId: [
-          { required: true, message: "应用ID不能为空", trigger: "blur" }
-        ],
-        status: [
-          { required: true, message: "状态(字典值：0启用  1停用)不能为空", trigger: "change" }
-        ],
-      }
-    };
-  },
-  created() {
-    this.getList();
-  },
-  methods: {
-    // AddOrSet(e) {
-    //   console.log(e);
-    // },
-    handleClose(tag) {
-      if (this.search) {
-        this.queryParams.did = ''
-      } else {
-        this.form.did = ''
-      }
+  import {
+    listDeviceInfo,
+    getDeviceInfo,
+    delDeviceInfo,
+    addDeviceInfo,
+    updateDeviceInfo,
+    refreshDeviceInfoDataModel
+  } from "@/api/link/deviceInfo";
+  import deviceList from "./deviceList.vue";
+  export default {
+    name: "DeviceInfo",
+    dicts: ['link_device_connect_status', 'link_deviceInfo_shadow_enable', 'business_data_status'],
+    components: {
+      deviceList
     },
-    //初始化数据模型
-    initializeTheDataModel(row) {
-      const ids = row.id || this.ids;
-      this.$modal
-        .confirm('是否初始化"' + ids + '"的数据项？')
-        .then(function () {
-          console.log(ids);
-          return refreshDeviceInfoDataModel(ids);
-        })
-        .then(() => {
-          this.getList()
-          this.$modal.msgSuccess("初始化成功");
-        })
-        .catch(() => { });
-    },
-    // 高级搜索切换显示隐藏
-    advancedSearch_toggle() {
-      this.advancedSearch = !this.advancedSearch;
-      // 切換icon
-      if (this.advancedSearch) {
-        this.icon = "el-icon-arrow-up";
-      } else {
-        this.icon = "el-icon-arrow-down";
-      }
-    },
-    /** 查询子设备管理列表 */
-    getList() {
-      this.loading = true;
-      listDeviceInfo(this.queryParams).then(response => {
-        console.log(response.rows);
-        this.deviceInfoList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-      this.edgeDevicesIdentification = ''
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        did: null,
-        appId: null,
-        nodeId: null,
-        nodeName: null,
-        deviceId: null,
-        description: null,
-        manufacturerId: null,
-        model: null,
-        connectStatus: null,
-        shadowEnable: null,
-        shadowTableName: null,
-        status: null,
-        createBy: null,
-        createTime: null,
-        updateBy: null,
-        updateTime: null,
-        remark: null
+    data() {
+      return {
+        flag: 1,
+        // 修改设备
+        did: 0,
+        edgeDevicesIdentification: "",
+        //修改禁用标识
+        set: false,
+        // 高级搜索切换
+        advancedSearch: false,
+        // 高级搜索icon
+        icon: "el-icon-arrow-down",
+        // 遮罩层
+        loading: true,
+        // 选中数组
+        ids: [],
+        // 非单个禁用
+        single: true,
+        // 非多个禁用
+        multiple: true,
+        // 显示搜索条件
+        showSearch: true,
+        // 总条数
+        total: 0,
+        // 子设备管理表格数据
+        deviceInfoList: [],
+        deviceList: [],
+        // 弹出层标题
+        title: "",
+        // 是否显示弹出层
+        open: false,
+        // 查询参数
+        queryParams: {
+          pageNum: 1,
+          pageSize: 10,
+          did: null,
+          appId: null,
+          nodeId: null,
+          nodeName: null,
+          deviceId: null,
+          description: null,
+          manufacturerId: null,
+          model: null,
+          connectStatus: null,
+          shadowEnable: null,
+          shadowTableName: null,
+          status: null,
+        },
+        // 表单参数
+        form: {},
+        // 表单校验
+        rules: {
+          did: [{
+            required: true,
+            message: "边设备不能为空",
+            trigger: "blur"
+          }],
+          appId: [{
+            required: true,
+            message: "应用ID不能为空",
+            trigger: "blur"
+          }],
+          status: [{
+            required: true,
+            message: "状态(字典值：0启用  1停用)不能为空",
+            trigger: "change"
+          }],
+        }
       };
-      this.resetForm("form");
     },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      console.log(this.queryParams);
+    created() {
       this.getList();
     },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.set = false
-      this.reset();
-      this.form.did = ''
-      this.edgeDevicesIdentification = ''
-      this.open = true;
-      this.search = false
-      this.title = "添加子设备管理";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      this.set = true;
-      const id = row.id || this.ids
-      getDeviceInfo(id).then(response => {
-        console.log(response.data);
-        this.form = response.data;
-        this.oldDid = this.form.did
-        this.edgeDevicesIdentification = response.data.edgeDevicesIdentification
-        this.oldEdgeDevicesIdentification = response.data.edgeDevicesIdentification
-        this.dynamicTags = [this.edgeDevicesIdentification]
-        this.open = true;
-        this.search = false
-        this.title = "修改子设备管理";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        console.log(this.form);
-        if (valid) {
-          if (this.form.id != null) {
-            updateDeviceInfo(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addDeviceInfo(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
+
+    methods: {
+      //搜索设备时网关id
+      searchDecive(did) {
+        this.queryParams.did = did
+      },
+      //新增设备时网关id
+      addDecive(did) {
+        this.form.did = did
+      },
+      setDecive(did) {
+        this.form.did = did
+      },
+      //初始化数据模型
+      initializeTheDataModel(row) {
+        const ids = row.id || this.ids;
+        this.$modal
+          .confirm('是否初始化"' + ids + '"的数据项？')
+          .then(function() {
+            console.log(ids);
+            return refreshDeviceInfoDataModel(ids);
+          })
+          .then(() => {
+            this.getList()
+            this.$modal.msgSuccess("初始化成功");
+          })
+          .catch(() => {});
+      },
+      // 高级搜索切换显示隐藏
+      advancedSearch_toggle() {
+        this.advancedSearch = !this.advancedSearch;
+        // 切換icon
+        if (this.advancedSearch) {
+          this.icon = "el-icon-arrow-up";
+        } else {
+          this.icon = "el-icon-arrow-down";
         }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除子设备管理编号为"' + ids + '"的数据项？').then(function () {
-        return delDeviceInfo(ids);
-      }).then(() => {
+      },
+      /** 查询子设备管理列表 */
+      getList() {
+        this.loading = true;
+        listDeviceInfo(this.queryParams).then(response => {
+          console.log(response.rows);
+          this.deviceInfoList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+      },
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          did: null,
+          appId: null,
+          nodeId: null,
+          nodeName: null,
+          deviceId: null,
+          description: null,
+          manufacturerId: null,
+          model: null,
+          connectStatus: null,
+          shadowEnable: null,
+          shadowTableName: null,
+          status: null,
+          createBy: null,
+          createTime: null,
+          updateBy: null,
+          updateTime: null,
+          remark: null
+        };
+        this.resetForm("form");
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
+        console.log(this.queryParams);
         this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('link/deviceInfo/export', {
-        ...this.queryParams
-      }, `link_deviceInfo.xlsx`)
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm("queryForm");
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      /** 新增按钮操作 */
+      handleAdd() {
+        this.set = false
+        this.reset();
+        this.form.did = ''
+        this.edgeDevicesIdentification = ''
+        this.open = true;
+        this.title = "添加子设备管理";
+      },
+      /** 修改按钮操作 */
+      handleUpdate(row) {
+        this.reset();
+        this.set = true;
+        const id = row.id || this.ids
+        getDeviceInfo(id).then(response => {
+          this.form = response.data;
+          this.$nextTick(() => {
+            this.$refs.DeviceList.did = this.form.id
+            this.$refs.DeviceList.edgeDevicesIdentification = this.form.edgeDevicesIdentification
+            this.$refs.DeviceList.dynamicTags = [this.form.edgeDevicesIdentification]
+            this.$refs.DeviceList.OldClickList = {
+              id: this.form.id,
+              deviceIdentification: this.form.edgeDevicesIdentification,
+            }
+          })
+          // this.did = this.form.id
+          // this.edgeDevicesIdentification = this.form.edgeDevicesIdentification
+          this.open = true;
+          this.title = "修改子设备管理";
+        });
+      },
+      /** 提交按钮 */
+      submitForm() {
+        this.$refs["form"].validate(valid => {
+          if (valid) {
+            if (this.form.id != null) {
+              console.log(this.form);
+              updateDeviceInfo(this.form).then(response => {
+                this.$modal.msgSuccess("修改成功");
+                this.open = false;
+                this.getList();
+              });
+            } else {
+              addDeviceInfo(this.form).then(response => {
+                this.$modal.msgSuccess("新增成功");
+                this.open = false;
+                this.getList();
+              });
+            }
+          }
+        });
+      },
+      /** 删除按钮操作 */
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        this.$modal.confirm('是否确认删除子设备管理编号为"' + ids + '"的数据项？').then(function() {
+          return delDeviceInfo(ids);
+        }).then(() => {
+          this.getList();
+          s.$modal.msgSuccess("删除成功");
+        }).catch(() => {});
+      },
+      /** 导出按钮操作 */
+      handleExport() {
+        this.download('link/deviceInfo/export', {
+          ...this.queryParams
+        }, `link_deviceInfo.xlsx`)
+      }
     }
-  }
-};
+  };
 </script>
 <style lang="scss" scoped>
+
 </style>

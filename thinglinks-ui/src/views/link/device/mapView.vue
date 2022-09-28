@@ -37,7 +37,7 @@
               <el-option v-for="item in tips" :key="item.id" :label="item.name" :value="item.id">
                 <span style="float: left">{{ item.name }}</span>
                 <span style="float: right; color: #8492a6; font-size: 13px">{{
-                    item.district
+                item.district
                 }}</span>
               </el-option>
               <i slot="suffix" class="el-input__icon el-icon-date"></i>

@@ -195,7 +195,7 @@
         <el-row style="display: flex;justify-content: space-around;">
           <el-col :span="23" style="padding: 0 10px ;box-sizing: border-box;">
             <el-form-item label="脚本入参">
-              <el-input style="width: 80%;" v-model="inParameter" :autosize="{ minRows: 2, maxRows: 4 }" :row="2"
+              <el-input style="width: 80%;" v-model="inParameter" :autosize="{ minRows: 2, maxRows: 4 }" :rows="2"
                 type="textarea" placeholder="请输入脚本入参" />
               <el-button type="info" size="mini" :disabled="this.form.content && this.inParameter ? false : true" round
                 style="margin: 10px 32px;" @click="runTheCheck">
@@ -206,8 +206,23 @@
         </el-row>
         <el-row style="display: flex;justify-content: space-around;">
           <el-col :span="23" style="padding: 0 10px ;box-sizing: border-box;">
+            <el-form-item v-show="runningResults" label="运行结果" prop="remark">
+              <!-- <el-input v-model="runningResults" :rows="6" type="textarea" placeholder="" /> -->
+              <div style=" background: rgb(65, 54, 114);height: 100px;overflow-y: auto;
+                color: #ccc;
+                font-family: Fira code, Fira Mono, Consolas, Menlo, Courier, monospace;
+                font-size: 14px;
+                line-height: 1.5;
+                padding: 5px;">
+                {{runningResults}}
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="display: flex;justify-content: space-around;">
+          <el-col :span="23" style="padding: 0 10px ;box-sizing: border-box;">
             <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" :autosize="{ minRows: 2, maxRows: 4 }" :row="2" type="textarea"
+              <el-input v-model="form.remark" :autosize="{ minRows: 2, maxRows: 4 }" :rows="2" type="textarea"
                 placeholder="请输入备注" />
             </el-form-item>
           </el-col>
@@ -222,230 +237,242 @@
 </template>
 
 <script>
-import {
-  listProtocol,
-  getProtocol,
-  delProtocol,
-  addProtocol,
-  updateProtocol,
-  enable,
-  disable,
-  dynamicallyXcode
-} from "@/api/link/protocol";
-import theCodeEditor from "./TheCodeEditor/theCodeEditor"
-export default {
-  name: "Protocol",
-  dicts: ['link_device_protocol_type', 'link_protocol_voice', 'business_data_status', "link_application_type",],
-  components: {
-    theCodeEditor
-  },
-  data() {
-    return {
-      //入参
-      inParameter: "",
-      //代码编辑器
-      CodeEditor: "",
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 协议管理表格数据
-      protocolList: [],
-      // 修改状态
-      status: '0',
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        productIdentification: null,
-        protocolName: null,
-        protocolIdentification: null,
-        protocolVersion: null,
-        protocolType: null,
-        protocolVoice: null,
-        status: null,
-      },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {
-        appId: [{ required: true, message: "应用ID不能为空", trigger: "blur" }],
-        productIdentification: [
-          { required: true, message: "产品标识不能为空", trigger: "blur" }
-        ],
-        status: [
-          { required: true, message: "状态(字典值：0启用  1停用)不能为空", trigger: "change" }
-        ],
-      }
-    };
-  },
-  created() {
-    this.getList();
-  },
-  methods: {
-    //运行校验
-    runTheCheck() {
-      console.log(this.form.content, this.inParameter);
-      let data = {
-        code: String(this.form.content),
-        inparam: String(this.inParameter)
-      }
-      console.log(JSON.stringify(data));
-      dynamicallyXcode(JSON.stringify(data)).then(res => {
-        console.log(res);
-      });
+  import {
+    listProtocol,
+    getProtocol,
+    delProtocol,
+    addProtocol,
+    updateProtocol,
+    enable,
+    disable,
+    dynamicallyXcode
+  } from "@/api/link/protocol";
+  import theCodeEditor from "./TheCodeEditor/theCodeEditor"
+  export default {
+    name: "Protocol",
+    dicts: ['link_device_protocol_type', 'link_protocol_voice', 'business_data_status', "link_application_type", ],
+    components: {
+      theCodeEditor
     },
-    codeValue(e) {
-      this.form.content = e
-    },
-    opedned() {
-      if (this.form.id != null) {
-        this.$refs.CodeEditor.code = this.form.content
-      }
-    },
-    closed() {
-      this.$refs.CodeEditor.code = ''
-    },
-    /** 查询协议管理列表 */
-    getList() {
-      this.loading = true;
-      listProtocol(this.queryParams).then(response => {
-        this.protocolList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-      this.CodeEditor = ''
-      this.form.content = ''
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        appId: null,
-        productIdentification: null,
-        protocolName: null,
-        protocolIdentification: null,
-        protocolVersion: null,
-        protocolType: null,
-        protocolVoice: null,
-        className: null,
-        filePath: null,
-        content: null,
-        status: null,
-        createBy: null,
-        createTime: null,
-        updateBy: null,
-        updateTime: null,
-        remark: null
+    data() {
+      return {
+        //运行结果
+        runningResults: "",
+        //入参
+        inParameter: "",
+        //代码编辑器
+        CodeEditor: "",
+        // 遮罩层
+        loading: true,
+        // 选中数组
+        ids: [],
+        // 非单个禁用
+        single: true,
+        // 非多个禁用
+        multiple: true,
+        // 显示搜索条件
+        showSearch: true,
+        // 总条数
+        total: 0,
+        // 协议管理表格数据
+        protocolList: [],
+        // 修改状态
+        status: '0',
+        // 弹出层标题
+        title: "",
+        // 是否显示弹出层
+        open: false,
+        // 查询参数
+        queryParams: {
+          pageNum: 1,
+          pageSize: 10,
+          productIdentification: null,
+          protocolName: null,
+          protocolIdentification: null,
+          protocolVersion: null,
+          protocolType: null,
+          protocolVoice: null,
+          status: null,
+        },
+        // 表单参数
+        form: {},
+        // 表单校验
+        rules: {
+          appId: [{
+            required: true,
+            message: "应用ID不能为空",
+            trigger: "blur"
+          }],
+          productIdentification: [{
+            required: true,
+            message: "产品标识不能为空",
+            trigger: "blur"
+          }],
+          status: [{
+            required: true,
+            message: "状态(字典值：0启用  1停用)不能为空",
+            trigger: "change"
+          }],
+        }
       };
-      this.resetForm("form");
     },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
+    created() {
       this.getList();
     },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.form.status = "0";
-      this.status = "1";
-      this.open = true;
-      this.CodeEditor = ''
-      this.title = "添加协议管理";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids;
-      this.status = row.status;
-      getProtocol(id).then(response => {
-        this.form = response.data;
-        this.form.content = response.data.content
+    methods: {
+      //运行校验
+      runTheCheck() {
+        console.log(this.form.content, this.inParameter);
+        let data = {
+          code: JSON.stringify(this.form.content),
+          inparam: JSON.stringify(this.inParameter)
+        }
+        // dynamicallyXcode(data).then(res => {
+        //   console.log(res);
+        // })
+        this.runningResults = {
+          "msg": null,
+          "code": 500
+        }
+      },
+      codeValue(e) {
+        this.form.content = e
+      },
+      opedned() {
+        if (this.form.id != null) {
+          this.$refs.CodeEditor.code = this.form.content
+        }
+      },
+      closed() {
+        this.$refs.CodeEditor.code = ''
+      },
+      /** 查询协议管理列表 */
+      getList() {
+        this.loading = true;
+        listProtocol(this.queryParams).then(response => {
+          this.protocolList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+      },
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+        this.CodeEditor = ''
+        this.form.content = ''
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          appId: null,
+          productIdentification: null,
+          protocolName: null,
+          protocolIdentification: null,
+          protocolVersion: null,
+          protocolType: null,
+          protocolVoice: null,
+          className: null,
+          filePath: null,
+          content: null,
+          status: null,
+          createBy: null,
+          createTime: null,
+          updateBy: null,
+          updateTime: null,
+          remark: null
+        };
+        this.resetForm("form");
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
+        this.getList();
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm("queryForm");
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      /** 新增按钮操作 */
+      handleAdd() {
+        this.reset();
+        this.form.status = "0";
+        this.status = "1";
         this.open = true;
-        this.title = "修改协议管理";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            this.form.content = this.$refs.CodeEditor.code
-            updateProtocol(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-              this.handlestatus(this.form.id);
-            });
+        this.CodeEditor = ''
+        this.title = "添加协议管理";
+      },
+      /** 修改按钮操作 */
+      handleUpdate(row) {
+        this.reset();
+        const id = row.id || this.ids;
+        this.status = row.status;
+        getProtocol(id).then(response => {
+          this.form = response.data;
+          this.form.content = response.data.content
+          this.open = true;
+          this.title = "修改协议管理";
+        });
+      },
+      /** 提交按钮 */
+      submitForm() {
+        this.$refs["form"].validate(valid => {
+          if (valid) {
+            if (this.form.id != null) {
+              this.form.content = this.$refs.CodeEditor.code
+              updateProtocol(this.form).then(response => {
+                this.$modal.msgSuccess("修改成功");
+                this.open = false;
+                this.getList();
+                this.handlestatus(this.form.id);
+              });
+            } else {
+              this.form.content = this.$refs.CodeEditor.code
+              addProtocol(this.form).then(response => {
+                this.$modal.msgSuccess("新增成功");
+                this.$refs.CodeEditor.code = ''
+                this.open = false;
+                this.getList();
+                this.handlestatus(response.data);
+              });
+            }
+          }
+        });
+      },
+      /** 启用禁用状态 */
+      handlestatus(id) {
+        if (this.status != this.form.status) {
+          if (this.form.status == "0") {
+            enable(id); //新增的时候没有id
           } else {
-            this.form.content = this.$refs.CodeEditor.code
-            addProtocol(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.$refs.CodeEditor.code = ''
-              this.open = false;
-              this.getList();
-              this.handlestatus(response.data);
-            });
+            disable(id);
           }
         }
-      });
-    },
-    /** 启用禁用状态 */
-    handlestatus(id) {
-      if (this.status != this.form.status) {
-        if (this.form.status == "0") {
-          enable(id);//新增的时候没有id
-        } else {
-          disable(id);
-        }
+      },
+      /** 删除按钮操作 */
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        this.$modal.confirm('是否确认删除协议管理编号为"' + ids + '"的数据项？').then(function() {
+          return delProtocol(ids);
+        }).then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        }).catch(() => {});
+      },
+      /** 导出按钮操作 */
+      handleExport() {
+        this.download('link/protocol/export', {
+          ...this.queryParams
+        }, `link_protocol.xlsx`)
       }
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除协议管理编号为"' + ids + '"的数据项？').then(function () {
-        return delProtocol(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('link/protocol/export', {
-        ...this.queryParams
-      }, `link_protocol.xlsx`)
     }
-  }
-};
+  };
 </script>
