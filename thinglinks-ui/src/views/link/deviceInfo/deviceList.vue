@@ -117,7 +117,7 @@
         } else if (this.flag === 2) {
           this.$emit('addDecive', this.did)
         } else if (this.flag === 3) {
-          this.$emit('addDecive', this.did)
+          this.$emit('setDecive', this.did)
         }
       },
       // el-tag关闭回调

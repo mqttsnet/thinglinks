@@ -324,9 +324,13 @@
       runTheCheck() {
         console.log(this.form.content, this.inParameter);
         let data = {
-          code: JSON.stringify(this.form.content),
-          inparam: JSON.stringify(this.inParameter)
+          code: this.form.content,
+          inparam: this.inParameter
         }
+        // let data = {
+        //   code: JSON.stringify(this.form.content),
+        //   inparam: JSON.stringify(this.inParameter)
+        // }
         // dynamicallyXcode(data).then(res => {
         //   console.log(res);
         // })
