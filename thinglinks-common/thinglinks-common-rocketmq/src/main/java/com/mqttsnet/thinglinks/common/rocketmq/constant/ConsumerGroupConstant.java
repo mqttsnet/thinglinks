@@ -32,5 +32,15 @@ public class ConsumerGroupConstant {
      */
     public static final String THINGLINKS_TDENGINE_GROUP = "thinglinks-tdengine";
 
+    /**
+     * job-consumer-group
+     */
+    public static final String THINGLINKS_JOB_GROUP = "thinglinks-job";
+
+    /**
+     * rule-consumer-group
+     */
+    public static final String THINGLINKS_RULE_GROUP = "thinglinks-rule";
+
 
 }
