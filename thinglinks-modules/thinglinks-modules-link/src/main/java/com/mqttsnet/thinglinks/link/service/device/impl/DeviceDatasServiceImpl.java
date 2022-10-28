@@ -555,9 +555,9 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 //调用插入方法插入数据
                 final R<?> insertResult = this.remoteTdEngineService.insertData(tableDto);
                 if (insertResult.getCode() == ResultEnum.SUCCESS.getCode()) {
-                    log.info("Insert data result: {}", insertResult.getMsg());
+                    log.info("DeviceIdentification: {}, Insert data result: {}", deviceIdentification, ResultEnum.SUCCESS.getMessage());
                 } else {
-                    log.error("Insert data Exception: {}", insertResult.getMsg());
+                    log.error("DeviceIdentification: {}, Insert data Exception: {}", deviceIdentification, ResultEnum.FAIL.getMessage());
                 }
             }
         }

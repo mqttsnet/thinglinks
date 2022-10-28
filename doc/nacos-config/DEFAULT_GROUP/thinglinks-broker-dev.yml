@@ -178,7 +178,7 @@ smqtt:
         tags: thinglinks
         namesrvAddr: 124.223.113.139:19876
         instanceName: broker-a
-        producerGroup: thinglinks
+        producerGroup: thinglinks-broker
 #    - source: KAFKA # kafka配置
 #      sourceName: kafka
 #      sourceAttributes:
