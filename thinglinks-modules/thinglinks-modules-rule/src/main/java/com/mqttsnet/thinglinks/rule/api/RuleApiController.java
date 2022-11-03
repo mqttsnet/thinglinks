@@ -84,14 +84,14 @@ public class RuleApiController extends BaseController {
             // 比较值
             String comparisonValue = conditions.getComparisonValue();
             //  条件类型(0:匹配设备触发、1:指定设备触发、2:按策略定时触发)
-            switch (ConditionTypeEnum.getBySymbol(conditions.getConditionType())) {
+            switch (Objects.requireNonNull(ConditionTypeEnum.getBySymbol(conditions.getConditionType()))) {
                 case MATCH:
                     R<?> deviceResponse = remoteDeviceService.selectByProductIdentification(conditions.getProductIdentification());
                     List<String> datas = (List<String>) deviceResponse.getData();
                     if (CollectionUtils.isEmpty(datas)) {
                         break;
                     }
-                    datas.stream().forEach(s -> {
+                    datas.forEach(s -> {
                         if (maps.containsKey(s)) {
                             Map<String, Object> stringObjectMap = maps.get(s);
                             if (stringObjectMap.containsKey(productPropertiesName)) {
@@ -103,7 +103,7 @@ public class RuleApiController extends BaseController {
                     break;
                 case SPECIFY:
                     List<String> deviceDatas = Arrays.asList(conditions.getDeviceIdentification().split(","));
-                    deviceDatas.stream().forEach(s -> {
+                    deviceDatas.forEach(s -> {
                         if (maps.containsKey(s)) {
                             Map<String, Object> stringObjectMap = maps.get(s);
                             if (stringObjectMap.containsKey(productPropertiesName)) {
@@ -124,7 +124,7 @@ public class RuleApiController extends BaseController {
             // 验证条件
             return R.ok(mark);
         }
-        switch (TriggeringEnum.getBySymbol(rule.getTriggering())) {
+        switch (Objects.requireNonNull(TriggeringEnum.getBySymbol(rule.getTriggering()))) {
             case ALL:
                 mark = flags.stream().allMatch(s -> s.equals(true));
                 break;
@@ -186,10 +186,10 @@ public class RuleApiController extends BaseController {
         boolean flag = false;
         FieldTypeEnum bySymbol = FieldTypeEnum.getBySymbol(propertiesType);
         // 判断比较类型
-        switch (OperatorEnum.getBySymbol(symbol)) {
+        switch (Objects.requireNonNull(OperatorEnum.getBySymbol(symbol))) {
             case eq:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) == Integer.parseInt(comparisonValue);
                         break;
@@ -209,7 +209,7 @@ public class RuleApiController extends BaseController {
                 break;
             case not:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) != Integer.parseInt(comparisonValue);
                         break;
@@ -229,7 +229,7 @@ public class RuleApiController extends BaseController {
                 break;
             case gt:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) > Integer.parseInt(comparisonValue);
                         break;
@@ -246,7 +246,7 @@ public class RuleApiController extends BaseController {
                 break;
             case lt:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) < Integer.parseInt(comparisonValue);
                         break;
@@ -263,7 +263,7 @@ public class RuleApiController extends BaseController {
                 break;
             case gte:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) >= Integer.parseInt(comparisonValue);
                         break;
@@ -280,7 +280,7 @@ public class RuleApiController extends BaseController {
                 break;
             case lte:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) <= Integer.parseInt(comparisonValue);
                         break;
@@ -297,13 +297,13 @@ public class RuleApiController extends BaseController {
                 break;
             case between:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
-                        int[] arrayint = Arrays.asList(comparisonValue.split(",")).stream().mapToInt(Integer::parseInt).toArray();
+                        int[] arrayint = Arrays.stream(comparisonValue.split(",")).mapToInt(Integer::parseInt).toArray();
                         flag = CompareUtil.rangeInDefinedInt(Integer.parseInt(actualValue), arrayint[0], arrayint[1]);
                         break;
                     case DECIMAL:
-                        double[] arrayDouble = Arrays.asList(comparisonValue.split(",")).stream().mapToDouble(Double::parseDouble).toArray();
+                        double[] arrayDouble = Arrays.stream(comparisonValue.split(",")).mapToDouble(Double::parseDouble).toArray();
                         flag = CompareUtil.rangeInDefinedDouble(Double.parseDouble(actualValue), arrayDouble[0], arrayDouble[1]);
                         break;
                     case TIMESTAMP:
