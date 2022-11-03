@@ -64,7 +64,7 @@ public class RemoteTdEngineFallbackFactory implements FallbackFactory<RemoteTdEn
             }
 
             @Override
-            public R<?> getLastDataByTags(TagsSelectDao tagsSelectDao) {
+            public R getLastDataByTags(TagsSelectDao tagsSelectDao) {
                 return R.fail("查询最新数据失败:{}", throwable.getMessage());
             }
 

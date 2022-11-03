@@ -64,7 +64,7 @@ public class ProductController extends BaseController {
      * @return 单条数据
      */
     @GetMapping("/selectByProductIdentification")
-    public R<?> selectByProductIdentification(String productIdentification) {
+    public R<?> selectByProductIdentification(@RequestParam(value = "productIdentification") String productIdentification) {
         return R.ok(productService.selectByProductIdentification(productIdentification));
     }
 

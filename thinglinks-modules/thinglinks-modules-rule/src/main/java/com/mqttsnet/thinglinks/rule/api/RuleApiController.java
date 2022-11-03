@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.rule.controller;
+package com.mqttsnet.thinglinks.rule.api;
 
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.ConditionTypeEnum;
@@ -20,7 +20,10 @@ import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
@@ -31,8 +34,8 @@ import java.util.*;
  * @author shisen
  */
 @RestController
-@RequestMapping("/rule")
-public class RuleController extends BaseController {
+@RequestMapping("/rule/api")
+public class RuleApiController extends BaseController {
 
     @Autowired
     private RuleService ruleService;
@@ -65,8 +68,8 @@ public class RuleController extends BaseController {
         List<Boolean> flags = new ArrayList<>();
         for (RuleConditions conditions : ruleConditions) {
             // 获取属性字段和类型，和设备上报的数据进行比对
-            R<?> properties = remoteProductService.selectByIdProperties(conditions.getPropertiesId());
-            ProductProperties propertiesData = (ProductProperties) properties.getData();
+            R<ProductProperties> properties = remoteProductService.selectByIdProperties(conditions.getPropertiesId());
+            ProductProperties propertiesData = properties.getData();
             if (propertiesData == null) {
                 continue;
             }
@@ -143,14 +146,14 @@ public class RuleController extends BaseController {
     private Map<String, Map<String, Object>> extractedDeviceData(RuleConditions conditions) {
         Map<String, Map<String, Object>> maps = new HashMap<>();
         // 获取产品信息
-        R productResponse = remoteProductService.selectByProductIdentification(conditions.getProductIdentification());
-        Product product = (Product) productResponse.getData();
+        R<Product> productResponse = remoteProductService.selectByProductIdentification(conditions.getProductIdentification());
+        Product product = productResponse.getData();
         if (product == null) {
             return maps;
         }
         // 获取服务信息
-        R<?> productServicesResponse = remoteProductService.selectProductServicesById(conditions.getServiceId());
-        ProductServices productServices = (ProductServices) productServicesResponse.getData();
+        R<ProductServices> productServicesResponse = remoteProductService.selectProductServicesById(conditions.getServiceId());
+        ProductServices productServices = productServicesResponse.getData();
         if (productServices == null) {
             return maps;
         }
@@ -161,9 +164,10 @@ public class RuleController extends BaseController {
         TagsSelectDao tagsSelectDao = new TagsSelectDao();
         tagsSelectDao.setDataBaseName("thinglinks");
         tagsSelectDao.setStableName(superName);
-        R<?> lastDataByTags = remoteTdEngineService.getLastDataByTags(tagsSelectDao);
+        tagsSelectDao.setTagsName("device_identification");
+        R<Map<String, Map<String, Object>>> lastDataByTags = remoteTdEngineService.getLastDataByTags(tagsSelectDao);
         if (lastDataByTags != null && lastDataByTags.getData() != null) {
-            maps = (Map<String, Map<String, Object>>) lastDataByTags.getData();
+            maps = lastDataByTags.getData();
         }
         return maps;
     }

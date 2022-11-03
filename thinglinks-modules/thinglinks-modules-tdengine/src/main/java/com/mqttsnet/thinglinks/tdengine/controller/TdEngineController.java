@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassDescription: TdEngine Controller
@@ -341,7 +342,7 @@ public class TdEngineController {
      * @return R<?>
      */
     @PostMapping("/getLastDataByTags")
-    public R<?> getLastDataByTags(@Validated @RequestBody TagsSelectDao tagsSelectDao) {
+    public R<Map<String, Map<String, Object>>> getLastDataByTags(@Validated @RequestBody TagsSelectDao tagsSelectDao) {
         try {
             return R.ok(this.tdEngineService.getLastDataByTags(tagsSelectDao));
         }catch (UncategorizedSQLException e) {

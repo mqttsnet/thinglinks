@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.rule.api.factory;
 
+import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.rule.api.RemoteRuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +24,10 @@ public class RemoteRuleFallbackFactory implements FallbackFactory<RemoteRuleServ
         log.error("Rule服务调用失败:{}", throwable.getMessage());
         return new RemoteRuleService()
         {
-
-
+            @Override
+            public R<?> checkRuleConditions(String ruleIdentification) {
+                return R.fail("调用规则触发器失败",throwable.getMessage());
+            }
         };
     }
 }

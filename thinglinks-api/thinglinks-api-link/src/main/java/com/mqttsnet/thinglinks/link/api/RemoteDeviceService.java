@@ -42,8 +42,8 @@ public interface RemoteDeviceService {
      * @param productIdentification
      * @return
      */
-    @GetMapping("/device/selectByProductIdentification")
-    public R<?> selectByProductIdentification(String productIdentification);
+    @GetMapping("/device/api/select-by-product-identification/{productIdentification}")
+    public R<?> selectByProductIdentification(@PathVariable("productIdentification") String productIdentification);
 
 
     /**

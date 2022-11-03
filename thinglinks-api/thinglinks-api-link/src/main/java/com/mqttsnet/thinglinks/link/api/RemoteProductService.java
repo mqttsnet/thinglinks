@@ -2,8 +2,9 @@ package com.mqttsnet.thinglinks.link.api;
 
 import com.mqttsnet.thinglinks.common.core.constant.ServiceNameConstants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.api.factory.RemoteProductFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,15 +21,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface RemoteProductService {
 
     /**
-     * 查询产品信息
-     */
-    /**
-     * 查询属性信息
+     * 通过标识查询产品
      *
+     * @param productIdentification
      * @return
      */
-    @GetMapping("/product/selectByProductIdentification")
-    public R<?> selectByProductIdentification(String productIdentification);
+    @GetMapping("/product/api/select-by-product-identification/{productIdentification}")
+    public R<Product> selectByProductIdentification(@PathVariable("productIdentification") String productIdentification);
 
     /**
      * 查询服务信息
@@ -36,8 +35,8 @@ public interface RemoteProductService {
      * @param id
      * @return
      */
-    @GetMapping(value = "/productServices/{id}")
-    public AjaxResult selectProductServicesById(@PathVariable("id") Long id);
+    @GetMapping(value = "/product-services/api/{id}")
+    public R<ProductServices> selectProductServicesById(@PathVariable("id") Long id);
 
 
     /**
@@ -45,6 +44,6 @@ public interface RemoteProductService {
      *
      * @return
      */
-    @GetMapping("/productProperties/{id}")
-    public AjaxResult selectByIdProperties(@PathVariable("id") Long id);
+    @GetMapping("/product-properties/api/{id}")
+    public R<ProductProperties> selectByIdProperties(@PathVariable("id") Long id);
 }
