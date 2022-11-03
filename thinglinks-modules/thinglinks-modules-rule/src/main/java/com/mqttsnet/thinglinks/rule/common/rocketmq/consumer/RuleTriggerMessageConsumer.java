@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.rule.common.rocketmq.consumer;
 
+import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerGroupConstant;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
@@ -36,7 +37,8 @@ public class RuleTriggerMessageConsumer implements RocketMQListener {
         assert message != null : "message cannot be empty";
         log.info("规则引擎-触发器规则数据消费-->Received message={}", message);
         try {
-            R<Boolean> data = remoteRuleService.checkRuleConditions(String.valueOf(message));
+            JSONObject json = JSONObject.parseObject(String.valueOf(message));
+            R<Boolean> data = remoteRuleService.checkRuleConditions(json.getString("msg"));
             Boolean flag = data.getData();
             log.info("告警结果:{}", flag);
         } catch (Exception e) {
