@@ -19,6 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface RemoteRuleService {
 
     @GetMapping("/rule/api/check-rule-conditions/{ruleIdentification}")
-    public R<?> checkRuleConditions(@PathVariable("ruleIdentification") String ruleIdentification);
+    public R<Boolean> checkRuleConditions(@PathVariable("ruleIdentification") String ruleIdentification);
 
 }

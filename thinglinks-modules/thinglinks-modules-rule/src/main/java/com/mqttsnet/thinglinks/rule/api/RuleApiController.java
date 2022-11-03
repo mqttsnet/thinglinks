@@ -56,7 +56,7 @@ public class RuleApiController extends BaseController {
      * 规则触发条件验证
      */
     @GetMapping(value = "/check-rule-conditions/{ruleIdentification}")
-    public R<?> checkRuleConditions(@PathVariable("ruleIdentification") String ruleIdentification) {
+    public R<Boolean> checkRuleConditions(@PathVariable("ruleIdentification") String ruleIdentification) {
         // 查询规则
         Rule rule = ruleService.selectByRuleIdentification(ruleIdentification);
         if (Objects.isNull(rule)) {
