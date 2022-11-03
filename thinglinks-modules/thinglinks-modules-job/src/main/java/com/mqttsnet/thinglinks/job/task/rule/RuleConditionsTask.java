@@ -1,13 +1,11 @@
 package com.mqttsnet.thinglinks.job.task.rule;
 
-import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
-import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
-import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
+import com.mqttsnet.thinglinks.rule.api.RemoteRuleService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * @program: thinglinks
@@ -21,8 +19,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RuleConditionsTask {
 
-    @Autowired
-    private RocketMQTemplate rocketMQTemplate;
+    @Resource
+    private RemoteRuleService remoteRuleService;
 
 
     /**
@@ -32,11 +30,6 @@ public class RuleConditionsTask {
         if(StringUtils.isBlank(params)){
             return;
         }
-        MQMessage mqMessage = new MQMessage();
-        mqMessage.setTopic(ConsumerTopicConstant.THINGLINKS_RULE_TRIGGER);
-        final JSONObject jsonObject = new JSONObject();
-        jsonObject.put("msg", params);
-        mqMessage.setMessage(jsonObject.toJSONString());
-        rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
+        remoteRuleService.triggerDeviceLinkage(params);
     }
 }

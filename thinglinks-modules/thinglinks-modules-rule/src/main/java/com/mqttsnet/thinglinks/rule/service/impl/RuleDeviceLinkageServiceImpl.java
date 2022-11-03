@@ -1,12 +1,14 @@
-package com.mqttsnet.thinglinks.rule.api;
+package com.mqttsnet.thinglinks.rule.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.ConditionTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.FieldTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.OperatorEnum;
 import com.mqttsnet.thinglinks.common.core.enums.TriggeringEnum;
 import com.mqttsnet.thinglinks.common.core.utils.CompareUtil;
-import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
+import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
+import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
 import com.mqttsnet.thinglinks.link.api.RemoteProductService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
@@ -15,27 +17,32 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.rule.api.domain.Rule;
 import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
 import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
+import com.mqttsnet.thinglinks.rule.service.RuleDeviceLinkageService;
 import com.mqttsnet.thinglinks.rule.service.RuleService;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-
 /**
- * 规则处理类
- *
- * @author shisen
- */
-@RestController
-@RequestMapping("/rule/api")
-public class RuleApiController extends BaseController {
+ * @program: thinglinks
+ * @description: 规则设备联动业务层接口实现类
+ * @packagename: com.mqttsnet.thinglinks.rule.service.impl
+ * @author: ShiHuan Sun
+ * @e-mainl: 13733918655@163.com
+ * @date: 2022-11-03 18:50
+ **/
+@Slf4j
+@Service
+public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
+
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
 
     @Autowired
     private RuleService ruleService;
@@ -53,14 +60,33 @@ public class RuleApiController extends BaseController {
     private RemoteDeviceService remoteDeviceService;
 
     /**
-     * 规则触发条件验证
+     * 触发设备联动规则条件
+     *
+     * @param ruleIdentification 规则标识
+     * @return
      */
-    @GetMapping(value = "/check-rule-conditions/{ruleIdentification}")
-    public R<Boolean> checkRuleConditions(@PathVariable("ruleIdentification") String ruleIdentification) {
+    @Override
+    public void triggerDeviceLinkageByRuleIdentification(String ruleIdentification) {
+        MQMessage mqMessage = new MQMessage();
+        mqMessage.setTopic(ConsumerTopicConstant.THINGLINKS_RULE_TRIGGER);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg", ruleIdentification);
+        mqMessage.setMessage(jsonObject.toJSONString());
+        rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
+    }
+
+    /**
+     * 规则触发条件验证
+     *
+     * @param ruleIdentification 规则标识
+     * @return
+     */
+    @Override
+    public Boolean checkRuleConditions(String ruleIdentification) {
         // 查询规则
         Rule rule = ruleService.selectByRuleIdentification(ruleIdentification);
         if (Objects.isNull(rule)) {
-            return R.fail("规则不存在");
+            log.warn("{}规则不存在", ruleIdentification);
         }
         // 查询触发条件
         List<RuleConditions> ruleConditions = ruleConditionsService.selectByRuleId(rule.getId());
@@ -122,7 +148,7 @@ public class RuleApiController extends BaseController {
         boolean mark = false;
         if (CollectionUtils.isEmpty(flags)) {
             // 验证条件
-            return R.ok(mark);
+            return mark;
         }
         switch (Objects.requireNonNull(TriggeringEnum.getBySymbol(rule.getTriggering()))) {
             case ALL:
@@ -134,7 +160,7 @@ public class RuleApiController extends BaseController {
             default:
                 break;
         }
-        return R.ok(mark);
+        return mark;
     }
 
     /**
@@ -319,5 +345,4 @@ public class RuleApiController extends BaseController {
         }
         return flag;
     }
-
 }

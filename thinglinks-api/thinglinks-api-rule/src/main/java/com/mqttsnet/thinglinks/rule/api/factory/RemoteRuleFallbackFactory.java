@@ -25,7 +25,7 @@ public class RemoteRuleFallbackFactory implements FallbackFactory<RemoteRuleServ
         return new RemoteRuleService()
         {
             @Override
-            public R checkRuleConditions(String ruleIdentification) {
+            public R<?> triggerDeviceLinkage(String ruleIdentification) {
                 return R.fail("调用规则触发器失败",throwable.getMessage());
             }
         };

@@ -1,10 +1,9 @@
 package com.mqttsnet.thinglinks.rule.common.rocketmq.consumer;
 
 import com.alibaba.fastjson.JSONObject;
-import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerGroupConstant;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
-import com.mqttsnet.thinglinks.rule.api.RemoteRuleService;
+import com.mqttsnet.thinglinks.rule.service.RuleDeviceLinkageService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
@@ -29,7 +28,7 @@ import org.springframework.stereotype.Component;
 public class RuleTriggerMessageConsumer implements RocketMQListener {
 
     @Autowired
-    private RemoteRuleService remoteRuleService;
+    private RuleDeviceLinkageService ruleDeviceLinkageService;
 
     @Async("ruleAsync")
     @Override
@@ -38,9 +37,8 @@ public class RuleTriggerMessageConsumer implements RocketMQListener {
         log.info("规则引擎-触发器规则数据消费-->Received message={}", message);
         try {
             JSONObject json = JSONObject.parseObject(String.valueOf(message));
-            R<Boolean> data = remoteRuleService.checkRuleConditions(json.getString("msg"));
-            Boolean flag = data.getData();
-            log.info("告警结果:{}", flag);
+            Boolean flag = ruleDeviceLinkageService.checkRuleConditions(json.getString("msg"));
+            log.info("规则匹配结果:{}", flag);
         } catch (Exception e) {
             log.error("规则引擎-触发器规则数据消费-->消费失败，失败原因：{}", e.getMessage());
         }
