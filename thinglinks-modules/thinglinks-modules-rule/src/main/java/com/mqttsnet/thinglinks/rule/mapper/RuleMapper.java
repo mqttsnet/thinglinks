@@ -1,11 +1,10 @@
 package com.mqttsnet.thinglinks.rule.mapper;
 
 import com.mqttsnet.thinglinks.rule.api.domain.Rule;
-
-import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @program: thinglinks
@@ -13,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
  * @packagename: com.mqttsnet.thinglinks.rule.mapper
  * @author: ShiHuan Sun
  * @e-mainl: 13733918655@163.com
- * @date: 2022-07-21 18:49
+ * @date: 2022-11-18 20:39
  **/
 @Mapper
 public interface RuleMapper {
@@ -24,14 +23,6 @@ public interface RuleMapper {
      * @return deleteCount
      */
     int deleteByPrimaryKey(Long id);
-
-    /**
-     * 根据规则标识查询规则信息
-     *
-     * @param ruleIdentification
-     * @return
-     */
-    Rule selectByRuleIdentification(String ruleIdentification);
 
     /**
      * insert record to table
@@ -82,4 +73,12 @@ public interface RuleMapper {
     int updateBatchSelective(List<Rule> list);
 
     int batchInsert(@Param("list") List<Rule> list);
+
+    /**
+     * 根据规则标识查询规则信息
+     *
+     * @param ruleIdentification
+     * @return
+     */
+    Rule selectByRuleIdentification(String ruleIdentification);
 }

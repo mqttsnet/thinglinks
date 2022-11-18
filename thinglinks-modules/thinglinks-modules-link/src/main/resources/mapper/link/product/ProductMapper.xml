@@ -6,7 +6,7 @@
     <!--@Table product-->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="app_id" jdbcType="VARCHAR" property="appId" />
-    <result column="template_id" jdbcType="BIGINT" property="templateId" />
+    <result column="template_identification" jdbcType="VARCHAR" property="templateIdentification" />
     <result column="product_name" jdbcType="VARCHAR" property="productName" />
     <result column="product_identification" jdbcType="VARCHAR" property="productIdentification" />
     <result column="product_type" jdbcType="VARCHAR" property="productType" />
@@ -15,7 +15,7 @@
     <result column="model" jdbcType="VARCHAR" property="model" />
     <result column="data_format" jdbcType="VARCHAR" property="dataFormat" />
     <result column="device_type" jdbcType="VARCHAR" property="deviceType" />
-    <result column="protocol_type" jdbcType="VARCHAR" property="protocolType"/>
+    <result column="protocol_type" jdbcType="VARCHAR" property="protocolType" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
@@ -25,16 +25,13 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, app_id, template_id, product_name, product_identification, product_type, manufacturer_id,
-    manufacturer_name, model, data_format, device_type, protocol_type, `status`, remark,
-    create_by, create_time, update_by, update_time
-  </sql>
-  <sql id="OrderByCreateTimeDesc">
-    order by create_time desc
+    id, app_id, template_identification, product_name, product_identification, product_type, 
+    manufacturer_id, manufacturer_name, model, data_format, device_type, protocol_type, 
+    `status`, remark, create_by, create_time, update_by, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select
+    select 
     <include refid="Base_Column_List" />
     from product
     where id = #{id,jdbcType=BIGINT}
@@ -46,69 +43,69 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into product (app_id, template_id, product_name,
-      product_identification, product_type, manufacturer_id,
-      manufacturer_name, model, data_format,
-      device_type, protocol_type, `status`,
-      remark, create_by, create_time,
+    insert into product (app_id, template_identification, product_name, 
+      product_identification, product_type, manufacturer_id, 
+      manufacturer_name, model, data_format, 
+      device_type, protocol_type, `status`, 
+      remark, create_by, create_time, 
       update_by, update_time)
-    values (#{appId,jdbcType=VARCHAR}, #{templateId,jdbcType=BIGINT}, #{productName,jdbcType=VARCHAR},
-      #{productIdentification,jdbcType=VARCHAR}, #{productType,jdbcType=VARCHAR}, #{manufacturerId,jdbcType=VARCHAR},
-      #{manufacturerName,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{dataFormat,jdbcType=VARCHAR},
-      #{deviceType,jdbcType=VARCHAR}, #{protocolType,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
-      #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+    values (#{appId,jdbcType=VARCHAR}, #{templateIdentification,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR}, 
+      #{productIdentification,jdbcType=VARCHAR}, #{productType,jdbcType=VARCHAR}, #{manufacturerId,jdbcType=VARCHAR}, 
+      #{manufacturerName,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{dataFormat,jdbcType=VARCHAR}, 
+      #{deviceType,jdbcType=VARCHAR}, #{protocolType,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
       #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into product
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="appId != null and appId != ''">
+      <if test="appId != null">
         app_id,
       </if>
-      <if test="templateId != null">
-        template_id,
+      <if test="templateIdentification != null">
+        template_identification,
       </if>
-      <if test="productName != null and productName != ''">
+      <if test="productName != null">
         product_name,
       </if>
-      <if test="productIdentification != null and productIdentification != ''">
+      <if test="productIdentification != null">
         product_identification,
       </if>
-      <if test="productType != null and productType != ''">
+      <if test="productType != null">
         product_type,
       </if>
-      <if test="manufacturerId != null and manufacturerId != ''">
+      <if test="manufacturerId != null">
         manufacturer_id,
       </if>
-      <if test="manufacturerName != null and manufacturerName != ''">
+      <if test="manufacturerName != null">
         manufacturer_name,
       </if>
-      <if test="model != null and model != ''">
+      <if test="model != null">
         model,
       </if>
-      <if test="dataFormat != null and dataFormat != ''">
+      <if test="dataFormat != null">
         data_format,
       </if>
-      <if test="deviceType != null and deviceType != ''">
+      <if test="deviceType != null">
         device_type,
       </if>
-      <if test="protocolType != null and protocolType != ''">
+      <if test="protocolType != null">
         protocol_type,
       </if>
-      <if test="status != null and status != ''">
+      <if test="status != null">
         `status`,
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark,
       </if>
-      <if test="createBy != null and createBy != ''">
+      <if test="createBy != null">
         create_by,
       </if>
       <if test="createTime != null">
         create_time,
       </if>
-      <if test="updateBy != null and updateBy != ''">
+      <if test="updateBy != null">
         update_by,
       </if>
       <if test="updateTime != null">
@@ -116,52 +113,52 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="appId != null and appId != ''">
+      <if test="appId != null">
         #{appId,jdbcType=VARCHAR},
       </if>
-      <if test="templateId != null">
-        #{templateId,jdbcType=BIGINT},
+      <if test="templateIdentification != null">
+        #{templateIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="productName != null and productName != ''">
+      <if test="productName != null">
         #{productName,jdbcType=VARCHAR},
       </if>
-      <if test="productIdentification != null and productIdentification != ''">
+      <if test="productIdentification != null">
         #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="productType != null and productType != ''">
+      <if test="productType != null">
         #{productType,jdbcType=VARCHAR},
       </if>
-      <if test="manufacturerId != null and manufacturerId != ''">
+      <if test="manufacturerId != null">
         #{manufacturerId,jdbcType=VARCHAR},
       </if>
-      <if test="manufacturerName != null and manufacturerName != ''">
+      <if test="manufacturerName != null">
         #{manufacturerName,jdbcType=VARCHAR},
       </if>
-      <if test="model != null and model != ''">
+      <if test="model != null">
         #{model,jdbcType=VARCHAR},
       </if>
-      <if test="dataFormat != null and dataFormat != ''">
+      <if test="dataFormat != null">
         #{dataFormat,jdbcType=VARCHAR},
       </if>
-      <if test="deviceType != null and deviceType != ''">
+      <if test="deviceType != null">
         #{deviceType,jdbcType=VARCHAR},
       </if>
-      <if test="protocolType != null and protocolType != ''">
+      <if test="protocolType != null">
         #{protocolType,jdbcType=VARCHAR},
       </if>
-      <if test="status != null and status != ''">
+      <if test="status != null">
         #{status,jdbcType=VARCHAR},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="createBy != null and createBy != ''">
+      <if test="createBy != null">
         #{createBy,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateBy != null and updateBy != ''">
+      <if test="updateBy != null">
         #{updateBy,jdbcType=VARCHAR},
       </if>
       <if test="updateTime != null">
@@ -173,52 +170,52 @@
     <!--@mbg.generated-->
     update product
     <set>
-      <if test="appId != null and appId != ''">
+      <if test="appId != null">
         app_id = #{appId,jdbcType=VARCHAR},
       </if>
-      <if test="templateId != null">
-        template_id = #{templateId,jdbcType=BIGINT},
+      <if test="templateIdentification != null">
+        template_identification = #{templateIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="productName != null and productName != ''">
+      <if test="productName != null">
         product_name = #{productName,jdbcType=VARCHAR},
       </if>
-      <if test="productIdentification != null and productIdentification != ''">
+      <if test="productIdentification != null">
         product_identification = #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="productType != null and productType != ''">
+      <if test="productType != null">
         product_type = #{productType,jdbcType=VARCHAR},
       </if>
-      <if test="manufacturerId != null and manufacturerId != ''">
+      <if test="manufacturerId != null">
         manufacturer_id = #{manufacturerId,jdbcType=VARCHAR},
       </if>
-      <if test="manufacturerName != null and manufacturerName != ''">
+      <if test="manufacturerName != null">
         manufacturer_name = #{manufacturerName,jdbcType=VARCHAR},
       </if>
-      <if test="model != null and model != ''">
+      <if test="model != null">
         model = #{model,jdbcType=VARCHAR},
       </if>
-      <if test="dataFormat != null and dataFormat != ''">
+      <if test="dataFormat != null">
         data_format = #{dataFormat,jdbcType=VARCHAR},
       </if>
-      <if test="deviceType != null and deviceType != ''">
+      <if test="deviceType != null">
         device_type = #{deviceType,jdbcType=VARCHAR},
       </if>
-      <if test="protocolType != null and protocolType != ''">
+      <if test="protocolType != null">
         protocol_type = #{protocolType,jdbcType=VARCHAR},
       </if>
-      <if test="status != null and status != ''">
+      <if test="status != null">
         `status` = #{status,jdbcType=VARCHAR},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="createBy != null and createBy != ''">
+      <if test="createBy != null">
         create_by = #{createBy,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateBy != null and updateBy != ''">
+      <if test="updateBy != null">
         update_by = #{updateBy,jdbcType=VARCHAR},
       </if>
       <if test="updateTime != null">
@@ -231,7 +228,7 @@
     <!--@mbg.generated-->
     update product
     set app_id = #{appId,jdbcType=VARCHAR},
-      template_id = #{templateId,jdbcType=BIGINT},
+      template_identification = #{templateIdentification,jdbcType=VARCHAR},
       product_name = #{productName,jdbcType=VARCHAR},
       product_identification = #{productIdentification,jdbcType=VARCHAR},
       product_type = #{productType,jdbcType=VARCHAR},
@@ -258,9 +255,9 @@
           when id = #{item.id,jdbcType=BIGINT} then #{item.appId,jdbcType=VARCHAR}
         </foreach>
       </trim>
-      <trim prefix="template_id = case" suffix="end,">
+      <trim prefix="template_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.templateId,jdbcType=BIGINT}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.templateIdentification,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="product_name = case" suffix="end,">
@@ -298,7 +295,7 @@
           when id = #{item.id,jdbcType=BIGINT} then #{item.dataFormat,jdbcType=VARCHAR}
         </foreach>
       </trim>
-      <trim prefix="deviceType = case" suffix="end,">
+      <trim prefix="device_type = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           when id = #{item.id,jdbcType=BIGINT} then #{item.deviceType,jdbcType=VARCHAR}
         </foreach>
@@ -355,10 +352,10 @@
           </if>
         </foreach>
       </trim>
-      <trim prefix="template_id = case" suffix="end,">
+      <trim prefix="template_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.templateId != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.templateId,jdbcType=BIGINT}
+          <if test="item.templateIdentification != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.templateIdentification,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
@@ -476,18 +473,18 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into product
-    (app_id, template_id, product_name, product_identification, product_type, manufacturer_id,
-      manufacturer_name, model, data_format, device_type, protocol_type, `status`, remark,
-      create_by, create_time, update_by, update_time)
+    (app_id, template_identification, product_name, product_identification, product_type, 
+      manufacturer_id, manufacturer_name, model, data_format, device_type, protocol_type, 
+      `status`, remark, create_by, create_time, update_by, update_time)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.appId,jdbcType=VARCHAR}, #{item.templateId,jdbcType=BIGINT}, #{item.productName,jdbcType=VARCHAR},
-        #{item.productIdentification,jdbcType=VARCHAR}, #{item.productType,jdbcType=VARCHAR},
-        #{item.manufacturerId,jdbcType=VARCHAR}, #{item.manufacturerName,jdbcType=VARCHAR},
-        #{item.model,jdbcType=VARCHAR}, #{item.dataFormat,jdbcType=VARCHAR}, #{item.deviceType,jdbcType=VARCHAR},
-        #{item.protocolType,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, #{item.remark,jdbcType=VARCHAR},
-        #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR},
-        #{item.updateTime,jdbcType=TIMESTAMP})
+      (#{item.appId,jdbcType=VARCHAR}, #{item.templateIdentification,jdbcType=VARCHAR}, 
+        #{item.productName,jdbcType=VARCHAR}, #{item.productIdentification,jdbcType=VARCHAR}, 
+        #{item.productType,jdbcType=VARCHAR}, #{item.manufacturerId,jdbcType=VARCHAR}, 
+        #{item.manufacturerName,jdbcType=VARCHAR}, #{item.model,jdbcType=VARCHAR}, #{item.dataFormat,jdbcType=VARCHAR}, 
+        #{item.deviceType,jdbcType=VARCHAR}, #{item.protocolType,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, 
+        #{item.remark,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
   <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product" useGeneratedKeys="true">
@@ -498,7 +495,7 @@
         id,
       </if>
       app_id,
-      template_id,
+      template_identification,
       product_name,
       product_identification,
       product_type,
@@ -521,7 +518,7 @@
         #{id,jdbcType=BIGINT},
       </if>
       #{appId,jdbcType=VARCHAR},
-      #{templateId,jdbcType=BIGINT},
+      #{templateIdentification,jdbcType=VARCHAR},
       #{productName,jdbcType=VARCHAR},
       #{productIdentification,jdbcType=VARCHAR},
       #{productType,jdbcType=VARCHAR},
@@ -538,13 +535,13 @@
       #{updateBy,jdbcType=VARCHAR},
       #{updateTime,jdbcType=TIMESTAMP},
     </trim>
-    on duplicate key update
+    on duplicate key update 
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
       app_id = #{appId,jdbcType=VARCHAR},
-      template_id = #{templateId,jdbcType=BIGINT},
+      template_identification = #{templateIdentification,jdbcType=VARCHAR},
       product_name = #{productName,jdbcType=VARCHAR},
       product_identification = #{productIdentification,jdbcType=VARCHAR},
       product_type = #{productType,jdbcType=VARCHAR},
@@ -569,52 +566,52 @@
       <if test="id != null">
         id,
       </if>
-      <if test="appId != null and appId != ''">
+      <if test="appId != null">
         app_id,
       </if>
-      <if test="templateId != null">
-        template_id,
+      <if test="templateIdentification != null">
+        template_identification,
       </if>
-      <if test="productName != null and productName != ''">
+      <if test="productName != null">
         product_name,
       </if>
-      <if test="productIdentification != null and productIdentification != ''">
+      <if test="productIdentification != null">
         product_identification,
       </if>
-      <if test="productType != null and productType != ''">
+      <if test="productType != null">
         product_type,
       </if>
-      <if test="manufacturerId != null and manufacturerId != ''">
+      <if test="manufacturerId != null">
         manufacturer_id,
       </if>
-      <if test="manufacturerName != null and manufacturerName != ''">
+      <if test="manufacturerName != null">
         manufacturer_name,
       </if>
-      <if test="model != null and model != ''">
+      <if test="model != null">
         model,
       </if>
-      <if test="dataFormat != null and dataFormat != ''">
+      <if test="dataFormat != null">
         data_format,
       </if>
-      <if test="deviceType != null and deviceType != ''">
+      <if test="deviceType != null">
         device_type,
       </if>
-      <if test="protocolType != null and protocolType != ''">
+      <if test="protocolType != null">
         protocol_type,
       </if>
-      <if test="status != null and status != ''">
+      <if test="status != null">
         `status`,
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark,
       </if>
-      <if test="createBy != null and createBy != ''">
+      <if test="createBy != null">
         create_by,
       </if>
       <if test="createTime != null">
         create_time,
       </if>
-      <if test="updateBy != null and updateBy != ''">
+      <if test="updateBy != null">
         update_by,
       </if>
       <if test="updateTime != null">
@@ -626,109 +623,109 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="appId != null and appId != ''">
+      <if test="appId != null">
         #{appId,jdbcType=VARCHAR},
       </if>
-      <if test="templateId != null">
-        #{templateId,jdbcType=BIGINT},
+      <if test="templateIdentification != null">
+        #{templateIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="productName != null and productName != ''">
+      <if test="productName != null">
         #{productName,jdbcType=VARCHAR},
       </if>
-      <if test="productIdentification != null and productIdentification != ''">
+      <if test="productIdentification != null">
         #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="productType != null and productType != ''">
+      <if test="productType != null">
         #{productType,jdbcType=VARCHAR},
       </if>
-      <if test="manufacturerId != null and manufacturerId != ''">
+      <if test="manufacturerId != null">
         #{manufacturerId,jdbcType=VARCHAR},
       </if>
-      <if test="manufacturerName != null and manufacturerName != ''">
+      <if test="manufacturerName != null">
         #{manufacturerName,jdbcType=VARCHAR},
       </if>
-      <if test="model != null and model != ''">
+      <if test="model != null">
         #{model,jdbcType=VARCHAR},
       </if>
-      <if test="dataFormat != null and dataFormat != ''">
+      <if test="dataFormat != null">
         #{dataFormat,jdbcType=VARCHAR},
       </if>
-      <if test="deviceType != null and deviceType != ''">
+      <if test="deviceType != null">
         #{deviceType,jdbcType=VARCHAR},
       </if>
-      <if test="protocolType != null and protocolType != ''">
+      <if test="protocolType != null">
         #{protocolType,jdbcType=VARCHAR},
       </if>
-      <if test="status != null and status != ''">
+      <if test="status != null">
         #{status,jdbcType=VARCHAR},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="createBy != null and createBy != ''">
+      <if test="createBy != null">
         #{createBy,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateBy != null and updateBy != ''">
+      <if test="updateBy != null">
         #{updateBy,jdbcType=VARCHAR},
       </if>
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
-    on duplicate key update
+    on duplicate key update 
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
       </if>
-      <if test="appId != null and appId != ''">
+      <if test="appId != null">
         app_id = #{appId,jdbcType=VARCHAR},
       </if>
-      <if test="templateId != null">
-        template_id = #{templateId,jdbcType=BIGINT},
+      <if test="templateIdentification != null">
+        template_identification = #{templateIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="productName != null and productName != ''">
+      <if test="productName != null">
         product_name = #{productName,jdbcType=VARCHAR},
       </if>
-      <if test="productIdentification != null and productIdentification != ''">
+      <if test="productIdentification != null">
         product_identification = #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="productType != null and productType != ''">
+      <if test="productType != null">
         product_type = #{productType,jdbcType=VARCHAR},
       </if>
-      <if test="manufacturerId != null and manufacturerId != ''">
+      <if test="manufacturerId != null">
         manufacturer_id = #{manufacturerId,jdbcType=VARCHAR},
       </if>
-      <if test="manufacturerName != null and manufacturerName != ''">
+      <if test="manufacturerName != null">
         manufacturer_name = #{manufacturerName,jdbcType=VARCHAR},
       </if>
-      <if test="model != null and model != ''">
+      <if test="model != null">
         model = #{model,jdbcType=VARCHAR},
       </if>
-      <if test="dataFormat != null and dataFormat != ''">
+      <if test="dataFormat != null">
         data_format = #{dataFormat,jdbcType=VARCHAR},
       </if>
-      <if test="deviceType != null and deviceType != ''">
+      <if test="deviceType != null">
         device_type = #{deviceType,jdbcType=VARCHAR},
       </if>
-      <if test="protocolType != null and protocolType != ''">
+      <if test="protocolType != null">
         protocol_type = #{protocolType,jdbcType=VARCHAR},
       </if>
-      <if test="status != null and status != ''">
+      <if test="status != null">
         `status` = #{status,jdbcType=VARCHAR},
       </if>
-      <if test="remark != null and remark != ''">
+      <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
-      <if test="createBy != null and createBy != ''">
+      <if test="createBy != null">
         create_by = #{createBy,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateBy != null and updateBy != ''">
+      <if test="updateBy != null">
         update_by = #{updateBy,jdbcType=VARCHAR},
       </if>
       <if test="updateTime != null">
@@ -736,6 +733,9 @@
       </if>
     </trim>
   </insert>
+  <sql id="OrderByCreateTimeDesc">
+    order by create_time desc
+  </sql>
 
   <select id="selectProductList" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product" resultMap="BaseResultMap">
     select
@@ -766,7 +766,7 @@
 
 
 
-  <insert id="insertProduct" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product" useGeneratedKeys="true" keyProperty="id">
+  <insert id="insertProduct" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.Product" useGeneratedKeys="true">
     insert into product
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="appId != null and appId != ''">app_id,</if>
@@ -838,7 +838,7 @@
 
   <delete id="deleteProductByIds" parameterType="String">
     delete from product where id in
-    <foreach item="id" collection="array" open="(" separator="," close=")">
+    <foreach close=")" collection="array" item="id" open="(" separator=",">
       #{id}
     </foreach>
   </delete>
@@ -846,7 +846,7 @@
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-02-17-->
   <select id="findOneByProductName" resultMap="BaseResultMap">
     select
-    <include refid="Base_Column_List"/>
+    <include refid="Base_Column_List" />
     from product
     <where>
       <if test="productName != null">
@@ -858,7 +858,7 @@
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-03-25-->
   <select id="selectByManufacturerIdAndModelAndDeviceType" resultMap="BaseResultMap">
     select
-    <include refid="Base_Column_List"/>
+    <include refid="Base_Column_List" />
     from product
     <where>
       <if test="manufacturerId != null">
@@ -876,7 +876,7 @@
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-03-25-->
   <select id="findOneByManufacturerIdAndModelAndDeviceType" resultMap="BaseResultMap">
     select
-    <include refid="Base_Column_List"/>
+    <include refid="Base_Column_List" />
     from product
     <where>
       <if test="manufacturerId != null">
@@ -894,7 +894,7 @@
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-04-13-->
   <select id="findAllByStatus" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from product
         <where>
             <if test="status != null">
@@ -906,7 +906,7 @@
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-04-14-->
   <select id="findOneByManufacturerIdAndModelAndProtocolTypeAndStatus" resultMap="BaseResultMap">
     select
-    <include refid="Base_Column_List"/>
+    <include refid="Base_Column_List" />
     from product
     <where>
       <if test="manufacturerId != null">
@@ -927,7 +927,7 @@
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-04-15-->
   <select id="findOneByIdAndStatus" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from product
         <where>
             <if test="id != null">
@@ -942,7 +942,7 @@
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-04-27-->
   <select id="findOneByProductIdentificationAndProtocolType" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from product
         <where>
             <if test="productIdentification != null">
@@ -957,13 +957,12 @@
 <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-04-27-->
   <select id="findAllByIdInAndStatus" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from product
         <where>
-            <if test="idCollection != null and idCollection.size() > 0">
+            <if test="idCollection != null and idCollection.size() &gt; 0">
                 and id in
-                <foreach item="item" index="index" collection="idCollection"
-                         open="(" separator="," close=")">
+                <foreach close=")" collection="idCollection" index="index" item="item" open="(" separator=",">
                     #{item,jdbcType=BIGINT}
                 </foreach>
             </if>

@@ -290,7 +290,7 @@
           </el-col>
           <el-col :span="11">
             <el-form-item label="设备类型" prop="deviceType">
-              <el-select v-model="form.deviceType" placeholder="请选择设备类型" disabled>
+              <el-select v-model="form.deviceType" placeholder="请选择设备类型" :disabled='set ? true : false'>
                 <el-option v-for="dict in dict.type.link_device_device_type" :key="dict.value" :label="dict.label"
                   :value="dict.value" />
               </el-select>

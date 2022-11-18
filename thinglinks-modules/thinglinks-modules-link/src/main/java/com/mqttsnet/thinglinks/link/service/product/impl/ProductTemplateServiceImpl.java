@@ -1,38 +1,37 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
 
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
-import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductTemplateModel;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.Properties;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.Services;
+import com.mqttsnet.thinglinks.link.mapper.product.ProductTemplateMapper;
 import com.mqttsnet.thinglinks.link.service.product.ProductPropertiesService;
 import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
+import com.mqttsnet.thinglinks.link.service.product.ProductTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate;
-import com.mqttsnet.thinglinks.link.mapper.product.ProductTemplateMapper;
-import com.mqttsnet.thinglinks.link.service.product.ProductTemplateService;
+
 /**
-
-* @Description:    java类作用描述
-* @Author:         ShiHuan Sun
-* @E-mail:         13733918655@163.com
-* @Website:        http://thinglinks.mqttsnet.com
-* @CreateDate:     2021/12/25$ 23:52$
-* @UpdateUser:     ShiHuan Sun
-* @UpdateDate:     2021/12/25$ 23:52$
-* @UpdateRemark:   修改内容
-* @Version:        1.0
-
-*/
+ * @Description: java类作用描述
+ * @Author: ShiHuan Sun
+ * @E-mail: 13733918655@163.com
+ * @Website: http://thinglinks.mqttsnet.com
+ * @CreateDate: 2021/12/25$ 23:52$
+ * @UpdateUser: ShiHuan Sun
+ * @UpdateDate: 2021/12/25$ 23:52$
+ * @UpdateRemark: 修改内容
+ * @Version: 1.0
+ */
 @Service
-public class ProductTemplateServiceImpl implements ProductTemplateService{
+public class ProductTemplateServiceImpl implements ProductTemplateService {
 
     @Resource
     private ProductTemplateMapper productTemplateMapper;
@@ -120,7 +119,7 @@ public class ProductTemplateServiceImpl implements ProductTemplateService{
         if (productTemplate != null) {
             BeanUtils.copyBeanProp(productTemplateModel, productTemplate);
             ProductServices find = new ProductServices();
-            find.setTemplateId(productTemplate.getId());
+            find.setTemplateIdentification(productTemplate.getTemplateIdentification());
             find.setStatus(Constants.ENABLE);
             // 查询服务列表
             List<ProductServices> productServicesList = productServicesService.selectProductServicesList(find);
@@ -168,7 +167,6 @@ public class ProductTemplateServiceImpl implements ProductTemplateService{
      */
     @Override
     public int insertProductTemplate(ProductTemplate productTemplate) {
-        productTemplate.setCreateTime(DateUtils.getNowDate());
         return productTemplateMapper.insertProductTemplate(productTemplate);
     }
 
@@ -180,7 +178,6 @@ public class ProductTemplateServiceImpl implements ProductTemplateService{
      */
     @Override
     public int updateProductTemplate(ProductTemplate productTemplate) {
-        productTemplate.setUpdateTime(DateUtils.getNowTime());
         return productTemplateMapper.updateProductTemplate(productTemplate);
     }
 
@@ -196,3 +193,6 @@ public class ProductTemplateServiceImpl implements ProductTemplateService{
     }
 
 }
+
+
+

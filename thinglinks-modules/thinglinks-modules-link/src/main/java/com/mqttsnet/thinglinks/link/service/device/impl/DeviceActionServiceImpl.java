@@ -115,7 +115,6 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         deviceAction.setActionType(String.valueOf(map.get("channelStatus")));
         deviceAction.setStatus("success");
         deviceAction.setMessage("Device Connection");
-        deviceAction.setCreateTime(LocalDateTimeUtil.now());
         deviceActionMapper.insert(deviceAction);
     }
 
@@ -135,7 +134,6 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         deviceAction.setActionType(String.valueOf(map.get("channelStatus")));
         deviceAction.setStatus(i != 0 ? "success" : "failure");
         deviceAction.setMessage("Device Disconnection");
-        deviceAction.setCreateTime(LocalDateTimeUtil.now());
         deviceActionMapper.insert(deviceAction);
     }
 
@@ -173,7 +171,6 @@ public class DeviceActionServiceImpl implements DeviceActionService {
     @Override
     public int insertDeviceAction(DeviceAction deviceAction)
     {
-        deviceAction.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceActionMapper.insertDeviceAction(deviceAction);
     }
 

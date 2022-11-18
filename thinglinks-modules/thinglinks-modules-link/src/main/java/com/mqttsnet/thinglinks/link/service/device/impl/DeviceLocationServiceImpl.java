@@ -53,13 +53,8 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     public int insertOrUpdateSelective(DeviceLocation record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (record.getId() == null){
-            record.setCreateBy(sysUser.getUserName());
-            record.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
-        }else {
-            record.setUpdateBy(sysUser.getUserName());
-            record.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
-        }
+        record.setCreateBy(sysUser.getUserName());
+        record.setUpdateBy(sysUser.getUserName());
         return deviceLocationMapper.insertOrUpdateSelective(record);
     }
 
@@ -133,7 +128,6 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     public int insertDeviceLocation(DeviceLocation deviceLocation)
     {
         deviceLocation.setCreateBy(SecurityUtils.getUsername());
-        deviceLocation.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceLocationMapper.insertDeviceLocation(deviceLocation);
     }
 
@@ -147,7 +141,6 @@ public class DeviceLocationServiceImpl implements DeviceLocationService {
     public int updateDeviceLocation(DeviceLocation deviceLocation)
     {
         deviceLocation.setUpdateBy(SecurityUtils.getUsername());
-        deviceLocation.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceLocationMapper.updateDeviceLocation(deviceLocation);
     }
 

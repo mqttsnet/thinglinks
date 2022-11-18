@@ -8,9 +8,9 @@
     <result column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="rule_identification" jdbcType="VARCHAR" property="ruleIdentification" />
     <result column="rule_name" jdbcType="VARCHAR" property="ruleName" />
-    <result column="job_id" jdbcType="BIGINT" property="jobId" />
+    <result column="job_identificatio" jdbcType="VARCHAR" property="jobIdentificatio" />
     <result column="status" jdbcType="VARCHAR" property="status" />
-    <result column="triggering" jdbcType="BIGINT" property="triggering" />
+    <result column="triggering" jdbcType="SMALLINT" property="triggering" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -19,25 +19,16 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, app_id, rule_identification, rule_name, job_id, `status`, triggering, remark,
-    create_by, create_time, update_by, update_time
+    id, app_id, rule_identification, rule_name, job_identificatio, `status`, triggering, 
+    remark, create_by, create_time, update_by, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select
+    select 
     <include refid="Base_Column_List" />
     from `rule`
     where id = #{id,jdbcType=BIGINT}
   </select>
-
-  <select id="selectByRuleIdentification" parameterType="java.lang.String" resultMap="BaseResultMap">
-    <!--@mbg.generated-->
-    select
-    <include refid="Base_Column_List" />
-    from `rule`
-    where rule_identification = #{ruleIdentification,jdbcType=VARCHAR}
-  </select>
-
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     <!--@mbg.generated-->
     delete from `rule`
@@ -45,13 +36,13 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.Rule" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into `rule` (app_id, rule_identification, rule_name,
-      job_id, `status`, triggering,
-      remark, create_by, create_time,
+    insert into `rule` (app_id, rule_identification, rule_name, 
+      job_identificatio, `status`, triggering, 
+      remark, create_by, create_time, 
       update_by, update_time)
-    values (#{appId,jdbcType=VARCHAR}, #{ruleIdentification,jdbcType=VARCHAR}, #{ruleName,jdbcType=VARCHAR},
-      #{jobId,jdbcType=BIGINT}, #{status,jdbcType=VARCHAR}, #{triggering,jdbcType=BIGINT},
-      #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+    values (#{appId,jdbcType=VARCHAR}, #{ruleIdentification,jdbcType=VARCHAR}, #{ruleName,jdbcType=VARCHAR}, 
+      #{jobIdentificatio,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{triggering,jdbcType=SMALLINT}, 
+      #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
       #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.Rule" useGeneratedKeys="true">
@@ -67,8 +58,8 @@
       <if test="ruleName != null">
         rule_name,
       </if>
-      <if test="jobId != null">
-        job_id,
+      <if test="jobIdentificatio != null">
+        job_identificatio,
       </if>
       <if test="status != null">
         `status`,
@@ -102,14 +93,14 @@
       <if test="ruleName != null">
         #{ruleName,jdbcType=VARCHAR},
       </if>
-      <if test="jobId != null">
-        #{jobId,jdbcType=BIGINT},
+      <if test="jobIdentificatio != null">
+        #{jobIdentificatio,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
         #{status,jdbcType=VARCHAR},
       </if>
       <if test="triggering != null">
-        #{triggering,jdbcType=BIGINT},
+        #{triggering,jdbcType=SMALLINT},
       </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
@@ -141,14 +132,14 @@
       <if test="ruleName != null">
         rule_name = #{ruleName,jdbcType=VARCHAR},
       </if>
-      <if test="jobId != null">
-        job_id = #{jobId,jdbcType=BIGINT},
+      <if test="jobIdentificatio != null">
+        job_identificatio = #{jobIdentificatio,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
         `status` = #{status,jdbcType=VARCHAR},
       </if>
       <if test="triggering != null">
-        triggering = #{triggering,jdbcType=BIGINT},
+        triggering = #{triggering,jdbcType=SMALLINT},
       </if>
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
@@ -174,9 +165,9 @@
     set app_id = #{appId,jdbcType=VARCHAR},
       rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
       rule_name = #{ruleName,jdbcType=VARCHAR},
-      job_id = #{jobId,jdbcType=BIGINT},
+      job_identificatio = #{jobIdentificatio,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
-      triggering = #{triggering,jdbcType=BIGINT},
+      triggering = #{triggering,jdbcType=SMALLINT},
       remark = #{remark,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -203,9 +194,9 @@
           when id = #{item.id,jdbcType=BIGINT} then #{item.ruleName,jdbcType=VARCHAR}
         </foreach>
       </trim>
-      <trim prefix="job_id = case" suffix="end,">
+      <trim prefix="job_identificatio = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.jobId,jdbcType=BIGINT}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.jobIdentificatio,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="`status` = case" suffix="end,">
@@ -215,7 +206,7 @@
       </trim>
       <trim prefix="triggering = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.triggering,jdbcType=BIGINT}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.triggering,jdbcType=SMALLINT}
         </foreach>
       </trim>
       <trim prefix="remark = case" suffix="end,">
@@ -274,10 +265,10 @@
           </if>
         </foreach>
       </trim>
-      <trim prefix="job_id = case" suffix="end,">
+      <trim prefix="job_identificatio = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.jobId != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.jobId,jdbcType=BIGINT}
+          <if test="item.jobIdentificatio != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.jobIdentificatio,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
@@ -291,7 +282,7 @@
       <trim prefix="triggering = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           <if test="item.triggering != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.triggering,jdbcType=BIGINT}
+            when id = #{item.id,jdbcType=BIGINT} then #{item.triggering,jdbcType=SMALLINT}
           </if>
         </foreach>
       </trim>
@@ -339,13 +330,13 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into `rule`
-    (app_id, rule_identification, rule_name, job_id, `status`, triggering, remark, create_by,
-      create_time, update_by, update_time)
+    (app_id, rule_identification, rule_name, job_identificatio, `status`, triggering, 
+      remark, create_by, create_time, update_by, update_time)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.appId,jdbcType=VARCHAR}, #{item.ruleIdentification,jdbcType=VARCHAR}, #{item.ruleName,jdbcType=VARCHAR},
-        #{item.jobId,jdbcType=BIGINT}, #{item.status,jdbcType=VARCHAR}, #{item.triggering,jdbcType=BIGINT},
-        #{item.remark,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+      (#{item.appId,jdbcType=VARCHAR}, #{item.ruleIdentification,jdbcType=VARCHAR}, #{item.ruleName,jdbcType=VARCHAR}, 
+        #{item.jobIdentificatio,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, #{item.triggering,jdbcType=SMALLINT}, 
+        #{item.remark,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
         #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
@@ -359,7 +350,7 @@
       app_id,
       rule_identification,
       rule_name,
-      job_id,
+      job_identificatio,
       `status`,
       triggering,
       remark,
@@ -376,16 +367,16 @@
       #{appId,jdbcType=VARCHAR},
       #{ruleIdentification,jdbcType=VARCHAR},
       #{ruleName,jdbcType=VARCHAR},
-      #{jobId,jdbcType=BIGINT},
+      #{jobIdentificatio,jdbcType=VARCHAR},
       #{status,jdbcType=VARCHAR},
-      #{triggering,jdbcType=BIGINT},
+      #{triggering,jdbcType=SMALLINT},
       #{remark,jdbcType=VARCHAR},
       #{createBy,jdbcType=VARCHAR},
       #{createTime,jdbcType=TIMESTAMP},
       #{updateBy,jdbcType=VARCHAR},
       #{updateTime,jdbcType=TIMESTAMP},
     </trim>
-    on duplicate key update
+    on duplicate key update 
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -393,9 +384,9 @@
       app_id = #{appId,jdbcType=VARCHAR},
       rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
       rule_name = #{ruleName,jdbcType=VARCHAR},
-      job_id = #{jobId,jdbcType=BIGINT},
+      job_identificatio = #{jobIdentificatio,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
-      triggering = #{triggering,jdbcType=BIGINT},
+      triggering = #{triggering,jdbcType=SMALLINT},
       remark = #{remark,jdbcType=VARCHAR},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -419,8 +410,8 @@
       <if test="ruleName != null">
         rule_name,
       </if>
-      <if test="jobId != null">
-        job_id,
+      <if test="jobIdentificatio != null">
+        job_identificatio,
       </if>
       <if test="status != null">
         `status`,
@@ -458,14 +449,14 @@
       <if test="ruleName != null">
         #{ruleName,jdbcType=VARCHAR},
       </if>
-      <if test="jobId != null">
-        #{jobId,jdbcType=BIGINT},
+      <if test="jobIdentificatio != null">
+        #{jobIdentificatio,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
         #{status,jdbcType=VARCHAR},
       </if>
       <if test="triggering != null">
-        #{triggering,jdbcType=BIGINT},
+        #{triggering,jdbcType=SMALLINT},
       </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
@@ -483,7 +474,7 @@
         #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
-    on duplicate key update
+    on duplicate key update 
     <trim suffixOverrides=",">
       <if test="id != null">
         id = #{id,jdbcType=BIGINT},
@@ -497,14 +488,14 @@
       <if test="ruleName != null">
         rule_name = #{ruleName,jdbcType=VARCHAR},
       </if>
-      <if test="jobId != null">
-        job_id = #{jobId,jdbcType=BIGINT},
+      <if test="jobIdentificatio != null">
+        job_identificatio = #{jobIdentificatio,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
         `status` = #{status,jdbcType=VARCHAR},
       </if>
       <if test="triggering != null">
-        triggering = #{triggering,jdbcType=BIGINT},
+        triggering = #{triggering,jdbcType=SMALLINT},
       </if>
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},

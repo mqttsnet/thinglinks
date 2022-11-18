@@ -11,7 +11,6 @@ import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
-import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -35,6 +34,7 @@ import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -101,7 +101,6 @@ public class ProductServiceImpl implements ProductService {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         record.setCreateBy(sysUser.getUserName());
-        record.setCreateTime(DateUtils.getNowDate());
         return productMapper.insert(record);
     }
 
@@ -109,13 +108,8 @@ public class ProductServiceImpl implements ProductService {
     public int insertOrUpdate(Product record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (record.getId() == null) {
-            record.setCreateBy(sysUser.getUserName());
-            record.setCreateTime(DateUtils.getNowDate());
-        } else {
-            record.setUpdateTime(DateUtils.getNowDate());
-            record.setUpdateBy(sysUser.getUserName());
-        }
+        record.setCreateBy(sysUser.getUserName());
+        record.setUpdateBy(sysUser.getUserName());
         return productMapper.insertOrUpdate(record);
     }
 
@@ -123,13 +117,8 @@ public class ProductServiceImpl implements ProductService {
     public int insertOrUpdateSelective(Product record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (record.getId() == null) {
-            record.setCreateBy(sysUser.getUserName());
-            record.setCreateTime(DateUtils.getNowDate());
-        } else {
-            record.setUpdateTime(DateUtils.getNowDate());
-            record.setUpdateBy(sysUser.getUserName());
-        }
+        record.setCreateBy(sysUser.getUserName());
+        record.setUpdateBy(sysUser.getUserName());
         return productMapper.insertOrUpdateSelective(record);
     }
 
@@ -138,7 +127,6 @@ public class ProductServiceImpl implements ProductService {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         record.setCreateBy(sysUser.getUserName());
-        record.setCreateTime(DateUtils.getNowDate());
         return productMapper.insertSelective(record);
     }
 
@@ -151,7 +139,6 @@ public class ProductServiceImpl implements ProductService {
     public int updateByPrimaryKeySelective(Product record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        record.setUpdateTime(DateUtils.getNowDate());
         record.setUpdateBy(sysUser.getUserName());
         return productMapper.updateByPrimaryKeySelective(record);
     }
@@ -160,7 +147,6 @@ public class ProductServiceImpl implements ProductService {
     public int updateByPrimaryKey(Product record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        record.setUpdateTime(DateUtils.getNowDate());
         record.setUpdateBy(sysUser.getUserName());
         return productMapper.updateByPrimaryKey(record);
     }
@@ -296,7 +282,7 @@ public class ProductServiceImpl implements ProductService {
             Product product = new Product();
             product.setAppId(appId);
             if (StringUtils.isNotEmpty(templateId)) {
-                product.setTemplateId(Long.valueOf(templateId));
+                product.setTemplateIdentification(templateId);
             }
             product.setProductName(productName);
             product.setProductIdentification(UUID.getUUID());
@@ -310,7 +296,6 @@ public class ProductServiceImpl implements ProductService {
             product.setStatus(status);
             product.setRemark(remark);
             product.setCreateBy(sysUser.getUserName());
-            product.setCreateTime(DateUtils.getNowDate());
             final int insertProduct = productMapper.insertProduct(product);
             if (insertProduct == 0) {
                 return AjaxResult.error("Product model storage error");
@@ -321,11 +306,10 @@ public class ProductServiceImpl implements ProductService {
                 JSONObject service = services.getJSONObject(i);
                 ProductServices productServices = new ProductServices();
                 productServices.setServiceName(service.getString("serviceId"));
-                productServices.setProductId(product.getId());
+                productServices.setProductIdentification(product.getProductIdentification());
                 productServices.setStatus(product.getStatus());
                 productServices.setDescription(service.getString("description"));
                 productServices.setCreateBy(sysUser.getUserName());
-                productServices.setCreateTime(DateUtils.getNowDate());
                 final int insertSelective = productServicesService.insertSelective(productServices);
                 if (insertSelective == 0) {
                     throw new RuntimeException("Service capability Data storage fails");
@@ -338,7 +322,6 @@ public class ProductServiceImpl implements ProductService {
                     BeanUtils.copyProperties(propertie.toJavaObject(Properties.class), productProperties);
                     productProperties.setServiceId(productServices.getId());
                     productProperties.setCreateBy(sysUser.getUserName());
-                    productProperties.setCreateTime(DateUtils.getNowDate());
                     final int batchInsert = productPropertiesService.insertSelective(productProperties);
                 }
             }
@@ -468,7 +451,7 @@ public class ProductServiceImpl implements ProductService {
         if (product != null) {
             BeanUtils.copyBeanProp(productModel, product);
             ProductServices find = new ProductServices();
-            find.setProductId(product.getId());
+            find.setProductIdentification(product.getProductIdentification());
             find.setStatus(Constants.ENABLE);
             // 查询服务列表
             List<ProductServices> productServicesList = productServicesService.selectProductServicesList(find);
@@ -524,7 +507,6 @@ public class ProductServiceImpl implements ProductService {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         product.setCreateBy(sysUser.getUserName());
-        product.setCreateTime(DateUtils.getNowDate());
         return productMapper.insertProduct(product);
     }
 
@@ -538,7 +520,6 @@ public class ProductServiceImpl implements ProductService {
     public int updateProduct(Product product) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        product.setUpdateTime(DateUtils.getNowDate());
         product.setUpdateBy(sysUser.getUserName());
         return productMapper.updateProduct(product);
     }
@@ -599,7 +580,7 @@ public class ProductServiceImpl implements ProductService {
     public List<SuperTableDto> createSuperTableDataModel(Long[] productIds, Boolean InitializeOrNot) {
         List<SuperTableDto> superTableDtoList = new ArrayList<>();
         List<Product> productList = new ArrayList<>();
-        if (null == productIds) {
+        if (CollectionUtils.isEmpty(productList)) {
             productList = productMapper.findAllByStatus(Constants.ENABLE);
         } else {
             productList = productMapper.findAllByIdInAndStatus(Arrays.asList(productIds), Constants.ENABLE);
@@ -710,3 +691,4 @@ public class ProductServiceImpl implements ProductService {
 
 
 }
+

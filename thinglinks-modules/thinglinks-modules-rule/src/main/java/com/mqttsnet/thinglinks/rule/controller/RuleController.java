@@ -22,6 +22,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 
@@ -40,13 +41,13 @@ public class RuleController extends BaseController {
     @Autowired
     private RuleConditionsService ruleConditionsService;
 
-    @Autowired
+    @Resource
     private RemoteProductService remoteProductService;
 
-    @Autowired
+    @Resource
     private RemoteTdEngineService remoteTdEngineService;
 
-    @Autowired
+    @Resource
     private RemoteDeviceService remoteDeviceService;
 
     /**
@@ -121,7 +122,7 @@ public class RuleController extends BaseController {
             // 验证条件
             return R.ok(mark);
         }
-        switch (TriggeringEnum.getBySymbol(rule.getTriggering())) {
+        switch (TriggeringEnum.getBySymbol(Integer.valueOf(rule.getTriggering()))) {
             case ALL:
                 mark = flags.stream().allMatch(s -> s.equals(true));
                 break;

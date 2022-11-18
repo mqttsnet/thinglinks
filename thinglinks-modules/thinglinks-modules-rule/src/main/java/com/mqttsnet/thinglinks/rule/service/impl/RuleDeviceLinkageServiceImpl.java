@@ -27,6 +27,7 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -50,13 +51,13 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
     @Autowired
     private RuleConditionsService ruleConditionsService;
 
-    @Autowired
+    @Resource
     private RemoteProductService remoteProductService;
 
-    @Autowired
+    @Resource
     private RemoteTdEngineService remoteTdEngineService;
 
-    @Autowired
+    @Resource
     private RemoteDeviceService remoteDeviceService;
 
     /**
@@ -150,7 +151,7 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
             // 验证条件
             return mark;
         }
-        switch (Objects.requireNonNull(TriggeringEnum.getBySymbol(rule.getTriggering()))) {
+        switch (Objects.requireNonNull(TriggeringEnum.getBySymbol(Integer.valueOf(rule.getTriggering())))) {
             case ALL:
                 mark = flags.stream().allMatch(s -> s.equals(true));
                 break;

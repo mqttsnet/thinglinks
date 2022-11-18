@@ -1,23 +1,19 @@
 package com.mqttsnet.thinglinks.link.mapper.product;
 
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-
-import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
- * @Description: java类作用描述
- * @Author: ShiHuan Sun
- * @E-mail: 13733918655@163.com
- * @Website: http://thinglinks.mqttsnet.com
- * @CreateDate: 2021/12/25$ 23:52$
- * @UpdateUser: ShiHuan Sun
- * @UpdateDate: 2021/12/25$ 23:52$
- * @UpdateRemark: 修改内容
- * @Version: 1.0
- */
+ * @program: thinglinks
+ * @description: ${description}
+ * @packagename: com.mqttsnet.thinglinks.link.mapper.product
+ * @author: ShiHuan Sun
+ * @e-mainl: 13733918655@163.com
+ * @date: 2022-11-18 20:38
+ **/
 @Mapper
 public interface ProductServicesMapper {
     /**
@@ -83,7 +79,6 @@ public interface ProductServicesMapper {
     List<ProductServices> findAllByProductIdAndStatus(@Param("productId") Long productId, @Param("status") String status);
 
     List<ProductServices> findAllByProductIdAndServiceNameAndStatus(@Param("productId") Long productId, @Param("serviceName") String serviceName, @Param("status") String status);
-
 
     /**
      * 查询产品模型服务
