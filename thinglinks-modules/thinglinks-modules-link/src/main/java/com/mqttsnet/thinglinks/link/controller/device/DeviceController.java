@@ -65,14 +65,6 @@ public class DeviceController extends BaseController {
     }
 
     /**
-     * 根据产品标识查询所属的设备标识
-     */
-    @GetMapping("/selectByProductIdentification")
-    public R<?> selectByProductIdentification(String productIdentification) {
-        return R.ok(deviceService.selectByProductIdentification(productIdentification));
-    }
-
-    /**
      * 导出设备管理列表
      */
     @PreAuthorize(hasPermi = "link:device:export")

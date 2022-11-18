@@ -11,8 +11,8 @@ import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfoParams;
+import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.entity.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model.DeviceInfoParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.common.core.utils.tdengine.TdUtils;
@@ -180,7 +180,6 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         deviceInfo.setCreateBy(sysUser.getUserName());
-        deviceInfo.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         deviceInfo.setDeviceId(UUID.getUUID());
         deviceInfo.setConnectStatus(DeviceConnectStatus.INIT.getValue());
         deviceInfo.setShadowEnable(true);
@@ -201,7 +200,6 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         deviceInfo.setUpdateBy(sysUser.getUserName());
-        deviceInfo.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceInfoMapper.updateDeviceInfo(deviceInfo);
     }
 

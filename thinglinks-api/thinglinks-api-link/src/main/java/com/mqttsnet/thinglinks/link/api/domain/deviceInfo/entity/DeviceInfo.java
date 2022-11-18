@@ -1,7 +1,8 @@
-package com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo;
+package com.mqttsnet.thinglinks.link.api.domain.deviceInfo.entity;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model.DeviceInfoParams;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

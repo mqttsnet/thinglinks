@@ -112,7 +112,6 @@ public class ProductCommandsResponseServiceImpl implements ProductCommandsRespon
      */
     @Override
     public int insertProductCommandsResponse(ProductCommandsResponse productCommandsResponse) {
-        productCommandsResponse.setCreateTime(DateUtils.getNowDate());
         return productCommandsResponseMapper.insertProductCommandsResponse(productCommandsResponse);
     }
 
@@ -124,7 +123,6 @@ public class ProductCommandsResponseServiceImpl implements ProductCommandsRespon
      */
     @Override
     public int updateProductCommandsResponse(ProductCommandsResponse productCommandsResponse) {
-        productCommandsResponse.setUpdateTime(DateUtils.getNowDate());
         return productCommandsResponseMapper.updateProductCommandsResponse(productCommandsResponse);
     }
 

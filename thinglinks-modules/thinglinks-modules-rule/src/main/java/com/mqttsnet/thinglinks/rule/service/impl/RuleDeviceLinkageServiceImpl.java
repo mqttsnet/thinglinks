@@ -1,12 +1,14 @@
-package com.mqttsnet.thinglinks.rule.controller;
+package com.mqttsnet.thinglinks.rule.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.ConditionTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.FieldTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.OperatorEnum;
 import com.mqttsnet.thinglinks.common.core.enums.TriggeringEnum;
 import com.mqttsnet.thinglinks.common.core.utils.CompareUtil;
-import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
+import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
+import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
 import com.mqttsnet.thinglinks.link.api.RemoteProductService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
@@ -15,25 +17,33 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.rule.api.domain.Rule;
 import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
 import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
+import com.mqttsnet.thinglinks.rule.service.RuleDeviceLinkageService;
 import com.mqttsnet.thinglinks.rule.service.RuleService;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
 
-
 /**
- * 规则处理类
- *
- * @author shisen
- */
-@RestController
-@RequestMapping("/rule")
-public class RuleController extends BaseController {
+ * @program: thinglinks
+ * @description: 规则设备联动业务层接口实现类
+ * @packagename: com.mqttsnet.thinglinks.rule.service.impl
+ * @author: ShiHuan Sun
+ * @e-mainl: 13733918655@163.com
+ * @date: 2022-11-03 18:50
+ **/
+@Slf4j
+@Service
+public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
+
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
 
     @Autowired
     private RuleService ruleService;
@@ -51,14 +61,33 @@ public class RuleController extends BaseController {
     private RemoteDeviceService remoteDeviceService;
 
     /**
-     * 规则触发条件验证
+     * 触发设备联动规则条件
+     *
+     * @param ruleIdentification 规则标识
+     * @return
      */
-    @GetMapping(value = "/check-rule-conditions/{ruleIdentification}")
-    public R<?> checkRuleConditions(@PathVariable("ruleIdentification") String ruleIdentification) {
+    @Override
+    public void triggerDeviceLinkageByRuleIdentification(String ruleIdentification) {
+        MQMessage mqMessage = new MQMessage();
+        mqMessage.setTopic(ConsumerTopicConstant.THINGLINKS_RULE_TRIGGER);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg", ruleIdentification);
+        mqMessage.setMessage(jsonObject.toJSONString());
+        rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
+    }
+
+    /**
+     * 规则触发条件验证
+     *
+     * @param ruleIdentification 规则标识
+     * @return
+     */
+    @Override
+    public Boolean checkRuleConditions(String ruleIdentification) {
         // 查询规则
         Rule rule = ruleService.selectByRuleIdentification(ruleIdentification);
         if (Objects.isNull(rule)) {
-            return R.fail("规则不存在");
+            log.warn("{}规则不存在", ruleIdentification);
         }
         // 查询触发条件
         List<RuleConditions> ruleConditions = ruleConditionsService.selectByRuleId(rule.getId());
@@ -66,8 +95,8 @@ public class RuleController extends BaseController {
         List<Boolean> flags = new ArrayList<>();
         for (RuleConditions conditions : ruleConditions) {
             // 获取属性字段和类型，和设备上报的数据进行比对
-            R<?> properties = remoteProductService.selectByIdProperties(conditions.getPropertiesId());
-            ProductProperties propertiesData = (ProductProperties) properties.getData();
+            R<ProductProperties> properties = remoteProductService.selectByIdProperties(conditions.getPropertiesId());
+            ProductProperties propertiesData = properties.getData();
             if (propertiesData == null) {
                 continue;
             }
@@ -82,14 +111,14 @@ public class RuleController extends BaseController {
             // 比较值
             String comparisonValue = conditions.getComparisonValue();
             //  条件类型(0:匹配设备触发、1:指定设备触发、2:按策略定时触发)
-            switch (ConditionTypeEnum.getBySymbol(conditions.getConditionType())) {
+            switch (Objects.requireNonNull(ConditionTypeEnum.getBySymbol(conditions.getConditionType()))) {
                 case MATCH:
                     R<?> deviceResponse = remoteDeviceService.selectByProductIdentification(conditions.getProductIdentification());
                     List<String> datas = (List<String>) deviceResponse.getData();
                     if (CollectionUtils.isEmpty(datas)) {
                         break;
                     }
-                    datas.stream().forEach(s -> {
+                    datas.forEach(s -> {
                         if (maps.containsKey(s)) {
                             Map<String, Object> stringObjectMap = maps.get(s);
                             if (stringObjectMap.containsKey(productPropertiesName)) {
@@ -101,7 +130,7 @@ public class RuleController extends BaseController {
                     break;
                 case SPECIFY:
                     List<String> deviceDatas = Arrays.asList(conditions.getDeviceIdentification().split(","));
-                    deviceDatas.stream().forEach(s -> {
+                    deviceDatas.forEach(s -> {
                         if (maps.containsKey(s)) {
                             Map<String, Object> stringObjectMap = maps.get(s);
                             if (stringObjectMap.containsKey(productPropertiesName)) {
@@ -120,9 +149,9 @@ public class RuleController extends BaseController {
         boolean mark = false;
         if (CollectionUtils.isEmpty(flags)) {
             // 验证条件
-            return R.ok(mark);
+            return mark;
         }
-        switch (TriggeringEnum.getBySymbol(Integer.valueOf(rule.getTriggering()))) {
+        switch (Objects.requireNonNull(TriggeringEnum.getBySymbol(Integer.valueOf(rule.getTriggering())))) {
             case ALL:
                 mark = flags.stream().allMatch(s -> s.equals(true));
                 break;
@@ -132,7 +161,7 @@ public class RuleController extends BaseController {
             default:
                 break;
         }
-        return R.ok(mark);
+        return mark;
     }
 
     /**
@@ -144,14 +173,14 @@ public class RuleController extends BaseController {
     private Map<String, Map<String, Object>> extractedDeviceData(RuleConditions conditions) {
         Map<String, Map<String, Object>> maps = new HashMap<>();
         // 获取产品信息
-        R productResponse = remoteProductService.selectByProductIdentification(conditions.getProductIdentification());
-        Product product = (Product) productResponse.getData();
+        R<Product> productResponse = remoteProductService.selectByProductIdentification(conditions.getProductIdentification());
+        Product product = productResponse.getData();
         if (product == null) {
             return maps;
         }
         // 获取服务信息
-        R<?> productServicesResponse = remoteProductService.selectProductServicesById(conditions.getServiceId());
-        ProductServices productServices = (ProductServices) productServicesResponse.getData();
+        R<ProductServices> productServicesResponse = remoteProductService.selectProductServicesById(conditions.getServiceId());
+        ProductServices productServices = productServicesResponse.getData();
         if (productServices == null) {
             return maps;
         }
@@ -162,9 +191,10 @@ public class RuleController extends BaseController {
         TagsSelectDao tagsSelectDao = new TagsSelectDao();
         tagsSelectDao.setDataBaseName("thinglinks");
         tagsSelectDao.setStableName(superName);
-        R<?> lastDataByTags = remoteTdEngineService.getLastDataByTags(tagsSelectDao);
+        tagsSelectDao.setTagsName("device_identification");
+        R<Map<String, Map<String, Object>>> lastDataByTags = remoteTdEngineService.getLastDataByTags(tagsSelectDao);
         if (lastDataByTags != null && lastDataByTags.getData() != null) {
-            maps = (Map<String, Map<String, Object>>) lastDataByTags.getData();
+            maps = lastDataByTags.getData();
         }
         return maps;
     }
@@ -183,10 +213,10 @@ public class RuleController extends BaseController {
         boolean flag = false;
         FieldTypeEnum bySymbol = FieldTypeEnum.getBySymbol(propertiesType);
         // 判断比较类型
-        switch (OperatorEnum.getBySymbol(symbol)) {
+        switch (Objects.requireNonNull(OperatorEnum.getBySymbol(symbol))) {
             case eq:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) == Integer.parseInt(comparisonValue);
                         break;
@@ -206,7 +236,7 @@ public class RuleController extends BaseController {
                 break;
             case not:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) != Integer.parseInt(comparisonValue);
                         break;
@@ -226,7 +256,7 @@ public class RuleController extends BaseController {
                 break;
             case gt:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) > Integer.parseInt(comparisonValue);
                         break;
@@ -243,7 +273,7 @@ public class RuleController extends BaseController {
                 break;
             case lt:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) < Integer.parseInt(comparisonValue);
                         break;
@@ -260,7 +290,7 @@ public class RuleController extends BaseController {
                 break;
             case gte:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) >= Integer.parseInt(comparisonValue);
                         break;
@@ -277,7 +307,7 @@ public class RuleController extends BaseController {
                 break;
             case lte:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
                         flag = Integer.parseInt(actualValue) <= Integer.parseInt(comparisonValue);
                         break;
@@ -294,13 +324,13 @@ public class RuleController extends BaseController {
                 break;
             case between:
                 // 判断属性值类型
-                switch (bySymbol) {
+                switch (Objects.requireNonNull(bySymbol)) {
                     case INT:
-                        int[] arrayint = Arrays.asList(comparisonValue.split(",")).stream().mapToInt(Integer::parseInt).toArray();
+                        int[] arrayint = Arrays.stream(comparisonValue.split(",")).mapToInt(Integer::parseInt).toArray();
                         flag = CompareUtil.rangeInDefinedInt(Integer.parseInt(actualValue), arrayint[0], arrayint[1]);
                         break;
                     case DECIMAL:
-                        double[] arrayDouble = Arrays.asList(comparisonValue.split(",")).stream().mapToDouble(Double::parseDouble).toArray();
+                        double[] arrayDouble = Arrays.stream(comparisonValue.split(",")).mapToDouble(Double::parseDouble).toArray();
                         flag = CompareUtil.rangeInDefinedDouble(Double.parseDouble(actualValue), arrayDouble[0], arrayDouble[1]);
                         break;
                     case TIMESTAMP:
@@ -316,5 +346,4 @@ public class RuleController extends BaseController {
         }
         return flag;
     }
-
 }

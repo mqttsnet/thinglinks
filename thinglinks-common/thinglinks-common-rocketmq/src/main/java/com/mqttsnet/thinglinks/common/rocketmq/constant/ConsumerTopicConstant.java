@@ -31,4 +31,9 @@ public class ConsumerTopicConstant {
      */
     public static final String THINGLINKS_COLLECTION_SYSTEM = "thinglinks_collection_system";
 
+    /**
+     * 规则引擎触发器规则动作监听主题
+     */
+    public static final String THINGLINKS_RULE_TRIGGER = "thinglinks_rule_trigger";
+
 }

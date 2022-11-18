@@ -13,7 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum OperatorEnum {
 
-    eq("="),
+    eq("=="),
     not("!="),
     gt(">"),
     lt("<"),

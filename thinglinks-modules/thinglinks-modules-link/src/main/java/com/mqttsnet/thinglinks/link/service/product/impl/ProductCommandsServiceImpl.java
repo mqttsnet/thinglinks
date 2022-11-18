@@ -1,16 +1,13 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
 
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands;
+import com.mqttsnet.thinglinks.link.mapper.product.ProductCommandsMapper;
+import com.mqttsnet.thinglinks.link.service.product.ProductCommandsService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
-import com.mqttsnet.thinglinks.link.mapper.product.ProductCommandsMapper;
-
 import java.util.List;
-
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands;
-import com.mqttsnet.thinglinks.link.service.product.ProductCommandsService;
 
 /**
  * @Description: java类作用描述
@@ -114,7 +111,6 @@ public class ProductCommandsServiceImpl implements ProductCommandsService {
      */
     @Override
     public int insertProductCommands(ProductCommands productCommands) {
-        productCommands.setCreateTime(DateUtils.getNowDate());
         return productCommandsMapper.insertProductCommands(productCommands);
     }
 
@@ -126,7 +122,6 @@ public class ProductCommandsServiceImpl implements ProductCommandsService {
      */
     @Override
     public int updateProductCommands(ProductCommands productCommands) {
-        productCommands.setUpdateTime(DateUtils.getNowDate());
         return productCommandsMapper.updateProductCommands(productCommands);
     }
 

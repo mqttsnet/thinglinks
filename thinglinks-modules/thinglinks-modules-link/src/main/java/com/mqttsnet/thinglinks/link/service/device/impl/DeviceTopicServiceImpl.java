@@ -123,7 +123,6 @@ public class DeviceTopicServiceImpl implements DeviceTopicService{
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         deviceTopic.setCreateBy(sysUser.getUserName());
-        deviceTopic.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceTopicMapper.insertDeviceTopic(deviceTopic);
     }
 
@@ -139,7 +138,6 @@ public class DeviceTopicServiceImpl implements DeviceTopicService{
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         deviceTopic.setUpdateBy(sysUser.getUserName());
-        deviceTopic.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return deviceTopicMapper.updateDeviceTopic(deviceTopic);
     }
 

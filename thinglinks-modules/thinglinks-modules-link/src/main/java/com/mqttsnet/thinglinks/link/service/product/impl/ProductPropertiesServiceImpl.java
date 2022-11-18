@@ -118,7 +118,6 @@ public class ProductPropertiesServiceImpl implements ProductPropertiesService {
      */
     @Override
     public int insertProductProperties(ProductProperties productProperties) {
-        productProperties.setCreateTime(DateUtils.getNowDate());
         return productPropertiesMapper.insertProductProperties(productProperties);
     }
 
@@ -130,7 +129,6 @@ public class ProductPropertiesServiceImpl implements ProductPropertiesService {
      */
     @Override
     public int updateProductProperties(ProductProperties productProperties) {
-        productProperties.setUpdateTime(DateUtils.getNowDate());
         return productPropertiesMapper.updateProductProperties(productProperties);
     }
 

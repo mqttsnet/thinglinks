@@ -92,7 +92,6 @@ public class DeviceServiceImpl implements DeviceService {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         record.setCreateBy(sysUser.getUserName());
-        record.setCreateTime(DateUtils.getNowDate());
         return deviceMapper.insert(record);
     }
 
@@ -100,13 +99,8 @@ public class DeviceServiceImpl implements DeviceService {
     public int insertOrUpdate(Device record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (record.getId() == null){
-            record.setCreateBy(sysUser.getUserName());
-            record.setCreateTime(DateUtils.getNowDate());
-        }else {
-            record.setUpdateTime(DateUtils.getNowDate());
-            record.setUpdateBy(sysUser.getUserName());
-        }
+        record.setCreateBy(sysUser.getUserName());
+        record.setUpdateBy(sysUser.getUserName());
         return deviceMapper.insertOrUpdate(record);
     }
 
@@ -114,13 +108,8 @@ public class DeviceServiceImpl implements DeviceService {
     public int insertOrUpdateSelective(Device record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        if (record.getId() == null){
-            record.setCreateBy(sysUser.getUserName());
-            record.setCreateTime(DateUtils.getNowDate());
-        }else {
-            record.setUpdateTime(DateUtils.getNowDate());
-            record.setUpdateBy(sysUser.getUserName());
-        }
+        record.setCreateBy(sysUser.getUserName());
+        record.setUpdateBy(sysUser.getUserName());
         return deviceMapper.insertOrUpdateSelective(record);
     }
 
@@ -129,7 +118,6 @@ public class DeviceServiceImpl implements DeviceService {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         record.setCreateBy(sysUser.getUserName());
-        record.setCreateTime(DateUtils.getNowDate());
         return deviceMapper.insertSelective(record);
     }
 
@@ -142,7 +130,6 @@ public class DeviceServiceImpl implements DeviceService {
     public int updateByPrimaryKeySelective(Device record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        record.setUpdateTime(DateUtils.getNowDate());
         record.setUpdateBy(sysUser.getUserName());
         return deviceMapper.updateByPrimaryKeySelective(record);
     }
@@ -151,7 +138,6 @@ public class DeviceServiceImpl implements DeviceService {
     public int updateByPrimaryKey(Device record) {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
-        record.setUpdateTime(DateUtils.getNowDate());
         record.setUpdateBy(sysUser.getUserName());
         return deviceMapper.updateByPrimaryKey(record);
     }
@@ -235,7 +221,6 @@ public class DeviceServiceImpl implements DeviceService {
         }
         device.setConnectStatus(DeviceConnectStatus.INIT.getValue());
         device.setCreateBy(sysUser.getUserName());
-        device.setCreateTime(DateUtils.getNowDate());
         final int insertDeviceCount = deviceMapper.insertOrUpdateSelective(device);
         if (insertDeviceCount>0){
             //设备位置信息存储
@@ -301,7 +286,6 @@ public class DeviceServiceImpl implements DeviceService {
         SysUser sysUser = loginUser.getSysUser();
         Device device = new Device();
         BeanUtils.copyProperties(deviceParams,device);
-        device.setUpdateTime(DateUtils.getNowDate());
         device.setUpdateBy(sysUser.getUserName());
         final int insertDeviceCount = deviceMapper.insertOrUpdateSelective(device);
         if (insertDeviceCount>0){
@@ -378,7 +362,6 @@ public class DeviceServiceImpl implements DeviceService {
             Device device = new Device();
             device.setId(oneByClientId.getId());
             device.setConnectStatus(DeviceConnectStatus.OFFLINE.getValue());
-            device.setUpdateTime(DateUtils.getNowDate());
             deviceMapper.updateByPrimaryKeySelective(device);
         }
         log.info(oneByClientId.toString());

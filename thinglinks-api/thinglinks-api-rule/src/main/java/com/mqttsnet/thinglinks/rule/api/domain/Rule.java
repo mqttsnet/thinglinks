@@ -2,20 +2,21 @@ package com.mqttsnet.thinglinks.rule.api.domain;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 /**
-* @program: thinglinks
-* @description: ${description}
-* @packagename: com.mqttsnet.thinglinks.rule.api.domain
-* @author: ShiHuan Sun
-* @e-mainl: 13733918655@163.com
-* @date: 2022-07-21 18:49
-**/
+ * @program: thinglinks
+ * @description: ${description}
+ * @packagename: com.mqttsnet.thinglinks.rule.api.domain
+ * @author: ShiHuan Sun
+ * @e-mainl: 13733918655@163.com
+ * @date: 2022-11-18 20:39
+ **/
 
 /**
  * 规则信息表
@@ -50,10 +51,10 @@ public class Rule implements Serializable {
     private String ruleName;
 
     /**
-     * 任务ID
+     * 任务标识
      */
-    @ApiModelProperty(value = "任务ID")
-    private Long jobId;
+    @ApiModelProperty(value = "任务标识")
+    private String jobIdentificatio;
 
     /**
      * 状态(字典值：0启用  1停用)
@@ -65,7 +66,7 @@ public class Rule implements Serializable {
      * 触发机制（0:全部，1:任意一个）
      */
     @ApiModelProperty(value = "触发机制（0:全部，1:任意一个）")
-    private Integer triggering;
+    private Short triggering;
 
     /**
      * 规则描述，可以为空

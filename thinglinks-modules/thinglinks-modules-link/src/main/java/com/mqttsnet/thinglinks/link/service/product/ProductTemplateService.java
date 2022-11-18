@@ -1,9 +1,9 @@
 package com.mqttsnet.thinglinks.link.service.product;
 
-import java.util.List;
-
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductTemplateModel;
+
+import java.util.List;
 
 /**
  * @Description: java类作用描述
@@ -89,3 +89,6 @@ public interface ProductTemplateService {
      */
     public int deleteProductTemplateByIds(Long[] ids);
 }
+
+
+

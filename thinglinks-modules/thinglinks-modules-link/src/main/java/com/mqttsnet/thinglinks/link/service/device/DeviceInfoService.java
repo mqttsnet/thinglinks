@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.link.service.device;
 
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfo;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo.DeviceInfoParams;
+import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.entity.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model.DeviceInfoParams;
 
 import java.util.Collection;
 import java.util.List;

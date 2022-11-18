@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
+
 @FeignClient(contextId = "remoteTdEngineService", value = ServiceNameConstants.THINGLINKS_TDENGINE, fallbackFactory = RemoteTdEngineFallbackFactory.class)
 public interface RemoteTdEngineService {
 
@@ -91,7 +93,7 @@ public interface RemoteTdEngineService {
      * @return
      */
     @PostMapping("/dataOperation/getLastDataByTags")
-    public R<?> getLastDataByTags(@Validated @RequestBody TagsSelectDao tagsSelectDao);
+    public R<Map<String, Map<String, Object>>> getLastDataByTags(@Validated @RequestBody TagsSelectDao tagsSelectDao);
 
     /**
      * 添加列字段

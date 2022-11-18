@@ -2,7 +2,6 @@ package com.mqttsnet.thinglinks.link.service.protocol.impl;
 
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.exception.ServiceException;
-import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol;
@@ -124,10 +123,9 @@ public class ProtocolServiceImpl implements ProtocolService {
      */
     @Override
     public int insertProtocol(Protocol protocol) {
-        protocol.setCreateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         int iexe = protocolMapper.insertProtocol(protocol);
         if (iexe != 1) {
-            throw new ServiceException("执行插入失败",1000);
+            throw new ServiceException("执行插入失败", 1000);
         }
         return Integer.parseInt(protocol.getId().toString());
     }
@@ -140,7 +138,6 @@ public class ProtocolServiceImpl implements ProtocolService {
      */
     @Override
     public int updateProtocol(Protocol protocol) {
-        protocol.setUpdateTime(DateUtils.dateToLocalDateTime(DateUtils.getNowDate()));
         return protocolMapper.updateProtocol(protocol);
     }
 

@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.link.api.domain.device.entity.deviceInfo;
+package com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
