@@ -157,7 +157,7 @@ public final class Base64
      * Decodes Base64 data into octects
      *
      * @param encoded string containing Base64 data
-     * @return Array containind decoded data.
+     * @return Array containing decoded data.
      */
     public static byte[] decode(String encoded)
     {
