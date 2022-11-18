@@ -69,6 +69,11 @@ com.mqttsnet.thinglinks
 
 ![](doc/imgs/overallArchitecture.png)
 
+
+## 平台功能架构
+
+![](doc/imgs/functionalArchitecture.png)
+
 ## 核心功能列表
 
 系统管理：用户管理、角色管理、菜单管理、部门管理、岗位管理、字典管理、参数设置、通知公告、日志管理
