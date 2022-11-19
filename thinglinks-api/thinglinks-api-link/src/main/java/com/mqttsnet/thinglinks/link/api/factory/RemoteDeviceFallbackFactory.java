@@ -49,6 +49,16 @@ public class RemoteDeviceFallbackFactory implements FallbackFactory<RemoteDevice
             public R<Device> findOneByClientId(String clientId) {
                 return R.fail("查询产品下的设备标识失败:" + throwable.getMessage());
             }
+
+            /**
+             *根据产品标识获取产品所有关联设备
+             * @param productIdentification
+             * @return
+             */
+            @Override
+            public R<?> selectAllByProductIdentification(String productIdentification){
+                return R.fail("查询产品下的设备:" + throwable.getMessage());
+            }
         };
     }
 }

@@ -119,4 +119,12 @@ public interface ProductServicesMapper {
      * @return 结果
      */
     int deleteProductServicesByIds(Long[] ids);
+
+    /**
+     * 根据产品标识和状态获取产品服务
+     * @param productIdentification
+     * @param status
+     * @return
+     */
+    List<ProductServices> selectAllByProductIdentificationAndStatus(@Param("productIdentification") String productIdentification,@Param("status") String status);
 }

@@ -149,5 +149,17 @@ public class ProductServicesServiceImpl implements ProductServicesService {
     public int deleteProductServicesByIds(Long[] ids) {
         return productServicesMapper.deleteProductServicesByIds(ids);
     }
+
+
+    /**
+     *根据产品标识和状态获取产品所有服务
+     * @param productIdentification
+     * @param status
+     * @return
+     */
+    @Override
+    public List<ProductServices> selectAllByProductIdentificationAndStatus(String productIdentification, String status){
+        return productServicesMapper.selectAllByProductIdentificationAndStatus(productIdentification, status);
+    }
 }
 

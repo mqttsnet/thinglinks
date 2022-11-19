@@ -690,5 +690,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    /**
+     * 根据状态获取所有的产品列表
+     * @param status
+     * @return
+     */
+    @Override
+    public List<Product> selectAllProductByStatus(String status){
+        return productMapper.selectAllProductByStatus(status);
+    }
+
 }
 

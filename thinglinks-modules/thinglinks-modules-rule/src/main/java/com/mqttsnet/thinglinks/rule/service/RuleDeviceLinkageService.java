@@ -1,5 +1,7 @@
 package com.mqttsnet.thinglinks.rule.service;
 
+import com.mqttsnet.thinglinks.common.core.domain.R;
+
 /**
  * @program: thinglinks
  * @description: 规则设备联动业务层接口
@@ -23,4 +25,33 @@ public interface RuleDeviceLinkageService {
      * @return
      */
     Boolean checkRuleConditions(String ruleIdentification);
+
+
+    /**
+     * 获取所有产品
+     * @return
+     */
+    R<?> selectAllProduct(String status);
+    /**
+     * 获取产品设备
+     * @param productIdentification
+     * @return
+     */
+    R<?> selectDeviceByProductIdentification(String productIdentification);
+
+
+    /**
+     * 获取产品服务
+     * @param productIdentification
+     * @return
+     */
+    R<?> selectProductServicesByProductIdentification(String productIdentification);
+
+
+    /**
+     * 根据产品id获取所有属性
+     * @param serviceId
+     * @return
+     */
+    R<?> selectProductPropertiesByServiceId(Long serviceId);
 }

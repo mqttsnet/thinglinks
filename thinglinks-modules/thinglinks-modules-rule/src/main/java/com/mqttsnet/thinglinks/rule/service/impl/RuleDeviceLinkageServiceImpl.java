@@ -10,7 +10,9 @@ import com.mqttsnet.thinglinks.common.core.utils.CompareUtil;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
 import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.link.api.RemoteProductPropertiesService;
 import com.mqttsnet.thinglinks.link.api.RemoteProductService;
+import com.mqttsnet.thinglinks.link.api.RemoteProductServicesService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
@@ -59,6 +61,12 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
 
     @Resource
     private RemoteDeviceService remoteDeviceService;
+
+    @Resource
+    private RemoteProductServicesService remoteProductServicesService;
+
+    @Resource
+    private RemoteProductPropertiesService remoteProductPropertiesService;
 
     /**
      * 触发设备联动规则条件
@@ -345,5 +353,46 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
                 break;
         }
         return flag;
+    }
+
+
+    /**
+     * 获取所有可用产品
+     * @return
+     */
+    public R<?> selectAllProduct(String status){
+        R<?> productResponse = remoteProductService.selectAllProduct(status);
+        return productResponse;
+    }
+
+    /**
+     * 根据产品标识获取产品所有设备
+     * @param productIdentification
+     * @return
+     */
+    public R<?> selectDeviceByProductIdentification(String productIdentification) {
+        R<?> deviceResponse = remoteDeviceService.selectAllByProductIdentification(productIdentification);
+        return deviceResponse;
+    }
+
+
+    /**
+     *根据产品标识获取产品所有服务
+     * @param productIdentification
+     * @return
+     */
+    public R<?> selectProductServicesByProductIdentification(String productIdentification){
+        R<?> productServicesResponse = remoteProductServicesService.selectAllByProductIdentificationAndStatus(productIdentification,"0");
+        return productServicesResponse;
+    }
+
+    /**
+     * 根据服务id获取服务所有属性
+     * @param serviceId
+     * @return
+     */
+    public R<?> selectProductPropertiesByServiceId(Long serviceId){
+        R<?> propertiesResponse = remoteProductPropertiesService.selectAllByServiceId(serviceId);
+        return propertiesResponse;
     }
 }

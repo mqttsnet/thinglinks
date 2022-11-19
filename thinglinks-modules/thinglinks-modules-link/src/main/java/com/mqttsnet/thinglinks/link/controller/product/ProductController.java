@@ -13,6 +13,7 @@ import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.RemoteFileService;
@@ -225,4 +226,15 @@ public class ProductController extends BaseController {
         return ajaxResult;
     }
 
+
+    /**
+     * 获取所有产品
+     *
+     * @param status  状态
+     * @return 列表数据
+     */
+    @GetMapping("/selectAllProduct/{status}")
+    public R<?> selectAllProductByStatus(@PathVariable(value = "status") String status) {
+        return R.ok(productService.selectAllProductByStatus(status));
+    }
 }

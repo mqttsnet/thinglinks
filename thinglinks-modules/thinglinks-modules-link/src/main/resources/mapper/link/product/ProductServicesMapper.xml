@@ -560,4 +560,21 @@
       #{id}
     </foreach>
   </delete>
+
+
+  <!--Author By kk    on 2022-11-19-->
+  <select id="selectAllByProductIdentificationAndStatus" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from product_services
+    <where>
+      <if test="productIdentification != null">
+        and  product_identification=#{productIdentification,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+        and `status`=#{status,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
 </mapper>

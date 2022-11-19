@@ -10,6 +10,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 /**
  * @program: thinglinks
  * @description: 产品管理服务
@@ -46,4 +48,9 @@ public interface RemoteProductService {
      */
     @GetMapping("/product-properties/api/{id}")
     public R<ProductProperties> selectByIdProperties(@PathVariable("id") Long id);
+
+    @GetMapping("/product/selectAllProduct/{status}")
+    public R<List<Product>> selectAllProduct(@PathVariable("status") String status);
+
+
 }

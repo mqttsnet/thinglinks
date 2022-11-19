@@ -971,4 +971,16 @@
             </if>
         </where>
     </select>
+
+  <!--Author By kk  on 2022-11-19-->
+  <select id="selectAllProductByStatus" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from product
+    <where>
+      <if test="status != null">
+        and `status`=#{status,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
 </mapper>

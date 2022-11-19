@@ -146,4 +146,6 @@ public interface ProductMapper {
     Product findOneByProductIdentificationAndProtocolType(@Param("productIdentification") String productIdentification, @Param("protocolType") String protocolType);
 
     List<Product> findAllByIdInAndStatus(@Param("idCollection") Collection<Long> idCollection, @Param("status") String status);
+
+    List<Product> selectAllProductByStatus(@Param("status") String status);
 }

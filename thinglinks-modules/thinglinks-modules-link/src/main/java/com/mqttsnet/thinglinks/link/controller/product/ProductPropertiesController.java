@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.controller.product;
 
+import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -104,5 +105,17 @@ return productPropertiesService.selectByPrimaryKey(id);
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(productPropertiesService.deleteProductPropertiesByIds(ids));
+    }
+
+
+    /**
+     * 查询产品模型服务属性列表
+     */
+    @GetMapping("/selectAllPropertiesByServiceId/{serviceId}")
+    public R selectAllPropertiesByServiceId(@PathVariable("serviceId") Long serviceId) {
+        ProductProperties productProperties = new ProductProperties();
+        productProperties.setServiceId(serviceId);
+        List<ProductProperties> list = productPropertiesService.selectProductPropertiesList(productProperties);
+        return R.ok(list);
     }
 }

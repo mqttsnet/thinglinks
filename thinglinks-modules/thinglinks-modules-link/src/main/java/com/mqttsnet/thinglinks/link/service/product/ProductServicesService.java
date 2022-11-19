@@ -88,5 +88,14 @@ public interface ProductServicesService {
      * @return 结果
      */
     int deleteProductServicesByIds(Long[] ids);
+
+
+    /**
+     * 根据产品标识和状态获取产品所有服务
+     * @param productIdentification
+     * @param status
+     * @return
+     */
+    List<ProductServices> selectAllByProductIdentificationAndStatus(String productIdentification, String status);
 }
 

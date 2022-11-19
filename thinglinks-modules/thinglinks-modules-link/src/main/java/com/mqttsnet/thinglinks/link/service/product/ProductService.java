@@ -181,5 +181,7 @@ public interface ProductService {
 
 
     List<Product> findAllByIdInAndStatus(Collection<Long> idCollection, String status);
+
+    List<Product> selectAllProductByStatus(String status);
 }
 

@@ -219,4 +219,15 @@ public class DeviceController extends BaseController {
     }
 
 
+    /**
+     * 根据产品标识获取产品所有关联设备
+     * @param productIdentification
+     * @return
+     */
+    @GetMapping("/selectAllByProductIdentification/{productIdentification}")
+    public R<List<Device>> selectAllByProductIdentification(@PathVariable(value = "productIdentification") String productIdentification){
+        return R.ok(deviceService.findAllByProductIdentification(productIdentification));
+    }
+
+
 }
