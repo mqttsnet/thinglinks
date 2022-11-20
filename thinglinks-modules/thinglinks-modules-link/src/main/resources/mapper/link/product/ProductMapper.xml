@@ -770,7 +770,7 @@
     insert into product
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="appId != null and appId != ''">app_id,</if>
-      <if test="templateId != null">template_id,</if>
+      <if test="templateIdentification != null">template_identification,</if>
       <if test="productName != null and productName != ''">product_name,</if>
       <if test="productIdentification != null and productIdentification != ''">product_identification,</if>
       <if test="productType != null and productType != ''">product_type,</if>
@@ -789,7 +789,7 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="appId != null and appId != ''">#{appId},</if>
-      <if test="templateId != null">#{templateId},</if>
+      <if test="templateIdentification != null">#{template_identification},</if>
       <if test="productName != null and productName != ''">#{productName},</if>
       <if test="productIdentification != null and productIdentification != ''">#{productIdentification},</if>
       <if test="productType != null and productType != ''">#{productType},</if>
@@ -812,7 +812,7 @@
     update product
     <trim prefix="SET" suffixOverrides=",">
       <if test="appId != null and appId != ''">app_id = #{appId},</if>
-      <if test="templateId != null">template_id = #{templateId},</if>
+      <if test="templateIdentification != null">template_identification = #{templateIdentification},</if>
       <if test="productName != null and productName != ''">product_name = #{productName},</if>
       <if test="productIdentification != null and productIdentification != ''">product_identification = #{productIdentification},</if>
       <if test="productType != null and productType != ''">product_type = #{productType},</if>
