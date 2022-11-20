@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.rule.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.ConditionTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.FieldTypeEnum;
@@ -382,7 +383,7 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
      * @return
      */
     public R<?> selectProductServicesByProductIdentification(String productIdentification){
-        R<?> productServicesResponse = remoteProductServicesService.selectAllByProductIdentificationAndStatus(productIdentification,"0");
+        R<?> productServicesResponse = remoteProductServicesService.selectAllByProductIdentificationAndStatus(productIdentification, Constants.ENABLE);
         return productServicesResponse;
     }
 
