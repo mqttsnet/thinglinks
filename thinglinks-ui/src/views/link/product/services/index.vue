@@ -124,7 +124,7 @@ import Commands from "@/views/link/product/commands";
 export default {
   name: "Services",
   components: { Commands, Properties },
-  props: ["productId", "templateId"],
+  props: ["productIdentification", "templateIdentification"],
   dicts: ["business_data_status"],
   data() {
     return {
@@ -162,8 +162,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
         serviceName: null,
-        productId: null,
-        templateId: null,
+        productIdentification: null,
+        templateIdentification: null,
         status: null,
         description: null,
       },
@@ -193,13 +193,13 @@ export default {
   watch: {
     productId(newval, oldval) {
       if (newval !== oldval) {
-        this.queryParams.productId = newval;
+        this.queryParams.productIdentification = newval;
         this.getList();
       }
     },
     templateId(newval, oldval) {
       if (newval !== oldval) {
-        this.queryParams.templateId = newval;
+        this.queryParams.templateIdentification = newval;
         this.getList();
       }
     },
@@ -209,10 +209,10 @@ export default {
     }
   },
   created() {
-    if (this.productId)
-      this.queryParams.productId = this.productId;
-    if (this.templateId)
-      this.queryParams.templateId = this.templateId;
+    if (this.productIdentification)
+      this.queryParams.productIdentification = this.productIdentification;
+    if (this.templateIdentification)
+      this.queryParams.templateIdentification = this.templateIdentification;
     this.getList();
   },
   methods: {
@@ -221,6 +221,7 @@ export default {
       this.loading = true;
       this.serviceOptions = [];
       queryServices(this.queryParams).then(res => {
+        console.log(res);
         let index = 0;
         res.data.forEach(item => {
           this.serviceOptions.push({
@@ -252,8 +253,8 @@ export default {
       this.form = {
         id: null,
         serviceName: null,
-        productId: null,
-        templateId: null,
+        productIdentification: null,
+        templateIdentification: null,
         status: "0",
         description: null,
         createBy: null,
@@ -282,8 +283,8 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.form.productId = this.productId;
-      this.form.templateId = this.templateId;
+      this.form.productIdentification = this.productIdentification;
+      this.form.templateIdentification = this.templateIdentification;
       this.open = true;
       this.title = "添加服务";
     },

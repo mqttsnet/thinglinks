@@ -164,12 +164,12 @@
       </trim>
       <trim prefix="template_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.templateIdentification,jdbcType=VARCHAR}
+          when template_identification = #{item.templateIdentification,jdbcType=VARCHAR} then #{item.templateIdentification,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="product_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.productIdentification,jdbcType=VARCHAR}
+          when product_identification = #{item.productIdentification,jdbcType=VARCHAR} then #{item.productIdentification,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="`status` = case" suffix="end,">
@@ -222,14 +222,14 @@
       <trim prefix="template_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           <if test="item.templateIdentification != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.templateIdentification,jdbcType=VARCHAR}
+            when template_identification = #{item.templateIdentification,jdbcType=VARCHAR} then #{item.templateIdentification,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
       <trim prefix="product_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           <if test="item.productIdentification != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.productIdentification,jdbcType=VARCHAR}
+            when product_identification = #{item.productIdentification,jdbcType=VARCHAR} then #{item.productIdentification,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
@@ -466,7 +466,7 @@
     from product_services
     <where>
       <if test="productId != null">
-        and product_id=#{productId,jdbcType=BIGINT}
+        and product_identification=#{productIdentification,jdbcType=VARCHAR}
       </if>
       <if test="status != null">
         and `status`=#{status,jdbcType=VARCHAR}
@@ -481,7 +481,7 @@
         from product_services
         <where>
             <if test="productId != null">
-                and product_id=#{productId,jdbcType=BIGINT}
+                and product_identification=#{productIdentification,jdbcType=VARCHAR}
             </if>
             <if test="serviceName != null">
                 and service_name=#{serviceName,jdbcType=VARCHAR}
@@ -493,15 +493,15 @@
     </select>
 
   <sql id="selectProductServicesVo">
-    select id, service_name, product_id, template_id, status, description, create_by, create_time, update_by, update_time from product_services
+    select id, service_name, product_identification, template_identification, status, description, create_by, create_time, update_by, update_time from product_services
   </sql>
 
   <select id="selectProductServicesList" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices" resultMap="BaseResultMap">
     <include refid="selectProductServicesVo" />
     <where>
       <if test="serviceName != null  and serviceName != ''"> and service_name like concat('%', #{serviceName}, '%')</if>
-      <if test="productId != null "> and product_id = #{productId}</if>
-      <if test="templateId != null "> and template_id = #{templateId}</if>
+      <if test="productIdentification != null "> and product_identification = #{productIdentification}</if>
+      <if test="templateIdentification != null "> and template_identification = #{templateIdentification}</if>
       <if test="status != null  and status != ''"> and status = #{status}</if>
       <if test="description != null  and description != ''"> and description = #{description}</if>
     </where>
@@ -516,8 +516,8 @@
     insert into product_services
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="serviceName != null and serviceName != ''">service_name,</if>
-      <if test="productId != null">product_id,</if>
-      <if test="templateId != null">template_id,</if>
+      <if test="productIdentification != null and productIdentification != ''">product_identification,</if>
+      <if test="templateIdentification != null">template_identification,</if>
       <if test="status != null and status != ''">status,</if>
       <if test="description != null">description,</if>
       <if test="createBy != null">create_by,</if>
@@ -527,8 +527,8 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="serviceName != null and serviceName != ''">#{serviceName},</if>
-      <if test="productId != null">#{productId},</if>
-      <if test="templateId != null">#{templateId},</if>
+      <if test="productIdentification != null and productIdentification != ''">#{productIdentification},</if>
+      <if test="templateIdentification != null">#{templateIdentification},</if>
       <if test="status != null and status != ''">#{status},</if>
       <if test="description != null">#{description},</if>
       <if test="createBy != null">#{createBy},</if>
@@ -542,8 +542,8 @@
     update product_services
     <trim prefix="SET" suffixOverrides=",">
       <if test="serviceName != null and serviceName != ''">service_name = #{serviceName},</if>
-      <if test="productId != null">product_id = #{productId},</if>
-      <if test="templateId != null">template_id = #{templateId},</if>
+      <if test="productIdentification != null">product_identification = #{productIdentification},</if>
+      <if test="templateIdentification != null">template_identification = #{templateIdentification},</if>
       <if test="status != null and status != ''">status = #{status},</if>
       <if test="description != null">description = #{description},</if>
       <if test="createBy != null">create_by = #{createBy},</if>
