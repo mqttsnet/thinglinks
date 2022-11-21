@@ -54,4 +54,13 @@ public interface RemoteDeviceService {
     @PostMapping("/device/findOneByClientId")
     public R<Device> findOneByClientId(String clientId);
 
+    /**
+     * 根据产品标识获取产品所有关联设备
+     * @param productIdentification
+     * @return
+     */
+    @GetMapping("/device/selectAllByProductIdentification/{productIdentification}")
+    public R<?> selectAllByProductIdentification(@PathVariable("productIdentification") String productIdentification);
+
+
 }

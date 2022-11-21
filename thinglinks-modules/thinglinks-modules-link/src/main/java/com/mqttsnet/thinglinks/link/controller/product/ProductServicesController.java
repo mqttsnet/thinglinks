@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.controller.product;
 
+import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -114,5 +115,17 @@ public class ProductServicesController extends BaseController {
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(productServicesService.deleteProductServicesByIds(ids));
+    }
+
+
+    /**
+     * 根据产品标识和状态获取产品关联服务
+     * @param productIdentification
+     * @param status
+     * @return
+     */
+    @GetMapping("/selectAllByProductIdentificationAndStatus")
+    public R<?> selectAllByProductIdentificationAndStatus(@RequestParam("productIdentification") String productIdentification, @RequestParam("status") String status){
+        return R.ok(productServicesService.selectAllByProductIdentificationAndStatus(productIdentification,status));
     }
 }

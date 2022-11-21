@@ -244,7 +244,9 @@ public class DeviceServiceImpl implements DeviceService {
                 topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/command","物联网平台给设备或边设备下发命令");
                 topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/commandResponse","边设备返回给物联网平台的命令响应");
                 Boolean commonDeviceTDSubtable = this.createCommonDeviceTDSubtable(device);
-                if (!commonDeviceTDSubtable) throw new Exception("创建普通设备TD子表失败");
+                if (!commonDeviceTDSubtable) {
+                    throw new Exception("创建普通设备TD子表失败");
+                }
             }
             //设备基础Topic数据存储
             for(Map.Entry<String,String> entry : topicMap.entrySet()) {
@@ -465,7 +467,7 @@ public class DeviceServiceImpl implements DeviceService {
                 log.error("查询普通设备影子数据失败，设备对应的产品不存在");
                 return;
             }
-            List<ProductServices> productServicesLis  = productServicesService.findAllByProductIdAndStatus(product.getId(),Constants.ENABLE);
+            List<ProductServices> productServicesLis  = productServicesService.findAllByProductIdentificationIdAndStatus(product.getProductIdentification(),Constants.ENABLE);
             if (StringUtils.isNull(productServicesLis)) {
                 log.error("查询普通设备影子数据失败，普通设备services不存在");
                 return;
@@ -515,7 +517,7 @@ public class DeviceServiceImpl implements DeviceService {
             log.error("刷新子设备数据模型失败，子设备产品不存在");
             return false;
         }
-        List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), Constants.ENABLE);
+        List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdentificationIdAndStatus(product.getProductIdentification(), Constants.ENABLE);
         TableDto tableDto;
         for (ProductServices productServices : allByProductIdAndStatus) {
             tableDto = new TableDto();

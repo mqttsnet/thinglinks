@@ -40,13 +40,13 @@ public interface ProductServicesService {
 
     int batchInsert(List<ProductServices> list);
 
-    List<ProductServices> findByProductIds(List<Long> productIds);
+    List<ProductServices> findByProductIdentifications(List<String> productIdentifications);
 
 
-    List<ProductServices> findAllByProductIdAndStatus(Long productId, String status);
+    List<ProductServices> findAllByProductIdentificationIdAndStatus(String productIdentification, String status);
 
 
-    List<ProductServices> findAllByProductIdAndServiceNameAndStatus(Long productId, String serviceName, String status);
+    List<ProductServices> findAllByProductIdentificationAndServiceNameAndStatus(String productIdentification, String serviceName, String status);
 
 
     /**
@@ -88,5 +88,14 @@ public interface ProductServicesService {
      * @return 结果
      */
     int deleteProductServicesByIds(Long[] ids);
+
+
+    /**
+     * 根据产品标识和状态获取产品所有服务
+     * @param productIdentification
+     * @param status
+     * @return
+     */
+    List<ProductServices> selectAllByProductIdentificationAndStatus(String productIdentification, String status);
 }
 

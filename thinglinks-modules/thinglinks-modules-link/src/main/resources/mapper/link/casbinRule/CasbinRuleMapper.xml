@@ -1,437 +1,513 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mqttsnet.thinglinks.link.mapper.casbinRule.CasbinRuleMapper">
-  <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule">
-    <!--@mbg.generated-->
-    <!--@Table thinglinks.casbin_rule-->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="ptype" jdbcType="VARCHAR" property="ptype" />
-    <result column="v0" jdbcType="VARCHAR" property="v0" />
-    <result column="v1" jdbcType="VARCHAR" property="v1" />
-    <result column="v2" jdbcType="VARCHAR" property="v2" />
-    <result column="v3" jdbcType="VARCHAR" property="v3" />
-    <result column="v4" jdbcType="VARCHAR" property="v4" />
-    <result column="v5" jdbcType="VARCHAR" property="v5" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, ptype, v0, v1, v2, v3, v4, v5
-  </sql>
-  <sql id="selectCasbinRuleVo">
-    select id, ptype, v0, v1, v2, v3, v4, v5 from casbin_rule
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    <!--@mbg.generated-->
-    select 
-    <include refid="Base_Column_List" />
-    from thinglinks.casbin_rule
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    <!--@mbg.generated-->
-    delete from thinglinks.casbin_rule
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into thinglinks.casbin_rule (ptype, v0, v1, 
-      v2, v3, v4, v5
-      )
-    values (#{ptype,jdbcType=VARCHAR}, #{v0,jdbcType=VARCHAR}, #{v1,jdbcType=VARCHAR}, 
-      #{v2,jdbcType=VARCHAR}, #{v3,jdbcType=VARCHAR}, #{v4,jdbcType=VARCHAR}, #{v5,jdbcType=VARCHAR}
-      )
-  </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into thinglinks.casbin_rule
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="ptype != null">
-        ptype,
-      </if>
-      <if test="v0 != null">
-        v0,
-      </if>
-      <if test="v1 != null">
-        v1,
-      </if>
-      <if test="v2 != null">
-        v2,
-      </if>
-      <if test="v3 != null">
-        v3,
-      </if>
-      <if test="v4 != null">
-        v4,
-      </if>
-      <if test="v5 != null">
-        v5,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="ptype != null">
-        #{ptype,jdbcType=VARCHAR},
-      </if>
-      <if test="v0 != null">
-        #{v0,jdbcType=VARCHAR},
-      </if>
-      <if test="v1 != null">
-        #{v1,jdbcType=VARCHAR},
-      </if>
-      <if test="v2 != null">
-        #{v2,jdbcType=VARCHAR},
-      </if>
-      <if test="v3 != null">
-        #{v3,jdbcType=VARCHAR},
-      </if>
-      <if test="v4 != null">
-        #{v4,jdbcType=VARCHAR},
-      </if>
-      <if test="v5 != null">
-        #{v5,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule">
-    <!--@mbg.generated-->
-    update thinglinks.casbin_rule
-    <set>
-      <if test="ptype != null">
-        ptype = #{ptype,jdbcType=VARCHAR},
-      </if>
-      <if test="v0 != null">
-        v0 = #{v0,jdbcType=VARCHAR},
-      </if>
-      <if test="v1 != null">
-        v1 = #{v1,jdbcType=VARCHAR},
-      </if>
-      <if test="v2 != null">
-        v2 = #{v2,jdbcType=VARCHAR},
-      </if>
-      <if test="v3 != null">
-        v3 = #{v3,jdbcType=VARCHAR},
-      </if>
-      <if test="v4 != null">
-        v4 = #{v4,jdbcType=VARCHAR},
-      </if>
-      <if test="v5 != null">
-        v5 = #{v5,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule">
-    <!--@mbg.generated-->
-    update thinglinks.casbin_rule
-    set ptype = #{ptype,jdbcType=VARCHAR},
-      v0 = #{v0,jdbcType=VARCHAR},
-      v1 = #{v1,jdbcType=VARCHAR},
-      v2 = #{v2,jdbcType=VARCHAR},
-      v3 = #{v3,jdbcType=VARCHAR},
-      v4 = #{v4,jdbcType=VARCHAR},
-      v5 = #{v5,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateBatch" parameterType="java.util.List">
-    <!--@mbg.generated-->
-    update thinglinks.casbin_rule
-    <trim prefix="set" suffixOverrides=",">
-      <trim prefix="ptype = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=INTEGER} then #{item.ptype,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="v0 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=INTEGER} then #{item.v0,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="v1 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=INTEGER} then #{item.v1,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="v2 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=INTEGER} then #{item.v2,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="v3 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=INTEGER} then #{item.v3,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="v4 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=INTEGER} then #{item.v4,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="v5 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=INTEGER} then #{item.v5,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-    </trim>
-    where id in
-    <foreach close=")" collection="list" item="item" open="(" separator=", ">
-      #{item.id,jdbcType=INTEGER}
-    </foreach>
-  </update>
-  <update id="updateBatchSelective" parameterType="java.util.List">
-    <!--@mbg.generated-->
-    update thinglinks.casbin_rule
-    <trim prefix="set" suffixOverrides=",">
-      <trim prefix="ptype = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.ptype != null">
-            when id = #{item.id,jdbcType=INTEGER} then #{item.ptype,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="v0 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.v0 != null">
-            when id = #{item.id,jdbcType=INTEGER} then #{item.v0,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="v1 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.v1 != null">
-            when id = #{item.id,jdbcType=INTEGER} then #{item.v1,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="v2 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.v2 != null">
-            when id = #{item.id,jdbcType=INTEGER} then #{item.v2,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="v3 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.v3 != null">
-            when id = #{item.id,jdbcType=INTEGER} then #{item.v3,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="v4 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.v4 != null">
-            when id = #{item.id,jdbcType=INTEGER} then #{item.v4,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="v5 = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.v5 != null">
-            when id = #{item.id,jdbcType=INTEGER} then #{item.v5,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-    </trim>
-    where id in
-    <foreach close=")" collection="list" item="item" open="(" separator=", ">
-      #{item.id,jdbcType=INTEGER}
-    </foreach>
-  </update>
-  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into thinglinks.casbin_rule
-    (ptype, v0, v1, v2, v3, v4, v5)
-    values
-    <foreach collection="list" item="item" separator=",">
-      (#{item.ptype,jdbcType=VARCHAR}, #{item.v0,jdbcType=VARCHAR}, #{item.v1,jdbcType=VARCHAR}, 
-        #{item.v2,jdbcType=VARCHAR}, #{item.v3,jdbcType=VARCHAR}, #{item.v4,jdbcType=VARCHAR}, 
-        #{item.v5,jdbcType=VARCHAR})
-    </foreach>
-  </insert>
-  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into thinglinks.casbin_rule
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule">
+        <!--@mbg.generated-->
+        <!--@Table thinglinks.casbin_rule-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="ptype" jdbcType="VARCHAR" property="ptype"/>
+        <result column="v0" jdbcType="VARCHAR" property="v0"/>
+        <result column="v1" jdbcType="VARCHAR" property="v1"/>
+        <result column="v2" jdbcType="VARCHAR" property="v2"/>
+        <result column="v3" jdbcType="VARCHAR" property="v3"/>
+        <result column="v4" jdbcType="VARCHAR" property="v4"/>
+        <result column="v5" jdbcType="VARCHAR" property="v5"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
         id,
-      </if>
-      ptype,
-      v0,
-      v1,
-      v2,
-      v3,
-      v4,
-      v5,
-    </trim>
-    values
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      #{ptype,jdbcType=VARCHAR},
-      #{v0,jdbcType=VARCHAR},
-      #{v1,jdbcType=VARCHAR},
-      #{v2,jdbcType=VARCHAR},
-      #{v3,jdbcType=VARCHAR},
-      #{v4,jdbcType=VARCHAR},
-      #{v5,jdbcType=VARCHAR},
-    </trim>
-    on duplicate key update 
-    <trim suffixOverrides=",">
-      <if test="id != null">
-        id = #{id,jdbcType=INTEGER},
-      </if>
-      ptype = #{ptype,jdbcType=VARCHAR},
-      v0 = #{v0,jdbcType=VARCHAR},
-      v1 = #{v1,jdbcType=VARCHAR},
-      v2 = #{v2,jdbcType=VARCHAR},
-      v3 = #{v3,jdbcType=VARCHAR},
-      v4 = #{v4,jdbcType=VARCHAR},
-      v5 = #{v5,jdbcType=VARCHAR},
-    </trim>
-  </insert>
-  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into thinglinks.casbin_rule
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="ptype != null">
         ptype,
-      </if>
-      <if test="v0 != null">
         v0,
-      </if>
-      <if test="v1 != null">
         v1,
-      </if>
-      <if test="v2 != null">
         v2,
-      </if>
-      <if test="v3 != null">
         v3,
-      </if>
-      <if test="v4 != null">
         v4,
-      </if>
-      <if test="v5 != null">
-        v5,
-      </if>
-    </trim>
-    values
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="ptype != null">
-        #{ptype,jdbcType=VARCHAR},
-      </if>
-      <if test="v0 != null">
-        #{v0,jdbcType=VARCHAR},
-      </if>
-      <if test="v1 != null">
-        #{v1,jdbcType=VARCHAR},
-      </if>
-      <if test="v2 != null">
-        #{v2,jdbcType=VARCHAR},
-      </if>
-      <if test="v3 != null">
-        #{v3,jdbcType=VARCHAR},
-      </if>
-      <if test="v4 != null">
-        #{v4,jdbcType=VARCHAR},
-      </if>
-      <if test="v5 != null">
-        #{v5,jdbcType=VARCHAR},
-      </if>
-    </trim>
-    on duplicate key update 
-    <trim suffixOverrides=",">
-      <if test="id != null">
-        id = #{id,jdbcType=INTEGER},
-      </if>
-      <if test="ptype != null">
-        ptype = #{ptype,jdbcType=VARCHAR},
-      </if>
-      <if test="v0 != null">
-        v0 = #{v0,jdbcType=VARCHAR},
-      </if>
-      <if test="v1 != null">
-        v1 = #{v1,jdbcType=VARCHAR},
-      </if>
-      <if test="v2 != null">
-        v2 = #{v2,jdbcType=VARCHAR},
-      </if>
-      <if test="v3 != null">
-        v3 = #{v3,jdbcType=VARCHAR},
-      </if>
-      <if test="v4 != null">
-        v4 = #{v4,jdbcType=VARCHAR},
-      </if>
-      <if test="v5 != null">
-        v5 = #{v5,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <select id="selectCasbinRuleList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" resultMap="BaseResultMap">
-    <include refid="selectCasbinRuleVo"/>
-    <where>
-      <if test="ptype != null  and ptype != ''"> and ptype = #{ptype}</if>
-      <if test="v0 != null  and v0 != ''"> and v0 = #{v0}</if>
-      <if test="v1 != null  and v1 != ''"> and v1 = #{v1}</if>
-      <if test="v2 != null  and v2 != ''"> and v2 = #{v2}</if>
-      <if test="v3 != null  and v3 != ''"> and v3 = #{v3}</if>
-    </where>
-  </select>
+        v5
+    </sql>
+    <sql id="selectCasbinRuleVo">
+        select id,
+               ptype,
+               v0,
+               v1,
+               v2,
+               v3,
+               v4,
+               v5
+        from casbin_rule
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from thinglinks.casbin_rule
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete
+        from thinglinks.casbin_rule
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into thinglinks.casbin_rule (ptype, v0, v1,
+                                            v2, v3, v4, v5)
+        values (#{ptype,jdbcType=VARCHAR}, #{v0,jdbcType=VARCHAR}, #{v1,jdbcType=VARCHAR},
+                #{v2,jdbcType=VARCHAR}, #{v3,jdbcType=VARCHAR}, #{v4,jdbcType=VARCHAR}, #{v5,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into thinglinks.casbin_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ptype != null">
+                ptype,
+            </if>
+            <if test="v0 != null">
+                v0,
+            </if>
+            <if test="v1 != null">
+                v1,
+            </if>
+            <if test="v2 != null">
+                v2,
+            </if>
+            <if test="v3 != null">
+                v3,
+            </if>
+            <if test="v4 != null">
+                v4,
+            </if>
+            <if test="v5 != null">
+                v5,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ptype != null">
+                #{ptype,jdbcType=VARCHAR},
+            </if>
+            <if test="v0 != null">
+                #{v0,jdbcType=VARCHAR},
+            </if>
+            <if test="v1 != null">
+                #{v1,jdbcType=VARCHAR},
+            </if>
+            <if test="v2 != null">
+                #{v2,jdbcType=VARCHAR},
+            </if>
+            <if test="v3 != null">
+                #{v3,jdbcType=VARCHAR},
+            </if>
+            <if test="v4 != null">
+                #{v4,jdbcType=VARCHAR},
+            </if>
+            <if test="v5 != null">
+                #{v5,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule">
+        <!--@mbg.generated-->
+        update thinglinks.casbin_rule
+        <set>
+            <if test="ptype != null">
+                ptype = #{ptype,jdbcType=VARCHAR},
+            </if>
+            <if test="v0 != null">
+                v0 = #{v0,jdbcType=VARCHAR},
+            </if>
+            <if test="v1 != null">
+                v1 = #{v1,jdbcType=VARCHAR},
+            </if>
+            <if test="v2 != null">
+                v2 = #{v2,jdbcType=VARCHAR},
+            </if>
+            <if test="v3 != null">
+                v3 = #{v3,jdbcType=VARCHAR},
+            </if>
+            <if test="v4 != null">
+                v4 = #{v4,jdbcType=VARCHAR},
+            </if>
+            <if test="v5 != null">
+                v5 = #{v5,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule">
+        <!--@mbg.generated-->
+        update thinglinks.casbin_rule
+        set ptype = #{ptype,jdbcType=VARCHAR},
+            v0    = #{v0,jdbcType=VARCHAR},
+            v1    = #{v1,jdbcType=VARCHAR},
+            v2    = #{v2,jdbcType=VARCHAR},
+            v3    = #{v3,jdbcType=VARCHAR},
+            v4    = #{v4,jdbcType=VARCHAR},
+            v5    = #{v5,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update thinglinks.casbin_rule
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="ptype = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.ptype,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="v0 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.v0,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="v1 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.v1,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="v2 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.v2,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="v3 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.v3,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="v4 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.v4,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="v5 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=INTEGER} then #{item.v5,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update thinglinks.casbin_rule
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="ptype = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.ptype != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.ptype,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="v0 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.v0 != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.v0,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="v1 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.v1 != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.v1,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="v2 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.v2 != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.v2,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="v3 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.v3 != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.v3,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="v4 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.v4 != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.v4,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="v5 = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.v5 != null">
+                        when id = #{item.id,jdbcType=INTEGER} then #{item.v5,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into thinglinks.casbin_rule
+            (ptype, v0, v1, v2, v3, v4, v5)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.ptype,jdbcType=VARCHAR}, #{item.v0,jdbcType=VARCHAR}, #{item.v1,jdbcType=VARCHAR},
+             #{item.v2,jdbcType=VARCHAR}, #{item.v3,jdbcType=VARCHAR}, #{item.v4,jdbcType=VARCHAR},
+             #{item.v5,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into thinglinks.casbin_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            ptype,
+            v0,
+            v1,
+            v2,
+            v3,
+            v4,
+            v5,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            #{ptype,jdbcType=VARCHAR},
+            #{v0,jdbcType=VARCHAR},
+            #{v1,jdbcType=VARCHAR},
+            #{v2,jdbcType=VARCHAR},
+            #{v3,jdbcType=VARCHAR},
+            #{v4,jdbcType=VARCHAR},
+            #{v5,jdbcType=VARCHAR},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            ptype = #{ptype,jdbcType=VARCHAR},
+            v0    = #{v0,jdbcType=VARCHAR},
+            v1    = #{v1,jdbcType=VARCHAR},
+            v2    = #{v2,jdbcType=VARCHAR},
+            v3    = #{v3,jdbcType=VARCHAR},
+            v4    = #{v4,jdbcType=VARCHAR},
+            v5    = #{v5,jdbcType=VARCHAR},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into thinglinks.casbin_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="ptype != null">
+                ptype,
+            </if>
+            <if test="v0 != null">
+                v0,
+            </if>
+            <if test="v1 != null">
+                v1,
+            </if>
+            <if test="v2 != null">
+                v2,
+            </if>
+            <if test="v3 != null">
+                v3,
+            </if>
+            <if test="v4 != null">
+                v4,
+            </if>
+            <if test="v5 != null">
+                v5,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="ptype != null">
+                #{ptype,jdbcType=VARCHAR},
+            </if>
+            <if test="v0 != null">
+                #{v0,jdbcType=VARCHAR},
+            </if>
+            <if test="v1 != null">
+                #{v1,jdbcType=VARCHAR},
+            </if>
+            <if test="v2 != null">
+                #{v2,jdbcType=VARCHAR},
+            </if>
+            <if test="v3 != null">
+                #{v3,jdbcType=VARCHAR},
+            </if>
+            <if test="v4 != null">
+                #{v4,jdbcType=VARCHAR},
+            </if>
+            <if test="v5 != null">
+                #{v5,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=INTEGER},
+            </if>
+            <if test="ptype != null">
+                ptype = #{ptype,jdbcType=VARCHAR},
+            </if>
+            <if test="v0 != null">
+                v0 = #{v0,jdbcType=VARCHAR},
+            </if>
+            <if test="v1 != null">
+                v1 = #{v1,jdbcType=VARCHAR},
+            </if>
+            <if test="v2 != null">
+                v2 = #{v2,jdbcType=VARCHAR},
+            </if>
+            <if test="v3 != null">
+                v3 = #{v3,jdbcType=VARCHAR},
+            </if>
+            <if test="v4 != null">
+                v4 = #{v4,jdbcType=VARCHAR},
+            </if>
+            <if test="v5 != null">
+                v5 = #{v5,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="selectCasbinRuleList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule"
+            resultMap="BaseResultMap">
+        <include refid="selectCasbinRuleVo"/>
+        <where>
+            <if test="ptype != null  and ptype != ''">
+                and ptype = #{ptype}
+            </if>
+            <if test="v0 != null  and v0 != ''">
+                and v0 = #{v0}
+            </if>
+            <if test="v1 != null  and v1 != ''">
+                and v1 = #{v1}
+            </if>
+            <if test="v2 != null  and v2 != ''">
+                and v2 = #{v2}
+            </if>
+            <if test="v3 != null  and v3 != ''">
+                and v3 = #{v3}
+            </if>
+        </where>
+    </select>
 
-  <select id="selectCasbinRuleById" parameterType="Long" resultMap="BaseResultMap">
-    <include refid="selectCasbinRuleVo"/>
-    where id = #{id}
-  </select>
+    <select id="selectCasbinRuleById" parameterType="Long" resultMap="BaseResultMap">
+        <include refid="selectCasbinRuleVo"/>
+        where id = #{id}
+    </select>
 
-  <insert id="insertCasbinRule" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule" useGeneratedKeys="true" keyProperty="id">
-    insert into casbin_rule
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="ptype != null and ptype != ''">ptype,</if>
-      <if test="v0 != null">v0,</if>
-      <if test="v1 != null">v1,</if>
-      <if test="v2 != null">v2,</if>
-      <if test="v3 != null">v3,</if>
-      <if test="v4 != null">v4,</if>
-      <if test="v5 != null">v5,</if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="ptype != null and ptype != ''">#{ptype},</if>
-      <if test="v0 != null">#{v0},</if>
-      <if test="v1 != null">#{v1},</if>
-      <if test="v2 != null">#{v2},</if>
-      <if test="v3 != null">#{v3},</if>
-      <if test="v4 != null">#{v4},</if>
-      <if test="v5 != null">#{v5},</if>
-    </trim>
-  </insert>
+    <insert id="insertCasbinRule" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into casbin_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ptype != null and ptype != ''">
+                ptype,
+            </if>
+            <if test="v0 != null">
+                v0,
+            </if>
+            <if test="v1 != null">
+                v1,
+            </if>
+            <if test="v2 != null">
+                v2,
+            </if>
+            <if test="v3 != null">
+                v3,
+            </if>
+            <if test="v4 != null">
+                v4,
+            </if>
+            <if test="v5 != null">
+                v5,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ptype != null and ptype != ''">
+                #{ptype},
+            </if>
+            <if test="v0 != null">
+                #{v0},
+            </if>
+            <if test="v1 != null">
+                #{v1},
+            </if>
+            <if test="v2 != null">
+                #{v2},
+            </if>
+            <if test="v3 != null">
+                #{v3},
+            </if>
+            <if test="v4 != null">
+                #{v4},
+            </if>
+            <if test="v5 != null">
+                #{v5},
+            </if>
+        </trim>
+    </insert>
 
-  <update id="updateCasbinRule" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule">
-    update casbin_rule
-    <trim prefix="SET" suffixOverrides=",">
-      <if test="ptype != null and ptype != ''">ptype = #{ptype},</if>
-      <if test="v0 != null">v0 = #{v0},</if>
-      <if test="v1 != null">v1 = #{v1},</if>
-      <if test="v2 != null">v2 = #{v2},</if>
-      <if test="v3 != null">v3 = #{v3},</if>
-      <if test="v4 != null">v4 = #{v4},</if>
-      <if test="v5 != null">v5 = #{v5},</if>
-    </trim>
-    where id = #{id}
-  </update>
+    <update id="updateCasbinRule" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.CasbinRule">
+        update casbin_rule
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ptype != null and ptype != ''">
+                ptype = #{ptype},
+            </if>
+            <if test="v0 != null">
+                v0 = #{v0},
+            </if>
+            <if test="v1 != null">
+                v1 = #{v1},
+            </if>
+            <if test="v2 != null">
+                v2 = #{v2},
+            </if>
+            <if test="v3 != null">
+                v3 = #{v3},
+            </if>
+            <if test="v4 != null">
+                v4 = #{v4},
+            </if>
+            <if test="v5 != null">
+                v5 = #{v5},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
 
-  <delete id="deleteCasbinRuleById" parameterType="Long">
-    delete from casbin_rule where id = #{id}
-  </delete>
+    <delete id="deleteCasbinRuleById" parameterType="Long">
+        delete
+        from casbin_rule
+        where id = #{id}
+    </delete>
 
-  <delete id="deleteCasbinRuleByIds" parameterType="String">
-    delete from casbin_rule where id in
-    <foreach item="id" collection="array" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </delete>
+    <delete id="deleteCasbinRuleByIds" parameterType="String">
+        delete
+        from casbin_rule where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

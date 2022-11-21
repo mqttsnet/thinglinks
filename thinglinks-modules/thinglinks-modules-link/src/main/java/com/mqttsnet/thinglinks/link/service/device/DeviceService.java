@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.device;
 
+import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
 
@@ -178,5 +179,6 @@ public interface DeviceService {
      * @return 普通设备影子数据
      */
     public Map<String, List<Map<String, Object>>> getDeviceShadow(String ids, String startTime, String endTime);
+
 }
 

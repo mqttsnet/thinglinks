@@ -74,11 +74,11 @@ public interface ProductServicesMapper {
 
     int batchInsert(@Param("list") List<ProductServices> list);
 
-    List<ProductServices> findByProductIds(@Param("productIds") List<Long> productIds);
+    List<ProductServices> findByProductIdentifications(@Param("productIdentifications") List<String> productIdentifications);
 
-    List<ProductServices> findAllByProductIdAndStatus(@Param("productId") Long productId, @Param("status") String status);
+    List<ProductServices> findAllByProductIdentificationIdAndStatus(@Param("productIdentification") String productIdentification, @Param("status") String status);
 
-    List<ProductServices> findAllByProductIdAndServiceNameAndStatus(@Param("productId") Long productId, @Param("serviceName") String serviceName, @Param("status") String status);
+    List<ProductServices> findAllByProductIdentificationAndServiceNameAndStatus(@Param("productIdentification") String productIdentification, @Param("serviceName") String serviceName, @Param("status") String status);
 
     /**
      * 查询产品模型服务
@@ -119,4 +119,13 @@ public interface ProductServicesMapper {
      * @return 结果
      */
     int deleteProductServicesByIds(Long[] ids);
+
+    /**
+     * 根据产品标识和状态获取产品服务
+     *
+     * @param productIdentification
+     * @param status
+     * @return
+     */
+    List<ProductServices> selectAllByProductIdentificationAndStatus(@Param("productIdentification") String productIdentification, @Param("status") String status);
 }

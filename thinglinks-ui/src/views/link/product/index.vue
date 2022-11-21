@@ -141,10 +141,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="11">
-            <el-form-item label="产品模型模板" prop="templateId">
+            <el-form-item label="产品模型模板" prop="templateIdentification">
               <el-col :span="22">
-                <el-select v-model="form.templateId" placeholder="请选择产品模型模板">
-                  <el-option v-for="item in templateList" :key="item.id" :label="item.templateName" :value="item.id" />
+                <el-select v-model="form.templateIdentification" placeholder="请选择产品模型模板">
+                  <el-option v-for="item in templateList" :key="item.templateIdentification" :label="item.templateName" :value="item.templateIdentification" />
                 </el-select>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
@@ -315,7 +315,7 @@
     <el-dialog :close-on-click-modal="false" :title="upload.title" :visible.sync="upload.open" append-to-body
       width="400px">
       <el-upload ref="upload"
-        :action="upload.url + '?updateSupport=' + upload.updateSupport + '&appId=' + upload.appId + '&templateId=' + upload.templateId + '&status=' + upload.status"
+        :action="upload.url + '?updateSupport=' + upload.updateSupport + '&appId=' + upload.appId + '&templateIdentification=' + upload.templateIdentification + '&status=' + upload.status"
         :auto-upload="false" :disabled="upload.isUploading" :headers="upload.headers" :limit="1"
         :on-change="fileUploadChanges" :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess"
         accept=".json" drag>
@@ -333,7 +333,7 @@
               </el-select>
             </el-col>
             <el-col :span="12">
-              <el-input v-model="upload.templateId" placeholder="请输入产品模型模板ID" style="width:95%" />
+              <el-input v-model="upload.templateIdentification" placeholder="请输入产品模型模板标识" style="width:95%" />
             </el-col>
             <el-col :span="12" hidden="hidden">
               <el-input v-model="upload.status" hidden="hidden" value="0" />
@@ -344,7 +344,7 @@
               <el-checkbox v-model="upload.updateSupport" />
               是否更新已经存在的产品模型数据
             </div>
-            <span>仅允许导入xls、xlsx格式文件。</span>
+            <span>仅允许导入json格式文件。</span>
             <el-link :underline="false" style="font-size: 12px; vertical-align: baseline" type="primary"
               @click="importTemplate">下载模板
             </el-link>
@@ -494,11 +494,11 @@
               </el-form-item>
             </div>
             <div class="small">
-              <el-form-item label="产品模板" prop="templateId">
+              <el-form-item label="产品模板" prop="templateIdentification">
                 <el-col :span="22">
-                  <el-select v-model="dialogquick.form.templateId" placeholder="请选择产品模型模板">
-                    <el-option v-for="item in templateList" :key="item.id" :label="item.templateName"
-                      :value="item.id" />
+                  <el-select v-model="dialogquick.form.templateIdentification" placeholder="请选择产品模型模板">
+                    <el-option v-for="item in templateList" :key="item.templateIdentification" :label="item.templateName"
+                      :value="item.templateIdentification" />
                   </el-select>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
@@ -755,11 +755,19 @@
 </template>
 
 <script>
-import { listProduct, getProduct, delProduct, addProduct, updateProduct, generateProductJson, initializeDataModel, } from "@/api/link/product/product";
-import { queryTemplate } from "@/api/link/product/productTemplate";
-import { getToken } from "@/utils/auth";
+  import {
+    addProduct,
+    delProduct,
+    generateProductJson,
+    getProduct,
+    initializeDataModel,
+    listProduct,
+    updateProduct,
+  } from "@/api/link/product/product";
+  import {listProductTemplate} from "@/api/link/product/productTemplate";
+  import {getToken} from "@/utils/auth";
 
-export default {
+  export default {
   name: "Product",
   dicts: [
     "link_application_type",
@@ -814,7 +822,7 @@ export default {
         // 应用ID
         appId: "",
         // 产品模型模板
-        templateId: "",
+        templateIdentification: "",
         // 状态
         status: "0",
         // 是否更新已经存在的用户数据
@@ -916,7 +924,7 @@ export default {
           productType: "",
           protocolType: "MQTT",
           remark: "",
-          templateId: "",
+          templateIdentification: "",
           services: [
             {
               commands: "",
@@ -1153,7 +1161,7 @@ export default {
         this.content = obj
         let data = {
           appId: this.dialogquick.form.appId,
-          templateId: this.dialogquick.form.templateId,
+          templateIdentification: this.dialogquick.form.templateIdentification,
           status: 0,
           content: this.content
         }
@@ -1241,7 +1249,7 @@ export default {
         appId: appId,
         status: 0
       };
-      queryTemplate(params).then(res => {
+      listProductTemplate(params).then(res => {
         this.templateList = res.data;
       })
     },
@@ -1255,7 +1263,7 @@ export default {
       this.form = {
         id: null,
         appId: null,
-        templateId: null,
+        templateIdentification: null,
         productName: null,
         productIdentification: null,
         productType: null,

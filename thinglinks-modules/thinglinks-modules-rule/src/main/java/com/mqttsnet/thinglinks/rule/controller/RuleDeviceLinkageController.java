@@ -37,4 +37,47 @@ public class RuleDeviceLinkageController extends BaseController {
         ruleDeviceLinkageService.triggerDeviceLinkageByRuleIdentification(ruleIdentification);
         return R.ok();
     }
+
+    /**
+     * 获取所有的产品
+     * @return
+     */
+    @GetMapping("/selectAllProduct")
+    public R<?> selectAllProduct(){
+        return ruleDeviceLinkageService.selectAllProduct("0");
+    }
+
+
+    /**
+     * 根据产品标识获取产品关联设备
+     * @param productIdentification
+     * @return
+     */
+    @GetMapping("/selectDeviceByProductIdentification/{productIdentification}")
+    public R<?> selectDeviceByProductIdentification(@PathVariable("productIdentification") String productIdentification){
+        return ruleDeviceLinkageService.selectDeviceByProductIdentification(productIdentification);
+    }
+
+
+    /**
+     * 根据产品标识获取产品关联服务
+     * @param productIdentification
+     * @return
+     */
+    @GetMapping("/selectProductServicesByProductIdentification/{productIdentification}")
+    public R<?> selectProductServicesByProductIdentification(@PathVariable("productIdentification") String productIdentification){
+        return ruleDeviceLinkageService.selectProductServicesByProductIdentification(productIdentification);
+    }
+
+    @GetMapping("/selectProductPropertiesByServiceId/{serviceId}")
+    public R<?> selectProductPropertiesByServiceId(@PathVariable("serviceId") Long serviceId){
+        return ruleDeviceLinkageService.selectProductPropertiesByServiceId(serviceId);
+    }
+
+
+
+
+
+
+
 }
