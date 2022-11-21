@@ -37,12 +37,12 @@ public class TdEngineServiceImpl implements TdEngineService {
     private RedisService redisService;
 
     @Override
-    public void createDateBase(String dataBaseName) throws Exception{
+    public void createDateBase(String dataBaseName) throws Exception {
         this.tdEngineMapper.createDatabase(dataBaseName);
     }
 
     @Override
-    public void createSuperTable(List<FieldsVo> schemaFields, List<FieldsVo> tagsFields, String dataBaseName, String superTableName) throws Exception{
+    public void createSuperTable(List<FieldsVo> schemaFields, List<FieldsVo> tagsFields, String dataBaseName, String superTableName) throws Exception {
         this.tdEngineMapper.createSuperTable(schemaFields, tagsFields, dataBaseName, superTableName);
     }
 
@@ -52,12 +52,12 @@ public class TdEngineServiceImpl implements TdEngineService {
     }
 
     @Override
-    public void insertData(TableDto tableDto) throws Exception{
+    public void insertData(TableDto tableDto) throws Exception {
         this.tdEngineMapper.insertData(tableDto);
     }
 
     @Override
-    public List<Map<String, Object>> selectByTimesTamp(SelectDto selectDto) throws Exception{
+    public List<Map<String, Object>> selectByTimesTamp(SelectDto selectDto) throws Exception {
         List<Map<String, Object>> maps = this.tdEngineMapper.selectByTimestamp(selectDto);
         for (Map<String, Object> map : maps) {
             Map<String, Object> filterMap = map.entrySet()
@@ -69,17 +69,18 @@ public class TdEngineServiceImpl implements TdEngineService {
     }
 
     @Override
-    public void addColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception{
+    public void addColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception {
         this.tdEngineMapper.addColumnForSuperTable(superTableName, fieldsVo);
     }
 
 
     @Override
-    public void dropColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception{
+    public void dropColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception {
         this.tdEngineMapper.dropColumnForSuperTable(superTableName, fieldsVo);
     }
+
     @Override
-    public Long getCountByTimesTamp(SelectDto selectDto) throws Exception{
+    public Long getCountByTimesTamp(SelectDto selectDto) throws Exception {
         Map<String, Long> countMap = this.tdEngineMapper.getCountByTimestamp(selectDto);
         if (countMap == null) {
             return 0L;
@@ -90,16 +91,17 @@ public class TdEngineServiceImpl implements TdEngineService {
 
     /**
      * 检查数据库表是否存在
-     * @param dataBaseName
-     * @param tableName tableName 可以为超级表名或普通表名
+     *
+     * @param dataBaseName 数据库名
+     * @param tableName    tableName 可以为超级表名或普通表名
      * @return
      */
-    public boolean checkTableExists(String dataBaseName,String tableName) throws Exception{
+    public boolean checkTableExists(String dataBaseName, String tableName) throws Exception {
         try {
             Integer count = tdEngineMapper.checkTableExists(dataBaseName, tableName);
             return count == 1;
         } catch (Exception e) {
-            log.error("数据库表不存在");
+            log.warn("{},{} 数据库表不存在", dataBaseName, tableName);
             return false;
         }
     }
@@ -116,8 +118,8 @@ public class TdEngineServiceImpl implements TdEngineService {
         //从入参获取超级表名称
         String superTableName = superTableDto.getSuperTableName();
         final boolean tableExists = this.checkTableExists(dataBaseName, superTableName);
-        if(tableExists){
-            log.info("超级表{}已存在",superTableName);
+        if (tableExists) {
+            log.info("超级表{}已存在", superTableName);
             return;
         }
         //获取列字段对象集合的第一个对象的字段数据类型
@@ -140,7 +142,7 @@ public class TdEngineServiceImpl implements TdEngineService {
      * @return
      */
     @Override
-    public List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception{
+    public List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception {
         List<Map<String, Object>> maps = this.tdEngineMapper.getLastData(selectDto);
 //        for (Map<String, Object> map : maps) {
 //            Map<String, Object> filterMap = map.entrySet()
@@ -164,7 +166,7 @@ public class TdEngineServiceImpl implements TdEngineService {
 //                    .stream()
 //                    .filter(entry -> entry.getValue() != null)
 //                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            objectHashMap.put(map.get(tagsSelectDao.getTagsName()).toString(),map);
+            objectHashMap.put(map.get(tagsSelectDao.getTagsName()).toString(), map);
         }
         return objectHashMap;
     }
