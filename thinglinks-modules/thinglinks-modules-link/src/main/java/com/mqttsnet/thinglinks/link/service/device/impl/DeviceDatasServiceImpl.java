@@ -278,7 +278,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             deviceInfo.setShadowEnable(true);
             StringBuilder shadowTableNameBuilder = new StringBuilder();
             // 新增设备管理成功后，创建TD普通表
-            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), Constants.ENABLE);
+            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdentificationIdAndStatus(product.getProductIdentification(), Constants.ENABLE);
             TableDto tableDto;
             for (ProductServices productServices : allByProductIdAndStatus) {
                 tableDto = new TableDto();

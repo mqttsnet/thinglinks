@@ -50,15 +50,15 @@ public interface ProductService {
     /**
      * 产品模型导入
      *
-     * @param file          json文件
-     * @param updateSupport 是否更新已经存在的产品模型数据
-     * @param appId         应用ID
-     * @param templateId    产品模型模板ID
-     * @param status        状态(字典值：启用  停用)
+     * @param file                   json文件
+     * @param updateSupport          是否更新已经存在的产品模型数据
+     * @param appId                  应用ID
+     * @param templateIdentification 产品模型模板标识
+     * @param status                 状态(字典值：启用  停用)
      * @return AjaxResult
      * @throws Exception
      */
-    AjaxResult importProductJson(MultipartFile file, Boolean updateSupport, String appId, String templateId, String status) throws Exception;
+    AjaxResult importProductJson(MultipartFile file, Boolean updateSupport, String appId, String templateIdentification, String status) throws Exception;
 
 
     /**
@@ -66,12 +66,12 @@ public interface ProductService {
      *
      * @param content    产品模型数据
      * @param appId      应用ID
-     * @param templateId 产品模型模板ID
+     * @param templateIdentification 产品模型模板标识
      * @param status     状态(字典值：启用  停用)
      * @return 解析结果
      * @throws Exception
      */
-    public AjaxResult productJsonDataAnalysis(JSONObject content, String appId, String templateId, String status) throws Exception;
+    public AjaxResult productJsonDataAnalysis(JSONObject content, String appId, String templateIdentification, String status) throws Exception;
 
     /**
      * 查询产品管理

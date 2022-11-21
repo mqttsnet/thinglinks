@@ -1,12 +1,12 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
 
-import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-import java.util.List;
 import com.mqttsnet.thinglinks.link.mapper.product.ProductServicesMapper;
 import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Description: java类作用描述
@@ -81,18 +81,18 @@ public class ProductServicesServiceImpl implements ProductServicesService {
     }
 
     @Override
-    public List<ProductServices> findByProductIds(List<Long> productIds) {
-        return productServicesMapper.findByProductIds(productIds);
+    public List<ProductServices> findByProductIdentifications(List<String> productIds) {
+        return productServicesMapper.findByProductIdentifications(productIds);
     }
 
     @Override
-    public List<ProductServices> findAllByProductIdAndStatus(Long productId, String status) {
-        return productServicesMapper.findAllByProductIdAndStatus(productId, status);
+    public List<ProductServices> findAllByProductIdentificationIdAndStatus(String productIdentification, String status) {
+        return productServicesMapper.findAllByProductIdentificationIdAndStatus(productIdentification, status);
     }
 
     @Override
-    public List<ProductServices> findAllByProductIdAndServiceNameAndStatus(Long productId, String serviceName, String status) {
-        return productServicesMapper.findAllByProductIdAndServiceNameAndStatus(productId, serviceName, status);
+    public List<ProductServices> findAllByProductIdentificationAndServiceNameAndStatus(String productIdentification, String serviceName, String status) {
+        return productServicesMapper.findAllByProductIdentificationAndServiceNameAndStatus(productIdentification, serviceName, status);
     }
 
     /**
@@ -152,13 +152,14 @@ public class ProductServicesServiceImpl implements ProductServicesService {
 
 
     /**
-     *根据产品标识和状态获取产品所有服务
+     * 根据产品标识和状态获取产品所有服务
+     *
      * @param productIdentification
      * @param status
      * @return
      */
     @Override
-    public List<ProductServices> selectAllByProductIdentificationAndStatus(String productIdentification, String status){
+    public List<ProductServices> selectAllByProductIdentificationAndStatus(String productIdentification, String status) {
         return productServicesMapper.selectAllByProductIdentificationAndStatus(productIdentification, status);
     }
 }

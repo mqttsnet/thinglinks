@@ -333,7 +333,7 @@
               </el-select>
             </el-col>
             <el-col :span="12">
-              <el-input v-model="upload.templateIdentification" placeholder="请输入产品模型模板ID" style="width:95%" />
+              <el-input v-model="upload.templateIdentification" placeholder="请输入产品模型模板标识" style="width:95%" />
             </el-col>
             <el-col :span="12" hidden="hidden">
               <el-input v-model="upload.status" hidden="hidden" value="0" />
@@ -344,7 +344,7 @@
               <el-checkbox v-model="upload.updateSupport" />
               是否更新已经存在的产品模型数据
             </div>
-            <span>仅允许导入xls、xlsx格式文件。</span>
+            <span>仅允许导入json格式文件。</span>
             <el-link :underline="false" style="font-size: 12px; vertical-align: baseline" type="primary"
               @click="importTemplate">下载模板
             </el-link>

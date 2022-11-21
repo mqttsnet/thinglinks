@@ -1,444 +1,524 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mqttsnet.thinglinks.link.mapper.product.ProductCommandsMapper">
-  <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands">
-    <!--@mbg.generated-->
-    <!--@Table product_commands-->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="service_id" jdbcType="BIGINT" property="serviceId" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="description" jdbcType="VARCHAR" property="description" />
-    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, service_id, `name`, description, create_by, create_time, update_by, update_time
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    <!--@mbg.generated-->
-    select
-    <include refid="Base_Column_List" />
-    from product_commands
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    <!--@mbg.generated-->
-    delete from product_commands
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into product_commands (service_id, `name`, description,
-      create_by, create_time, update_by,
-      update_time)
-    values (#{service_id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
-      #{create_by,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP}, #{update_by,jdbcType=VARCHAR},
-      #{update_time,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into product_commands
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="service_id != null">
-        service_id,
-      </if>
-      <if test="name != null and name != ''">
-        `name`,
-      </if>
-      <if test="description != null and description != ''">
-        description,
-      </if>
-      <if test="create_by != null and create_by != ''">
-        create_by,
-      </if>
-      <if test="create_time != null">
-        create_time,
-      </if>
-      <if test="update_by != null and update_by != ''">
-        update_by,
-      </if>
-      <if test="update_time != null">
-        update_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="service_id != null">
-        #{service_id,jdbcType=BIGINT},
-      </if>
-      <if test="name != null and name != ''">
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null and description != ''">
-        #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="create_by != null and create_by != ''">
-        #{create_by,jdbcType=VARCHAR},
-      </if>
-      <if test="create_time != null">
-        #{create_time,jdbcType=TIMESTAMP},
-      </if>
-      <if test="update_by != null and update_by != ''">
-        #{update_by,jdbcType=VARCHAR},
-      </if>
-      <if test="update_time != null">
-        #{update_time,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands">
-    <!--@mbg.generated-->
-    update product_commands
-    <set>
-      <if test="service_id != null">
-        service_id = #{service_id,jdbcType=BIGINT},
-      </if>
-      <if test="name != null and name != ''">
-        `name` = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null and description != ''">
-        description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="create_by != null and create_by != ''">
-        create_by = #{create_by,jdbcType=VARCHAR},
-      </if>
-      <if test="create_time != null">
-        create_time = #{create_time,jdbcType=TIMESTAMP},
-      </if>
-      <if test="update_by != null and update_by != ''">
-        update_by = #{update_by,jdbcType=VARCHAR},
-      </if>
-      <if test="update_time != null">
-        update_time = #{update_time,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands">
-    <!--@mbg.generated-->
-    update product_commands
-    set service_id = #{service_id,jdbcType=BIGINT},
-      `name` = #{name,jdbcType=VARCHAR},
-      description = #{description,jdbcType=VARCHAR},
-      create_by = #{create_by,jdbcType=VARCHAR},
-      create_time = #{create_time,jdbcType=TIMESTAMP},
-      update_by = #{update_by,jdbcType=VARCHAR},
-      update_time = #{update_time,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateBatch" parameterType="java.util.List">
-    <!--@mbg.generated-->
-    update product_commands
-    <trim prefix="set" suffixOverrides=",">
-      <trim prefix="service_id = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.service_id,jdbcType=BIGINT}
-        </foreach>
-      </trim>
-      <trim prefix="`name` = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="description = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.description,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="create_by = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.create_by,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="create_time = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.create_time,jdbcType=TIMESTAMP}
-        </foreach>
-      </trim>
-      <trim prefix="update_by = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.update_by,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="update_time = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.update_time,jdbcType=TIMESTAMP}
-        </foreach>
-      </trim>
-    </trim>
-    where id in
-    <foreach close=")" collection="list" item="item" open="(" separator=", ">
-      #{item.id,jdbcType=BIGINT}
-    </foreach>
-  </update>
-  <update id="updateBatchSelective" parameterType="java.util.List">
-    <!--@mbg.generated-->
-    update product_commands
-    <trim prefix="set" suffixOverrides=",">
-      <trim prefix="service_id = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.service_id != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.service_id,jdbcType=BIGINT}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="`name` = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.name != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="description = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.description != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.description,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="create_by = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.create_by != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.create_by,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="create_time = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.create_time != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.create_time,jdbcType=TIMESTAMP}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="update_by = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.update_by != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.update_by,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="update_time = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.update_time != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.update_time,jdbcType=TIMESTAMP}
-          </if>
-        </foreach>
-      </trim>
-    </trim>
-    where id in
-    <foreach close=")" collection="list" item="item" open="(" separator=", ">
-      #{item.id,jdbcType=BIGINT}
-    </foreach>
-  </update>
-  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into product_commands
-    (service_id, `name`, description, create_by, create_time, update_by, update_time)
-    values
-    <foreach collection="list" item="item" separator=",">
-      (#{item.service_id,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR},
-        #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP}, #{item.update_by,jdbcType=VARCHAR},
-        #{item.update_time,jdbcType=TIMESTAMP})
-    </foreach>
-  </insert>
-  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into product_commands
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands">
+        <!--@mbg.generated-->
+        <!--@Table product_commands-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="service_id" jdbcType="BIGINT" property="serviceId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
         id,
-      </if>
-      service_id,
-      `name`,
-      description,
-      create_by,
-      create_time,
-      update_by,
-      update_time,
-    </trim>
-    values
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      #{service_id,jdbcType=BIGINT},
-      #{name,jdbcType=VARCHAR},
-      #{description,jdbcType=VARCHAR},
-      #{create_by,jdbcType=VARCHAR},
-      #{create_time,jdbcType=TIMESTAMP},
-      #{update_by,jdbcType=VARCHAR},
-      #{update_time,jdbcType=TIMESTAMP},
-    </trim>
-    on duplicate key update
-    <trim suffixOverrides=",">
-      <if test="id != null">
-        id = #{id,jdbcType=BIGINT},
-      </if>
-      service_id = #{service_id,jdbcType=BIGINT},
-      `name` = #{name,jdbcType=VARCHAR},
-      description = #{description,jdbcType=VARCHAR},
-      create_by = #{create_by,jdbcType=VARCHAR},
-      create_time = #{create_time,jdbcType=TIMESTAMP},
-      update_by = #{update_by,jdbcType=VARCHAR},
-      update_time = #{update_time,jdbcType=TIMESTAMP},
-    </trim>
-  </insert>
-  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into product_commands
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="service_id != null">
         service_id,
-      </if>
-      <if test="name != null and name != ''">
         `name`,
-      </if>
-      <if test="description != null and description != ''">
         description,
-      </if>
-      <if test="create_by != null and create_by != ''">
         create_by,
-      </if>
-      <if test="create_time != null">
         create_time,
-      </if>
-      <if test="update_by != null and update_by != ''">
         update_by,
-      </if>
-      <if test="update_time != null">
-        update_time,
-      </if>
-    </trim>
-    values
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="service_id != null">
-        #{service_id,jdbcType=BIGINT},
-      </if>
-      <if test="name != null and name != ''">
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null and description != ''">
-        #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="create_by != null and create_by != ''">
-        #{create_by,jdbcType=VARCHAR},
-      </if>
-      <if test="create_time != null">
-        #{create_time,jdbcType=TIMESTAMP},
-      </if>
-      <if test="update_by != null and update_by != ''">
-        #{update_by,jdbcType=VARCHAR},
-      </if>
-      <if test="update_time != null">
-        #{update_time,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-    on duplicate key update
-    <trim suffixOverrides=",">
-      <if test="id != null">
-        id = #{id,jdbcType=BIGINT},
-      </if>
-      <if test="service_id != null">
-        service_id = #{service_id,jdbcType=BIGINT},
-      </if>
-      <if test="name != null and name != ''">
-        `name` = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="description != null and description != ''">
-        description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="create_by != null and create_by != ''">
-        create_by = #{create_by,jdbcType=VARCHAR},
-      </if>
-      <if test="create_time != null">
-        create_time = #{create_time,jdbcType=TIMESTAMP},
-      </if>
-      <if test="update_by != null and update_by != ''">
-        update_by = #{update_by,jdbcType=VARCHAR},
-      </if>
-      <if test="update_time != null">
-        update_time = #{update_time,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
+        update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from product_commands
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        <!--@mbg.generated-->
+        delete
+        from product_commands
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into product_commands (service_id, `name`, description,
+                                      create_by, create_time, update_by,
+                                      update_time)
+        values (#{service_id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+                #{create_by,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP}, #{update_by,jdbcType=VARCHAR},
+                #{update_time,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into product_commands
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="service_id != null">
+                service_id,
+            </if>
+            <if test="name != null and name != ''">
+                `name`,
+            </if>
+            <if test="description != null and description != ''">
+                description,
+            </if>
+            <if test="create_by != null and create_by != ''">
+                create_by,
+            </if>
+            <if test="create_time != null">
+                create_time,
+            </if>
+            <if test="update_by != null and update_by != ''">
+                update_by,
+            </if>
+            <if test="update_time != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="service_id != null">
+                #{service_id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null and name != ''">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null and description != ''">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="create_by != null and create_by != ''">
+                #{create_by,jdbcType=VARCHAR},
+            </if>
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_by != null and update_by != ''">
+                #{update_by,jdbcType=VARCHAR},
+            </if>
+            <if test="update_time != null">
+                #{update_time,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands">
+        <!--@mbg.generated-->
+        update product_commands
+        <set>
+            <if test="service_id != null">
+                service_id = #{service_id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null and name != ''">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="create_by != null and create_by != ''">
+                create_by = #{create_by,jdbcType=VARCHAR},
+            </if>
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_by != null and update_by != ''">
+                update_by = #{update_by,jdbcType=VARCHAR},
+            </if>
+            <if test="update_time != null">
+                update_time = #{update_time,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands">
+        <!--@mbg.generated-->
+        update product_commands
+        set service_id  = #{service_id,jdbcType=BIGINT},
+            `name`      = #{name,jdbcType=VARCHAR},
+            description = #{description,jdbcType=VARCHAR},
+            create_by   = #{create_by,jdbcType=VARCHAR},
+            create_time = #{create_time,jdbcType=TIMESTAMP},
+            update_by   = #{update_by,jdbcType=VARCHAR},
+            update_time = #{update_time,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update product_commands
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="service_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.service_id,jdbcType=BIGINT}
+                </foreach>
+            </trim>
+            <trim prefix="`name` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="description = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.description,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_by = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.create_by,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.create_time,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_by = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.update_by,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.update_time,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=BIGINT}
+        </foreach>
+    </update>
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update product_commands
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="service_id = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.service_id != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.service_id,jdbcType=BIGINT}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="`name` = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.name != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="description = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.description != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.description,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.create_by != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.create_by,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.create_time != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.create_time,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.update_by != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.update_by,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.update_time != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.update_time,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=BIGINT}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into product_commands
+        (service_id, `name`, description, create_by, create_time, update_by, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.service_id,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR},
+             #{item.create_by,jdbcType=VARCHAR}, #{item.create_time,jdbcType=TIMESTAMP},
+             #{item.update_by,jdbcType=VARCHAR},
+             #{item.update_time,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into product_commands
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            service_id,
+            `name`,
+            description,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            #{service_id,jdbcType=BIGINT},
+            #{name,jdbcType=VARCHAR},
+            #{description,jdbcType=VARCHAR},
+            #{create_by,jdbcType=VARCHAR},
+            #{create_time,jdbcType=TIMESTAMP},
+            #{update_by,jdbcType=VARCHAR},
+            #{update_time,jdbcType=TIMESTAMP},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=BIGINT},
+            </if>
+            service_id  = #{service_id,jdbcType=BIGINT},
+            `name`      = #{name,jdbcType=VARCHAR},
+            description = #{description,jdbcType=VARCHAR},
+            create_by   = #{create_by,jdbcType=VARCHAR},
+            create_time = #{create_time,jdbcType=TIMESTAMP},
+            update_by   = #{update_by,jdbcType=VARCHAR},
+            update_time = #{update_time,jdbcType=TIMESTAMP},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into product_commands
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="service_id != null">
+                service_id,
+            </if>
+            <if test="name != null and name != ''">
+                `name`,
+            </if>
+            <if test="description != null and description != ''">
+                description,
+            </if>
+            <if test="create_by != null and create_by != ''">
+                create_by,
+            </if>
+            <if test="create_time != null">
+                create_time,
+            </if>
+            <if test="update_by != null and update_by != ''">
+                update_by,
+            </if>
+            <if test="update_time != null">
+                update_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="service_id != null">
+                #{service_id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null and name != ''">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null and description != ''">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="create_by != null and create_by != ''">
+                #{create_by,jdbcType=VARCHAR},
+            </if>
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_by != null and update_by != ''">
+                #{update_by,jdbcType=VARCHAR},
+            </if>
+            <if test="update_time != null">
+                #{update_time,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=BIGINT},
+            </if>
+            <if test="service_id != null">
+                service_id = #{service_id,jdbcType=BIGINT},
+            </if>
+            <if test="name != null and name != ''">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="create_by != null and create_by != ''">
+                create_by = #{create_by,jdbcType=VARCHAR},
+            </if>
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="update_by != null and update_by != ''">
+                update_by = #{update_by,jdbcType=VARCHAR},
+            </if>
+            <if test="update_time != null">
+                update_time = #{update_time,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
 
-  <resultMap type="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" id="ProductCommandsResult">
-    <result property="id"    column="id"    />
-    <result property="serviceId"    column="service_id"    />
-    <result property="name"    column="name"    />
-    <result property="description"    column="description"    />
-    <result property="createBy"    column="create_by"    />
-    <result property="createTime"    column="create_time"    />
-    <result property="updateBy"    column="update_by"    />
-    <result property="updateTime"    column="update_time"    />
-  </resultMap>
+    <resultMap type="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" id="ProductCommandsResult">
+        <result property="id" column="id"/>
+        <result property="serviceId" column="service_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
 
-  <sql id="selectProductCommandsVo">
-    select id, service_id, name, description, create_by, create_time, update_by, update_time from product_commands
-  </sql>
+    <sql id="selectProductCommandsVo">
+        select id,
+               service_id,
+               name,
+               description,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        from product_commands
+    </sql>
 
-  <select id="selectProductCommandsList" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" resultMap="ProductCommandsResult">
-    <include refid="selectProductCommandsVo"/>
-    <where>
-      <if test="serviceId != null "> and service_id = #{serviceId}</if>
-      <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-      <if test="description != null  and description != ''"> and description = #{description}</if>
-    </where>
-  </select>
+    <select id="selectProductCommandsList"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands"
+            resultMap="ProductCommandsResult">
+        <include refid="selectProductCommandsVo"/>
+        <where>
+            <if test="serviceId != null">
+                and service_id = #{serviceId}
+            </if>
+            <if test="name != null  and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="description != null  and description != ''">
+                and description = #{description}
+            </if>
+        </where>
+    </select>
 
-  <select id="selectProductCommandsById" parameterType="Long" resultMap="ProductCommandsResult">
-    <include refid="selectProductCommandsVo"/>
-    where id = #{id}
-  </select>
+    <select id="selectProductCommandsById" parameterType="Long" resultMap="ProductCommandsResult">
+        <include refid="selectProductCommandsVo"/>
+        where id = #{id}
+    </select>
 
-  <insert id="insertProductCommands" parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands" useGeneratedKeys="true" keyProperty="id">
-    insert into product_commands
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="serviceId != null">service_id,</if>
-      <if test="name != null and name != ''">name,</if>
-      <if test="description != null">description,</if>
-      <if test="createBy != null">create_by,</if>
-      <if test="createTime != null">create_time,</if>
-      <if test="updateBy != null">update_by,</if>
-      <if test="updateTime != null">update_time,</if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="serviceId != null">#{serviceId},</if>
-      <if test="name != null and name != ''">#{name},</if>
-      <if test="description != null">#{description},</if>
-      <if test="createBy != null">#{createBy},</if>
-      <if test="createTime != null">#{createTime},</if>
-      <if test="updateBy != null">#{updateBy},</if>
-      <if test="updateTime != null">#{updateTime},</if>
-    </trim>
-  </insert>
+    <insert id="insertProductCommands"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into product_commands
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serviceId != null">
+                service_id,
+            </if>
+            <if test="name != null and name != ''">
+                name,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serviceId != null">
+                #{serviceId},
+            </if>
+            <if test="name != null and name != ''">
+                #{name},
+            </if>
+            <if test="description != null">
+                #{description},
+            </if>
+            <if test="createBy != null">
+                #{createBy},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
 
-  <update id="updateProductCommands" parameterType="ProductCommands">
-    update product_commands
-    <trim prefix="SET" suffixOverrides=",">
-      <if test="serviceId != null">service_id = #{serviceId},</if>
-      <if test="name != null and name != ''">name = #{name},</if>
-      <if test="description != null">description = #{description},</if>
-      <if test="createBy != null">create_by = #{createBy},</if>
-      <if test="createTime != null">create_time = #{createTime},</if>
-      <if test="updateBy != null">update_by = #{updateBy},</if>
-      <if test="updateTime != null">update_time = #{updateTime},</if>
-    </trim>
-    where id = #{id}
-  </update>
+    <update id="updateProductCommands" parameterType="ProductCommands">
+        update product_commands
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serviceId != null">
+                service_id = #{serviceId},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
 
-  <delete id="deleteProductCommandsByIds" parameterType="String">
-    delete from product_commands where id in
-    <foreach item="id" collection="array" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </delete>
+    <delete id="deleteProductCommandsByIds" parameterType="String">
+        delete
+        from product_commands where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

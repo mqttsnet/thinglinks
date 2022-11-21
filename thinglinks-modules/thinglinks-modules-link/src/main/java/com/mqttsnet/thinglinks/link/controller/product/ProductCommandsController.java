@@ -59,7 +59,7 @@ public class ProductCommandsController extends BaseController {
     @PreAuthorize(hasPermi = "link:commands:export")
     @Log(title = "产品模型服务命令", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, ProductCommands productCommands)  throws IOException {
+    public void export(HttpServletResponse response, ProductCommands productCommands) throws IOException {
         List<ProductCommands> list = productCommandsService.selectProductCommandsList(productCommands);
         ExcelUtil<ProductCommands> util = new ExcelUtil<ProductCommands>(ProductCommands.class);
         util.exportExcel(response, list, "产品模型服务命令数据");

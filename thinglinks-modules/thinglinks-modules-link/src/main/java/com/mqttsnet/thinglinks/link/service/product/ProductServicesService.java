@@ -40,13 +40,13 @@ public interface ProductServicesService {
 
     int batchInsert(List<ProductServices> list);
 
-    List<ProductServices> findByProductIds(List<Long> productIds);
+    List<ProductServices> findByProductIdentifications(List<String> productIdentifications);
 
 
-    List<ProductServices> findAllByProductIdAndStatus(Long productId, String status);
+    List<ProductServices> findAllByProductIdentificationIdAndStatus(String productIdentification, String status);
 
 
-    List<ProductServices> findAllByProductIdAndServiceNameAndStatus(Long productId, String serviceName, String status);
+    List<ProductServices> findAllByProductIdentificationAndServiceNameAndStatus(String productIdentification, String serviceName, String status);
 
 
     /**

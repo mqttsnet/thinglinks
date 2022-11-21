@@ -13,7 +13,6 @@ import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.RemoteFileService;
@@ -72,11 +71,11 @@ public class ProductController extends BaseController {
     /**
      * 导入产品模型json数据
      *
-     * @param file          json文件
-     * @param updateSupport 是否更新已经存在的产品模型数据
-     * @param appId         应用ID
-     * @param templateId    产品模型模板ID
-     * @param status        状态(字典值：启用  停用)
+     * @param file                   json文件
+     * @param updateSupport          是否更新已经存在的产品模型数据
+     * @param appId                  应用ID
+     * @param templateIdentification 产品模型模板标识
+     * @param status                 状态(字典值：启用  停用)
      * @return AjaxResult
      * @throws Exception
      */
@@ -86,10 +85,10 @@ public class ProductController extends BaseController {
     public AjaxResult importProductJson(MultipartFile file,
                                         Boolean updateSupport,
                                         String appId,
-                                        String templateId,
+                                        String templateIdentification,
                                         String status
     ) throws Exception {
-        AjaxResult ajaxResult = productService.importProductJson(file, updateSupport, appId, templateId, status);
+        AjaxResult ajaxResult = productService.importProductJson(file, updateSupport, appId, templateIdentification, status);
         //存储产品模型原始文件
 //        final R<SysFile> uploadMessage = remoteFileService.upload(file);
         return ajaxResult;
@@ -209,7 +208,7 @@ public class ProductController extends BaseController {
     /**
      * 快捷生成产品模型json数据
      *
-     * @param params (content 模型json数据、appId 应用ID、templateId  产品模型模板ID、status 状态(字典值：启用  停用))
+     * @param params (content 模型json数据、appId 应用ID、templateIdentification  产品模型模板标识、status 状态(字典值：启用  停用))
      * @return AjaxResult
      * @throws Exception
      */
@@ -220,9 +219,9 @@ public class ProductController extends BaseController {
     public AjaxResult generateProductJson(@RequestBody Map<String, Object> params) throws Exception {
         final Object content = params.get("content");
         final Object appId = params.get("appId");
-        final Object templateId = params.get("templateId");
+        final Object templateIdentification = params.get("templateIdentification");
         final Object status = params.get("status");
-        AjaxResult ajaxResult = productService.productJsonDataAnalysis(JSONObject.parseObject(content.toString()), appId.toString(), templateId.toString(), status.toString());
+        AjaxResult ajaxResult = productService.productJsonDataAnalysis(JSONObject.parseObject(content.toString()), appId.toString(), templateIdentification.toString(), status.toString());
         return ajaxResult;
     }
 
@@ -230,7 +229,7 @@ public class ProductController extends BaseController {
     /**
      * 获取所有产品
      *
-     * @param status  状态
+     * @param status 状态
      * @return 列表数据
      */
     @GetMapping("/selectAllProduct/{status}")

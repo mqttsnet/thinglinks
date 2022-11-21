@@ -172,13 +172,13 @@ public class ProductServiceImpl implements ProductService {
      * @param file          json文件
      * @param updateSupport 是否更新已经存在的产品模型数据
      * @param appId         应用ID
-     * @param templateId    产品模型模板ID
+     * @param templateIdentification    产品模型模板标识
      * @param status        状态(字典值：启用  停用)
      * @return AjaxResult
      * @throws Exception
      */
     @Override
-    public AjaxResult importProductJson(MultipartFile file, Boolean updateSupport, String appId, String templateId, String status) throws Exception {
+    public AjaxResult importProductJson(MultipartFile file, Boolean updateSupport, String appId, String templateIdentification, String status) throws Exception {
         // 首先校验json格式
         List<String> jsonType = Lists.newArrayList("json");
         // 获取文件名，带后缀
@@ -197,7 +197,7 @@ public class ProductServiceImpl implements ProductService {
                         sb.append(line);
                     }
                     //解析产品模型数据
-                    return this.productJsonDataAnalysis(JSONObject.parseObject(sb.toString()), appId, templateId, status);
+                    return this.productJsonDataAnalysis(JSONObject.parseObject(sb.toString()), appId, templateIdentification, status);
                 } catch (IOException e) {
                     log.error(e.getMessage());
                 } finally {
@@ -218,13 +218,13 @@ public class ProductServiceImpl implements ProductService {
      *
      * @param content    产品模型数据
      * @param appId      应用ID
-     * @param templateId 产品模型模板ID
+     * @param templateIdentification 产品模型模标识
      * @param status     状态(字典值：启用  停用)
      * @return 解析结果
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public AjaxResult productJsonDataAnalysis(JSONObject content, String appId, String templateId, String status) throws Exception {
+    public AjaxResult productJsonDataAnalysis(JSONObject content, String appId, String templateIdentification, String status) throws Exception {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         try {
@@ -281,8 +281,8 @@ public class ProductServiceImpl implements ProductService {
             //服务属性解析处理
             Product product = new Product();
             product.setAppId(appId);
-            if (StringUtils.isNotEmpty(templateId)) {
-                product.setTemplateIdentification(templateId);
+            if (StringUtils.isNotEmpty(templateIdentification)) {
+                product.setTemplateIdentification(templateIdentification);
             }
             product.setProductName(productName);
             product.setProductIdentification(UUID.getUUID());
@@ -588,7 +588,7 @@ public class ProductServiceImpl implements ProductService {
         SuperTableDto superTableDto;
         loop:
         for (Product product : productList) {
-            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdAndStatus(product.getId(), Constants.ENABLE);
+            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdentificationIdAndStatus(product.getProductIdentification(), Constants.ENABLE);
             if (StringUtils.isEmpty(allByProductIdAndStatus)) {
                 continue;
             }

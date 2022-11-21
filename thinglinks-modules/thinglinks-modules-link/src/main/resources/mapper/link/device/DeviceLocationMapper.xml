@@ -1,646 +1,770 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mqttsnet.thinglinks.link.mapper.device.DeviceLocationMapper">
-  <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation">
-    <!--@mbg.generated-->
-    <!--@Table device_location-->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="device_identification" jdbcType="VARCHAR" property="deviceIdentification" />
-    <result column="latitude" jdbcType="DECIMAL" property="latitude" />
-    <result column="longitude" jdbcType="DECIMAL" property="longitude" />
-    <result column="full_name" jdbcType="VARCHAR" property="fullName" />
-    <result column="province_code" jdbcType="VARCHAR" property="provinceCode" />
-    <result column="city_code" jdbcType="VARCHAR" property="cityCode" />
-    <result column="region_code" jdbcType="VARCHAR" property="regionCode" />
-    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="remark" jdbcType="VARCHAR" property="remark" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, device_identification, latitude, longitude, full_name, province_code, city_code,
-    region_code, create_by, create_time, update_by, update_time, remark
-  </sql>
-  <sql id="Latest_Data">
-    order by update_time desc limit 1
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    <!--@mbg.generated-->
-    select
-    <include refid="Base_Column_List" />
-    from device_location
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    <!--@mbg.generated-->
-    delete from device_location
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into device_location (device_identification, latitude, longitude,
-      full_name, province_code, city_code,
-      region_code, create_by, create_time,
-      update_by, update_time, remark
-      )
-    values (#{deviceIdentification,jdbcType=VARCHAR}, #{latitude,jdbcType=DECIMAL}, #{longitude,jdbcType=DECIMAL},
-      #{fullName,jdbcType=VARCHAR}, #{provinceCode,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR},
-      #{regionCode,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
-      #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
-      )
-  </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into device_location
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="deviceIdentification != null">
-        device_identification,
-      </if>
-      <if test="latitude != null">
-        latitude,
-      </if>
-      <if test="longitude != null">
-        longitude,
-      </if>
-      <if test="fullName != null">
-        full_name,
-      </if>
-      <if test="provinceCode != null">
-        province_code,
-      </if>
-      <if test="cityCode != null">
-        city_code,
-      </if>
-      <if test="regionCode != null">
-        region_code,
-      </if>
-      <if test="createBy != null">
-        create_by,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateBy != null">
-        update_by,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
-      <if test="remark != null">
-        remark,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="deviceIdentification != null">
-        #{deviceIdentification,jdbcType=VARCHAR},
-      </if>
-      <if test="latitude != null">
-        #{latitude,jdbcType=DECIMAL},
-      </if>
-      <if test="longitude != null">
-        #{longitude,jdbcType=DECIMAL},
-      </if>
-      <if test="fullName != null">
-        #{fullName,jdbcType=VARCHAR},
-      </if>
-      <if test="provinceCode != null">
-        #{provinceCode,jdbcType=VARCHAR},
-      </if>
-      <if test="cityCode != null">
-        #{cityCode,jdbcType=VARCHAR},
-      </if>
-      <if test="regionCode != null">
-        #{regionCode,jdbcType=VARCHAR},
-      </if>
-      <if test="createBy != null">
-        #{createBy,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateBy != null">
-        #{updateBy,jdbcType=VARCHAR},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="remark != null">
-        #{remark,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation">
-    <!--@mbg.generated-->
-    update device_location
-    <set>
-      <if test="deviceIdentification != null">
-        device_identification = #{deviceIdentification,jdbcType=VARCHAR},
-      </if>
-      <if test="latitude != null">
-        latitude = #{latitude,jdbcType=DECIMAL},
-      </if>
-      <if test="longitude != null">
-        longitude = #{longitude,jdbcType=DECIMAL},
-      </if>
-      <if test="fullName != null">
-        full_name = #{fullName,jdbcType=VARCHAR},
-      </if>
-      <if test="provinceCode != null">
-        province_code = #{provinceCode,jdbcType=VARCHAR},
-      </if>
-      <if test="cityCode != null">
-        city_code = #{cityCode,jdbcType=VARCHAR},
-      </if>
-      <if test="regionCode != null">
-        region_code = #{regionCode,jdbcType=VARCHAR},
-      </if>
-      <if test="createBy != null">
-        create_by = #{createBy,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateBy != null">
-        update_by = #{updateBy,jdbcType=VARCHAR},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="remark != null">
-        remark = #{remark,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation">
-    <!--@mbg.generated-->
-    update device_location
-    set device_identification = #{deviceIdentification,jdbcType=VARCHAR},
-      latitude = #{latitude,jdbcType=DECIMAL},
-      longitude = #{longitude,jdbcType=DECIMAL},
-      full_name = #{fullName,jdbcType=VARCHAR},
-      province_code = #{provinceCode,jdbcType=VARCHAR},
-      city_code = #{cityCode,jdbcType=VARCHAR},
-      region_code = #{regionCode,jdbcType=VARCHAR},
-      create_by = #{createBy,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_by = #{updateBy,jdbcType=VARCHAR},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      remark = #{remark,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateBatch" parameterType="java.util.List">
-    <!--@mbg.generated-->
-    update device_location
-    <trim prefix="set" suffixOverrides=",">
-      <trim prefix="device_identification = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.deviceIdentification,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="latitude = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.latitude,jdbcType=DECIMAL}
-        </foreach>
-      </trim>
-      <trim prefix="longitude = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.longitude,jdbcType=DECIMAL}
-        </foreach>
-      </trim>
-      <trim prefix="full_name = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.fullName,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="province_code = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.provinceCode,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="city_code = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.cityCode,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="region_code = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.regionCode,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="create_by = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="create_time = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
-        </foreach>
-      </trim>
-      <trim prefix="update_by = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-      <trim prefix="update_time = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
-        </foreach>
-      </trim>
-      <trim prefix="remark = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.remark,jdbcType=VARCHAR}
-        </foreach>
-      </trim>
-    </trim>
-    where id in
-    <foreach close=")" collection="list" item="item" open="(" separator=", ">
-      #{item.id,jdbcType=BIGINT}
-    </foreach>
-  </update>
-  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into device_location
-    (device_identification, latitude, longitude, full_name, province_code, city_code,
-      region_code, create_by, create_time, update_by, update_time, remark)
-    values
-    <foreach collection="list" item="item" separator=",">
-      (#{item.deviceIdentification,jdbcType=VARCHAR}, #{item.latitude,jdbcType=DECIMAL},
-        #{item.longitude,jdbcType=DECIMAL}, #{item.fullName,jdbcType=VARCHAR}, #{item.provinceCode,jdbcType=VARCHAR},
-        #{item.cityCode,jdbcType=VARCHAR}, #{item.regionCode,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR},
-        #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP},
-        #{item.remark,jdbcType=VARCHAR})
-    </foreach>
-  </insert>
-  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into device_location
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation">
+        <!--@mbg.generated-->
+        <!--@Table device_location-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="device_identification" jdbcType="VARCHAR" property="deviceIdentification"/>
+        <result column="latitude" jdbcType="DECIMAL" property="latitude"/>
+        <result column="longitude" jdbcType="DECIMAL" property="longitude"/>
+        <result column="full_name" jdbcType="VARCHAR" property="fullName"/>
+        <result column="province_code" jdbcType="VARCHAR" property="provinceCode"/>
+        <result column="city_code" jdbcType="VARCHAR" property="cityCode"/>
+        <result column="region_code" jdbcType="VARCHAR" property="regionCode"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
         id,
-      </if>
-      device_identification,
-      latitude,
-      longitude,
-      full_name,
-      province_code,
-      city_code,
-      region_code,
-      create_by,
-      create_time,
-      update_by,
-      update_time,
-      remark,
-    </trim>
-    values
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      #{deviceIdentification,jdbcType=VARCHAR},
-      #{latitude,jdbcType=DECIMAL},
-      #{longitude,jdbcType=DECIMAL},
-      #{fullName,jdbcType=VARCHAR},
-      #{provinceCode,jdbcType=VARCHAR},
-      #{cityCode,jdbcType=VARCHAR},
-      #{regionCode,jdbcType=VARCHAR},
-      #{createBy,jdbcType=VARCHAR},
-      #{createTime,jdbcType=TIMESTAMP},
-      #{updateBy,jdbcType=VARCHAR},
-      #{updateTime,jdbcType=TIMESTAMP},
-      #{remark,jdbcType=VARCHAR},
-    </trim>
-    on duplicate key update
-    <trim suffixOverrides=",">
-      <if test="id != null">
-        id = #{id,jdbcType=BIGINT},
-      </if>
-      device_identification = #{deviceIdentification,jdbcType=VARCHAR},
-      latitude = #{latitude,jdbcType=DECIMAL},
-      longitude = #{longitude,jdbcType=DECIMAL},
-      full_name = #{fullName,jdbcType=VARCHAR},
-      province_code = #{provinceCode,jdbcType=VARCHAR},
-      city_code = #{cityCode,jdbcType=VARCHAR},
-      region_code = #{regionCode,jdbcType=VARCHAR},
-      create_by = #{createBy,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_by = #{updateBy,jdbcType=VARCHAR},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      remark = #{remark,jdbcType=VARCHAR},
-    </trim>
-  </insert>
-  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into device_location
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="deviceIdentification != null">
         device_identification,
-      </if>
-      <if test="latitude != null">
         latitude,
-      </if>
-      <if test="longitude != null">
         longitude,
-      </if>
-      <if test="fullName != null">
         full_name,
-      </if>
-      <if test="provinceCode != null">
         province_code,
-      </if>
-      <if test="cityCode != null">
         city_code,
-      </if>
-      <if test="regionCode != null">
         region_code,
-      </if>
-      <if test="createBy != null">
         create_by,
-      </if>
-      <if test="createTime != null">
         create_time,
-      </if>
-      <if test="updateBy != null">
         update_by,
-      </if>
-      <if test="updateTime != null">
         update_time,
-      </if>
-      <if test="remark != null">
-        remark,
-      </if>
-    </trim>
-    values
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
-      </if>
-      <if test="deviceIdentification != null">
-        #{deviceIdentification,jdbcType=VARCHAR},
-      </if>
-      <if test="latitude != null">
-        #{latitude,jdbcType=DECIMAL},
-      </if>
-      <if test="longitude != null">
-        #{longitude,jdbcType=DECIMAL},
-      </if>
-      <if test="fullName != null">
-        #{fullName,jdbcType=VARCHAR},
-      </if>
-      <if test="provinceCode != null">
-        #{provinceCode,jdbcType=VARCHAR},
-      </if>
-      <if test="cityCode != null">
-        #{cityCode,jdbcType=VARCHAR},
-      </if>
-      <if test="regionCode != null">
-        #{regionCode,jdbcType=VARCHAR},
-      </if>
-      <if test="createBy != null">
-        #{createBy,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateBy != null">
-        #{updateBy,jdbcType=VARCHAR},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="remark != null">
-        #{remark,jdbcType=VARCHAR},
-      </if>
-    </trim>
-    on duplicate key update
-    <trim suffixOverrides=",">
-      <if test="id != null">
-        id = #{id,jdbcType=BIGINT},
-      </if>
-      <if test="deviceIdentification != null">
-        device_identification = #{deviceIdentification,jdbcType=VARCHAR},
-      </if>
-      <if test="latitude != null">
-        latitude = #{latitude,jdbcType=DECIMAL},
-      </if>
-      <if test="longitude != null">
-        longitude = #{longitude,jdbcType=DECIMAL},
-      </if>
-      <if test="fullName != null">
-        full_name = #{fullName,jdbcType=VARCHAR},
-      </if>
-      <if test="provinceCode != null">
-        province_code = #{provinceCode,jdbcType=VARCHAR},
-      </if>
-      <if test="cityCode != null">
-        city_code = #{cityCode,jdbcType=VARCHAR},
-      </if>
-      <if test="regionCode != null">
-        region_code = #{regionCode,jdbcType=VARCHAR},
-      </if>
-      <if test="createBy != null">
-        create_by = #{createBy,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateBy != null">
-        update_by = #{updateBy,jdbcType=VARCHAR},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="remark != null">
-        remark = #{remark,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-
-  <sql id="selectDeviceLocationVo">
-    select id, device_identification, latitude, longitude, full_name, province_code, city_code, region_code, create_by, create_time, update_by, update_time, remark from device_location
-  </sql>
-
-  <select id="selectDeviceLocationList" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" resultMap="BaseResultMap">
-    <include refid="selectDeviceLocationVo"/>
-    <where>
-      <if test="deviceIdentification != null  and deviceIdentification != ''"> and device_identification = #{deviceIdentification}</if>
-      <if test="latitude != null "> and latitude = #{latitude}</if>
-      <if test="longitude != null "> and longitude = #{longitude}</if>
-      <if test="fullName != null  and fullName != ''"> and full_name like concat('%', #{fullName}, '%')</if>
-      <if test="provinceCode != null  and provinceCode != ''"> and province_code = #{provinceCode}</if>
-      <if test="cityCode != null  and cityCode != ''"> and city_code = #{cityCode}</if>
-      <if test="regionCode != null  and regionCode != ''"> and region_code = #{regionCode}</if>
-    </where>
-  </select>
-
-  <select id="selectDeviceLocationById" parameterType="Long" resultMap="BaseResultMap">
-    <include refid="selectDeviceLocationVo"/>
-    where id = #{id}
-  </select>
-
-  <insert id="insertDeviceLocation" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" useGeneratedKeys="true" keyProperty="id">
-    insert into device_location
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="deviceIdentification != null and deviceIdentification != ''">device_identification,</if>
-      <if test="latitude != null">latitude,</if>
-      <if test="longitude != null">longitude,</if>
-      <if test="fullName != null and fullName != ''">full_name,</if>
-      <if test="provinceCode != null and provinceCode != ''">province_code,</if>
-      <if test="cityCode != null and cityCode != ''">city_code,</if>
-      <if test="regionCode != null and regionCode != ''">region_code,</if>
-      <if test="createBy != null">create_by,</if>
-      <if test="createTime != null">create_time,</if>
-      <if test="updateBy != null">update_by,</if>
-      <if test="updateTime != null">update_time,</if>
-      <if test="remark != null">remark,</if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="deviceIdentification != null and deviceIdentification != ''">#{deviceIdentification},</if>
-      <if test="latitude != null">#{latitude},</if>
-      <if test="longitude != null">#{longitude},</if>
-      <if test="fullName != null and fullName != ''">#{fullName},</if>
-      <if test="provinceCode != null and provinceCode != ''">#{provinceCode},</if>
-      <if test="cityCode != null and cityCode != ''">#{cityCode},</if>
-      <if test="regionCode != null and regionCode != ''">#{regionCode},</if>
-      <if test="createBy != null">#{createBy},</if>
-      <if test="createTime != null">#{createTime},</if>
-      <if test="updateBy != null">#{updateBy},</if>
-      <if test="updateTime != null">#{updateTime},</if>
-      <if test="remark != null">#{remark},</if>
-    </trim>
-  </insert>
-
-  <update id="updateDeviceLocation" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation">
-    update device_location
-    <trim prefix="SET" suffixOverrides=",">
-      <if test="deviceIdentification != null and deviceIdentification != ''">device_identification = #{deviceIdentification},</if>
-      <if test="latitude != null">latitude = #{latitude},</if>
-      <if test="longitude != null">longitude = #{longitude},</if>
-      <if test="fullName != null and fullName != ''">full_name = #{fullName},</if>
-      <if test="provinceCode != null and provinceCode != ''">province_code = #{provinceCode},</if>
-      <if test="cityCode != null and cityCode != ''">city_code = #{cityCode},</if>
-      <if test="regionCode != null and regionCode != ''">region_code = #{regionCode},</if>
-      <if test="updateBy != null">update_by = #{updateBy},</if>
-      <if test="updateTime != null">update_time = #{updateTime},</if>
-      <if test="remark != null">remark = #{remark},</if>
-    </trim>
-    where id = #{id}
-  </update>
-
-  <delete id="deleteDeviceLocationByIds" parameterType="String">
-    delete from device_location where id in
-    <foreach item="id" collection="array" open="(" separator="," close=")">
-      #{id}
-    </foreach>
-  </delete>
-
-<!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-20-->
-  <select id="findOneByDeviceIdentification" resultMap="BaseResultMap">
+        remark
+    </sql>
+    <sql id="Latest_Data">
+        order by update_time desc
+        limit 1
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
         select
         <include refid="Base_Column_List"/>
         from device_location
-        where device_identification=#{deviceIdentification,jdbcType=VARCHAR}
-        <include refid="Latest_Data"/>
-  </select>
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        <!--@mbg.generated-->
+        delete
+        from device_location
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into device_location (device_identification, latitude, longitude,
+                                     full_name, province_code, city_code,
+                                     region_code, create_by, create_time,
+                                     update_by, update_time, remark)
+        values (#{deviceIdentification,jdbcType=VARCHAR}, #{latitude,jdbcType=DECIMAL}, #{longitude,jdbcType=DECIMAL},
+                #{fullName,jdbcType=VARCHAR}, #{provinceCode,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR},
+                #{regionCode,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+                #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into device_location
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceIdentification != null">
+                device_identification,
+            </if>
+            <if test="latitude != null">
+                latitude,
+            </if>
+            <if test="longitude != null">
+                longitude,
+            </if>
+            <if test="fullName != null">
+                full_name,
+            </if>
+            <if test="provinceCode != null">
+                province_code,
+            </if>
+            <if test="cityCode != null">
+                city_code,
+            </if>
+            <if test="regionCode != null">
+                region_code,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceIdentification != null">
+                #{deviceIdentification,jdbcType=VARCHAR},
+            </if>
+            <if test="latitude != null">
+                #{latitude,jdbcType=DECIMAL},
+            </if>
+            <if test="longitude != null">
+                #{longitude,jdbcType=DECIMAL},
+            </if>
+            <if test="fullName != null">
+                #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="provinceCode != null">
+                #{provinceCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cityCode != null">
+                #{cityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="regionCode != null">
+                #{regionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation">
+        <!--@mbg.generated-->
+        update device_location
+        <set>
+            <if test="deviceIdentification != null">
+                device_identification = #{deviceIdentification,jdbcType=VARCHAR},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude,jdbcType=DECIMAL},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude,jdbcType=DECIMAL},
+            </if>
+            <if test="fullName != null">
+                full_name = #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="provinceCode != null">
+                province_code = #{provinceCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cityCode != null">
+                city_code = #{cityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="regionCode != null">
+                region_code = #{regionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation">
+        <!--@mbg.generated-->
+        update device_location
+        set device_identification = #{deviceIdentification,jdbcType=VARCHAR},
+            latitude              = #{latitude,jdbcType=DECIMAL},
+            longitude             = #{longitude,jdbcType=DECIMAL},
+            full_name             = #{fullName,jdbcType=VARCHAR},
+            province_code         = #{provinceCode,jdbcType=VARCHAR},
+            city_code             = #{cityCode,jdbcType=VARCHAR},
+            region_code           = #{regionCode,jdbcType=VARCHAR},
+            create_by             = #{createBy,jdbcType=VARCHAR},
+            create_time           = #{createTime,jdbcType=TIMESTAMP},
+            update_by             = #{updateBy,jdbcType=VARCHAR},
+            update_time           = #{updateTime,jdbcType=TIMESTAMP},
+            remark                = #{remark,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update device_location
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="device_identification = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.deviceIdentification,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="latitude = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.latitude,jdbcType=DECIMAL}
+                </foreach>
+            </trim>
+            <trim prefix="longitude = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.longitude,jdbcType=DECIMAL}
+                </foreach>
+            </trim>
+            <trim prefix="full_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.fullName,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="province_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.provinceCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="city_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.cityCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="region_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.regionCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_by = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="update_by = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
+            <trim prefix="remark = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.remark,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=BIGINT}
+        </foreach>
+    </update>
+    <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into device_location
+        (device_identification, latitude, longitude, full_name, province_code, city_code,
+         region_code, create_by, create_time, update_by, update_time, remark)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.deviceIdentification,jdbcType=VARCHAR}, #{item.latitude,jdbcType=DECIMAL},
+             #{item.longitude,jdbcType=DECIMAL}, #{item.fullName,jdbcType=VARCHAR},
+             #{item.provinceCode,jdbcType=VARCHAR},
+             #{item.cityCode,jdbcType=VARCHAR}, #{item.regionCode,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR},
+             #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR},
+             #{item.updateTime,jdbcType=TIMESTAMP},
+             #{item.remark,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+    <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into device_location
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            device_identification,
+            latitude,
+            longitude,
+            full_name,
+            province_code,
+            city_code,
+            region_code,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            #{deviceIdentification,jdbcType=VARCHAR},
+            #{latitude,jdbcType=DECIMAL},
+            #{longitude,jdbcType=DECIMAL},
+            #{fullName,jdbcType=VARCHAR},
+            #{provinceCode,jdbcType=VARCHAR},
+            #{cityCode,jdbcType=VARCHAR},
+            #{regionCode,jdbcType=VARCHAR},
+            #{createBy,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{updateBy,jdbcType=VARCHAR},
+            #{updateTime,jdbcType=TIMESTAMP},
+            #{remark,jdbcType=VARCHAR},
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=BIGINT},
+            </if>
+            device_identification = #{deviceIdentification,jdbcType=VARCHAR},
+            latitude              = #{latitude,jdbcType=DECIMAL},
+            longitude             = #{longitude,jdbcType=DECIMAL},
+            full_name             = #{fullName,jdbcType=VARCHAR},
+            province_code         = #{provinceCode,jdbcType=VARCHAR},
+            city_code             = #{cityCode,jdbcType=VARCHAR},
+            region_code           = #{regionCode,jdbcType=VARCHAR},
+            create_by             = #{createBy,jdbcType=VARCHAR},
+            create_time           = #{createTime,jdbcType=TIMESTAMP},
+            update_by             = #{updateBy,jdbcType=VARCHAR},
+            update_time           = #{updateTime,jdbcType=TIMESTAMP},
+            remark                = #{remark,jdbcType=VARCHAR},
+        </trim>
+    </insert>
+    <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into device_location
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="deviceIdentification != null">
+                device_identification,
+            </if>
+            <if test="latitude != null">
+                latitude,
+            </if>
+            <if test="longitude != null">
+                longitude,
+            </if>
+            <if test="fullName != null">
+                full_name,
+            </if>
+            <if test="provinceCode != null">
+                province_code,
+            </if>
+            <if test="cityCode != null">
+                city_code,
+            </if>
+            <if test="regionCode != null">
+                region_code,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="deviceIdentification != null">
+                #{deviceIdentification,jdbcType=VARCHAR},
+            </if>
+            <if test="latitude != null">
+                #{latitude,jdbcType=DECIMAL},
+            </if>
+            <if test="longitude != null">
+                #{longitude,jdbcType=DECIMAL},
+            </if>
+            <if test="fullName != null">
+                #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="provinceCode != null">
+                #{provinceCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cityCode != null">
+                #{cityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="regionCode != null">
+                #{regionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+        on duplicate key update
+        <trim suffixOverrides=",">
+            <if test="id != null">
+                id = #{id,jdbcType=BIGINT},
+            </if>
+            <if test="deviceIdentification != null">
+                device_identification = #{deviceIdentification,jdbcType=VARCHAR},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude,jdbcType=DECIMAL},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude,jdbcType=DECIMAL},
+            </if>
+            <if test="fullName != null">
+                full_name = #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="provinceCode != null">
+                province_code = #{provinceCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cityCode != null">
+                city_code = #{cityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="regionCode != null">
+                region_code = #{regionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
 
-  <update id="updateBatchSelective" parameterType="java.util.List">
-    <!--@mbg.generated-->
-    update device_location
-    <trim prefix="set" suffixOverrides=",">
-      <trim prefix="device_identification = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.deviceIdentification != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.deviceIdentification,jdbcType=VARCHAR}
-          </if>
+    <sql id="selectDeviceLocationVo">
+        select id,
+               device_identification,
+               latitude,
+               longitude,
+               full_name,
+               province_code,
+               city_code,
+               region_code,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from device_location
+    </sql>
+
+    <select id="selectDeviceLocationList"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation"
+            resultMap="BaseResultMap">
+        <include refid="selectDeviceLocationVo"/>
+        <where>
+            <if test="deviceIdentification != null  and deviceIdentification != ''">
+                and device_identification = #{deviceIdentification}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude}
+            </if>
+            <if test="fullName != null  and fullName != ''">
+                and full_name like concat('%', #{fullName}, '%')
+            </if>
+            <if test="provinceCode != null  and provinceCode != ''">
+                and province_code = #{provinceCode}
+            </if>
+            <if test="cityCode != null  and cityCode != ''">
+                and city_code = #{cityCode}
+            </if>
+            <if test="regionCode != null  and regionCode != ''">
+                and region_code = #{regionCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectDeviceLocationById" parameterType="Long" resultMap="BaseResultMap">
+        <include refid="selectDeviceLocationVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDeviceLocation"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into device_location
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceIdentification != null and deviceIdentification != ''">
+                device_identification,
+            </if>
+            <if test="latitude != null">
+                latitude,
+            </if>
+            <if test="longitude != null">
+                longitude,
+            </if>
+            <if test="fullName != null and fullName != ''">
+                full_name,
+            </if>
+            <if test="provinceCode != null and provinceCode != ''">
+                province_code,
+            </if>
+            <if test="cityCode != null and cityCode != ''">
+                city_code,
+            </if>
+            <if test="regionCode != null and regionCode != ''">
+                region_code,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceIdentification != null and deviceIdentification != ''">
+                #{deviceIdentification},
+            </if>
+            <if test="latitude != null">
+                #{latitude},
+            </if>
+            <if test="longitude != null">
+                #{longitude},
+            </if>
+            <if test="fullName != null and fullName != ''">
+                #{fullName},
+            </if>
+            <if test="provinceCode != null and provinceCode != ''">
+                #{provinceCode},
+            </if>
+            <if test="cityCode != null and cityCode != ''">
+                #{cityCode},
+            </if>
+            <if test="regionCode != null and regionCode != ''">
+                #{regionCode},
+            </if>
+            <if test="createBy != null">
+                #{createBy},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateDeviceLocation"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation">
+        update device_location
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deviceIdentification != null and deviceIdentification != ''">
+                device_identification = #{deviceIdentification},
+            </if>
+            <if test="latitude != null">
+                latitude = #{latitude},
+            </if>
+            <if test="longitude != null">
+                longitude = #{longitude},
+            </if>
+            <if test="fullName != null and fullName != ''">
+                full_name = #{fullName},
+            </if>
+            <if test="provinceCode != null and provinceCode != ''">
+                province_code = #{provinceCode},
+            </if>
+            <if test="cityCode != null and cityCode != ''">
+                city_code = #{cityCode},
+            </if>
+            <if test="regionCode != null and regionCode != ''">
+                region_code = #{regionCode},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDeviceLocationByIds" parameterType="String">
+        delete
+        from device_location where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
-      </trim>
-      <trim prefix="latitude = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.latitude != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.latitude,jdbcType=DECIMAL}
-          </if>
+    </delete>
+
+    <!--Author  By ShiHuan Sun  E-mail: 13733918655@163.com on 2022-07-20-->
+    <select id="findOneByDeviceIdentification" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from device_location
+        where device_identification = #{deviceIdentification,jdbcType=VARCHAR}
+        <include refid="Latest_Data"/>
+    </select>
+
+    <update id="updateBatchSelective" parameterType="java.util.List">
+        <!--@mbg.generated-->
+        update device_location
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="device_identification = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.deviceIdentification != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.deviceIdentification,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="latitude = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.latitude != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.latitude,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="longitude = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.longitude != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.longitude,jdbcType=DECIMAL}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="full_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fullName != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.fullName,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="province_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.provinceCode != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.provinceCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="city_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.cityCode != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.cityCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="region_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.regionCode != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.regionCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createBy != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.createTime != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateBy != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.updateTime != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.remark != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.remark,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach close=")" collection="list" item="item" open="(" separator=", ">
+            #{item.id,jdbcType=BIGINT}
         </foreach>
-      </trim>
-      <trim prefix="longitude = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.longitude != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.longitude,jdbcType=DECIMAL}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="full_name = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.fullName != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.fullName,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="province_code = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.provinceCode != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.provinceCode,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="city_code = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.cityCode != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.cityCode,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="region_code = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.regionCode != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.regionCode,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="create_by = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.createBy != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.createBy,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="create_time = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.createTime != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="update_by = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.updateBy != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.updateBy,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="update_time = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.updateTime != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
-          </if>
-        </foreach>
-      </trim>
-      <trim prefix="remark = case" suffix="end,">
-        <foreach collection="list" index="index" item="item">
-          <if test="item.remark != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.remark,jdbcType=VARCHAR}
-          </if>
-        </foreach>
-      </trim>
-    </trim>
-    where id in
-    <foreach close=")" collection="list" item="item" open="(" separator=", ">
-      #{item.id,jdbcType=BIGINT}
-    </foreach>
-  </update>
+    </update>
 </mapper>
