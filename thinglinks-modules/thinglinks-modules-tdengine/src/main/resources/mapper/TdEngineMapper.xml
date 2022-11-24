@@ -290,7 +290,7 @@
             resultType="Map">
         select last(*) from #{dataBaseName}.#{stableName} group by ${tagsName}
     </select>
-    
+
     <select id="getHistoryData" resultType="java.util.Map" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.visual.SelectVisualDto">
         SELECT #{fieldName},ts
         FROM #{dataBaseName}.#{tableName} WHERE ts BETWEEN #{startTime} AND #{endTime} LIMIT #{num}
