@@ -49,11 +49,11 @@
             useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into product_template (app_id, template_identification, template_name,
-                                      `status`, remark, create_by,
-                                      create_time, update_by, update_time)
+        `status`, remark, create_by,
+        create_time, update_by, update_time)
         values (#{appId,jdbcType=VARCHAR}, #{templateIdentification,jdbcType=VARCHAR}, #{templateName,jdbcType=VARCHAR},
-                #{status,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR},
-                #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+        #{status,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate"
@@ -158,15 +158,15 @@
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductTemplate">
         <!--@mbg.generated-->
         update product_template
-        set app_id                  = #{appId,jdbcType=VARCHAR},
-            template_identification = #{templateIdentification,jdbcType=VARCHAR},
-            template_name           = #{templateName,jdbcType=VARCHAR},
-            `status`                = #{status,jdbcType=VARCHAR},
-            remark                  = #{remark,jdbcType=VARCHAR},
-            create_by               = #{createBy,jdbcType=VARCHAR},
-            create_time             = #{createTime,jdbcType=TIMESTAMP},
-            update_by               = #{updateBy,jdbcType=VARCHAR},
-            update_time             = #{updateTime,jdbcType=TIMESTAMP}
+        set app_id = #{appId,jdbcType=VARCHAR},
+        template_identification = #{templateIdentification,jdbcType=VARCHAR},
+        template_name = #{templateName,jdbcType=VARCHAR},
+        `status` = #{status,jdbcType=VARCHAR},
+        remark = #{remark,jdbcType=VARCHAR},
+        create_by = #{createBy,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_by = #{updateBy,jdbcType=VARCHAR},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateBatch" parameterType="java.util.List">
@@ -301,14 +301,14 @@
         <!--@mbg.generated-->
         insert into product_template
         (app_id, template_identification, template_name, `status`, remark, create_by, create_time,
-         update_by, update_time)
+        update_by, update_time)
         values
         <foreach collection="list" item="item" separator=",">
             (#{item.appId,jdbcType=VARCHAR}, #{item.templateIdentification,jdbcType=VARCHAR},
-             #{item.templateName,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, #{item.remark,jdbcType=VARCHAR},
-             #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
-             #{item.updateBy,jdbcType=VARCHAR},
-             #{item.updateTime,jdbcType=TIMESTAMP})
+            #{item.templateName,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, #{item.remark,jdbcType=VARCHAR},
+            #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateBy,jdbcType=VARCHAR},
+            #{item.updateTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
     <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
@@ -350,15 +350,15 @@
             <if test="id != null">
                 id = #{id,jdbcType=BIGINT},
             </if>
-            app_id                  = #{appId,jdbcType=VARCHAR},
+            app_id = #{appId,jdbcType=VARCHAR},
             template_identification = #{templateIdentification,jdbcType=VARCHAR},
-            template_name           = #{templateName,jdbcType=VARCHAR},
-            `status`                = #{status,jdbcType=VARCHAR},
-            remark                  = #{remark,jdbcType=VARCHAR},
-            create_by               = #{createBy,jdbcType=VARCHAR},
-            create_time             = #{createTime,jdbcType=TIMESTAMP},
-            update_by               = #{updateBy,jdbcType=VARCHAR},
-            update_time             = #{updateTime,jdbcType=TIMESTAMP},
+            template_name = #{templateName,jdbcType=VARCHAR},
+            `status` = #{status,jdbcType=VARCHAR},
+            remark = #{remark,jdbcType=VARCHAR},
+            create_by = #{createBy,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_by = #{updateBy,jdbcType=VARCHAR},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
         </trim>
     </insert>
     <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
@@ -469,6 +469,7 @@
     <sql id="selectProductTemplateVo">
         select id,
                app_id,
+               template_identification,
                template_name,
                status,
                remark,
@@ -486,6 +487,9 @@
         <where>
             <if test="appId != null  and appId != ''">
                 and app_id = #{appId}
+            </if>
+            <if test="templateIdentification != null  and templateIdentification != ''">
+                and template_identification like concat('%', #{templateIdentification}, '%')
             </if>
             <if test="templateName != null  and templateName != ''">
                 and template_name like concat('%', #{templateName}, '%')
@@ -508,6 +512,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="appId != null and appId != ''">
                 app_id,
+            </if>
+            <if test="templateIdentification != null and templateIdentification != ''">
+                template_identification,
             </if>
             <if test="templateName != null and templateName != ''">
                 template_name,
@@ -534,6 +541,9 @@
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="appId != null and appId != ''">
                 #{appId},
+            </if>
+            <if test="templateIdentification != null and templateIdentification != ''">
+                #{templateIdentification},
             </if>
             <if test="templateName != null and templateName != ''">
                 #{templateName},
@@ -565,6 +575,9 @@
         <trim prefix="SET" suffixOverrides=",">
             <if test="appId != null and appId != ''">
                 app_id = #{appId},
+            </if>
+            <if test="templateIdentification != null and templateIdentification != ''">
+                template_identification = #{templateIdentification},
             </if>
             <if test="templateName != null and templateName != ''">
                 template_name = #{templateName},
