@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
 
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
+import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
@@ -167,6 +168,7 @@ public class ProductTemplateServiceImpl implements ProductTemplateService {
      */
     @Override
     public int insertProductTemplate(ProductTemplate productTemplate) {
+        productTemplate.setTemplateIdentification(UUID.getUUID());
         return productTemplateMapper.insertProductTemplate(productTemplate);
     }
 
