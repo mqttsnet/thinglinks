@@ -7,6 +7,7 @@ import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
+import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
@@ -48,20 +49,32 @@ public class DeviceController extends BaseController {
      */
     @PreAuthorize(hasPermi = "link:device:list")
     @GetMapping("/list")
-    public R<Map<String, Object>> list(Device device) {
-        final Map<String, Object> results = new HashMap<>();
-        Map<String, List<Device>> connectStatusCollect = deviceService.selectDeviceList(device).parallelStream().collect(Collectors.groupingBy(Device::getConnectStatus));
+    public TableDataInfo list(Device device) {
         startPage();
         List<Device> list = deviceService.selectDeviceList(device);
-        //查询设备数据
-        results.put("device", getDataTable(list));
+        return getDataTable(list);
+    }
+
+    /**
+     * 获取设备列表对应各个状态的设备数量
+     * @param device
+     * @return
+     */
+    @PreAuthorize(hasPermi = "link:device:count")
+    @GetMapping("/listStatusCount")
+    public AjaxResult listStatusCount(Device device) {
+
+        Map<String, List<Device>> connectStatusCollect = deviceService.selectDeviceList(device).parallelStream().collect(Collectors.groupingBy(Device::getConnectStatus));
+
+        Map<String , Integer> countMap = new HashMap<>();
         //统计设备在线数量
-        results.put("onlineCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()))?connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()).size():0);
+        countMap.put("onlineCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()))?connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()).size():0);
         //统计设备离线数量
-        results.put("offlineCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()))?connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()).size():0);
+        countMap.put("offlineCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()))?connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()).size():0);
         //统计设备初始化数量
-        results.put("initCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()))?connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()).size():0);
-        return R.ok(results);
+        countMap.put("initCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()))?connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()).size():0);
+
+        return AjaxResult.success(countMap);
     }
 
     /**
