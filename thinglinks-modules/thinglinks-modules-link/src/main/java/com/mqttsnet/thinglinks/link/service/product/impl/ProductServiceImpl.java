@@ -34,7 +34,6 @@ import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -169,11 +168,11 @@ public class ProductServiceImpl implements ProductService {
     /**
      * 产品模型文件导入
      *
-     * @param file          json文件
-     * @param updateSupport 是否更新已经存在的产品模型数据
-     * @param appId         应用ID
-     * @param templateIdentification    产品模型模板标识
-     * @param status        状态(字典值：启用  停用)
+     * @param file                   json文件
+     * @param updateSupport          是否更新已经存在的产品模型数据
+     * @param appId                  应用ID
+     * @param templateIdentification 产品模型模板标识
+     * @param status                 状态(字典值：启用  停用)
      * @return AjaxResult
      * @throws Exception
      */
@@ -216,10 +215,10 @@ public class ProductServiceImpl implements ProductService {
     /**
      * 解析产品模型数据
      *
-     * @param content    产品模型数据
-     * @param appId      应用ID
+     * @param content                产品模型数据
+     * @param appId                  应用ID
      * @param templateIdentification 产品模型模标识
-     * @param status     状态(字典值：启用  停用)
+     * @param status                 状态(字典值：启用  停用)
      * @return 解析结果
      */
     @Override
@@ -579,11 +578,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<SuperTableDto> createSuperTableDataModel(Long[] productIds, Boolean InitializeOrNot) {
         List<SuperTableDto> superTableDtoList = new ArrayList<>();
-        List<Product> productList = new ArrayList<>();
-        if (CollectionUtils.isEmpty(productList)) {
+        List<Product> productList;
+        if (null == productIds) {
             productList = productMapper.findAllByStatus(Constants.ENABLE);
         } else {
             productList = productMapper.findAllByIdInAndStatus(Arrays.asList(productIds), Constants.ENABLE);
+        }
+        if (productList.isEmpty()) {
+            return superTableDtoList;
         }
         SuperTableDto superTableDto;
         loop:
@@ -654,7 +656,7 @@ public class ProductServiceImpl implements ProductService {
                 redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
                 log.info("缓存超级表数据模型:{}", JSON.toJSONString(superTableDto));
                 superTableDtoList.add(superTableDto);
-                if (InitializeOrNot) {
+                if (Boolean.TRUE.equals(InitializeOrNot)) {
                     //推送RocketMq消息初始化超级表
                     MQMessage mqMessage = new MQMessage();
                     mqMessage.setTopic(ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE);
@@ -692,11 +694,12 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * 根据状态获取所有的产品列表
+     *
      * @param status
      * @return
      */
     @Override
-    public List<Product> selectAllProductByStatus(String status){
+    public List<Product> selectAllProductByStatus(String status) {
         return productMapper.selectAllProductByStatus(status);
     }
 
