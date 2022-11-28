@@ -1,10 +1,20 @@
 import request from '@/utils/request'
-import { praseStrEmpty } from "@/utils/thinglinks";
+import {
+  praseStrEmpty
+} from "@/utils/thinglinks";
 
 // 查询设备管理列表
 export function listDevice(query) {
   return request({
     url: '/link/device/list',
+    method: 'get',
+    params: query
+  })
+}
+// 查询设备统计接口
+export function listStatusCount(query) {
+  return request({
+    url: '/link/device/listStatusCount',
     method: 'get',
     params: query
   })
