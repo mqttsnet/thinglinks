@@ -367,7 +367,7 @@
       ></crontab>
     </el-dialog>
 
-    <el-dialog title="选择设备" width="60%" :visible.sync="openSelectDevice">
+    <el-drawer title="选择设备" width="60%" :visible.sync="openSelectDevice">
       <el-table
         :data="deviceList"
         style="width: 100%"
@@ -394,10 +394,12 @@
         <el-table-column prop="deviceDescription" label="描述">
         </el-table-column>
       </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="handleOk">确 定</el-button>
+      <span class="drawer-footer">
+        <el-button type="primary" size="mini" @click="handleOk"
+          >确 定</el-button
+        >
       </span>
-    </el-dialog>
+    </el-drawer>
     <el-dialog
       title="下发命令参数配置"
       width="500"
