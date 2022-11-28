@@ -128,4 +128,8 @@ public class ProductServicesController extends BaseController {
     public R<?> selectAllByProductIdentificationAndStatus(@RequestParam("productIdentification") String productIdentification, @RequestParam("status") String status){
         return R.ok(productServicesService.selectAllByProductIdentificationAndStatus(productIdentification,status));
     }
+
+    public R<?> selectServicesByServiceIdList(@RequestParam("serviceIdList") List<Long> serviceIdList) {
+        return R.ok(productServicesService.selectServicesByServiceIdList(serviceIdList));
+    }
 }

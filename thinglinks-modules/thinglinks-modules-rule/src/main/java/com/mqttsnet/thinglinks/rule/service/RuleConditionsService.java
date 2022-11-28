@@ -39,5 +39,6 @@ public interface RuleConditionsService {
 
     int batchInsert(List<RuleConditions> list);
 
+    int deleteBatchByIds(Long[] ids);
 }
 

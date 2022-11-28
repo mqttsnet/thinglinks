@@ -8,6 +8,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 
 @FeignClient(contextId = "RemoteProductPropertiesService", value = ServiceNameConstants.THINGLINKS_LINK, fallbackFactory = RemoteProductPropertiesFallbackFactory.class)
 public interface RemoteProductPropertiesService {
@@ -16,4 +18,7 @@ public interface RemoteProductPropertiesService {
 
     @GetMapping("/productProperties/selectAllPropertiesByServiceId/{serviceId}")
     R<?> selectAllByServiceId(@RequestParam("serviceId") Long serviceId);
+
+    @GetMapping("/productProperties/selectPropertiesByPropertiesIdList")
+    R<?> selectPropertiesByPropertiesIdList(@RequestParam("propertiesIdList")List<Long> propertiesIdList);
 }

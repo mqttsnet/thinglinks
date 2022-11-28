@@ -1124,4 +1124,19 @@
         </where>
         <include refid="OrderByCreateTimeDesc"/>
     </select>
+    
+    <select id="selectProductByIdentificationList" resultMap="BaseResultMap">
+        select 
+            <include refid="Base_Colum_List"></include>
+        from
+            product
+        <where>
+            <if test="identificationList != null and identificationList.size() &gt; 0">
+                and product_identification in
+                <foreach close=")" collection="identificationList" index="index" item="item" open="(" separator=",">
+                    #{item,jdbcType=BIGINT}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>

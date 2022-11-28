@@ -148,4 +148,5 @@ public interface ProductMapper {
     List<Product> findAllByIdInAndStatus(@Param("idCollection") Collection<Long> idCollection, @Param("status") String status);
 
     List<Product> selectAllProductByStatus(@Param("status") String status);
+    List<Product> selectProductByIdentificationList(List<String> identificationList);
 }

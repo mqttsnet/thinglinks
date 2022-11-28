@@ -8,6 +8,8 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 /**
  * @program: thinglinks
  * @description: 产品属性管理服务降级处理
@@ -27,6 +29,10 @@ public class RemoteProductPropertiesFallbackFactory implements FallbackFactory<R
             @Override
             public R<?> selectAllByServiceId(@RequestParam("serviceId") Long serviceId) {
                 return R.fail("产品服务属性", throwable.getMessage());
+            }
+            @Override
+            public R<?> selectPropertiesByPropertiesIdList(List<Long> propertiesIdList){
+                return R.fail("根据属性id列表获取属性失败", throwable.getMessage());
             }
 
         };

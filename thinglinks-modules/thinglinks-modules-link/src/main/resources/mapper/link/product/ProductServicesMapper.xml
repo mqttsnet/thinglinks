@@ -683,4 +683,19 @@
         </where>
         <include refid="OrderByCreateTimeDesc"/>
     </select>
+    
+    <select id="selectServicesByServiceIdList" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List"/>
+        from
+            product_services
+        <where>
+            <if test="serviceIdList != null ">
+                and id in
+                <foreach collection="serviceIdList" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>

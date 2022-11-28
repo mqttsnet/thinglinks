@@ -118,4 +118,8 @@ return productPropertiesService.selectByPrimaryKey(id);
         List<ProductProperties> list = productPropertiesService.selectProductPropertiesList(productProperties);
         return R.ok(list);
     }
+
+    public R<?> selectPropertiesByPropertiesIdList(@RequestParam("propertiesIdList") List<Long> propertiesIdList){
+        return R.ok(productPropertiesService.selectPropertiesByPropertiesIdList(propertiesIdList));
+    }
 }

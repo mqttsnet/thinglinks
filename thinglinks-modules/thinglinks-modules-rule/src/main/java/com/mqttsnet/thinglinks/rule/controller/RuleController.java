@@ -1,19 +1,28 @@
 package com.mqttsnet.thinglinks.rule.controller;
 
+import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.ConditionTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.FieldTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.OperatorEnum;
 import com.mqttsnet.thinglinks.common.core.enums.TriggeringEnum;
 import com.mqttsnet.thinglinks.common.core.utils.CompareUtil;
+import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
+import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
+import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
+import com.mqttsnet.thinglinks.common.log.annotation.Log;
+import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
+import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
 import com.mqttsnet.thinglinks.link.api.RemoteProductService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
 import com.mqttsnet.thinglinks.rule.api.domain.Rule;
 import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
+import com.mqttsnet.thinglinks.rule.api.domain.model.RuleModel;
 import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
 import com.mqttsnet.thinglinks.rule.service.RuleService;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
@@ -23,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -49,6 +60,70 @@ public class RuleController extends BaseController {
 
     @Resource
     private RemoteDeviceService remoteDeviceService;
+
+
+    /**
+     * 查询规则管理列表
+     */
+    @PreAuthorize(hasPermi = "rule:rule:list")
+    @GetMapping("/list")
+    public TableDataInfo list(Rule rule) {
+        startPage();
+        List<Rule> list = ruleService.selectRuleList(rule);
+        return getDataTable(list);
+    }
+
+
+    /**
+     * 获取规则详细信息
+     */
+    @PreAuthorize(hasPermi = "rule:rule:query")
+    @GetMapping(value = "/{id}")
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
+        return AjaxResult.success(ruleService.selectByPrimaryKey(id));
+    }
+
+    /**
+     * 获取规则详细信息
+     */
+    @PreAuthorize(hasPermi = "rule:rule:query")
+    @GetMapping(value = "/getFullInfo/{id}")
+    public AjaxResult getFullInfo(@PathVariable("id") Long id) {
+        RuleModel ruleModel = ruleService.selectFullRuleById(id);
+        return AjaxResult.success(ruleModel);
+    }
+
+    /**
+     * 新增规则
+     */
+    @NoRepeatSubmit
+    @PreAuthorize(hasPermi = "rule:rule:add")
+    @Log(title = "新增规则", businessType = BusinessType.INSERT)
+    @PostMapping
+    public AjaxResult add(@RequestBody Rule rule) {
+        return toAjax(ruleService.insert(rule));
+    }
+
+    /**
+     * 修改规则
+     */
+    @NoRepeatSubmit
+    @PreAuthorize(hasPermi = "rule:rule:edit")
+    @Log(title = "规则管理", businessType = BusinessType.UPDATE)
+    @PutMapping
+    public AjaxResult edit(@RequestBody Rule rule) {
+        return toAjax(ruleService.updateByPrimaryKey(rule));
+    }
+
+    /**
+     * 删除产品管理
+     */
+    @PreAuthorize(hasPermi = "rule:rule:remove")
+    @Log(title = "规则删除", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{id}")
+    public AjaxResult remove(@PathVariable Long id) {
+        return toAjax(ruleService.deleteByPrimaryKey(id));
+    }
 
     /**
      * 规则触发条件验证

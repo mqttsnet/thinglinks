@@ -541,4 +541,12 @@
       </if>
     </trim>
   </insert>
+
+  <delete id="deleteBatchByIds" parameterType="String">
+    delete
+    from rule_conditions where id in
+    <foreach close=")" collection="array" item="id" open="(" separator=",">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

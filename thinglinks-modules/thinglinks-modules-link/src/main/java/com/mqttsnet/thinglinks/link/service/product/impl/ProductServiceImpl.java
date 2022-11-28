@@ -703,5 +703,8 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.selectAllProductByStatus(status);
     }
 
+    public List<Product> selectProductByIdentificationList(List<String> identificationList){
+        return productMapper.selectProductByIdentificationList(identificationList);
+    }
 }
 

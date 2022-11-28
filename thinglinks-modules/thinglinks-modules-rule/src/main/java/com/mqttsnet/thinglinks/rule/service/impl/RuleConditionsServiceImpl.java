@@ -82,5 +82,8 @@ public class RuleConditionsServiceImpl implements RuleConditionsService {
         return ruleConditionsMapper.batchInsert(list);
     }
 
+    public int deleteBatchByIds(Long[] ids) {
+        return ruleConditionsMapper.deleteBatchByIds(ids);
+    }
 }
 

@@ -97,5 +97,7 @@ public interface ProductServicesService {
      * @return
      */
     List<ProductServices> selectAllByProductIdentificationAndStatus(String productIdentification, String status);
+
+    List<ProductServices> selectServicesByServiceIdList(List<Long> serviceIdList);
 }
 

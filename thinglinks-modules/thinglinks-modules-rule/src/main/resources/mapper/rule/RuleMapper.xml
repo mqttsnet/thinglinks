@@ -22,6 +22,9 @@
     id, app_id, rule_identification, rule_name, job_identificatio, `status`, triggering, 
     remark, create_by, create_time, update_by, update_time
   </sql>
+  <sql id="OrderByCreateTimeDesc">
+    order by create_time desc
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select 
@@ -514,4 +517,31 @@
       </if>
     </trim>
   </insert>
+  <select id="selectRuleList" parameterType="com.mqttsnet.thinglinks.rule.api.domain.Rule"
+          resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from rule
+    <where>
+      <if test="ruleName != null  and ruleName != ''">
+        and rule_name like concat('%', #{ruleName}, '%')
+      </if>
+      <if test="appId != null  and appId != ''">
+        and app_id = #{appId}
+      </if>
+      <if test="ruleIdentification != null  and ruleIdentification != ''">
+        and rule_identification like concat('%', #{ruleIdentification}, '%')
+      </if>
+      <if test="jobIdentificatio != null  and jobIdentificatio != ''">
+        and job_identificatio like concat('%', #{jobIdentificatio}, '%')
+      </if>
+      <if test="status != null  and status != ''">
+        and status = #{status}
+      </if>
+      <if test="triggering != null  and triggering != ''">
+        and triggering = #{triggering}
+      </if>
+    </where>
+    <include refid="OrderByCreateTimeDesc"/>
+  </select>
 </mapper>

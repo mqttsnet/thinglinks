@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.link.service.product;
 import java.util.List;
 
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @Description: java类作用描述
@@ -82,4 +83,6 @@ public interface ProductPropertiesService {
      * @return 结果
      */
     int deleteProductPropertiesByIds(Long[] ids);
+
+    List<ProductProperties> selectPropertiesByPropertiesIdList( List<Long> propertiesIdList);
 }

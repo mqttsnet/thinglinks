@@ -543,5 +543,8 @@ public class DeviceServiceImpl implements DeviceService {
         return true;
     }
 
+    public List<Device> selectDeviceByDeviceIdentificationList( List<String> deviceIdentificationList){
+        return deviceMapper.selectDeviceByDeviceIdentificationList( deviceIdentificationList);
+    }
 }
 

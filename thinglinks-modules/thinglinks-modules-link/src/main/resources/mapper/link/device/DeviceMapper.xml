@@ -1440,10 +1440,12 @@
         where product_identification=#{productIdentification}
     </select>
 
-    <select id="selectByProductIdentification" resultType="String">
+    <select id="selectDeviceByDeviceIdentificationList" resultType="BaseResultMap">
         select
-        device_identification
+            <include refid="Base_Column_List"/>
         from device
         where product_identification=#{productIdentification}
     </select>
+    
+    <select id=""
 </mapper>

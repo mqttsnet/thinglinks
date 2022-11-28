@@ -1,6 +1,8 @@
 package com.mqttsnet.thinglinks.rule.service;
 
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.rule.api.domain.Rule;
+import com.mqttsnet.thinglinks.rule.api.domain.model.RuleModel;
 
 import java.util.List;
 
@@ -39,6 +41,9 @@ public interface RuleService {
 
     int batchInsert(List<Rule> list);
 
+    List<Rule> selectRuleList(Rule rule);
+
+    RuleModel selectFullRuleById(Long id);
 }
 
 
