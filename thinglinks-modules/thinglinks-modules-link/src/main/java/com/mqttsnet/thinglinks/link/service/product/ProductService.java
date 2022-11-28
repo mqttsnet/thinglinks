@@ -184,6 +184,6 @@ public interface ProductService {
 
     List<Product> selectAllProductByStatus(String status);
 
-    List<Product> selectProductByIdentificationList(List<String> identificationList);
+    List<Product> selectProductByProductIdentificationList(List<String> productIdentificationList);
 }
 

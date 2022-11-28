@@ -1125,15 +1125,15 @@
         <include refid="OrderByCreateTimeDesc"/>
     </select>
     
-    <select id="selectProductByIdentificationList" resultMap="BaseResultMap">
+    <select id="selectProductByProductIdentificationList" resultMap="BaseResultMap">
         select 
-            <include refid="Base_Colum_List"></include>
+            <include refid="Base_Column_List"></include>
         from
             product
         <where>
-            <if test="identificationList != null and identificationList.size() &gt; 0">
+            <if test="productIdentificationList != null and productIdentificationList.size() &gt; 0">
                 and product_identification in
-                <foreach close=")" collection="identificationList" index="index" item="item" open="(" separator=",">
+                <foreach close=")" collection="productIdentificationList" index="index" item="item" open="(" separator=",">
                     #{item,jdbcType=BIGINT}
                 </foreach>
             </if>

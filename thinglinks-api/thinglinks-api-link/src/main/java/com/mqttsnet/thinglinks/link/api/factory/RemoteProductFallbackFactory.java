@@ -51,7 +51,7 @@ public class RemoteProductFallbackFactory implements FallbackFactory<RemoteProdu
             }
 
             @Override
-            public R<?> selectProductByIdentificationList(List<String> identificationList){
+            public R<?> selectProductByProductIdentificationList(List<String> productIdentificationList){
                 return R.fail("获取产品失败", throwable.getMessage());
             }
         };

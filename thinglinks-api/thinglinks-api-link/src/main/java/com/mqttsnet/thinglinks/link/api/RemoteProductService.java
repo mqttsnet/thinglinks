@@ -53,7 +53,7 @@ public interface RemoteProductService {
     @GetMapping("/product/selectAllProduct/{status}")
     public R<List<Product>> selectAllProduct(@PathVariable("status") String status);
 
-    @GetMapping("/product/selectProductByIdentificationList")
-    public R<?> selectProductByIdentificationList(@RequestParam List<String> identificationList);
+    @GetMapping("/product/selectProductByProductIdentificationList")
+    public R<?> selectProductByProductIdentificationList(@RequestParam("productIdentificationList") List<String> productIdentificationList);
 
 }

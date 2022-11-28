@@ -1440,13 +1440,6 @@
         where product_identification=#{productIdentification}
     </select>
 
-    <select id="selectDeviceByDeviceIdentificationList" resultType="BaseResultMap">
-        select
-            <include refid="Base_Column_List"/>
-        from device
-        where product_identification=#{productIdentification}
-    </select>
-    
     <select id="selectDeviceByDeviceIdentificationList" resultMap="BaseResultMap">
         select
             <include refid="Base_Column_List"/>
