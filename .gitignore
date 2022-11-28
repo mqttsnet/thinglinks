@@ -22,3 +22,11 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 /.idea
+/doc
+/thinglinks-modules/*/target
+/thinglinks-common/*/target
+/thinglinks-api/*/target
+/thinglinks-auth/target
+/thinglinks-gateway/target
+/thinglinks-registry/target
+/thinglinks-visual/*/target
