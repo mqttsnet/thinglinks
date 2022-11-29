@@ -1,7 +1,11 @@
 package com.mqttsnet.thinglinks.rule.service.impl;
 
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.exception.ServiceException;
+import com.mqttsnet.thinglinks.common.core.text.UUID;
+import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
+import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
 import com.mqttsnet.thinglinks.link.api.RemoteProductPropertiesService;
 import com.mqttsnet.thinglinks.link.api.RemoteProductService;
@@ -17,6 +21,8 @@ import com.mqttsnet.thinglinks.rule.api.domain.model.RuleModel;
 import com.mqttsnet.thinglinks.rule.mapper.RuleMapper;
 import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
 import com.mqttsnet.thinglinks.rule.service.RuleService;
+import com.mqttsnet.thinglinks.system.api.domain.SysUser;
+import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +46,8 @@ import java.util.stream.Stream;
 public class RuleServiceImpl implements RuleService {
 
     @Resource
+    private TokenService tokenService;
+    @Resource
     private RuleMapper ruleMapper;
     @Resource
     private RuleConditionsService ruleConditionsService;
@@ -58,8 +66,23 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
-    public int insert(Rule record) {
-        return ruleMapper.insert(record);
+    public Rule insert(Rule record) {
+        //判断name重复
+        Rule ruleQuery = new Rule();
+        ruleQuery.setRuleName(record.getRuleName());
+        List<Rule> ruleList = ruleMapper.selectRuleList(ruleQuery);
+        if (!ruleList.isEmpty()) {
+            throw new ServiceException("规则名称重复");
+        }
+        record.setRuleIdentification(UUID.getUUID());
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        record.setCreateBy(sysUser.getUserName());
+        int res = ruleMapper.insert(record);
+        if(res > 0){
+            return record;
+        }
+        throw new ServiceException("添加规则失败");
     }
 
     @Override

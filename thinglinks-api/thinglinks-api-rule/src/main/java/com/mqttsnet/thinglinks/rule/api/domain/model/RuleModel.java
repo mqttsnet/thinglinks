@@ -14,7 +14,7 @@ public class RuleModel {
     private String appId;
     private String ruleIdentification;
     private String ruleName;
-    private String jobIdentificatio;
+    private String jobIdentification;
     private String status;
     private Short triggering;
     private String remark;

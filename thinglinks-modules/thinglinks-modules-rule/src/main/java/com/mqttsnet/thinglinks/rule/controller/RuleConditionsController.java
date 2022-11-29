@@ -43,9 +43,9 @@ public class RuleConditionsController extends BaseController {
     @NoRepeatSubmit
     @PreAuthorize(hasPermi = "rule:ruleConditions:add")
     @Log(title = "规则条件", businessType = BusinessType.INSERT)
-    @PostMapping
+    @PostMapping("/batchInsert")
     public AjaxResult add(@RequestBody List<RuleConditions> ruleConditions) {
-        return toAjax(ruleConditionsService.batchInsert(ruleConditions));
+        return AjaxResult.success(ruleConditionsService.batchInsert(ruleConditions));
     }
 
     /**

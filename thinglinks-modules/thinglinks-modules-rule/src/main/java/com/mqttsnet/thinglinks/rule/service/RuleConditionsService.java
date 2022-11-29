@@ -38,7 +38,7 @@ public interface RuleConditionsService {
 
     int updateBatchSelective(List<RuleConditions> list);
 
-    int batchInsert(List<RuleConditions> list);
+    List<RuleConditions> batchInsert(List<RuleConditions> list);
 
     int deleteBatchByIds(Long[] ids);
 

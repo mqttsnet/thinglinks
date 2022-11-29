@@ -97,7 +97,9 @@ public class RuleController extends BaseController {
     @Log(title = "新增规则", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Rule rule) {
-        return toAjax(ruleService.insert(rule));
+
+        Rule insertRule = ruleService.insert(rule);
+        return AjaxResult.success(insertRule);
     }
 
     /**

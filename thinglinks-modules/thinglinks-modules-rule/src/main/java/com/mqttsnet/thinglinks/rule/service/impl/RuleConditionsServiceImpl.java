@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.exception.ServiceException;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
+import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
 import com.mqttsnet.thinglinks.link.api.RemoteProductPropertiesService;
 import com.mqttsnet.thinglinks.link.api.RemoteProductService;
@@ -16,6 +17,8 @@ import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
 import com.mqttsnet.thinglinks.rule.api.domain.model.RuleConditionsModel;
 import com.mqttsnet.thinglinks.rule.mapper.RuleConditionsMapper;
 import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
+import com.mqttsnet.thinglinks.system.api.domain.SysUser;
+import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.bytecode.stackmap.TypeData;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,8 @@ import java.util.stream.Collectors;
 @Service
 public class RuleConditionsServiceImpl implements RuleConditionsService {
 
+    @Resource
+    private TokenService tokenService;
     @Resource
     private RuleConditionsMapper ruleConditionsMapper;
 
@@ -113,8 +118,15 @@ public class RuleConditionsServiceImpl implements RuleConditionsService {
     }
 
     @Override
-    public int batchInsert(List<RuleConditions> list) {
-        return ruleConditionsMapper.batchInsert(list);
+    public List<RuleConditions> batchInsert(List<RuleConditions> list) {
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        List<RuleConditions> insertList = list.stream().map(s->{
+            s.setCreateBy(sysUser.getUserName());
+            return s;
+        }).collect(Collectors.toList());
+        ruleConditionsMapper.batchInsert(insertList);
+        return  insertList;
     }
 
     public int deleteBatchByIds(Long[] ids) {
@@ -134,21 +146,15 @@ public class RuleConditionsServiceImpl implements RuleConditionsService {
             productIdentificationList.add(ruleConditions.getProductIdentification());
         });
         R<?> productListResponse = remoteProductService.selectProductByProductIdentificationList(productIdentificationList);
-        //List<Product> productList = JSONObject.parseArray(JSONObject.toJSONString(productListResponse.getData())).toJavaList(Product.class);
-        //List<Product> productList = JSONObject.parseArray(JSONObject.toJSONString(productListResponse.getData())).toJavaList(Product.class);
-        //log.info("productList:{}",productList.toString());
         Map<String,Product> productMap = rDataToBeanList(productListResponse,Product.class).stream().collect(Collectors.toMap(Product::getProductIdentification, s->s));
-        log.info("productMap:{}",productMap.toString());
+
         R<?> deviceListResponse = remoteDeviceService.selectDeviceByDeviceIdentificationList(deviceIdentificationList);
-        //List<Device> deviceList = JSONObject.parseArray(JSONObject.toJSONString(deviceListResponse.getData())).toJavaList(Device.class);
         Map<String,Device> deviceMap = rDataToBeanList(deviceListResponse,Device.class).stream().collect(Collectors.toMap(Device::getDeviceIdentification, s->s));
 
         R<?> productServicesResponse = remoteProductServicesService.selectServicesByServiceIdList(productServicesIdList);
-        //List<ProductServices> productServicesList = JSONObject.parseArray(JSONObject.toJSONString(productServicesResponse.getData())).toJavaList(ProductServices.class);
         Map<Long, ProductServices> productServicesMap =  rDataToBeanList(productServicesResponse,ProductServices.class).stream().collect(Collectors.toMap(ProductServices::getId,s->s));
 
         R<?> productPropertiesResponse = remoteProductPropertiesService.selectPropertiesByPropertiesIdList(productPropertiesIdList);
-        //List<ProductProperties> productPropertiesList = JSONObject.parseArray(JSONObject.toJSONString(productPropertiesResponse.getData())).toJavaList(ProductProperties.class);
         Map<Long, ProductProperties> productPropertiesMap =  rDataToBeanList(productPropertiesResponse,ProductProperties.class).stream().collect(Collectors.toMap(ProductProperties::getId,s->s));
 
         ruleConditionsList.stream().forEach(

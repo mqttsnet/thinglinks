@@ -54,7 +54,7 @@ public class Rule implements Serializable {
      * 任务标识
      */
     @ApiModelProperty(value = "任务标识")
-    private String jobIdentificatio;
+    private String jobIdentification;
 
     /**
      * 状态(字典值：0启用  1停用)

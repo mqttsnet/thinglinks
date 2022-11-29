@@ -21,7 +21,7 @@ public interface RuleService {
 
     Rule selectByRuleIdentification(String ruleIdentification);
 
-    int insert(Rule record);
+    Rule insert(Rule record);
 
     int insertOrUpdate(Rule record);
 
