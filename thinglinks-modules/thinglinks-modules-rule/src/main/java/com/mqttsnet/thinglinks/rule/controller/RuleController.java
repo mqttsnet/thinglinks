@@ -7,7 +7,6 @@ import com.mqttsnet.thinglinks.common.core.enums.FieldTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.OperatorEnum;
 import com.mqttsnet.thinglinks.common.core.enums.TriggeringEnum;
 import com.mqttsnet.thinglinks.common.core.utils.CompareUtil;
-import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
@@ -19,7 +18,6 @@ import com.mqttsnet.thinglinks.link.api.RemoteProductService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
 import com.mqttsnet.thinglinks.rule.api.domain.Rule;
 import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
 import com.mqttsnet.thinglinks.rule.api.domain.model.RuleModel;
@@ -32,8 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.*;
 
 
@@ -77,7 +73,7 @@ public class RuleController extends BaseController {
     /**
      * 获取规则详细信息
      */
-    @PreAuthorize(hasPermi = "rule:rule:query")
+    //@PreAuthorize(hasPermi = "rule:rule:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(ruleService.selectByPrimaryKey(id));
@@ -86,7 +82,7 @@ public class RuleController extends BaseController {
     /**
      * 获取规则详细信息
      */
-    @PreAuthorize(hasPermi = "rule:rule:query")
+    //@PreAuthorize(hasPermi = "rule:rule:query")
     @GetMapping(value = "/getFullInfo/{id}")
     public AjaxResult getFullInfo(@PathVariable("id") Long id) {
         RuleModel ruleModel = ruleService.selectFullRuleById(id);

@@ -237,8 +237,8 @@ public class ProductController extends BaseController {
         return R.ok(productService.selectAllProductByStatus(status));
     }
 
-    @GetMapping("/selectProductByProductIdentificationList")
-    public R<?> selectProductByProductIdentificationList(@RequestParam("productIdentificationList") List<String> productIdentificationList){
+    @PostMapping("/selectProductByProductIdentificationList")
+    public R<?> selectProductByProductIdentificationList(@RequestBody List<String> productIdentificationList){
         return R.ok(productService.selectProductByProductIdentificationList(productIdentificationList));
     }
 }

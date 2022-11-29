@@ -6,6 +6,8 @@ import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.link.api.factory.RemoteProductPropertiesFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -19,6 +21,6 @@ public interface RemoteProductPropertiesService {
     @GetMapping("/productProperties/selectAllPropertiesByServiceId/{serviceId}")
     R<?> selectAllByServiceId(@RequestParam("serviceId") Long serviceId);
 
-    @GetMapping("/productProperties/selectPropertiesByPropertiesIdList")
-    R<?> selectPropertiesByPropertiesIdList(@RequestParam("propertiesIdList")List<Long> propertiesIdList);
+    @PostMapping("/productProperties/selectPropertiesByPropertiesIdList")
+    R<?> selectPropertiesByPropertiesIdList(@RequestBody List<Long> propertiesIdList);
 }

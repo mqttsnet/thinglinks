@@ -63,6 +63,6 @@ public interface RemoteDeviceService {
     @GetMapping("/device/selectAllByProductIdentification/{productIdentification}")
     public R<?> selectAllByProductIdentification(@PathVariable("productIdentification") String productIdentification);
 
-    @GetMapping("/selectDeviceByDeviceIdentificationList")
-    public R<?> selectDeviceByDeviceIdentificationList(@RequestParam("deviceIdentificationList")List<String> deviceIdentificationList);
+    @PostMapping("/device/selectDeviceByDeviceIdentificationList")
+    public R<?> selectDeviceByDeviceIdentificationList(@RequestBody List<String> deviceIdentificationList);
 }

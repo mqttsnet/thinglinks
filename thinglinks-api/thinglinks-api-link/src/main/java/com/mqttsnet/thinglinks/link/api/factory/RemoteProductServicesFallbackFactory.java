@@ -8,6 +8,8 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -33,7 +35,7 @@ public class RemoteProductServicesFallbackFactory implements FallbackFactory<Rem
             }
 
             @Override
-            public R<?> selectServicesByServiceIdList(@RequestParam("serviceIdList") List<Long> serviceIdList){
+            public R<?> selectServicesByServiceIdList(List<Long> serviceIdList){
                 return R.fail("根据服务id列表查询服务失败", throwable.getMessage());
             }
 

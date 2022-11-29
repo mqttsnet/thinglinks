@@ -119,7 +119,8 @@ return productPropertiesService.selectByPrimaryKey(id);
         return R.ok(list);
     }
 
-    public R<?> selectPropertiesByPropertiesIdList(@RequestParam("propertiesIdList") List<Long> propertiesIdList){
+    @PostMapping("/selectPropertiesByPropertiesIdList")
+    public R<?> selectPropertiesByPropertiesIdList(@RequestBody List<Long> propertiesIdList){
         return R.ok(productPropertiesService.selectPropertiesByPropertiesIdList(propertiesIdList));
     }
 }

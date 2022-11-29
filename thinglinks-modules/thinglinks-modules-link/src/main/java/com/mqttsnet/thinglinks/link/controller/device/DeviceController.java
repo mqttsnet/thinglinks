@@ -243,8 +243,8 @@ public class DeviceController extends BaseController {
     }
 
 
-    @GetMapping("/selectDeviceByDeviceIdentificationList")
-    public R<?> selectDeviceByDeviceIdentificationList(@RequestParam("deviceIdentificationList") List<String> deviceIdentificationList)
+    @PostMapping("/selectDeviceByDeviceIdentificationList")
+    public R<?> selectDeviceByDeviceIdentificationList(@RequestBody List<String> deviceIdentificationList)
     {
         return R.ok(deviceService.selectDeviceByDeviceIdentificationList( deviceIdentificationList));
     }

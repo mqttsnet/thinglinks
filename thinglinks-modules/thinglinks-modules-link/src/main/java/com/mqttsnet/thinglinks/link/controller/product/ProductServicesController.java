@@ -129,7 +129,8 @@ public class ProductServicesController extends BaseController {
         return R.ok(productServicesService.selectAllByProductIdentificationAndStatus(productIdentification,status));
     }
 
-    public R<?> selectServicesByServiceIdList(@RequestParam("serviceIdList") List<Long> serviceIdList) {
+    @PostMapping("/selectServicesByServiceIdList")
+    public R<?> selectServicesByServiceIdList(@RequestBody List<Long> serviceIdList) {
         return R.ok(productServicesService.selectServicesByServiceIdList(serviceIdList));
     }
 }

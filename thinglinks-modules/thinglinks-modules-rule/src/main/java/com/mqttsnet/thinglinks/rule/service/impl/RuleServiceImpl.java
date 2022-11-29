@@ -17,6 +17,7 @@ import com.mqttsnet.thinglinks.rule.api.domain.model.RuleModel;
 import com.mqttsnet.thinglinks.rule.mapper.RuleMapper;
 import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
 import com.mqttsnet.thinglinks.rule.service.RuleService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,6 +35,7 @@ import java.util.stream.Stream;
  * @e-mainl: 13733918655@163.com
  * @date: 2022-07-21 18:47
  **/
+@Slf4j
 @Service
 public class RuleServiceImpl implements RuleService {
 
@@ -116,6 +118,7 @@ public class RuleServiceImpl implements RuleService {
         BeanUtils.copyProperties(rule,ruleModel);
 
         List<RuleConditions> ruleConditionsList = ruleConditionsService.selectByRuleId(id);
+        log.info("List<RuleConditions>:{}",ruleConditionsList.toString());
 
         ruleModel.setRuleConditionsModelList(ruleConditionsService.ruleConditionsListToRuleConditionsModelList(ruleConditionsList));
         return ruleModel;
