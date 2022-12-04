@@ -1440,10 +1440,18 @@
         where product_identification=#{productIdentification}
     </select>
 
-    <select id="selectByProductIdentification" resultType="String">
+    <select id="selectDeviceByDeviceIdentificationList" resultMap="BaseResultMap">
         select
-        device_identification
-        from device
-        where product_identification=#{productIdentification}
+            <include refid="Base_Column_List"/>
+        from
+            device
+        <where>
+            <if test="deviceIdentificationList != null">
+                and device_identification in
+                <foreach collection="deviceIdentificationList" open="(" close=")" separator="," item="item">
+                        #{item}
+                </foreach>
+            </if>
+        </where>
     </select>
 </mapper>

@@ -7,8 +7,7 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.api.factory.RemoteProductFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -52,5 +51,7 @@ public interface RemoteProductService {
     @GetMapping("/product/selectAllProduct/{status}")
     public R<List<Product>> selectAllProduct(@PathVariable("status") String status);
 
+    @PostMapping("/product/selectProductByProductIdentificationList")
+    public R<?> selectProductByProductIdentificationList(@RequestBody List<String> productIdentificationList);
 
 }

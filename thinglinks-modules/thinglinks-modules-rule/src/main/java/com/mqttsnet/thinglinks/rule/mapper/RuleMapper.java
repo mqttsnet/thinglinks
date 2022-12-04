@@ -81,4 +81,7 @@ public interface RuleMapper {
      * @return
      */
     Rule selectByRuleIdentification(String ruleIdentification);
+
+
+    List<Rule> selectRuleList(Rule rule);
 }

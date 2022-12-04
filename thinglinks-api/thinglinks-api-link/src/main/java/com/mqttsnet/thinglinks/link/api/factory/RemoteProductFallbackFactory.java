@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -47,6 +48,11 @@ public class RemoteProductFallbackFactory implements FallbackFactory<RemoteProdu
             @Override
             public R selectAllProduct(String status){
                 return R.fail("获取所有产品失败", throwable.getMessage());
+            }
+
+            @Override
+            public R<?> selectProductByProductIdentificationList(List<String> productIdentificationList){
+                return R.fail("获取产品失败", throwable.getMessage());
             }
         };
     }

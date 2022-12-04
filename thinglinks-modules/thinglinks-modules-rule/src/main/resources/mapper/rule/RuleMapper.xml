@@ -8,7 +8,7 @@
     <result column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="rule_identification" jdbcType="VARCHAR" property="ruleIdentification" />
     <result column="rule_name" jdbcType="VARCHAR" property="ruleName" />
-    <result column="job_identificatio" jdbcType="VARCHAR" property="jobIdentificatio" />
+    <result column="job_identification" jdbcType="VARCHAR" property="jobIdentification" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="triggering" jdbcType="SMALLINT" property="triggering" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
@@ -19,8 +19,11 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, app_id, rule_identification, rule_name, job_identificatio, `status`, triggering, 
+    id, app_id, rule_identification, rule_name, job_identification, `status`, triggering,
     remark, create_by, create_time, update_by, update_time
+  </sql>
+  <sql id="OrderByCreateTimeDesc">
+    order by create_time desc
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -36,14 +39,33 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.Rule" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into `rule` (app_id, rule_identification, rule_name, 
-      job_identificatio, `status`, triggering, 
-      remark, create_by, create_time, 
-      update_by, update_time)
-    values (#{appId,jdbcType=VARCHAR}, #{ruleIdentification,jdbcType=VARCHAR}, #{ruleName,jdbcType=VARCHAR}, 
-      #{jobIdentificatio,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{triggering,jdbcType=SMALLINT}, 
-      #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+    insert into `rule`
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="appId != null and appId != ''">app_id,</if>
+      <if test="ruleName != null and ruleName != ''">rule_name,</if>
+      <if test="ruleIdentification != null">rule_identification,</if>
+      <if test="jobIdentification != null">job_identification,</if>
+      <if test="triggering != null">triggering,</if>
+      <if test="status != null and status != ''">status,</if>
+      <if test="remark != null">remark,</if>
+      <if test="createBy != null">create_by,</if>
+      <if test="createTime != null">create_time,</if>
+      <if test="updateBy != null">update_by,</if>
+      <if test="updateTime != null">update_time,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="appId != null and appId != ''">#{appId},</if>
+      <if test="ruleName != null and ruleName != ''">#{ruleName},</if>
+      <if test="ruleIdentification != null">#{ruleIdentification},</if>
+      <if test="jobIdentification != null">#{jobIdentification},</if>
+      <if test="triggering != null">#{triggering},</if>
+      <if test="status != null and status != ''">#{status},</if>
+      <if test="remark != null">#{remark},</if>
+      <if test="createBy != null">#{createBy},</if>
+      <if test="createTime != null">#{createTime},</if>
+      <if test="updateBy != null">#{updateBy},</if>
+      <if test="updateTime != null">#{updateTime},</if>
+    </trim>
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.Rule" useGeneratedKeys="true">
     <!--@mbg.generated-->
@@ -58,8 +80,8 @@
       <if test="ruleName != null">
         rule_name,
       </if>
-      <if test="jobIdentificatio != null">
-        job_identificatio,
+      <if test="jobIdentification != null">
+        job_identification,
       </if>
       <if test="status != null">
         `status`,
@@ -93,8 +115,8 @@
       <if test="ruleName != null">
         #{ruleName,jdbcType=VARCHAR},
       </if>
-      <if test="jobIdentificatio != null">
-        #{jobIdentificatio,jdbcType=VARCHAR},
+      <if test="jobIdentification != null">
+        #{jobIdentification,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
         #{status,jdbcType=VARCHAR},
@@ -132,8 +154,8 @@
       <if test="ruleName != null">
         rule_name = #{ruleName,jdbcType=VARCHAR},
       </if>
-      <if test="jobIdentificatio != null">
-        job_identificatio = #{jobIdentificatio,jdbcType=VARCHAR},
+      <if test="jobIdentification != null">
+        job_identification = #{jobIdentification,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
         `status` = #{status,jdbcType=VARCHAR},
@@ -165,7 +187,7 @@
     set app_id = #{appId,jdbcType=VARCHAR},
       rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
       rule_name = #{ruleName,jdbcType=VARCHAR},
-      job_identificatio = #{jobIdentificatio,jdbcType=VARCHAR},
+      job_identification = #{jobIdentification,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
       triggering = #{triggering,jdbcType=SMALLINT},
       remark = #{remark,jdbcType=VARCHAR},
@@ -194,9 +216,9 @@
           when id = #{item.id,jdbcType=BIGINT} then #{item.ruleName,jdbcType=VARCHAR}
         </foreach>
       </trim>
-      <trim prefix="job_identificatio = case" suffix="end,">
+      <trim prefix="job_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=BIGINT} then #{item.jobIdentificatio,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=BIGINT} then #{item.jobIdentification,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="`status` = case" suffix="end,">
@@ -265,10 +287,10 @@
           </if>
         </foreach>
       </trim>
-      <trim prefix="job_identificatio = case" suffix="end,">
+      <trim prefix="job_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.jobIdentificatio != null">
-            when id = #{item.id,jdbcType=BIGINT} then #{item.jobIdentificatio,jdbcType=VARCHAR}
+          <if test="item.jobIdentification != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.jobIdentification,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
@@ -330,12 +352,12 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into `rule`
-    (app_id, rule_identification, rule_name, job_identificatio, `status`, triggering, 
+    (app_id, rule_identification, rule_name, job_identification, `status`, triggering,
       remark, create_by, create_time, update_by, update_time)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.appId,jdbcType=VARCHAR}, #{item.ruleIdentification,jdbcType=VARCHAR}, #{item.ruleName,jdbcType=VARCHAR}, 
-        #{item.jobIdentificatio,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, #{item.triggering,jdbcType=SMALLINT}, 
+        #{item.jobIdentification,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, #{item.triggering,jdbcType=SMALLINT},
         #{item.remark,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
         #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP})
     </foreach>
@@ -350,7 +372,7 @@
       app_id,
       rule_identification,
       rule_name,
-      job_identificatio,
+      job_identification,
       `status`,
       triggering,
       remark,
@@ -367,7 +389,7 @@
       #{appId,jdbcType=VARCHAR},
       #{ruleIdentification,jdbcType=VARCHAR},
       #{ruleName,jdbcType=VARCHAR},
-      #{jobIdentificatio,jdbcType=VARCHAR},
+      #{jobIdentification,jdbcType=VARCHAR},
       #{status,jdbcType=VARCHAR},
       #{triggering,jdbcType=SMALLINT},
       #{remark,jdbcType=VARCHAR},
@@ -384,7 +406,7 @@
       app_id = #{appId,jdbcType=VARCHAR},
       rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
       rule_name = #{ruleName,jdbcType=VARCHAR},
-      job_identificatio = #{jobIdentificatio,jdbcType=VARCHAR},
+      job_identification = #{jobIdentification,jdbcType=VARCHAR},
       `status` = #{status,jdbcType=VARCHAR},
       triggering = #{triggering,jdbcType=SMALLINT},
       remark = #{remark,jdbcType=VARCHAR},
@@ -410,8 +432,8 @@
       <if test="ruleName != null">
         rule_name,
       </if>
-      <if test="jobIdentificatio != null">
-        job_identificatio,
+      <if test="jobIdentification != null">
+        job_identification,
       </if>
       <if test="status != null">
         `status`,
@@ -449,8 +471,8 @@
       <if test="ruleName != null">
         #{ruleName,jdbcType=VARCHAR},
       </if>
-      <if test="jobIdentificatio != null">
-        #{jobIdentificatio,jdbcType=VARCHAR},
+      <if test="jobIdentification != null">
+        #{jobIdentification,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
         #{status,jdbcType=VARCHAR},
@@ -488,8 +510,8 @@
       <if test="ruleName != null">
         rule_name = #{ruleName,jdbcType=VARCHAR},
       </if>
-      <if test="jobIdentificatio != null">
-        job_identificatio = #{jobIdentificatio,jdbcType=VARCHAR},
+      <if test="jobIdentification != null">
+        job_identification = #{jobIdentification,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
         `status` = #{status,jdbcType=VARCHAR},
@@ -514,4 +536,31 @@
       </if>
     </trim>
   </insert>
+  <select id="selectRuleList" parameterType="com.mqttsnet.thinglinks.rule.api.domain.Rule"
+          resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from rule
+    <where>
+      <if test="ruleName != null  and ruleName != ''">
+        and rule_name like concat('%', #{ruleName}, '%')
+      </if>
+      <if test="appId != null  and appId != ''">
+        and app_id = #{appId}
+      </if>
+      <if test="ruleIdentification != null  and ruleIdentification != ''">
+        and rule_identification like concat('%', #{ruleIdentification}, '%')
+      </if>
+      <if test="jobIdentification != null  and jobIdentificatio != ''">
+        and job_identification like concat('%', #{jobIdentificatio}, '%')
+      </if>
+      <if test="status != null  and status != ''">
+        and status = #{status}
+      </if>
+      <if test="triggering != null  and triggering != ''">
+        and triggering = #{triggering}
+      </if>
+    </where>
+    <include refid="OrderByCreateTimeDesc"/>
+  </select>
 </mapper>

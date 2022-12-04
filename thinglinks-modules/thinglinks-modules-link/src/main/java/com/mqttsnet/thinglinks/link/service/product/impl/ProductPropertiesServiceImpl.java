@@ -9,6 +9,7 @@ import java.util.List;
 import com.mqttsnet.thinglinks.link.mapper.product.ProductPropertiesMapper;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.service.product.ProductPropertiesService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @Description: java类作用描述
@@ -141,5 +142,11 @@ public class ProductPropertiesServiceImpl implements ProductPropertiesService {
     @Override
     public int deleteProductPropertiesByIds(Long[] ids) {
         return productPropertiesMapper.deleteProductPropertiesByIds(ids);
+    }
+
+    @Override
+    public List<ProductProperties> selectPropertiesByPropertiesIdList(List<Long> propertiesIdList)
+    {
+        return productPropertiesMapper.selectPropertiesByPropertiesIdList(propertiesIdList);
     }
 }

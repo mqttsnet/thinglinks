@@ -7,6 +7,7 @@ import com.mqttsnet.thinglinks.link.api.factory.RemoteDeviceFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,5 +63,6 @@ public interface RemoteDeviceService {
     @GetMapping("/device/selectAllByProductIdentification/{productIdentification}")
     public R<?> selectAllByProductIdentification(@PathVariable("productIdentification") String productIdentification);
 
-
+    @PostMapping("/device/selectDeviceByDeviceIdentificationList")
+    public R<?> selectDeviceByDeviceIdentificationList(@RequestBody List<String> deviceIdentificationList);
 }

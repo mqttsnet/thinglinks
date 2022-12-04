@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.link.mapper.product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -119,4 +120,6 @@ public interface ProductPropertiesMapper {
      * @return 结果
      */
     int deleteProductPropertiesByIds(Long[] ids);
+
+    List<ProductProperties> selectPropertiesByPropertiesIdList(@Param("propertiesIdList") List<Long> propertiesIdList);
 }

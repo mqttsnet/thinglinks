@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.rule.mapper.ActionCommandsMapper">
+  <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands">
+    <!--@mbg.generated-->
+    <!--@Table action_commands-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="business_type" jdbcType="INTEGER" property="businessType" />
+    <result column="rule_identification" jdbcType="VARCHAR" property="ruleIdentification" />
+    <result column="product_identification" jdbcType="VARCHAR" property="productIdentification" />
+    <result column="device_identificaiton" jdbcType="VARCHAR" property="deviceIdentificaiton" />
+    <result column="service_id" jdbcType="INTEGER" property="serviceId" />
+    <result column="command_id" jdbcType="INTEGER" property="commandId" />
+    <result column="command_body" jdbcType="LONGVARCHAR" property="commandBody" />
+    <result column="ctreate_by" jdbcType="VARCHAR" property="ctreateBy" />
+    <result column="ctreate_time" jdbcType="TIMESTAMP" property="ctreateTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, business_type, rule_identification, product_identification, device_identificaiton, 
+    service_id, command_id, command_body, ctreate_by, ctreate_time, update_by, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from action_commands
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from action_commands
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into action_commands (business_type, rule_identification, 
+      product_identification, device_identificaiton, 
+      service_id, command_id, command_body, 
+      ctreate_by, ctreate_time, update_by, 
+      update_time)
+    values (#{businessType,jdbcType=INTEGER}, #{ruleIdentification,jdbcType=VARCHAR}, 
+      #{productIdentification,jdbcType=VARCHAR}, #{deviceIdentificaiton,jdbcType=VARCHAR}, 
+      #{serviceId,jdbcType=INTEGER}, #{commandId,jdbcType=INTEGER}, #{commandBody,jdbcType=LONGVARCHAR}, 
+      #{ctreateBy,jdbcType=VARCHAR}, #{ctreateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into action_commands
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="businessType != null">
+        business_type,
+      </if>
+      <if test="ruleIdentification != null">
+        rule_identification,
+      </if>
+      <if test="productIdentification != null">
+        product_identification,
+      </if>
+      <if test="deviceIdentificaiton != null">
+        device_identificaiton,
+      </if>
+      <if test="serviceId != null">
+        service_id,
+      </if>
+      <if test="commandId != null">
+        command_id,
+      </if>
+      <if test="commandBody != null">
+        command_body,
+      </if>
+      <if test="ctreateBy != null">
+        ctreate_by,
+      </if>
+      <if test="ctreateTime != null">
+        ctreate_time,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="businessType != null">
+        #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="ruleIdentification != null">
+        #{ruleIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="productIdentification != null">
+        #{productIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceIdentificaiton != null">
+        #{deviceIdentificaiton,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceId != null">
+        #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="commandId != null">
+        #{commandId,jdbcType=INTEGER},
+      </if>
+      <if test="commandBody != null">
+        #{commandBody,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="ctreateBy != null">
+        #{ctreateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="ctreateTime != null">
+        #{ctreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands">
+    <!--@mbg.generated-->
+    update action_commands
+    <set>
+      <if test="businessType != null">
+        business_type = #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="ruleIdentification != null">
+        rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="productIdentification != null">
+        product_identification = #{productIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceIdentificaiton != null">
+        device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceId != null">
+        service_id = #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="commandId != null">
+        command_id = #{commandId,jdbcType=INTEGER},
+      </if>
+      <if test="commandBody != null">
+        command_body = #{commandBody,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="ctreateBy != null">
+        ctreate_by = #{ctreateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="ctreateTime != null">
+        ctreate_time = #{ctreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands">
+    <!--@mbg.generated-->
+    update action_commands
+    set business_type = #{businessType,jdbcType=INTEGER},
+      rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
+      product_identification = #{productIdentification,jdbcType=VARCHAR},
+      device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
+      service_id = #{serviceId,jdbcType=INTEGER},
+      command_id = #{commandId,jdbcType=INTEGER},
+      command_body = #{commandBody,jdbcType=LONGVARCHAR},
+      ctreate_by = #{ctreateBy,jdbcType=VARCHAR},
+      ctreate_time = #{ctreateTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update action_commands
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="business_type = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.businessType,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="rule_identification = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.ruleIdentification,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="product_identification = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.productIdentification,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="device_identificaiton = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.deviceIdentificaiton,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="service_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.serviceId,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="command_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.commandId,jdbcType=INTEGER}
+        </foreach>
+      </trim>
+      <trim prefix="command_body = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.commandBody,jdbcType=LONGVARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="ctreate_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.ctreateBy,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="ctreate_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.ctreateTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="update_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.updateBy,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update action_commands
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="business_type = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.businessType != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.businessType,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="rule_identification = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.ruleIdentification != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.ruleIdentification,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="product_identification = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.productIdentification != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.productIdentification,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="device_identificaiton = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.deviceIdentificaiton != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.deviceIdentificaiton,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="service_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.serviceId != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.serviceId,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="command_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.commandId != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.commandId,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="command_body = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.commandBody != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.commandBody,jdbcType=LONGVARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="ctreate_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.ctreateBy != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.ctreateBy,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="ctreate_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.ctreateTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.ctreateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_by = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateBy != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.updateBy,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into action_commands
+    (business_type, rule_identification, product_identification, device_identificaiton, 
+      service_id, command_id, command_body, ctreate_by, ctreate_time, update_by, update_time
+      )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.businessType,jdbcType=INTEGER}, #{item.ruleIdentification,jdbcType=VARCHAR}, 
+        #{item.productIdentification,jdbcType=VARCHAR}, #{item.deviceIdentificaiton,jdbcType=VARCHAR}, 
+        #{item.serviceId,jdbcType=INTEGER}, #{item.commandId,jdbcType=INTEGER}, #{item.commandBody,jdbcType=LONGVARCHAR}, 
+        #{item.ctreateBy,jdbcType=VARCHAR}, #{item.ctreateTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR}, 
+        #{item.updateTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+  <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into action_commands
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      business_type,
+      rule_identification,
+      product_identification,
+      device_identificaiton,
+      service_id,
+      command_id,
+      command_body,
+      ctreate_by,
+      ctreate_time,
+      update_by,
+      update_time,
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      #{businessType,jdbcType=INTEGER},
+      #{ruleIdentification,jdbcType=VARCHAR},
+      #{productIdentification,jdbcType=VARCHAR},
+      #{deviceIdentificaiton,jdbcType=VARCHAR},
+      #{serviceId,jdbcType=INTEGER},
+      #{commandId,jdbcType=INTEGER},
+      #{commandBody,jdbcType=LONGVARCHAR},
+      #{ctreateBy,jdbcType=VARCHAR},
+      #{ctreateTime,jdbcType=TIMESTAMP},
+      #{updateBy,jdbcType=VARCHAR},
+      #{updateTime,jdbcType=TIMESTAMP},
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      business_type = #{businessType,jdbcType=INTEGER},
+      rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
+      product_identification = #{productIdentification,jdbcType=VARCHAR},
+      device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
+      service_id = #{serviceId,jdbcType=INTEGER},
+      command_id = #{commandId,jdbcType=INTEGER},
+      command_body = #{commandBody,jdbcType=LONGVARCHAR},
+      ctreate_by = #{ctreateBy,jdbcType=VARCHAR},
+      ctreate_time = #{ctreateTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+    </trim>
+  </insert>
+  <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into action_commands
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="businessType != null">
+        business_type,
+      </if>
+      <if test="ruleIdentification != null">
+        rule_identification,
+      </if>
+      <if test="productIdentification != null">
+        product_identification,
+      </if>
+      <if test="deviceIdentificaiton != null">
+        device_identificaiton,
+      </if>
+      <if test="serviceId != null">
+        service_id,
+      </if>
+      <if test="commandId != null">
+        command_id,
+      </if>
+      <if test="commandBody != null">
+        command_body,
+      </if>
+      <if test="ctreateBy != null">
+        ctreate_by,
+      </if>
+      <if test="ctreateTime != null">
+        ctreate_time,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    values
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="businessType != null">
+        #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="ruleIdentification != null">
+        #{ruleIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="productIdentification != null">
+        #{productIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceIdentificaiton != null">
+        #{deviceIdentificaiton,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceId != null">
+        #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="commandId != null">
+        #{commandId,jdbcType=INTEGER},
+      </if>
+      <if test="commandBody != null">
+        #{commandBody,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="ctreateBy != null">
+        #{ctreateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="ctreateTime != null">
+        #{ctreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+    on duplicate key update 
+    <trim suffixOverrides=",">
+      <if test="id != null">
+        id = #{id,jdbcType=INTEGER},
+      </if>
+      <if test="businessType != null">
+        business_type = #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="ruleIdentification != null">
+        rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="productIdentification != null">
+        product_identification = #{productIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceIdentificaiton != null">
+        device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceId != null">
+        service_id = #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="commandId != null">
+        command_id = #{commandId,jdbcType=INTEGER},
+      </if>
+      <if test="commandBody != null">
+        command_body = #{commandBody,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="ctreateBy != null">
+        ctreate_by = #{ctreateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="ctreateTime != null">
+        ctreate_time = #{ctreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>

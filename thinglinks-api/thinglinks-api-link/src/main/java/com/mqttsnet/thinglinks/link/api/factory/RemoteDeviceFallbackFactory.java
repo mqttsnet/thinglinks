@@ -9,6 +9,7 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,6 +59,11 @@ public class RemoteDeviceFallbackFactory implements FallbackFactory<RemoteDevice
             @Override
             public R<?> selectAllByProductIdentification(String productIdentification){
                 return R.fail("查询产品下的设备:" + throwable.getMessage());
+            }
+            @Override
+            public R<?> selectDeviceByDeviceIdentificationList(List<String> deviceIdentificationList){
+
+                return R.fail("根据设备标识列表查询设备失败:" + throwable.getMessage());
             }
         };
     }

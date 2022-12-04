@@ -236,4 +236,9 @@ public class ProductController extends BaseController {
     public R<?> selectAllProductByStatus(@PathVariable(value = "status") String status) {
         return R.ok(productService.selectAllProductByStatus(status));
     }
+
+    @PostMapping("/selectProductByProductIdentificationList")
+    public R<?> selectProductByProductIdentificationList(@RequestBody List<String> productIdentificationList){
+        return R.ok(productService.selectProductByProductIdentificationList(productIdentificationList));
+    }
 }

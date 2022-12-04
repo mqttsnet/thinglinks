@@ -162,5 +162,10 @@ public class ProductServicesServiceImpl implements ProductServicesService {
     public List<ProductServices> selectAllByProductIdentificationAndStatus(String productIdentification, String status) {
         return productServicesMapper.selectAllByProductIdentificationAndStatus(productIdentification, status);
     }
+
+    @Override
+    public List<ProductServices> selectServicesByServiceIdList(List<Long> serviceIdList){
+        return productServicesMapper.selectServicesByServiceIdList( serviceIdList);
+    }
 }
 

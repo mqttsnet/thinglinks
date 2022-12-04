@@ -180,5 +180,7 @@ public interface DeviceService {
      */
     public Map<String, List<Map<String, Object>>> getDeviceShadow(String ids, String startTime, String endTime);
 
+    public List<Device>  selectDeviceByDeviceIdentificationList( List<String> deviceIdentificationList);
+
 }
 

@@ -92,7 +92,7 @@ com.mqttsnet.thinglinks
 
 由于服务器近期频繁遭到境外IP暴力破解攻击，暂时关闭！
 
-- thinglinks/123456
+- thinglinks-demo/123456
 
 演示地址：http://thinglinks.mqttsnet.com/
 

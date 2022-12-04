@@ -82,4 +82,6 @@ public interface RuleConditionsMapper {
     int updateBatchSelective(List<RuleConditions> list);
 
     int batchInsert(@Param("list") List<RuleConditions> list);
+
+    int deleteBatchByIds(Long[] ids);
 }

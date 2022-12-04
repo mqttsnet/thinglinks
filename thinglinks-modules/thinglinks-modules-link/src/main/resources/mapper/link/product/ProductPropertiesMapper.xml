@@ -973,4 +973,19 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectPropertiesByPropertiesIdList" resultMap="BaseResultMap">
+        select
+            <include refid="Base_Column_List"></include>
+        from
+            product_properties
+        <where>
+            <if test="propertiesIdList != null">
+                and id in
+                <foreach collection="propertiesIdList" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>
