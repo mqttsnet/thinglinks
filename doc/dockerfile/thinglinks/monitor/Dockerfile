@@ -2,7 +2,9 @@
 FROM  openjdk:8-jre
 # author
 MAINTAINER thinglinks
-
+# 设定时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # 挂载目录
 VOLUME /www/wwwroot/thinglinks/thinglinks-server
 # 创建目录

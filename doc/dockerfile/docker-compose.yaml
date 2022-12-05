@@ -180,7 +180,7 @@ services:
   thinglinks-modules-protocolanalysis:
     container_name: thinglinks-modules-protocolanalysis
     build:
-      context: ./thinglinks/protocolAnalysis
+      context: thinglinks/protocolanalysis
       dockerfile: Dockerfile
     ports:
       - "19307:19307"
