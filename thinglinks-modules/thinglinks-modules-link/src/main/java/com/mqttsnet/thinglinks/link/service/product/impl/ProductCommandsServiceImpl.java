@@ -135,4 +135,9 @@ public class ProductCommandsServiceImpl implements ProductCommandsService {
     public int deleteProductCommandsByIds(Long[] ids) {
         return productCommandsMapper.deleteProductCommandsByIds(ids);
     }
+
+    @Override
+    public List<ProductCommands> selectProductCommandsByIdList(List<Long> commandIdList){
+        return productCommandsMapper.selectProductCommandsByIdList(commandIdList);
+    }
 }

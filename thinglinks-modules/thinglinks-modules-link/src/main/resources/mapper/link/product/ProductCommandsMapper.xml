@@ -521,4 +521,19 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectProductCommandsByIdList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        product_
+        <where>
+            <if test="commandIdList != null ">
+                and id in
+                <foreach collection="commandIdList" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>

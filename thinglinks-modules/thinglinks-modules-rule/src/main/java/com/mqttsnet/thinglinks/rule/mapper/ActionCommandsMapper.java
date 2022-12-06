@@ -67,4 +67,8 @@ public interface ActionCommandsMapper {
     int updateBatchSelective(List<ActionCommands> list);
 
     int batchInsert(@Param("list") List<ActionCommands> list);
+
+    List<ActionCommands> selectByActionCommandsSelective(ActionCommands actionCommands);
+
+    int deleteBatchByIds(Long[] ids);
 }

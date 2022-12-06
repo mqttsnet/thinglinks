@@ -117,4 +117,6 @@ public interface ProductCommandsMapper {
      * @return 结果
      */
     int deleteProductCommandsByIds(Long[] ids);
+
+    List<ProductCommands> selectProductCommandsByIdList(List<Long> commandIdList);
 }

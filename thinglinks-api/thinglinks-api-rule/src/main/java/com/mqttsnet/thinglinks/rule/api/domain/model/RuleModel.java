@@ -25,4 +25,6 @@ public class RuleModel {
 
     private List<RuleConditionsModel> ruleConditionsModelList;
 
+    private List<ActionCommandsModel> actionCommandsModelList;
+
 }

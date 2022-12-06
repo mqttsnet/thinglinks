@@ -75,9 +75,8 @@ public class RuleServiceImpl implements RuleService {
             throw new ServiceException("规则名称重复");
         }
         record.setRuleIdentification(UUID.getUUID());
-        LoginUser loginUser = tokenService.getLoginUser();
-        SysUser sysUser = loginUser.getSysUser();
-        record.setCreateBy(sysUser.getUserName());
+
+        record.setCreateBy(getSysUserName());
         int res = ruleMapper.insert(record);
         if(res > 0){
             return record;
@@ -107,6 +106,9 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public int updateByPrimaryKeySelective(Rule record) {
+        //job-todo
+        record.setJobIdentification(UUID.getUUID());
+        record.setUpdateBy(getSysUserName());
         return ruleMapper.updateByPrimaryKeySelective(record);
     }
 
@@ -145,6 +147,13 @@ public class RuleServiceImpl implements RuleService {
 
         ruleModel.setRuleConditionsModelList(ruleConditionsService.ruleConditionsListToRuleConditionsModelList(ruleConditionsList));
         return ruleModel;
+    }
+
+
+    private String getSysUserName(){
+        LoginUser loginUser = tokenService.getLoginUser();
+        SysUser sysUser = loginUser.getSysUser();
+        return sysUser.getUserName();
     }
 }
 

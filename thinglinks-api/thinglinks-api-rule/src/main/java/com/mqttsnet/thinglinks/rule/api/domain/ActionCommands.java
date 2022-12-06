@@ -56,13 +56,13 @@ public class ActionCommands implements Serializable {
     * 服务id
     */
     @ApiModelProperty(value="服务id")
-    private Integer serviceId;
+    private Long serviceId;
 
     /**
     * 命令id
     */
     @ApiModelProperty(value="命令id")
-    private Integer commandId;
+    private Long commandId;
 
     /**
     * json命令参数及参数值{"key":"value","key1":"value1"}

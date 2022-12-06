@@ -129,5 +129,5 @@ public interface ProductServicesMapper {
      */
     List<ProductServices> selectAllByProductIdentificationAndStatus(@Param("productIdentification") String productIdentification, @Param("status") String status);
 
-    List<ProductServices> selectServicesByServiceIdList(@Param("serviceIdList") List<Long> serviceIdList);
+    List<ProductServices> selectProductServicesByIdList(@Param("serviceIdList") List<Long> serviceIdList);
 }

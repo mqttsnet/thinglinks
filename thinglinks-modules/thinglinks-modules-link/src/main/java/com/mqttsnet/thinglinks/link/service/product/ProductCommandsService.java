@@ -78,4 +78,6 @@ public interface ProductCommandsService {
      */
     int deleteProductCommandsByIds(Long[] ids);
 
+    List<ProductCommands> selectProductCommandsByIdList(List<Long> commandIdList);
+
 }

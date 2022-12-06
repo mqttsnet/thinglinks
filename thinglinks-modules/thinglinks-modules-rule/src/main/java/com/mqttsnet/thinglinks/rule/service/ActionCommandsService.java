@@ -35,4 +35,8 @@ public interface ActionCommandsService{
 
     int batchInsert(List<ActionCommands> list);
 
+
+    List<ActionCommands>   selectByActionCommandsSelective(ActionCommands actionCommands);
+
+    int deleteBatchByIds(Long[] ids);
 }

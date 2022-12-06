@@ -1,8 +1,14 @@
 package com.mqttsnet.thinglinks.common.core.utils.bean;
 
+import com.alibaba.fastjson.JSONObject;
+import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.exception.ServiceException;
+
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -106,5 +112,34 @@ public class BeanUtils extends org.springframework.beans.BeanUtils
     public static boolean isMethodPropEquals(String m1, String m2)
     {
         return m1.substring(BEAN_METHOD_PROP_INDEX).equals(m2.substring(BEAN_METHOD_PROP_INDEX));
+    }
+
+    public static  <T> List<T> rDataToBeanList(R r, Class<T> beanClass){
+        if(null == r.getData()){
+            return  new ArrayList<T>();
+        }
+        return JSONObject.parseArray(JSONObject.toJSONString(r.getData())).toJavaList(beanClass);
+    }
+
+    /**
+     * 获取map中对象的某一字段字符串值
+     * @param map
+     * @param k
+     * @param clazz
+     * @param funcName
+     * @return
+     * @param <K>
+     * @param <V>
+     */
+    public static <K,V> String getMapBeanVal(Map<K,V> map, K k, Class<V> clazz, String funcName){
+        if(null != k && null != map && map.containsKey(k)){
+            try {
+                Method  m = clazz.getDeclaredMethod(funcName);
+                return (String) m.invoke(map.get(k));
+            }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
+                throw new ServiceException(e.getMessage());
+            }
+        }
+        return null;
     }
 }

@@ -110,7 +110,7 @@ public class RuleController extends BaseController {
     @Log(title = "规则管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Rule rule) {
-        return toAjax(ruleService.updateByPrimaryKey(rule));
+        return toAjax(ruleService.updateByPrimaryKeySelective(rule));
     }
 
     /**

@@ -333,15 +333,14 @@
     <!--@mbg.generated-->
     insert into action_commands
     (business_type, rule_identification, product_identification, device_identificaiton, 
-      service_id, command_id, command_body, ctreate_by, ctreate_time, update_by, update_time
+      service_id, command_id, command_body, ctreate_by
       )
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.businessType,jdbcType=INTEGER}, #{item.ruleIdentification,jdbcType=VARCHAR}, 
         #{item.productIdentification,jdbcType=VARCHAR}, #{item.deviceIdentificaiton,jdbcType=VARCHAR}, 
         #{item.serviceId,jdbcType=INTEGER}, #{item.commandId,jdbcType=INTEGER}, #{item.commandBody,jdbcType=LONGVARCHAR}, 
-        #{item.ctreateBy,jdbcType=VARCHAR}, #{item.ctreateTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR}, 
-        #{item.updateTime,jdbcType=TIMESTAMP})
+        #{item.ctreateBy,jdbcType=VARCHAR})
     </foreach>
   </insert>
   <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands" useGeneratedKeys="true">
@@ -518,4 +517,56 @@
       </if>
     </trim>
   </insert>
+
+  <select id="selectByActionCommandsSelective" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from action_commands
+    <where>
+      <if test="id != null">
+        and id = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="businessType != null">
+        business_type = #{businessType,jdbcType=INTEGER},
+      </if>
+      <if test="ruleIdentification != null">
+        rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="productIdentification != null">
+        product_identification = #{productIdentification,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceIdentificaiton != null">
+        device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceId != null">
+        service_id = #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="commandId != null">
+        command_id = #{commandId,jdbcType=INTEGER},
+      </if>
+      <if test="commandBody != null">
+        command_body = #{commandBody,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="ctreateBy != null">
+        ctreate_by = #{ctreateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="ctreateTime != null">
+        ctreate_time = #{ctreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </where>
+  </select>
+
+  <delete id="deleteBatchByIds" parameterType="String">
+    delete
+    from action_commands where id in
+    <foreach close=")" collection="array" item="id" open="(" separator=",">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>
