@@ -14,7 +14,7 @@ services:
       - "19200:19200"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-auth/jar:/www/wwwroot/thinglinks/thinglinks-auth/jar/
+      - ./auth/jar:/www/wwwroot/thinglinks/auth/jar/
       - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-auth
     networks:
       - backend
@@ -27,8 +27,8 @@ services:
       - "19300:19300"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-modules-file/jar:/www/wwwroot/thinglinks/thinglinks-modules-file/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-file
+      - ./file/jar:/www/wwwroot/thinglinks/file/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-file
       - /home/www/thinglinks/uploadPath:/www/wwwroot/thinglinks/uploadPath
     networks:
       - backend
@@ -44,7 +44,7 @@ services:
       - "19101:19101"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-gateway/jar:/www/wwwroot/thinglinks/thinglinks-gateway/jar/
+      - ./gateway/jar:/www/wwwroot/thinglinks/gateway/jar/
       - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-gateway
     networks:
       - backend
@@ -58,8 +58,8 @@ services:
       - "19301:19301"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-modules-gen/jar:/www/wwwroot/thinglinks/thinglinks-modules-gen/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-gen
+      - ./gen/jar:/www/wwwroot/thinglinks/gen/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-gen
     networks:
       - backend
   thinglinks-modules-job:
@@ -71,8 +71,8 @@ services:
       - "19302:19302"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-modules-job/jar:/www/wwwroot/thinglinks/thinglinks-modules-job/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-job
+      - ./job/jar:/www/wwwroot/thinglinks/job/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-job
     networks:
       - backend
   thinglinks-modules-system:
@@ -84,8 +84,8 @@ services:
       - "19303:19303"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-modules-system/jar:/www/wwwroot/thinglinks/thinglinks-modules-system/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-system
+      - ./system/jar:/www/wwwroot/thinglinks/system/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-system
     networks:
       - backend
   thinglinks-modules-tdengine:
@@ -99,8 +99,8 @@ services:
       - "tdengine:192.168.110.82"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-modules-tdengine/jar:/www/wwwroot/thinglinks/thinglinks-modules-tdengine/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-tdengine
+      - ./tdengine/jar:/www/wwwroot/thinglinks/tdengine/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-tdengine
     networks:
       - backend
   thinglinks-modules-link:
@@ -112,8 +112,8 @@ services:
       - "19305:19305"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-modules-link/jar:/www/wwwroot/thinglinks/thinglinks-modules-link/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-link
+      - ./link/jar:/www/wwwroot/ink/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-link
     networks:
       - backend
   thinglinks-modules-broker:
@@ -128,8 +128,8 @@ services:
       - "18999:18999"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-modules-broker/jar:/www/wwwroot/thinglinks/thinglinks-modules-broker/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-broker
+      - ./broker/jar:/www/wwwroot/thinglinks/broker/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-broker
     networks:
       - backend
   thinglinks-modules-protocolanalysis:
@@ -143,8 +143,8 @@ services:
       - "18902:18902"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-modules-protocolanalysis/jar:/www/wwwroot/thinglinks/thinglinks-modules-protocolanalysis/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-protocolanalysis
+      - ./protocolanalysis/jar:/www/wwwroot/thinglinks/protocolanalysis/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-protocolanalysis
     networks:
       - backend
   thinglinks-modules-rule:
@@ -156,8 +156,8 @@ services:
       - "19308:19308"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-modules-rule/jar:/www/wwwroot/thinglinks/thinglinks-modules-rule/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-rule
+      - ./rule/jar:/www/wwwroot/thinglinks/rule/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-rule
     networks:
       - backend    
   thinglinks-visual-monitor:
@@ -169,8 +169,8 @@ services:
       - "19400:19400"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-visual-monitor/jar:/www/wwwroot/thinglinks/thinglinks-visual-monitor/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-visual-monitor
+      - ./monitor/jar:/www/wwwroot/thinglinks/monitor/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-monitor
   thinglinks-visual-collection:
     container_name: thinglinks-visual-collection
     build:
@@ -180,7 +180,7 @@ services:
       - "19401:19401"
     volumes:
       - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
-      - ./thinglinks-visual-collection/jar:/www/wwwroot/thinglinks/thinglinks-visual-collection/jar/
-      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-visual-collection
+      - ./collection/jar:/www/wwwroot/thinglinks/collection/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-collection
     networks:
       - backend
