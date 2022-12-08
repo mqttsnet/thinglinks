@@ -6,12 +6,12 @@ MAINTAINER thinglinks
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # 挂载目录
-VOLUME /www/wwwroot/thinglinks/thinglinks-server
+VOLUME /www/wwwroot/thinglinks
 # 创建目录
-RUN mkdir -p /www/wwwroot/thinglinks/thinglinks-server
+RUN mkdir -p /www/wwwroot/thinglinks
 # 指定路径
-WORKDIR /www/wwwroot/thinglinks/thinglinks-server
+WORKDIR /www/wwwroot/thinglinks
 # 复制jar文件到路径
-COPY ./jar/thinglinks-modules-protocolAnalysis-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/thinglinks-server/protocolAnalysis/protocolAnalysis.jar
+COPY ./jar/thinglinks-modules-protocolAnalysis-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/protocolAnalysis/protocolAnalysis.jar
 # 启动protocolAnalysis服务
 ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/protocolAnalysis.jar"]

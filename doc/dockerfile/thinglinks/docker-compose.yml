@@ -1,0 +1,186 @@
+#@mattsnet  thinglinks  Docker Compose管理容器
+#dcoker 版本  yaml 配置实例
+version: '3.9'
+networks:
+  backend:
+    driver: bridge
+services:
+  thinglinks-auth:
+    container_name: thinglinks-auth
+    build:
+      context: ./thinglinks-auth
+      dockerfile: Dockerfile
+    ports:
+      - "19200:19200"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-auth/jar:/www/wwwroot/thinglinks/thinglinks-auth/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-auth
+    networks:
+      - backend
+  thinglinks-modules-file:
+    container_name: thinglinks-modules-file
+    build:
+      context: ./thinglinks-modules-file
+      dockerfile: Dockerfile
+    ports:
+      - "19300:19300"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-modules-file/jar:/www/wwwroot/thinglinks/thinglinks-modules-file/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-file
+      - /home/www/thinglinks/uploadPath:/www/wwwroot/thinglinks/uploadPath
+    networks:
+      - backend
+    stdin_open: true
+    tty: true
+  thinglinks-gateway:
+    container_name: thinglinks-gateway
+    build:
+      context: ./thinglinks-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "19100:19100"
+      - "19101:19101"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-gateway/jar:/www/wwwroot/thinglinks/thinglinks-gateway/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-gateway
+    networks:
+      - backend
+
+  thinglinks-modules-gen:
+    container_name: thinglinks-modules-gen
+    build:
+      context: ./thinglinks-modules-gen
+      dockerfile: Dockerfile
+    ports:
+      - "19301:19301"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-modules-gen/jar:/www/wwwroot/thinglinks/thinglinks-modules-gen/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-gen
+    networks:
+      - backend
+  thinglinks-modules-job:
+    container_name: thinglinks-modules-job
+    build:
+      context: ./thinglinks-modules-job
+      dockerfile: Dockerfile
+    ports:
+      - "19302:19302"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-modules-job/jar:/www/wwwroot/thinglinks/thinglinks-modules-job/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-job
+    networks:
+      - backend
+  thinglinks-modules-system:
+    container_name: thinglinks-modules-system
+    build:
+      context: ./thinglinks-modules-system
+      dockerfile: Dockerfile
+    ports:
+      - "19303:19303"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-modules-system/jar:/www/wwwroot/thinglinks/thinglinks-modules-system/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-system
+    networks:
+      - backend
+  thinglinks-modules-tdengine:
+    container_name: thinglinks-modules-tdengine
+    build:
+      context: ./thinglinks-modules-tdengine
+      dockerfile: Dockerfile
+    ports:
+      - "19304:19304"
+    extra_hosts:
+      - "tdengine:192.168.110.82"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-modules-tdengine/jar:/www/wwwroot/thinglinks/thinglinks-modules-tdengine/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-tdengine
+    networks:
+      - backend
+  thinglinks-modules-link:
+    container_name: thinglinks-modules-link
+    build:
+      context: ./thinglinks-modules-link
+      dockerfile: Dockerfile
+    ports:
+      - "19305:19305"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-modules-link/jar:/www/wwwroot/thinglinks/thinglinks-modules-link/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-link
+    networks:
+      - backend
+  thinglinks-modules-broker:
+    container_name: thinglinks-modules-broker
+    build:
+      context: ./thinglinks-modules-broker
+      dockerfile: Dockerfile
+    ports:
+      - "19306:19306"
+      - "11883:11883"
+      - "18443:18443"
+      - "18999:18999"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-modules-broker/jar:/www/wwwroot/thinglinks/thinglinks-modules-broker/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-broker
+    networks:
+      - backend
+  thinglinks-modules-protocolanalysis:
+    container_name: thinglinks-modules-protocolanalysis
+    build:
+      context: ./thinglinks-modules-protocolanalysis
+      dockerfile: Dockerfile
+    ports:
+      - "19307:19307"
+      - "18901:18901"
+      - "18902:18902"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-modules-protocolanalysis/jar:/www/wwwroot/thinglinks/thinglinks-modules-protocolanalysis/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-protocolanalysis
+    networks:
+      - backend
+  thinglinks-modules-rule:
+    container_name: thinglinks-modules-rule
+    build:
+      context: ./thinglinks-modules-rule
+      dockerfile: Dockerfile
+    ports:
+      - "19308:19308"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-modules-rule/jar:/www/wwwroot/thinglinks/thinglinks-modules-rule/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-modules-rule
+    networks:
+      - backend    
+  thinglinks-visual-monitor:
+    container_name: thinglinks-visual-monitor
+    build:
+      context: ./thinglinks-visual-monitor
+      dockerfile: Dockerfile
+    ports:
+      - "19400:19400"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-visual-monitor/jar:/www/wwwroot/thinglinks/thinglinks-visual-monitor/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-visual-monitor
+  thinglinks-visual-collection:
+    container_name: thinglinks-visual-collection
+    build:
+      context: ./thinglinks-visual-collection
+      dockerfile: Dockerfile
+    ports:
+      - "19401:19401"
+    volumes:
+      - /home/www/thinglinks/lib:/www/wwwroot/thinglinks/lib
+      - ./thinglinks-visual-collection/jar:/www/wwwroot/thinglinks/thinglinks-visual-collection/jar/
+      - /home/www/thinglinks/logs:/www/wwwroot/thinglinks/logs/thinglinks-visual-collection
+    networks:
+      - backend
