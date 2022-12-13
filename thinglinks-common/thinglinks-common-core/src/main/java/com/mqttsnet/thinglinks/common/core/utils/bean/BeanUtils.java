@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Bean 工具类
@@ -141,5 +142,15 @@ public class BeanUtils extends org.springframework.beans.BeanUtils
             }
         }
         return null;
+    }
+
+    public static<K,V>  List<K> listCopyBeanProp(List<V> vList){
+        List<K> newList = new ArrayList<>();
+        vList.stream().forEach(v->{
+            Object o = new Object();
+            copyBeanProp(o,v);
+            newList.add((K) o);
+        });
+        return newList;
     }
 }

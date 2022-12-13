@@ -7,7 +7,7 @@ import lombok.Data;
 public class ActionCommandsModel {
 
 
-    private Integer id;
+    private Long id;
 
 
     private Integer businessType;
@@ -22,12 +22,12 @@ public class ActionCommandsModel {
     private String deviceIdentificaiton;
     private String deviceName;
 
-    private Integer serviceId;
+    private Long serviceId;
     private String serviceName;
 
 
-    private Integer commandId;
+    private Long commandId;
     private String commandName;
 
-    private String commandBody;
+    private Object commandBody;
 }

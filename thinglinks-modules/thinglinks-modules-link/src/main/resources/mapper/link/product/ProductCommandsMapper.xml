@@ -526,7 +526,7 @@
         select
         <include refid="Base_Column_List"/>
         from
-        product_
+        product_commands
         <where>
             <if test="commandIdList != null ">
                 and id in

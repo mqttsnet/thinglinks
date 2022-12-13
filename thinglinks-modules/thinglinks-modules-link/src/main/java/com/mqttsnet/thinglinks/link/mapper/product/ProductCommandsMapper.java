@@ -118,5 +118,5 @@ public interface ProductCommandsMapper {
      */
     int deleteProductCommandsByIds(Long[] ids);
 
-    List<ProductCommands> selectProductCommandsByIdList(List<Long> commandIdList);
+    List<ProductCommands> selectProductCommandsByIdList(@Param("commandIdList") List<Long> commandIdList);
 }

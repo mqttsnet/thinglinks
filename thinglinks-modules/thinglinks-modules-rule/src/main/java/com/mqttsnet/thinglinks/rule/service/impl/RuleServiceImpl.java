@@ -14,11 +14,13 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.rule.api.domain.ActionCommands;
 import com.mqttsnet.thinglinks.rule.api.domain.Rule;
 import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
 import com.mqttsnet.thinglinks.rule.api.domain.model.RuleConditionsModel;
 import com.mqttsnet.thinglinks.rule.api.domain.model.RuleModel;
 import com.mqttsnet.thinglinks.rule.mapper.RuleMapper;
+import com.mqttsnet.thinglinks.rule.service.ActionCommandsService;
 import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
 import com.mqttsnet.thinglinks.rule.service.RuleService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
@@ -51,6 +53,10 @@ public class RuleServiceImpl implements RuleService {
     private RuleMapper ruleMapper;
     @Resource
     private RuleConditionsService ruleConditionsService;
+
+
+    @Resource
+    private ActionCommandsService actionCommandsService;
 
 
     @Override
@@ -139,6 +145,9 @@ public class RuleServiceImpl implements RuleService {
     @Override
     public RuleModel selectFullRuleById(Long id){
         Rule rule = ruleMapper.selectByPrimaryKey(id);
+        if(null == rule){
+            throw new ServiceException("rule not exist");
+        }
         RuleModel  ruleModel = new RuleModel();
         BeanUtils.copyProperties(rule,ruleModel);
 
@@ -146,6 +155,11 @@ public class RuleServiceImpl implements RuleService {
         log.info("List<RuleConditions>:{}",ruleConditionsList.toString());
 
         ruleModel.setRuleConditionsModelList(ruleConditionsService.ruleConditionsListToRuleConditionsModelList(ruleConditionsList));
+        ActionCommands actionCommands = new ActionCommands();
+        actionCommands.setRuleIdentification(rule.getRuleIdentification());
+        log.info("RuleIdentification:{}",rule.getRuleIdentification());
+        List<ActionCommands> actionCommandsList = actionCommandsService.selectByActionCommandsSelective(actionCommands);
+        ruleModel.setActionCommandsModelList(actionCommandsService.actionCommandsToActionCommandsModelList(actionCommandsList));
         return ruleModel;
     }
 

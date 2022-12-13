@@ -139,7 +139,7 @@ public class ActionCommandsServiceImpl implements ActionCommandsService {
 
 
 
-    public List<ActionCommandsModel> ruleConditionsListToRuleConditionsModelList(List<ActionCommands> actionCommandsList){
+    public List<ActionCommandsModel> actionCommandsToActionCommandsModelList(List<ActionCommands> actionCommandsList){
         List<ActionCommandsModel> actionCommandsModelList = new ArrayList<>();
         List<Long> productServicesIdList = new ArrayList<>();
         List<Long> commandIdList = new ArrayList<>();

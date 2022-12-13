@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.rule.controller;
 
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
+import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
@@ -8,14 +9,15 @@ import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.rule.api.domain.ActionCommands;
-import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
+import com.mqttsnet.thinglinks.rule.api.domain.model.ActionCommandsModel;
 import com.mqttsnet.thinglinks.rule.service.ActionCommandsService;
-import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
 
+@RequestMapping("/actionCommands")
+@RestController
 public class ActionCommandsController extends BaseController {
 
 
@@ -39,7 +41,7 @@ public class ActionCommandsController extends BaseController {
     @PreAuthorize(hasPermi = "rule:actionCommands:add")
     @Log(title = "执行动作命令", businessType = BusinessType.INSERT)
     @PostMapping("/batchInsert")
-    public AjaxResult add(@RequestBody List<ActionCommands> actionCommandsList) {
+    public AjaxResult batchInsert(@RequestBody List<ActionCommands> actionCommandsList) {
         return AjaxResult.success(actionCommandsService.batchInsert(actionCommandsList));
     }
 
@@ -50,7 +52,7 @@ public class ActionCommandsController extends BaseController {
     @PreAuthorize(hasPermi = "rule:actionCommands:edit")
     @Log(title = "执行动作命令", businessType = BusinessType.UPDATE)
     @PutMapping("/batchEdit")
-    public AjaxResult batchEdit(@RequestBody List<ActionCommands> actionCommandsList) {
+    public AjaxResult updateBatch(@RequestBody List<ActionCommands> actionCommandsList) {
         return toAjax(actionCommandsService.updateBatchSelective(actionCommandsList));
     }
 
