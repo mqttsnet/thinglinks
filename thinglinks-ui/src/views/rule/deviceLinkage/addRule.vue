@@ -1,6 +1,26 @@
 <template>
   <div class="wrap">
-    <div class="info">
+    <div class="steps">
+      <el-steps :active="stepActive" simple>
+        <el-step
+          title="基础信息"
+          icon="el-icon-edit"
+          description="基础信息描述"
+        ></el-step>
+        <el-step
+          title="触发机制"
+          icon="el-icon-setting"
+          description="触发机制描述"
+        ></el-step>
+        <el-step
+          title="执行动作"
+          icon="el-icon-message-solid
+"
+          description="执行动作描述"
+        ></el-step>
+      </el-steps>
+    </div>
+    <div class="info" v-if="stepActive == 0">
       <el-row>
         <el-col> 基本信息 </el-col>
       </el-row>
@@ -8,25 +28,40 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="规则名称">
-              <el-input></el-input>
+              <el-input
+                v-model="ruleBasic.ruleName"
+                class="detail-input"
+                maxlength="60"
+                placeholder="请输入规则名称"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="规则标识">
-              <el-input></el-input>
+              <el-input
+                v-model="ruleBasic.jobIdentification"
+                class="detail-input"
+                maxlength="60"
+                placeholder="请输入规则标识"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="8">
             <el-form-item label="应用ID">
-              <el-input></el-input>
+              <el-input
+                v-model="ruleBasic.appId"
+                class="detail-input"
+                maxlength="60"
+                placeholder="请输入应用ID"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="cron表达式" prop="cronExpression">
               <el-input
-                v-model="form.cronExpression"
+                v-model="ruleBasic.cronExpression"
                 placeholder="请输入cron执行表达式"
               >
                 <template slot="append">
@@ -42,7 +77,7 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="错误策略" prop="misfirePolicy">
-              <el-radio-group v-model="form.misfirePolicy" size="small">
+              <el-radio-group v-model="ruleBasic.misfirePolicy" size="small">
                 <el-radio-button label="1">立即执行</el-radio-button>
                 <el-radio-button label="2">执行一次</el-radio-button>
                 <el-radio-button label="3">放弃执行</el-radio-button>
@@ -51,20 +86,34 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="是否并发" prop="concurrent">
-              <el-radio-group v-model="form.concurrent" size="small">
+              <el-radio-group v-model="ruleBasic.concurrent" size="mini">
                 <el-radio-button label="0">允许</el-radio-button>
                 <el-radio-button label="1">禁止</el-radio-button>
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+        </el-row>
+        <el-row>
+          <el-col :span="8">
             <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
+              <el-radio-group v-model="ruleBasic.status" size="mini">
+                <el-radio-button
                   v-for="dict in dict.type.sys_job_status"
                   :key="dict.value"
                   :label="dict.value"
-                  >{{ dict.label }}</el-radio
+                  >{{ dict.label }}</el-radio-button
+                >
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="触发机制">
+              <el-radio-group v-model="ruleBasic.triggering" size="mini">
+                <el-radio-button
+                  v-for="dict in options"
+                  :key="dict.value"
+                  :label="dict.value"
+                  >{{ dict.label }}</el-radio-button
                 >
               </el-radio-group>
             </el-form-item>
@@ -73,33 +122,30 @@
         <el-row>
           <el-col :span="16">
             <el-form-item label="规则描述">
-              <el-input type="textarea"></el-input>
+              <el-input
+                v-model="ruleBasic.remark"
+                placeholder="请输入规则描述"
+                :autosize="{ minRows: 3, maxRows: 10 }"
+                maxlength="255"
+                show-word-limit
+                type="textarea"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
+      <div class="btn">
+        <el-button type="primary" size="mini" @click="stepNext(1)"
+          >确 定</el-button
+        >
+      </div>
     </div>
-    <div class="info">
+
+    <div class="info" v-if="stepActive == 1">
       <el-row>
         <el-col> 触发机制 </el-col>
       </el-row>
       <el-form>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="需满足">
-              <el-select v-model="value" placeholder="请选择" size="small">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                </el-option>
-              </el-select>
-              <span style="margin-left: 10px; color: #606266">以下条件</span>
-            </el-form-item>
-          </el-col>
-        </el-row>
         <div class="condition" v-if="conditionForm.length == 0">
           <span>尚未设置条件</span>
         </div>
@@ -159,7 +205,7 @@
                   <span>{{ item.device.deviceName || "未命名设备" }}</span>
                 </el-tooltip>
                 <el-link @click="showDeviceDiag(index, 1)">
-                  {{ item.deviceId ? "重新选择" : "请选择设备" }}
+                  {{ item.device ? "重新选择" : "请选择设备" }}
                 </el-link>
               </span>
               <el-select
@@ -259,8 +305,16 @@
           </el-col>
         </el-row>
       </el-form>
+      <div class="btn">
+        <el-button type="primary" size="mini" @click="stepActive -= 1"
+          >上一步</el-button
+        >
+        <el-button type="primary" size="mini" @click="stepNext(2)"
+          >确 定</el-button
+        >
+      </div>
     </div>
-    <div class="info">
+    <div class="info" v-if="stepActive == 2">
       <el-row>
         <el-col> 执行动作 </el-col>
       </el-row>
@@ -352,6 +406,14 @@
           </el-col>
         </el-row>
       </el-form>
+      <div class="btn">
+        <el-button type="primary" size="mini" @click="stepActive -= 1"
+          >上一步</el-button
+        >
+        <el-button type="primary" size="mini" @click="stepNext(3)"
+          >确 定</el-button
+        >
+      </div>
     </div>
     <el-dialog
       title="Cron表达式生成器"
@@ -367,7 +429,7 @@
       ></crontab>
     </el-dialog>
 
-    <el-drawer title="选择设备" width="60%" :visible.sync="openSelectDevice">
+    <!-- <el-drawer title="选择设备" width="60%" :visible.sync="openSelectDevice">
       <el-table
         :data="deviceList"
         style="width: 100%"
@@ -399,7 +461,7 @@
           >确 定</el-button
         >
       </span>
-    </el-drawer>
+    </el-drawer> -->
     <el-dialog
       title="下发命令参数配置"
       width="500"
@@ -434,6 +496,12 @@
         <el-button type="primary" @click="handleParamsOk">确 定</el-button>
       </span>
     </el-dialog>
+    <TLSelectDevice
+      ref="TLSelectDevice"
+      :productIdentification="productIdentification"
+      :params="{}"
+      @handleOk="handleOk"
+    ></TLSelectDevice>
   </div>
 </template>
 
@@ -441,10 +509,12 @@
 import Crontab from "@/components/Crontab";
 import {
   listProduct,
-  listDevice,
+  // listDevice,
   listService,
   listProperties,
+  ruleSaveBasic, //  保存基本信息
 } from "@/api/rule/deviceLinkage";
+import { listDevice } from "@/api/link/device/device";
 export default {
   name: "index.vue",
   components: { Crontab },
@@ -452,6 +522,15 @@ export default {
   data() {
     return {
       form: {},
+      ruleBasic: {}, // 规则基础信息数据集合
+      detail: {
+        ruleBasic: {
+          id: 6,
+        },
+      }, // 详情
+      stepActive: 1, // 步骤条
+      productIdentification: "", // 选择的产品标识
+
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -555,6 +634,25 @@ export default {
     this.getProductList();
   },
   methods: {
+    // step 点击下一步
+    stepNext(step) {
+      console.log(step);
+      if (step == 1) {
+        ruleSaveBasic({
+          ...this.ruleBasic,
+        }).then((res) => {
+          this.detail.ruleBasic = res.data;
+          this.stepActive = step;
+        });
+      } else if (step == 2) {
+        // TODO 触发机制和执行动作
+        this.detail.ruleBasic.id = 6; // 测试id为6的
+        console.log(this.detail.ruleBasic.id);
+        console.log(this.conditionForm);
+      }
+      this.stepActive = step;
+    },
+
     // 添加动作
     addActionEnum() {
       let obj = {
@@ -647,33 +745,28 @@ export default {
       this.deviceItem.device = row;
     },
     // 选择设备
-    handleOk() {
+    handleOk(e) {
+      console.log(e);
       this.openSelectDevice = false;
       if (this.selectType == 1) {
-        this.$set(
-          this.conditionForm[this.nowIndex],
-          "device",
-          this.deviceItem.device
-        );
+        this.$set(this.conditionForm[this.nowIndex], "device", e);
       } else if (this.selectType == 2) {
-        this.$set(
-          this.actionForm[this.nowIndex],
-          "device",
-          this.deviceItem.device
-        );
+        this.$set(this.actionForm[this.nowIndex], "device", e);
         this.getServiceList("8672340058954281bd34b265586ec45e");
       }
       this.deviceItem = {};
     },
     async showDeviceDiag(index, type) {
       this.selectType = type;
+      // type = 1 触发机制   2  执行动作
       if (this.selectType == 1) {
-        await this.getDeviceList(this.conditionForm[index].productValue);
+        this.productIdentification = this.conditionForm[index].productValue;
       } else if (this.selectType == 2) {
         // TODO 先固定一个产品id
         await this.getDeviceList("8672340058954281bd34b265586ec45e");
       }
-      this.openSelectDevice = true;
+      // this.openSelectDevice = true;
+      this.$refs.TLSelectDevice.open();
     },
     /** 查询产品服务列表 */
     getServiceList(id) {
@@ -695,7 +788,11 @@ export default {
     /** 查询设备档案列表 */
     async getDeviceList(productIdentification) {
       this.loading = true;
-      await listDevice(productIdentification).then((response) => {
+      await listDevice({
+        productIdentification,
+        page: 1,
+        pageSize: 100,
+      }).then((response) => {
         this.deviceList = response.data;
         this.loading = false;
       });
@@ -717,7 +814,7 @@ export default {
   .info {
     width: 100%;
     height: 100%;
-    background: #eef0f5;
+    background: #f5f7fa;
     padding: 20px 50px;
     box-sizing: border-box;
     font-weight: 700;
@@ -760,5 +857,12 @@ export default {
 .el-form-item,
 .condition {
   margin-bottom: 10px;
+}
+.steps {
+  width: 80%;
+  margin: 20px auto;
+}
+.btn {
+  text-align: center;
 }
 </style>
