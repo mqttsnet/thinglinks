@@ -79,12 +79,19 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
-        <!-- TODO  https://github.com/quickmsg/smqtt  V1.1.5版本（切勿自行更新）   -->
+        <!-- TODO  https://github.com/quickmsg/smqttx  V2.0.6版本（切勿自行更新）   -->
         <dependency>
             <groupId>io.github.quickmsg</groupId>
-            <artifactId>smqtt-spring-boot-starter</artifactId>
-            <version>1.1.5</version>
+            <artifactId>smqttx-spring-boot-starter</artifactId>
+            <version>2.0.6</version>
         </dependency>
+        <!--屏蔽h2版本冲突-->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.197</version>
+        </dependency>
+
 
         <!-- thinglinks API Link -->
         <dependency>

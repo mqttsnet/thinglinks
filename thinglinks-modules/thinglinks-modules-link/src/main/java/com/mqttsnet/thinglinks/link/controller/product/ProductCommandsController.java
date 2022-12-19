@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.controller.product;
 
+import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -105,5 +106,8 @@ public class ProductCommandsController extends BaseController {
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(productCommandsService.deleteProductCommandsByIds(ids));
     }
-
+    @PostMapping("/selectProductCommandsByIdList")
+    public R<?> selectProductCommandsByIdList(@RequestBody List<Long> commandIdList) {
+        return R.ok(productCommandsService.selectProductCommandsByIdList(commandIdList));
+    }
 }

@@ -2,6 +2,22 @@ import request from '@/utils/request'
 
 
 
+// 分页查询规则列表
+export function listRule(params) {
+  return request({
+    url: `/rule/rule/list`,
+    method: 'get',
+    params
+  })
+}
+// 删除规则
+export function deleteRule(id) {
+  return request({
+    url: `/rule/rule/${id}`,
+    method: 'delete'
+  })
+}
+
 // 获取所有产品
 export function listProduct() {
   return request({
@@ -30,5 +46,15 @@ export function listProperties(serviceId) {
   return request({
     url: `/rule/ruleDeviceLinkage/selectProductPropertiesByServiceId/${serviceId}`,
     method: 'get'
+  })
+}
+
+
+// 提交规则基本信息
+export function ruleSaveBasic(data) {
+  return request({
+    url: '/rule/rule',
+    method: 'post',
+    data
   })
 }

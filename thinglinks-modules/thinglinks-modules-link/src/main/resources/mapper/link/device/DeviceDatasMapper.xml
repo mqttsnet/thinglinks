@@ -6,36 +6,30 @@
         <!--@Table device_datas-->
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="device_identification" jdbcType="VARCHAR" property="deviceIdentification"/>
+        <result column="protocol_type" jdbcType="VARCHAR" property="protocolType"/>
         <result column="message_id" jdbcType="VARCHAR" property="messageId"/>
         <result column="topic" jdbcType="VARCHAR" property="topic"/>
-        <result column="status" jdbcType="VARCHAR" property="status"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-    </resultMap>
-    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
-               type="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas">
-        <!--@mbg.generated-->
-        <!--@Table device_datas-->
         <result column="message" jdbcType="LONGVARCHAR" property="message"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="report_time" jdbcType="TIMESTAMP" property="reportTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
         id,
         device_identification,
+        protocol_type,
         message_id,
         topic,
+        message,
         `status`,
+        report_time,
         create_time
     </sql>
-    <sql id="Blob_Column_List">
-        <!--@mbg.generated-->
-        message
-    </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         <!--@mbg.generated-->
         select
         <include refid="Base_Column_List"/>
-        ,
-        <include refid="Blob_Column_List"/>
         from device_datas
         where id = #{id,jdbcType=BIGINT}
     </select>
@@ -48,103 +42,111 @@
     <insert id="insert" keyColumn="id" keyProperty="id"
             parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas" useGeneratedKeys="true">
         <!--@mbg.generated-->
-        insert into device_datas (device_identification, message_id,
-                                  topic, `status`, create_time,
-                                  message)
-        values (#{deviceIdentification,jdbcType=VARCHAR}, #{messageId,jdbcType=VARCHAR},
-                #{topic,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
-                #{message,jdbcType=LONGVARCHAR})
+        insert into device_datas (device_identification, protocol_type,
+                                  message_id, topic, message,
+                                  `status`, report_time, create_time)
+        values (#{deviceIdentification,jdbcType=VARCHAR}, #{protocolType,jdbcType=VARCHAR},
+                #{messageId,jdbcType=VARCHAR}, #{topic,jdbcType=VARCHAR}, #{message,jdbcType=LONGVARCHAR},
+                #{status,jdbcType=VARCHAR}, #{reportTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
             parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas" useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into device_datas
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="deviceIdentification != null and deviceIdentification != ''">
+            <if test="deviceIdentification != null">
                 device_identification,
             </if>
-            <if test="messageId != null and messageId != ''">
+            <if test="protocolType != null">
+                protocol_type,
+            </if>
+            <if test="messageId != null">
                 message_id,
             </if>
-            <if test="topic != null and topic != ''">
+            <if test="topic != null">
                 topic,
             </if>
-            <if test="status != null and status != ''">
+            <if test="message != null">
+                message,
+            </if>
+            <if test="status != null">
                 `status`,
+            </if>
+            <if test="reportTime != null">
+                report_time,
             </if>
             <if test="createTime != null">
                 create_time,
             </if>
-            <if test="message != null and message != ''">
-                message,
-            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="deviceIdentification != null and deviceIdentification != ''">
+            <if test="deviceIdentification != null">
                 #{deviceIdentification,jdbcType=VARCHAR},
             </if>
-            <if test="messageId != null and messageId != ''">
+            <if test="protocolType != null">
+                #{protocolType,jdbcType=VARCHAR},
+            </if>
+            <if test="messageId != null">
                 #{messageId,jdbcType=VARCHAR},
             </if>
-            <if test="topic != null and topic != ''">
+            <if test="topic != null">
                 #{topic,jdbcType=VARCHAR},
             </if>
-            <if test="status != null and status != ''">
+            <if test="message != null">
+                #{message,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="status != null">
                 #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="reportTime != null">
+                #{reportTime,jdbcType=TIMESTAMP},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
             </if>
-            <if test="message != null and message != ''">
-                #{message,jdbcType=LONGVARCHAR},
-            </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective"
-            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas">
+    <update id="updateByPrimaryKeySelective" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas">
         <!--@mbg.generated-->
         update device_datas
         <set>
-            <if test="deviceIdentification != null and deviceIdentification != ''">
+            <if test="deviceIdentification != null">
                 device_identification = #{deviceIdentification,jdbcType=VARCHAR},
             </if>
-            <if test="messageId != null and messageId != ''">
+            <if test="protocolType != null">
+                protocol_type = #{protocolType,jdbcType=VARCHAR},
+            </if>
+            <if test="messageId != null">
                 message_id = #{messageId,jdbcType=VARCHAR},
             </if>
-            <if test="topic != null and topic != ''">
+            <if test="topic != null">
                 topic = #{topic,jdbcType=VARCHAR},
             </if>
-            <if test="status != null and status != ''">
+            <if test="message != null">
+                message = #{message,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="status != null">
                 `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="reportTime != null">
+                report_time = #{reportTime,jdbcType=TIMESTAMP},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
-            <if test="message != null and message != ''">
-                message = #{message,jdbcType=LONGVARCHAR},
-            </if>
         </set>
-        where id = #{id,jdbcType=BIGINT}
-    </update>
-    <update id="updateByPrimaryKeyWithBLOBs"
-            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas">
-        <!--@mbg.generated-->
-        update device_datas
-        set device_identification = #{deviceIdentification,jdbcType=VARCHAR},
-            message_id            = #{messageId,jdbcType=VARCHAR},
-            topic                 = #{topic,jdbcType=VARCHAR},
-            `status`              = #{status,jdbcType=VARCHAR},
-            create_time           = #{createTime,jdbcType=TIMESTAMP},
-            message               = #{message,jdbcType=LONGVARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas">
         <!--@mbg.generated-->
         update device_datas
         set device_identification = #{deviceIdentification,jdbcType=VARCHAR},
+            protocol_type         = #{protocolType,jdbcType=VARCHAR},
             message_id            = #{messageId,jdbcType=VARCHAR},
             topic                 = #{topic,jdbcType=VARCHAR},
+            message               = #{message,jdbcType=LONGVARCHAR},
             `status`              = #{status,jdbcType=VARCHAR},
+            report_time           = #{reportTime,jdbcType=TIMESTAMP},
             create_time           = #{createTime,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -157,6 +159,11 @@
                     when id = #{item.id,jdbcType=BIGINT} then #{item.deviceIdentification,jdbcType=VARCHAR}
                 </foreach>
             </trim>
+            <trim prefix="protocol_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.protocolType,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
             <trim prefix="message_id = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
                     when id = #{item.id,jdbcType=BIGINT} then #{item.messageId,jdbcType=VARCHAR}
@@ -167,19 +174,24 @@
                     when id = #{item.id,jdbcType=BIGINT} then #{item.topic,jdbcType=VARCHAR}
                 </foreach>
             </trim>
+            <trim prefix="message = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.message,jdbcType=LONGVARCHAR}
+                </foreach>
+            </trim>
             <trim prefix="`status` = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
                     when id = #{item.id,jdbcType=BIGINT} then #{item.status,jdbcType=VARCHAR}
                 </foreach>
             </trim>
+            <trim prefix="report_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.reportTime,jdbcType=TIMESTAMP}
+                </foreach>
+            </trim>
             <trim prefix="create_time = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
                     when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
-                </foreach>
-            </trim>
-            <trim prefix="message = case" suffix="end,">
-                <foreach collection="list" index="index" item="item">
-                    when id = #{item.id,jdbcType=BIGINT} then #{item.message,jdbcType=LONGVARCHAR}
                 </foreach>
             </trim>
         </trim>
@@ -199,6 +211,13 @@
                     </if>
                 </foreach>
             </trim>
+            <trim prefix="protocol_type = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.protocolType != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.protocolType,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
             <trim prefix="message_id = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
                     <if test="item.messageId != null">
@@ -213,6 +232,13 @@
                     </if>
                 </foreach>
             </trim>
+            <trim prefix="message = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.message != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.message,jdbcType=LONGVARCHAR}
+                    </if>
+                </foreach>
+            </trim>
             <trim prefix="`status` = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
                     <if test="item.status != null">
@@ -220,17 +246,17 @@
                     </if>
                 </foreach>
             </trim>
+            <trim prefix="report_time = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.reportTime != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.reportTime,jdbcType=TIMESTAMP}
+                    </if>
+                </foreach>
+            </trim>
             <trim prefix="create_time = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
                     <if test="item.createTime != null">
                         when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="message = case" suffix="end,">
-                <foreach collection="list" index="index" item="item">
-                    <if test="item.message != null">
-                        when id = #{item.id,jdbcType=BIGINT} then #{item.message,jdbcType=LONGVARCHAR}
                     </if>
                 </foreach>
             </trim>
@@ -243,12 +269,14 @@
     <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into device_datas
-        (device_identification, message_id, topic, `status`, create_time, message)
+        (device_identification, protocol_type, message_id, topic, message, `status`, report_time,
+         create_time)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.deviceIdentification,jdbcType=VARCHAR}, #{item.messageId,jdbcType=VARCHAR},
-             #{item.topic,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
-             #{item.message,jdbcType=LONGVARCHAR})
+            (#{item.deviceIdentification,jdbcType=VARCHAR}, #{item.protocolType,jdbcType=VARCHAR},
+             #{item.messageId,jdbcType=VARCHAR}, #{item.topic,jdbcType=VARCHAR}, #{item.message,jdbcType=LONGVARCHAR},
+             #{item.status,jdbcType=VARCHAR}, #{item.reportTime,jdbcType=TIMESTAMP},
+             #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
     <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
@@ -260,48 +288,13 @@
                 id,
             </if>
             device_identification,
+            protocol_type,
             message_id,
             topic,
-            `status`,
-            create_time,
-        </trim>
-        values
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                #{id,jdbcType=BIGINT},
-            </if>
-            #{deviceIdentification,jdbcType=VARCHAR},
-            #{messageId,jdbcType=VARCHAR},
-            #{topic,jdbcType=VARCHAR},
-            #{status,jdbcType=VARCHAR},
-            #{createTime,jdbcType=TIMESTAMP},
-        </trim>
-        on duplicate key update
-        <trim suffixOverrides=",">
-            <if test="id != null">
-                id = #{id,jdbcType=BIGINT},
-            </if>
-            device_identification = #{deviceIdentification,jdbcType=VARCHAR},
-            message_id            = #{messageId,jdbcType=VARCHAR},
-            topic                 = #{topic,jdbcType=VARCHAR},
-            `status`              = #{status,jdbcType=VARCHAR},
-            create_time           = #{createTime,jdbcType=TIMESTAMP},
-        </trim>
-    </insert>
-    <insert id="insertOrUpdateWithBLOBs" keyColumn="id" keyProperty="id"
-            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas" useGeneratedKeys="true">
-        <!--@mbg.generated-->
-        insert into device_datas
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                id,
-            </if>
-            device_identification,
-            message_id,
-            topic,
-            `status`,
-            create_time,
             message,
+            `status`,
+            report_time,
+            create_time,
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -309,11 +302,13 @@
                 #{id,jdbcType=BIGINT},
             </if>
             #{deviceIdentification,jdbcType=VARCHAR},
+            #{protocolType,jdbcType=VARCHAR},
             #{messageId,jdbcType=VARCHAR},
             #{topic,jdbcType=VARCHAR},
-            #{status,jdbcType=VARCHAR},
-            #{createTime,jdbcType=TIMESTAMP},
             #{message,jdbcType=LONGVARCHAR},
+            #{status,jdbcType=VARCHAR},
+            #{reportTime,jdbcType=TIMESTAMP},
+            #{createTime,jdbcType=TIMESTAMP},
         </trim>
         on duplicate key update
         <trim suffixOverrides=",">
@@ -321,11 +316,13 @@
                 id = #{id,jdbcType=BIGINT},
             </if>
             device_identification = #{deviceIdentification,jdbcType=VARCHAR},
+            protocol_type         = #{protocolType,jdbcType=VARCHAR},
             message_id            = #{messageId,jdbcType=VARCHAR},
             topic                 = #{topic,jdbcType=VARCHAR},
-            `status`              = #{status,jdbcType=VARCHAR},
-            create_time           = #{createTime,jdbcType=TIMESTAMP},
             message               = #{message,jdbcType=LONGVARCHAR},
+            `status`              = #{status,jdbcType=VARCHAR},
+            report_time           = #{reportTime,jdbcType=TIMESTAMP},
+            create_time           = #{createTime,jdbcType=TIMESTAMP},
         </trim>
     </insert>
     <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
@@ -336,23 +333,29 @@
             <if test="id != null">
                 id,
             </if>
-            <if test="deviceIdentification != null and deviceIdentification != ''">
+            <if test="deviceIdentification != null">
                 device_identification,
             </if>
-            <if test="messageId != null and messageId != ''">
+            <if test="protocolType != null">
+                protocol_type,
+            </if>
+            <if test="messageId != null">
                 message_id,
             </if>
-            <if test="topic != null and topic != ''">
+            <if test="topic != null">
                 topic,
             </if>
-            <if test="status != null and status != ''">
+            <if test="message != null">
+                message,
+            </if>
+            <if test="status != null">
                 `status`,
+            </if>
+            <if test="reportTime != null">
+                report_time,
             </if>
             <if test="createTime != null">
                 create_time,
-            </if>
-            <if test="message != null and message != ''">
-                message,
             </if>
         </trim>
         values
@@ -360,23 +363,29 @@
             <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
-            <if test="deviceIdentification != null and deviceIdentification != ''">
+            <if test="deviceIdentification != null">
                 #{deviceIdentification,jdbcType=VARCHAR},
             </if>
-            <if test="messageId != null and messageId != ''">
+            <if test="protocolType != null">
+                #{protocolType,jdbcType=VARCHAR},
+            </if>
+            <if test="messageId != null">
                 #{messageId,jdbcType=VARCHAR},
             </if>
-            <if test="topic != null and topic != ''">
+            <if test="topic != null">
                 #{topic,jdbcType=VARCHAR},
             </if>
-            <if test="status != null and status != ''">
+            <if test="message != null">
+                #{message,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="status != null">
                 #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="reportTime != null">
+                #{reportTime,jdbcType=TIMESTAMP},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="message != null and message != ''">
-                #{message,jdbcType=LONGVARCHAR},
             </if>
         </trim>
         on duplicate key update
@@ -384,23 +393,29 @@
             <if test="id != null">
                 id = #{id,jdbcType=BIGINT},
             </if>
-            <if test="deviceIdentification != null and deviceIdentification != ''">
+            <if test="deviceIdentification != null">
                 device_identification = #{deviceIdentification,jdbcType=VARCHAR},
             </if>
-            <if test="messageId != null and messageId != ''">
+            <if test="protocolType != null">
+                protocol_type = #{protocolType,jdbcType=VARCHAR},
+            </if>
+            <if test="messageId != null">
                 message_id = #{messageId,jdbcType=VARCHAR},
             </if>
-            <if test="topic != null and topic != ''">
+            <if test="topic != null">
                 topic = #{topic,jdbcType=VARCHAR},
             </if>
-            <if test="status != null and status != ''">
+            <if test="message != null">
+                message = #{message,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="status != null">
                 `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="reportTime != null">
+                report_time = #{reportTime,jdbcType=TIMESTAMP},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="message != null and message != ''">
-                message = #{message,jdbcType=LONGVARCHAR},
             </if>
         </trim>
     </insert>

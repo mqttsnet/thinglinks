@@ -35,7 +35,7 @@ public class RemoteProductServicesFallbackFactory implements FallbackFactory<Rem
             }
 
             @Override
-            public R<?> selectServicesByServiceIdList(List<Long> serviceIdList){
+            public R<?> selectProductServicesByIdList(List<Long> serviceIdList){
                 return R.fail("根据服务id列表查询服务失败", throwable.getMessage());
             }
 

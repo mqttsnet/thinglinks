@@ -2,7 +2,9 @@ package com.mqttsnet.thinglinks.rule.service;
 
 import java.util.List;
 import com.mqttsnet.thinglinks.rule.api.domain.ActionCommands;
-    /**
+import com.mqttsnet.thinglinks.rule.api.domain.model.ActionCommandsModel;
+
+/**
 * @program: thinglinks
 * @description: ${description}
 * @packagename: com.mqttsnet.thinglinks.rule.service.impl
@@ -35,4 +37,10 @@ public interface ActionCommandsService{
 
     int batchInsert(List<ActionCommands> list);
 
+
+    List<ActionCommands>   selectByActionCommandsSelective(ActionCommands actionCommands);
+
+    int deleteBatchByIds(Long[] ids);
+
+    List<ActionCommandsModel> actionCommandsToActionCommandsModelList(List<ActionCommands> actionCommandsList);
 }

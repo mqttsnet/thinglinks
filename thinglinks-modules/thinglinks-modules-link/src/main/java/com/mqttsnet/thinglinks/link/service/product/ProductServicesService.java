@@ -98,6 +98,6 @@ public interface ProductServicesService {
      */
     List<ProductServices> selectAllByProductIdentificationAndStatus(String productIdentification, String status);
 
-    List<ProductServices> selectServicesByServiceIdList(List<Long> serviceIdList);
+    List<ProductServices> selectProductServicesByIdList(List<Long> serviceIdList);
 }
 

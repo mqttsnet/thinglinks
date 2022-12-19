@@ -169,10 +169,10 @@ thinglinks基于UniApp开发的轻量级移动端: thinglinks-app
 - [Github](https://github.com/mqttsnet/thinglinks-app)
 - [Gitee](https://gitee.com/mqttsnet/thinglinks-app)
 
-本平台高效MQTT Broker采用: SMQTT
+本平台高效MQTT Broker采用: SMQTTX
 
-- [Github](https://github.com/quickmsg/smqtt)
-- [Gitee](https://gitee.com/quickmsg/mqtt-cluster)
+- [Github](https://github.com/quickmsg/smqttx)
+- [Gitee](https://gitee.com/quickmsg/smqttx)
 
 MQTT客户端C库: thinglinks-mqtt-c
 

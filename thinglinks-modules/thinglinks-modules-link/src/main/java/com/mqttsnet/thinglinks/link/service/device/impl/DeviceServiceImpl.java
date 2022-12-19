@@ -158,25 +158,25 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
 
-	@Override
-	public int updateConnectStatusByClientId(String updatedConnectStatus,String clientId){
-		 return deviceMapper.updateConnectStatusByClientId(updatedConnectStatus,clientId);
-	}
+    @Override
+    public int updateConnectStatusByClientId(String updatedConnectStatus, String clientId) {
+        return deviceMapper.updateConnectStatusByClientId(updatedConnectStatus, clientId);
+    }
 
-	@Override
-	public Device findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(String clientId,String userName,String password,String deviceStatus,String protocolType){
-		 return deviceMapper.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientId,userName,password,deviceStatus,protocolType);
-	}
+    @Override
+    public Device findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(String clientId, String userName, String password, String deviceStatus, String protocolType) {
+        return deviceMapper.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientId, userName, password, deviceStatus, protocolType);
+    }
 
-	@Override
-	public List<Device> findByAll(Device device){
-		 return deviceMapper.findByAll(device);
-	}
+    @Override
+    public List<Device> findByAll(Device device) {
+        return deviceMapper.findByAll(device);
+    }
 
-	@Override
-	public Device findOneById(Long id){
-		 return deviceMapper.findOneById(id);
-	}
+    @Override
+    public Device findOneById(Long id) {
+        return deviceMapper.findOneById(id);
+    }
 
     /**
      * 查询设备管理
@@ -185,8 +185,7 @@ public class DeviceServiceImpl implements DeviceService {
      * @return 设备管理
      */
     @Override
-    public Device selectDeviceById(Long id)
-    {
+    public Device selectDeviceById(Long id) {
         return deviceMapper.selectDeviceById(id);
     }
 
@@ -197,8 +196,7 @@ public class DeviceServiceImpl implements DeviceService {
      * @return 设备管理
      */
     @Override
-    public List<Device> selectDeviceList(Device device)
-    {
+    public List<Device> selectDeviceList(Device device) {
         return deviceMapper.selectDeviceList(device);
     }
 
@@ -210,60 +208,60 @@ public class DeviceServiceImpl implements DeviceService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public int insertDevice(DeviceParams deviceParams)throws Exception {
+    public int insertDevice(DeviceParams deviceParams) throws Exception {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         Device device = new Device();
-        BeanUtils.copyProperties(deviceParams,device);
+        BeanUtils.copyProperties(deviceParams, device);
         Device oneByClientIdAndDeviceIdentification = deviceMapper.findOneByClientIdOrDeviceIdentification(device.getClientId(), device.getDeviceIdentification());
-        if(StringUtils.isNotNull(oneByClientIdAndDeviceIdentification)){
+        if (StringUtils.isNotNull(oneByClientIdAndDeviceIdentification)) {
             throw new Exception("设备编号或者设备标识已存在");
         }
         device.setConnectStatus(DeviceConnectStatus.INIT.getValue());
         device.setCreateBy(sysUser.getUserName());
         final int insertDeviceCount = deviceMapper.insertOrUpdateSelective(device);
-        if (insertDeviceCount>0){
+        if (insertDeviceCount > 0) {
             //设备位置信息存储
             DeviceLocation deviceLocation = new DeviceLocation();
-            BeanUtils.copyProperties(deviceParams.getDeviceLocation(),deviceLocation);
+            BeanUtils.copyProperties(deviceParams.getDeviceLocation(), deviceLocation);
             deviceLocationService.insertOrUpdateSelective(deviceLocation);
             //基础TOPIC集合
             Map<String, String> topicMap = new HashMap<>();
-            if (device.getDeviceType().equals(DeviceType.GATEWAY.getValue())){
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/add","边设备添加子设备");
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/addResponse","物联网平台返回的添加子设备的响应");
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/delete","边设备删除子设备");
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/deleteResponse","物联网平台返回的删除子设备的响应");
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/update","边设备更新子设备状态");
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/topo/updateResponse","物联网平台返回的更新子设备状态的响应");
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/datas","边设备上报数据");
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/command","物联网平台给设备或边设备下发命令");
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/commandResponse","边设备返回给物联网平台的命令响应");
-            }else if (device.getDeviceType().equals(DeviceType.COMMON.getValue())){
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/datas","边设备上报数据");
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/command","物联网平台给设备或边设备下发命令");
-                topicMap.put("/v1/devices/"+device.getDeviceIdentification()+"/commandResponse","边设备返回给物联网平台的命令响应");
+            if (device.getDeviceType().equals(DeviceType.GATEWAY.getValue())) {
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/add", "边设备添加子设备");
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/addResponse", "物联网平台返回的添加子设备的响应");
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/delete", "边设备删除子设备");
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/deleteResponse", "物联网平台返回的删除子设备的响应");
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/update", "边设备更新子设备状态");
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/updateResponse", "物联网平台返回的更新子设备状态的响应");
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/datas", "边设备上报数据");
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/command", "物联网平台给设备或边设备下发命令");
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/commandResponse", "边设备返回给物联网平台的命令响应");
+            } else if (device.getDeviceType().equals(DeviceType.COMMON.getValue())) {
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/datas", "边设备上报数据");
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/command", "物联网平台给设备或边设备下发命令");
+                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/commandResponse", "边设备返回给物联网平台的命令响应");
                 Boolean commonDeviceTDSubtable = this.createCommonDeviceTDSubtable(device);
                 if (!commonDeviceTDSubtable) {
                     throw new Exception("创建普通设备TD子表失败");
                 }
             }
             //设备基础Topic数据存储
-            for(Map.Entry<String,String> entry : topicMap.entrySet()) {
+            for (Map.Entry<String, String> entry : topicMap.entrySet()) {
                 DeviceTopic deviceTopic = new DeviceTopic();
                 deviceTopic.setDeviceIdentification(device.getDeviceIdentification());
                 deviceTopic.setType(DeviceTopicEnum.BASIS.getKey());
                 deviceTopic.setTopic(entry.getKey());
-                if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("datas")){
+                if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("datas")) {
                     deviceTopic.setPublisher("边设备");
                     deviceTopic.setSubscriber("物联网平台");
-                }else if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("commandResponse")) {
+                } else if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("commandResponse")) {
                     deviceTopic.setPublisher("边设备");
                     deviceTopic.setSubscriber("物联网平台");
-                }else if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("Response")) {
+                } else if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("Response")) {
                     deviceTopic.setPublisher("物联网平台");
                     deviceTopic.setSubscriber("边设备");
-                }else {
+                } else {
                     deviceTopic.setPublisher("边设备");
                     deviceTopic.setSubscriber("物联网平台");
                 }
@@ -287,13 +285,13 @@ public class DeviceServiceImpl implements DeviceService {
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         Device device = new Device();
-        BeanUtils.copyProperties(deviceParams,device);
+        BeanUtils.copyProperties(deviceParams, device);
         device.setUpdateBy(sysUser.getUserName());
         final int insertDeviceCount = deviceMapper.insertOrUpdateSelective(device);
-        if (insertDeviceCount>0){
+        if (insertDeviceCount > 0) {
             //设备位置信息存储
             DeviceLocation deviceLocation = new DeviceLocation();
-            BeanUtils.copyProperties(deviceParams.getDeviceLocation(),deviceLocation);
+            BeanUtils.copyProperties(deviceParams.getDeviceLocation(), deviceLocation);
             deviceLocationService.insertOrUpdateSelective(deviceLocation);
         }
         return deviceMapper.updateDevice(device);
@@ -306,8 +304,7 @@ public class DeviceServiceImpl implements DeviceService {
      * @return 结果
      */
     @Override
-    public int deleteDeviceByIds(Long[] ids)
-    {
+    public int deleteDeviceByIds(Long[] ids) {
         return deviceMapper.deleteDeviceByIds(ids);
     }
 
@@ -318,38 +315,38 @@ public class DeviceServiceImpl implements DeviceService {
      * @return 结果
      */
     @Override
-    public int deleteDeviceById(Long id)
-    {
+    public int deleteDeviceById(Long id) {
         return deviceMapper.deleteDeviceById(id);
     }
 
-	@Override
-	public Device findOneByClientId(String clientId){
-		 return deviceMapper.findOneByClientId(clientId);
-	}
+    @Override
+    public Device findOneByClientId(String clientId) {
+        return deviceMapper.findOneByClientId(clientId);
+    }
 
-	@Override
-	public Device findOneByClientIdAndDeviceIdentification(String clientId,String deviceIdentification){
-		 return deviceMapper.findOneByClientIdAndDeviceIdentification(clientId,deviceIdentification);
-	}
+    @Override
+    public Device findOneByClientIdAndDeviceIdentification(String clientId, String deviceIdentification) {
+        return deviceMapper.findOneByClientIdAndDeviceIdentification(clientId, deviceIdentification);
+    }
 
-	@Override
-	public Device findOneByDeviceIdentification(String deviceIdentification){
-		 return deviceMapper.findOneByDeviceIdentification(deviceIdentification);
-	}
+    @Override
+    public Device findOneByDeviceIdentification(String deviceIdentification) {
+        return deviceMapper.findOneByDeviceIdentification(deviceIdentification);
+    }
 
-	@Override
-	public Device findOneByClientIdOrderByDeviceIdentification(String clientId){
-		 return deviceMapper.findOneByClientIdOrderByDeviceIdentification(clientId);
-	}
+    @Override
+    public Device findOneByClientIdOrderByDeviceIdentification(String clientId) {
+        return deviceMapper.findOneByClientIdOrderByDeviceIdentification(clientId);
+    }
 
-	@Override
-	public Device findOneByClientIdOrDeviceIdentification(String clientId,String deviceIdentification){
-		 return deviceMapper.findOneByClientIdOrDeviceIdentification(clientId,deviceIdentification);
-	}
+    @Override
+    public Device findOneByClientIdOrDeviceIdentification(String clientId, String deviceIdentification) {
+        return deviceMapper.findOneByClientIdOrDeviceIdentification(clientId, deviceIdentification);
+    }
 
     /**
      * 设备信息缓存失效
+     *
      * @param clientId
      * @return
      */
@@ -357,9 +354,9 @@ public class DeviceServiceImpl implements DeviceService {
     public Boolean cacheInvalidation(String clientId) {
         Device oneByClientId = deviceMapper.findOneByClientId(clientId);
         //设备信息缓存失效 删除缓存 更新数据库设备状态
-        if(StringUtils.isNotNull(oneByClientId)){
+        if (StringUtils.isNotNull(oneByClientId)) {
             //删除缓存
-            redisService.delete(Constants.DEVICE_RECORD_KEY+oneByClientId.getDeviceIdentification());
+            redisService.delete(Constants.DEVICE_RECORD_KEY + oneByClientId.getDeviceIdentification());
             //更新数据库设备状态
             Device device = new Device();
             device.setId(oneByClientId.getId());
@@ -379,19 +376,19 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public Boolean disconnect(Long[] ids) {
         final List<Device> deviceList = deviceMapper.findAllByIdIn(Arrays.asList(ids));
-        if (StringUtils.isEmpty(deviceList)){
+        if (StringUtils.isEmpty(deviceList)) {
             return false;
         }
         final List<String> clientIdentifiers = deviceList.stream().map(Device::getClientId).collect(Collectors.toList());
         final R r = remotePublishActorService.closeConnection(clientIdentifiers);
-        log.info("主动断开设备ID: {} 连接 , Broker 处理结果: {}",clientIdentifiers,r.toString());
+        log.info("主动断开设备ID: {} 连接 , Broker 处理结果: {}", clientIdentifiers, r.toString());
         return r.getCode() == ResultEnum.SUCCESS.getCode();
     }
 
-	@Override
-	public Long countDistinctClientIdByConnectStatus(String connectStatus){
-		 return deviceMapper.countDistinctClientIdByConnectStatus(connectStatus);
-	}
+    @Override
+    public Long countDistinctClientIdByConnectStatus(String connectStatus) {
+        return deviceMapper.countDistinctClientIdByConnectStatus(connectStatus);
+    }
 
     @Override
     public List<String> selectByProductIdentification(String productIdentification) {
@@ -400,11 +397,12 @@ public class DeviceServiceImpl implements DeviceService {
 
     /**
      * 客户端身份认证
+     *
      * @param clientIdentifier 客户端
-     * @param username 用户名
-     * @param password 密码
-     * @param deviceStatus 设备状态
-     * @param protocolType 协议类型
+     * @param username         用户名
+     * @param password         密码
+     * @param deviceStatus     设备状态
+     * @param protocolType     协议类型
      * @return
      */
     @Override
@@ -412,23 +410,23 @@ public class DeviceServiceImpl implements DeviceService {
         final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, username, password, deviceStatus, protocolType);
         if (Optional.ofNullable(device).isPresent()) {
             //缓存设备信息
-            redisService.setCacheObject(Constants.DEVICE_RECORD_KEY+device.getDeviceIdentification(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(Constants.DEVICE_RECORD_KEY + device.getDeviceIdentification(), device, 60L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             //更改设备在线状态为在线
-            this.updateConnectStatusByClientId(DeviceConnectStatus.ONLINE.getValue(),clientIdentifier);
+            this.updateConnectStatusByClientId(DeviceConnectStatus.ONLINE.getValue(), clientIdentifier);
             return true;
         }
         return false;
     }
 
-	@Override
-	public List<Device> findAllByIdIn(Collection<Long> idCollection){
-		 return deviceMapper.findAllByIdIn(idCollection);
-	}
+    @Override
+    public List<Device> findAllByIdIn(Collection<Long> idCollection) {
+        return deviceMapper.findAllByIdIn(idCollection);
+    }
 
-	@Override
-	public List<Device> findAllByProductIdentification(String productIdentification){
-		 return deviceMapper.findAllByProductIdentification(productIdentification);
-	}
+    @Override
+    public List<Device> findAllByProductIdentification(String productIdentification) {
+        return deviceMapper.findAllByProductIdentification(productIdentification);
+    }
 
     /**
      * 查询设备详细信息
@@ -447,9 +445,9 @@ public class DeviceServiceImpl implements DeviceService {
     /**
      * 查询普通设备影子数据
      *
-     * @param ids 需要查询的普通设备id
+     * @param ids       需要查询的普通设备id
      * @param startTime 开始时间 格式：yyyy-MM-dd HH:mm:ss
-     * @param endTime 结束时间 格式：yyyy-MM-dd HH:mm:ss
+     * @param endTime   结束时间 格式：yyyy-MM-dd HH:mm:ss
      * @return 普通设备影子数据
      */
     @Override
@@ -467,14 +465,14 @@ public class DeviceServiceImpl implements DeviceService {
                 log.error("查询普通设备影子数据失败，设备对应的产品不存在");
                 return;
             }
-            List<ProductServices> productServicesLis  = productServicesService.findAllByProductIdentificationIdAndStatus(product.getProductIdentification(),Constants.ENABLE);
+            List<ProductServices> productServicesLis = productServicesService.findAllByProductIdentificationIdAndStatus(product.getProductIdentification(), Constants.ENABLE);
             if (StringUtils.isNull(productServicesLis)) {
                 log.error("查询普通设备影子数据失败，普通设备services不存在");
                 return;
             }
             productServicesLis.forEach(productServices -> {
-                String superTableName = TdUtils.getSuperTableName(product.getProductType(),product.getProductIdentification(),productServices.getServiceName());
-                String shadowTableName = TdUtils.getSubTableName(superTableName,device.getClientId());
+                String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceName());
+                String shadowTableName = TdUtils.getSubTableName(superTableName, device.getClientId());
                 SelectDto selectDto = new SelectDto();
                 selectDto.setDataBaseName(dataBaseName);
                 selectDto.setTableName(shadowTableName);
@@ -485,16 +483,16 @@ public class DeviceServiceImpl implements DeviceService {
                     R<?> dataByTimestamp = remoteTdEngineService.getDataByTimestamp(selectDto);
                     if (StringUtils.isNull(dataByTimestamp)) {
                         log.error("查询普通设备影子数据失败，普通设备影子数据不存在");
-                    }else {
+                    } else {
                         map.put(shadowTableName, (List<Map<String, Object>>) dataByTimestamp.getData());
                         log.info("查询普通设备影子数据成功，普通设备影子数据：{}", dataByTimestamp.getData());
 
                     }
-                }else{
+                } else {
                     R<?> lastData = remoteTdEngineService.getLastData(selectDto);
                     if (StringUtils.isNull(lastData)) {
                         log.error("查询普通设备影子数据失败，普通设备影子数据不存在");
-                    }else {
+                    } else {
                         map.put(shadowTableName, (List<Map<String, Object>>) lastData.getData());
                         log.info("查询普通设备影子数据成功，普通设备影子数据：{}", lastData.getData());
 
@@ -508,10 +506,11 @@ public class DeviceServiceImpl implements DeviceService {
 
     /**
      * 创建普通设备TD子表
+     *
      * @param device
      * @return
      */
-    public Boolean createCommonDeviceTDSubtable(Device device){
+    public Boolean createCommonDeviceTDSubtable(Device device) {
         final Product product = productService.findOneByProductIdentificationAndProtocolType(device.getProductIdentification(), device.getProtocolType());
         if (StringUtils.isNull(product)) {
             log.error("刷新子设备数据模型失败，子设备产品不存在");
@@ -523,10 +522,10 @@ public class DeviceServiceImpl implements DeviceService {
             tableDto = new TableDto();
             tableDto.setDataBaseName(dataBaseName);
             //超级表命名规则 : 产品类型_产品标识_服务名称
-            String superTableName = TdUtils.getSuperTableName(product.getProductType(),product.getProductIdentification(),productServices.getServiceName());
+            String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceName());
             tableDto.setSuperTableName(superTableName);
             //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
-            tableDto.setTableName(TdUtils.getSubTableName(superTableName,device.getDeviceIdentification()));
+            tableDto.setTableName(TdUtils.getSubTableName(superTableName, device.getDeviceIdentification()));
             //Tag的处理
             List<Fields> tagsFieldValues = new ArrayList<>();
             Fields fields = new Fields();
@@ -543,8 +542,8 @@ public class DeviceServiceImpl implements DeviceService {
         return true;
     }
 
-    public List<Device> selectDeviceByDeviceIdentificationList( List<String> deviceIdentificationList){
-        return deviceMapper.selectDeviceByDeviceIdentificationList( deviceIdentificationList);
+    public List<Device> selectDeviceByDeviceIdentificationList(List<String> deviceIdentificationList) {
+        return deviceMapper.selectDeviceByDeviceIdentificationList(deviceIdentificationList);
     }
 }
 

@@ -684,7 +684,7 @@
         <include refid="OrderByCreateTimeDesc"/>
     </select>
     
-    <select id="selectServicesByServiceIdList" resultMap="BaseResultMap">
+    <select id="selectProductServicesByIdList" resultMap="BaseResultMap">
         select
             <include refid="Base_Column_List"/>
         from

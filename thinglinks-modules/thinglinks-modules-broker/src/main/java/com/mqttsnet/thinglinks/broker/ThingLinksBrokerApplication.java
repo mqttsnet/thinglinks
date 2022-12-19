@@ -1,8 +1,8 @@
 package com.mqttsnet.thinglinks.broker;
 
-import io.github.quickmsg.starter.EnableMqttServer;
 import com.mqttsnet.thinglinks.common.security.annotation.EnableRyFeignClients;
 import com.mqttsnet.thinglinks.common.swagger.annotation.EnableCustomSwagger2;
+import io.github.quickmsg.starter.config.EnableMqttServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.CrossOrigin;

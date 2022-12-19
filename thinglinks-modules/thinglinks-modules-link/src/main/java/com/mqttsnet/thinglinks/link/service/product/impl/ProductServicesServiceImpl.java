@@ -164,8 +164,8 @@ public class ProductServicesServiceImpl implements ProductServicesService {
     }
 
     @Override
-    public List<ProductServices> selectServicesByServiceIdList(List<Long> serviceIdList){
-        return productServicesMapper.selectServicesByServiceIdList( serviceIdList);
+    public List<ProductServices> selectProductServicesByIdList(List<Long> serviceIdList){
+        return productServicesMapper.selectProductServicesByIdList( serviceIdList);
     }
 }
 

@@ -11,7 +11,7 @@
     <result column="device_identificaiton" jdbcType="VARCHAR" property="deviceIdentificaiton" />
     <result column="service_id" jdbcType="INTEGER" property="serviceId" />
     <result column="command_id" jdbcType="INTEGER" property="commandId" />
-    <result column="command_body" jdbcType="LONGVARCHAR" property="commandBody" />
+    <result column="command_body" jdbcType="LONGVARCHAR" property="commandBody" typeHandler="com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler"/>
     <result column="ctreate_by" jdbcType="VARCHAR" property="ctreateBy" />
     <result column="ctreate_time" jdbcType="TIMESTAMP" property="ctreateTime" />
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
@@ -43,7 +43,7 @@
       update_time)
     values (#{businessType,jdbcType=INTEGER}, #{ruleIdentification,jdbcType=VARCHAR}, 
       #{productIdentification,jdbcType=VARCHAR}, #{deviceIdentificaiton,jdbcType=VARCHAR}, 
-      #{serviceId,jdbcType=INTEGER}, #{commandId,jdbcType=INTEGER}, #{commandBody,jdbcType=LONGVARCHAR}, 
+      #{serviceId,jdbcType=INTEGER}, #{commandId,jdbcType=INTEGER}, #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       #{ctreateBy,jdbcType=VARCHAR}, #{ctreateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
@@ -105,7 +105,7 @@
         #{commandId,jdbcType=INTEGER},
       </if>
       <if test="commandBody != null">
-        #{commandBody,jdbcType=LONGVARCHAR},
+        #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       </if>
       <if test="ctreateBy != null">
         #{ctreateBy,jdbcType=VARCHAR},
@@ -144,7 +144,7 @@
         command_id = #{commandId,jdbcType=INTEGER},
       </if>
       <if test="commandBody != null">
-        command_body = #{commandBody,jdbcType=LONGVARCHAR},
+        command_body = #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       </if>
       <if test="ctreateBy != null">
         ctreate_by = #{ctreateBy,jdbcType=VARCHAR},
@@ -170,7 +170,7 @@
       device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
       service_id = #{serviceId,jdbcType=INTEGER},
       command_id = #{commandId,jdbcType=INTEGER},
-      command_body = #{commandBody,jdbcType=LONGVARCHAR},
+      command_body = #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       ctreate_by = #{ctreateBy,jdbcType=VARCHAR},
       ctreate_time = #{ctreateTime,jdbcType=TIMESTAMP},
       update_by = #{updateBy,jdbcType=VARCHAR},
@@ -213,7 +213,7 @@
       </trim>
       <trim prefix="command_body = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=INTEGER} then #{item.commandBody,jdbcType=LONGVARCHAR}
+          when id = #{item.id,jdbcType=INTEGER} then #{item.commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler}
         </foreach>
       </trim>
       <trim prefix="ctreate_by = case" suffix="end,">
@@ -291,7 +291,7 @@
       <trim prefix="command_body = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
           <if test="item.commandBody != null">
-            when id = #{item.id,jdbcType=INTEGER} then #{item.commandBody,jdbcType=LONGVARCHAR}
+            when id = #{item.id,jdbcType=INTEGER} then #{item.commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler}
           </if>
         </foreach>
       </trim>
@@ -333,15 +333,14 @@
     <!--@mbg.generated-->
     insert into action_commands
     (business_type, rule_identification, product_identification, device_identificaiton, 
-      service_id, command_id, command_body, ctreate_by, ctreate_time, update_by, update_time
+      service_id, command_id, command_body, ctreate_by
       )
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.businessType,jdbcType=INTEGER}, #{item.ruleIdentification,jdbcType=VARCHAR}, 
         #{item.productIdentification,jdbcType=VARCHAR}, #{item.deviceIdentificaiton,jdbcType=VARCHAR}, 
-        #{item.serviceId,jdbcType=INTEGER}, #{item.commandId,jdbcType=INTEGER}, #{item.commandBody,jdbcType=LONGVARCHAR}, 
-        #{item.ctreateBy,jdbcType=VARCHAR}, #{item.ctreateTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR}, 
-        #{item.updateTime,jdbcType=TIMESTAMP})
+        #{item.serviceId,jdbcType=INTEGER}, #{item.commandId,jdbcType=INTEGER}, #{item.commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
+        #{item.ctreateBy,jdbcType=VARCHAR})
     </foreach>
   </insert>
   <insert id="insertOrUpdate" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands" useGeneratedKeys="true">
@@ -374,7 +373,7 @@
       #{deviceIdentificaiton,jdbcType=VARCHAR},
       #{serviceId,jdbcType=INTEGER},
       #{commandId,jdbcType=INTEGER},
-      #{commandBody,jdbcType=LONGVARCHAR},
+      #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       #{ctreateBy,jdbcType=VARCHAR},
       #{ctreateTime,jdbcType=TIMESTAMP},
       #{updateBy,jdbcType=VARCHAR},
@@ -391,7 +390,7 @@
       device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
       service_id = #{serviceId,jdbcType=INTEGER},
       command_id = #{commandId,jdbcType=INTEGER},
-      command_body = #{commandBody,jdbcType=LONGVARCHAR},
+      command_body = #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       ctreate_by = #{ctreateBy,jdbcType=VARCHAR},
       ctreate_time = #{ctreateTime,jdbcType=TIMESTAMP},
       update_by = #{updateBy,jdbcType=VARCHAR},
@@ -463,7 +462,7 @@
         #{commandId,jdbcType=INTEGER},
       </if>
       <if test="commandBody != null">
-        #{commandBody,jdbcType=LONGVARCHAR},
+        #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       </if>
       <if test="ctreateBy != null">
         #{ctreateBy,jdbcType=VARCHAR},
@@ -502,7 +501,7 @@
         command_id = #{commandId,jdbcType=INTEGER},
       </if>
       <if test="commandBody != null">
-        command_body = #{commandBody,jdbcType=LONGVARCHAR},
+        command_body = #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       </if>
       <if test="ctreateBy != null">
         ctreate_by = #{ctreateBy,jdbcType=VARCHAR},
@@ -518,4 +517,56 @@
       </if>
     </trim>
   </insert>
+
+  <select id="selectByActionCommandsSelective" parameterType="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from action_commands
+    <where>
+      <if test="id != null">
+        and id = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="businessType != null">
+        and business_type = #{businessType,jdbcType=INTEGER}
+      </if>
+      <if test="ruleIdentification != null">
+        and rule_identification = #{ruleIdentification,jdbcType=VARCHAR}
+      </if>
+      <if test="productIdentification != null">
+        and product_identification = #{productIdentification,jdbcType=VARCHAR}
+      </if>
+      <if test="deviceIdentificaiton != null">
+        and device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR}
+      </if>
+      <if test="serviceId != null">
+        and service_id = #{serviceId,jdbcType=INTEGER}
+      </if>
+      <if test="commandId != null">
+        and command_id = #{commandId,jdbcType=INTEGER}
+      </if>
+      <if test="commandBody != null">
+        and command_body = #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler}
+      </if>
+      <if test="ctreateBy != null">
+        and ctreate_by = #{ctreateBy,jdbcType=VARCHAR}
+      </if>
+      <if test="ctreateTime != null">
+        and ctreate_time = #{ctreateTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateBy != null">
+        and update_by = #{updateBy,jdbcType=VARCHAR}
+      </if>
+      <if test="updateTime != null">
+        and update_time = #{updateTime,jdbcType=TIMESTAMP}
+      </if>
+    </where>
+  </select>
+
+  <delete id="deleteBatchByIds" parameterType="String">
+    delete
+    from action_commands where id in
+    <foreach close=")" collection="array" item="id" open="(" separator=",">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

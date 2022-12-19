@@ -1,8 +1,12 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
-import cn.hutool.core.date.LocalDateTimeUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
+import com.mqttsnet.thinglinks.common.core.constant.Constants;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceActionMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceActionService;
@@ -14,6 +18,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description: 设备动作数据Service业务层处理
@@ -33,6 +38,8 @@ public class DeviceActionServiceImpl implements DeviceActionService {
     private DeviceActionMapper deviceActionMapper;
     @Autowired
     private DeviceService deviceService;
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -105,17 +112,11 @@ public class DeviceActionServiceImpl implements DeviceActionService {
      * @param thinglinksMessage
      */
     @Override
-    public void connectEvent(String thinglinksMessage) {
+    public void connectEvent(JSONObject thinglinksMessage) {
         Gson gson = new Gson();
         Map<String, Object> map = new HashMap<>();
-        map = gson.fromJson(thinglinksMessage, map.getClass());
-        int i = deviceService.updateConnectStatusByClientId("ONLINE", String.valueOf(map.get("clientIdentifier")));
-        DeviceAction deviceAction = new DeviceAction();
-        deviceAction.setDeviceIdentification(String.valueOf(map.get("clientIdentifier")));
-        deviceAction.setActionType(String.valueOf(map.get("channelStatus")));
-        deviceAction.setStatus("success");
-        deviceAction.setMessage("Device Connection");
-        deviceActionMapper.insert(deviceAction);
+        map = gson.fromJson(thinglinksMessage.toJSONString(), map.getClass());
+        deviceService.updateConnectStatusByClientId(DeviceConnectStatus.ONLINE.getValue(), String.valueOf(map.get("clientId")));
     }
 
     /**
@@ -124,17 +125,11 @@ public class DeviceActionServiceImpl implements DeviceActionService {
      * @param thinglinksMessage
      */
     @Override
-    public void closeEvent(String thinglinksMessage) {
+    public void closeEvent(JSONObject thinglinksMessage) {
         Gson gson = new Gson();
         Map<String, Object> map = new HashMap<>();
-        map = gson.fromJson(thinglinksMessage, map.getClass());
-        int i = deviceService.updateConnectStatusByClientId("OFFLINE", String.valueOf(map.get("clientIdentifier")));
-        DeviceAction deviceAction = new DeviceAction();
-        deviceAction.setDeviceIdentification(String.valueOf(map.get("clientIdentifier")));
-        deviceAction.setActionType(String.valueOf(map.get("channelStatus")));
-        deviceAction.setStatus(i != 0 ? "success" : "failure");
-        deviceAction.setMessage("Device Disconnection");
-        deviceActionMapper.insert(deviceAction);
+        map = gson.fromJson(thinglinksMessage.toJSONString(), map.getClass());
+        deviceService.updateConnectStatusByClientId(DeviceConnectStatus.OFFLINE.getValue(), String.valueOf(map.get("clientId")));
     }
 
 
@@ -145,8 +140,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
      * @return 设备动作数据
      */
     @Override
-    public DeviceAction selectDeviceActionById(Long id)
-    {
+    public DeviceAction selectDeviceActionById(Long id) {
         return deviceActionMapper.selectDeviceActionById(id);
     }
 
@@ -157,8 +151,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
      * @return 设备动作数据
      */
     @Override
-    public List<DeviceAction> selectDeviceActionList(DeviceAction deviceAction)
-    {
+    public List<DeviceAction> selectDeviceActionList(DeviceAction deviceAction) {
         return deviceActionMapper.selectDeviceActionList(deviceAction);
     }
 
@@ -169,8 +162,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
      * @return 结果
      */
     @Override
-    public int insertDeviceAction(DeviceAction deviceAction)
-    {
+    public int insertDeviceAction(DeviceAction deviceAction) {
         return deviceActionMapper.insertDeviceAction(deviceAction);
     }
 
@@ -181,8 +173,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
      * @return 结果
      */
     @Override
-    public int updateDeviceAction(DeviceAction deviceAction)
-    {
+    public int updateDeviceAction(DeviceAction deviceAction) {
         return deviceActionMapper.updateDeviceAction(deviceAction);
     }
 
@@ -193,8 +184,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
      * @return 结果
      */
     @Override
-    public int deleteDeviceActionByIds(Long[] ids)
-    {
+    public int deleteDeviceActionByIds(Long[] ids) {
         return deviceActionMapper.deleteDeviceActionByIds(ids);
     }
 
@@ -205,9 +195,43 @@ public class DeviceActionServiceImpl implements DeviceActionService {
      * @return 结果
      */
     @Override
-    public int deleteDeviceActionById(Long id)
-    {
+    public int deleteDeviceActionById(Long id) {
         return deviceActionMapper.deleteDeviceActionById(id);
+    }
+
+    /**
+     * 保存事件动作
+     *
+     * @param thinglinksMessage
+     */
+    @Override
+    public void insertEvent(JSONObject thinglinksMessage) {
+        Gson gson = new Gson();
+        Map<String, Object> map = new HashMap<>();
+        map = gson.fromJson(thinglinksMessage.toJSONString(), map.getClass());
+        DeviceAction deviceAction = new DeviceAction();
+        deviceAction.setDeviceIdentification(String.valueOf(map.get("clientId")));
+        deviceAction.setActionType(String.valueOf(map.get("event")));
+        deviceAction.setStatus("success");
+        deviceAction.setMessage(thinglinksMessage.toJSONString());
+        deviceActionMapper.insertSelective(deviceAction);
+    }
+
+    /**
+     * 刷新设备缓存
+     *
+     * @param thinglinksMessage
+     */
+    @Override
+    public void refreshDeviceCache(JSONObject thinglinksMessage) {
+        Gson gson = new Gson();
+        Map<String, Object> map = new HashMap<>();
+        map = gson.fromJson(thinglinksMessage.toJSONString(), map.getClass());
+        Device device = deviceService.findOneByClientId(String.valueOf(map.get("clientId")));
+        if (null != device){
+            //缓存设备信息
+            redisService.setCacheObject(Constants.DEVICE_RECORD_KEY+device.getClientId(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+        }
     }
 
 }

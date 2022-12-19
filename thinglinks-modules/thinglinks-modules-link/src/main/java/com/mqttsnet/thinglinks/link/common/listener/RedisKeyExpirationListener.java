@@ -48,7 +48,6 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
         String uuid = UUID.getUUID();
         try {
             resultLock = redisService.checkLock(expiredKey, uuid, 1000L);
-            log.info("获取分布式锁返回值：{}", resultLock);
             if (resultLock) {
                 log.info("获取分布式锁成功-key：{}，value：{}", expiredKey, uuid);
                 if (expiredKey.contains(Constants.DEVICE_RECORD_KEY)){

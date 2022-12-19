@@ -19,6 +19,6 @@ public interface RemoteProductServicesService {
     @GetMapping("/productServices/selectAllByProductIdentificationAndStatus")
     R<?> selectAllByProductIdentificationAndStatus(@RequestParam("productIdentification") String productIdentification,@RequestParam("status") String status);
 
-    @PostMapping ("/productServices/selectServicesByServiceIdList")
-    R<?> selectServicesByServiceIdList(@RequestBody List<Long> serviceIdList);
+    @PostMapping ("/productServices/selectProductServicesByIdList")
+    R<?> selectProductServicesByIdList(@RequestBody List<Long> serviceIdList);
 }

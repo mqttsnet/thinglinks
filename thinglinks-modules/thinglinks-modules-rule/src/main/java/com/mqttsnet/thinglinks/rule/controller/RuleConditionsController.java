@@ -38,18 +38,18 @@ public class RuleConditionsController extends BaseController {
     }
 
     /**
-     * 新增产品管理
+     * 批量添加触发条件
      */
     @NoRepeatSubmit
     @PreAuthorize(hasPermi = "rule:ruleConditions:add")
-    @Log(title = "规则条件", businessType = BusinessType.INSERT)
+    @Log(title = "触发条件", businessType = BusinessType.INSERT)
     @PostMapping("/batchInsert")
     public AjaxResult add(@RequestBody List<RuleConditions> ruleConditions) {
         return AjaxResult.success(ruleConditionsService.batchInsert(ruleConditions));
     }
 
     /**
-     * 新增规则条件
+     * 新增触发条件
      */
     @NoRepeatSubmit
     @PreAuthorize(hasPermi = "rule:ruleConditions:edit")
@@ -58,15 +58,24 @@ public class RuleConditionsController extends BaseController {
     public AjaxResult edit(@RequestBody List<RuleConditions> ruleConditions) {
         return toAjax(ruleConditionsService.updateBatch(ruleConditions));
     }
-
+    /**
+     * 新增触发条件
+     */
+    @NoRepeatSubmit
+    @PreAuthorize(hasPermi = "rule:ruleConditions:edit")
+    @Log(title = "触发条件", businessType = BusinessType.UPDATE)
+    @PutMapping("/batchEdit")
+    public AjaxResult batchEdit(@RequestBody List<RuleConditions> ruleConditions) {
+        return toAjax(ruleConditionsService.updateBatchSelective(ruleConditions));
+    }
 
     /**
-     * 批量删除
+     * 批量删除触发条件
      * @param ids
      * @return
      */
     @PreAuthorize(hasPermi = "link:ruleConditions:remove")
-    @Log(title = "规则条件", businessType = BusinessType.DELETE)
+    @Log(title = "触发条件", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(ruleConditionsService.deleteBatchByIds(ids));

@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.rule.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ActionCommands implements Serializable {
     @ApiModelProperty(value="")
-    private Integer id;
+    private Long id;
 
     /**
     * 业务类型:0规则生效1产品生效2设备生效
@@ -56,19 +57,19 @@ public class ActionCommands implements Serializable {
     * 服务id
     */
     @ApiModelProperty(value="服务id")
-    private Integer serviceId;
+    private Long serviceId;
 
     /**
     * 命令id
     */
     @ApiModelProperty(value="命令id")
-    private Integer commandId;
+    private Long commandId;
 
     /**
     * json命令参数及参数值{"key":"value","key1":"value1"}
     */
     @ApiModelProperty(value="json命令参数及参数值{'key':'value','key1':'value1'}")
-    private String commandBody;
+    private Object commandBody;
 
     /**
     * 创建者

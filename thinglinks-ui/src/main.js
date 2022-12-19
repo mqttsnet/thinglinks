@@ -12,13 +12,26 @@ import store from './store'
 import router from './router'
 import directive from './directive' //directive
 import plugins from './plugins' // plugins
-import { download } from '@/utils/request'
+import {
+  download
+} from '@/utils/request'
 
 import './assets/icons' // icon
 import './permission' // permission control
-import { getDicts } from "@/api/system/dict/data";
-import { getConfigKey } from "@/api/system/config";
-import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/thinglinks";
+import {
+  getDicts
+} from "@/api/system/dict/data";
+import {
+  getConfigKey
+} from "@/api/system/config";
+import {
+  parseTime,
+  resetForm,
+  addDateRange,
+  selectDictLabel,
+  selectDictLabels,
+  handleTree
+} from "@/utils/thinglinks";
 // 分页组件
 import Pagination from "@/components/Pagination";
 // 自定义表格工具组件
@@ -41,7 +54,7 @@ import BaiduMap from 'vue-baidu-map'
 // 引入高德
 import AmapVue from '@amap/amap-vue';
 AmapVue.config.version = '2.0'; // 默认2.0，这里可以不修改
-AmapVue.config.key = 'e13456422e8fe93451cf2201f4db84bd';//服务平台选择 Web端(JS API)
+AmapVue.config.key = 'e13456422e8fe93451cf2201f4db84bd'; //服务平台选择 Web端(JS API)
 AmapVue.config.plugins = [
   'AMap.moveAnimation',
   'AMap.Geocoder',
@@ -75,6 +88,14 @@ Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
 DictData.install()
+
+
+// 全局注册thinglinks专属组件
+import components from './components/ThingLinksComponents'
+Object.keys(components).forEach(key => {
+  const component = components[key]
+  Vue.component(component.name, component)
+})
 
 /**
  * If you don't want to use mock-server
