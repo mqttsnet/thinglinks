@@ -1,21 +1,19 @@
 package com.mqttsnet.thinglinks.link.mapper.device;
 
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas;
-import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
- * @Description: java类作用描述
- * @Author: ShiHuan Sun
- * @E-mail: 13733918655@163.com
- * @Website: http://thinglinks.mqttsnet.com
- * @CreateDate: 2021/12/26$ 13:20$
- * @UpdateUser: ShiHuan Sun
- * @UpdateDate: 2021/12/26$ 13:20$
- * @UpdateRemark: 修改内容
- * @Version: 1.0
- */
+ * @program: thinglinks
+ * @description: ${description}
+ * @packagename: com.mqttsnet.thinglinks.link.mapper.device
+ * @author: ShiHuan Sun
+ * @e-mainl: 13733918655@163.com
+ * @date: 2022-12-17 20:08
+ **/
 @Mapper
 public interface DeviceDatasMapper {
     /**
@@ -37,8 +35,6 @@ public interface DeviceDatasMapper {
     int insertOrUpdate(DeviceDatas record);
 
     int insertOrUpdateSelective(DeviceDatas record);
-
-    int insertOrUpdateWithBLOBs(DeviceDatas record);
 
     /**
      * insert record to table selective
@@ -63,8 +59,6 @@ public interface DeviceDatasMapper {
      * @return update count
      */
     int updateByPrimaryKeySelective(DeviceDatas record);
-
-    int updateByPrimaryKeyWithBLOBs(DeviceDatas record);
 
     /**
      * update record

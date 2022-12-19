@@ -81,12 +81,11 @@ seata:
       server-addr: 127.0.0.1:8848
       namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
 
-#smqtt配置文件V1.1.5
+#smqtt配置文件V2.0
 smqtt:
   logLevel: INFO # 系统日志
   tcp: # tcp配置
     port: 11883 # mqtt端口号
-    connectModel: KICK # UNIQUE 唯一 KICK 互踢
     notKickSecond: 30 # KICK互踢模式生效, 单位秒, 指定时间内客户端不互踢, 避免客户端自动连接持续互踢
     wiretap: false  # 二进制日志 前提是 smqtt.logLevel = DEBUG
     bossThreadSize: 1  # boss线程 默认=1
@@ -145,83 +144,55 @@ smqtt:
       port: 7777 # 用于映射容器端口 请不要随意设置，如果不需要请移除此选项
   meter:
     meterType: PROMETHEUS # INFLUXDB , PROMETHEUS
-  rules: # 规则引擎相关配置
-    - ruleName: ROCKET_MQ # 过滤器名称
-      chain: # 规则链(支持多个)
-        - ruleType: ROCKET_MQ  # 过滤器类型
-          script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
-  #    - ruleName: KAFKA # 过滤器名称
-  #      chain: # 规则链(支持多个)
-  #        - ruleType: KAFKA  # 过滤器类型
-  #          script:  '{"topic":"${topic}","msg":${msg},"qos":${qos}}'
-  #    - ruleName: HTTP # 过滤器名称
-  #      chain: # 规则链(支持多个)
-  #        - ruleType: HTTP
-  #          script:  '{"topic":"${topic}","msg":"${msg.test}","qos":${qos}}'
-  #    - ruleName: MQTT # 过滤器名称
-  #      chain: # 规则链(支持多个)
-  #        - ruleType: MQTT # 过滤器类型
-  #          script: '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
-  #    - ruleName: DATA_BASE # 过滤器名称
-  #      chain: # 规则链
-  #        - ruleType: DATA_BASE # 过滤器类型
-  #          script: insert into device_msg (clientIdentifier,topic,qos,retain,msg) value ('${clientIdentifier}','${topic}','${qos}',${retain},'${msg}')
-  #    - ruleName: RABBIT_MQ # 过滤器名称
-  #      chain: # 规则链
-  #        - ruleType: RABBIT_MQ # 过滤器类型
-  #          script: '{"topic":"${topic}","msg":"${msg}","qos":${qos}}'
+  rules:
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("ping")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'ping',clientId':clientId,'messageId':messageId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("connect")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'connect','clientId':clientId,'auth':auth,'clientAddress':clientAddress,'keepalive':keepalive,'nodeIp':nodeIp,'version':version,'time':time,'will':will}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("publish")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'publish','topic':topic,'body':body,'qos':qos,'clientId':clientId,'messageId':messageId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("disconnect")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'disconnect','clientId':clientId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("clone")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'disconnect','clientId':clientId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("subscribe")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'subscribe','clientId':clientId,'subscribeTopics':subscribeTopics,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("unsubscribe")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'unsubscribe','clientId':clientId,'topics':topics,'time':time}"
   sources: # 配置数据源sources
     - source: ROCKET_MQ # rocketmq配置
       sourceName: rocket_mq
       sourceAttributes:
         topic: thinglinks-link-mqttMsg
         tags: thinglinks
-        namesrvAddr: 124.223.113.139:19876
+        namesrvAddr: 127.0.0.1:19876
         instanceName: broker-a
         producerGroup: thinglinks-broker
-#    - source: KAFKA # kafka配置
-#      sourceName: kafka
-#      sourceAttributes:
-#        topic: thinglinks
-#        bootstrap-servers: 127.0.0.1:9092
-#        key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#        value-serializer: org.apache.kafka.common.serialization.StringSerializer
-#     - source: HTTP
-#       sourceName: http
-#       sourceAttributes:
-#         url: http://127.0.0.1:60027/publishTopic/reqSysTimeEvtPublishData
-#         port: 80
-#         headers:
-#           Authorization: token value
-#    - source: MQTT # mqtt配置
-#      sourceName: thinglinks
-#      sourceAttributes:
-#        host: 127.0.0.1
-#        port: 11883
-#        clientId: testClient # 客户端标志
-#        userName: thinglinks      # 鉴权帐号
-#        passWord: thinglinks		 # 鉴权密码
-#    - source: DATA_BASE # 数据库配置
-#      sourceName: dataBase
-#      sourceAttributes:
-#        jdbcUrl: jdbc:mysql://localhost:3306/thinglinks
-#        username: root
-#        password: root
-#        dataSource-cachePrepStmts: true
-#        dataSource-prepStmtCacheSize: 250
-#        dataSource-prepStmtCacheSqlLimit: 2048
-#        dataSource-useServerPrepStmts: true
-#        dataSource-useLocalSessionState: true
-#        dataSource-rewriteBatchedStatements: true
-#        dataSource-cacheResultSetMetadata: true
-#        dataSource-cacheServerConfiguration: true
-#        dataSource-elideSetAutoCommits: true
-#        dataSource-maintainTimeStats: false
-#    - source: RABBIT_MQ # rabbit mq配置
-#      sourceName: rabbitmq
-#      sourceAttributes:
-#        host: x.x.x.x
-#        port: 5672
-#        userName: thinglinks
-#        passWord: thinglinks
-#        queueName: thinglinks # 队列名称

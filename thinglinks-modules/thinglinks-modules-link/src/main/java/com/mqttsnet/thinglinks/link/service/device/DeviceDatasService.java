@@ -1,9 +1,9 @@
 package com.mqttsnet.thinglinks.link.service.device;
 
-import java.util.List;
-
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas;
+
+import java.util.List;
 
 /**
  * @Description: java类作用描述
@@ -27,15 +27,11 @@ public interface DeviceDatasService {
 
     int insertOrUpdateSelective(DeviceDatas record);
 
-    int insertOrUpdateWithBLOBs(DeviceDatas record);
-
     int insertSelective(DeviceDatas record);
 
     DeviceDatas selectByPrimaryKey(Long id);
 
     int updateByPrimaryKeySelective(DeviceDatas record);
-
-    int updateByPrimaryKeyWithBLOBs(DeviceDatas record);
 
     int updateByPrimaryKey(DeviceDatas record);
 
@@ -57,42 +53,44 @@ public interface DeviceDatasService {
      * 处理/topo/add Topic边设备添加子设备
      *
      * @param deviceIdentification 设备标识
-     * @param msg                  数据
+     * @param body                  数据
      */
-    String processingTopoAddTopic(String deviceIdentification,String msg) throws Exception;
+    String processingTopoAddTopic(String deviceIdentification, String body) throws Exception;
 
     /**
      * 处理/topo/delete Topic边设备删除子设备
      *
      * @param deviceIdentification 设备标识
-     * @param msg                  数据
+     * @param body                  数据
      */
-    String processingTopoDeleteTopic(String deviceIdentification,String msg) throws Exception;
+    String processingTopoDeleteTopic(String deviceIdentification, String body) throws Exception;
 
     /**
      * 处理/topo/update Topic边设备更新子设备状态
      *
      * @param deviceIdentification 设备标识
-     * @param msg                  数据
+     * @param body                  数据
      */
-    String processingTopoUpdateTopic(String deviceIdentification,String msg) throws Exception;
+    String processingTopoUpdateTopic(String deviceIdentification, String body) throws Exception;
 
     /**
      * 处理datas Topic数据上报
      *
      * @param deviceIdentification 设备标识
-     * @param msg                  数据
+     * @param body                  数据
      */
-    void processingDatasTopic(String deviceIdentification,String msg) throws Exception;
+    void processingDatasTopic(String deviceIdentification, String body) throws Exception;
 
     /**
      * 处理/commandResponse Topic边设备返回给物联网平台的命令响应
      *
      * @param deviceIdentification 设备标识
-     * @param msg                  数据
+     * @param body                  数据
      */
-    void processingTopoCommandResponseTopic(String deviceIdentification,String msg) throws Exception;
+    void processingTopoCommandResponseTopic(String deviceIdentification, String body) throws Exception;
 
 }
+
+
 
 

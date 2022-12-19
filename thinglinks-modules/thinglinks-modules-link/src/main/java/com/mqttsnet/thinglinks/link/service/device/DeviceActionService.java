@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.device;
 
+import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction;
 
 import java.util.List;
@@ -49,14 +50,14 @@ public interface DeviceActionService {
      *
      * @param thinglinksMessage
      */
-    void connectEvent(String thinglinksMessage);
+    void connectEvent(JSONObject thinglinksMessage);
 
     /**
      * 设备断开事件
      *
      * @param thinglinksMessage
      */
-    void closeEvent(String thinglinksMessage);
+    void closeEvent(JSONObject thinglinksMessage);
 
     /**
      * 查询设备动作数据
@@ -106,6 +107,18 @@ public interface DeviceActionService {
      */
     public int deleteDeviceActionById(Long id);
 
+    /**
+     * 保存事件动作
+     *
+     * @param thinglinksMessage
+     */
+    void insertEvent(JSONObject thinglinksMessage);
+
+    /**
+     * 刷新设备缓存
+     * @param thinglinksMessage
+     */
+    void refreshDeviceCache(JSONObject thinglinksMessage);
 }
 
 

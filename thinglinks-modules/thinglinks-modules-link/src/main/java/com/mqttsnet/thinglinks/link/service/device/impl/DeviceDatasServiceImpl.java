@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -19,16 +20,15 @@ import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
-import com.mqttsnet.thinglinks.common.core.utils.SubStringUtil;
+import com.mqttsnet.thinglinks.common.core.utils.tdengine.TdUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceDatas;
-import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.entity.DeviceInfo;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceInfos;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.TopoAddDatas;
+import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.entity.DeviceInfo;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-import com.mqttsnet.thinglinks.common.core.utils.tdengine.TdUtils;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceDatasMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
@@ -53,7 +53,12 @@ import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -117,11 +122,6 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
     }
 
     @Override
-    public int insertOrUpdateWithBLOBs(DeviceDatas record) {
-        return deviceDatasMapper.insertOrUpdateWithBLOBs(record);
-    }
-
-    @Override
     public int insertSelective(DeviceDatas record) {
         return deviceDatasMapper.insertSelective(record);
     }
@@ -134,11 +134,6 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
     @Override
     public int updateByPrimaryKeySelective(DeviceDatas record) {
         return deviceDatasMapper.updateByPrimaryKeySelective(record);
-    }
-
-    @Override
-    public int updateByPrimaryKeyWithBLOBs(DeviceDatas record) {
-        return deviceDatasMapper.updateByPrimaryKeyWithBLOBs(record);
     }
 
     @Override
@@ -170,10 +165,22 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void insertBaseDatas(JSONObject thinglinksMessage) throws Exception {
+        String deviceIdentification = thinglinksMessage.getString("clientId");
+        String messageId = thinglinksMessage.getString("messageId");
         String topic = thinglinksMessage.getString("topic");
         String qos = thinglinksMessage.getString("qos");
-        String msg = thinglinksMessage.getString("msg");
-        if (Objects.equals(msg, "{}")) {
+        String body = thinglinksMessage.getString("body");
+        String time = thinglinksMessage.getString("time");
+        DeviceDatas deviceDatas = new DeviceDatas();
+        deviceDatas.setDeviceIdentification(deviceIdentification);
+        deviceDatas.setProtocolType(ProtocolType.MQTT.getValue());
+        deviceDatas.setTopic(topic);
+        deviceDatas.setMessage(body);
+        deviceDatas.setMessageId(messageId);
+        deviceDatas.setStatus("success");
+        deviceDatas.setReportTime(LocalDateTime.parse(time, DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS)));
+        deviceDatasMapper.insertSelective(deviceDatas);
+        if (!JSONUtil.isJson(body)) {
             log.error("Topic:{},The entry is empty and ignored", topic);
             return;
         }
@@ -191,9 +198,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
          */
         //边设备上报数据处理
         if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/add")) {
-            log.info("Side equipment report data processing,Topic:{},Msg:{}", topic, msg);
-            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -9);
-            final String payload = this.processingTopoAddTopic(deviceIdentification, msg);
+            final String payload = this.processingTopoAddTopic(deviceIdentification, body);
             final Map<String, Object> param = new HashMap<>();
             param.put("topic", topic.replace("add", "addResponse"));
             param.put("qos", Integer.valueOf(qos));
@@ -201,9 +206,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             param.put("message", payload);
             remotePublishActorService.sendMessage(param);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/delete")) {
-            log.info("Side equipment report data processing,Topic:{},Msg:{}", topic, msg);
-            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -12);
-            final String payload = this.processingTopoDeleteTopic(deviceIdentification, msg);
+            final String payload = this.processingTopoDeleteTopic(deviceIdentification, body);
             final Map<String, Object> param = new HashMap<>();
             param.put("topic", topic.replace("delete", "deleteResponse"));
             param.put("qos", Integer.valueOf(qos));
@@ -211,9 +214,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             param.put("message", payload);
             remotePublishActorService.sendMessage(param);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/update")) {
-            log.info("Side equipment report data processing,Topic:{},Msg:{}", topic, msg);
-            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -12);
-            final String payload = this.processingTopoUpdateTopic(deviceIdentification, msg);
+            final String payload = this.processingTopoUpdateTopic(deviceIdentification, body);
             final Map<String, Object> param = new HashMap<>();
             param.put("topic", topic.replace("update", "updateResponse"));
             param.put("qos", Integer.valueOf(qos));
@@ -221,16 +222,12 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             param.put("message", payload);
             remotePublishActorService.sendMessage(param);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/datas")) {
-            log.info("Side equipment report data processing,Topic:{},Msg:{}", topic, msg);
-            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -6);
-            this.processingDatasTopic(deviceIdentification, msg);
+            this.processingDatasTopic(deviceIdentification, body);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/commandResponse")) {
-            log.info("Side equipment report data processing,Topic:{},Msg:{}", topic, msg);
-            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -16);
-            this.processingTopoCommandResponseTopic(deviceIdentification, msg);
+            this.processingTopoCommandResponseTopic(deviceIdentification, body);
         } else {
             //TODO 其他协议自行扩展
-            log.info("Other Topic packets are ignored,Topic:{},Msg:{}", topic, msg);
+            log.info("Other Topic packets are ignored,Topic:{},Body:{},Time:{}", topic, body, time);
         }
     }
 
@@ -238,13 +235,13 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 处理/topo/add Topic边设备添加子设备
      *
      * @param deviceIdentification 设备标识
-     * @param msg                  数据
+     * @param body                  数据
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public String processingTopoAddTopic(String deviceIdentification, String msg) throws Exception {
-        final TopoAddDatas topoAddDatas = JSONObject.toJavaObject(JSONObject.parseObject(msg), TopoAddDatas.class);
-        Map responseMaps = new HashMap<>();
+    public String processingTopoAddTopic(String deviceIdentification, String body) throws Exception {
+        final TopoAddDatas topoAddDatas = JSON.toJavaObject(JSON.parseObject(body), TopoAddDatas.class);
+        Map<Object, Object> responseMaps = new HashMap<>();
         List<Map<String, Object>> dataList = new ArrayList();
         responseMaps.put("mid", topoAddDatas.getMid());
         responseMaps.put("statusCode", 0);
@@ -252,14 +249,14 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
         responseMaps.put("data", dataList);
         final Device device = deviceService.findOneByDeviceIdentification(deviceIdentification);
         if (StringUtils.isNull(device)) {
-            log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+            log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
             responseMaps.put("statusCode", 1);
             responseMaps.put("statusDesc", "The side device reports data processing, but the device does not exist.");
             return JSON.toJSONString(responseMaps);
         }
         final Product product = productService.findOneByProductIdentificationAndProtocolType(device.getProductIdentification(), device.getProtocolType());
         if (StringUtils.isNull(product)) {
-            log.error("The side device reports data processing, but the product does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+            log.error("The side device reports data processing, but the product does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
             responseMaps.put("statusCode", 1);
             responseMaps.put("statusDesc", "The side device reports data processing, but the product does not exist.");
             return JSON.toJSONString(responseMaps);
@@ -284,10 +281,10 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 tableDto = new TableDto();
                 tableDto.setDataBaseName(dataBaseName);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
-                String superTableName = TdUtils.getSuperTableName(product.getProductType(),product.getProductIdentification(),productServices.getServiceName());
+                String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceName());
                 tableDto.setSuperTableName(superTableName);
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
-                tableDto.setTableName(TdUtils.getSubTableName(superTableName,deviceInfo.getDeviceId()));
+                tableDto.setTableName(TdUtils.getSubTableName(superTableName, deviceInfo.getDeviceId()));
                 //Tag的处理
                 List<Fields> tagsFieldValues = new ArrayList<>();
                 Fields fields = new Fields();
@@ -315,9 +312,9 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             } else {
                 responseMap.put("statusCode", 1);
                 responseMap.put("statusDesc", "abortive");
-                log.error("Insert DeviceInfo Exception,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+                log.error("Insert DeviceInfo Exception,DeviceIdentification:{},Body:{}", deviceIdentification, body);
             }
-            Map deviceInfoMap = new HashMap<>();
+            Map<Object, Object> deviceInfoMap = new HashMap<>();
             deviceInfoMap.put("deviceId", deviceInfo.getDeviceId());
             deviceInfoMap.put("nodeId", deviceInfo.getNodeId());
             deviceInfoMap.put("name", deviceInfo.getNodeName());
@@ -334,20 +331,20 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 处理/topo/delete Topic边设备删除子设备
      *
      * @param deviceIdentification 设备标识
-     * @param msg                  数据
+     * @param body                  数据
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public String processingTopoDeleteTopic(String deviceIdentification, String msg) throws Exception {
-        Map responseMaps = new HashMap<>();
+    public String processingTopoDeleteTopic(String deviceIdentification, String body) throws Exception {
+        Map<Object, Object> responseMaps = new HashMap<>();
         List<Map<String, Object>> dataList = new ArrayList();
-        responseMaps.put("mid", JsonPath.read(msg, "$.mid").toString());
+        responseMaps.put("mid", JsonPath.read(body, "$.mid").toString());
         responseMaps.put("statusCode", 0);
         responseMaps.put("statusDesc", "successful");
         responseMaps.put("data", dataList);
-        final List<String> deviceIds = JsonPath.read(msg, "$.deviceIds[*]");
+        final List<String> deviceIds = JsonPath.read(body, "$.deviceIds[*]");
         if (StringUtils.isNull(deviceIds)) {
-            log.error("The side device reports data processing, but the deviceId does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+            log.error("The side device reports data processing, but the deviceId does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
             responseMaps.put("statusCode", 1);
             responseMaps.put("statusDesc", "The side device reports data processing, but the deviceId does not exist.");
             return JSON.toJSONString(responseMaps);
@@ -373,21 +370,21 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 处理/topo/update Topic边设备更新子设备状态
      *
      * @param deviceIdentification 设备标识
-     * @param msg                  数据
+     * @param body                  数据
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public String processingTopoUpdateTopic(String deviceIdentification, String msg) throws Exception {
-        JSONObject message = JSONObject.parseObject(msg);
-        Map responseMaps = new HashMap<>();
+    public String processingTopoUpdateTopic(String deviceIdentification, String body) throws Exception {
+        JSONObject message = JSON.parseObject(body);
+        Map<Object, Object> responseMaps = new HashMap<>();
         List<Map<String, Object>> dataList = new ArrayList();
-        responseMaps.put("mid", JsonPath.read(msg, "$.mid").toString());
+        responseMaps.put("mid", JsonPath.read(body, "$.mid").toString());
         responseMaps.put("statusCode", 0);
         responseMaps.put("statusDesc", "successful");
         responseMaps.put("data", dataList);
         JSONArray jsonArray = message.getJSONArray("deviceStatuses");
         if (StringUtils.isNull(jsonArray)) {
-            log.error("The side device reports data processing, but the deviceStatus does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+            log.error("The side device reports data processing, but the deviceStatus does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
             responseMaps.put("statusCode", 1);
             responseMaps.put("statusDesc", "The side device reports data processing, but the deviceStatus does not exist.");
             return JSON.toJSONString(responseMaps);
@@ -399,7 +396,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             final String status = deviceStatusMap.get("status").toString();
             final DeviceInfo deviceInfo = deviceInfoService.findOneByDeviceId(deviceId);
             if (StringUtils.isNull(deviceInfo)) {
-                log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+                log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
             }
             if ("ONLINE".equals(status)) {
                 deviceInfo.setConnectStatus(DeviceConnectStatus.ONLINE.getValue());
@@ -426,42 +423,42 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 处理datas Topic数据上报
      *
      * @param deviceIdentification 设备标识
-     * @param msg                  数据
+     * @param body                  数据
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public void processingDatasTopic(String deviceIdentification, String msg) throws Exception {
+    public void processingDatasTopic(String deviceIdentification, String body) throws Exception {
         //协议脚本转换处理
-        msg = convert2msg(deviceIdentification, msg);
+        body = convertToBody(deviceIdentification, body);
         //根据返回的json解析出上报的数据data，所属的服务serviceName，事件发生的时间eventTime
-        Map<String, Object> resultMap = StringUtils.jsonToMap(msg);
+        Map<String, Object> resultMap = StringUtils.jsonToMap(body);
         List<Map<String, Object>> items = (List<Map<String, Object>>) resultMap.get("devices");
         for (Map<String, Object> item : items) {
             final Object deviceId = item.get("deviceId");
             Device device = null;
-            if (redisService.hasKey(Constants.DEVICE_RECORD_KEY + deviceIdentification)){
+            if (Boolean.TRUE.equals(redisService.hasKey(Constants.DEVICE_RECORD_KEY + deviceIdentification))) {
                 device = redisService.getCacheObject(Constants.DEVICE_RECORD_KEY + deviceIdentification);
-            }else {
+            } else {
                 device = deviceService.findOneByDeviceIdentification(deviceIdentification);
-                if (StringUtils.isNotNull(device)){
-                    redisService.setCacheObject(Constants.DEVICE_RECORD_KEY + deviceIdentification,device);
-                }else {
-                    log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+                if (StringUtils.isNotNull(device)) {
+                    redisService.setCacheObject(Constants.DEVICE_RECORD_KEY + deviceIdentification, device);
+                } else {
+                    log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
                     continue;
                 }
             }
             String manufacturerId = "";
             String model = "";
-            if (device.getDeviceType().equals(DeviceType.GATEWAY.getValue())){
+            if (device.getDeviceType().equals(DeviceType.GATEWAY.getValue())) {
                 final DeviceInfo oneByDeviceId = deviceInfoService.findOneByDeviceId(deviceId.toString());
                 if (StringUtils.isNull(oneByDeviceId)) {
-                    log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+                    log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
                     continue;
                 }
                 //获取设备的厂商ID和型号
                 manufacturerId = oneByDeviceId.getManufacturerId();
                 model = oneByDeviceId.getModel();
-            }else if (device.getDeviceType().equals(DeviceType.COMMON.getValue())){
+            } else if (device.getDeviceType().equals(DeviceType.COMMON.getValue())) {
                 // TODO 优化取redis产品信息
                 Product product = productService.selectByProductIdentification(device.getProductIdentification());
                 manufacturerId = product.getManufacturerId();
@@ -470,7 +467,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             final JSONArray services = JSON.parseArray(item.get("services").toString());
             //如果设备上报的数据为空，不需要存，跳过该循环，进入下个循环
             if (services.isEmpty()) {
-                log.error("The side device reports data processing, but the data does not exist,DeviceIdentification:{},Msg:{}", deviceIdentification, msg);
+                log.error("The side device reports data processing, but the data does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
                 continue;
             }
             for (Object service : services) {
@@ -567,11 +564,11 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 处理/commandResponse Topic边设备返回给物联网平台的命令响应
      *
      * @param deviceIdentification 设备标识
-     * @param msg                  数据
+     * @param body                  数据
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public void processingTopoCommandResponseTopic(String deviceIdentification, String msg) throws Exception {
+    public void processingTopoCommandResponseTopic(String deviceIdentification, String body) throws Exception {
 
     }
 
@@ -579,8 +576,8 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 协议转换处理
      * 根据设备找到所属产品 产品的服务及属性 转换出系统能识别的json 找到这个产品的协议内容即Java代码
      */
-    public String convert2msg(String deviceIdentification, String msg) {
-        if (redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification)) {
+    public String convertToBody(String deviceIdentification, String body) {
+        if (Boolean.TRUE.equals(redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification))) {
             String protocolContent = redisService.get(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification);
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintWriter out = new PrintWriter(buffer, true);
@@ -588,13 +585,15 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             byte[] injectedClass = ClassInjector.injectSystem(classBytes);
             InjectionSystem.inject(null, new PrintStream(buffer, true), null);
             DynamicClassLoader classLoader = new DynamicClassLoader(this.getClass().getClassLoader());
-            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out, msg);
-            msg = buffer.toString().trim();
-            return msg;
+            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out, body);
+            body = buffer.toString().trim();
+            return body;
         } else {
-            return msg;
+            return body;
         }
     }
 }
+
+
 
 

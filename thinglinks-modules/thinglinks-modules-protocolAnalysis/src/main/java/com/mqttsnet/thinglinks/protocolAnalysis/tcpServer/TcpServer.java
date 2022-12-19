@@ -77,7 +77,7 @@ public class TcpServer {
             future.channel().closeFuture().sync();//以异步的方式关闭端口
 
         }catch (InterruptedException e) {
-            log.info("启动出现异常:{}",e);
+            log.error("启动出现异常:{}",e);
         }finally {
             work.shutdownGracefully();
             boss.shutdownGracefully();//出现异常后，关闭线程组
