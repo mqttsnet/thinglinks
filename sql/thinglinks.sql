@@ -1848,7 +1848,7 @@ CREATE TABLE `rule`
     `app_id`              varchar(64)  NOT NULL COMMENT '应用ID',
     `rule_identification` varchar(100) NOT NULL COMMENT '规则标识',
     `rule_name`           varchar(255) NOT NULL COMMENT '规则名称',
-    `job_identificatio`   varchar(255) NOT NULL COMMENT '任务标识',
+    `job_identification`   varchar(255) NOT NULL COMMENT '任务标识',
     `status`              varchar(10)  NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
     `triggering`          smallint(20)          DEFAULT NULL COMMENT '触发机制（0:全部，1:任意一个）',
     `remark`              varchar(255)          DEFAULT NULL COMMENT '规则描述，可以为空',
