@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.websocket;
+package com.mqttsnet.thinglinks.broker.websocket;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
