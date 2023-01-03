@@ -2,10 +2,11 @@ package com.mqttsnet.thinglinks.tdengine.common.consumer;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
-import com.mqttsnet.thinglinks.tdengine.service.ProductSuperTableCreateOrUpdateService;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerGroupConstant;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
+import com.mqttsnet.thinglinks.tdengine.service.ProductSuperTableCreateOrUpdateService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.annotation.MessageModel;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_LINK_GROUP, topic = ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE)
+@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_LINK_GROUP, topic = ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE, messageModel = MessageModel.CLUSTERING)
 public class ProductCreateSuperTableMessageConsumer implements RocketMQListener {
 
     @Autowired

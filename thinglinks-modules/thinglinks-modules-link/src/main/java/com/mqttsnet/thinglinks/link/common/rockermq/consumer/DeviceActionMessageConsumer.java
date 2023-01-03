@@ -8,6 +8,7 @@ import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
 import com.mqttsnet.thinglinks.link.service.device.DeviceActionService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.annotation.MessageModel;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_BROKER_GROUP, topic = ConsumerTopicConstant.THINGLINKS_LINK_MQTT_MSG)
+@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_BROKER_GROUP, topic = ConsumerTopicConstant.THINGLINKS_LINK_MQTT_MSG, messageModel = MessageModel.CLUSTERING)
 public class DeviceActionMessageConsumer implements RocketMQListener {
     @Autowired
     private DeviceActionService deviceActionService;

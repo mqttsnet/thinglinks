@@ -150,7 +150,7 @@ smqtt:
         - ruleType: PREDICATE
           script: $.event.equals("ping")
         - ruleType: ROCKET_MQ
-          script: "{'event':'ping',clientId':clientId,'messageId':messageId,'time':time}"
+          script: "{'event':'ping','clientId':clientId,'messageId':messageId,'time':time}"
     - ruleName: ROCKET_MQ
       chain:
         - ruleType: PREDICATE

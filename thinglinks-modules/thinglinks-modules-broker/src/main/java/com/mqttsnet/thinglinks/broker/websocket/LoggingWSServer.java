@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.websocket;
+package com.mqttsnet.thinglinks.broker.websocket;
 
 import com.mqttsnet.thinglinks.common.core.utils.ErrorUtil;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;

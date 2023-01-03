@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.websocket;
+package com.mqttsnet.thinglinks.broker.websocket;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
