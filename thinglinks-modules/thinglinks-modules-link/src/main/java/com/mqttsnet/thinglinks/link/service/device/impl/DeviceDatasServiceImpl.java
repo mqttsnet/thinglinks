@@ -20,6 +20,7 @@ import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.core.utils.SubStringUtil;
 import com.mqttsnet.thinglinks.common.core.utils.tdengine.TdUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
@@ -35,7 +36,6 @@ import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
-import com.mqttsnet.thinglinks.link.service.protocol.ProtocolService;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
@@ -53,8 +53,6 @@ import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -93,8 +91,6 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
     private DeviceInfoService deviceInfoService;
     @Resource
     private RemotePublishActorService remotePublishActorService;
-    @Autowired
-    private ProtocolService protocolService;
     /**
      * 数据库名称
      */
@@ -165,21 +161,10 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void insertBaseDatas(JSONObject thinglinksMessage) throws Exception {
-        String deviceIdentification = thinglinksMessage.getString("clientId");
-        String messageId = thinglinksMessage.getString("messageId");
         String topic = thinglinksMessage.getString("topic");
         String qos = thinglinksMessage.getString("qos");
         String body = thinglinksMessage.getString("body");
         String time = thinglinksMessage.getString("time");
-        DeviceDatas deviceDatas = new DeviceDatas();
-        deviceDatas.setDeviceIdentification(deviceIdentification);
-        deviceDatas.setProtocolType(ProtocolType.MQTT.getValue());
-        deviceDatas.setTopic(topic);
-        deviceDatas.setMessage(body);
-        deviceDatas.setMessageId(messageId);
-        deviceDatas.setStatus("success");
-        deviceDatas.setReportTime(LocalDateTime.parse(time, DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS)));
-        deviceDatasMapper.insertSelective(deviceDatas);
         if (!JSONUtil.isJson(body)) {
             log.error("Topic:{},The entry is empty and ignored", topic);
             return;
@@ -198,6 +183,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
          */
         //边设备上报数据处理
         if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/add")) {
+            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -9);
             final String payload = this.processingTopoAddTopic(deviceIdentification, body);
             final Map<String, Object> param = new HashMap<>();
             param.put("topic", topic.replace("add", "addResponse"));
@@ -206,6 +192,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             param.put("message", payload);
             remotePublishActorService.sendMessage(param);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/delete")) {
+            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -12);
             final String payload = this.processingTopoDeleteTopic(deviceIdentification, body);
             final Map<String, Object> param = new HashMap<>();
             param.put("topic", topic.replace("delete", "deleteResponse"));
@@ -214,6 +201,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             param.put("message", payload);
             remotePublishActorService.sendMessage(param);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/update")) {
+            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -12);
             final String payload = this.processingTopoUpdateTopic(deviceIdentification, body);
             final Map<String, Object> param = new HashMap<>();
             param.put("topic", topic.replace("update", "updateResponse"));
@@ -222,8 +210,10 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             param.put("message", payload);
             remotePublishActorService.sendMessage(param);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/datas")) {
+            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -6);
             this.processingDatasTopic(deviceIdentification, body);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/commandResponse")) {
+            final String deviceIdentification = SubStringUtil.subStr(topic, 12, -16);
             this.processingTopoCommandResponseTopic(deviceIdentification, body);
         } else {
             //TODO 其他协议自行扩展
@@ -549,7 +539,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 tableDto.setTableName(tableName);
                 tableDto.setSchemaFieldValues(schemaFieldsStream);
                 tableDto.setTagsFieldValues(tagsFieldsStream);
-                //调用插入方法插入数据
+                //调用插入方法插入数据 TODO 需要改为mq异步处理
                 final R<?> insertResult = this.remoteTdEngineService.insertData(tableDto);
                 if (insertResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     log.info("DeviceIdentification: {}, Insert data result: {}", deviceIdentification, ResultEnum.SUCCESS.getMessage());

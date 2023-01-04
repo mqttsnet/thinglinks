@@ -33,15 +33,16 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        // target: `http://localhost:19100`,
-        target: `http://frp1.xiaonannet.com:6901`,
+        target: `http://localhost:19100`,
+        // target: `http://frp1.xiaonannet.com:6901`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }
       },
       [process.env.VUE_APP_BASE_SOCKETIP]: {
-        target: `ws://frp1.xiaonannet.com:6901`,
+        target: `ws://localhost:19100`,
+        // target: `ws://frp1.xiaonannet.com:6901`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_SOCKETIP]: ''

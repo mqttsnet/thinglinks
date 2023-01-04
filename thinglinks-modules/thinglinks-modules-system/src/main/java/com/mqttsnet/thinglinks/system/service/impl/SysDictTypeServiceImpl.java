@@ -1,8 +1,5 @@
 package com.mqttsnet.thinglinks.system.service.impl;
 
-import java.util.List;
-import javax.annotation.PostConstruct;
-
 import com.mqttsnet.thinglinks.common.core.constant.UserConstants;
 import com.mqttsnet.thinglinks.common.core.exception.ServiceException;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
@@ -15,6 +12,10 @@ import com.mqttsnet.thinglinks.system.service.ISysDictTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 字典 业务层处理
@@ -82,7 +83,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
             DictUtils.setDictCache(dictType, dictDatas);
             return dictDatas;
         }
-        return null;
+        return Collections.emptyList();
     }
 
     /**

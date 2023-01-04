@@ -363,8 +363,7 @@ public class DeviceServiceImpl implements DeviceService {
             device.setConnectStatus(DeviceConnectStatus.OFFLINE.getValue());
             deviceMapper.updateByPrimaryKeySelective(device);
         }
-        log.info(oneByClientId.toString());
-        return null;
+        return true;
     }
 
     /**
