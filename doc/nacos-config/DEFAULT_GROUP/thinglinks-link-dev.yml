@@ -76,15 +76,6 @@ thinglinks:
         logpath: /www/server/thinglinks/xxljob/link
         logretentiondays: 30
 
-
-threadBus:
-  pool:
-    core-pool-size: 1
-    max-pool-size: 2
-    keep-alive-time: 60
-    queue-capacity: 200
-    thread-name-prefix: thinglinksAsync-
-
 # seata配置
 seata:
   enabled: false
