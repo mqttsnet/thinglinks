@@ -92,13 +92,13 @@ com.mqttsnet.thinglinks
 
 由于服务器近期频繁遭到境外IP暴力破解攻击，暂时关闭！
 
-- thinglinks-demo/123456
+- admin/adminthinglinks（请大家切勿修改密码）
 
 演示地址：http://thinglinks.mqttsnet.com/
 
 ## 功能开发计划
 
-*、规则引擎-设备联动(实现中)
+*、规则引擎-设备联动(开发完成，缺少告警信息的配置)
 
 *、APP移动端-我的设备(实现中)
 
