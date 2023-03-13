@@ -75,19 +75,20 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Override
     public Weather lastOne() {
+        Weather weather = null;
         Map<String, Object> result = weatherMapper.lastOne();
-
-        long ts = (long) result.get("ts");
-        float temperature = (float) result.get("temperature");
-        float humidity = (float) result.get("humidity");
-        String note = (String) result.get("note");
-        int groupId = (int) result.get("groupid");
-        String location = (String) result.get("location");
-
-        Weather weather = new Weather(new Timestamp(ts), temperature, humidity);
-        weather.setNote(note);
-        weather.setGroupId(groupId);
-        weather.setLocation(location);
+        if (null != result) {
+            long ts = (long) result.get("last_row(ts)");
+            float temperature = (float) result.get("temperature");
+            float humidity = (float) result.get("humidity");
+            String note = (String) result.get("note");
+            int groupId = (int) result.get("groupid");
+            String location = (String) result.get("location");
+            weather = new Weather(new Timestamp(ts), temperature, humidity);
+            weather.setNote(note);
+            weather.setGroupId(groupId);
+            weather.setLocation(location);
+        }
         return weather;
     }
 }

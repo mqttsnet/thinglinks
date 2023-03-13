@@ -17,15 +17,17 @@ public class TaosAspect {
         Map<String, Object> result = null;
         try {
             result = (Map<String, Object>) joinPoint.proceed();
-            for (String key : result.keySet()) {
-                Object obj = result.get(key);
-                if (obj instanceof byte[]) {
-                    obj = new String((byte[]) obj);
-                    result.put(key, obj);
-                }
-                if (obj instanceof Timestamp) {
-                    obj = ((Timestamp) obj).getTime();
-                    result.put(key, obj);
+            if (null != result) {
+                for (String key : result.keySet()) {
+                    Object obj = result.get(key);
+                    if (obj instanceof byte[]) {
+                        obj = new String((byte[]) obj);
+                        result.put(key, obj);
+                    }
+                    if (obj instanceof Timestamp) {
+                        obj = ((Timestamp) obj).getTime();
+                        result.put(key, obj);
+                    }
                 }
             }
         } catch (Throwable e) {
