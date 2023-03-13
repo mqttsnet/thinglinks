@@ -129,8 +129,8 @@
       getDeviceList() {
         this.loading = true;
         listDevice(this.queryParamsD).then((response) => {
-          this.deviceList = response.data.device.rows;
-          this.deviceTotal = response.data.device.total;
+          this.deviceList = response.data.rows;
+          this.deviceTotal = response.data.total;
           this.loading = false;
         });
       },
