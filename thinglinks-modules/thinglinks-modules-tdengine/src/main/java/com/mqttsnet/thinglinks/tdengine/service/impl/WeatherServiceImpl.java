@@ -78,7 +78,7 @@ public class WeatherServiceImpl implements WeatherService {
         Weather weather = null;
         Map<String, Object> result = weatherMapper.lastOne();
         if (null != result) {
-            long ts = (long) result.get("last_row(ts)");
+            long ts = (long) result.get("ts");
             float temperature = (float) result.get("temperature");
             float humidity = (float) result.get("humidity");
             String note = (String) result.get("note");
