@@ -258,7 +258,7 @@ public class DeviceServiceImpl implements DeviceService {
                 } else if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("commandResponse")) {
                     deviceTopic.setPublisher("边设备");
                     deviceTopic.setSubscriber("物联网平台");
-                } else if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("Response")) {
+                } else if (entry.getKey().startsWith("/v1/devices/") && (entry.getKey().endsWith("Response") || entry.getKey().endsWith("command"))) {
                     deviceTopic.setPublisher("物联网平台");
                     deviceTopic.setSubscriber("边设备");
                 } else {
