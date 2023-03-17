@@ -13,10 +13,14 @@
 
  Date: 26/12/2021 22:54:45
 */
+DROP DATABASE IF EXISTS `wgcloud`;
+
+CREATE DATABASE  `wgcloud` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+USE `wgcloud`;
 -- ----------------------------
 -- Table structure for APP_INFO
 -- ----------------------------

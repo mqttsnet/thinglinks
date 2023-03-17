@@ -13,5 +13,6 @@ RUN mkdir -p /www/wwwroot/thinglinks
 WORKDIR /www/wwwroot/thinglinks
 # 复制jar文件到路径
 COPY ./jar/thinglinks-modules-rule-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/rule/rule.jar
+COPY ./jar/resources  /www/wwwroot/thinglinks/rule/resources
 # 启动系统模块
-ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/rule.jar"]
+ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "./rule/rule.jar"]

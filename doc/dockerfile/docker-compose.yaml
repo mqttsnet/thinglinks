@@ -1,6 +1,13 @@
 #@mattsnet  thinglinks  Docker Compose管理容器
 #dcoker 版本  yaml 配置实例
 version: "3.9"
+networks:
+  thinglinks-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet:  172.29.0.0/16
+    name: thinglinks-network
 #thinglinks微服务集合-组件
 services:
   thinglinks-nacos:
@@ -19,6 +26,9 @@ services:
       - "9849:9849"
     depends_on:
       - thinglinks-mysql
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.20
   thinglinks-mysql:
     container_name: thinglinks-mysql
     image: mysql:5.7
@@ -30,17 +40,21 @@ services:
       - ./mysql/conf:/etc/mysql/conf.d
       - ./mysql/logs:/logs
       - ./mysql/data:/var/lib/mysql
+      - ./mysql/db:/docker-entrypoint-initdb.d
     command: [
-        'mysqld',
-        '--innodb-buffer-pool-size=80M',
-        '--character-set-server=utf8mb4',
-        '--collation-server=utf8mb4_unicode_ci',
-        '--default-time-zone=+8:00',
-        '--lower-case-table-names=1'
+      'mysqld',
+      '--innodb-buffer-pool-size=80M',
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_unicode_ci',
+      '--default-time-zone=+8:00',
+      '--lower-case-table-names=1'
     ]
     environment:
       MYSQL_DATABASE: 'thinglinks'
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: 1qazxsw2
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.2
   thinglinks-redis:
     container_name: thinglinks-redis
     image: redis
@@ -52,13 +66,16 @@ services:
       - ./redis/conf/redis.conf:/www/wwwroot/thinglinks/redis/redis.conf
       - ./redis/data:/data
     command: redis-server /www/wwwroot/thinglinks/redis/redis.conf
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.3
   thinglinks-nginx:
     container_name: thinglinks-nginx
     image: nginx
     build:
       context: ./nginx
     ports:
-      - "80:80"
+      - "80:19000"
     volumes:
       - ./nginx/html/dist:/www/wwwroot/thinglinks/thinglinks-ui
       - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
@@ -68,3 +85,227 @@ services:
       - thinglinks-gateway
     links:
       - thinglinks-gateway
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.4
+  thinglinks-auth:
+    container_name: thinglinks-auth
+    build:
+      context: ./thinglinks/auth
+      dockerfile: Dockerfile
+    ports:
+      - "19200:19200"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-redis
+    links:
+      - thinglinks-redis
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.5
+  thinglinks-modules-file:
+    container_name: thinglinks-modules-file
+    build:
+      context: ./thinglinks/file
+      dockerfile: Dockerfile
+    ports:
+      - "19300:19300"
+    volumes:
+      - ./thinglinks/uploadPath:/www/wwwroot/thinglinks/uploadPath
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.6
+    stdin_open: true
+    tty: true
+  thinglinks-gateway:
+    container_name: thinglinks-gateway
+    build:
+      context: ./thinglinks/gateway
+      dockerfile: Dockerfile
+    ports:
+      - "19100:19100"
+      - "19101:19101"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-redis
+    links:
+      - thinglinks-redis
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.7
+  thinglinks-modules-gen:
+    container_name: thinglinks-modules-gen
+    build:
+      context: ./thinglinks/gen
+      dockerfile: Dockerfile
+    ports:
+      - "19301:19301"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-mysql
+    links:
+      - thinglinks-mysql
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.8
+  thinglinks-modules-job:
+    container_name: thinglinks-modules-job
+    build:
+      context: ./thinglinks/job
+      dockerfile: Dockerfile
+    ports:
+      - "19302:19302"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-mysql
+    links:
+      - thinglinks-mysql
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.9
+  thinglinks-modules-system:
+    container_name: thinglinks-modules-system
+    build:
+      context: ./thinglinks/system
+      dockerfile: Dockerfile
+    ports:
+      - "19303:19303"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-redis
+      - thinglinks-mysql
+    links:
+      - thinglinks-redis
+      - thinglinks-mysql
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.10
+  thinglinks-modules-tdengine:
+    container_name: thinglinks-modules-tdengine
+    build:
+      context: ./thinglinks/tdengine
+      dockerfile: Dockerfile
+    ports:
+      - "19304:19304"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-redis
+      - thinglinks-mysql
+    links:
+      - thinglinks-redis
+      - thinglinks-mysql
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.11
+  thinglinks-modules-link:
+    container_name: thinglinks-modules-link
+    build:
+      context: ./thinglinks/link
+      dockerfile: Dockerfile
+    ports:
+      - "19305:19305"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-redis
+      - thinglinks-mysql
+    links:
+      - thinglinks-redis
+      - thinglinks-mysql
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.12
+  thinglinks-modules-broker:
+    container_name: thinglinks-modules-broker
+    build:
+      context: ./thinglinks/broker
+      dockerfile: Dockerfile
+    ports:
+      - "19306:19306"
+      - "11883:11883"
+      - "18443:18443"
+      - "18999:18999"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-redis
+      - thinglinks-mysql
+    links:
+      - thinglinks-redis
+      - thinglinks-mysql
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.13
+  thinglinks-modules-protocolanalysis:
+    container_name: thinglinks-modules-protocolanalysis
+    build:
+      context: ./thinglinks/protocolAnalysis
+      dockerfile: Dockerfile
+    ports:
+      - "19307:19307"
+      - "18901:18901"
+      - "18902:18902"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-redis
+    links:
+      - thinglinks-redis
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.14
+  thinglinks-modules-rule:
+    container_name: thinglinks-modules-rule
+    build:
+      context: ./thinglinks/rule
+      dockerfile: Dockerfile
+    ports:
+      - "19308:19308"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-redis
+      - thinglinks-mysql
+    links:
+      - thinglinks-redis
+      - thinglinks-mysql
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.15
+  thinglinks-visual-monitor:
+    container_name: thinglinks-visual-monitor
+    build:
+      context: ./thinglinks/monitor
+      dockerfile: Dockerfile
+    ports:
+      - "19400:19400"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.16
+  thinglinks-visual-collection:
+    container_name: thinglinks-visual-collection
+    build:
+      context: ./thinglinks/collection
+      dockerfile: Dockerfile
+    ports:
+      - "19401:19401"
+    volumes:
+      - ./thinglinks/lib:/www/wwwroot/thinglinks/lib
+    depends_on:
+      - thinglinks-redis
+      - thinglinks-mysql
+    links:
+      - thinglinks-redis
+      - thinglinks-mysql
+    networks:
+      thinglinks-network:
+        ipv4_address: 172.29.0.17
