@@ -90,6 +90,7 @@ services:
         ipv4_address: 172.29.0.4
   thinglinks-auth:
     container_name: thinglinks-auth
+    image: thinglinks-auth
     build:
       context: ./thinglinks/auth
       dockerfile: Dockerfile
@@ -106,6 +107,7 @@ services:
         ipv4_address: 172.29.0.5
   thinglinks-modules-file:
     container_name: thinglinks-modules-file
+    image: thinglinks-modules-file
     build:
       context: ./thinglinks/file
       dockerfile: Dockerfile
@@ -121,6 +123,7 @@ services:
     tty: true
   thinglinks-gateway:
     container_name: thinglinks-gateway
+    image: thinglinks-gateway
     build:
       context: ./thinglinks/gateway
       dockerfile: Dockerfile
@@ -138,6 +141,7 @@ services:
         ipv4_address: 172.29.0.7
   thinglinks-modules-gen:
     container_name: thinglinks-modules-gen
+    image: thinglinks-modules-gen
     build:
       context: ./thinglinks/gen
       dockerfile: Dockerfile
@@ -154,6 +158,7 @@ services:
         ipv4_address: 172.29.0.8
   thinglinks-modules-job:
     container_name: thinglinks-modules-job
+    image: thinglinks-modules-job
     build:
       context: ./thinglinks/job
       dockerfile: Dockerfile
@@ -170,6 +175,7 @@ services:
         ipv4_address: 172.29.0.9
   thinglinks-modules-system:
     container_name: thinglinks-modules-system
+    image: thinglinks-modules-system
     build:
       context: ./thinglinks/system
       dockerfile: Dockerfile
@@ -188,6 +194,7 @@ services:
         ipv4_address: 172.29.0.10
   thinglinks-modules-tdengine:
     container_name: thinglinks-modules-tdengine
+    image: thinglinks-modules-tdengine
     build:
       context: ./thinglinks/tdengine
       dockerfile: Dockerfile
@@ -206,6 +213,7 @@ services:
         ipv4_address: 172.29.0.11
   thinglinks-modules-link:
     container_name: thinglinks-modules-link
+    image: thinglinks-modules-link
     build:
       context: ./thinglinks/link
       dockerfile: Dockerfile
@@ -224,6 +232,7 @@ services:
         ipv4_address: 172.29.0.12
   thinglinks-modules-broker:
     container_name: thinglinks-modules-broker
+    image: thinglinks-modules-broker
     build:
       context: ./thinglinks/broker
       dockerfile: Dockerfile
@@ -245,6 +254,7 @@ services:
         ipv4_address: 172.29.0.13
   thinglinks-modules-protocolanalysis:
     container_name: thinglinks-modules-protocolanalysis
+    image: thinglinks-modules-protocolanalysis
     build:
       context: ./thinglinks/protocolAnalysis
       dockerfile: Dockerfile
@@ -263,6 +273,7 @@ services:
         ipv4_address: 172.29.0.14
   thinglinks-modules-rule:
     container_name: thinglinks-modules-rule
+    image: thinglinks-modules-rule
     build:
       context: ./thinglinks/rule
       dockerfile: Dockerfile
@@ -281,6 +292,7 @@ services:
         ipv4_address: 172.29.0.15
   thinglinks-visual-monitor:
     container_name: thinglinks-visual-monitor
+    image: thinglinks-visual-monitor
     build:
       context: ./thinglinks/monitor
       dockerfile: Dockerfile
@@ -293,6 +305,7 @@ services:
         ipv4_address: 172.29.0.16
   thinglinks-visual-collection:
     container_name: thinglinks-visual-collection
+    image: thinglinks-visual-collection
     build:
       context: ./thinglinks/collection
       dockerfile: Dockerfile
