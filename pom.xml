@@ -42,7 +42,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <jackson.version>2.13.3</jackson.version>
         <openfeign.version>3.1.2</openfeign.version>
-        <tdEngine.version>2.0.40</tdEngine.version>
+        <tdEngine.version>3.0.3</tdEngine.version>
         <!-- 文件拷贝时的编码 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

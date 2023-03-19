@@ -77,3 +77,21 @@ docker inspect 容器名称
 ```
 ##docker容器工作目录对应的源地址
 ![docker容器详情-容器工作目录对应的源地址](../imgs/docker容器详情.png)
+
+
+docker pull tdengine/tdengine:latest
+docker run -d --name thinglinks-tdengine --hostname="tdengine-server" -v /data/thinglinks-work/tdengine/log:/var/log/taos -v /data/thinglinks-work/tdengine/data:/var/lib/taos  -p 6030-6049:6030-6049 -p 6030-6049:6030-6049/udp tdengine/tdengine
+docker exec -it thinglinks-tdengine /bin/bash
+taos
+CREATE DATABASE thinglinks KEEP 365 DURATION 10 BUFFER 16 WAL_LEVEL 1;
+
+# 1. 拉取镜像文件
+docker pull tdengine/tdengine:3.0.1.0
+# 2. 创建运行容器
+docker run -d --name thinglinks-tdengine  -v /data/thinglinks-work/tdengine/log:/var/log/taos -v /data/thinglinks-work/tdengine/data:/var/lib/taos  -p 6030-6049:6030-6049 -p 6030-6049:6030-6049/udp tdengine/tdengine:3.0.1.0
+# 3. 指定thinglinks库生成一亿条测试数据
+taosBenchmark -d thinglinks -y -M -S 600000
+
+docker exec -it thinglinks-tdengine /bin/bash
+
+
