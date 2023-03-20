@@ -1,0 +1,59 @@
+version: '3'
+services:
+  rocketmq-namesrv:
+    image: foxiswho/rocketmq:4.8.0
+    container_name: rocketmq-namesrv
+    restart: always
+    ports:
+      - 19876:9876
+    volumes:
+      - ./namesrv/logs:/home/rocketmq/logs
+      - ./namesrv/store:/home/rocketmq/store
+    environment:
+      JAVA_OPT_EXT: "-Duser.home=/home/rocketmq -Xms512M -Xmx512M -Xmn128m"
+    command: ["sh","mqnamesrv"]
+    networks:
+      rocketmq_net:
+        aliases:
+          - rocketmq-namesrv
+
+  rocketmq-broker:
+    image: foxiswho/rocketmq:4.8.0
+    container_name: rocketmq-broker
+    restart: always
+    ports:
+      - 10909:10909
+      - 10911:10911
+    volumes:
+      - ./broker/logs:/home/rocketmq/rocketmq-4.8.0/logs
+      - ./broker/store:/home/rocketmq/rocketmq-4.8.0/store
+      - ./broker/conf/broker.conf:/home/rocketmq/rocketmq-4.8.0/conf/broker.conf
+    environment:
+      JAVA_OPT_EXT: "-Duser.home=/home/rocketmq -Xms512M -Xmx512M -Xmn128m"
+    command: ["sh","mqbroker","-c","/home/rocketmq/rocketmq-4.8.0/conf/broker.conf","-n","rocketmq-namesrv:9876","autoCreateTopicEnable=true"]
+    depends_on:
+      - rocketmq-namesrv
+    networks:
+      rocketmq_net:
+        aliases:
+          - rocketmq-broker
+
+  rocketmq-console:
+    image: styletang/rocketmq-console-ng
+    container_name: rocketmq-console
+    restart: always
+    ports:
+      - 8180:8080
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=rocketmq-namesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    depends_on:
+      - rocketmq-namesrv
+    networks:
+      rocketmq_net:
+        aliases:
+          - rocketmq-console
+
+networks:
+  rocketmq_net:
+    name: rocketmq_net
+    driver: bridge
