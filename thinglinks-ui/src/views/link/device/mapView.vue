@@ -102,7 +102,17 @@ export default {
     provinceValue(newVal) {
       console.log(111);
       console.log(this.provinceValue);
-      this.provincE(newVal)
+      console.log(newVal);
+      if(this.isEmptyStr(newVal)){
+        return;
+      }
+      if(this.province.length == 0){
+        return;
+      }
+      if(this.provinceValue == newVal){
+        return;
+      }
+      this.provinceE(newVal)
     },
     // cityValue() {
     //   this.areaE()
@@ -112,6 +122,12 @@ export default {
     this.TheMap();
   },
   methods: {
+    isEmptyStr(s) {
+      if (s == undefined || s == null || s == '') {
+        return true
+      }
+      return false
+    },
     TheMap(lonLat) {
       this.address = '';
       this.provinceValue = '';

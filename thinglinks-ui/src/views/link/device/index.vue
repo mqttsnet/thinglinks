@@ -1011,6 +1011,9 @@ export default {
         } else {
           this.lonLat = [];
         }
+        if(response.products !== null && response.products.length > 0){
+          this.productOptions = response.products;
+        }
         this.open = true;
         this.title = "修改设备档案";
       });
