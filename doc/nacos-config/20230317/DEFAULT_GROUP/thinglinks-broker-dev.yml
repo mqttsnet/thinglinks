@@ -1,0 +1,197 @@
+# spring配置
+spring:
+  redis:
+    database: 0
+    host: 172.29.0.3
+    port: 6379
+    timeout: 30000
+    jedis:
+      pool:
+        # 连接池中的最大空闲连接
+        max-idle: 20
+        # 连接池中的最小空闲连接
+        min-idle: 0
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: -1
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1
+  datasource:
+    druid:
+      stat-view-servlet:
+        enabled: true
+        loginUsername: admin
+        loginPassword: 123456
+    dynamic:
+      druid:
+        initial-size: 5
+        min-idle: 5
+        maxActive: 20
+        maxWait: 60000
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: SELECT 1 FROM DUAL
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxPoolPreparedStatementPerConnectionSize: 20
+        filters: stat,slf4j
+        connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+      datasource:
+        # 主库数据源
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://172.29.0.2:3306/thinglinks?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: 1qazxsw2
+          # 从库数据源
+          # slave:
+          # username: 
+          # password: 
+          # url: 
+          # driver-class-name: 
+      # seata: true    # 开启seata代理，开启后默认每个数据源都代理，如果某个不需要代理可单独关闭
+
+# seata配置
+seata:
+  # 默认关闭，如需启用spring.datasource.dynami.seata需要同时开启
+  enabled: false
+  # Seata 应用编号，默认为 ${spring.application.name}
+  application-id: thinglinks-broker
+  # Seata 事务组编号，用于 TC 集群名
+  tx-service-group: thinglinks-broker-group
+  # 关闭自动代理
+  enable-auto-data-source-proxy: false
+  # 服务配置项
+  service:
+    # 虚拟组和分组的映射
+    vgroup-mapping:
+      thinglinks-broker-group: default
+  config:
+    type: nacos
+    nacos:
+      serverAddr: 172.29.0.20:8848
+      group: SEATA_GROUP
+      namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 172.29.0.20:8848
+      namespace: 1e1aff6c-da73-43e2-9e5f-8e0b890189d9
+
+#smqtt配置文件V2.0
+smqtt:
+  logLevel: INFO # 系统日志
+  tcp: # tcp配置
+    port: 11883 # mqtt端口号
+    notKickSecond: 30 # KICK互踢模式生效, 单位秒, 指定时间内客户端不互踢, 避免客户端自动连接持续互踢
+    wiretap: false  # 二进制日志 前提是 smqtt.logLevel = DEBUG
+    bossThreadSize: 1  # boss线程 默认=1
+    workThreadSize: 9 # work线程 默认=cpu核心数+1
+    businessThreadSize: 8 # 业务线程数 默认=cpu核心数
+    businessQueueSize: 100000 #业务队列 默认=100000
+    messageMaxSize: 4194304 # 接收消息的最大限制 默认4194304(4M)
+    lowWaterMark: 4000000 # 不建议配置 默认 32768
+    highWaterMark: 80000000 # 不建议配置 默认 65536
+    # globalReadWriteSize: 10000000,100000000  全局读写大小限制
+    # channelReadWriteSize: 10000000,100000000 单个channel读写大小限制
+    options: # netty option设置
+      SO_BACKLOG: 2000
+    childOptions:  #netty child option设置
+      SO_REUSEADDR: true
+    ssl: # ssl配置
+      enable: false # 开关
+      key: classpath:ssl/server.key # 指定ssl文件 默认系统生成
+      crt: classpath:ssl/server.crt # 指定ssl文件 默认系统生成
+      ca: classpath:ssl/server.ca # ca证书 双向加密配置
+  acl:
+    aclPolicy: JDBC # NONE or FILE or JDBC
+    filePath:  # FILE时配置filePath
+    jdbcAclConfig:
+      driver: com.mysql.jdbc.Driver
+      url: ${spring.datasource.dynamic.datasource.master.url}
+      username: ${spring.datasource.dynamic.datasource.master.username}
+      password: ${spring.datasource.dynamic.datasource.master.password}
+  http: # http相关配置 端口固定60000
+    enable: true # 开关
+    accessLog: false # http访问日志
+    ssl: # ssl配置
+      enable: false
+    admin: # Broker后台管理配置
+      enable: true  # 开关
+      username: thinglinks # 访问用户名
+      password: thinglinks # 访问密码
+  auth:
+    http: #设备鉴权模式（请求方式固定 POST body 格式为: {"clientIdentifier":"","username":"","password":""} 返回状态码 200 即可 如果检验失败返回400）
+      host: 172.29.0.7 #网关服务器IP
+      port: 19100 #网关服务端口
+      path: /link/device/clientAuthentication
+      params: {"deviceStatus":"ENABLE","protocolType":"MQTT"}
+  ws: # websocket配置
+    enable: true # 开关
+    port: 18999 # 端口
+    path: /mqtt # ws 的访问path mqtt.js请设置此选项
+  cluster: # 集群配置
+    enable: false # 集群开关
+    url: 172.29.0.13:7771,172.29.0.13:7772 # 启动节点
+    port: 7771  # 端口
+    node: node-1 # 集群节点名称 唯一
+    namespace: thinglinks
+    external:
+      host: localhost # 用于映射容器ip 请不要随意设置，如果不需要请移除此选项
+      port: 7777 # 用于映射容器端口 请不要随意设置，如果不需要请移除此选项
+  meter:
+    meterType: PROMETHEUS # INFLUXDB , PROMETHEUS
+  rules:
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("ping")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'ping','clientId':clientId,'messageId':messageId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("connect")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'connect','clientId':clientId,'auth':auth,'clientAddress':clientAddress,'keepalive':keepalive,'nodeIp':nodeIp,'version':version,'time':time,'will':will}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("publish")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'publish','topic':topic,'body':body,'qos':qos,'clientId':clientId,'messageId':messageId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("disconnect")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'disconnect','clientId':clientId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("clone")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'disconnect','clientId':clientId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("subscribe")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'subscribe','clientId':clientId,'subscribeTopics':subscribeTopics,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("unsubscribe")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'unsubscribe','clientId':clientId,'topics':topics,'time':time}"
+  sources: # 配置数据源sources
+    - source: ROCKET_MQ # rocketmq配置
+      sourceName: rocket_mq
+      sourceAttributes:
+        topic: thinglinks-link-mqttMsg
+        tags: thinglinks
+        namesrvAddr: 192.168.2.88:19876
+        instanceName: broker-a
+        producerGroup: thinglinks-broker
