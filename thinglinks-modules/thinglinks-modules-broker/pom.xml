@@ -79,11 +79,11 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
-        <!-- TODO  https://github.com/quickmsg/smqttx  V2.0.7版本（切勿自行更新）   -->
+        <!-- TODO  https://github.com/quickmsg/smqttx  V2.0.8版本（切勿自行更新）   -->
         <dependency>
             <groupId>io.github.quickmsg</groupId>
             <artifactId>smqttx-spring-boot-starter</artifactId>
-            <version>2.0.7</version>
+            <version>2.0.8</version>
         </dependency>
         <!--屏蔽h2版本冲突-->
         <dependency>
