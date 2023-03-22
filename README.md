@@ -92,7 +92,7 @@ com.mqttsnet.thinglinks
 
 由于服务器近期频繁遭到境外IP暴力破解攻击，暂时关闭！
 
-- admin/adminthinglinks（请大家切勿修改密码）
+- admin/adminthinglinks（请大家切勿修改密码，修改他人测试数据营造良好的开源氛围）
 
 演示地址：http://thinglinks.mqttsnet.com/
 
@@ -158,9 +158,9 @@ com.mqttsnet.thinglinks
 
 ~~~
 
-## 贡献代码(欢迎你的加入)
+## 商业合作&贡献代码
 
-如果你有兴趣参与项目开发，请联系mqttsnet团队邮箱: mqttsnet@163.com 
+如果你有兴趣参与项目开发或进行商务合作，请联系mqttsnet团队邮箱: mqttsnet@163.com
 
 ## 友情链接
 
@@ -179,7 +179,7 @@ MQTT客户端C库: thinglinks-mqtt-c
 - [Github](https://github.com/mqttsnet/thinglinks-mqtt-c)
 - [Gitee](https://gitee.com/mqttsnet/thinglinks-mqtt-c)
 
-## License
+## License(开源协议)
 
 [Apache License, Version 2.0](License)
 
@@ -187,12 +187,13 @@ MQTT客户端C库: thinglinks-mqtt-c
 
 ## 交流社区（添加作者WX: xiaonannet 邀请进微信群，备注：thinglinks）
 
-[相关技术资料及话题](https://bbs.csdn.net/forums/thinglinks)
+[相关技术资料](http://showdoc.mqttsnet.com/web/#/5)
 
-## issues
+## issues(欢迎大家提出宝贵意见)
 [issues](https://github.com/mqttsnet/thinglinks/issues)
 
-
+## 欢迎提交 pr
+[pr->release/1.0.0](https://gitee.com/mqttsnet/thinglinks/pulls)
 
 ## 版权使用说明
 ThingLinks开源平台遵循 [Apache License, Version 2.0](License) 协议。 允许商业使用，但务必保留类作者、Copyright 信息。

@@ -114,4 +114,4 @@ mybatis:
 swagger:
   title: Link模块接口文档
   license: Powered By thinglinks
-  licenseUrl: https://showdoc.thinglinks.mqttsnet.com
+  licenseUrl: http://showdoc.mqttsnet.com/web/#/5

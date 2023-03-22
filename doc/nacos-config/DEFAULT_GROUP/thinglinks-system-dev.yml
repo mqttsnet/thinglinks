@@ -92,4 +92,4 @@ mybatis:
 swagger:
   title: 系统模块接口文档
   license: Powered By thinglinks
-  licenseUrl: https://doc.thinglinks.mqttsnet.com
+  licenseUrl: http://showdoc.mqttsnet.com/web/#/5

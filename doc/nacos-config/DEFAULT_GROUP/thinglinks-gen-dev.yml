@@ -33,7 +33,7 @@ mybatis:
 swagger:
   title: 代码生成接口文档
   license: Powered By thinglinks
-  licenseUrl: https://doc.thinglinks.mqttsnet.com
+  licenseUrl: http://showdoc.mqttsnet.com/web/#/5
 
 # 代码生成
 gen: 
