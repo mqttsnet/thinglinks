@@ -11,7 +11,7 @@
         <foreach item="item" collection="schemaFields" separator=","
                  open="(" close=")" index="">
             <if test="item.fieldName != null || item.fieldName != ''">
-                #{item.fieldName}
+                ${item.fieldName}
             </if>
             <if test="item.dataType != null || item.dataType != ''">
                 <choose>
@@ -59,7 +59,7 @@
         <foreach item="item" collection="tagsFields" separator=","
                  open="(" close=")" index="">
             <if test="item.fieldName != null || item.fieldName != ''">
-                #{item.fieldName}
+                ${item.fieldName}
             </if>
             <if test="item.dataType != null || item.dataType != ''">
                 <choose>
@@ -111,7 +111,7 @@
                 tags
         <foreach item="item" collection="tagsFieldValues" separator=","
                  open="(" close=")" index="">
-            #{item.fieldValue}
+            ${item.fieldValue}
         </foreach>
     </update>
 
@@ -119,13 +119,13 @@
         insert into #{dataBaseName}.#{tableName}
         <foreach item="item" collection="schemaFieldValues" separator=","
                  open="(" close=")" index="">
-            #{item.fieldName}
+            ${item.fieldName}
         </foreach>
         using #{dataBaseName}.#{superTableName}
         tags
         <foreach item="item" collection="tagsFieldValues" separator=","
                  open="(" close=")" index="">
-            #{item.fieldValue}
+            ${item.fieldValue}
         </foreach>
         values
         <foreach item="item" collection="schemaFieldValues" separator=","
@@ -150,7 +150,7 @@
                 ADD
                 COLUMN
         <if test="fieldsVo.fieldName != null || fieldsVo.fieldName != ''">
-            #{fieldsVo.fieldName}
+            ${fieldsVo.fieldName}
         </if>
         <if test="fieldsVo.dataType != null || fieldsVo.dataType != ''">
             <choose>
@@ -203,7 +203,7 @@
         DROP
         COLUMN
         <if test="fieldsVo.fieldName != null || fieldsVo.fieldName != ''">
-            #{fieldsVo.fieldName}
+            ${fieldsVo.fieldName}
         </if>
     </update>
 
@@ -214,7 +214,7 @@
         ADD
         TAG
         <if test="fieldsVo.fieldName != null || fieldsVo.fieldName != ''">
-            #{fieldsVo.fieldName}
+            ${fieldsVo.fieldName}
         </if>
         <if test="fieldsVo.dataType != null || fieldsVo.dataType != ''">
             <choose>
@@ -267,7 +267,7 @@
         DROP
         TAG
         <if test="fieldsVo.fieldName != null || fieldsVo.fieldName != ''">
-            #{fieldsVo.fieldName}
+            ${fieldsVo.fieldName}
         </if>
     </update>
 

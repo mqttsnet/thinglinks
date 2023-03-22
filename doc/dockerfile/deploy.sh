@@ -31,7 +31,7 @@ base(){
 
 # 启动程序模块（必须）
 modules(){
-	docker-compose up -d thinglinks-nginx thinglinks-gateway thinglinks-auth thinglinks-modules-file thinglinks-modules-gen thinglinks-modules-job thinglinks-modules-system thinglinks-modules-tdengine thinglinks-modules-link thinglinks-modules-broker thinglinks-modules-protocolAnalysis thinglinks-visual-monitor thinglinks-visual-collection
+	docker-compose up -d thinglinks-nginx thinglinks-gateway thinglinks-auth thinglinks-modules-file thinglinks-modules-gen thinglinks-modules-job thinglinks-modules-system thinglinks-modules-tdengine thinglinks-modules-link thinglinks-modules-broker thinglinks-modules-rule thinglinks-modules-protocolanalysis thinglinks-visual-monitor thinglinks-visual-collection
 }
 
 # 关闭所有环境/模块

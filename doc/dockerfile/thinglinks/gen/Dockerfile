@@ -13,5 +13,6 @@ RUN mkdir -p /www/wwwroot/thinglinks
 WORKDIR /www/wwwroot/thinglinks
 # 复制jar文件到路径
 COPY ./jar/thinglinks-modules-gen-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/gen/gen.jar
+COPY ./jar/resources  /www/wwwroot/thinglinks/gen/resources
 # 启动代码生成服务
-ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/gen.jar"]
+ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "./gen/gen.jar"]

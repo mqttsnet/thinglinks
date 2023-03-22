@@ -32,7 +32,7 @@
     <el-row>
       <div class="chart-wrapper">
         <el-card class="box-card">
-          <Services :template-id="this.templateId"></Services>
+          <Services :template-identification="this.templateInfo.templateIdentification"></Services>
         </el-card>
       </div>
     </el-row>

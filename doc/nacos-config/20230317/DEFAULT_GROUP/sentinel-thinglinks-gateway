@@ -1,0 +1,66 @@
+[
+    {
+        "resource": "thinglinks-auth",
+        "count": 500,
+        "grade": 1,
+        "limitApp": "default",
+        "strategy": 0,
+        "controlBehavior": 0
+    },
+	{
+        "resource": "thinglinks-system",
+        "count": 1000,
+        "grade": 1,
+        "limitApp": "default",
+        "strategy": 0,
+        "controlBehavior": 0
+    },
+	{
+        "resource": "thinglinks-gen",
+        "count": 200,
+        "grade": 1,
+        "limitApp": "default",
+        "strategy": 0,
+        "controlBehavior": 0
+    },
+	{
+        "resource": "thinglinks-job",
+        "count": 300,
+        "grade": 1,
+        "limitApp": "default",
+        "strategy": 0,
+        "controlBehavior": 0
+    },
+	{
+        "resource": "thinglinks-tdengine",
+        "count": 300,
+        "grade": 1,
+        "limitApp": "default",
+        "strategy": 0,
+        "controlBehavior": 0
+    },
+	{
+        "resource": "thinglinks-link",
+        "count": 300,
+        "grade": 1,
+        "limitApp": "default",
+        "strategy": 0,
+        "controlBehavior": 0
+    },
+	{
+        "resource": "thinglinks-broker",
+        "count": 300,
+        "grade": 1,
+        "limitApp": "default",
+        "strategy": 0,
+        "controlBehavior": 0
+    },
+	{
+        "resource": "thinglinks-protocolAnalysis",
+        "count": 300,
+        "grade": 1,
+        "limitApp": "default",
+        "strategy": 0,
+        "controlBehavior": 0
+    }
+]

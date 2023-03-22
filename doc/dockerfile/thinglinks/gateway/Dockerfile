@@ -14,5 +14,6 @@ RUN mkdir -p /www/wwwroot/thinglinks
 WORKDIR /www/wwwroot/thinglinks
 # 复制jar文件到路径
 COPY ./jar/thinglinks-gateway-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/gateway/gateway.jar
+COPY ./jar/resources  /www/wwwroot/thinglinks/gateway/resources
 # 启动网关模块
-ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/gateway.jar"]
+ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "./gateway/gateway.jar"]

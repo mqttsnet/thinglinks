@@ -13,10 +13,13 @@
 
  Date: 18/11/2022 21:10:02
 */
+DROP DATABASE IF EXISTS `thinglinks`;
+
+CREATE DATABASE  `thinglinks` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
+USE `thinglinks`;
 -- ----------------------------
 -- Table structure for QRTZ_BLOB_TRIGGERS
 -- ----------------------------
@@ -1865,7 +1868,7 @@ CREATE TABLE `rule`
 -- Records of rule
 -- ----------------------------
 BEGIN;
-INSERT INTO `rule` (`id`, `app_id`, `rule_identification`, `rule_name`, `job_identificatio`, `status`, `triggering`,
+INSERT INTO `rule` (`id`, `app_id`, `rule_identification`, `rule_name`, `job_identification`, `status`, `triggering`,
                     `remark`, `create_by`, `create_time`, `update_by`, `update_time`)
 VALUES (1, 'thinglinks', 'rule-001', '测试规则', '10', '0', 1, '测试规则', 'admin', '2022-10-28 16:47:09', NULL,
         '2022-10-28 16:47:09');

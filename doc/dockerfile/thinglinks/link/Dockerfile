@@ -13,5 +13,6 @@ RUN mkdir -p /www/wwwroot/thinglinks
 WORKDIR /www/wwwroot/thinglinks
 # 复制jar文件到路径
 COPY ./jar/thinglinks-modules-link-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/link/link.jar
+COPY ./jar/resources  /www/wwwroot/thinglinks/link/resources
 # 启动Link服务
-ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/link.jar"]
+ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "./link/link.jar"]

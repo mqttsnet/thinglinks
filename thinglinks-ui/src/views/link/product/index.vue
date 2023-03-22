@@ -1250,7 +1250,7 @@
         status: 0
       };
       listProductTemplate(params).then(res => {
-        this.templateList = res.data;
+        this.templateList = res.rows;
       })
     },
     // 取消按钮
@@ -1314,7 +1314,16 @@
         this.form.productIdentification = null;
         this.open = true;
         this.title = "复制产品";
+        if(!this.isEmptyStr(response.data.appId) && this.templateList.length == 0){
+          this.getTemplateList(response.data.appId)
+        }
       });
+    },
+    isEmptyStr(s) {
+      if (s == undefined || s == null || s == '') {
+        return true
+      }
+      return false
     },
     /** 提交按钮 */
     submitForm() {

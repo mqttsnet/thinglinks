@@ -13,5 +13,6 @@ RUN mkdir -p /www/wwwroot/thinglinks
 WORKDIR /www/wwwroot/thinglinks
 # 复制jar文件到路径
 COPY ./jar/thinglinks-auth-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/auth/auth.jar
+COPY ./jar/resources  /www/wwwroot/thinglinks/auth/resources
 # 启动认证服务
-ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/auth.jar"]
+ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "./auth/auth.jar"]

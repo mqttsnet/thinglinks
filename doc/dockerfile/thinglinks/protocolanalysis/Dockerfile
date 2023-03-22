@@ -13,5 +13,6 @@ RUN mkdir -p /www/wwwroot/thinglinks
 WORKDIR /www/wwwroot/thinglinks
 # 复制jar文件到路径
 COPY ./jar/thinglinks-modules-protocolAnalysis-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/protocolanalysis/protocolanalysis.jar
+COPY ./jar/resources  /www/wwwroot/thinglinks/protocolanalysis/resources
 # 启动protocolAnalysis服务
-ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/protocolanalysis.jar"]
+ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "./protocolanalysis/protocolanalysis.jar"]

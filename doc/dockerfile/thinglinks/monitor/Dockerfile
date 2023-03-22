@@ -13,5 +13,6 @@ RUN mkdir -p /www/wwwroot/thinglinks
 WORKDIR /www/wwwroot/thinglinks
 # 复制jar文件到路径
 COPY ./jar/thinglinks-visual-monitor-1.0.0.RELEASE.jar /www/wwwroot/thinglinks/monitor/monitor.jar
+COPY ./jar/resources  /www/wwwroot/thinglinks/monitor/resources
 # 启动监控中心
-ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "/monitor.jar"]
+ENTRYPOINT ["java", "-Xmx400m", "-Xms400m", "-Xmn150m", "-Xss1024k", "-jar", "./monitor/monitor.jar"]
