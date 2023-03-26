@@ -32,6 +32,12 @@ spring:
         # 共享配置
         shared-configs:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+          - dataId: redis.yml
+            refresh: false
+          - dataId: database.yml
+            refresh: true
+          - dataId: rocketmq.yml
+            refresh: false
         username: @nacos.username@
         password: @nacos.password@
     sentinel:
@@ -45,9 +51,9 @@ spring:
       datasource:
         ds1:
           nacos:
-            server-addr: @nacos.server.address@
+            server-addr: @nacos.ip@:@nacos.port@
             #命名空间
-            namespace: @nacos.server.namespace@
+            namespace: @nacos.namespace@
             dataId: sentinel-thinglinks-gateway
             groupId: DEFAULT_GROUP
             data-type: json

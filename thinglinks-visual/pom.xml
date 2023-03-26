@@ -10,15 +10,10 @@
 
     <modules>
         <module>thinglinks-visual-monitor</module>
-        <module>thinglinks-visual-collection</module>
     </modules>
 
     <artifactId>thinglinks-visual</artifactId>
-
     <packaging>pom</packaging>
-
-    <description>
-        thinglinks-visual图形化管理模块
-    </description>
+    <description>thinglinks-visual图形化管理模块</description>
 
 </project>
