@@ -1,0 +1,6 @@
+# rocketmq地址
+rocketmq: 
+  name-server: 127.0.0.1:19876
+# 默认的消息组
+  producer: 
+    group: thinglinks-link

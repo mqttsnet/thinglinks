@@ -1,0 +1,117 @@
+# Tomcat
+server:
+  port: 19306
+
+#smqtt配置文件V2.0
+smqtt:
+  logLevel: INFO # 系统日志
+  tcp: # tcp配置
+    port: 11883 # mqtt端口号
+    notKickSecond: 30 # KICK互踢模式生效, 单位秒, 指定时间内客户端不互踢, 避免客户端自动连接持续互踢
+    wiretap: false  # 二进制日志 前提是 smqtt.logLevel = DEBUG
+    bossThreadSize: 1  # boss线程 默认=1
+    workThreadSize: 9 # work线程 默认=cpu核心数+1
+    businessThreadSize: 8 # 业务线程数 默认=cpu核心数
+    businessQueueSize: 100000 #业务队列 默认=100000
+    messageMaxSize: 4194304 # 接收消息的最大限制 默认4194304(4M)
+    lowWaterMark: 4000000 # 不建议配置 默认 32768
+    highWaterMark: 80000000 # 不建议配置 默认 65536
+    # globalReadWriteSize: 10000000,100000000  全局读写大小限制
+    # channelReadWriteSize: 10000000,100000000 单个channel读写大小限制
+    options: # netty option设置
+      SO_BACKLOG: 2000
+    childOptions:  #netty child option设置
+      SO_REUSEADDR: true
+    ssl: # ssl配置
+      enable: false # 开关
+      key: classpath:ssl/server.key # 指定ssl文件 默认系统生成
+      crt: classpath:ssl/server.crt # 指定ssl文件 默认系统生成
+      ca: classpath:ssl/server.ca # ca证书 双向加密配置
+  acl:
+    aclPolicy: JDBC # NONE or FILE or JDBC
+    filePath:  # FILE时配置filePath
+    jdbcAclConfig:
+      driver: com.mysql.jdbc.Driver
+      url: ${spring.datasource.dynamic.datasource.master.url}
+      username: ${spring.datasource.dynamic.datasource.master.username}
+      password: ${spring.datasource.dynamic.datasource.master.password}
+  http: # http相关配置 端口固定60000
+    enable: true # 开关
+    accessLog: false # http访问日志
+    ssl: # ssl配置
+      enable: false
+    admin: # Broker后台管理配置
+      enable: true  # 开关
+      username: thinglinks # 访问用户名
+      password: thinglinks # 访问密码
+  auth:
+    http: #设备鉴权模式（请求方式固定 POST body 格式为: {"clientIdentifier":"","username":"","password":""} 返回状态码 200 即可 如果检验失败返回400）
+      host: 127.0.0.1 #网关服务器IP
+      port: 19100 #网关服务端口
+      path: /link/device/clientAuthentication
+      params: {"deviceStatus":"ENABLE","protocolType":"MQTT"}
+  ws: # websocket配置
+    enable: true # 开关
+    port: 18999 # 端口
+    path: /mqtt # ws 的访问path mqtt.js请设置此选项
+  cluster: # 集群配置
+    #本地IP，多网卡时候指定
+    localAddress: 127.0.0.1
+    #集群IP集合
+    addresses: ["127.0.0.1"]
+    #集群持久化目录，默认启动目录
+    #workDirectory:  /soft/dir
+  meter:
+    meterType: PROMETHEUS # INFLUXDB , PROMETHEUS
+  rules:
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("ping")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'ping','clientId':clientId,'messageId':messageId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("connect")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'connect','clientId':clientId,'auth':auth,'clientAddress':clientAddress,'keepalive':keepalive,'nodeIp':nodeIp,'version':version,'time':time,'will':will}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("publish")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'publish','topic':topic,'body':body,'qos':qos,'clientId':clientId,'messageId':messageId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("disconnect")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'disconnect','clientId':clientId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("clone")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'disconnect','clientId':clientId,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("subscribe")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'subscribe','clientId':clientId,'subscribeTopics':subscribeTopics,'time':time}"
+    - ruleName: ROCKET_MQ
+      chain:
+        - ruleType: PREDICATE
+          script: $.event.equals("unsubscribe")
+        - ruleType: ROCKET_MQ
+          script: "{'event':'unsubscribe','clientId':clientId,'topics':topics,'time':time}"
+  sources: # 配置数据源sources
+    - source: ROCKET_MQ # rocketmq配置
+      sourceName: rocket_mq
+      sourceAttributes:
+        topic: thinglinks-link-mqttMsg
+        tags: thinglinks
+        namesrvAddr: 127.0.0.1:19876
+        instanceName: broker-a
+        producerGroup: thinglinks-broker
