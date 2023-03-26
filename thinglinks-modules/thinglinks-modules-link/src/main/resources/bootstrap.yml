@@ -20,6 +20,8 @@ spring:
         server-addr: @nacos.ip@:@nacos.port@
         #命名空间
         namespace: @nacos.namespace@
+        username: @nacos.username@
+        password: @nacos.password@
       config:
         # 配置中心地址
         server-addr: @nacos.ip@:@nacos.port@
@@ -30,4 +32,5 @@ spring:
         # 共享配置
         shared-configs:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
-
+        username: @nacos.username@
+        password: @nacos.password@
