@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>thinglinks-visual-monitor</artifactId>
     <name>${project.artifactId}</name>
-    <description>thinglinks-visual-monitor  监控中心</description>
+    <description>thinglinks-visual-monitor监控中心</description>
 
     <properties>
         <!--suppress UnresolvedMavenProperty -->
