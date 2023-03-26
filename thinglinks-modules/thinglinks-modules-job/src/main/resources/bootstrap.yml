@@ -1,7 +1,3 @@
-# Tomcat
-server:
-  port: 19302
-
 # Spring
 spring: 
   application:
