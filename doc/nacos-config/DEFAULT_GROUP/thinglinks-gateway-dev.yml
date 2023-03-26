@@ -21,65 +21,65 @@ spring:
             - ValidateCodeFilter
             - StripPrefix=1
         # 代码生成
-        - id: thinglinks-gen
-          uri: lb://thinglinks-gen
+        - id: thinglinks-modules-gen
+          uri: lb://thinglinks-modules-gen
           predicates:
             - Path=/code/**
           filters:
             - StripPrefix=1
         # 定时任务
-        - id: thinglinks-job
-          uri: lb://thinglinks-job
+        - id: thinglinks-modules-job
+          uri: lb://thinglinks-modules-job
           predicates:
             - Path=/schedule/**
           filters:
             - StripPrefix=1
         # 系统模块
-        - id: thinglinks-system
-          uri: lb://thinglinks-system
+        - id: thinglinks-modules-system
+          uri: lb://thinglinks-modules-system
           predicates:
             - Path=/system/**
           filters:
             - StripPrefix=1
         # 文件服务
-        - id: thinglinks-file
-          uri: lb://thinglinks-file
+        - id: thinglinks-modules-file
+          uri: lb://thinglinks-modules-file
           predicates:
             - Path=/file/**
           filters:
             - StripPrefix=1
         # TDengine服务
-        - id: thinglinks-tdengine
-          uri: lb://thinglinks-tdengine
+        - id: thinglinks-modules-tdengine
+          uri: lb://thinglinks-modules-tdengine
           predicates:
             - Path=/tdengine/**
           filters:
             - StripPrefix=1
         # Link服务
-        - id: thinglinks-link
-          uri: lb://thinglinks-link
+        - id: thinglinks-modules-link
+          uri: lb://thinglinks-modules-link
           predicates:
             - Path=/link/**
           filters:
             - StripPrefix=1
         # Broker服务
-        - id: thinglinks-broker
-          uri: lb://thinglinks-broker
+        - id: thinglinks-modules-broker
+          uri: lb://thinglinks-modules-broker
           predicates:
             - Path=/broker/**
           filters:
             - StripPrefix=1
             - RemoveRequestHeader=Sec-WebSocket-Protocol #移除请求头
         # ProtocolAnalysis服务
-        - id: thinglinks-protocolAnalysis
-          uri: lb://thinglinks-protocolAnalysis
+        - id: thinglinks-modules-protocolAnalysis
+          uri: lb://thinglinks-modules-protocolAnalysis
           predicates:
             - Path=/protocolAnalysis/**
           filters:
             - StripPrefix=1
         # rule服务
-        - id: thinglinks-rule
-          uri: lb://thinglinks-rule
+        - id: thinglinks-modules-rule
+          uri: lb://thinglinks-modules-rule
           predicates:
             - Path=/rule/**
           filters:
