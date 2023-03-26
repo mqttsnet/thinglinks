@@ -6,13 +6,11 @@
         <artifactId>thinglinks</artifactId>
         <version>${thinglinks.version}</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
-    
     <artifactId>thinglinks-auth</artifactId>
-	
-    <description>
-        thinglinks-auth认证授权中心
-    </description>
+    <name>${project.artifactId}</name>
+    <description>thinglinks-auth认证授权中心</description>
 
     <properties>
         <!--lib打包目录-->
@@ -85,6 +83,15 @@
     </build>-->
 
     <build>
+        <filters>
+            <filter>../src/main/filters/config-${spring.profile}.properties</filter>
+        </filters>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <!--打包jar-->
             <plugin>

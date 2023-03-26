@@ -6,10 +6,10 @@ server:
 spring: 
   application:
     # 应用名称
-    name: thinglinks-system
+    name: @project.artifactId@
   profiles:
     # 环境配置
-    active: dev
+    active: @spring.profile@
   main:
     allow-circular-references: true
     allow-bean-definition-overriding: true
@@ -17,14 +17,14 @@ spring:
     nacos:
       discovery:
         # 配置中心地址
-        server-addr: 172.29.0.20:8848
+        server-addr: @nacos.ip@:@nacos.port@
         #命名空间
-        namespace: 8ea40c2e-64ba-4430-9bd8-a25336b2b45a
+        namespace: @nacos.namespace@
       config:
         # 配置中心地址
-        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        server-addr: @nacos.ip@:@nacos.port@
         #命名空间
-        namespace: ${spring.cloud.nacos.discovery.namespace}
+        namespace: @nacos.namespace@
         # 配置文件格式
         file-extension: yml
         # 共享配置

@@ -7,13 +7,11 @@
         <artifactId>thinglinks-visual</artifactId>
         <version>${thinglinks.version}</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>thinglinks-visual-monitor</artifactId>
-
-    <description>
-        thinglinks-visual-monitor  监控中心
-    </description>
+    <name>${project.artifactId}</name>
+    <description>thinglinks-visual-monitor  监控中心</description>
 
     <properties>
         <!--suppress UnresolvedMavenProperty -->
@@ -136,6 +134,9 @@
 
     </dependencies>
     <build>
+        <filters>
+            <filter>../../src/main/filters/config-${spring.profile}.properties</filter>
+        </filters>
         <plugins>
             <!--打包jar-->
             <plugin>
