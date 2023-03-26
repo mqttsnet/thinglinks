@@ -32,12 +32,6 @@
             <version>${spring-boot-admin.version}</version>
         </dependency>
 
-        <!-- Spring Security -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
         <!-- SpringCloud Alibaba Nacos -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -50,16 +44,16 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
-        <!-- SpringBoot Actuator -->
+        <!-- SpringCloud Alibaba Sentinel -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
         </dependency>
 
-        <!-- Mysql Connector -->
+        <!-- SpringBoot Web -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <!-- Spring Security -->
@@ -68,62 +62,6 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- thinglinks Common DataSource -->
-        <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-datasource</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>
-
-        <!-- thinglinks Common Rocketmq -->
-        <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-rocketmq</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>
-
-        <!-- thinglinks Common Swagger -->
-        <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-swagger</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>2.34.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.12.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.coobird</groupId>
-            <artifactId>thumbnailator</artifactId>
-            <version>0.4.8</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.ethz.ganymed</groupId>
-            <artifactId>ganymed-ssh2</artifactId>
-            <version>262</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-email</artifactId>
-            <version>1.5</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.2</version>
-        </dependency>
 
     </dependencies>
     <build>
