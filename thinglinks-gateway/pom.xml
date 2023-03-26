@@ -9,10 +9,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>thinglinks-gateway</artifactId>
-
-    <description>
-        thinglinks-gateway网关模块
-    </description>
+    <name>${project.artifactId}</name>
+    <description>thinglinks-gateway网关模块</description>
 
     <properties>
         <!--suppress UnresolvedMavenProperty -->
@@ -116,6 +114,15 @@
     </build>-->
 
     <build>
+        <filters>
+            <filter>../src/main/filters/config-${spring.profile}.properties</filter>
+        </filters>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <!--打包jar-->
             <plugin>

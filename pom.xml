@@ -278,6 +278,12 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -314,6 +320,37 @@
     </developers>
 
     <profiles>
+        <profile>
+            <!-- 本地环境 -->
+            <id>dev</id>
+            <properties>
+                <spring.profile>dev</spring.profile>
+            </properties>
+            <activation>
+                <!-- 是否默认激活 -->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <!-- 测试环境 -->
+            <id>test</id>
+            <properties>
+                <spring.profile>test</spring.profile>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <!-- 生产环境 -->
+            <id>prod</id>
+            <properties>
+                <spring.profile>prod</spring.profile>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
         <profile>
             <id>release</id>
             <build>
