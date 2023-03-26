@@ -54,6 +54,13 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+
+        <!-- thinglinks Common DataSource -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-datasource</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
         
         <!-- thinglinks Common Log -->
         <dependency>
