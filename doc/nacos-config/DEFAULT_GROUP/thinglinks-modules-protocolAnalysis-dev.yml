@@ -1,9 +1,0 @@
-# Tomcat
-server:
-  port: 19307
-
-protocol: 
-    tcp-ip: 
-        port: 18901
-    udp-ip: 
-        port: 18902
