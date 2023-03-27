@@ -1,0 +1,59 @@
+spring:
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+#请求处理的超时时间
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+
+# feign 配置
+feign:
+  hystrix: 
+    enabled: true
+  sentinel:
+    enabled: true
+  okhttp:
+    enabled: true
+  httpclient:
+    enabled: false
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+
+# 暴露监控端点
+management:
+  metrics: 
+    export: 
+      influx: 
+        enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+#线程池总线资源配置
+threadBus:
+  pool:
+    #核心线程数（默认线程数）
+    core-pool-size: 8
+    #最大线程数
+    max-pool-size: 16
+    #允许线程空闲时间（单位：默认为秒）
+    keep-alive-time: 60
+    #缓冲队列大小
+    queue-capacity: 1000
+    #线程池名前缀
+    thread-name-prefix: thinglinksAsync-
