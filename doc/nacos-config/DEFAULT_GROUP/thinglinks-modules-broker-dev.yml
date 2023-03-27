@@ -114,4 +114,4 @@ smqtt:
         tags: thinglinks
         namesrvAddr: 127.0.0.1:19876
         instanceName: broker-a
-        producerGroup: thinglinks-broker
+        producerGroup: thinglinks
