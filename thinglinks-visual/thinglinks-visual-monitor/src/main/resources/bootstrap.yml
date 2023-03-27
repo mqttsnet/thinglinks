@@ -32,7 +32,8 @@ spring:
           refresh: true
         # 共享配置
         shared-configs:
-          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+          - dataId: application.yml
+            refresh: true
           - dataId: redis.yml
             refresh: false
           - dataId: database.yml

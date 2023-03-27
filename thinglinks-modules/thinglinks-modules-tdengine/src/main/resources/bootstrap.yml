@@ -27,10 +27,11 @@ spring:
         file-extension: yml
         # 共享配置
         shared-configs:
-          - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
-          - dataId: redis.yml
-            refresh: false
+          - dataId: application.yml
+            refresh: true
           - dataId: rocketmq.yml
+            refresh: false
+          - dataId: redis.yml
             refresh: false
         username: @nacos.username@
         password: @nacos.password@
