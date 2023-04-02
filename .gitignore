@@ -31,3 +31,4 @@ hs_err_pid*
 /thinglinks-visual/*/target
 *.iml
 doc/
+src/
