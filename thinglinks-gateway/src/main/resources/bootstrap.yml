@@ -43,7 +43,6 @@ spring:
       transport:
         # 控制台地址
         dashboard: @sentinel.dashboard@
-        port: @sentinel.port@
       # nacos配置持久化
       datasource:
         ds1:
