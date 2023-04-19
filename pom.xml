@@ -48,6 +48,30 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- 编译时的编码 -->
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <dockerfile-maven-plugin.version>1.4.12</dockerfile-maven-plugin.version>
+        <docker.image.prefix>mqttsnet</docker.image.prefix>
+
+
+        <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
+        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
+        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
+        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
+        <maven-help-plugin.version>3.2.0</maven-help-plugin.version>
+        <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
+        <maven-invoker-plugin.version>3.2.2</maven-invoker-plugin.version>
+        <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+        <maven-shade-plugin.version>3.3.0</maven-shade-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -71,13 +95,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- Alibaba Nacos 配置 -->
-<!--            <dependency>-->
-<!--                <groupId>com.alibaba.nacos</groupId>-->
-<!--                <artifactId>nacos-client</artifactId>-->
-<!--                <version>${alibaba.nacos.version}</version>-->
-<!--            </dependency>-->
 
             <!-- SpringBoot 依赖配置 -->
             <dependency>
@@ -270,27 +287,6 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <!-- TODO 发行版本控制（需要版本发行时使用） -->
     <licenses>
         <license>
@@ -355,92 +351,180 @@
                         </includes>
                     </resource>
                 </resources>
-                <pluginManagement>
-                    <plugins>
-                        <!-- Source -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-source-plugin</artifactId>
-                            <version>3.2.1</version>
-                            <executions>
-                                <execution>
-                                    <phase>package</phase>
-                                    <goals>
-                                        <goal>jar-no-fork</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <!-- Javadoc -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>3.3.1</version>
-                            <configuration>
-                                <show>private</show>
-                                <nohelp>true</nohelp>
-                                <charset>UTF-8</charset>
-                                <encoding>UTF-8</encoding>
-                                <docencoding>UTF-8</docencoding>
-                                <!--                            <additionalparam>-Xdoclint:none</additionalparam>-->
-                                <!-- TODO 临时解决不规范的javadoc生成报错,后面要规范化后把这行去掉 -->
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <phase>package</phase>
-                                    <goals>
-                                        <goal>jar</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <!-- GPG -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-gpg-plugin</artifactId>
-                            <version>3.0.1</version>
-                            <executions>
-                                <execution>
-                                    <phase>verify</phase>
-                                    <goals>
-                                        <goal>sign</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <!--Compiler -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <version>3.8.1</version>
-                            <configuration>
-                                <source>${java.version}</source>
-                                <target>${java.version}</target>
-                                <encoding>${project.build.sourceEncoding}</encoding>
-                            </configuration>
-                        </plugin>
-                        <!--Release -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-release-plugin</artifactId>
-                            <version>3.0.0-M4</version>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
             </build>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>sonatype-nexus-snapshots</id>
-                    <name>Sonatype Nexus Snapshots</name>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>sonatype-nexus-staging</id>
-                    <name>Nexus Release Repository</name>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
         </profile>
     </profiles>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <!--打包跳过测试-->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+
+            <!-- 资源插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin.version}</version>
+            </plugin>
+
+            <!-- 一键更新子模块版本号 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.15.0</version>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <!--打包跳过测试-->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <skipTests>true</skipTests>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>2.7.7</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-plugin.version}</version>
+                    <configuration>
+                        <!-- 后缀为pem、pfx的证书文件 -->
+                        <nonFilteredFileExtensions>
+                            <nonFilteredFileExtension>pem</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>map</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>pfx</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>p12</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>key</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>db</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>xdb</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>eot</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>otf</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>svg</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>woff</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>map</nonFilteredFileExtension>
+                        </nonFilteredFileExtensions>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <charset>UTF-8</charset>
+                        <docencoding>UTF-8</docencoding>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                            <configuration>
+                                <additionalJOption>-Xdoclint:none</additionalJOption>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!--配置生成源码包 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven-source-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>aliyun</id>
+            <name>aliyun</name>
+            <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/libs-milestone</url>
+        </repository>
+        <repository>
+            <id>oss-public</id>
+            <url>https://oss.sonatype.org/content/repositories/public</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>aliyun-plugin</id>
+            <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>

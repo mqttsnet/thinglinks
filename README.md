@@ -179,15 +179,12 @@ MQTT客户端C库: thinglinks-mqtt-c
 - [Github](https://github.com/mqttsnet/thinglinks-mqtt-c)
 - [Gitee](https://gitee.com/mqttsnet/thinglinks-mqtt-c)
 
-## License(开源协议)
-
-[Apache License, Version 2.0](License)
-
-[感谢JetBrains官方提供免费 IDEA License](https://www.jetbrains.com)
-
 ## 交流社区（添加作者WX: xiaonannet 邀请进微信群，备注：thinglinks）
 
 [相关技术资料](http://showdoc.mqttsnet.com/web/#/5)
+
+## 高质量交流社区
+![](doc/imgs/zsxq.png)
 
 ## issues(欢迎大家提出宝贵意见)
 [issues](https://github.com/mqttsnet/thinglinks/issues)
@@ -195,5 +192,11 @@ MQTT客户端C库: thinglinks-mqtt-c
 ## 欢迎提交 pr
 [pr->release/1.0.0](https://gitee.com/mqttsnet/thinglinks/pulls)
 
+## License(开源协议)
+
+[Apache License, Version 2.0](LICENSE)
+
+[感谢JetBrains官方提供免费 IDEA License](https://www.jetbrains.com)
+
 ## 版权使用说明
-ThingLinks开源平台遵循 [Apache License, Version 2.0](License) 协议。 允许商业使用，但务必保留类作者、Copyright 信息。
+ThingLinks开源平台遵循 [Apache License, Version 2.0](LICENSE) 协议。 允许商业使用，但务必保留类作者、Copyright 信息。
