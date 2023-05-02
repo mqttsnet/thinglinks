@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 产品模型业务层
@@ -687,8 +688,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAllByIdInAndStatus(Collection<Long> idCollection, String status) {
-        return productMapper.findAllByIdInAndStatus(idCollection, status);
+    public List<Product> findAllByIdInAndStatus(List<Long> ids, String status) {
+        return productMapper.findAllByIdInAndStatus(ids, status);
     }
 
 
