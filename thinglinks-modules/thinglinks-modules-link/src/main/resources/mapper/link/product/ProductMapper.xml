@@ -1099,9 +1099,9 @@
         <include refid="Base_Column_List"/>
         from product
         <where>
-            <if test="idCollection != null and idCollection.size() &gt; 0">
+            <if test="ids != null">
                 and id in
-                <foreach close=")" collection="idCollection" index="index" item="item" open="(" separator=",">
+                <foreach close=")" collection="ids" index="index" item="item" open="(" separator=",">
                     #{item,jdbcType=BIGINT}
                 </foreach>
             </if>
