@@ -15,35 +15,35 @@ public class ServiceNameConstants
     /**
      * 系统模块的serviceid
      */
-    public static final String SYSTEM_SERVICE = "thinglinks-system";
+    public static final String SYSTEM_SERVICE = "thinglinks-modules-system";
 
     /**
      * 文件服务的serviceid
      */
-    public static final String FILE_SERVICE = "thinglinks-file";
+    public static final String FILE_SERVICE = "thinglinks-modules-file";
 
     /**
      * Link服务的serviceid
      */
-    public static final String THINGLINKS_LINK = "thinglinks-link";
+    public static final String THINGLINKS_LINK = "thinglinks-modules-link";
 
     /**
      * Broker服务的serviceid
      */
-    public static final String THINGLINKS_BROKER = "thinglinks-broker";
+    public static final String THINGLINKS_BROKER = "thinglinks-modules-broker";
 
     /**
      * Tdengine服务的serviceid
      */
-    public static final String THINGLINKS_TDENGINE = "thinglinks-tdengine";
+    public static final String THINGLINKS_TDENGINE = "thinglinks-modules-tdengine";
 
     /**
      * Rule服务的serviceid
      */
-    public static final String THINGLINKS_RULE = "thinglinks-rule";
+    public static final String THINGLINKS_RULE = "thinglinks-modules-rule";
 
     /**
      * Job服务的serviceid
      */
-    public static final String THINGLINKS_JOB = "thinglinks-job";
+    public static final String THINGLINKS_JOB = "thinglinks-modules-job";
 }

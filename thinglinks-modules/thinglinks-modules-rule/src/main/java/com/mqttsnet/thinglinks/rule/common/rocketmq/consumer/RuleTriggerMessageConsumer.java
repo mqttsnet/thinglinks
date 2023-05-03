@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_JOB_GROUP, topic = ConsumerTopicConstant.THINGLINKS_RULE_TRIGGER, messageModel = MessageModel.CLUSTERING)
+@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_GROUP, topic = ConsumerTopicConstant.THINGLINKS_RULE_TRIGGER, messageModel = MessageModel.CLUSTERING)
 public class RuleTriggerMessageConsumer implements RocketMQListener {
 
     @Autowired

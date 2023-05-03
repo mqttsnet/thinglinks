@@ -33,8 +33,8 @@ public class InitDataBase {
     /**
      * 数据库名称
      */
-    @Value("${spring.datasource.dynamic.datasource.master.dbName:thinglinks}")
-    private String dataBaseName;
+    @Value("${spring.datasource.dynamic.datasource.master.dbName}")
+    private String dataBaseName = "thinglinks";
 
     @PostConstruct
     public void init() throws Exception {

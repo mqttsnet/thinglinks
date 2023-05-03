@@ -180,7 +180,7 @@ public interface ProductService {
     Product findOneByProductIdentificationAndProtocolType(String productIdentification, String protocolType);
 
 
-    List<Product> findAllByIdInAndStatus(Collection<Long> idCollection, String status);
+    List<Product> findAllByIdInAndStatus(List<Long> ids, String status);
 
     List<Product> selectAllProductByStatus(String status);
 

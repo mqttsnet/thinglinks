@@ -15,10 +15,11 @@
         <module>thinglinks-common-swagger</module>
         <module>thinglinks-common-security</module>
         <module>thinglinks-common-datascope</module>
-		<module>thinglinks-common-datasource</module>
+        <module>thinglinks-common-datasource</module>
         <module>thinglinks-common-rocketmq</module>
         <module>thinglinks-common-job</module>
         <module>thinglinks-common-kafka</module>
+        <module>thinglinks-common-seata</module>
     </modules>
 
     <artifactId>thinglinks-common</artifactId>

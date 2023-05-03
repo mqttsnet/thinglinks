@@ -16,31 +16,4 @@ public class ConsumerGroupConstant {
      * default-consumer-group
      */
     public static final String THINGLINKS_GROUP = "thinglinks";
-
-    /**
-     * broker-consumer-group
-     */
-    public static final String THINGLINKS_BROKER_GROUP = "thinglinks-broker";
-
-    /**
-     * link-consumer-group
-     */
-    public static final String THINGLINKS_LINK_GROUP = "thinglinks-link";
-
-    /**
-     * tdengine-consumer-group
-     */
-    public static final String THINGLINKS_TDENGINE_GROUP = "thinglinks-tdengine";
-
-    /**
-     * job-consumer-group
-     */
-    public static final String THINGLINKS_JOB_GROUP = "thinglinks-job";
-
-    /**
-     * rule-consumer-group
-     */
-    public static final String THINGLINKS_RULE_GROUP = "thinglinks-rule";
-
-
 }

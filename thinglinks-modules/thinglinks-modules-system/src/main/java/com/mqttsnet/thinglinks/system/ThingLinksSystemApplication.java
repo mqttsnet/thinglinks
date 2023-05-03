@@ -5,6 +5,7 @@ import com.mqttsnet.thinglinks.common.security.annotation.EnableRyFeignClients;
 import com.mqttsnet.thinglinks.common.swagger.annotation.EnableCustomSwagger2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 /**

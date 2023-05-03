@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>com.mqttsnet</groupId>
+    <artifactId>thinglinks-common</artifactId>
+    <version>${thinglinks.version}</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>thinglinks-common-seata</artifactId>
+  <description>thinglinks-common-seata分布式事务</description>
+  <dependencies>
+    <!-- SpringBoot Seata -->
+    <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>
