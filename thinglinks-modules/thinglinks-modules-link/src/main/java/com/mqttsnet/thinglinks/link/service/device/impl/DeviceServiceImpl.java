@@ -234,7 +234,7 @@ public class DeviceServiceImpl implements DeviceService {
             deviceLocationService.insertOrUpdateSelective(deviceLocation);
             //基础TOPIC集合
             Map<String, String> topicMap = new HashMap<>();
-            if (device.getDeviceType().equals(DeviceType.GATEWAY.getValue())) {
+            if (DeviceType.GATEWAY.getValue().equals(device.getDeviceType())) {
                 topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/add", "边设备添加子设备");
                 topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/addResponse", "物联网平台返回的添加子设备的响应");
                 topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/delete", "边设备删除子设备");
@@ -244,7 +244,7 @@ public class DeviceServiceImpl implements DeviceService {
                 topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/datas", "边设备上报数据");
                 topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/command", "物联网平台给设备或边设备下发命令");
                 topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/commandResponse", "边设备返回给物联网平台的命令响应");
-            } else if (device.getDeviceType().equals(DeviceType.COMMON.getValue())) {
+            } else if (DeviceType.COMMON.getValue().equals(device.getDeviceType())) {
                 topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/datas", "边设备上报数据");
                 topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/command", "物联网平台给设备或边设备下发命令");
                 topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/commandResponse", "边设备返回给物联网平台的命令响应");
