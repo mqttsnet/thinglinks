@@ -48,6 +48,7 @@
     },
     data() {
       return {
+        loading:false,
         falg: 1,
         // 设备档案表格数据
         did: "",
@@ -129,8 +130,8 @@
       getDeviceList() {
         this.loading = true;
         listDevice(this.queryParamsD).then((response) => {
-          this.deviceList = response.data.device.rows;
-          this.deviceTotal = response.data.device.total;
+          this.deviceList = response.rows;
+          this.deviceTotal = response.total;
           this.loading = false;
         });
       },
