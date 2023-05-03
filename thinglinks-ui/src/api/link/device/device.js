@@ -86,3 +86,11 @@ export function getDeviceShadow(data) {
     data: data
   })
 }
+// 查询设备告警信息列表
+export function listAlarm(query) {
+  return request({
+    url: '/link/alarm/list',
+    method: 'get',
+    params: query
+  })
+}
