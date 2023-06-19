@@ -29,8 +29,6 @@ spring:
         shared-configs:
           - dataId: application.yml
             refresh: true
-          - dataId: rocketmq.yml
-            refresh: false
           - dataId: redis.yml
             refresh: false
         username: @nacos.username@
