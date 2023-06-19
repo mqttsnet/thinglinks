@@ -30,7 +30,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_GROUP, topic = ConsumerTopicConstant.THINGLINKS_LINK_MQTT_MSG, messageModel = MessageModel.CLUSTERING)
+@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_BROKER_GROUP, topic = ConsumerTopicConstant.THINGLINKS_LINK_MQTT_MSG, messageModel = MessageModel.CLUSTERING)
 public class DeviceActionMessageConsumer implements RocketMQListener {
     @Autowired
     private DeviceActionService deviceActionService;

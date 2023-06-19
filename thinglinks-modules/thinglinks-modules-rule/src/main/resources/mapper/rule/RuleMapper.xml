@@ -563,4 +563,11 @@
     </where>
     <include refid="OrderByCreateTimeDesc"/>
   </select>
+  <select id="selectByRuleIdentification" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from `rule`
+    where rule_identification = #{ruleIdentification,jdbcType=VARCHAR}
+  </select>
 </mapper>
