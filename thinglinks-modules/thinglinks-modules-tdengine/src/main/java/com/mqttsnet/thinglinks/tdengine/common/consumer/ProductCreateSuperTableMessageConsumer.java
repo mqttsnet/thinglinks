@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_GROUP, topic = ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE, messageModel = MessageModel.CLUSTERING)
+@RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_LINK_GROUP, topic = ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE, messageModel = MessageModel.CLUSTERING)
 public class ProductCreateSuperTableMessageConsumer implements RocketMQListener {
 
     @Autowired
