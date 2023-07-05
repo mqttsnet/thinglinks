@@ -170,7 +170,7 @@ public class ProtocolServiceImpl implements ProtocolService {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             String content = StringEscapeUtils.unescapeHtml4(protocol.getContent());
             for (Device device : deviceList) {
-                redisService.set(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getDeviceIdentification(), content);
+                redisService.set(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getProtocolType() + device.getDeviceIdentification(), content);
             }
             protocolMapper.updateStatusById(Constants.ENABLE, protocol.getId());
         }
