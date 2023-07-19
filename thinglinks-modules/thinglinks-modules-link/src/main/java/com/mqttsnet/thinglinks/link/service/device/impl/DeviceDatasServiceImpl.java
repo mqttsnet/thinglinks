@@ -481,8 +481,15 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                     continue;
                 }
                 //取出事件发生时间，并格式化为long类型的毫秒时间戳
-                String eventTimeStr = eventTime.toString().replace("T", "").replace("Z", "");
-                long eventDataTime = DateUtils.string2MillisWithJdk8(eventTimeStr, "yyyyMMddHHmmss");
+//                String eventTimeStr = eventTime.toString().replace("T", "").replace("Z", "");
+//                long eventDataTime = DateUtils.string2MillisWithJdk8(eventTimeStr, "yyyyMMddHHmmss");
+                String formatStr = "yyyy-MM-dd HH:mm:ss";
+                String eventTimeStr = eventTime.toString();
+                if(eventTime.toString().endsWith("Z")){
+                    formatStr = "yyyyMMddHHmmss";
+                    eventTimeStr = eventTime.toString().replace("T", "").replace("Z", "");
+                }
+                long eventDataTime = DateUtils.string2MillisWithJdk8(eventTimeStr, formatStr);
                 //超级表第一个字段数据类型必须为时间戳,默认Ts为当前系统时间
                 schemaFields.get(0).setFieldValue(DateUtils.millisecondStampL());
                 //因为超级表的第二个字段为事件发生时间数据类型必须为时间戳，所以直接将索引为1的字段信息对象的字段值设置为eventTime
