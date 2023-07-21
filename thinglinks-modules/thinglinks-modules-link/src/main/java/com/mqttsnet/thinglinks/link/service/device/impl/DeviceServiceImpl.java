@@ -478,7 +478,7 @@ public class DeviceServiceImpl implements DeviceService {
             }
             productServicesLis.forEach(productServices -> {
                 String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceName());
-                String shadowTableName = TdUtils.getSubTableName(superTableName, device.getClientId());
+                String shadowTableName = TdUtils.getSubTableName(superTableName, device.getDeviceIdentification());
                 SelectDto selectDto = new SelectDto();
                 selectDto.setDataBaseName(dataBaseName);
                 selectDto.setTableName(shadowTableName);
