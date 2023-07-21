@@ -29,42 +29,10 @@
 
 TDengine时序数据库超级表设计概念：每个设备一张表,每类设备一个超级表。
 
-## 系统模块
+## 文档
 
-~~~
-com.mqttsnet.thinglinks     
-├── thinglinks-ui              // 前端框架 [19000]
-├── thinglinks-gateway         // 网关模块 [19100]、[sentinel:19101]
-├── thinglinks-auth            // 认证中心 [19200]
-├── thinglinks-api             // 接口模块
-│       └── thinglinks-api-system                          // 系统接口
-├── thinglinks-common          // 通用模块
-│       └── thinglinks-common-core                         // 核心模块
-│       └── thinglinks-common-datascope                    // 权限范围
-│       └── thinglinks-common-datasource                   // 多数据源
-│       └── thinglinks-common-job                          // 分布式定时任务
-│       └── thinglinks-common-kafka                        // kafka消息服务
-│       └── thinglinks-common-log                          // 日志记录
-│       └── thinglinks-common-redis                        // 缓存服务
-│       └── thinglinks-common-rocketmq                     // rocketmq消息服务
-│       └── thinglinks-common-security                     // 安全模块
-│       └── thinglinks-common-swagger                      // 系统接口
-├── thinglinks-modules         // 业务模块
-│       └── thinglinks-modules-file                        // 文件服务 [19300]
-│       └── thinglinks-modules-gen                         // 代码生成 [19301]
-│       └── thinglinks-modules-job                         // 定时任务 [19302]
-│       └── thinglinks-modules-system                      // 系统模块 [19303]
-│       └── thinglinks-modules-tdengine                    // TDengine服务 [19304]
-│       └── thinglinks-modules-link                        // Link服务 [19305]
-│       └── thinglinks-modules-broker                      // broker服务 [19306]、[MQTT-TCP:11883]、[MQTT-SSL:18443]、[MQTT-WS:18999]
-│       └── thinglinks-modules-protocolAnalysis            // 协议解析服务 [19307]、[TCP-IP:18901]、[UDP-IP:18902]
-        └── thinglinks-modules-rule                        // 规则模块 [19308]
-├── thinglinks-registry         // 注册中心微应用
-├── thinglinks-visual          // 图形化管理模块
-│       └── thinglinks-visual-monitor                      // 监控中心 [19400]
-│       └── thinglinks-visual-collection                   // 服务器监控采集服务 [19401]
-├──pom.xml                // 公共依赖
-~~~
+- [官方文档](https://mqttsnet.yuque.com/gt6zkc/thinglinks?# 《ThingLinks物联网一体化平台》)
+
 ## 平台总体架构
 
 ![](doc/imgs/overallArchitecture.png)
@@ -87,14 +55,6 @@ com.mqttsnet.thinglinks
 设备调试：实时日志、命令下发
 
 规则引擎消息转发：支持KAFKA节点、HTTP节点、PREDICATE节点、ROCKET_MQ节点、RABBIT_MQ节点、MYSQL节点、MQTT节点、TOPIC节点、LOG节点
-
-## 在线体验
-
-由于服务器近期频繁遭到境外IP暴力破解攻击，暂时关闭！
-
-- admin/adminthinglinks（请大家切勿修改密码，修改他人测试数据营造良好的开源氛围）
-
-演示地址：http://thinglinks.mqttsnet.com/
 
 ## 功能开发计划
 
@@ -124,73 +84,26 @@ com.mqttsnet.thinglinks
 
 ![](doc/imgs/deviceIntegration/img_6.png)
 
-## 配置使用
-
-### 启动命令（进入对应目录后逐一启动即可、可根据服务器性能调整JVM参数）
-
-~~~
-
-1、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-gateway-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-2、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-auth-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-3、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-file-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-4、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-gen-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-5、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-job-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-6、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-system-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-7、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-tdengine-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-8、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-link-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-9、nohup java -Xms400m -Xmx400m -Xmn150m -Xss512k -XX:MetaspaceSize=1024m -XX:MaxMetaspaceSize=1024m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-broker-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-10、nohup java -Xms400m -Xmx400m -Xmn150m -Xss512k -XX:MetaspaceSize=1024m -XX:MaxMetaspaceSize=1024m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-rule-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-11、nohup java -Xms400m -Xmx400m -Xmn150m -Xss512k -XX:MetaspaceSize=1024m -XX:MaxMetaspaceSize=1024m -server -jar -Dfile.encoding=utf-8  ./thinglinks-modules-protocolAnalysis-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-12、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -jar -Dfile.encoding=utf-8  ./thinglinks-visual-monitor-1.0.0.RELEASE.jar >/dev/null 2>&1 &
-
-13、nohup java -Xms150m -Xmx150m -Xmn100m -Xss512k -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m -server -Dserver.port=19101 -Dcsp.sentinel.dashboard.server=localhost:19101 -Dproject.name=sentinel-dashboard -Dsentinel.dashboard.auth.username=thinglinks -Dsentinel.dashboard.auth.password=123456 -jar -Dfile.encoding=utf-8  ./sentinel-dashboard-1.8.2.jar >/dev/null 2>&1 &
-
-~~~
-
 ## 商业合作&贡献代码
 
 如果你有兴趣参与项目开发或进行商务合作，请联系mqttsnet团队邮箱: mqttsnet@163.com
 
 ## 友情链接
 
-thinglinks基于UniApp开发的轻量级移动端: thinglinks-app
+BifroMQ 是一个高性能的 MQTT 消息中间件，采用原生多租户架构。由百度开源。
+- [官网](bifromq.io)
+- [Github](https://github.com/baidu/bifromq)
 
-- [Github](https://github.com/mqttsnet/thinglinks-app)
-- [Gitee](https://gitee.com/mqttsnet/thinglinks-app)
-
-本平台高效MQTT Broker采用: SMQTTX
-
+高效MQTT Broker: SMQTTX
 - [Github](https://github.com/quickmsg/smqttx)
 - [Gitee](https://gitee.com/quickmsg/smqttx)
 
-MQTT客户端C库: thinglinks-mqtt-c
-
-- [Github](https://github.com/mqttsnet/thinglinks-mqtt-c)
-- [Gitee](https://gitee.com/mqttsnet/thinglinks-mqtt-c)
-
-## 交流社区（添加作者WX: xiaonannet 邀请进微信群，备注：thinglinks）
-
-[相关技术资料](http://showdoc.mqttsnet.com/web/#/5)
-
-## 高质量交流社区
-![](doc/imgs/zsxq.png)
 
 ## issues(欢迎大家提出宝贵意见)
 [issues](https://github.com/mqttsnet/thinglinks/issues)
 
 ## 欢迎提交 pr
-[pr->release/1.0.0](https://gitee.com/mqttsnet/thinglinks/pulls)
+[pr->feat/contrbute](https://github.com/mqttsnet/thinglinks/pulls)
 
 ## License(开源协议)
 
