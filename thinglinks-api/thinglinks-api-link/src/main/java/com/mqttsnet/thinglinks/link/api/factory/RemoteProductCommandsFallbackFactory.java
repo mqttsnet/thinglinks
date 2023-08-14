@@ -32,6 +32,11 @@ public class RemoteProductCommandsFallbackFactory implements FallbackFactory<Rem
                 return R.fail("根据产品命令id列表查询服务失败", throwable.getMessage());
             }
 
+            @Override
+            public R<?> selectAllByServiceId(Long serviceId) {
+                return R.fail("根据产品服务id列表查询命令失败", throwable.getMessage());
+            }
+
         };
     }
 

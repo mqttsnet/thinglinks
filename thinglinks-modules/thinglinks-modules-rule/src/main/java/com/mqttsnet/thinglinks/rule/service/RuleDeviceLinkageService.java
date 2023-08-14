@@ -54,4 +54,11 @@ public interface RuleDeviceLinkageService {
      * @return
      */
     R<?> selectProductPropertiesByServiceId(Long serviceId);
+
+    /**
+     * 根据产品id获取所有命令
+     * @param serviceId
+     * @return
+     */
+    R<?> selectProductCommandsByServiceId(Long serviceId);
 }

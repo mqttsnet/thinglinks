@@ -110,4 +110,5 @@ security:
       - /broker/websocket/logging
       #客户端身份认证接口
       - /link/device/clientAuthentication
+      - /link/device/clientConnectionAuthentication
       - /tdengine/**

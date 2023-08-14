@@ -16,8 +16,6 @@ import java.util.List;
 @FeignClient(contextId = "RemoteProductPropertiesService", value = ServiceNameConstants.THINGLINKS_LINK, fallbackFactory = RemoteProductPropertiesFallbackFactory.class)
 public interface RemoteProductPropertiesService {
 
-
-
     @GetMapping("/productProperties/selectAllPropertiesByServiceId/{serviceId}")
     R<?> selectAllByServiceId(@RequestParam("serviceId") Long serviceId);
 

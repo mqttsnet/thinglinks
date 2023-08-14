@@ -10,6 +10,7 @@ import com.mqttsnet.thinglinks.common.log.annotation.Log;
 import com.mqttsnet.thinglinks.common.log.enums.BusinessType;
 import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.service.product.ProductCommandsService;
 import org.springframework.web.bind.annotation.*;
 
@@ -110,4 +111,16 @@ public class ProductCommandsController extends BaseController {
     public R<?> selectProductCommandsByIdList(@RequestBody List<Long> commandIdList) {
         return R.ok(productCommandsService.selectProductCommandsByIdList(commandIdList));
     }
+
+    /**
+     * 查询产品模型服务命令列表
+     */
+    @GetMapping("/selectAllCommandsByServiceId/{serviceId}")
+    public R selectAllCommandsByServiceId(@PathVariable("serviceId") Long serviceId) {
+        ProductCommands productCommands = new ProductCommands();
+        productCommands.setServiceId(serviceId);
+        List<ProductCommands> list = productCommandsService.selectProductCommandsList(productCommands);
+        return R.ok(list);
+    }
+
 }

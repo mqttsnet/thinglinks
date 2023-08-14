@@ -7,7 +7,7 @@
     </update>
 
     <update id="createSuperTable">
-        create table if not exists #{dataBaseName}.#{superTableName}
+        create stable if not exists #{dataBaseName}.#{superTableName}
         <foreach item="item" collection="schemaFields" separator=","
                  open="(" close=")" index="">
             <if test="item.fieldName != null || item.fieldName != ''">
@@ -111,7 +111,7 @@
                 tags
         <foreach item="item" collection="tagsFieldValues" separator=","
                  open="(" close=")" index="">
-            ${item.fieldValue}
+            '${item.fieldValue}'
         </foreach>
     </update>
 
@@ -125,7 +125,7 @@
         tags
         <foreach item="item" collection="tagsFieldValues" separator=","
                  open="(" close=")" index="">
-            ${item.fieldValue}
+            '${item.fieldValue}'
         </foreach>
         values
         <foreach item="item" collection="schemaFieldValues" separator=","

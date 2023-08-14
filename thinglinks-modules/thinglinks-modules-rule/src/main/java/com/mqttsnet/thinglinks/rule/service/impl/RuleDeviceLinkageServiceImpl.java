@@ -7,13 +7,11 @@ import com.mqttsnet.thinglinks.common.core.enums.ConditionTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.FieldTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.OperatorEnum;
 import com.mqttsnet.thinglinks.common.core.enums.TriggeringEnum;
+import com.mqttsnet.thinglinks.common.core.mqs.SelectorConfig;
 import com.mqttsnet.thinglinks.common.core.utils.CompareUtil;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
 import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
-import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
-import com.mqttsnet.thinglinks.link.api.RemoteProductPropertiesService;
-import com.mqttsnet.thinglinks.link.api.RemoteProductService;
-import com.mqttsnet.thinglinks.link.api.RemoteProductServicesService;
+import com.mqttsnet.thinglinks.link.api.*;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
@@ -26,8 +24,10 @@ import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -46,7 +46,13 @@ import java.util.*;
 public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
 
     @Autowired
+    private KafkaTemplate<String, String> thingLinksProKafkaTemplate;
+
+    @Autowired
     private RocketMQTemplate rocketMQTemplate;
+
+    @Autowired
+    private SelectorConfig selectorConfig;
 
     @Autowired
     private RuleService ruleService;
@@ -69,6 +75,12 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
     @Resource
     private RemoteProductPropertiesService remoteProductPropertiesService;
 
+    @Resource
+    private RemoteProductCommandsService remoteProductCommandsService;
+
+    @Resource
+    private RemoteProductCommandsRequestsService remoteProductCommandsRequestsService;
+
     /**
      * 触发设备联动规则条件
      *
@@ -82,7 +94,12 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", ruleIdentification);
         mqMessage.setMessage(jsonObject.toJSONString());
-        rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
+
+        if (selectorConfig.isSelectorKafka()) {
+            thingLinksProKafkaTemplate.send(new ProducerRecord<>(mqMessage.getTopic(), mqMessage.getMessage()));
+        } else {
+            rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
+        }
     }
 
     /**
@@ -394,6 +411,16 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
      */
     public R<?> selectProductPropertiesByServiceId(Long serviceId){
         R<?> propertiesResponse = remoteProductPropertiesService.selectAllByServiceId(serviceId);
+        return propertiesResponse;
+    }
+
+    /**
+     * 根据服务id获取服务所有命令
+     * @param serviceId
+     * @return
+     */
+    public R<?> selectProductCommandsByServiceId(Long serviceId){
+        R<?> propertiesResponse = remoteProductCommandsService.selectAllByServiceId(serviceId);
         return propertiesResponse;
     }
 }
