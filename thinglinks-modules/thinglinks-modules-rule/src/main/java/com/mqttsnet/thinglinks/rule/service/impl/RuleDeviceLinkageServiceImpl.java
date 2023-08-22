@@ -21,7 +21,6 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.rule.api.domain.ActionCommands;
 import com.mqttsnet.thinglinks.rule.api.domain.Rule;
 import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
-import com.mqttsnet.thinglinks.rule.common.consumer.mqtt.MqttProviderConfig;
 import com.mqttsnet.thinglinks.rule.service.ActionCommandsService;
 import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
 import com.mqttsnet.thinglinks.rule.service.RuleDeviceLinkageService;
@@ -70,9 +69,6 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
 
     @Autowired
     private RuleConditionsService ruleConditionsService;
-
-    @Autowired
-    private MqttProviderConfig providerClient;
 
     @Resource
     private RemoteProductService remoteProductService;
@@ -247,7 +243,6 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
                 message.put("service", command.getServiceName());
                 message.put("deviceId", command.getDeviceIdentification());
 
-                providerClient.publish(0,true,topic, message.toString());
             });
         }
 
