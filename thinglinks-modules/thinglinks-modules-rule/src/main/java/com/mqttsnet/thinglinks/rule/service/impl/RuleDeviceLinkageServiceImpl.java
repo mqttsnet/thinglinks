@@ -1,6 +1,8 @@
 package com.mqttsnet.thinglinks.rule.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.ConditionTypeEnum;
@@ -12,11 +14,15 @@ import com.mqttsnet.thinglinks.common.core.utils.CompareUtil;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
 import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.link.api.*;
+import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.rule.api.domain.ActionCommands;
 import com.mqttsnet.thinglinks.rule.api.domain.Rule;
 import com.mqttsnet.thinglinks.rule.api.domain.RuleConditions;
+import com.mqttsnet.thinglinks.rule.common.consumer.mqtt.MqttProviderConfig;
+import com.mqttsnet.thinglinks.rule.service.ActionCommandsService;
 import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
 import com.mqttsnet.thinglinks.rule.service.RuleDeviceLinkageService;
 import com.mqttsnet.thinglinks.rule.service.RuleService;
@@ -29,6 +35,8 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -55,10 +63,16 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
     private SelectorConfig selectorConfig;
 
     @Autowired
+    private ActionCommandsService actionCommandsService;
+
+    @Autowired
     private RuleService ruleService;
 
     @Autowired
     private RuleConditionsService ruleConditionsService;
+
+    @Autowired
+    private MqttProviderConfig providerClient;
 
     @Resource
     private RemoteProductService remoteProductService;
@@ -88,12 +102,16 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
      * @return
      */
     @Override
+    @Transactional
     public void triggerDeviceLinkageByRuleIdentification(String ruleIdentification) {
         MQMessage mqMessage = new MQMessage();
         mqMessage.setTopic(ConsumerTopicConstant.THINGLINKS_RULE_TRIGGER);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", ruleIdentification);
         mqMessage.setMessage(jsonObject.toJSONString());
+
+        log.info("topic:{}", mqMessage.getTopic());
+        log.info("message:{}", mqMessage.getMessage());
 
         if (selectorConfig.isSelectorKafka()) {
             thingLinksProKafkaTemplate.send(new ProducerRecord<>(mqMessage.getTopic(), mqMessage.getMessage()));
@@ -120,14 +138,23 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
         // 存放比较结果
         List<Boolean> flags = new ArrayList<>();
         for (RuleConditions conditions : ruleConditions) {
+
+            log.info("conditions:{}", conditions.toString());
+
             // 获取属性字段和类型，和设备上报的数据进行比对
             R<ProductProperties> properties = remoteProductService.selectByIdProperties(conditions.getPropertiesId());
             ProductProperties propertiesData = properties.getData();
             if (propertiesData == null) {
                 continue;
             }
+
+            log.info("properties:{}", properties.toString());
+
             // 获取该产品下的所有设备数据
             Map<String, Map<String, Object>> maps = extractedDeviceData(conditions);
+
+            log.info("maps:{}", maps.toString());
+
             // 属性名称
             String productPropertiesName = propertiesData.getName();
             // 属性类型
@@ -140,16 +167,19 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
             switch (Objects.requireNonNull(ConditionTypeEnum.getBySymbol(conditions.getConditionType()))) {
                 case MATCH:
                     R<?> deviceResponse = remoteDeviceService.selectByProductIdentification(conditions.getProductIdentification());
-                    List<String> datas = (List<String>) deviceResponse.getData();
+                    List<Map<String, Object>> datas = (List<Map<String, Object>>) deviceResponse.getData();
                     if (CollectionUtils.isEmpty(datas)) {
                         break;
                     }
                     datas.forEach(s -> {
-                        if (maps.containsKey(s)) {
-                            Map<String, Object> stringObjectMap = maps.get(s);
-                            if (stringObjectMap.containsKey(productPropertiesName)) {
+
+                        String deviceIdentification = s.get("deviceIdentification").toString();
+                        if (maps.containsKey(deviceIdentification)) {
+                            Map<String, Object> stringObjectMap = maps.get(deviceIdentification);
+                            String productPropertiesNameKey = "last(" + productPropertiesName + ")";
+                            if (stringObjectMap.containsKey(productPropertiesNameKey)) {
                                 // 获取属性实际的值
-                                flags.add(compare(comparisonMode, productPropertiesType, stringObjectMap.get(productPropertiesName).toString(), comparisonValue));
+                                flags.add(compare(comparisonMode, productPropertiesType, stringObjectMap.get(productPropertiesNameKey).toString(), comparisonValue));
                             }
                         }
                     });
@@ -188,6 +218,40 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
                 break;
         }
         return mark;
+    }
+
+    /**
+     * 触发执行动作
+     *
+     * @param ruleIdentification 规则标识
+     * @return
+     */
+    @Override
+    public Boolean execAction(String ruleIdentification) {
+
+        List<ActionCommands> actionCommands = actionCommandsService.actionCommandsByRuleIdentification(ruleIdentification);
+
+        if (actionCommands != null && actionCommands.size() > 0) {
+            actionCommands.forEach((command) -> {
+
+                //MQTT消息下发
+                String topic = "/v1/devices/" + command.getDeviceIdentification() + "/command";
+
+                Map<String, Object> message = new HashMap<>();
+
+                message.put("msgType", "cloudReq");
+                message.put("mid", command.getCommandId());
+                message.put("cmd", command.getCommandName());
+                message.put("paras", command.getCommandBody());
+                message.put("serviceId", command.getServiceId());
+                message.put("service", command.getServiceName());
+                message.put("deviceId", command.getDeviceIdentification());
+
+                providerClient.publish(0,true,topic, message.toString());
+            });
+        }
+
+        return true;
     }
 
     /**
@@ -239,7 +303,7 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
         boolean flag = false;
         FieldTypeEnum bySymbol = FieldTypeEnum.getBySymbol(propertiesType);
         // 判断比较类型
-        switch (Objects.requireNonNull(OperatorEnum.getBySymbol(symbol))) {
+        switch (Objects.requireNonNull(OperatorEnum.getBySymbol(HtmlUtils.htmlUnescape(symbol)))) {
             case eq:
                 // 判断属性值类型
                 switch (Objects.requireNonNull(bySymbol)) {
@@ -376,15 +440,17 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
 
     /**
      * 获取所有可用产品
+     *
      * @return
      */
-    public R<?> selectAllProduct(String status){
+    public R<?> selectAllProduct(String status) {
         R<?> productResponse = remoteProductService.selectAllProduct(status);
         return productResponse;
     }
 
     /**
      * 根据产品标识获取产品所有设备
+     *
      * @param productIdentification
      * @return
      */
@@ -395,31 +461,34 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
 
 
     /**
-     *根据产品标识获取产品所有服务
+     * 根据产品标识获取产品所有服务
+     *
      * @param productIdentification
      * @return
      */
-    public R<?> selectProductServicesByProductIdentification(String productIdentification){
+    public R<?> selectProductServicesByProductIdentification(String productIdentification) {
         R<?> productServicesResponse = remoteProductServicesService.selectAllByProductIdentificationAndStatus(productIdentification, Constants.ENABLE);
         return productServicesResponse;
     }
 
     /**
      * 根据服务id获取服务所有属性
+     *
      * @param serviceId
      * @return
      */
-    public R<?> selectProductPropertiesByServiceId(Long serviceId){
+    public R<?> selectProductPropertiesByServiceId(Long serviceId) {
         R<?> propertiesResponse = remoteProductPropertiesService.selectAllByServiceId(serviceId);
         return propertiesResponse;
     }
 
     /**
      * 根据服务id获取服务所有命令
+     *
      * @param serviceId
      * @return
      */
-    public R<?> selectProductCommandsByServiceId(Long serviceId){
+    public R<?> selectProductCommandsByServiceId(Long serviceId) {
         R<?> propertiesResponse = remoteProductCommandsService.selectAllByServiceId(serviceId);
         return propertiesResponse;
     }

@@ -164,6 +164,8 @@ public interface DeviceMapper {
 
     List<Device> findAllByIdIn(@Param("idCollection") Collection<Long> idCollection);
 
+    Device selectByProductIdentificationAndDeviceIdentification(@Param("productIdentification") String productIdentification,
+                                                                @Param("deviceIdentification") String deviceIdentification);
 
     List<Device> findAllByProductIdentification(@Param("productIdentification") String productIdentification);
 

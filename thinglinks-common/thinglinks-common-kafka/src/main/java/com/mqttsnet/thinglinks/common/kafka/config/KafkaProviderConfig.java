@@ -12,6 +12,7 @@ import org.springframework.kafka.transaction.KafkaTransactionManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @program: thinglinks-cloud-pro-datasource-column
@@ -63,6 +64,9 @@ public class KafkaProviderConfig {
         //反序列化，和生产者的序列化方式对应
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        //为生产者分配一个唯一的事务 ID
+        props.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, UUID.randomUUID().toString());
+
         return props;
     }
 

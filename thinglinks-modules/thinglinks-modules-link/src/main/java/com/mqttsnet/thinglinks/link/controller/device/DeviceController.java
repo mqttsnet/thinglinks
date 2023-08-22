@@ -21,6 +21,7 @@ import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,6 +57,29 @@ public class DeviceController extends BaseController {
         startPage();
         List<Device> list = deviceService.selectDeviceList(device);
         return getDataTable(list);
+    }
+
+    /**
+     * 通过主产品标识查询产品
+     *
+     * @param productIdentification 产品标识
+     * @return 单条数据
+     */
+    @GetMapping("/selectByProductIdentification/{productIdentification}")
+    public R<?> selectByProductIdentification(@PathVariable(value = "productIdentification") String productIdentification) {
+        return R.ok(deviceService.findAllByProductIdentification(productIdentification));
+    }
+
+    /**
+     * 通过主产品标识查询产品
+     *
+     * @param productIdentification 产品标识
+     * @return 单条数据
+     */
+    @GetMapping("/selectByProductIdentificationAndDeviceIdentification/{productIdentification}/{deviceIdentification}")
+    public R<?> selectByProductIdentificationAndDeviceIdentification(@PathVariable(value = "productIdentification") String productIdentification
+            , @PathVariable(value = "deviceIdentification") String deviceIdentification) {
+        return R.ok(deviceService.selectByProductIdentificationAndDeviceIdentification(productIdentification, deviceIdentification));
     }
 
     /**
@@ -225,6 +249,16 @@ public class DeviceController extends BaseController {
         return certificationStatus ? ResponseEntity.ok().body(AjaxResult.success("认证成功")) : ResponseEntity.status(403).body(AjaxResult.error("认证失败"));
     }
 
+    @Value("${mqtt.username}")
+    private String mqttUsername;
+
+    @Value("${mqtt.password}")
+    private String mqttPassword;
+
+    @Value("${mqtt.clientId}")
+    private String mqttClientId;
+
+
     /**
      * bifromq客户端身份认证
      *
@@ -239,8 +273,17 @@ public class DeviceController extends BaseController {
         final Object password = params.get("password");
         final Object deviceStatus = "ENABLE";// params.get("deviceStatus");
         final Object protocolType = "MQTT";// params.get("protocolType");
-        Boolean certificationStatus = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
-        log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, certificationStatus ? "成功" : "失败");
+        Boolean certificationStatus = false;
+
+        if (mqttClientId.equals(clientIdentifier) &&
+                mqttUsername.equals(username) &&
+                mqttPassword.equals(password)) {
+            certificationStatus = true;
+            log.info("超级管理员clientId登录");
+        } else {
+            certificationStatus = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
+            log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, certificationStatus ? "成功" : "失败");
+        }
 
         Map<String, Object> resultValue = new HashMap<>();
         resultValue.put("clientId", clientIdentifier.toString());

@@ -166,7 +166,7 @@ public class TdEngineServiceImpl implements TdEngineService {
 //                    .stream()
 //                    .filter(entry -> entry.getValue() != null)
 //                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            objectHashMap.put(map.get(tagsSelectDao.getTagsName()).toString(), map);
+            objectHashMap.put(map.get("last("+tagsSelectDao.getTagsName()+")").toString(), map);
         }
         return objectHashMap;
     }

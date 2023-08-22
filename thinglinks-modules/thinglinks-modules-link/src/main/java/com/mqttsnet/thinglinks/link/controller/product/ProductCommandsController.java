@@ -44,6 +44,8 @@ public class ProductCommandsController extends BaseController {
         return productCommandsService.selectByPrimaryKey(id);
     }
 
+
+
     /**
      * 查询产品模型服务命令列表
      */

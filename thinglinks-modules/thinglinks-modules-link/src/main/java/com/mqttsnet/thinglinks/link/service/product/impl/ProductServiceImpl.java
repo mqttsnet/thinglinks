@@ -510,7 +510,7 @@ public class ProductServiceImpl implements ProductService {
     public int insertProduct(Product product) {
         Product oneByProductName = productMapper.findOneByProductName(product.getProductName());
         if (StringUtils.isNotNull(oneByProductName)) {
-            return 0;
+            return -1;
         }
         product.setProductIdentification(UUID.getUUID());
         LoginUser loginUser = tokenService.getLoginUser();
@@ -676,7 +676,7 @@ public class ProductServiceImpl implements ProductService {
                     mqMessage.setMessage(jsonObject.toJSONString());
 
                     if (selectorConfig.isSelectorKafka()) {
-                        thingLinksProKafkaTemplate.send(new ProducerRecord<>(mqMessage.getTopic(), mqMessage.getMessage()));
+                         thingLinksProKafkaTemplate.send(new ProducerRecord<>(mqMessage.getTopic(), mqMessage.getMessage()));
                     } else {
                         rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
                     }

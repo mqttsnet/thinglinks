@@ -19,29 +19,41 @@ import java.io.IOException;
 import java.util.List;
 
 /**
-* (productProperties)表控制层
-*
-* @author thinglinks
-*/
+ * (productProperties)表控制层
+ *
+ * @author thinglinks
+ */
 @RestController
 @RequestMapping("/productProperties")
 public class ProductPropertiesController extends BaseController {
-/**
-* 服务对象
-*/
-@Resource
-private ProductPropertiesService productPropertiesService;
+    /**
+     * 服务对象
+     */
+    @Resource
+    private ProductPropertiesService productPropertiesService;
 
-/**
-* 通过主键查询单条数据
-*
-* @param id 主键
-* @return 单条数据
-*/
-@GetMapping("selectOne")
-public ProductProperties selectOne(Long id) {
-return productPropertiesService.selectByPrimaryKey(id);
-}
+    /**
+     * 通过主键查询单条数据
+     *
+     * @param id 主键
+     * @return 单条数据
+     */
+    @GetMapping("selectOne")
+    public ProductProperties selectOne(Long id) {
+        return productPropertiesService.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 通过主键查询单条数据
+     *
+     * @param id 主键
+     * @return 单条数据
+     */
+    @GetMapping(value = "/selectByIdProperties/{id}")
+    public R<?> selectByIdProperties(@PathVariable("id") Long id)
+    {
+        return R.ok(productPropertiesService.selectProductPropertiesById(id));
+    }
 
     /**
      * 查询产品模型服务属性列表
@@ -120,7 +132,7 @@ return productPropertiesService.selectByPrimaryKey(id);
     }
 
     @PostMapping("/selectPropertiesByPropertiesIdList")
-    public R<?> selectPropertiesByPropertiesIdList(@RequestBody List<Long> propertiesIdList){
+    public R<?> selectPropertiesByPropertiesIdList(@RequestBody List<Long> propertiesIdList) {
         return R.ok(productPropertiesService.selectPropertiesByPropertiesIdList(propertiesIdList));
     }
 }

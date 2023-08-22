@@ -28,6 +28,13 @@ public interface RuleDeviceLinkageService {
 
 
     /**
+     * 执行动作
+     * @param ruleIdentification 规则标识
+     * @return
+     */
+    Boolean execAction(String ruleIdentification);
+
+    /**
      * 获取所有产品
      * @return
      */

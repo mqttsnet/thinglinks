@@ -133,6 +133,11 @@ public class ActionCommandsServiceImpl implements ActionCommandsService {
     }
 
     @Override
+    public List<ActionCommands> actionCommandsByRuleIdentification(String ruleIdentification) {
+        return actionCommandsMapper.actionCommandsByRuleIdentification(ruleIdentification);
+    }
+
+    @Override
     public int deleteBatchByIds(Long[] ids){
         return actionCommandsMapper.deleteBatchByIds(ids);
     }
@@ -148,7 +153,7 @@ public class ActionCommandsServiceImpl implements ActionCommandsService {
         actionCommandsList.stream().forEach(actionCommands -> {
             productServicesIdList.add(actionCommands.getServiceId());
             commandIdList.add(actionCommands.getCommandId());
-            deviceIdentificationList.add(actionCommands.getDeviceIdentificaiton());
+            deviceIdentificationList.add(actionCommands.getDeviceIdentification());
             productIdentificationList.add(actionCommands.getProductIdentification());
         });
         R<?> productListResponse = remoteProductService.selectProductByProductIdentificationList(productIdentificationList);
@@ -168,7 +173,7 @@ public class ActionCommandsServiceImpl implements ActionCommandsService {
                     ActionCommandsModel actionCommandsModel = new ActionCommandsModel();
                     BeanUtils.copyProperties(actionCommands,actionCommandsModel);
                     actionCommandsModel.setProductName(BeanUtils.getMapBeanVal(productMap,actionCommands.getProductIdentification().toString(), Product.class ,"getProductName"));
-                    actionCommandsModel.setDeviceName(BeanUtils.getMapBeanVal(deviceMap,actionCommands.getDeviceIdentificaiton().toString(),Device.class,"getDeviceName"));
+                    actionCommandsModel.setDeviceName(BeanUtils.getMapBeanVal(deviceMap,actionCommands.getDeviceIdentification().toString(),Device.class,"getDeviceName"));
                     actionCommandsModel.setServiceName(BeanUtils.getMapBeanVal(productServicesMap,actionCommands.getServiceId(),ProductServices.class,"getServiceName"));
                     actionCommandsModel.setCommandName(BeanUtils.getMapBeanVal(productCommandsMap,actionCommands.getCommandId(),ProductCommands.class,"getName"));
 

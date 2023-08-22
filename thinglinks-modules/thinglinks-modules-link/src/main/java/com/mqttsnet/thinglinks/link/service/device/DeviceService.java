@@ -162,6 +162,8 @@ public interface DeviceService {
 
     List<Device> findAllByProductIdentification(String productIdentification);
 
+    Device selectByProductIdentificationAndDeviceIdentification(String productIdentification,String deviceIdentification);
+
     /**
      * 查询设备详细信息
      *

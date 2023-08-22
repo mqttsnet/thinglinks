@@ -434,6 +434,11 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceMapper.findAllByProductIdentification(productIdentification);
     }
 
+    @Override
+    public Device selectByProductIdentificationAndDeviceIdentification(String productIdentification,String deviceIdentification) {
+        return deviceMapper.selectByProductIdentificationAndDeviceIdentification(productIdentification,deviceIdentification);
+    }
+
     /**
      * 查询设备详细信息
      *

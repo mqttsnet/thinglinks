@@ -44,6 +44,11 @@ public class RuleTriggerMessageKafkaConsumer {
             JSONObject json = JSONObject.parseObject(message.toString());
             Boolean flag = ruleDeviceLinkageService.checkRuleConditions(json.getString("msg"));
             log.info("规则匹配结果:{}", flag);
+            //触发执行动作
+            if(flag) {
+                ruleDeviceLinkageService.execAction(json.getString("msg"));
+            }
+
         } catch (Exception e) {
             log.error("规则引擎-触发器规则数据消费-->消费失败，失败原因：{}", e.getMessage());
         }
