@@ -245,31 +245,12 @@ public class DeviceController extends BaseController {
         final Object deviceStatus = params.get("deviceStatus");
         final Object protocolType = params.get("protocolType");
 
-        Boolean certificationStatus = false;
-
-        if (mqttClientId.equals(clientIdentifier) &&
-                mqttUsername.equals(username) &&
-                mqttPassword.equals(password)) {
-            certificationStatus = true;
-            log.info("超级管理员clientId登录");
-        } else {
-            certificationStatus = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
-            log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, certificationStatus ? "成功" : "失败");
-        }
+        Boolean certificationStatus = certificationStatus = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
+        log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, certificationStatus ? "成功" : "失败");
 
         log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, certificationStatus ? "成功" : "失败");
         return certificationStatus ? ResponseEntity.ok().body(AjaxResult.success("认证成功")) : ResponseEntity.status(403).body(AjaxResult.error("认证失败"));
     }
-
-    @Value("${mqtt.username}")
-    private String mqttUsername;
-
-    @Value("${mqtt.password}")
-    private String mqttPassword;
-
-    @Value("${mqtt.clientId}")
-    private String mqttClientId;
-
 
     /**
      * bifromq客户端身份认证
@@ -285,17 +266,8 @@ public class DeviceController extends BaseController {
         final Object password = params.get("password");
         final Object deviceStatus = "ENABLE";// params.get("deviceStatus");
         final Object protocolType = "MQTT";// params.get("protocolType");
-        Boolean certificationStatus = false;
-
-        if (mqttClientId.equals(clientIdentifier) &&
-                mqttUsername.equals(username) &&
-                mqttPassword.equals(password)) {
-            certificationStatus = true;
-            log.info("超级管理员clientId登录");
-        } else {
-            certificationStatus = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
-            log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, certificationStatus ? "成功" : "失败");
-        }
+        Boolean certificationStatus = certificationStatus = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
+        log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, certificationStatus ? "成功" : "失败");
 
         Map<String, Object> resultValue = new HashMap<>();
         resultValue.put("clientId", clientIdentifier.toString());
