@@ -412,16 +412,16 @@ public class DeviceServiceImpl implements DeviceService {
      * @return
      */
     @Override
-    public Boolean clientAuthentication(String clientIdentifier, String username, String password, String deviceStatus, String protocolType) {
+    public Device clientAuthentication(String clientIdentifier, String username, String password, String deviceStatus, String protocolType) {
         final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, username, password, deviceStatus, protocolType);
         if (Optional.ofNullable(device).isPresent()) {
             //缓存设备信息
             redisService.setCacheObject(Constants.DEVICE_RECORD_KEY + device.getDeviceIdentification(), device, 60L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             //更改设备在线状态为在线
             this.updateConnectStatusByClientId(DeviceConnectStatus.ONLINE.getValue(), clientIdentifier);
-            return true;
+            return device;
         }
-        return false;
+        return null;
     }
 
     @Override
