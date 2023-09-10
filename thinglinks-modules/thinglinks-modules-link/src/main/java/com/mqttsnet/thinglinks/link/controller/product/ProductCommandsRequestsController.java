@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.controller.product;
 
+import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.SecurityUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -106,5 +107,17 @@ public class ProductCommandsRequestsController extends BaseController {
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(productCommandsRequestsService.deleteProductCommandsRequestsByIds(ids));
     }
+
+    /**
+     * 查询产品模型服务命令下发属性列表
+     */
+    @GetMapping("/selectAllCommandsRequestsByCommandId/{commandId}")
+    public R selectAllCommandsRequestsByCommandId(@PathVariable("commandId") Long commandId) {
+        ProductCommandsRequests productCommandsRequests = new ProductCommandsRequests();
+        productCommandsRequests.setCommandsId(commandId);
+        List<ProductCommandsRequests> list = productCommandsRequestsService.selectProductCommandsRequestsList(productCommandsRequests);
+        return R.ok(list);
+    }
+
 
 }

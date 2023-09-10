@@ -68,50 +68,71 @@ smqtt:
       chain:
         - ruleType: PREDICATE
           script: $.event.equals("ping")
-        - ruleType: ROCKET_MQ
+  #      - ruleType: ROCKET_MQ
+  #        script: "{'event':'ping','clientId':clientId,'messageId':messageId,'time':time}"
+        - ruleType: KAFKA
           script: "{'event':'ping','clientId':clientId,'messageId':messageId,'time':time}"
     - ruleName: ROCKET_MQ
       chain:
         - ruleType: PREDICATE
           script: $.event.equals("connect")
-        - ruleType: ROCKET_MQ
+  #      - ruleType: ROCKET_MQ
+  #        script: "{'event':'connect','clientId':clientId,'auth':auth,'clientAddress':clientAddress,'keepalive':keepalive,'nodeIp':nodeIp,'version':version,'time':time,'will':will}"
+        - ruleType: KAFKA
           script: "{'event':'connect','clientId':clientId,'auth':auth,'clientAddress':clientAddress,'keepalive':keepalive,'nodeIp':nodeIp,'version':version,'time':time,'will':will}"
     - ruleName: ROCKET_MQ
       chain:
         - ruleType: PREDICATE
           script: $.event.equals("publish")
-        - ruleType: ROCKET_MQ
-          script: "{'event':'publish','topic':topic,'body':body,'qos':qos,'clientId':clientId,'messageId':messageId,'time':time}"
+  #      - ruleType: ROCKET_MQ
+  #        script: "{'event':'publish','topic':topic,'body':body,'qos':qos,'clientId':clientId,'messageId':messageId,'time':time}"
+        - ruleType: KAFKA
+          script: "{'event':'publish','topic':topic,'body':body,'qos':qos,'clientId':clientId,'messageId':messageId,'time':time}"          
     - ruleName: ROCKET_MQ
       chain:
         - ruleType: PREDICATE
           script: $.event.equals("disconnect")
-        - ruleType: ROCKET_MQ
-          script: "{'event':'disconnect','clientId':clientId,'time':time}"
+  #      - ruleType: ROCKET_MQ
+  #        script: "{'event':'disconnect','clientId':clientId,'time':time}"
+        - ruleType: KAFKA
+          script: "{'event':'disconnect','clientId':clientId,'time':time}"          
     - ruleName: ROCKET_MQ
       chain:
         - ruleType: PREDICATE
           script: $.event.equals("clone")
-        - ruleType: ROCKET_MQ
-          script: "{'event':'disconnect','clientId':clientId,'time':time}"
+  #      - ruleType: ROCKET_MQ
+  #        script: "{'event':'disconnect','clientId':clientId,'time':time}"
+        - ruleType: KAFKA
+          script: "{'event':'disconnect','clientId':clientId,'time':time}"          
     - ruleName: ROCKET_MQ
       chain:
         - ruleType: PREDICATE
           script: $.event.equals("subscribe")
-        - ruleType: ROCKET_MQ
-          script: "{'event':'subscribe','clientId':clientId,'subscribeTopics':subscribeTopics,'time':time}"
+  #      - ruleType: ROCKET_MQ
+  #        script: "{'event':'subscribe','clientId':clientId,'subscribeTopics':subscribeTopics,'time':time}"
+        - ruleType: KAFKA
+          script: "{'event':'subscribe','clientId':clientId,'subscribeTopics':subscribeTopics,'time':time}"          
     - ruleName: ROCKET_MQ
       chain:
         - ruleType: PREDICATE
           script: $.event.equals("unsubscribe")
-        - ruleType: ROCKET_MQ
-          script: "{'event':'unsubscribe','clientId':clientId,'topics':topics,'time':time}"
+    #    - ruleType: ROCKET_MQ
+    #      script: "{'event':'unsubscribe','clientId':clientId,'topics':topics,'time':time}"
+        - ruleType: KAFKA
+          script: "{'event':'unsubscribe','clientId':clientId,'topics':topics,'time':time}"          
   sources: # 配置数据源sources
-    - source: ROCKET_MQ # rocketmq配置
-      sourceName: rocket_mq
+ #   - source: ROCKET_MQ # rocketmq配置
+ #     sourceName: rocket_mq
+ #     sourceAttributes:
+ #       topic: thinglinks-link-mqttMsg
+ #       tags: thinglinks
+ #       namesrvAddr: 127.0.0.1:9876
+ #       instanceName: broker-a
+ #       producerGroup: thinglinks-broker
+    - source: KAFKA # kafka配置
+      sourceName: kafka
       sourceAttributes:
         topic: thinglinks-link-mqttMsg
-        tags: thinglinks
-        namesrvAddr: 127.0.0.1:19876
-        instanceName: broker-a
-        producerGroup: thinglinks-broker
+        bootstrap-servers: 127.0.0.1:9092
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.apache.kafka.common.serialization.StringSerializer

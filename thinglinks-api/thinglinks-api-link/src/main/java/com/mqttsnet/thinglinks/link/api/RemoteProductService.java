@@ -27,7 +27,7 @@ public interface RemoteProductService {
      * @param productIdentification
      * @return
      */
-    @GetMapping("/product/api/select-by-product-identification/{productIdentification}")
+    @GetMapping("/product/selectByProductIdentification/{productIdentification}")
     public R<Product> selectByProductIdentification(@PathVariable("productIdentification") String productIdentification);
 
     /**
@@ -36,7 +36,7 @@ public interface RemoteProductService {
      * @param id
      * @return
      */
-    @GetMapping(value = "/product-services/api/{id}")
+    @GetMapping(value = "/productServices/selectProductServicesById/{id}")
     public R<ProductServices> selectProductServicesById(@PathVariable("id") Long id);
 
 
@@ -45,7 +45,7 @@ public interface RemoteProductService {
      *
      * @return
      */
-    @GetMapping("/product-properties/api/{id}")
+    @GetMapping("/productProperties/selectByIdProperties/{id}")
     public R<ProductProperties> selectByIdProperties(@PathVariable("id") Long id);
 
     @GetMapping("/product/selectAllProduct/{status}")

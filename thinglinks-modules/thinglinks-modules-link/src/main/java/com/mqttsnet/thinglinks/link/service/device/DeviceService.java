@@ -154,13 +154,15 @@ public interface DeviceService {
      * @param protocolType     协议类型
      * @return
      */
-    Boolean clientAuthentication(String clientIdentifier, String username, String password, String deviceStatus, String protocolType);
+    Device clientAuthentication(String clientIdentifier, String username, String password, String deviceStatus, String protocolType);
 
 
     List<Device> findAllByIdIn(Collection<Long> idCollection);
 
 
     List<Device> findAllByProductIdentification(String productIdentification);
+
+    Device selectByProductIdentificationAndDeviceIdentification(String productIdentification,String deviceIdentification);
 
     /**
      * 查询设备详细信息

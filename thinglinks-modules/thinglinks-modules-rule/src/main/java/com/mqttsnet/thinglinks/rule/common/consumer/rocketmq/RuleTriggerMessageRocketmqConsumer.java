@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.rule.common.rocketmq.consumer;
+package com.mqttsnet.thinglinks.rule.common.consumer.rocketmq;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerGroupConstant;
@@ -24,9 +24,9 @@ import org.springframework.stereotype.Component;
  * @Version: 1.0
  */
 @Slf4j
-@Component
+//@Component
 @RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_RULE_GROUP, topic = ConsumerTopicConstant.THINGLINKS_RULE_TRIGGER, messageModel = MessageModel.CLUSTERING)
-public class RuleTriggerMessageConsumer implements RocketMQListener {
+public class RuleTriggerMessageRocketmqConsumer implements RocketMQListener {
 
     @Autowired
     private RuleDeviceLinkageService ruleDeviceLinkageService;

@@ -51,7 +51,7 @@ public class ActionCommands implements Serializable {
     * 设备标识
     */
     @ApiModelProperty(value="设备标识")
-    private String deviceIdentificaiton;
+    private String deviceIdentification;
 
     /**
     * 服务id
@@ -60,10 +60,22 @@ public class ActionCommands implements Serializable {
     private Long serviceId;
 
     /**
+     * 服务id
+     */
+    @ApiModelProperty(value="服务名称")
+    private Long serviceName;
+
+    /**
     * 命令id
     */
     @ApiModelProperty(value="命令id")
     private Long commandId;
+
+    /**
+     * 命令id
+     */
+    @ApiModelProperty(value="命令名称")
+    private Long commandName;
 
     /**
     * json命令参数及参数值{"key":"value","key1":"value1"}

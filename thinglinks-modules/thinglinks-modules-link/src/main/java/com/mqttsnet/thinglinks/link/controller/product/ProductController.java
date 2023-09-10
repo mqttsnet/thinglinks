@@ -63,8 +63,8 @@ public class ProductController extends BaseController {
      * @param productIdentification 产品标识
      * @return 单条数据
      */
-    @GetMapping("/selectByProductIdentification")
-    public R<?> selectByProductIdentification(@RequestParam(value = "productIdentification") String productIdentification) {
+    @GetMapping("/selectByProductIdentification/{productIdentification}")
+    public R<?> selectByProductIdentification(@PathVariable(value = "productIdentification") String productIdentification) {
         return R.ok(productService.selectByProductIdentification(productIdentification));
     }
 
@@ -144,7 +144,14 @@ public class ProductController extends BaseController {
     @Log(title = "产品管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Product product) {
-        return toAjax(productService.insertProduct(product));
+
+        int row = productService.insertProduct(product);
+
+        if (row == -1) {
+            return AjaxResult.error("产品名称已经存在！");
+        }
+
+        return toAjax(row);
     }
 
     /**
@@ -238,7 +245,7 @@ public class ProductController extends BaseController {
     }
 
     @PostMapping("/selectProductByProductIdentificationList")
-    public R<?> selectProductByProductIdentificationList(@RequestBody List<String> productIdentificationList){
+    public R<?> selectProductByProductIdentificationList(@RequestBody List<String> productIdentificationList) {
         return R.ok(productService.selectProductByProductIdentificationList(productIdentificationList));
     }
 }

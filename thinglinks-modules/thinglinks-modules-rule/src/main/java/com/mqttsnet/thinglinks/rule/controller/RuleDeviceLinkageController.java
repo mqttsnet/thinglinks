@@ -74,7 +74,10 @@ public class RuleDeviceLinkageController extends BaseController {
         return ruleDeviceLinkageService.selectProductPropertiesByServiceId(serviceId);
     }
 
-
+    @GetMapping("/selectProductCommandsByServiceId/{serviceId}")
+    public R<?> selectProductCommandsByServiceId(@PathVariable("serviceId") Long serviceId){
+        return ruleDeviceLinkageService.selectProductCommandsByServiceId(serviceId);
+    }
 
 
 

@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.rule.controller;
 
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
+import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
@@ -24,7 +25,16 @@ public class ActionCommandsController extends BaseController {
     @Resource
     private ActionCommandsService actionCommandsService;
 
-
+    /**
+     * 通过主产品标识查询产品
+     *
+     * @param ruleIdentification 规则标识
+     * @return 单条数据
+     */
+    @GetMapping("/actionCommandsByRuleIdentification/{ruleIdentification}")
+    public R<?> actionCommandsByRuleIdentification(@PathVariable(value = "ruleIdentification") String ruleIdentification) {
+        return R.ok(actionCommandsService.actionCommandsByRuleIdentification(ruleIdentification));
+    }
 
 
     @PreAuthorize(hasPermi = "rule:rule:list")

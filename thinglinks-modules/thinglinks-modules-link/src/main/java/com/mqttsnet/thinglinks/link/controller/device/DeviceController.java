@@ -1,5 +1,7 @@
 package com.mqttsnet.thinglinks.link.controller.device;
 
+import cn.hutool.json.JSONConverter;
+import com.alibaba.fastjson.JSON;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
@@ -19,9 +21,11 @@ import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
@@ -56,7 +60,31 @@ public class DeviceController extends BaseController {
     }
 
     /**
+     * 通过主产品标识查询产品
+     *
+     * @param productIdentification 产品标识
+     * @return 单条数据
+     */
+    @GetMapping("/selectByProductIdentification/{productIdentification}")
+    public R<?> selectByProductIdentification(@PathVariable(value = "productIdentification") String productIdentification) {
+        return R.ok(deviceService.findAllByProductIdentification(productIdentification));
+    }
+
+    /**
+     * 通过主产品标识查询产品
+     *
+     * @param productIdentification 产品标识
+     * @return 单条数据
+     */
+    @GetMapping("/selectByProductIdentificationAndDeviceIdentification/{productIdentification}/{deviceIdentification}")
+    public R<?> selectByProductIdentificationAndDeviceIdentification(@PathVariable(value = "productIdentification") String productIdentification
+            , @PathVariable(value = "deviceIdentification") String deviceIdentification) {
+        return R.ok(deviceService.selectByProductIdentificationAndDeviceIdentification(productIdentification, deviceIdentification));
+    }
+
+    /**
      * 获取设备列表对应各个状态的设备数量
+     *
      * @param device
      * @return
      */
@@ -66,13 +94,13 @@ public class DeviceController extends BaseController {
 
         Map<String, List<Device>> connectStatusCollect = deviceService.selectDeviceList(device).parallelStream().collect(Collectors.groupingBy(Device::getConnectStatus));
 
-        Map<String , Integer> countMap = new HashMap<>();
+        Map<String, Integer> countMap = new HashMap<>();
         //统计设备在线数量
-        countMap.put("onlineCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()))?connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()).size():0);
+        countMap.put("onlineCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue())) ? connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()).size() : 0);
         //统计设备离线数量
-        countMap.put("offlineCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()))?connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()).size():0);
+        countMap.put("offlineCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue())) ? connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()).size() : 0);
         //统计设备初始化数量
-        countMap.put("initCount", !connectStatusCollect.isEmpty()&&!CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()))?connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()).size():0);
+        countMap.put("initCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.INIT.getValue())) ? connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()).size() : 0);
 
         return AjaxResult.success(countMap);
     }
@@ -204,7 +232,7 @@ public class DeviceController extends BaseController {
     }
 
     /**
-     * 客户端身份认证
+     * smqttx客户端身份认证
      *
      * @param params
      * @return
@@ -216,13 +244,44 @@ public class DeviceController extends BaseController {
         final Object password = params.get("password");
         final Object deviceStatus = params.get("deviceStatus");
         final Object protocolType = params.get("protocolType");
-        Boolean certificationStatus = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
-        log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, certificationStatus ? "成功" : "失败");
-        return certificationStatus ? ResponseEntity.ok().body(AjaxResult.success("认证成功")) : ResponseEntity.status(403).body(AjaxResult.error("认证失败"));
+
+        Device device = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
+        log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, device != null ? "成功" : "失败");
+
+        return device != null ? ResponseEntity.ok().body(AjaxResult.success("认证成功")) : ResponseEntity.status(403).body(AjaxResult.error("认证失败"));
     }
 
     /**
+     * bifromq客户端身份认证
+     *
+     * @param params
+     * @return
+     */
+    @RequestMapping("/clientConnectionAuthentication")
+    public ResponseEntity clientConnectionAuthentication(HttpServletRequest request, @RequestBody Map<String, Object> params) {
+
+        final Object clientIdentifier = params.get("clientIdentifier");
+        final Object username = params.get("username");
+        final Object password = params.get("password");
+        final Object deviceStatus = "ENABLE";// params.get("deviceStatus");
+        final Object protocolType = "MQTT";// params.get("protocolType");
+        Device device = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
+        log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, device != null ? "成功" : "失败");
+
+        Map<String, Object> resultValue = new HashMap<>();
+        resultValue.put("clientId", clientIdentifier.toString());
+        Map<String, Object> result = new HashMap<>();
+        result.put("certificationResult", device == null ? false : true);
+        result.put("tenantId", device == null ? "" : device.getAppId());
+        result.put("deviceResult", resultValue);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+
+    /**
      * 根据客户端标识获取设备信息
+     *
      * @param clientId
      * @return
      */
@@ -234,18 +293,18 @@ public class DeviceController extends BaseController {
 
     /**
      * 根据产品标识获取产品所有关联设备
+     *
      * @param productIdentification
      * @return
      */
     @GetMapping("/selectAllByProductIdentification/{productIdentification}")
-    public R<List<Device>> selectAllByProductIdentification(@PathVariable(value = "productIdentification") String productIdentification){
+    public R<List<Device>> selectAllByProductIdentification(@PathVariable(value = "productIdentification") String productIdentification) {
         return R.ok(deviceService.findAllByProductIdentification(productIdentification));
     }
 
 
     @PostMapping("/selectDeviceByDeviceIdentificationList")
-    public R<?> selectDeviceByDeviceIdentificationList(@RequestBody List<String> deviceIdentificationList)
-    {
-        return R.ok(deviceService.selectDeviceByDeviceIdentificationList( deviceIdentificationList));
+    public R<?> selectDeviceByDeviceIdentificationList(@RequestBody List<String> deviceIdentificationList) {
+        return R.ok(deviceService.selectDeviceByDeviceIdentificationList(deviceIdentificationList));
     }
 }

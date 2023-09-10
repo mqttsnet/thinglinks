@@ -31,5 +31,7 @@ spring:
             refresh: true
           - dataId: redis.yml
             refresh: false
+          - dataId: kafka.yml
+            refresh: false
         username: @nacos.username@
         password: @nacos.password@

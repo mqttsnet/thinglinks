@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.link.api.factory;
 
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.link.api.RemoteProductCommandsService;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -31,6 +32,13 @@ public class RemoteProductCommandsFallbackFactory implements FallbackFactory<Rem
             public R<?> selectProductCommandsByIdList(List<Long> commandIdList){
                 return R.fail("根据产品命令id列表查询服务失败", throwable.getMessage());
             }
+
+            @Override
+            public R<?> selectAllByServiceId(Long serviceId) {
+                return R.fail("根据产品服务id列表查询命令失败", throwable.getMessage());
+            }
+
+
 
         };
     }

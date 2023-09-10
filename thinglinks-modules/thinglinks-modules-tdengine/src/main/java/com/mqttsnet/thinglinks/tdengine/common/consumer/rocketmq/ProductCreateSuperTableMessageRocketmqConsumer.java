@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.tdengine.common.consumer;
+package com.mqttsnet.thinglinks.tdengine.common.consumer.rocketmq;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
@@ -24,9 +24,9 @@ import org.springframework.stereotype.Component;
  * @Version: 1.0
  */
 @Slf4j
-@Component
+//@Component
 @RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_LINK_GROUP, topic = ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE, messageModel = MessageModel.CLUSTERING)
-public class ProductCreateSuperTableMessageConsumer implements RocketMQListener {
+public class ProductCreateSuperTableMessageRocketmqConsumer implements RocketMQListener {
 
     @Autowired
     private ProductSuperTableCreateOrUpdateService productSuperTableCreateOrUpdateService;

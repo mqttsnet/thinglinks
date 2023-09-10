@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * @ClassDescription: 规则服务降级处理
@@ -28,6 +30,12 @@ public class RemoteRuleFallbackFactory implements FallbackFactory<RemoteRuleServ
             public R<?> triggerDeviceLinkage(String ruleIdentification) {
                 return R.fail("调用规则触发器失败",throwable.getMessage());
             }
+
+            @Override
+            public R<?> actionCommandsByRuleIdentification(String ruleIdentification) {
+                return R.fail("调用规则触发器失败",throwable.getMessage());
+            }
+
         };
     }
 }

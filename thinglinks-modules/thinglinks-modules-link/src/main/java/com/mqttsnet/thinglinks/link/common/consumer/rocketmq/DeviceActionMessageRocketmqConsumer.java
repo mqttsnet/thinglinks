@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.link.common.rockermq.consumer;
+package com.mqttsnet.thinglinks.link.common.consumer.rocketmq;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -13,7 +13,6 @@ import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
@@ -29,9 +28,9 @@ import java.util.Objects;
  * @Version: 1.0
  */
 @Slf4j
-@Component
+//@Component
 @RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_BROKER_GROUP, topic = ConsumerTopicConstant.THINGLINKS_LINK_MQTT_MSG, messageModel = MessageModel.CLUSTERING)
-public class DeviceActionMessageConsumer implements RocketMQListener {
+public class DeviceActionMessageRocketmqConsumer implements RocketMQListener {
     @Autowired
     private DeviceActionService deviceActionService;
     @Autowired
