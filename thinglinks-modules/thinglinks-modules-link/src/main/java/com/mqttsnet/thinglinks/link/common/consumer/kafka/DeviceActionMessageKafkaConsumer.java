@@ -30,7 +30,7 @@ import java.util.Objects;
  * @CreateDate: 2023/08/08
  * @UpdateUser: menffy
  * @UpdateDate: 2023/08/08
- * @UpdateRemark: 修改内容
+ * @UpdateRemark: https://mqttsnet.yuque.com/gt6zkc/thinglinks/yhzgnpduyo8adxgs
  * @Version: 1.0
  */
 @Slf4j

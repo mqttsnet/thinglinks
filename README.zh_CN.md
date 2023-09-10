@@ -1,4 +1,8 @@
+<div align="center">
+
 [![MQTTSNET Logo](./doc/imgs/logo.png)](http://www.mqttsnet.com)
+
+</div>
 
 ## ThingLinks | [English Documentation](README.md)
 
