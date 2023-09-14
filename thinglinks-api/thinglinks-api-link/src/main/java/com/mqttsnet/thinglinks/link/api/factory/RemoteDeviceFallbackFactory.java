@@ -40,6 +40,11 @@ public class RemoteDeviceFallbackFactory implements FallbackFactory<RemoteDevice
                 return R.fail("查询产品下的设备标识失败:" + throwable.getMessage());
             }
 
+            @Override
+            public R<Device> selectByProductIdentificationAndDeviceIdentification(String productIdentification, String deviceIdentification) {
+                return R.fail("查询产品的设备标识失败:" + throwable.getMessage());
+            }
+
             /**
              * 根据客户端标识获取设备信息
              *

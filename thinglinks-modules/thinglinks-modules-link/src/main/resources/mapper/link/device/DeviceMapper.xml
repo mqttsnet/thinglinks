@@ -1440,6 +1440,14 @@
         where product_identification=#{productIdentification}
     </select>
 
+    <!--Author  By Menffy on 2023-08-21-->
+    <select id="selectByProductIdentificationAndDeviceIdentification" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from device
+        where product_identification=#{productIdentification} and device_identification=#{deviceIdentification} limit 1
+    </select>
+
     <select id="selectDeviceByDeviceIdentificationList" resultMap="BaseResultMap">
         select
             <include refid="Base_Column_List"/>

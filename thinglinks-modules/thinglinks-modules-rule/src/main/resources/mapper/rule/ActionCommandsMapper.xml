@@ -8,8 +8,10 @@
     <result column="business_type" jdbcType="INTEGER" property="businessType" />
     <result column="rule_identification" jdbcType="VARCHAR" property="ruleIdentification" />
     <result column="product_identification" jdbcType="VARCHAR" property="productIdentification" />
-    <result column="device_identificaiton" jdbcType="VARCHAR" property="deviceIdentificaiton" />
+    <result column="device_identification" jdbcType="VARCHAR" property="deviceIdentification" />
     <result column="service_id" jdbcType="INTEGER" property="serviceId" />
+    <result column="service_name" jdbcType="VARCHAR" property="serviceName" />
+    <result column="command_name" jdbcType="VARCHAR" property="commandName" />
     <result column="command_id" jdbcType="INTEGER" property="commandId" />
     <result column="command_body" jdbcType="LONGVARCHAR" property="commandBody" typeHandler="com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler"/>
     <result column="ctreate_by" jdbcType="VARCHAR" property="ctreateBy" />
@@ -19,8 +21,8 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, business_type, rule_identification, product_identification, device_identificaiton, 
-    service_id, command_id, command_body, ctreate_by, ctreate_time, update_by, update_time
+    id, business_type, rule_identification, product_identification, device_identification, 
+    service_id,service_name, command_name, command_id, command_body, ctreate_by, ctreate_time, update_by, update_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -37,13 +39,13 @@
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.mqttsnet.thinglinks.rule.api.domain.ActionCommands" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into action_commands (business_type, rule_identification, 
-      product_identification, device_identificaiton, 
-      service_id, command_id, command_body, 
+      product_identification, device_identification, 
+      service_id,service_name, command_name, command_id, command_body,
       ctreate_by, ctreate_time, update_by, 
       update_time)
     values (#{businessType,jdbcType=INTEGER}, #{ruleIdentification,jdbcType=VARCHAR}, 
-      #{productIdentification,jdbcType=VARCHAR}, #{deviceIdentificaiton,jdbcType=VARCHAR}, 
-      #{serviceId,jdbcType=INTEGER}, #{commandId,jdbcType=INTEGER}, #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
+      #{productIdentification,jdbcType=VARCHAR}, #{deviceIdentification,jdbcType=VARCHAR}, 
+      #{serviceId,jdbcType=INTEGER},#{serviceName,jdbcType=VARCHAR}, #{commandName,jdbcType=VARCHAR}, #{commandId,jdbcType=INTEGER}, #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       #{ctreateBy,jdbcType=VARCHAR}, #{ctreateTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, 
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
@@ -60,11 +62,17 @@
       <if test="productIdentification != null">
         product_identification,
       </if>
-      <if test="deviceIdentificaiton != null">
-        device_identificaiton,
+      <if test="deviceIdentification != null">
+        device_identification,
       </if>
       <if test="serviceId != null">
         service_id,
+      </if>
+      <if test="serviceName != null">
+        service_Name,
+      </if>
+      <if test="commandName != null">
+        command_Name,
       </if>
       <if test="commandId != null">
         command_id,
@@ -95,11 +103,17 @@
       <if test="productIdentification != null">
         #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="deviceIdentificaiton != null">
-        #{deviceIdentificaiton,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        #{deviceIdentification,jdbcType=VARCHAR},
       </if>
       <if test="serviceId != null">
         #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceName != null">
+        service_Name,
+      </if>
+      <if test="commandName != null">
+        command_Name,
       </if>
       <if test="commandId != null">
         #{commandId,jdbcType=INTEGER},
@@ -134,11 +148,17 @@
       <if test="productIdentification != null">
         product_identification = #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="deviceIdentificaiton != null">
-        device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       </if>
       <if test="serviceId != null">
         service_id = #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceName != null">
+        service_name = #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="commandName != null">
+        command_name = #{commandName,jdbcType=VARCHAR},
       </if>
       <if test="commandId != null">
         command_id = #{commandId,jdbcType=INTEGER},
@@ -167,8 +187,10 @@
     set business_type = #{businessType,jdbcType=INTEGER},
       rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
       product_identification = #{productIdentification,jdbcType=VARCHAR},
-      device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
+      device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       service_id = #{serviceId,jdbcType=INTEGER},
+      service_name = #{serviceName,jdbcType=VARCHAR},
+      command_name = #{commandName,jdbcType=VARCHAR},
       command_id = #{commandId,jdbcType=INTEGER},
       command_body = #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       ctreate_by = #{ctreateBy,jdbcType=VARCHAR},
@@ -196,9 +218,9 @@
           when id = #{item.id,jdbcType=INTEGER} then #{item.productIdentification,jdbcType=VARCHAR}
         </foreach>
       </trim>
-      <trim prefix="device_identificaiton = case" suffix="end,">
+      <trim prefix="device_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          when id = #{item.id,jdbcType=INTEGER} then #{item.deviceIdentificaiton,jdbcType=VARCHAR}
+          when id = #{item.id,jdbcType=INTEGER} then #{item.deviceIdentification,jdbcType=VARCHAR}
         </foreach>
       </trim>
       <trim prefix="service_id = case" suffix="end,">
@@ -267,10 +289,10 @@
           </if>
         </foreach>
       </trim>
-      <trim prefix="device_identificaiton = case" suffix="end,">
+      <trim prefix="device_identification = case" suffix="end,">
         <foreach collection="list" index="index" item="item">
-          <if test="item.deviceIdentificaiton != null">
-            when id = #{item.id,jdbcType=INTEGER} then #{item.deviceIdentificaiton,jdbcType=VARCHAR}
+          <if test="item.deviceIdentification != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.deviceIdentification,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
@@ -278,6 +300,20 @@
         <foreach collection="list" index="index" item="item">
           <if test="item.serviceId != null">
             when id = #{item.id,jdbcType=INTEGER} then #{item.serviceId,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="service_name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.serviceName != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.serviceName,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="command_name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.commandName != null">
+            when id = #{item.id,jdbcType=INTEGER} then #{item.commandName,jdbcType=VARCHAR}
           </if>
         </foreach>
       </trim>
@@ -332,14 +368,14 @@
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into action_commands
-    (business_type, rule_identification, product_identification, device_identificaiton, 
-      service_id, command_id, command_body, ctreate_by
+    (business_type, rule_identification, product_identification, device_identification,
+      service_id, service_name, command_name, command_id, command_body, ctreate_by
       )
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.businessType,jdbcType=INTEGER}, #{item.ruleIdentification,jdbcType=VARCHAR}, 
-        #{item.productIdentification,jdbcType=VARCHAR}, #{item.deviceIdentificaiton,jdbcType=VARCHAR}, 
-        #{item.serviceId,jdbcType=INTEGER}, #{item.commandId,jdbcType=INTEGER}, #{item.commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
+        #{item.productIdentification,jdbcType=VARCHAR}, #{item.deviceIdentification,jdbcType=VARCHAR}, 
+        #{item.serviceId,jdbcType=INTEGER}, #{item.serviceName,jdbcType=VARCHAR}, #{item.commandName,jdbcType=VARCHAR},#{item.commandId,jdbcType=INTEGER}, #{item.commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
         #{item.ctreateBy,jdbcType=VARCHAR})
     </foreach>
   </insert>
@@ -353,8 +389,10 @@
       business_type,
       rule_identification,
       product_identification,
-      device_identificaiton,
+      device_identification,
       service_id,
+      service_name,
+      command_name,
       command_id,
       command_body,
       ctreate_by,
@@ -370,8 +408,10 @@
       #{businessType,jdbcType=INTEGER},
       #{ruleIdentification,jdbcType=VARCHAR},
       #{productIdentification,jdbcType=VARCHAR},
-      #{deviceIdentificaiton,jdbcType=VARCHAR},
+      #{deviceIdentification,jdbcType=VARCHAR},
       #{serviceId,jdbcType=INTEGER},
+      #{serviceName,jdbcType=VARCHAR},
+      #{commandName,jdbcType=VARCHAR},
       #{commandId,jdbcType=INTEGER},
       #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
       #{ctreateBy,jdbcType=VARCHAR},
@@ -387,7 +427,7 @@
       business_type = #{businessType,jdbcType=INTEGER},
       rule_identification = #{ruleIdentification,jdbcType=VARCHAR},
       product_identification = #{productIdentification,jdbcType=VARCHAR},
-      device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
+      device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       service_id = #{serviceId,jdbcType=INTEGER},
       command_id = #{commandId,jdbcType=INTEGER},
       command_body = #{commandBody,jdbcType=LONGVARCHAR,typeHandler=com.mqttsnet.thinglinks.rule.common.handler.JsonTypeHandler},
@@ -413,11 +453,17 @@
       <if test="productIdentification != null">
         product_identification,
       </if>
-      <if test="deviceIdentificaiton != null">
-        device_identificaiton,
+      <if test="deviceIdentification != null">
+        device_identification,
       </if>
       <if test="serviceId != null">
         service_id,
+      </if>
+      <if test="serviceName != null">
+        service_name,
+      </if>
+      <if test="commandName != null">
+        command_name,
       </if>
       <if test="commandId != null">
         command_id,
@@ -452,11 +498,17 @@
       <if test="productIdentification != null">
         #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="deviceIdentificaiton != null">
-        #{deviceIdentificaiton,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        #{deviceIdentification,jdbcType=VARCHAR},
       </if>
       <if test="serviceId != null">
         #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceName != null">
+        #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="commandName != null">
+        #{commandName,jdbcType=VARCHAR},
       </if>
       <if test="commandId != null">
         #{commandId,jdbcType=INTEGER},
@@ -491,11 +543,17 @@
       <if test="productIdentification != null">
         product_identification = #{productIdentification,jdbcType=VARCHAR},
       </if>
-      <if test="deviceIdentificaiton != null">
-        device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR},
+      <if test="deviceIdentification != null">
+        device_identification = #{deviceIdentification,jdbcType=VARCHAR},
       </if>
       <if test="serviceId != null">
         service_id = #{serviceId,jdbcType=INTEGER},
+      </if>
+      <if test="serviceName != null">
+        service_name = #{serviceName,jdbcType=VARCHAR},
+      </if>
+      <if test="commandName != null">
+        command_name = #{commandName,jdbcType=VARCHAR},
       </if>
       <if test="commandId != null">
         command_id = #{commandId,jdbcType=INTEGER},
@@ -535,8 +593,8 @@
       <if test="productIdentification != null">
         and product_identification = #{productIdentification,jdbcType=VARCHAR}
       </if>
-      <if test="deviceIdentificaiton != null">
-        and device_identificaiton = #{deviceIdentificaiton,jdbcType=VARCHAR}
+      <if test="deviceIdentification != null">
+        and device_identification = #{deviceIdentification,jdbcType=VARCHAR}
       </if>
       <if test="serviceId != null">
         and service_id = #{serviceId,jdbcType=INTEGER}
@@ -560,6 +618,13 @@
         and update_time = #{updateTime,jdbcType=TIMESTAMP}
       </if>
     </where>
+  </select>
+
+  <select id="actionCommandsByRuleIdentification" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from action_commands
+    where rule_identification = #{ruleIdentification}
   </select>
 
   <delete id="deleteBatchByIds" parameterType="String">

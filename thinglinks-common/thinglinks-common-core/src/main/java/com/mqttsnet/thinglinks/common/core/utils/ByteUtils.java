@@ -19,7 +19,6 @@ import java.util.GregorianCalendar;
 
 public class ByteUtils {
 
-
     /**
      * 字节数组转16进制
      *

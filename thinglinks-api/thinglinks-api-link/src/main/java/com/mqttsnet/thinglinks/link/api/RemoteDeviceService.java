@@ -43,9 +43,19 @@ public interface RemoteDeviceService {
      * @param productIdentification
      * @return
      */
-    @GetMapping("/device/api/select-by-product-identification/{productIdentification}")
+    @GetMapping("/device/selectByProductIdentification/{productIdentification}")
     public R<?> selectByProductIdentification(@PathVariable("productIdentification") String productIdentification);
 
+
+    /**
+     * 查询产品下的设备标识
+     *
+     * @param productIdentification
+     * @return
+     */
+    @GetMapping("/device/selectByProductIdentificationAndDeviceIdentification/{productIdentification}/{deviceIdentification}")
+    public R<Device> selectByProductIdentificationAndDeviceIdentification(@PathVariable("productIdentification") String productIdentification,
+                                                                     @PathVariable("deviceIdentification") String deviceIdentification);
 
     /**
      * 根据客户端标识获取设备信息

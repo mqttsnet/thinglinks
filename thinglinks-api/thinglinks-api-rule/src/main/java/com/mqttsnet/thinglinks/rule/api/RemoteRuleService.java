@@ -21,4 +21,13 @@ public interface RemoteRuleService {
     @GetMapping("/ruleDeviceLinkage/triggerDeviceLinkage/{ruleIdentification}")
     public R<?> triggerDeviceLinkage(@PathVariable("ruleIdentification") String ruleIdentification);
 
+    /**
+     * 通过标识查询产品
+     *
+     * @param ruleIdentification
+     * @return
+     */
+    @GetMapping("/ruleDeviceLinkage/actionCommandsByRuleIdentification/{ruleIdentification}")
+    public R<?> actionCommandsByRuleIdentification(@PathVariable("ruleIdentification") String ruleIdentification);
+
 }

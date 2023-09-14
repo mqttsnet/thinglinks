@@ -30,6 +30,13 @@
             <version>3.0.0</version>
         </dependency>
 
+        <!-- thinglinks Common Core-->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-core</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>

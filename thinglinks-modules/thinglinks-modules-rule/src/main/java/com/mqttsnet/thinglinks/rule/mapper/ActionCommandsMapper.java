@@ -70,5 +70,7 @@ public interface ActionCommandsMapper {
 
     List<ActionCommands> selectByActionCommandsSelective(ActionCommands actionCommands);
 
+    List<ActionCommands> actionCommandsByRuleIdentification(String ruleIdentification);
+
     int deleteBatchByIds(Long[] ids);
 }
