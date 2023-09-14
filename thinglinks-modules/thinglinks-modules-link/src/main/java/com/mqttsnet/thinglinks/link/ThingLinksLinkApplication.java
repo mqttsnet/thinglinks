@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.link;
 import com.mqttsnet.thinglinks.common.security.annotation.EnableCustomConfig;
 import com.mqttsnet.thinglinks.common.security.annotation.EnableRyFeignClients;
 import com.mqttsnet.thinglinks.common.swagger.annotation.EnableCustomSwagger2;
+import com.mqttsnet.thinglinks.link.common.config.ThingLinksBeanDefinitionRegistrar;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
