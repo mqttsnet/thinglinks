@@ -1,15 +1,5 @@
 package com.mqttsnet.thinglinks.broker.websocket;
 
-import com.mqttsnet.thinglinks.common.core.utils.ErrorUtil;
-import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.task.AsyncTaskExecutor;
-import org.springframework.stereotype.Component;
-
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -19,6 +9,15 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import javax.websocket.*;
+import javax.websocket.server.ServerEndpoint;
+
+import com.mqttsnet.thinglinks.common.core.utils.ErrorUtil;
+import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.stereotype.Component;
 
 /**
  * WebSocket获取实时日志并输出到Web页面
@@ -27,9 +26,6 @@ import java.util.regex.Pattern;
 @Component
 @ServerEndpoint(value = "/websocket/logging", configurator = MyEndpointConfigure.class)
 public class LoggingWSServer {
-
-    @Value("${spring.application.name}")
-    private String applicationName;
 
     @Autowired
     AsyncTaskExecutor asyncTaskExecutor;
@@ -63,7 +59,8 @@ public class LoggingWSServer {
             while (sessionMap.get(session.getId()) != null) {
                 try {
                     //日志文件，获取最新的如 thinglinks-broker.2022-07-12.log
-                    fileReader = new FileReader(System.getProperty("user.dir") + "/logs/" + applicationName + "/all" + "." + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + ".log");
+                    fileReader = new FileReader(System.getProperty("user.dir") + "/logs/thinglinks-broker/all" + "." + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) +
+                            ".log");
                     //字符流
                     reader = new BufferedReader(fileReader);
                     Object[] lines = reader.lines().toArray();
