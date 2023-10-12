@@ -51,10 +51,11 @@ import DictData from '@/components/DictData'
 // 引入百度地图
 import BaiduMap from 'vue-baidu-map'
 
+
 // 引入高德
 import AmapVue from '@amap/amap-vue';
 AmapVue.config.version = '2.0'; // 默认2.0，这里可以不修改
-AmapVue.config.key = 'e13456422e8fe93451cf2201f4db84bd'; //服务平台选择 Web端(JS API)
+AmapVue.config.key = 'a7875e62299794a32054f208842e0c34'; //服务平台选择 Web端(JS API)
 AmapVue.config.plugins = [
   'AMap.moveAnimation',
   'AMap.Geocoder',
@@ -62,6 +63,10 @@ AmapVue.config.plugins = [
   'AMap.PlaceSearch',
   // 在此配置你需要预加载的插件，如果不配置，在使用到的时候会自动异步加载
 ];
+// 新版本的Web端开发者安全密钥
+window._AMapSecurityConfig = {
+  securityJsCode: "51346fc6439b2d535eff510407d3a5bb",
+};
 Vue.use(AmapVue);
 
 // 全局方法挂载
