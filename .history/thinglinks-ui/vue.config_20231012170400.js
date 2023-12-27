@@ -34,7 +34,7 @@ module.exports = {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
         // target: `http://localhost:19100`,
-        target: `http://thinglinks.mqttsnet.com/prod-api`,
+        target: `http://thinglinks.mqttsnet.com`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
