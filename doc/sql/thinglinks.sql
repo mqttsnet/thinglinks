@@ -13,13 +13,17 @@
 
  Date: 18/11/2022 21:10:02
 */
-DROP DATABASE IF EXISTS `thinglinks`;
+DROP
+DATABASE IF EXISTS `thinglinks`;
 
-CREATE DATABASE  `thinglinks` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE
+DATABASE  `thinglinks` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-USE `thinglinks`;
+SET
+FOREIGN_KEY_CHECKS = 0;
+USE
+`thinglinks`;
 -- ----------------------------
 -- Table structure for QRTZ_BLOB_TRIGGERS
 -- ----------------------------
@@ -116,9 +120,9 @@ CREATE TABLE `QRTZ_FIRED_TRIGGERS`
     `trigger_name`      varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
     `trigger_group`     varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
     `instance_name`     varchar(200) NOT NULL COMMENT '调度器实例名',
-    `fired_time`        bigint(13)   NOT NULL COMMENT '触发的时间',
-    `sched_time`        bigint(13)   NOT NULL COMMENT '定时器制定的时间',
-    `priority`          int(11)      NOT NULL COMMENT '优先级',
+    `fired_time`        bigint(13) NOT NULL COMMENT '触发的时间',
+    `sched_time`        bigint(13) NOT NULL COMMENT '定时器制定的时间',
+    `priority`          int(11) NOT NULL COMMENT '优先级',
     `state`             varchar(16)  NOT NULL COMMENT '状态',
     `job_name`          varchar(200) DEFAULT NULL COMMENT '任务名称',
     `job_group`         varchar(200) DEFAULT NULL COMMENT '任务组名',
@@ -262,8 +266,8 @@ CREATE TABLE `QRTZ_SCHEDULER_STATE`
 (
     `sched_name`        varchar(120) NOT NULL COMMENT '调度名称',
     `instance_name`     varchar(200) NOT NULL COMMENT '实例名称',
-    `last_checkin_time` bigint(13)   NOT NULL COMMENT '上次检查时间',
-    `checkin_interval`  bigint(13)   NOT NULL COMMENT '检查间隔时间',
+    `last_checkin_time` bigint(13) NOT NULL COMMENT '上次检查时间',
+    `checkin_interval`  bigint(13) NOT NULL COMMENT '检查间隔时间',
     PRIMARY KEY (`sched_name`, `instance_name`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -286,9 +290,9 @@ CREATE TABLE `QRTZ_SIMPLE_TRIGGERS`
     `sched_name`      varchar(120) NOT NULL COMMENT '调度名称',
     `trigger_name`    varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_name的外键',
     `trigger_group`   varchar(200) NOT NULL COMMENT 'qrtz_triggers表trigger_group的外键',
-    `repeat_count`    bigint(7)    NOT NULL COMMENT '重复的次数统计',
-    `repeat_interval` bigint(12)   NOT NULL COMMENT '重复的间隔时间',
-    `times_triggered` bigint(10)   NOT NULL COMMENT '已经触发的次数',
+    `repeat_count`    bigint(7) NOT NULL COMMENT '重复的次数统计',
+    `repeat_interval` bigint(12) NOT NULL COMMENT '重复的间隔时间',
+    `times_triggered` bigint(10) NOT NULL COMMENT '已经触发的次数',
     PRIMARY KEY (`sched_name`, `trigger_name`, `trigger_group`) USING BTREE,
     CONSTRAINT `QRTZ_SIMPLE_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `QRTZ_TRIGGERS` (`sched_name`, `trigger_name`, `trigger_group`)
 ) ENGINE = InnoDB
@@ -313,10 +317,10 @@ CREATE TABLE `QRTZ_SIMPROP_TRIGGERS`
     `str_prop_1`    varchar(512)   DEFAULT NULL COMMENT 'String类型的trigger的第一个参数',
     `str_prop_2`    varchar(512)   DEFAULT NULL COMMENT 'String类型的trigger的第二个参数',
     `str_prop_3`    varchar(512)   DEFAULT NULL COMMENT 'String类型的trigger的第三个参数',
-    `int_prop_1`    int(11)        DEFAULT NULL COMMENT 'int类型的trigger的第一个参数',
-    `int_prop_2`    int(11)        DEFAULT NULL COMMENT 'int类型的trigger的第二个参数',
-    `long_prop_1`   bigint(20)     DEFAULT NULL COMMENT 'long类型的trigger的第一个参数',
-    `long_prop_2`   bigint(20)     DEFAULT NULL COMMENT 'long类型的trigger的第二个参数',
+    `int_prop_1`    int(11) DEFAULT NULL COMMENT 'int类型的trigger的第一个参数',
+    `int_prop_2`    int(11) DEFAULT NULL COMMENT 'int类型的trigger的第二个参数',
+    `long_prop_1`   bigint(20) DEFAULT NULL COMMENT 'long类型的trigger的第一个参数',
+    `long_prop_2`   bigint(20) DEFAULT NULL COMMENT 'long类型的trigger的第二个参数',
     `dec_prop_1`    decimal(13, 4) DEFAULT NULL COMMENT 'decimal类型的trigger的第一个参数',
     `dec_prop_2`    decimal(13, 4) DEFAULT NULL COMMENT 'decimal类型的trigger的第二个参数',
     `bool_prop_1`   varchar(1)     DEFAULT NULL COMMENT 'Boolean类型的trigger的第一个参数',
@@ -345,18 +349,18 @@ CREATE TABLE `QRTZ_TRIGGERS`
     `job_name`       varchar(200) NOT NULL COMMENT 'qrtz_job_details表job_name的外键',
     `job_group`      varchar(200) NOT NULL COMMENT 'qrtz_job_details表job_group的外键',
     `description`    varchar(250) DEFAULT NULL COMMENT '相关介绍',
-    `next_fire_time` bigint(13)   DEFAULT NULL COMMENT '上一次触发时间（毫秒）',
-    `prev_fire_time` bigint(13)   DEFAULT NULL COMMENT '下一次触发时间（默认为-1表示不触发）',
-    `priority`       int(11)      DEFAULT NULL COMMENT '优先级',
+    `next_fire_time` bigint(13) DEFAULT NULL COMMENT '上一次触发时间（毫秒）',
+    `prev_fire_time` bigint(13) DEFAULT NULL COMMENT '下一次触发时间（默认为-1表示不触发）',
+    `priority`       int(11) DEFAULT NULL COMMENT '优先级',
     `trigger_state`  varchar(16)  NOT NULL COMMENT '触发器状态',
     `trigger_type`   varchar(8)   NOT NULL COMMENT '触发器的类型',
-    `start_time`     bigint(13)   NOT NULL COMMENT '开始时间',
-    `end_time`       bigint(13)   DEFAULT NULL COMMENT '结束时间',
+    `start_time`     bigint(13) NOT NULL COMMENT '开始时间',
+    `end_time`       bigint(13) DEFAULT NULL COMMENT '结束时间',
     `calendar_name`  varchar(200) DEFAULT NULL COMMENT '日程表名称',
-    `misfire_instr`  smallint(2)  DEFAULT NULL COMMENT '补偿执行的策略',
+    `misfire_instr`  smallint(2) DEFAULT NULL COMMENT '补偿执行的策略',
     `job_data`       blob COMMENT '存放持久化job对象',
     PRIMARY KEY (`sched_name`, `trigger_name`, `trigger_group`) USING BTREE,
-    KEY `sched_name` (`sched_name`, `job_name`, `job_group`) USING BTREE,
+    KEY              `sched_name` (`sched_name`, `job_name`, `job_group`) USING BTREE,
     CONSTRAINT `QRTZ_TRIGGERS_ibfk_1` FOREIGN KEY (`sched_name`, `job_name`, `job_group`) REFERENCES `QRTZ_JOB_DETAILS` (`sched_name`, `job_name`, `job_group`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -424,7 +428,7 @@ COMMIT;
 DROP TABLE IF EXISTS `casbin_rule`;
 CREATE TABLE `casbin_rule`
 (
-    `id`    int(11)      NOT NULL AUTO_INCREMENT,
+    `id`    int(11) NOT NULL AUTO_INCREMENT,
     `ptype` varchar(100) NOT NULL,
     `v0`    varchar(100) DEFAULT NULL,
     `v1`    varchar(100) DEFAULT NULL,
@@ -448,7 +452,7 @@ COMMIT;
 DROP TABLE IF EXISTS `device`;
 CREATE TABLE `device`
 (
-    `id`                     bigint(19)   NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `id`                     bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
     `client_id`              varchar(255) NOT NULL COMMENT '客户端标识',
     `user_name`              varchar(255) NOT NULL COMMENT '用户名',
     `password`               varchar(255) NOT NULL COMMENT '密码',
@@ -471,8 +475,8 @@ CREATE TABLE `device`
     `update_time`            datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `remark`                 varchar(500)          DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
-    KEY `device_id` (`device_identification`) USING BTREE COMMENT '设备标识',
-    KEY `client_id` (`client_id`) USING BTREE COMMENT '客户端标识'
+    KEY                      `device_id` (`device_identification`) USING BTREE COMMENT '设备标识',
+    KEY                      `client_id` (`client_id`) USING BTREE COMMENT '客户端标识'
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 67
   DEFAULT CHARSET = utf8 COMMENT ='边设备档案信息表';
@@ -490,13 +494,13 @@ DROP TABLE IF EXISTS `device_action`;
 CREATE TABLE `device_action`
 (
     `id`                    bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `device_identification` varchar(255)        DEFAULT NULL COMMENT '设备标识',
-    `action_type`           varchar(255)        DEFAULT NULL COMMENT '动作类型',
+    `device_identification` varchar(255)      DEFAULT NULL COMMENT '设备标识',
+    `action_type`           varchar(255)      DEFAULT NULL COMMENT '动作类型',
     `message`               longtext COMMENT '内容信息',
-    `status`                varchar(255)        DEFAULT NULL COMMENT '状态',
-    `create_time`           datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `status`                varchar(255)      DEFAULT NULL COMMENT '状态',
+    `create_time`           datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     PRIMARY KEY (`id`) USING BTREE,
-    KEY `device_id` (`device_identification`) USING BTREE COMMENT '设备标识'
+    KEY                     `device_id` (`device_identification`) USING BTREE COMMENT '设备标识'
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1001
   DEFAULT CHARSET = utf8 COMMENT ='设备动作数据';
@@ -514,15 +518,15 @@ DROP TABLE IF EXISTS `device_datas`;
 CREATE TABLE `device_datas`
 (
     `id`                    bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `device_identification` varchar(255)        DEFAULT NULL COMMENT '设备标识',
-    `message_id`            varchar(255)        DEFAULT NULL COMMENT '消息ID',
-    `topic`                 varchar(255)        DEFAULT NULL COMMENT 'topic',
+    `device_identification` varchar(255)      DEFAULT NULL COMMENT '设备标识',
+    `message_id`            varchar(255)      DEFAULT NULL COMMENT '消息ID',
+    `topic`                 varchar(255)      DEFAULT NULL COMMENT 'topic',
     `message`               longtext COMMENT '内容信息',
-    `status`                varchar(255)        DEFAULT NULL COMMENT '状态',
-    `create_time`           datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `status`                varchar(255)      DEFAULT NULL COMMENT '状态',
+    `create_time`           datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE KEY `message_id` (`message_id`) USING BTREE COMMENT '消息标识',
-    KEY `device_id` (`device_identification`) USING BTREE COMMENT '设备标识'
+    KEY                     `device_id` (`device_identification`) USING BTREE COMMENT '设备标识'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8 COMMENT ='设备消息';
 
@@ -538,8 +542,8 @@ COMMIT;
 DROP TABLE IF EXISTS `device_info`;
 CREATE TABLE `device_info`
 (
-    `id`                bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `d_id`              bigint(20)  NOT NULL COMMENT '边设备档案主键',
+    `id`                bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `d_id`              bigint(20) NOT NULL COMMENT '边设备档案主键',
     `app_id`            varchar(64) NOT NULL COMMENT '应用ID',
     `node_id`           varchar(256)         DEFAULT NULL COMMENT '设备节点ID',
     `node_name`         varchar(256)         DEFAULT NULL COMMENT '设备名称',
@@ -548,7 +552,7 @@ CREATE TABLE `device_info`
     `manufacturer_id`   varchar(256)         DEFAULT NULL COMMENT '厂商ID',
     `model`             varchar(256)         DEFAULT NULL COMMENT '设备型号',
     `connect_status`    varchar(20)          DEFAULT NULL COMMENT '子设备连接状态 : 在线：ONLINE || 离线：OFFLINE || 未连接：INIT',
-    `shadow_enable`     tinyint(1)           DEFAULT '1' COMMENT '是否支持设备影子TRUE:1、FALSE :0',
+    `shadow_enable`     tinyint(1) DEFAULT '1' COMMENT '是否支持设备影子TRUE:1、FALSE :0',
     `shadow_table_name` varchar(2048)        DEFAULT NULL COMMENT '设备影子数据表名(多个英文逗号分割)',
     `status`            varchar(10) NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
     `create_by`         varchar(64)          DEFAULT 'ununited' COMMENT '创建者',
@@ -574,7 +578,7 @@ COMMIT;
 DROP TABLE IF EXISTS `device_location`;
 CREATE TABLE `device_location`
 (
-    `id`                    bigint(19)     NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `id`                    bigint(19) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `device_identification` varchar(100)   NOT NULL COMMENT '设备标识',
     `latitude`              decimal(10, 7) NOT NULL COMMENT '纬度',
     `longitude`             decimal(10, 7) NOT NULL COMMENT '经度',
@@ -604,7 +608,7 @@ COMMIT;
 DROP TABLE IF EXISTS `device_topic`;
 CREATE TABLE `device_topic`
 (
-    `id`                    bigint(19)   NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `id`                    bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
     `device_identification` varchar(100) NOT NULL COMMENT '设备标识',
     `type`                  varchar(255)          DEFAULT NULL COMMENT '类型(0:基础Topic,1:自定义Topic)',
     `topic`                 varchar(100)          DEFAULT NULL COMMENT 'topic',
@@ -633,25 +637,25 @@ DROP TABLE IF EXISTS `gen_table`;
 CREATE TABLE `gen_table`
 (
     `table_id`          bigint(20) NOT NULL AUTO_INCREMENT COMMENT '编号',
-    `table_name`        varchar(200)        DEFAULT '' COMMENT '表名称',
-    `table_comment`     varchar(500)        DEFAULT '' COMMENT '表描述',
-    `sub_table_name`    varchar(64)         DEFAULT NULL COMMENT '关联子表的表名',
-    `sub_table_fk_name` varchar(64)         DEFAULT NULL COMMENT '子表关联的外键名',
-    `class_name`        varchar(100)        DEFAULT '' COMMENT '实体类名称',
-    `tpl_category`      varchar(200)        DEFAULT 'crud' COMMENT '使用的模板（crud单表操作 tree树表操作）',
-    `package_name`      varchar(100)        DEFAULT NULL COMMENT '生成包路径',
-    `module_name`       varchar(30)         DEFAULT NULL COMMENT '生成模块名',
-    `business_name`     varchar(30)         DEFAULT NULL COMMENT '生成业务名',
-    `function_name`     varchar(50)         DEFAULT NULL COMMENT '生成功能名',
-    `function_author`   varchar(50)         DEFAULT NULL COMMENT '生成功能作者',
-    `gen_type`          char(1)             DEFAULT '0' COMMENT '生成代码方式（0zip压缩包 1自定义路径）',
-    `gen_path`          varchar(200)        DEFAULT '/' COMMENT '生成路径（不填默认项目路径）',
-    `options`           varchar(1000)       DEFAULT NULL COMMENT '其它生成选项',
-    `create_by`         varchar(64)         DEFAULT '' COMMENT '创建者',
-    `create_time`       datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_by`         varchar(64)         DEFAULT '' COMMENT '更新者',
-    `update_time`       datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `remark`            varchar(500)        DEFAULT NULL COMMENT '备注',
+    `table_name`        varchar(200)      DEFAULT '' COMMENT '表名称',
+    `table_comment`     varchar(500)      DEFAULT '' COMMENT '表描述',
+    `sub_table_name`    varchar(64)       DEFAULT NULL COMMENT '关联子表的表名',
+    `sub_table_fk_name` varchar(64)       DEFAULT NULL COMMENT '子表关联的外键名',
+    `class_name`        varchar(100)      DEFAULT '' COMMENT '实体类名称',
+    `tpl_category`      varchar(200)      DEFAULT 'crud' COMMENT '使用的模板（crud单表操作 tree树表操作）',
+    `package_name`      varchar(100)      DEFAULT NULL COMMENT '生成包路径',
+    `module_name`       varchar(30)       DEFAULT NULL COMMENT '生成模块名',
+    `business_name`     varchar(30)       DEFAULT NULL COMMENT '生成业务名',
+    `function_name`     varchar(50)       DEFAULT NULL COMMENT '生成功能名',
+    `function_author`   varchar(50)       DEFAULT NULL COMMENT '生成功能作者',
+    `gen_type`          char(1)           DEFAULT '0' COMMENT '生成代码方式（0zip压缩包 1自定义路径）',
+    `gen_path`          varchar(200)      DEFAULT '/' COMMENT '生成路径（不填默认项目路径）',
+    `options`           varchar(1000)     DEFAULT NULL COMMENT '其它生成选项',
+    `create_by`         varchar(64)       DEFAULT '' COMMENT '创建者',
+    `create_time`       datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by`         varchar(64)       DEFAULT '' COMMENT '更新者',
+    `update_time`       datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `remark`            varchar(500)      DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`table_id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 14
@@ -672,14 +676,16 @@ INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_n
                          `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`,
                          `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`,
                          `update_time`, `remark`)
-VALUES (4, 'product', '产品管理', NULL, NULL, 'Product', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'product', '产品管理',
+VALUES (4, 'product', '产品管理', NULL, NULL, 'Product', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'product',
+        '产品管理',
         'thinglinks', '0', '/', '{\"parentMenuId\":1061}', 'admin', '2022-02-09 16:13:45', '', '2022-02-09 16:52:41',
         NULL);
 INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`,
                          `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`,
                          `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`,
                          `update_time`, `remark`)
-VALUES (5, 'device_info', '子设备档案表', '', '', 'DeviceInfo', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'deviceInfo',
+VALUES (5, 'device_info', '子设备档案表', '', '', 'DeviceInfo', 'crud', 'com.mqttsnet.thinglinks.link', 'link',
+        'deviceInfo',
         '子设备管理', 'thinglinks', '0', '/',
         '{\"treeCode\":\"d_id\",\"treeName\":\"d_id\",\"treeParentCode\":\"d_id\",\"parentMenuId\":\"1076\"}', 'admin',
         '2022-05-09 15:38:08', '', '2022-06-21 14:32:37', NULL);
@@ -688,48 +694,58 @@ INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_n
                          `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`,
                          `update_time`, `remark`)
 VALUES (7, 'casbin_rule', 'CAS规则策略配置表', NULL, NULL, 'CasbinRule', 'crud', 'com.mqttsnet.thinglinks.link', 'link',
-        'casbinRule', 'CAS规则管理', 'thinglinks', '0', '/', '{\"parentMenuId\":\"1061\"}', 'admin', '2022-06-16 17:19:58',
+        'casbinRule', 'CAS规则管理', 'thinglinks', '0', '/', '{\"parentMenuId\":\"1061\"}', 'admin',
+        '2022-06-16 17:19:58',
         '', '2022-06-17 11:09:44', NULL);
 INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`,
                          `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`,
                          `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`,
                          `update_time`, `remark`)
-VALUES (8, 'device_topic', '设备Topic数据表', '', '', 'DeviceTopic', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'topic',
-        '设备Topic数据', 'thinglinks', '0', '/', '{\"treeCode\":\"device_identification\",\"parentMenuId\":1076}', 'admin',
+VALUES (8, 'device_topic', '设备Topic数据表', '', '', 'DeviceTopic', 'crud', 'com.mqttsnet.thinglinks.link', 'link',
+        'topic',
+        '设备Topic数据', 'thinglinks', '0', '/', '{\"treeCode\":\"device_identification\",\"parentMenuId\":1076}',
+        'admin',
         '2022-06-17 16:41:13', '', '2022-06-17 16:57:24', NULL);
 INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`,
                          `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`,
                          `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`,
                          `update_time`, `remark`)
 VALUES (9, 'device_action', '设备动作数据', NULL, NULL, 'DeviceAction', 'crud', 'com.mqttsnet.thinglinks.link', 'link',
-        'action', '设备动作数据', 'thinglinks', '0', '/', '{\"parentMenuId\":\"1076\"}', 'admin', '2022-06-17 17:38:20', '',
+        'action', '设备动作数据', 'thinglinks', '0', '/', '{\"parentMenuId\":\"1076\"}', 'admin', '2022-06-17 17:38:20',
+        '',
         '2022-06-17 17:46:18', NULL);
 INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`,
                          `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`,
                          `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`,
                          `update_time`, `remark`)
-VALUES (10, 'device_location', '设备位置表', NULL, NULL, 'DeviceLocation', 'crud', 'com.mqttsnet.thinglinks.link', 'link',
-        'device_location', '设备位置', 'lvwshuai', '0', '/', '{\"parentMenuId\":\"1062\"}', 'admin', '2022-06-30 16:54:17',
+VALUES (10, 'device_location', '设备位置表', NULL, NULL, 'DeviceLocation', 'crud', 'com.mqttsnet.thinglinks.link',
+        'link',
+        'device_location', '设备位置', 'lvwshuai', '0', '/', '{\"parentMenuId\":\"1062\"}', 'admin',
+        '2022-06-30 16:54:17',
         '', '2022-06-30 16:58:36', NULL);
 INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`,
                          `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`,
                          `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`,
                          `update_time`, `remark`)
-VALUES (11, 'product_template', '产品模板', NULL, NULL, 'ProductTemplate', 'crud', 'com.mqttsnet.thinglinks.link', 'link',
-        'product_template', '产品模板', 'thinglinks', '0', '/', '{\"parentMenuId\":1061}', 'admin', '2022-06-30 20:03:00',
+VALUES (11, 'product_template', '产品模板', NULL, NULL, 'ProductTemplate', 'crud', 'com.mqttsnet.thinglinks.link',
+        'link',
+        'product_template', '产品模板', 'thinglinks', '0', '/', '{\"parentMenuId\":1061}', 'admin',
+        '2022-06-30 20:03:00',
         '', '2022-07-08 18:33:57', NULL);
 INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`,
                          `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`,
                          `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`,
                          `update_time`, `remark`)
-VALUES (12, 'protocol', '协议信息表', NULL, NULL, 'Protocol', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'protocol',
+VALUES (12, 'protocol', '协议信息表', NULL, NULL, 'Protocol', 'crud', 'com.mqttsnet.thinglinks.link', 'link',
+        'protocol',
         '协议管理', 'thinglinks', '0', '/', '{\"parentMenuId\":\"1061\"}', 'admin', '2022-07-04 09:05:19', '',
         '2022-07-04 11:21:13', '协议管理');
 INSERT INTO `gen_table` (`table_id`, `table_name`, `table_comment`, `sub_table_name`, `sub_table_fk_name`, `class_name`,
                          `tpl_category`, `package_name`, `module_name`, `business_name`, `function_name`,
                          `function_author`, `gen_type`, `gen_path`, `options`, `create_by`, `create_time`, `update_by`,
                          `update_time`, `remark`)
-VALUES (13, 'rule', '规则信息表', NULL, NULL, 'Rule', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'rule', '规则信息',
+VALUES (13, 'rule', '规则信息表', NULL, NULL, 'Rule', 'crud', 'com.mqttsnet.thinglinks.link', 'link', 'rule',
+        '规则信息',
         'thinglinks', '0', '/', NULL, 'admin', '2022-07-15 17:47:01', '', '2022-11-18 13:37:26', NULL);
 COMMIT;
 
@@ -740,27 +756,27 @@ DROP TABLE IF EXISTS `gen_table_column`;
 CREATE TABLE `gen_table_column`
 (
     `column_id`      bigint(20) NOT NULL AUTO_INCREMENT COMMENT '编号',
-    `table_id`       varchar(64)         DEFAULT NULL COMMENT '归属表编号',
-    `column_name`    varchar(200)        DEFAULT NULL COMMENT '列名称',
-    `column_comment` varchar(500)        DEFAULT NULL COMMENT '列描述',
-    `column_type`    varchar(100)        DEFAULT NULL COMMENT '列类型',
-    `java_type`      varchar(500)        DEFAULT NULL COMMENT 'JAVA类型',
-    `java_field`     varchar(200)        DEFAULT NULL COMMENT 'JAVA字段名',
-    `is_pk`          char(1)             DEFAULT NULL COMMENT '是否主键（1是）',
-    `is_increment`   char(1)             DEFAULT NULL COMMENT '是否自增（1是）',
-    `is_required`    char(1)             DEFAULT NULL COMMENT '是否必填（1是）',
-    `is_insert`      char(1)             DEFAULT NULL COMMENT '是否为插入字段（1是）',
-    `is_edit`        char(1)             DEFAULT NULL COMMENT '是否编辑字段（1是）',
-    `is_list`        char(1)             DEFAULT NULL COMMENT '是否列表字段（1是）',
-    `is_query`       char(1)             DEFAULT NULL COMMENT '是否查询字段（1是）',
-    `query_type`     varchar(200)        DEFAULT 'EQ' COMMENT '查询方式（等于、不等于、大于、小于、范围）',
-    `html_type`      varchar(200)        DEFAULT NULL COMMENT '显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）',
-    `dict_type`      varchar(200)        DEFAULT '' COMMENT '字典类型',
-    `sort`           int(11)             DEFAULT NULL COMMENT '排序',
-    `create_by`      varchar(64)         DEFAULT '' COMMENT '创建者',
-    `create_time`    datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_by`      varchar(64)         DEFAULT '' COMMENT '更新者',
-    `update_time`    datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `table_id`       varchar(64)       DEFAULT NULL COMMENT '归属表编号',
+    `column_name`    varchar(200)      DEFAULT NULL COMMENT '列名称',
+    `column_comment` varchar(500)      DEFAULT NULL COMMENT '列描述',
+    `column_type`    varchar(100)      DEFAULT NULL COMMENT '列类型',
+    `java_type`      varchar(500)      DEFAULT NULL COMMENT 'JAVA类型',
+    `java_field`     varchar(200)      DEFAULT NULL COMMENT 'JAVA字段名',
+    `is_pk`          char(1)           DEFAULT NULL COMMENT '是否主键（1是）',
+    `is_increment`   char(1)           DEFAULT NULL COMMENT '是否自增（1是）',
+    `is_required`    char(1)           DEFAULT NULL COMMENT '是否必填（1是）',
+    `is_insert`      char(1)           DEFAULT NULL COMMENT '是否为插入字段（1是）',
+    `is_edit`        char(1)           DEFAULT NULL COMMENT '是否编辑字段（1是）',
+    `is_list`        char(1)           DEFAULT NULL COMMENT '是否列表字段（1是）',
+    `is_query`       char(1)           DEFAULT NULL COMMENT '是否查询字段（1是）',
+    `query_type`     varchar(200)      DEFAULT 'EQ' COMMENT '查询方式（等于、不等于、大于、小于、范围）',
+    `html_type`      varchar(200)      DEFAULT NULL COMMENT '显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）',
+    `dict_type`      varchar(200)      DEFAULT '' COMMENT '字典类型',
+    `sort`           int(11) DEFAULT NULL COMMENT '排序',
+    `create_by`      varchar(64)       DEFAULT '' COMMENT '创建者',
+    `create_time`    datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by`      varchar(64)       DEFAULT '' COMMENT '更新者',
+    `update_time`    datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`column_id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 189
@@ -780,13 +796,15 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (50, '3', 'client_id', '客户端标识', 'varchar(255)', 'String', 'clientId', '0', '0', '1', '1', '1', '1', '1', 'LIKE',
+VALUES (50, '3', 'client_id', '客户端标识', 'varchar(255)', 'String', 'clientId', '0', '0', '1', '1', '1', '1', '1',
+        'LIKE',
         'input', '', 2, 'thinglinks', '2021-12-28 10:51:40', '', '2021-12-28 11:04:26');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (51, '3', 'user_name', '用户名', 'varchar(255)', 'String', 'userName', '0', '0', '1', '1', '1', '1', NULL, 'LIKE',
+VALUES (51, '3', 'user_name', '用户名', 'varchar(255)', 'String', 'userName', '0', '0', '1', '1', '1', '1', NULL,
+        'LIKE',
         'input', '', 3, 'thinglinks', '2021-12-28 10:51:40', '', '2021-12-28 11:04:26');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -798,19 +816,22 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (53, '3', 'app_id', '应用ID', 'varchar(64)', 'String', 'appId', '0', '0', '1', '1', '1', NULL, NULL, 'EQ', 'input',
+VALUES (53, '3', 'app_id', '应用ID', 'varchar(64)', 'String', 'appId', '0', '0', '1', '1', '1', NULL, NULL, 'EQ',
+        'input',
         '', 5, 'thinglinks', '2021-12-28 10:51:40', '', '2021-12-28 11:04:26');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (54, '3', 'auth_mode', '认证方式', 'varchar(255)', 'String', 'authMode', '0', '0', '1', '1', '1', '1', NULL, 'EQ',
+VALUES (54, '3', 'auth_mode', '认证方式', 'varchar(255)', 'String', 'authMode', '0', '0', '1', '1', '1', '1', NULL,
+        'EQ',
         'input', 'link_device_auth_mode', 6, 'thinglinks', '2021-12-28 10:51:40', '', '2021-12-28 11:04:26');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (55, '3', 'device_identification', '设备标识', 'varchar(100)', 'String', 'deviceIdentification', '0', '0', '1', '1',
+VALUES (55, '3', 'device_identification', '设备标识', 'varchar(100)', 'String', 'deviceIdentification', '0', '0', '1',
+        '1',
         '1', '1', '1', 'LIKE', 'input', '', 7, 'thinglinks', '2021-12-28 10:51:40', '', '2021-12-28 11:04:26');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -822,25 +843,29 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (57, '3', 'connector', '连接实例', 'varchar(255)', 'String', 'connector', '0', '0', '1', '1', '1', '1', '1', 'EQ',
+VALUES (57, '3', 'connector', '连接实例', 'varchar(255)', 'String', 'connector', '0', '0', '1', '1', '1', '1', '1',
+        'EQ',
         'input', 'link_device_connector', 9, 'thinglinks', '2021-12-28 10:51:40', '', '2021-12-28 11:04:26');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (58, '3', 'device_description', '设备描述', 'varchar(255)', 'String', 'deviceDescription', '0', '0', NULL, '1', '1',
+VALUES (58, '3', 'device_description', '设备描述', 'varchar(255)', 'String', 'deviceDescription', '0', '0', NULL, '1',
+        '1',
         '1', NULL, 'EQ', 'input', '', 10, 'thinglinks', '2021-12-28 10:51:40', '', '2021-12-28 11:04:26');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (59, '3', 'device_status', '设备状态', 'varchar(255)', 'String', 'deviceStatus', '0', '0', '1', '1', '1', '1', '1',
+VALUES (59, '3', 'device_status', '设备状态', 'varchar(255)', 'String', 'deviceStatus', '0', '0', '1', '1', '1', '1',
+        '1',
         'EQ', 'radio', 'link_device_status', 11, 'thinglinks', '2021-12-28 10:51:41', '', '2021-12-28 11:04:26');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (60, '3', 'connect_status', '连接状态', 'varchar(255)', 'String', 'connectStatus', '0', '0', '1', '1', '1', '1', '1',
+VALUES (60, '3', 'connect_status', '连接状态', 'varchar(255)', 'String', 'connectStatus', '0', '0', '1', '1', '1', '1',
+        '1',
         'EQ', 'radio', 'link_device_connect_status', 12, 'thinglinks', '2021-12-28 10:51:41', '',
         '2021-12-28 11:04:26');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
@@ -853,13 +878,15 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (62, '3', 'device_tags', '设备标签', 'varchar(255)', 'String', 'deviceTags', '0', '0', '1', '1', '1', '1', '1', 'EQ',
+VALUES (62, '3', 'device_tags', '设备标签', 'varchar(255)', 'String', 'deviceTags', '0', '0', '1', '1', '1', '1', '1',
+        'EQ',
         'input', '', 14, 'thinglinks', '2021-12-28 10:51:41', '', '2021-12-28 11:04:27');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (63, '3', 'product_id', '产品型号', 'varchar(255)', 'String', 'productId', '0', '0', '1', '1', '1', '1', '1', 'EQ',
+VALUES (63, '3', 'product_id', '产品型号', 'varchar(255)', 'String', 'productId', '0', '0', '1', '1', '1', '1', '1',
+        'EQ',
         'input', '', 15, 'thinglinks', '2021-12-28 10:51:41', '', '2021-12-28 11:04:27');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -871,14 +898,16 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (65, '3', 'protocol_type', '产品协议类型', 'varchar(255)', 'String', 'protocolType', '0', '0', '1', '1', '1', '1', '1',
+VALUES (65, '3', 'protocol_type', '产品协议类型', 'varchar(255)', 'String', 'protocolType', '0', '0', '1', '1', '1',
+        '1', '1',
         'EQ', 'select', 'link_device_protocol_type', 17, 'thinglinks', '2021-12-28 10:51:41', '',
         '2021-12-28 11:04:27');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (66, '3', 'device_type', '设备类型', 'varchar(255)', 'String', 'deviceType', '0', '0', '1', '1', '1', '1', '1', 'EQ',
+VALUES (66, '3', 'device_type', '设备类型', 'varchar(255)', 'String', 'deviceType', '0', '0', '1', '1', '1', '1', '1',
+        'EQ',
         'select', 'link_device_device_type', 18, 'thinglinks', '2021-12-28 10:51:41', '', '2021-12-28 11:04:27');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -926,13 +955,15 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (74, '4', 'template_id', '产品模型模板', 'bigint(19)', 'Long', 'templateId', '0', '0', NULL, '1', NULL, NULL, NULL,
+VALUES (74, '4', 'template_id', '产品模型模板', 'bigint(19)', 'Long', 'templateId', '0', '0', NULL, '1', NULL, NULL,
+        NULL,
         'EQ', 'input', '', 3, 'admin', '2022-02-09 16:13:46', '', '2022-02-09 16:52:41');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (75, '4', 'product_name', '产品名称:自定义，支持中文、英文大小写、数字、下划线和中划线', 'varchar(255)', 'String', 'productName', '0', '0',
+VALUES (75, '4', 'product_name', '产品名称:自定义，支持中文、英文大小写、数字、下划线和中划线', 'varchar(255)', 'String',
+        'productName', '0', '0',
         '1', '1', '1', '1', '1', 'LIKE', 'input', '', 4, 'admin', '2022-02-09 16:13:46', '', '2022-02-09 16:52:41');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -944,53 +975,61 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (77, '4', 'product_type', '支持以下两种产品类型•0：普通产品，需直连设备。\r\n•1：网关产品，可挂载子设备。\r\n', 'varchar(255)', 'String',
+VALUES (77, '4', 'product_type', '支持以下两种产品类型•0：普通产品，需直连设备。\r\n•1：网关产品，可挂载子设备。\r\n',
+        'varchar(255)', 'String',
         'productType', '0', '0', '1', '1', NULL, NULL, NULL, 'EQ', 'select', 'link_device_device_type', 6, 'admin',
         '2022-02-09 16:13:46', '', '2022-02-09 16:52:41');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (78, '4', 'manufacturer_id', '厂商ID:支持英文大小写，数字，下划线和中划线', 'varchar(255)', 'String', 'manufacturerId', '0', '0',
+VALUES (78, '4', 'manufacturer_id', '厂商ID:支持英文大小写，数字，下划线和中划线', 'varchar(255)', 'String',
+        'manufacturerId', '0', '0',
         '1', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2022-02-09 16:13:46', '', '2022-02-09 16:52:41');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (79, '4', 'manufacturer_name', '厂商名称 :支持中文、英文大小写、数字、下划线和中划线', 'varchar(255)', 'String', 'manufacturerName', '0',
+VALUES (79, '4', 'manufacturer_name', '厂商名称 :支持中文、英文大小写、数字、下划线和中划线', 'varchar(255)', 'String',
+        'manufacturerName', '0',
         '0', '1', '1', '1', '1', '1', 'LIKE', 'input', '', 8, 'admin', '2022-02-09 16:13:46', '',
         '2022-02-09 16:52:41');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (80, '4', 'model', '产品型号，建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线\r\n', 'varchar(255)', 'String', 'model', '0', '0',
+VALUES (80, '4', 'model', '产品型号，建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线\r\n',
+        'varchar(255)', 'String', 'model', '0', '0',
         '1', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2022-02-09 16:13:46', '', '2022-02-09 16:52:42');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (81, '4', 'data_format', '数据格式，默认为JSON无需修改。', 'varchar(255)', 'String', 'dataFormat', '0', '0', '1', '1', NULL,
+VALUES (81, '4', 'data_format', '数据格式，默认为JSON无需修改。', 'varchar(255)', 'String', 'dataFormat', '0', '0', '1',
+        '1', NULL,
         NULL, NULL, 'EQ', 'input', '', 10, 'admin', '2022-02-09 16:13:46', '', '2022-02-09 16:52:42');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (82, '4', 'device_type', '设备类型:支持英文大小写、数字、下划线和中划线\r\n', 'varchar(255)', 'String', 'deviceType', '0', '0', '1',
+VALUES (82, '4', 'device_type', '设备类型:支持英文大小写、数字、下划线和中划线\r\n', 'varchar(255)', 'String',
+        'deviceType', '0', '0', '1',
         '1', NULL, '1', NULL, 'EQ', 'select', 'link_protocol_device_type', 11, 'admin', '2022-02-09 16:13:46', '',
         '2022-02-09 16:52:42');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (83, '4', 'protocol_type', '设备接入平台的协议类型，默认为MQTT无需修改。\r\n ', 'varchar(255)', 'String', 'protocolType', '0', '0',
+VALUES (83, '4', 'protocol_type', '设备接入平台的协议类型，默认为MQTT无需修改。\r\n ', 'varchar(255)', 'String',
+        'protocolType', '0', '0',
         '1', '1', NULL, '1', NULL, 'EQ', 'select', 'link_device_protocol_type', 12, 'admin', '2022-02-09 16:13:46', '',
         '2022-02-09 16:52:42');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (84, '4', 'status', '状态(字典值：启用  停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1', '1', NULL,
+VALUES (84, '4', 'status', '状态(字典值：启用  停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1', '1',
+        NULL,
         'EQ', 'select', 'sys_normal_disable', 13, 'admin', '2022-02-09 16:13:46', '', '2022-02-09 16:52:42');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1002,13 +1041,15 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (86, '4', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (86, '4', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'input', '', 15, 'admin', '2022-02-09 16:13:47', '', '2022-02-09 16:52:42');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (87, '4', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (87, '4', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'datetime', '', 16, 'admin', '2022-02-09 16:13:47', '', '2022-02-09 16:52:42');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1020,7 +1061,8 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (89, '4', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (89, '4', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'datetime', '', 18, 'admin', '2022-02-09 16:13:47', '', '2022-02-09 16:52:42');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1044,19 +1086,22 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (93, '5', 'node_id', '设备唯一标识', 'varchar(256)', 'String', 'nodeId', '0', '0', NULL, '1', '1', '1', '1', 'EQ',
+VALUES (93, '5', 'node_id', '设备唯一标识', 'varchar(256)', 'String', 'nodeId', '0', '0', NULL, '1', '1', '1', '1',
+        'EQ',
         'input', '', 4, 'admin', '2022-05-09 15:38:08', '', '2022-06-21 14:32:37');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (94, '5', 'node_name', '设备名称', 'varchar(256)', 'String', 'nodeName', '0', '0', NULL, '1', '1', '1', '1', 'LIKE',
+VALUES (94, '5', 'node_name', '设备名称', 'varchar(256)', 'String', 'nodeName', '0', '0', NULL, '1', '1', '1', '1',
+        'LIKE',
         'input', '', 5, 'admin', '2022-05-09 15:38:08', '', '2022-06-21 14:32:37');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (95, '5', 'device_id', '子设备标识', 'varchar(256)', 'String', 'deviceId', '0', '0', NULL, '1', '1', '1', '1', 'EQ',
+VALUES (95, '5', 'device_id', '子设备标识', 'varchar(256)', 'String', 'deviceId', '0', '0', NULL, '1', '1', '1', '1',
+        'EQ',
         'input', '', 6, 'admin', '2022-05-09 15:38:09', '', '2022-06-21 14:32:37');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1074,7 +1119,8 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (98, '5', 'model', '设备型号', 'varchar(256)', 'String', 'model', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'input',
+VALUES (98, '5', 'model', '设备型号', 'varchar(256)', 'String', 'model', '0', '0', NULL, '1', '1', '1', '1', 'EQ',
+        'input',
         '', 9, 'admin', '2022-05-09 15:38:09', '', '2022-06-21 14:32:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1087,44 +1133,51 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (100, '5', 'shadow_enable', '是否支持设备影子', 'tinyint(1)', 'Integer', 'shadowEnable', '0', '0', NULL, '1', '1', '1',
+VALUES (100, '5', 'shadow_enable', '是否支持设备影子', 'tinyint(1)', 'Integer', 'shadowEnable', '0', '0', NULL, '1',
+        '1', '1',
         '1', 'EQ', 'select', 'link_deviceInfo_shadow_enable', 11, 'admin', '2022-05-09 15:38:09', '',
         '2022-06-21 14:32:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (101, '5', 'shadow_table_name', '设备影子数据表名', 'varchar(2048)', 'String', 'shadowTableName', '0', '0', NULL, '1',
+VALUES (101, '5', 'shadow_table_name', '设备影子数据表名', 'varchar(2048)', 'String', 'shadowTableName', '0', '0', NULL,
+        '1',
         '1', '1', '1', 'LIKE', 'input', '', 12, 'admin', '2022-05-09 15:38:09', '', '2022-06-21 14:32:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (102, '5', 'status', '状态(字典值：0启用  1停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1', '1', '1',
+VALUES (102, '5', 'status', '状态(字典值：0启用  1停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1',
+        '1', '1',
         'EQ', 'select', 'business_data_status', 13, 'admin', '2022-05-09 15:38:09', '', '2022-06-21 14:32:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (103, '5', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (103, '5', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'input', '', 14, 'admin', '2022-05-09 15:38:09', '', '2022-06-21 14:32:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (104, '5', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (104, '5', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'datetime', '', 15, 'admin', '2022-05-09 15:38:09', '', '2022-06-21 14:32:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (105, '5', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (105, '5', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'input', '', 16, 'admin', '2022-05-09 15:38:09', '', '2022-06-21 14:32:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (106, '5', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (106, '5', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'datetime', '', 17, 'admin', '2022-05-09 15:38:09', '', '2022-06-21 14:32:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1148,13 +1201,15 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (118, '7', 'v0', '规则名称', 'varchar(100)', 'String', 'v0', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'input', '',
+VALUES (118, '7', 'v0', '规则名称', 'varchar(100)', 'String', 'v0', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'input',
+        '',
         3, 'admin', '2022-06-16 17:19:58', '', '2022-06-17 11:09:45');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (119, '7', 'v1', '资源', 'varchar(100)', 'String', 'v1', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'input', '', 4,
+VALUES (119, '7', 'v1', '资源', 'varchar(100)', 'String', 'v1', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'input', '',
+        4,
         'admin', '2022-06-16 17:19:58', '', '2022-06-17 11:09:45');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1190,13 +1245,15 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (125, '8', 'device_identification', '设备标识', 'varchar(100)', 'String', 'deviceIdentification', '0', '0', '1', '1',
+VALUES (125, '8', 'device_identification', '设备标识', 'varchar(100)', 'String', 'deviceIdentification', '0', '0', '1',
+        '1',
         '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2022-06-17 16:41:14', '', '2022-06-17 16:57:24');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (126, '8', 'type', '类型(0:基础Topic,1:自定义Topic)', 'varchar(255)', 'String', 'type', '0', '0', NULL, '1', '1', '1',
+VALUES (126, '8', 'type', '类型(0:基础Topic,1:自定义Topic)', 'varchar(255)', 'String', 'type', '0', '0', NULL, '1', '1',
+        '1',
         '1', 'EQ', 'select', '', 3, 'admin', '2022-06-17 16:41:14', '', '2022-06-17 16:57:24');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1208,37 +1265,43 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (128, '8', 'publisher', '发布者', 'varchar(255)', 'String', 'publisher', '0', '0', NULL, '1', '1', '1', '1', 'EQ',
+VALUES (128, '8', 'publisher', '发布者', 'varchar(255)', 'String', 'publisher', '0', '0', NULL, '1', '1', '1', '1',
+        'EQ',
         'input', '', 5, 'admin', '2022-06-17 16:41:14', '', '2022-06-17 16:57:24');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (129, '8', 'subscriber', '订阅者', 'varchar(255)', 'String', 'subscriber', '0', '0', NULL, '1', '1', '1', '1', 'EQ',
+VALUES (129, '8', 'subscriber', '订阅者', 'varchar(255)', 'String', 'subscriber', '0', '0', NULL, '1', '1', '1', '1',
+        'EQ',
         'input', '', 6, 'admin', '2022-06-17 16:41:14', '', '2022-06-17 16:57:24');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (130, '8', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (130, '8', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'input', '', 7, 'admin', '2022-06-17 16:41:14', '', '2022-06-17 16:57:24');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (131, '8', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (131, '8', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'datetime', '', 8, 'admin', '2022-06-17 16:41:14', '', '2022-06-17 16:57:25');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (132, '8', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (132, '8', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'input', '', 9, 'admin', '2022-06-17 16:41:14', '', '2022-06-17 16:57:25');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (133, '8', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (133, '8', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'datetime', '', 10, 'admin', '2022-06-17 16:41:14', '', '2022-06-17 16:57:25');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1274,19 +1337,22 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (139, '9', 'status', '状态', 'varchar(255)', 'String', 'status', '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'radio',
+VALUES (139, '9', 'status', '状态', 'varchar(255)', 'String', 'status', '0', '0', NULL, '1', '1', '1', '1', 'EQ',
+        'radio',
         '', 5, 'admin', '2022-06-17 17:38:21', '', '2022-06-17 17:46:18');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (140, '9', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (140, '9', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'datetime', '', 6, 'admin', '2022-06-17 17:38:21', '', '2022-06-17 17:46:19');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (141, '10', 'id', '主键', 'bigint(19)', 'Long', 'id', '1', '1', NULL, '1', NULL, NULL, NULL, 'EQ', 'input', '', 1,
+VALUES (141, '10', 'id', '主键', 'bigint(19)', 'Long', 'id', '1', '1', NULL, '1', NULL, NULL, NULL, 'EQ', 'input', '',
+        1,
         'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1298,7 +1364,8 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (143, '10', 'latitude', '纬度', 'decimal(10,7)', 'BigDecimal', 'latitude', '0', '0', '1', '1', '1', '1', '1', 'EQ',
+VALUES (143, '10', 'latitude', '纬度', 'decimal(10,7)', 'BigDecimal', 'latitude', '0', '0', '1', '1', '1', '1', '1',
+        'EQ',
         'input', '', 3, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1310,13 +1377,15 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (145, '10', 'full_name', '位置名称', 'varchar(500)', 'String', 'fullName', '0', '0', '1', '1', '1', '1', '1', 'LIKE',
+VALUES (145, '10', 'full_name', '位置名称', 'varchar(500)', 'String', 'fullName', '0', '0', '1', '1', '1', '1', '1',
+        'LIKE',
         'textarea', '', 5, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (146, '10', 'province_code', '省,直辖市编码', 'varchar(50)', 'String', 'provinceCode', '0', '0', '1', '1', '1', '1',
+VALUES (146, '10', 'province_code', '省,直辖市编码', 'varchar(50)', 'String', 'provinceCode', '0', '0', '1', '1', '1',
+        '1',
         '1', 'EQ', 'input', '', 6, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1328,31 +1397,36 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (148, '10', 'region_code', '区县', 'varchar(50)', 'String', 'regionCode', '0', '0', '1', '1', '1', '1', '1', 'EQ',
+VALUES (148, '10', 'region_code', '区县', 'varchar(50)', 'String', 'regionCode', '0', '0', '1', '1', '1', '1', '1',
+        'EQ',
         'input', '', 8, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:36');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (149, '10', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (149, '10', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'input', '', 9, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:37');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (150, '10', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (150, '10', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'datetime', '', 10, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:37');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (151, '10', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (151, '10', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'input', '', 11, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:37');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (152, '10', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (152, '10', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'datetime', '', 12, 'admin', '2022-06-30 16:54:17', '', '2022-06-30 16:58:37');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1370,50 +1444,58 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (155, '11', 'app_id', '应用ID', 'varchar(64)', 'String', 'appId', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input',
+VALUES (155, '11', 'app_id', '应用ID', 'varchar(64)', 'String', 'appId', '0', '0', '1', '1', '1', '1', '1', 'EQ',
+        'input',
         '', 2, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (156, '11', 'template_name', '产品模板名称:自定义，支持中文、英文大小写、数字、下划线和中划线', 'varchar(255)', 'String', 'templateName', '0',
+VALUES (156, '11', 'template_name', '产品模板名称:自定义，支持中文、英文大小写、数字、下划线和中划线', 'varchar(255)',
+        'String', 'templateName', '0',
         '0', '1', '1', '1', '1', '1', 'LIKE', 'input', '', 3, 'admin', '2022-06-30 20:03:01', '',
         '2022-07-08 18:33:58');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (157, '11', 'status', '状态(字典值：启用  停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1', '1', '1',
+VALUES (157, '11', 'status', '状态(字典值：启用  停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1', '1',
+        '1',
         'EQ', 'radio', '', 4, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (158, '11', 'remark', '产品模型模板描述', 'varchar(255)', 'String', 'remark', '0', '0', NULL, '1', '1', '1', NULL, 'EQ',
+VALUES (158, '11', 'remark', '产品模型模板描述', 'varchar(255)', 'String', 'remark', '0', '0', NULL, '1', '1', '1',
+        NULL, 'EQ',
         'input', '', 5, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (159, '11', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (159, '11', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'input', '', 6, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (160, '11', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (160, '11', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'datetime', '', 7, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (161, '11', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (161, '11', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'input', '', 8, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (162, '11', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (162, '11', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'datetime', '', 9, 'admin', '2022-06-30 20:03:01', '', '2022-07-08 18:33:58');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1425,7 +1507,8 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (164, '12', 'product_identification', '产品标识', 'varchar(100)', 'String', 'productIdentification', '0', '0', '1',
+VALUES (164, '12', 'product_identification', '产品标识', 'varchar(100)', 'String', 'productIdentification', '0', '0',
+        '1',
         '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1443,20 +1526,23 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (167, '12', 'protocol_version', '协议版本', 'varchar(255)', 'String', 'protocolVersion', '0', '0', NULL, '1', '1',
+VALUES (167, '12', 'protocol_version', '协议版本', 'varchar(255)', 'String', 'protocolVersion', '0', '0', NULL, '1',
+        '1',
         '1', '1', 'EQ', 'input', '', 5, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (168, '12', 'protocol_type', '协议类型 ：mqtt || coap || modbus || http', 'varchar(255)', 'String', 'protocolType',
+VALUES (168, '12', 'protocol_type', '协议类型 ：mqtt || coap || modbus || http', 'varchar(255)', 'String',
+        'protocolType',
         '0', '0', NULL, '1', '1', '1', '1', 'EQ', 'select', 'link_device_protocol_type', 6, 'admin',
         '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (169, '12', 'protocol_voice', '协议语言', 'varchar(255)', 'String', 'protocolVoice', '0', '0', NULL, '1', '1', '1',
+VALUES (169, '12', 'protocol_voice', '协议语言', 'varchar(255)', 'String', 'protocolVoice', '0', '0', NULL, '1', '1',
+        '1',
         '1', 'EQ', 'select', 'link_ protocol_voice', 7, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:13');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1468,7 +1554,8 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (171, '12', 'file_path', '文件地址', 'varchar(255)', 'String', 'filePath', '0', '0', NULL, '1', '1', '1', NULL, 'EQ',
+VALUES (171, '12', 'file_path', '文件地址', 'varchar(255)', 'String', 'filePath', '0', '0', NULL, '1', '1', '1', NULL,
+        'EQ',
         'input', '', 9, 'admin', '2022-07-04 09:05:19', '', '2022-07-04 11:21:14');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1480,31 +1567,36 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (173, '12', 'status', '状态(字典值：0启用  1停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1', '1', '1',
+VALUES (173, '12', 'status', '状态(字典值：0启用  1停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1',
+        '1', '1',
         'EQ', 'select', 'business_data_status', 11, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (174, '12', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, '1', NULL, 'EQ',
+VALUES (174, '12', 'create_by', '创建者', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, '1', NULL,
+        'EQ',
         'input', '', 12, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (175, '12', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, '1', NULL, 'EQ',
+VALUES (175, '12', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, '1', NULL,
+        'EQ',
         'datetime', '', 13, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (176, '12', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', '1', NULL, 'EQ',
+VALUES (176, '12', 'update_by', '更新者', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', '1', NULL,
+        'EQ',
         'input', '', 14, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (177, '12', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', '1', NULL, 'EQ',
+VALUES (177, '12', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', '1', NULL,
+        'EQ',
         'datetime', '', 15, 'admin', '2022-07-04 09:05:20', '', '2022-07-04 11:21:14');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
@@ -1522,55 +1614,64 @@ INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (180, '13', 'app_id', '应用ID', 'varchar(64)', 'String', 'appId', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input',
+VALUES (180, '13', 'app_id', '应用ID', 'varchar(64)', 'String', 'appId', '0', '0', '1', '1', '1', '1', '1', 'EQ',
+        'input',
         '', 2, 'admin', '2022-07-15 17:47:02', '', '2022-11-18 13:38:26');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (181, '13', 'rule_name', '规则名称', 'varchar(255)', 'String', 'ruleName', '0', '0', '1', '1', '1', '1', '1', 'LIKE',
+VALUES (181, '13', 'rule_name', '规则名称', 'varchar(255)', 'String', 'ruleName', '0', '0', '1', '1', '1', '1', '1',
+        'LIKE',
         'input', '', 3, 'admin', '2022-07-15 17:47:02', '', '2022-11-18 13:38:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (182, '13', 'cron_expression', '生效时间', 'varchar(50)', 'String', 'cronExpression', '0', '0', NULL, '1', '1', '1',
+VALUES (182, '13', 'cron_expression', '生效时间', 'varchar(50)', 'String', 'cronExpression', '0', '0', NULL, '1', '1',
+        '1',
         '1', 'EQ', 'input', '', 4, 'admin', '2022-07-15 17:47:02', '', '2022-11-18 13:38:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (183, '13', 'status', '状态(字典值：0启用  1停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1', '1', '1',
+VALUES (183, '13', 'status', '状态(字典值：0启用  1停用)', 'varchar(10)', 'String', 'status', '0', '0', '1', '1', '1',
+        '1', '1',
         'EQ', 'radio', '', 5, 'admin', '2022-07-15 17:47:02', '', '2022-11-18 13:38:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (184, '13', 'remark', '规则描述，可以为空', 'varchar(255)', 'String', 'remark', '0', '0', NULL, '1', '1', '1', NULL, 'EQ',
+VALUES (184, '13', 'remark', '规则描述，可以为空', 'varchar(255)', 'String', 'remark', '0', '0', NULL, '1', '1', '1',
+        NULL, 'EQ',
         'input', '', 6, 'admin', '2022-07-15 17:47:02', '', '2022-11-18 13:38:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (185, '13', 'create_by', '创建人', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (185, '13', 'create_by', '创建人', 'varchar(64)', 'String', 'createBy', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'input', '', 7, 'admin', '2022-07-15 17:47:02', '', '2022-11-18 13:38:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (186, '13', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL, 'EQ',
+VALUES (186, '13', 'create_time', '创建时间', 'datetime', 'Date', 'createTime', '0', '0', NULL, '1', NULL, NULL, NULL,
+        'EQ',
         'datetime', '', 8, 'admin', '2022-07-15 17:47:03', '', '2022-11-18 13:38:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (187, '13', 'update_by', '更新人', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (187, '13', 'update_by', '更新人', 'varchar(64)', 'String', 'updateBy', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'input', '', 9, 'admin', '2022-07-15 17:47:03', '', '2022-11-18 13:38:38');
 INSERT INTO `gen_table_column` (`column_id`, `table_id`, `column_name`, `column_comment`, `column_type`, `java_type`,
                                 `java_field`, `is_pk`, `is_increment`, `is_required`, `is_insert`, `is_edit`, `is_list`,
                                 `is_query`, `query_type`, `html_type`, `dict_type`, `sort`, `create_by`, `create_time`,
                                 `update_by`, `update_time`)
-VALUES (188, '13', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL, 'EQ',
+VALUES (188, '13', 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', NULL, '1', '1', NULL, NULL,
+        'EQ',
         'datetime', '', 10, 'admin', '2022-07-15 17:47:03', '', '2022-11-18 13:38:38');
 COMMIT;
 
@@ -1580,7 +1681,7 @@ COMMIT;
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product`
 (
-    `id`                      bigint(19)   NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `id`                      bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
     `app_id`                  varchar(64)  NOT NULL COMMENT '应用ID',
     `template_identification` varchar(100)          DEFAULT NULL COMMENT '产品模版标识',
     `product_name`            varchar(255) NOT NULL COMMENT '产品名称:自定义，支持中文、英文大小写、数字、下划线和中划线',
@@ -1599,7 +1700,7 @@ CREATE TABLE `product`
     `update_by`               varchar(64)           DEFAULT '' COMMENT '更新者',
     `update_time`             datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
-    KEY `manufacturer_id` (`manufacturer_id`) USING BTREE COMMENT '厂商ID索引'
+    KEY                       `manufacturer_id` (`manufacturer_id`) USING BTREE COMMENT '厂商ID索引'
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 47
   DEFAULT CHARSET = utf8 COMMENT ='产品模型';
@@ -1616,8 +1717,8 @@ COMMIT;
 DROP TABLE IF EXISTS `product_commands`;
 CREATE TABLE `product_commands`
 (
-    `id`          bigint(19)   NOT NULL AUTO_INCREMENT COMMENT '命令id',
-    `service_id`  bigint(19)   NOT NULL COMMENT '服务ID',
+    `id`          bigint(19) NOT NULL AUTO_INCREMENT COMMENT '命令id',
+    `service_id`  bigint(19) NOT NULL COMMENT '服务ID',
     `name`        varchar(255) NOT NULL COMMENT '指示命令的名字，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。\r\n支持英文大小写、数字及下划线，长度[2,50]。\r\n',
     `description` varchar(255)          DEFAULT NULL COMMENT '命令描述。',
     `create_by`   varchar(64)           DEFAULT 'ununited' COMMENT '创建者',
@@ -1625,7 +1726,7 @@ CREATE TABLE `product_commands`
     `update_by`   varchar(64)           DEFAULT '' COMMENT '更新者',
     `update_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
-    KEY `service_id` (`service_id`) USING BTREE
+    KEY           `service_id` (`service_id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 6
   DEFAULT CHARSET = utf8 COMMENT ='产品模型设备服务命令表';
@@ -1642,9 +1743,9 @@ COMMIT;
 DROP TABLE IF EXISTS `product_commands_requests`;
 CREATE TABLE `product_commands_requests`
 (
-    `id`                    bigint(19)   NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `service_id`            bigint(19)   NOT NULL COMMENT '服务ID',
-    `commands_id`           bigint(19)   NOT NULL COMMENT '命令ID',
+    `id`                    bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `service_id`            bigint(19) NOT NULL COMMENT '服务ID',
+    `commands_id`           bigint(19) NOT NULL COMMENT '命令ID',
     `datatype`              varchar(255) NOT NULL COMMENT '指示数据类型。取值范围：string、int、decimal\r\n',
     `enumlist`              varchar(255)          DEFAULT NULL COMMENT '指示枚举值。\r\n如开关状态status可有如下取值\r\n"enumList" : ["OPEN","CLOSE"]\r\n目前本字段是非功能性字段，仅起到描述作用。建议准确定义。\r\n',
     `max`                   varchar(255)          DEFAULT NULL COMMENT '指示最大值。\r\n仅当dataType为int、decimal时生效，逻辑小于等于。',
@@ -1660,8 +1761,8 @@ CREATE TABLE `product_commands_requests`
     `update_by`             varchar(64)           DEFAULT '' COMMENT '更新者',
     `update_time`           datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
-    KEY `commands_id` (`commands_id`) USING BTREE,
-    KEY `service_id` (`service_id`) USING BTREE
+    KEY                     `commands_id` (`commands_id`) USING BTREE,
+    KEY                     `service_id` (`service_id`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8 COMMENT ='产品模型设备下发服务命令属性表';
 
@@ -1677,9 +1778,9 @@ COMMIT;
 DROP TABLE IF EXISTS `product_commands_response`;
 CREATE TABLE `product_commands_response`
 (
-    `id`                    bigint(19)   NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `commands_id`           bigint(19)   NOT NULL COMMENT '命令ID',
-    `service_id`            bigint(19)            DEFAULT NULL COMMENT '服务ID',
+    `id`                    bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `commands_id`           bigint(19) NOT NULL COMMENT '命令ID',
+    `service_id`            bigint(19) DEFAULT NULL COMMENT '服务ID',
     `datatype`              varchar(255) NOT NULL COMMENT '指示数据类型。取值范围：string、int、decimal\r\n',
     `enumlist`              varchar(255)          DEFAULT NULL COMMENT '指示枚举值。\r\n如开关状态status可有如下取值\r\n"enumList" : ["OPEN","CLOSE"]\r\n目前本字段是非功能性字段，仅起到描述作用。建议准确定义。\r\n',
     `max`                   varchar(255)          DEFAULT NULL COMMENT '指示最大值。\r\n仅当dataType为int、decimal时生效，逻辑小于等于。',
@@ -1695,8 +1796,8 @@ CREATE TABLE `product_commands_response`
     `update_by`             varchar(64)           DEFAULT '' COMMENT '更新者',
     `update_time`           datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
-    KEY `commands_id` (`commands_id`) USING BTREE,
-    KEY `service_id` (`service_id`) USING BTREE
+    KEY                     `commands_id` (`commands_id`) USING BTREE,
+    KEY                     `service_id` (`service_id`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8 COMMENT ='产品模型设备响应服务命令属性表';
 
@@ -1712,25 +1813,25 @@ COMMIT;
 DROP TABLE IF EXISTS `product_properties`;
 CREATE TABLE `product_properties`
 (
-    `id`          bigint(19)   NOT NULL AUTO_INCREMENT COMMENT '属性id',
+    `id`          bigint(19) NOT NULL AUTO_INCREMENT COMMENT '属性id',
     `name`        varchar(255) NOT NULL COMMENT '指示属性名称。',
-    `service_id`  bigint(19)   NOT NULL COMMENT '服务ID',
+    `service_id`  bigint(19) NOT NULL COMMENT '服务ID',
     `datatype`    varchar(255) NOT NULL COMMENT '指示数据类型：取值范围：string、int、decimal（float和double都可以使用此类型）、DateTime、jsonObject上报数据时，复杂类型数据格式如下：\r\n•DateTime:yyyyMMdd’T’HHmmss’Z’如:20151212T121212Z•jsonObject：自定义json结构体，平台不理解只透传\r\n',
     `description` varchar(255)          DEFAULT NULL COMMENT '属性描述，不影响实际功能，可配置为空字符串""。',
     `enumlist`    varchar(255)          DEFAULT NULL COMMENT '指示枚举值:如开关状态status可有如下取值"enumList" : ["OPEN","CLOSE"]目前本字段是非功能性字段，仅起到描述作用。建议准确定义。\r\n',
     `max`         varchar(255)          DEFAULT NULL COMMENT '指示最大值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑小于等于。\r\n',
-    `maxlength`   bigint(19)            DEFAULT NULL COMMENT '指示字符串长度。仅当dataType为string、DateTime时生效。\r\n',
+    `maxlength`   bigint(19) DEFAULT NULL COMMENT '指示字符串长度。仅当dataType为string、DateTime时生效。\r\n',
     `method`      varchar(255)          DEFAULT NULL COMMENT '指示访问模式。R:可读；W:可写；E属性值更改时上报数据取值范围：R、RW、RE、RWE\r\n',
     `min`         varchar(255)          DEFAULT NULL COMMENT '指示最小值。支持长度不超过50的数字。仅当dataType为int、decimal时生效，逻辑大于等于。\r\n',
-    `required`    int(2)                DEFAULT NULL COMMENT '指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。(字典值link_product_isRequired：0非必填 1必填)\r\n',
-    `step`        int(9)                DEFAULT NULL COMMENT '指示步长。',
+    `required`    int(2) DEFAULT NULL COMMENT '指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。(字典值link_product_isRequired：0非必填 1必填)\r\n',
+    `step`        int(9) DEFAULT NULL COMMENT '指示步长。',
     `unit`        varchar(255)          DEFAULT NULL COMMENT '指示单位。支持长度不超过50。\r\n取值根据参数确定，如：\r\n•温度单位：“C”或“K”\r\n•百分比单位：“%”\r\n•压强单位：“Pa”或“kPa”\r\n',
     `create_by`   varchar(64)           DEFAULT 'ununited' COMMENT '创建者',
     `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_by`   varchar(64)           DEFAULT '' COMMENT '更新者',
     `update_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
-    KEY `service_id` (`service_id`) USING BTREE COMMENT '服务ID'
+    KEY           `service_id` (`service_id`) USING BTREE COMMENT '服务ID'
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 142
   DEFAULT CHARSET = utf8 COMMENT ='产品模型服务属性表';
@@ -1747,7 +1848,7 @@ COMMIT;
 DROP TABLE IF EXISTS `product_services`;
 CREATE TABLE `product_services`
 (
-    `id`                      bigint(19)   NOT NULL AUTO_INCREMENT COMMENT '服务id',
+    `id`                      bigint(19) NOT NULL AUTO_INCREMENT COMMENT '服务id',
     `service_name`            varchar(255) NOT NULL COMMENT '服务名称:支持英文大小写、数字、下划线和中划线\r\n',
     `template_identification` varchar(100)          DEFAULT NULL COMMENT '产品模版标识',
     `product_identification`  varchar(100)          DEFAULT NULL COMMENT '产品标识',
@@ -1774,7 +1875,7 @@ COMMIT;
 DROP TABLE IF EXISTS `product_template`;
 CREATE TABLE `product_template`
 (
-    `id`                      bigint(19)   NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `id`                      bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
     `app_id`                  varchar(64)  NOT NULL COMMENT '应用ID',
     `template_identification` varchar(100) NOT NULL COMMENT '产品模版标识',
     `template_name`           varchar(255) NOT NULL COMMENT '产品模板名称:自定义，支持中文、英文大小写、数字、下划线和中划线',
@@ -1801,7 +1902,7 @@ COMMIT;
 DROP TABLE IF EXISTS `protocol`;
 CREATE TABLE `protocol`
 (
-    `id`                      bigint(19)   NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `id`                      bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
     `app_id`                  varchar(64)  NOT NULL COMMENT '应用ID',
     `product_identification`  varchar(100) NOT NULL COMMENT '产品标识',
     `protocol_name`           varchar(255)          DEFAULT NULL COMMENT '协议名称',
@@ -1830,7 +1931,8 @@ BEGIN;
 INSERT INTO `protocol` (`id`, `app_id`, `product_identification`, `protocol_name`, `protocol_identification`,
                         `protocol_version`, `protocol_type`, `protocol_voice`, `class_name`, `file_path`, `content`,
                         `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (1, 'thinglinks', '82325a1de5e84ea88f332f3dbc10f6d5', '温湿度产品协议转换', '22', '22', 'MQTT', 'java', '222', '222',
+VALUES (1, 'thinglinks', '82325a1de5e84ea88f332f3dbc10f6d5', '温湿度产品协议转换', '22', '22', 'MQTT', 'java', '222',
+        '222',
         'import com.alibaba.fastjson.JSONArray;\nimport com.alibaba.fastjson.JSONObject;\n\nimport javax.xml.bind.annotation.adapters.HexBinaryAdapter;\nimport java.math.BigInteger;\nimport java.util.Date;\n\npublic class newtest {\n    public static void main(String[] args) throws Exception {\n        String injson = \"\";\n\n        if (args != null && args.length != 0) {\n            injson = args[0];\n        }\n        JSONObject parsejson = JSONObject.parseObject(injson);\n        System.out.println(Convert2SystemJSON(parsejson));\n    }\n    public static String Convert2SystemJSON(JSONObject injsonobj) throws Exception {\n        String hexdata = injsonobj.get(\"data\").toString();\n        byte[] bt = java.util.Base64.getDecoder().decode(hexdata);\n        JSONObject data = hex2wsdjsonobj(bt);\n\n        JSONArray services = new JSONArray();\n        JSONObject server = new JSONObject();\n        server.put(\"serviceId\", \"serdsd123\");\n        server.put(\"data\", data);\n        server.put(\"eventTime\", new Date());\n        services.add(server);\n\n        JSONObject dev = new JSONObject();\n        dev.put(\"deviceId\", injsonobj.get(\"devEui\"));\n        dev.put(\"services\", services);\n        JSONArray devices = new JSONArray();\n        devices.add(dev);\n\n        JSONObject root = new JSONObject();\n        root.put(\"devices\", devices);\n        return root.toJSONString();\n    }\n\n    /**\n     * 十六进制转换成10进制 负数也能转换\n     */\n    public static int hex16convert2(String hex) throws Exception {\n        if (hex.length() != 4) {\n            throw new Exception(\"必须是4个长度\");\n        }\n        int bit1 = Integer.parseInt(hex.substring(0, 1), 16);\n        if (bit1 &lt; 8)\n        {\n            return Integer.parseInt(hex, 16);\n        } else {\n            return new BigInteger(\"FFFF\" + hex, 16).intValue();\n        }\n    }\n\n    /**\n     * 温湿度解码\n     */\n    private static JSONObject hex2wsdjsonobj(byte[] bt) throws Exception {\n        javax.xml.bind.annotation.adapters.HexBinaryAdapter hexBinaryAdapter = new HexBinaryAdapter();\n        JSONObject data = new JSONObject();\n        String temp = hexBinaryAdapter.marshal(new byte[]{bt[2]});\n        String temp2 = hexBinaryAdapter.marshal(new byte[]{bt[3]});\n        String changtemp = change(temp, temp2);\n        data.put(\"temperature\", hex16convert2(changtemp) * 0.01);\n        temp = hexBinaryAdapter.marshal(new byte[]{bt[4]});\n        temp2 = hexBinaryAdapter.marshal(new byte[]{bt[5]});\n        changtemp = change(temp, temp2);\n        data.put(\"humidity\", hex16convert2(changtemp) * 0.01);\n        temp = hexBinaryAdapter.marshal(new byte[]{bt[8]});\n        temp2 = hexBinaryAdapter.marshal(new byte[]{bt[9]});\n        changtemp = change(temp, temp2);\n        data.put(\"battery\", hex16convert2(changtemp));\n        return data;\n    }\n\n    public static String change(String first, String end) {\n        return end + first;\n    }\n}\n',
         '0', 'admin', '2022-07-11 15:55:22', 'admin', '2022-08-17 17:29:02', '温湿度产品协议转换样例');
 INSERT INTO `protocol` (`id`, `app_id`, `product_identification`, `protocol_name`, `protocol_identification`,
@@ -1847,13 +1949,13 @@ COMMIT;
 DROP TABLE IF EXISTS `rule`;
 CREATE TABLE `rule`
 (
-    `id`                  bigint(1)    NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `id`                  bigint(1) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `app_id`              varchar(64)  NOT NULL COMMENT '应用ID',
     `rule_identification` varchar(100) NOT NULL COMMENT '规则标识',
     `rule_name`           varchar(255) NOT NULL COMMENT '规则名称',
-    `job_identification`   varchar(255) NOT NULL COMMENT '任务标识',
+    `job_identification`  varchar(255) NOT NULL COMMENT '任务标识',
     `status`              varchar(10)  NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
-    `triggering`          smallint(20)          DEFAULT NULL COMMENT '触发机制（0:全部，1:任意一个）',
+    `triggering`          smallint(20) DEFAULT NULL COMMENT '触发机制（0:全部，1:任意一个）',
     `remark`              varchar(255)          DEFAULT NULL COMMENT '规则描述，可以为空',
     `create_by`           varchar(64)           DEFAULT NULL COMMENT '创建人',
     `create_time`         datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -1881,16 +1983,16 @@ DROP TABLE IF EXISTS `rule_alarm`;
 CREATE TABLE `rule_alarm`
 (
     `id`                bigint(20) NOT NULL AUTO_INCREMENT COMMENT '规则告警ID',
-    `rule_id`           bigint(20)          DEFAULT NULL COMMENT '规则ID',
-    `rule_alarm_name`   varchar(255)        DEFAULT NULL COMMENT '告警规则名称',
-    `rule_alarm_status` int(10)             DEFAULT NULL COMMENT '告警状态0 未启动  1运行中',
-    `rule_alarm_remark` varchar(255)        DEFAULT NULL COMMENT '告警规则描述',
-    `rule_level`        int(10)             DEFAULT NULL COMMENT '告警级别',
-    `notice_type`       int(10)             DEFAULT NULL COMMENT '通知方式',
-    `create_by`         varchar(64)         DEFAULT NULL COMMENT '创建人',
-    `create_time`       datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_by`         varchar(64)         DEFAULT NULL COMMENT '更新人',
-    `update_time`       datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `rule_id`           bigint(20) DEFAULT NULL COMMENT '规则ID',
+    `rule_alarm_name`   varchar(255)      DEFAULT NULL COMMENT '告警规则名称',
+    `rule_alarm_status` int(10) DEFAULT NULL COMMENT '告警状态0 未启动  1运行中',
+    `rule_alarm_remark` varchar(255)      DEFAULT NULL COMMENT '告警规则描述',
+    `rule_level`        int(10) DEFAULT NULL COMMENT '告警级别',
+    `notice_type`       int(10) DEFAULT NULL COMMENT '通知方式',
+    `create_by`         varchar(64)       DEFAULT NULL COMMENT '创建人',
+    `create_time`       datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by`         varchar(64)       DEFAULT NULL COMMENT '更新人',
+    `update_time`       datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8 COMMENT ='规则告警表';
@@ -1910,9 +2012,9 @@ CREATE TABLE `rule_alarm_list`
     `id`                  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `alarm_time`          datetime     DEFAULT NULL COMMENT '告警时间',
     `alarm_name`          varchar(255) DEFAULT NULL COMMENT '告警名称',
-    `alarm_level`         int(10)      DEFAULT NULL COMMENT '告警级别',
+    `alarm_level`         int(10) DEFAULT NULL COMMENT '告警级别',
     `alarm_describe`      varchar(255) DEFAULT NULL COMMENT '告警描述',
-    `processing_result`   int(10)      DEFAULT NULL COMMENT '处理结果 0 未处理 1已处理',
+    `processing_result`   int(10) DEFAULT NULL COMMENT '处理结果 0 未处理 1已处理',
     `processing_opinions` varchar(255) DEFAULT NULL COMMENT '处理意见',
     `alarm_content`       varchar(500) DEFAULT NULL COMMENT '告警内容',
     `processing_people`   varchar(64)  DEFAULT NULL COMMENT '处理人',
@@ -1933,19 +2035,19 @@ COMMIT;
 DROP TABLE IF EXISTS `rule_conditions`;
 CREATE TABLE `rule_conditions`
 (
-    `id`                     bigint(20)   NOT NULL COMMENT '主键',
-    `rule_id`                bigint(20)   NOT NULL COMMENT '规则ID',
+    `id`                     bigint(20) NOT NULL COMMENT '主键',
+    `rule_id`                bigint(20) NOT NULL COMMENT '规则ID',
     `condition_type`         smallint(20) NOT NULL COMMENT '条件类型(0:匹配设备触发、1:指定设备触发、2:按策略定时触发)',
-    `device_identification`  varchar(2000)         DEFAULT NULL COMMENT '设备标识(匹配设备设备类型存储一个产品下所有的设备标识逗号分隔，指定设备触发存储指定的设备标识)',
-    `product_identification` varchar(100)          DEFAULT NULL COMMENT '产品标识',
-    `service_id`             bigint(20)            DEFAULT NULL COMMENT '服务ID',
-    `properties_id`          bigint(20)            DEFAULT NULL COMMENT '属性ID',
-    `comparison_mode`        varchar(255)          DEFAULT NULL COMMENT '比较模式\r\n<\r\n<=\r\n>\r\n>=\r\n==\r\n!=\r\nin\r\nbetween',
-    `comparison_value`       varchar(255)          DEFAULT NULL COMMENT '比较值\r\n\r\nbetween类型传值例子  [10,15] 必须是两位，且数字不能重复\r\n判断数据是否处于一个离散的取值范围内，例如输入[1,2,3,4]，取值范围是1、2、3、4四个值，如果比较值类型为float(double)，两个float（double）型数值相差在0.000001范围内即为相等',
-    `create_by`              varchar(64)           DEFAULT NULL COMMENT '创建人',
-    `create_time`            datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_by`              varchar(64)           DEFAULT NULL COMMENT '更新人',
-    `update_time`            datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `device_identification`  varchar(2000)     DEFAULT NULL COMMENT '设备标识(匹配设备设备类型存储一个产品下所有的设备标识逗号分隔，指定设备触发存储指定的设备标识)',
+    `product_identification` varchar(100)      DEFAULT NULL COMMENT '产品标识',
+    `service_id`             bigint(20) DEFAULT NULL COMMENT '服务ID',
+    `properties_id`          bigint(20) DEFAULT NULL COMMENT '属性ID',
+    `comparison_mode`        varchar(255)      DEFAULT NULL COMMENT '比较模式\r\n<\r\n<=\r\n>\r\n>=\r\n==\r\n!=\r\nin\r\nbetween',
+    `comparison_value`       varchar(255)      DEFAULT NULL COMMENT '比较值\r\n\r\nbetween类型传值例子  [10,15] 必须是两位，且数字不能重复\r\n判断数据是否处于一个离散的取值范围内，例如输入[1,2,3,4]，取值范围是1、2、3、4四个值，如果比较值类型为float(double)，两个float（double）型数值相差在0.000001范围内即为相等',
+    `create_by`              varchar(64)       DEFAULT NULL COMMENT '创建人',
+    `create_time`            datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by`              varchar(64)       DEFAULT NULL COMMENT '更新人',
+    `update_time`            datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8 COMMENT ='规则条件表';
@@ -1989,7 +2091,8 @@ CREATE TABLE `sys_config`
 BEGIN;
 INSERT INTO `sys_config` (`config_id`, `config_name`, `config_key`, `config_value`, `config_type`, `create_by`,
                           `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (1, '主框架页-默认皮肤样式名称', 'sys.index.skinName', 'skin-green', 'Y', 'admin', '2021-09-17 18:40:14', 'admin',
+VALUES (1, '主框架页-默认皮肤样式名称', 'sys.index.skinName', 'skin-green', 'Y', 'admin', '2021-09-17 18:40:14',
+        'admin',
         '2022-10-14 17:53:03', '蓝色 skin-blue、绿色 skin-green、紫色 skin-purple、红色 skin-red、黄色 skin-yellow');
 INSERT INTO `sys_config` (`config_id`, `config_name`, `config_key`, `config_value`, `config_type`, `create_by`,
                           `create_time`, `update_by`, `update_time`, `remark`)
@@ -2001,7 +2104,8 @@ VALUES (3, '主框架页-侧边栏主题', 'sys.index.sideTheme', 'theme-dark', 
         '2022-11-18 13:51:15', '深色主题theme-dark，浅色主题theme-light');
 INSERT INTO `sys_config` (`config_id`, `config_name`, `config_key`, `config_value`, `config_type`, `create_by`,
                           `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (4, '账号自助-是否开启用户注册功能', 'sys.account.registerUser', 'false', 'Y', 'admin', '2021-09-17 18:40:14', '',
+VALUES (4, '账号自助-是否开启用户注册功能', 'sys.account.registerUser', 'false', 'Y', 'admin', '2021-09-17 18:40:14',
+        '',
         '2022-11-18 13:51:20', '是否开启注册用户功能（true开启，false关闭）');
 COMMIT;
 
@@ -2012,19 +2116,19 @@ DROP TABLE IF EXISTS `sys_dept`;
 CREATE TABLE `sys_dept`
 (
     `dept_id`     bigint(20) NOT NULL AUTO_INCREMENT COMMENT '部门id',
-    `parent_id`   bigint(20)          DEFAULT '0' COMMENT '父部门id',
-    `ancestors`   varchar(50)         DEFAULT '' COMMENT '祖级列表',
-    `dept_name`   varchar(30)         DEFAULT '' COMMENT '部门名称',
-    `order_num`   int(4)              DEFAULT '0' COMMENT '显示顺序',
-    `leader`      varchar(20)         DEFAULT NULL COMMENT '负责人',
-    `phone`       varchar(11)         DEFAULT NULL COMMENT '联系电话',
-    `email`       varchar(50)         DEFAULT NULL COMMENT '邮箱',
-    `status`      char(1)             DEFAULT '0' COMMENT '部门状态（0正常 1停用）',
-    `del_flag`    char(1)             DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
-    `create_by`   varchar(64)         DEFAULT '' COMMENT '创建者',
-    `create_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_by`   varchar(64)         DEFAULT '' COMMENT '更新者',
-    `update_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `parent_id`   bigint(20) DEFAULT '0' COMMENT '父部门id',
+    `ancestors`   varchar(50)       DEFAULT '' COMMENT '祖级列表',
+    `dept_name`   varchar(30)       DEFAULT '' COMMENT '部门名称',
+    `order_num`   int(4) DEFAULT '0' COMMENT '显示顺序',
+    `leader`      varchar(20)       DEFAULT NULL COMMENT '负责人',
+    `phone`       varchar(11)       DEFAULT NULL COMMENT '联系电话',
+    `email`       varchar(50)       DEFAULT NULL COMMENT '邮箱',
+    `status`      char(1)           DEFAULT '0' COMMENT '部门状态（0正常 1停用）',
+    `del_flag`    char(1)           DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+    `create_by`   varchar(64)       DEFAULT '' COMMENT '创建者',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by`   varchar(64)       DEFAULT '' COMMENT '更新者',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`dept_id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 110
@@ -2041,39 +2145,48 @@ VALUES (100, 0, '0', 'mqttsnet', 0, 'thinglinks', '15888888888', 'mqttsnet@163.c
         '2021-09-17 18:39:56', 'thinglinks', '2022-01-03 11:45:55');
 INSERT INTO `sys_dept` (`dept_id`, `parent_id`, `ancestors`, `dept_name`, `order_num`, `leader`, `phone`, `email`,
                         `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
-VALUES (101, 100, '0,100', '深圳总公司', 1, 'mqtts', '15888888888', 'ry@qq.com', '0', '0', 'admin', '2021-09-17 18:39:56',
+VALUES (101, 100, '0,100', '深圳总公司', 1, 'mqtts', '15888888888', 'ry@qq.com', '0', '0', 'admin',
+        '2021-09-17 18:39:56',
         '', '2022-01-03 11:45:55');
 INSERT INTO `sys_dept` (`dept_id`, `parent_id`, `ancestors`, `dept_name`, `order_num`, `leader`, `phone`, `email`,
                         `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
-VALUES (102, 100, '0,100', '长沙分公司', 2, 'mqtts', '15888888888', 'ry@qq.com', '0', '2', 'admin', '2021-09-17 18:39:56',
+VALUES (102, 100, '0,100', '长沙分公司', 2, 'mqtts', '15888888888', 'ry@qq.com', '0', '2', 'admin',
+        '2021-09-17 18:39:56',
         '', '2022-01-03 11:45:55');
 INSERT INTO `sys_dept` (`dept_id`, `parent_id`, `ancestors`, `dept_name`, `order_num`, `leader`, `phone`, `email`,
                         `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
-VALUES (103, 101, '0,100,101', '研发部门', 1, 'mqtts', '15888888888', 'ry@qq.com', '0', '0', 'admin', '2021-09-17 18:39:56',
+VALUES (103, 101, '0,100,101', '研发部门', 1, 'mqtts', '15888888888', 'ry@qq.com', '0', '0', 'admin',
+        '2021-09-17 18:39:56',
         '', '2022-01-03 11:45:55');
 INSERT INTO `sys_dept` (`dept_id`, `parent_id`, `ancestors`, `dept_name`, `order_num`, `leader`, `phone`, `email`,
                         `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
-VALUES (104, 101, '0,100,101', '市场部门', 2, 'mqtts', '15888888888', 'ry@qq.com', '0', '0', 'admin', '2021-09-17 18:39:57',
+VALUES (104, 101, '0,100,101', '市场部门', 2, 'mqtts', '15888888888', 'ry@qq.com', '0', '0', 'admin',
+        '2021-09-17 18:39:57',
         '', '2022-01-03 11:45:55');
 INSERT INTO `sys_dept` (`dept_id`, `parent_id`, `ancestors`, `dept_name`, `order_num`, `leader`, `phone`, `email`,
                         `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
-VALUES (105, 101, '0,100,101', '测试部门', 3, 'mqtts', '15888888888', 'ry@qq.com', '0', '0', 'admin', '2021-09-17 18:39:57',
+VALUES (105, 101, '0,100,101', '测试部门', 3, 'mqtts', '15888888888', 'ry@qq.com', '0', '0', 'admin',
+        '2021-09-17 18:39:57',
         '', '2022-01-03 11:45:55');
 INSERT INTO `sys_dept` (`dept_id`, `parent_id`, `ancestors`, `dept_name`, `order_num`, `leader`, `phone`, `email`,
                         `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
-VALUES (106, 101, '0,100,101', '财务部门', 4, 'mqtts', '15888888888', 'ry@qq.com', '0', '2', 'admin', '2021-09-17 18:39:57',
+VALUES (106, 101, '0,100,101', '财务部门', 4, 'mqtts', '15888888888', 'ry@qq.com', '0', '2', 'admin',
+        '2021-09-17 18:39:57',
         '', '2022-01-03 11:45:55');
 INSERT INTO `sys_dept` (`dept_id`, `parent_id`, `ancestors`, `dept_name`, `order_num`, `leader`, `phone`, `email`,
                         `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
-VALUES (107, 101, '0,100,101', '运维部门', 5, 'mqtts', '15888888888', 'ry@qq.com', '0', '2', 'admin', '2021-09-17 18:39:57',
+VALUES (107, 101, '0,100,101', '运维部门', 5, 'mqtts', '15888888888', 'ry@qq.com', '0', '2', 'admin',
+        '2021-09-17 18:39:57',
         '', '2022-01-03 11:45:55');
 INSERT INTO `sys_dept` (`dept_id`, `parent_id`, `ancestors`, `dept_name`, `order_num`, `leader`, `phone`, `email`,
                         `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
-VALUES (108, 102, '0,100,102', '市场部门', 1, 'mqtts', '15888888888', 'ry@qq.com', '0', '2', 'admin', '2021-09-17 18:39:57',
+VALUES (108, 102, '0,100,102', '市场部门', 1, 'mqtts', '15888888888', 'ry@qq.com', '0', '2', 'admin',
+        '2021-09-17 18:39:57',
         '', '2022-01-03 11:45:55');
 INSERT INTO `sys_dept` (`dept_id`, `parent_id`, `ancestors`, `dept_name`, `order_num`, `leader`, `phone`, `email`,
                         `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
-VALUES (109, 102, '0,100,102', '财务部门', 2, 'mqtts', '15888888888', 'ry@qq.com', '0', '2', 'admin', '2021-09-17 18:39:57',
+VALUES (109, 102, '0,100,102', '财务部门', 2, 'mqtts', '15888888888', 'ry@qq.com', '0', '2', 'admin',
+        '2021-09-17 18:39:57',
         '', '2022-01-03 11:45:55');
 COMMIT;
 
@@ -2084,19 +2197,19 @@ DROP TABLE IF EXISTS `sys_dict_data`;
 CREATE TABLE `sys_dict_data`
 (
     `dict_code`   bigint(20) NOT NULL AUTO_INCREMENT COMMENT '字典编码',
-    `dict_sort`   int(4)              DEFAULT '0' COMMENT '字典排序',
-    `dict_label`  varchar(100)        DEFAULT '' COMMENT '字典标签',
-    `dict_value`  varchar(100)        DEFAULT '' COMMENT '字典键值',
-    `dict_type`   varchar(100)        DEFAULT '' COMMENT '字典类型',
-    `css_class`   varchar(100)        DEFAULT NULL COMMENT '样式属性（其他样式扩展）',
-    `list_class`  varchar(100)        DEFAULT NULL COMMENT '表格回显样式',
-    `is_default`  char(1)             DEFAULT 'N' COMMENT '是否默认（Y是 N否）',
-    `status`      char(1)             DEFAULT '0' COMMENT '状态（0正常 1停用）',
-    `create_by`   varchar(64)         DEFAULT '' COMMENT '创建者',
-    `create_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_by`   varchar(64)         DEFAULT '' COMMENT '更新者',
-    `update_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `remark`      varchar(500)        DEFAULT NULL COMMENT '备注',
+    `dict_sort`   int(4) DEFAULT '0' COMMENT '字典排序',
+    `dict_label`  varchar(100)      DEFAULT '' COMMENT '字典标签',
+    `dict_value`  varchar(100)      DEFAULT '' COMMENT '字典键值',
+    `dict_type`   varchar(100)      DEFAULT '' COMMENT '字典类型',
+    `css_class`   varchar(100)      DEFAULT NULL COMMENT '样式属性（其他样式扩展）',
+    `list_class`  varchar(100)      DEFAULT NULL COMMENT '表格回显样式',
+    `is_default`  char(1)           DEFAULT 'N' COMMENT '是否默认（Y是 N否）',
+    `status`      char(1)           DEFAULT '0' COMMENT '状态（0正常 1停用）',
+    `create_by`   varchar(64)       DEFAULT '' COMMENT '创建者',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by`   varchar(64)       DEFAULT '' COMMENT '更新者',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `remark`      varchar(500)      DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`dict_code`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 76
@@ -2250,7 +2363,8 @@ VALUES (28, 2, '失败', '1', 'sys_common_status', '', 'danger', 'N', '0', 'admi
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (29, 0, '默认', 'default', 'link_device_auth_mode', NULL, 'default', 'N', '0', 'admin', '2021-10-21 17:56:52', '',
+VALUES (29, 0, '默认', 'default', 'link_device_auth_mode', NULL, 'default', 'N', '0', 'admin', '2021-10-21 17:56:52',
+        '',
         '2021-09-17 18:40:13', '设备用户名+设备密码');
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
@@ -2265,12 +2379,14 @@ VALUES (31, 0, '127.0.0.1:11883', '127.0.0.1:11883', 'link_device_connector', NU
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (32, 0, '启用', 'ENABLE', 'link_device_status', NULL, 'success', 'N', '0', 'admin', '2021-10-22 16:28:13', 'admin',
+VALUES (32, 0, '启用', 'ENABLE', 'link_device_status', NULL, 'success', 'N', '0', 'admin', '2021-10-22 16:28:13',
+        'admin',
         '2021-09-17 18:40:13', '设备启用');
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (33, 1, '禁用', 'DISABLE', 'link_device_status', NULL, 'danger', 'N', '0', 'admin', '2021-10-22 16:28:31', 'admin',
+VALUES (33, 1, '禁用', 'DISABLE', 'link_device_status', NULL, 'danger', 'N', '0', 'admin', '2021-10-22 16:28:31',
+        'admin',
         '2021-09-17 18:40:13', '设备禁用');
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
@@ -2320,12 +2436,14 @@ VALUES (42, 3, 'http', 'HTTP', 'link_device_protocol_type', NULL, 'default', 'N'
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (43, 0, '普通设备', 'COMMON', 'link_device_device_type', NULL, 'default', 'N', '0', 'admin', '2021-10-22 16:57:26',
+VALUES (43, 0, '普通设备', 'COMMON', 'link_device_device_type', NULL, 'default', 'N', '0', 'admin',
+        '2021-10-22 16:57:26',
         'mqtts', '2021-09-17 18:40:13', '普通设备（无子设备也无父设备）');
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (44, 1, '网关设备', 'GATEWAY', 'link_device_device_type', NULL, 'default', 'N', '0', 'admin', '2021-10-22 16:57:44',
+VALUES (44, 1, '网关设备', 'GATEWAY', 'link_device_device_type', NULL, 'default', 'N', '0', 'admin',
+        '2021-10-22 16:57:44',
         'mqtts', '2021-09-17 18:40:13', '网关设备(可挂载子设备)');
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
@@ -2365,7 +2483,8 @@ VALUES (52, 0, '必填', '1', 'link_product_isRequired', NULL, 'default', 'N', '
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (53, 0, '允许', 'allow', 'link_casbinRule_v3', NULL, 'success', 'N', '0', 'admin', '2022-06-16 18:03:46', 'admin',
+VALUES (53, 0, '允许', 'allow', 'link_casbinRule_v3', NULL, 'success', 'N', '0', 'admin', '2022-06-16 18:03:46',
+        'admin',
         '2021-09-17 18:40:13', NULL);
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
@@ -2380,12 +2499,14 @@ VALUES (57, 0, '发布', 'PUBLISH', 'link_casbinRule_v2', NULL, 'primary', 'N', 
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (58, 0, '订阅', 'SUBSCRIBE', 'link_casbinRule_v2', NULL, 'info', 'N', '0', 'admin', '2022-06-16 18:21:09', 'admin',
+VALUES (58, 0, '订阅', 'SUBSCRIBE', 'link_casbinRule_v2', NULL, 'info', 'N', '0', 'admin', '2022-06-16 18:21:09',
+        'admin',
         '2021-09-17 18:40:13', '订阅动作');
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (59, 0, '上线', 'ONLINE', 'link_device_action_type', NULL, 'success', 'N', '0', 'admin', '2022-06-17 17:45:24', '',
+VALUES (59, 0, '上线', 'ONLINE', 'link_device_action_type', NULL, 'success', 'N', '0', 'admin', '2022-06-17 17:45:24',
+        '',
         '2021-09-17 18:40:13', NULL);
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
@@ -2455,7 +2576,8 @@ VALUES (72, 0, 'java', 'java', 'link_protocol_voice', NULL, 'default', 'N', '0',
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (73, 3, '协议管理', 'PROTOCOL', 'sys_job_group', NULL, 'default', 'N', '0', 'admin', '2022-07-11 15:48:55', 'admin',
+VALUES (73, 3, '协议管理', 'PROTOCOL', 'sys_job_group', NULL, 'default', 'N', '0', 'admin', '2022-07-11 15:48:55',
+        'admin',
         '2021-09-17 18:40:13', '协议管理');
 INSERT INTO `sys_dict_data` (`dict_code`, `dict_sort`, `dict_label`, `dict_value`, `dict_type`, `css_class`,
                              `list_class`, `is_default`, `status`, `create_by`, `create_time`, `update_by`,
@@ -2533,7 +2655,8 @@ INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `cre
 VALUES (12, '设备连接实例', 'link_device_connector', '0', 'admin', '2021-10-21 18:10:18', '', NULL, '设备连接实例');
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (13, '设备状态', 'link_device_status', '0', 'admin', '2021-10-22 16:27:28', 'mqtts', '2021-10-25 15:48:58', '设备状态');
+VALUES (13, '设备状态', 'link_device_status', '0', 'admin', '2021-10-22 16:27:28', 'mqtts', '2021-10-25 15:48:58',
+        '设备状态');
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
 VALUES (14, '连接状态', 'link_device_connect_status', '0', 'admin', '2021-10-22 16:35:11', '', NULL, '设备连接状态\n');
@@ -2554,7 +2677,8 @@ VALUES (18, '集成应用类型', 'link_application_type', '0', 'thinglinks', '2
         '2021-12-28 13:42:28', '集成应用');
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (19, '产品设备类型', 'link_product_device_type', '0', 'admin', '2022-02-09 16:50:14', 'admin', '2022-02-09 17:53:25',
+VALUES (19, '产品设备类型', 'link_product_device_type', '0', 'admin', '2022-02-09 16:50:14', 'admin',
+        '2022-02-09 17:53:25',
         '产品设备类型，支持英文大小写、数字、下划线和中划线');
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
@@ -2565,7 +2689,8 @@ INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `cre
 VALUES (21, '是否必填', 'link_product_isRequired', '0', 'admin', '2022-03-25 15:39:40', '', NULL, NULL);
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (22, 'CAS策略类型', 'link_casbinRule_v3', '0', 'admin', '2022-06-16 18:02:31', '', NULL, 'CAS策略类型：允许||拒绝');
+VALUES (22, 'CAS策略类型', 'link_casbinRule_v3', '0', 'admin', '2022-06-16 18:02:31', '', NULL,
+        'CAS策略类型：允许||拒绝');
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
 VALUES (23, 'CAS策略动作', 'link_casbinRule_v2', '0', 'admin', '2022-06-16 18:11:05', '', NULL, '认证动作');
@@ -2574,13 +2699,16 @@ INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `cre
 VALUES (24, '设备动作类型', 'link_device_action_type', '0', 'admin', '2022-06-17 17:43:34', '', NULL, NULL);
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (25, '设备影子状态', 'link_deviceInfo_shadow_enable', '0', 'admin', '2022-06-21 11:27:39', '', NULL, '是否支设备影子');
+VALUES (25, '设备影子状态', 'link_deviceInfo_shadow_enable', '0', 'admin', '2022-06-21 11:27:39', '', NULL,
+        '是否支设备影子');
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (26, '业务数据状态', 'business_data_status', '0', 'admin', '2022-06-21 14:25:45', '', NULL, '业务数据状态标识（0启用  1停用）');
+VALUES (26, '业务数据状态', 'business_data_status', '0', 'admin', '2022-06-21 14:25:45', '', NULL,
+        '业务数据状态标识（0启用  1停用）');
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
-VALUES (27, '指示数据类型', 'link_product_datatype', '0', 'admin', '2022-06-24 18:41:39', '', NULL, '产品模型指示数据类型');
+VALUES (27, '指示数据类型', 'link_product_datatype', '0', 'admin', '2022-06-24 18:41:39', '', NULL,
+        '产品模型指示数据类型');
 INSERT INTO `sys_dict_type` (`dict_id`, `dict_name`, `dict_type`, `status`, `create_by`, `create_time`, `update_by`,
                              `update_time`, `remark`)
 VALUES (28, '协议语言', 'link_protocol_voice', '0', 'admin', '2022-07-04 11:16:20', 'admin', '2022-07-04 17:09:29',
@@ -2593,7 +2721,7 @@ COMMIT;
 DROP TABLE IF EXISTS `sys_job`;
 CREATE TABLE `sys_job`
 (
-    `job_id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '任务ID',
+    `job_id`          bigint(20) NOT NULL AUTO_INCREMENT COMMENT '任务ID',
     `job_name`        varchar(64)  NOT NULL DEFAULT '' COMMENT '任务名称',
     `job_group`       varchar(64)  NOT NULL DEFAULT 'DEFAULT' COMMENT '任务组名',
     `invoke_target`   varchar(500) NOT NULL COMMENT '调用目标字符串',
@@ -2618,7 +2746,8 @@ CREATE TABLE `sys_job`
 BEGIN;
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`,
                        `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (1, '系统默认（无参）', 'DEFAULT', 'ryTask.ryNoParams', '0/10 * * * * ?', '3', '1', '1', 'admin', '2021-09-17 18:40:15',
+VALUES (1, '系统默认（无参）', 'DEFAULT', 'ryTask.ryNoParams', '0/10 * * * * ?', '3', '1', '1', 'admin',
+        '2021-09-17 18:40:15',
         'mqtts', '2021-10-25 03:09:23', '');
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`,
                        `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
@@ -2626,11 +2755,13 @@ VALUES (2, '系统默认（有参）', 'DEFAULT', 'ryTask.ryParams(\'ry\')', '0/
         '2021-09-17 18:40:15', '', '2022-11-23 13:54:34', '');
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`,
                        `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (3, '系统默认（多参）', 'DEFAULT', 'ryTask.ryMultipleParams(\'ry\', true, 2000L, 316.50D, 100)', '0/20 * * * * ?', '3',
+VALUES (3, '系统默认（多参）', 'DEFAULT', 'ryTask.ryMultipleParams(\'ry\', true, 2000L, 316.50D, 100)', '0/20 * * * * ?',
+        '3',
         '1', '1', 'admin', '2021-09-17 18:40:15', '', '2022-11-18 13:54:40', '');
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`,
                        `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (4, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask', '0/5 0 0/23 * * ?', '2', '1',
+VALUES (4, '协议脚本缓存刷新定时任务', 'PROTOCOL', 'linkProtocolTask.protocolScriptCacheRefreshTask',
+        '0/5 0 0/23 * * ?', '2', '1',
         '1', 'admin', '2022-07-11 15:50:49', 'admin', '2022-07-29 14:35:06', '');
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`,
                        `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
@@ -2642,7 +2773,8 @@ VALUES (6, '测试2', 'RULE_TRIGGER', 'ruleConditionsTask.parsingRuleConditions2
         'admin', '2022-07-19 15:21:48', 'admin', '2022-08-26 09:38:12', '');
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`,
                        `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (7, '刷新子设备数据模型', 'LINK_DEVICE', 'linkDeviceInfoTask.refreshDeviceInfoDataModel(\'\')', '0 0 0/12 * * ?', '1',
+VALUES (7, '刷新子设备数据模型', 'LINK_DEVICE', 'linkDeviceInfoTask.refreshDeviceInfoDataModel(\'\')', '0 0 0/12 * * ?',
+        '1',
         '1', '1', 'admin', '2022-07-29 14:38:01', 'admin', '2022-07-29 16:09:15', '');
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`,
                        `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
@@ -2654,7 +2786,8 @@ VALUES (9, '测试4', 'RULE_TRIGGER', 'ryTask.ryParams(\'4\')', '0/2 * * * * ?',
         '2022-08-25 14:09:27', 'admin', '2022-08-25 14:15:49', '');
 INSERT INTO `sys_job` (`job_id`, `job_name`, `job_group`, `invoke_target`, `cron_expression`, `misfire_policy`,
                        `concurrent`, `status`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`)
-VALUES (10, '哈哈', 'RULE_TRIGGER', 'ruleConditionsTask.parsingRuleConditions(\'rule-001\')', '0/2 0/2 * * * ?', '1', '0',
+VALUES (10, '哈哈', 'RULE_TRIGGER', 'ruleConditionsTask.parsingRuleConditions(\'rule-001\')', '0/2 0/2 * * * ?', '1',
+        '0',
         '0', 'admin', '2022-10-28 16:46:14', 'admin', '2022-11-04 18:22:57', '');
 COMMIT;
 
@@ -2664,7 +2797,7 @@ COMMIT;
 DROP TABLE IF EXISTS `sys_job_log`;
 CREATE TABLE `sys_job_log`
 (
-    `job_log_id`     bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '任务日志ID',
+    `job_log_id`     bigint(20) NOT NULL AUTO_INCREMENT COMMENT '任务日志ID',
     `job_name`       varchar(64)  NOT NULL COMMENT '任务名称',
     `job_group`      varchar(64)  NOT NULL COMMENT '任务组名',
     `invoke_target`  varchar(500) NOT NULL COMMENT '调用目标字符串',
@@ -2691,11 +2824,11 @@ DROP TABLE IF EXISTS `sys_logininfor`;
 CREATE TABLE `sys_logininfor`
 (
     `info_id`     bigint(20) NOT NULL AUTO_INCREMENT COMMENT '访问ID',
-    `user_name`   varchar(50)         DEFAULT '' COMMENT '用户账号',
-    `ipaddr`      varchar(128)        DEFAULT '' COMMENT '登录IP地址',
-    `status`      char(1)             DEFAULT '0' COMMENT '登录状态（0成功 1失败）',
-    `msg`         varchar(255)        DEFAULT '' COMMENT '提示信息',
-    `access_time` datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '访问时间',
+    `user_name`   varchar(50)       DEFAULT '' COMMENT '用户账号',
+    `ipaddr`      varchar(128)      DEFAULT '' COMMENT '登录IP地址',
+    `status`      char(1)           DEFAULT '0' COMMENT '登录状态（0成功 1失败）',
+    `msg`         varchar(255)      DEFAULT '' COMMENT '提示信息',
+    `access_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '访问时间',
     PRIMARY KEY (`info_id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 322
@@ -2714,15 +2847,15 @@ COMMIT;
 DROP TABLE IF EXISTS `sys_menu`;
 CREATE TABLE `sys_menu`
 (
-    `menu_id`     bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
+    `menu_id`     bigint(20) NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
     `menu_name`   varchar(50) NOT NULL COMMENT '菜单名称',
-    `parent_id`   bigint(20)   DEFAULT '0' COMMENT '父菜单ID',
-    `order_num`   int(4)       DEFAULT '0' COMMENT '显示顺序',
+    `parent_id`   bigint(20) DEFAULT '0' COMMENT '父菜单ID',
+    `order_num`   int(4) DEFAULT '0' COMMENT '显示顺序',
     `path`        varchar(200) DEFAULT '' COMMENT '路由地址',
     `component`   varchar(255) DEFAULT NULL COMMENT '组件路径',
     `query`       varchar(255) DEFAULT NULL COMMENT '路由参数',
-    `is_frame`    int(1)       DEFAULT '1' COMMENT '是否为外链（0是 1否）',
-    `is_cache`    int(1)       DEFAULT '0' COMMENT '是否缓存（0缓存 1不缓存）',
+    `is_frame`    int(1) DEFAULT '1' COMMENT '是否为外链（0是 1否）',
+    `is_cache`    int(1) DEFAULT '0' COMMENT '是否缓存（0缓存 1不缓存）',
     `menu_type`   char(1)      DEFAULT '' COMMENT '菜单类型（M目录 C菜单 F按钮）',
     `visible`     char(1)      DEFAULT '0' COMMENT '菜单状态（0显示 1隐藏）',
     `status`      char(1)      DEFAULT '0' COMMENT '菜单状态（0正常 1停用）',
@@ -2751,7 +2884,8 @@ VALUES (1, '系统管理', 0, 1, 'system', NULL, '', 1, 0, 'M', '0', '0', '', 's
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (2, '系统监控', 0, 2, 'monitor', NULL, '', 1, 0, 'M', '0', '0', '', 'monitor', 'admin', '2021-09-17 18:39:58', '',
+VALUES (2, '系统监控', 0, 2, 'monitor', NULL, '', 1, 0, 'M', '0', '0', '', 'monitor', 'admin', '2021-09-17 18:39:58',
+        '',
         '2022-10-28 17:46:29', '系统监控目录');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2761,17 +2895,20 @@ VALUES (3, '系统工具', 0, 3, 'tool', NULL, '', 1, 0, 'M', '0', '0', '', 'too
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (4, 'ThingLinks官网', 0, 8, 'http://thinglinks.mqttsnet.com', NULL, '', 0, 0, 'M', '0', '1', '', 'guide', 'admin',
+VALUES (4, 'ThingLinks官网', 0, 8, 'http://thinglinks.mqttsnet.com', NULL, '', 0, 0, 'M', '0', '1', '', 'guide',
+        'admin',
         '2021-09-17 18:39:59', 'admin', '2022-10-28 17:46:29', 'mqtts官网地址');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (100, '用户管理', 1, 1, 'user', 'system/user/index', '', 1, 0, 'C', '0', '0', 'system:user:list', 'user', 'admin',
+VALUES (100, '用户管理', 1, 1, 'user', 'system/user/index', '', 1, 0, 'C', '0', '0', 'system:user:list', 'user',
+        'admin',
         '2021-09-17 18:39:59', '', '2022-10-28 17:46:29', '用户管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (101, '角色管理', 1, 2, 'role', 'system/role/index', '', 1, 0, 'C', '0', '0', 'system:role:list', 'peoples', 'admin',
+VALUES (101, '角色管理', 1, 2, 'role', 'system/role/index', '', 1, 0, 'C', '0', '0', 'system:role:list', 'peoples',
+        'admin',
         '2021-09-17 18:39:59', '', '2022-10-28 17:46:29', '角色管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2781,17 +2918,20 @@ VALUES (102, '菜单管理', 1, 3, 'menu', 'system/menu/index', '', 1, 0, 'C', '
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (103, '部门管理', 1, 4, 'dept', 'system/dept/index', '', 1, 0, 'C', '0', '0', 'system:dept:list', 'tree', 'admin',
+VALUES (103, '部门管理', 1, 4, 'dept', 'system/dept/index', '', 1, 0, 'C', '0', '0', 'system:dept:list', 'tree',
+        'admin',
         '2021-09-17 18:39:59', '', '2022-10-28 17:46:29', '部门管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (104, '岗位管理', 1, 5, 'post', 'system/post/index', '', 1, 0, 'C', '0', '0', 'system:post:list', 'post', 'admin',
+VALUES (104, '岗位管理', 1, 5, 'post', 'system/post/index', '', 1, 0, 'C', '0', '0', 'system:post:list', 'post',
+        'admin',
         '2021-09-17 18:39:59', '', '2022-10-28 17:46:29', '岗位管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (105, '字典管理', 1, 6, 'dict', 'system/dict/index', '', 1, 0, 'C', '0', '0', 'system:dict:list', 'dict', 'admin',
+VALUES (105, '字典管理', 1, 6, 'dict', 'system/dict/index', '', 1, 0, 'C', '0', '0', 'system:dict:list', 'dict',
+        'admin',
         '2021-09-17 18:39:59', '', '2022-10-28 17:46:29', '字典管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2801,7 +2941,8 @@ VALUES (106, '参数设置', 1, 7, 'config', 'system/config/index', '', 1, 0, 'C
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (107, '通知公告', 1, 8, 'notice', 'system/notice/index', '', 1, 0, 'C', '0', '0', 'system:notice:list', 'message',
+VALUES (107, '通知公告', 1, 8, 'notice', 'system/notice/index', '', 1, 0, 'C', '0', '0', 'system:notice:list',
+        'message',
         'admin', '2021-09-17 18:39:59', '', '2022-10-28 17:46:29', '通知公告菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2811,7 +2952,8 @@ VALUES (108, '日志管理', 1, 9, 'log', '', '', 1, 0, 'M', '0', '0', '', 'log'
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (109, '在线用户', 2, 1, 'online', 'monitor/online/index', '', 1, 0, 'C', '0', '0', 'monitor:online:list', 'online',
+VALUES (109, '在线用户', 2, 1, 'online', 'monitor/online/index', '', 1, 0, 'C', '0', '0', 'monitor:online:list',
+        'online',
         'admin', '2021-09-17 18:39:59', '', '2022-10-28 17:46:29', '在线用户菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2836,7 +2978,8 @@ VALUES (113, 'Admin控制台', 2, 5, 'http://localhost:19400/login', '', '', 0, 
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (114, '表单构建', 3, 1, 'build', 'tool/build/index', '', 1, 0, 'C', '0', '0', 'tool:build:list', 'build', 'admin',
+VALUES (114, '表单构建', 3, 1, 'build', 'tool/build/index', '', 1, 0, 'C', '0', '0', 'tool:build:list', 'build',
+        'admin',
         '2021-09-17 18:39:59', '', '2022-10-28 17:46:29', '表单构建菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2851,27 +2994,32 @@ VALUES (116, '系统接口', 3, 3, 'http://localhost:8080/swagger-ui/index.html'
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (500, '操作日志', 108, 1, 'operlog', 'system/operlog/index', '', 1, 0, 'C', '0', '0', 'system:operlog:list', 'form',
+VALUES (500, '操作日志', 108, 1, 'operlog', 'system/operlog/index', '', 1, 0, 'C', '0', '0', 'system:operlog:list',
+        'form',
         'admin', '2021-09-17 18:40:00', '', '2022-10-28 17:46:29', '操作日志菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (501, '登录日志', 108, 2, 'logininfor', 'system/logininfor/index', '', 1, 0, 'C', '0', '0', 'system:logininfor:list',
+VALUES (501, '登录日志', 108, 2, 'logininfor', 'system/logininfor/index', '', 1, 0, 'C', '0', '0',
+        'system:logininfor:list',
         'logininfor', 'admin', '2021-09-17 18:40:00', '', '2022-10-28 17:46:29', '登录日志菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1001, '用户查询', 100, 1, '', '', '', 1, 0, 'F', '0', '0', 'system:user:query', '#', 'admin', '2021-09-17 18:40:00',
+VALUES (1001, '用户查询', 100, 1, '', '', '', 1, 0, 'F', '0', '0', 'system:user:query', '#', 'admin',
+        '2021-09-17 18:40:00',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1002, '用户新增', 100, 2, '', '', '', 1, 0, 'F', '0', '0', 'system:user:add', '#', 'admin', '2021-09-17 18:40:00',
+VALUES (1002, '用户新增', 100, 2, '', '', '', 1, 0, 'F', '0', '0', 'system:user:add', '#', 'admin',
+        '2021-09-17 18:40:00',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1003, '用户修改', 100, 3, '', '', '', 1, 0, 'F', '0', '0', 'system:user:edit', '#', 'admin', '2021-09-17 18:40:00',
+VALUES (1003, '用户修改', 100, 3, '', '', '', 1, 0, 'F', '0', '0', 'system:user:edit', '#', 'admin',
+        '2021-09-17 18:40:00',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2896,17 +3044,20 @@ VALUES (1007, '重置密码', 100, 7, '', '', '', 1, 0, 'F', '0', '0', 'system:u
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1008, '角色查询', 101, 1, '', '', '', 1, 0, 'F', '0', '0', 'system:role:query', '#', 'admin', '2021-09-17 18:40:00',
+VALUES (1008, '角色查询', 101, 1, '', '', '', 1, 0, 'F', '0', '0', 'system:role:query', '#', 'admin',
+        '2021-09-17 18:40:00',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1009, '角色新增', 101, 2, '', '', '', 1, 0, 'F', '0', '0', 'system:role:add', '#', 'admin', '2021-09-17 18:40:00',
+VALUES (1009, '角色新增', 101, 2, '', '', '', 1, 0, 'F', '0', '0', 'system:role:add', '#', 'admin',
+        '2021-09-17 18:40:00',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1010, '角色修改', 101, 3, '', '', '', 1, 0, 'F', '0', '0', 'system:role:edit', '#', 'admin', '2021-09-17 18:40:01',
+VALUES (1010, '角色修改', 101, 3, '', '', '', 1, 0, 'F', '0', '0', 'system:role:edit', '#', 'admin',
+        '2021-09-17 18:40:01',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2921,17 +3072,20 @@ VALUES (1012, '角色导出', 101, 5, '', '', '', 1, 0, 'F', '0', '0', 'system:r
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1013, '菜单查询', 102, 1, '', '', '', 1, 0, 'F', '0', '0', 'system:menu:query', '#', 'admin', '2021-09-17 18:40:01',
+VALUES (1013, '菜单查询', 102, 1, '', '', '', 1, 0, 'F', '0', '0', 'system:menu:query', '#', 'admin',
+        '2021-09-17 18:40:01',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1014, '菜单新增', 102, 2, '', '', '', 1, 0, 'F', '0', '0', 'system:menu:add', '#', 'admin', '2021-09-17 18:40:01',
+VALUES (1014, '菜单新增', 102, 2, '', '', '', 1, 0, 'F', '0', '0', 'system:menu:add', '#', 'admin',
+        '2021-09-17 18:40:01',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1015, '菜单修改', 102, 3, '', '', '', 1, 0, 'F', '0', '0', 'system:menu:edit', '#', 'admin', '2021-09-17 18:40:01',
+VALUES (1015, '菜单修改', 102, 3, '', '', '', 1, 0, 'F', '0', '0', 'system:menu:edit', '#', 'admin',
+        '2021-09-17 18:40:01',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2941,17 +3095,20 @@ VALUES (1016, '菜单删除', 102, 4, '', '', '', 1, 0, 'F', '0', '0', 'system:m
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1017, '部门查询', 103, 1, '', '', '', 1, 0, 'F', '0', '0', 'system:dept:query', '#', 'admin', '2021-09-17 18:40:01',
+VALUES (1017, '部门查询', 103, 1, '', '', '', 1, 0, 'F', '0', '0', 'system:dept:query', '#', 'admin',
+        '2021-09-17 18:40:01',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1018, '部门新增', 103, 2, '', '', '', 1, 0, 'F', '0', '0', 'system:dept:add', '#', 'admin', '2021-09-17 18:40:01',
+VALUES (1018, '部门新增', 103, 2, '', '', '', 1, 0, 'F', '0', '0', 'system:dept:add', '#', 'admin',
+        '2021-09-17 18:40:01',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1019, '部门修改', 103, 3, '', '', '', 1, 0, 'F', '0', '0', 'system:dept:edit', '#', 'admin', '2021-09-17 18:40:01',
+VALUES (1019, '部门修改', 103, 3, '', '', '', 1, 0, 'F', '0', '0', 'system:dept:edit', '#', 'admin',
+        '2021-09-17 18:40:01',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2961,17 +3118,20 @@ VALUES (1020, '部门删除', 103, 4, '', '', '', 1, 0, 'F', '0', '0', 'system:d
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1021, '岗位查询', 104, 1, '', '', '', 1, 0, 'F', '0', '0', 'system:post:query', '#', 'admin', '2021-09-17 18:40:01',
+VALUES (1021, '岗位查询', 104, 1, '', '', '', 1, 0, 'F', '0', '0', 'system:post:query', '#', 'admin',
+        '2021-09-17 18:40:01',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1022, '岗位新增', 104, 2, '', '', '', 1, 0, 'F', '0', '0', 'system:post:add', '#', 'admin', '2021-09-17 18:40:01',
+VALUES (1022, '岗位新增', 104, 2, '', '', '', 1, 0, 'F', '0', '0', 'system:post:add', '#', 'admin',
+        '2021-09-17 18:40:01',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1023, '岗位修改', 104, 3, '', '', '', 1, 0, 'F', '0', '0', 'system:post:edit', '#', 'admin', '2021-09-17 18:40:01',
+VALUES (1023, '岗位修改', 104, 3, '', '', '', 1, 0, 'F', '0', '0', 'system:post:edit', '#', 'admin',
+        '2021-09-17 18:40:01',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -2991,12 +3151,14 @@ VALUES (1026, '字典查询', 105, 1, '#', '', '', 1, 0, 'F', '0', '0', 'system:
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1027, '字典新增', 105, 2, '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:add', '#', 'admin', '2021-09-17 18:40:02',
+VALUES (1027, '字典新增', 105, 2, '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:add', '#', 'admin',
+        '2021-09-17 18:40:02',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1028, '字典修改', 105, 3, '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:edit', '#', 'admin', '2021-09-17 18:40:02',
+VALUES (1028, '字典修改', 105, 3, '#', '', '', 1, 0, 'F', '0', '0', 'system:dict:edit', '#', 'admin',
+        '2021-09-17 18:40:02',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -3106,12 +3268,14 @@ VALUES (1049, '任务查询', 110, 1, '#', '', '', 1, 0, 'F', '0', '0', 'monitor
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1050, '任务新增', 110, 2, '#', '', '', 1, 0, 'F', '0', '0', 'monitor:job:add', '#', 'admin', '2021-09-17 18:40:03',
+VALUES (1050, '任务新增', 110, 2, '#', '', '', 1, 0, 'F', '0', '0', 'monitor:job:add', '#', 'admin',
+        '2021-09-17 18:40:03',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1051, '任务修改', 110, 3, '#', '', '', 1, 0, 'F', '0', '0', 'monitor:job:edit', '#', 'admin', '2021-09-17 18:40:03',
+VALUES (1051, '任务修改', 110, 3, '#', '', '', 1, 0, 'F', '0', '0', 'monitor:job:edit', '#', 'admin',
+        '2021-09-17 18:40:03',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -3131,32 +3295,38 @@ VALUES (1054, '任务导出', 110, 7, '#', '', '', 1, 0, 'F', '0', '0', 'monitor
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1055, '生成查询', 115, 1, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:query', '#', 'admin', '2021-09-17 18:40:04',
+VALUES (1055, '生成查询', 115, 1, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:query', '#', 'admin',
+        '2021-09-17 18:40:04',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1056, '生成修改', 115, 2, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:edit', '#', 'admin', '2021-09-17 18:40:04',
+VALUES (1056, '生成修改', 115, 2, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:edit', '#', 'admin',
+        '2021-09-17 18:40:04',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1057, '生成删除', 115, 3, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:remove', '#', 'admin', '2021-09-17 18:40:04',
+VALUES (1057, '生成删除', 115, 3, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:remove', '#', 'admin',
+        '2021-09-17 18:40:04',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1058, '导入代码', 115, 2, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:import', '#', 'admin', '2021-09-17 18:40:04',
+VALUES (1058, '导入代码', 115, 2, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:import', '#', 'admin',
+        '2021-09-17 18:40:04',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1059, '预览代码', 115, 4, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:preview', '#', 'admin', '2021-09-17 18:40:04',
+VALUES (1059, '预览代码', 115, 4, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:preview', '#', 'admin',
+        '2021-09-17 18:40:04',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1060, '生成代码', 115, 5, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code', '#', 'admin', '2021-09-17 18:40:04',
+VALUES (1060, '生成代码', 115, 5, '#', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code', '#', 'admin',
+        '2021-09-17 18:40:04',
         '', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -3166,7 +3336,8 @@ VALUES (1061, '设备集成', 0, 4, 'link', NULL, NULL, 1, 0, 'M', '0', '0', '',
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1062, '设备管理', 1061, 3, 'device', 'link/device/index', NULL, 1, 0, 'C', '0', '0', 'link:device:list', 'slider',
+VALUES (1062, '设备管理', 1061, 3, 'device', 'link/device/index', NULL, 1, 0, 'C', '0', '0', 'link:device:list',
+        'slider',
         'admin', '2021-10-21 17:27:48', 'admin', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -3241,12 +3412,14 @@ VALUES (1076, '设备详情', 1062, 7, '', NULL, NULL, 1, 0, 'F', '0', '0', 'lin
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1077, '设备监控', 0, 6, 'tdengine', NULL, NULL, 1, 0, 'M', '0', '0', '', 'online', 'admin', '2022-05-05 14:06:11',
+VALUES (1077, '设备监控', 0, 6, 'tdengine', NULL, NULL, 1, 0, 'M', '0', '0', '', 'online', 'admin',
+        '2022-05-05 14:06:11',
         'admin', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1078, '设备影子', 1077, 1, 'tdengine', 'tdengine/shadow/index', NULL, 1, 0, 'C', '0', '0', 'tdengine:shadow:list',
+VALUES (1078, '设备影子', 1077, 1, 'tdengine', 'tdengine/shadow/index', NULL, 1, 0, 'C', '0', '0',
+        'tdengine:shadow:list',
         'ContentUnion', 'admin', '2022-05-05 14:09:20', 'admin', '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -3257,7 +3430,8 @@ INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
 VALUES (1080, 'CAS规则管理', 1061, 6, 'casbinRule', 'link/casbinRule/index', NULL, 1, 0, 'C', '0', '0',
-        'link:casbinRule:list', 'lock', 'admin', '2022-06-16 18:29:45', 'admin', '2022-10-28 17:46:29', 'CAS规则管理菜单');
+        'link:casbinRule:list', 'lock', 'admin', '2022-06-16 18:29:45', 'admin', '2022-10-28 17:46:29',
+        'CAS规则管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
@@ -3316,7 +3490,8 @@ VALUES (1091, '设备Topic数据导出', 1086, 5, '#', '', NULL, 1, 0, 'F', '0',
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1092, '设备动作数据', 1076, 1, 'action', 'link/action/index', NULL, 1, 0, 'C', '0', '0', 'link:action:list', '#',
+VALUES (1092, '设备动作数据', 1076, 1, 'action', 'link/action/index', NULL, 1, 0, 'C', '0', '0', 'link:action:list',
+        '#',
         'admin', '2022-06-17 17:47:32', '', '2022-10-28 17:46:29', '设备动作数据菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -3347,7 +3522,8 @@ INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
 VALUES (1098, '子设备管理', 1061, 4, 'deviceInfo', 'link/deviceInfo/index', NULL, 1, 0, 'C', '0', '0',
-        'link:deviceInfo:list', 'cascader', 'admin', '2022-06-21 10:48:04', 'admin', '2022-10-28 17:46:29', '子设备管理菜单');
+        'link:deviceInfo:list', 'cascader', 'admin', '2022-06-21 10:48:04', 'admin', '2022-10-28 17:46:29',
+        '子设备管理菜单');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
@@ -3447,7 +3623,8 @@ VALUES (1120, '产品模板导出', 1115, 5, '#', '', NULL, 1, 0, 'F', '0', '0',
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
                         `update_by`, `update_time`, `remark`)
-VALUES (1121, '设备调试', 0, 5, 'broker', NULL, NULL, 1, 0, 'M', '0', '0', NULL, 'bug', 'admin', '2022-07-08 19:12:34', '',
+VALUES (1121, '设备调试', 0, 5, 'broker', NULL, NULL, 1, 0, 'M', '0', '0', NULL, 'bug', 'admin', '2022-07-08 19:12:34',
+        '',
         '2022-10-28 17:46:29', '');
 INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`,
                         `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`,
@@ -3527,7 +3704,7 @@ COMMIT;
 DROP TABLE IF EXISTS `sys_notice`;
 CREATE TABLE `sys_notice`
 (
-    `notice_id`      int(4)      NOT NULL AUTO_INCREMENT COMMENT '公告ID',
+    `notice_id`      int(4) NOT NULL AUTO_INCREMENT COMMENT '公告ID',
     `notice_title`   varchar(50) NOT NULL COMMENT '公告标题',
     `notice_type`    char(1)     NOT NULL COMMENT '公告类型（1通知 2公告）',
     `notice_content` longblob COMMENT '公告内容',
@@ -3564,21 +3741,21 @@ DROP TABLE IF EXISTS `sys_oper_log`;
 CREATE TABLE `sys_oper_log`
 (
     `oper_id`        bigint(20) NOT NULL AUTO_INCREMENT COMMENT '日志主键',
-    `title`          varchar(50)         DEFAULT '' COMMENT '模块标题',
-    `business_type`  int(2)              DEFAULT '0' COMMENT '业务类型（0其它 1新增 2修改 3删除）',
-    `method`         varchar(100)        DEFAULT '' COMMENT '方法名称',
-    `request_method` varchar(10)         DEFAULT '' COMMENT '请求方式',
-    `operator_type`  int(1)              DEFAULT '0' COMMENT '操作类别（0其它 1后台用户 2手机端用户）',
-    `oper_name`      varchar(50)         DEFAULT '' COMMENT '操作人员',
-    `dept_name`      varchar(50)         DEFAULT '' COMMENT '部门名称',
-    `oper_url`       varchar(255)        DEFAULT '' COMMENT '请求URL',
-    `oper_ip`        varchar(128)        DEFAULT '' COMMENT '主机地址',
-    `oper_location`  varchar(255)        DEFAULT '' COMMENT '操作地点',
-    `oper_param`     varchar(2000)       DEFAULT '' COMMENT '请求参数',
-    `json_result`    varchar(2000)       DEFAULT '' COMMENT '返回参数',
-    `status`         int(1)              DEFAULT '0' COMMENT '操作状态（0正常 1异常）',
-    `error_msg`      varchar(2000)       DEFAULT '' COMMENT '错误消息',
-    `oper_time`      datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+    `title`          varchar(50)       DEFAULT '' COMMENT '模块标题',
+    `business_type`  int(2) DEFAULT '0' COMMENT '业务类型（0其它 1新增 2修改 3删除）',
+    `method`         varchar(100)      DEFAULT '' COMMENT '方法名称',
+    `request_method` varchar(10)       DEFAULT '' COMMENT '请求方式',
+    `operator_type`  int(1) DEFAULT '0' COMMENT '操作类别（0其它 1后台用户 2手机端用户）',
+    `oper_name`      varchar(50)       DEFAULT '' COMMENT '操作人员',
+    `dept_name`      varchar(50)       DEFAULT '' COMMENT '部门名称',
+    `oper_url`       varchar(255)      DEFAULT '' COMMENT '请求URL',
+    `oper_ip`        varchar(128)      DEFAULT '' COMMENT '主机地址',
+    `oper_location`  varchar(255)      DEFAULT '' COMMENT '操作地点',
+    `oper_param`     varchar(2000)     DEFAULT '' COMMENT '请求参数',
+    `json_result`    varchar(2000)     DEFAULT '' COMMENT '返回参数',
+    `status`         int(1) DEFAULT '0' COMMENT '操作状态（0正常 1异常）',
+    `error_msg`      varchar(2000)     DEFAULT '' COMMENT '错误消息',
+    `oper_time`      datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
     PRIMARY KEY (`oper_id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 178
@@ -3597,10 +3774,10 @@ COMMIT;
 DROP TABLE IF EXISTS `sys_post`;
 CREATE TABLE `sys_post`
 (
-    `post_id`     bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '岗位ID',
+    `post_id`     bigint(20) NOT NULL AUTO_INCREMENT COMMENT '岗位ID',
     `post_code`   varchar(64) NOT NULL COMMENT '岗位编码',
     `post_name`   varchar(50) NOT NULL COMMENT '岗位名称',
-    `post_sort`   int(4)      NOT NULL COMMENT '显示顺序',
+    `post_sort`   int(4) NOT NULL COMMENT '显示顺序',
     `status`      char(1)     NOT NULL COMMENT '状态（0正常 1停用）',
     `create_by`   varchar(64)          DEFAULT '' COMMENT '创建者',
     `create_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -3637,13 +3814,13 @@ COMMIT;
 DROP TABLE IF EXISTS `sys_role`;
 CREATE TABLE `sys_role`
 (
-    `role_id`             bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '角色ID',
+    `role_id`             bigint(20) NOT NULL AUTO_INCREMENT COMMENT '角色ID',
     `role_name`           varchar(30)  NOT NULL COMMENT '角色名称',
     `role_key`            varchar(100) NOT NULL COMMENT '角色权限字符串',
-    `role_sort`           int(4)       NOT NULL COMMENT '显示顺序',
+    `role_sort`           int(4) NOT NULL COMMENT '显示顺序',
     `data_scope`          char(1)               DEFAULT '1' COMMENT '数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限）',
-    `menu_check_strictly` tinyint(1)            DEFAULT '1' COMMENT '菜单树选择项是否关联显示',
-    `dept_check_strictly` tinyint(1)            DEFAULT '1' COMMENT '部门树选择项是否关联显示',
+    `menu_check_strictly` tinyint(1) DEFAULT '1' COMMENT '菜单树选择项是否关联显示',
+    `dept_check_strictly` tinyint(1) DEFAULT '1' COMMENT '部门树选择项是否关联显示',
     `status`              char(1)      NOT NULL COMMENT '角色状态（0正常 1停用）',
     `del_flag`            char(1)               DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
     `create_by`           varchar(64)           DEFAULT '' COMMENT '创建者',
@@ -3962,8 +4139,8 @@ COMMIT;
 DROP TABLE IF EXISTS `sys_user`;
 CREATE TABLE `sys_user`
 (
-    `user_id`     bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-    `dept_id`     bigint(20)           DEFAULT NULL COMMENT '部门ID',
+    `user_id`     bigint(20) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+    `dept_id`     bigint(20) DEFAULT NULL COMMENT '部门ID',
     `user_name`   varchar(30) NOT NULL COMMENT '用户账号',
     `nick_name`   varchar(30) NOT NULL COMMENT '用户昵称',
     `user_type`   varchar(2)           DEFAULT '00' COMMENT '用户类型（00系统用户）',
@@ -4088,7 +4265,7 @@ COMMIT;
 DROP TABLE IF EXISTS `td_createStable_record`;
 CREATE TABLE `td_createStable_record`
 (
-    `id`             bigint(19)   NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `id`             bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
     `table_name`     varchar(255) NOT NULL COMMENT '表名',
     `sql_message`    longtext COMMENT 'SQL报文',
     `execute_status` varchar(10)  NOT NULL COMMENT '执行状态(成功 || 失败)',
@@ -4099,14 +4276,107 @@ CREATE TABLE `td_createStable_record`
     `update_time`    datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `remark`         varchar(500)          DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`id`),
-    KEY `table_name` (`table_name`) USING HASH COMMENT '超级表名'
+    KEY              `table_name` (`table_name`) USING HASH COMMENT '超级表名'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8 COMMENT ='TDengine创建超级表记录';
 
 -- ----------------------------
 -- Records of td_createStable_record
 -- ----------------------------
+
+
+-- ----------------------------
+-- Table structure for ota_upgrades
+-- ----------------------------
+
+DROP TABLE IF EXISTS `ota_upgrades`;
+CREATE TABLE `ota_upgrades`
+(
+    `id`                     bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `app_id`                 varchar(64)  NOT NULL DEFAULT '' COMMENT '应用ID',
+    `package_name`           varchar(100) NOT NULL DEFAULT '' COMMENT '包名称',
+    `package_type`           smallint(1) NOT NULL DEFAULT '0' COMMENT '升级包类型(0:软件包、1:固件包)',
+    `product_identification` varchar(100) NOT NULL DEFAULT '' COMMENT '产品标识',
+    `version`                varchar(255) NOT NULL DEFAULT '' COMMENT '升级包版本号',
+    `file_location`          varchar(255) NOT NULL DEFAULT '' COMMENT '升级包的位置',
+    `status`                 smallint(1) NOT NULL DEFAULT '0' COMMENT '状态',
+    `description`            varchar(255)          DEFAULT '' COMMENT '升级包功能描述',
+    `custom_info`            longtext COMMENT '自定义信息',
+    `remark`                 varchar(255)          DEFAULT '' COMMENT '描述',
+    `created_by`             bigint(20) DEFAULT NULL COMMENT '创建人',
+    `created_time`           datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_by`             bigint(20) DEFAULT NULL COMMENT '更新人',
+    `updated_time`           datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY                      `idx_app_id` (`app_id`) USING BTREE COMMENT '应用ID',
+    KEY                      `idx_product_identification` (`product_identification`) USING BTREE COMMENT '产品标识',
+    KEY                      `idx_version` (`version`) USING BTREE COMMENT '升级包版本号'
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='OTA升级包';
+
+-- ----------------------------
+-- Records of ota_upgrades
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for ota_upgrade_tasks
+-- ----------------------------
+
+CREATE TABLE `ota_upgrade_tasks`
+(
+    `id`             bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `upgrade_id`     bigint(20) NOT NULL COMMENT '升级包ID，关联ota_upgrades表',
+    `task_name`      varchar(100) NOT NULL DEFAULT '' COMMENT '任务名称',
+    `task_status`    smallint(1) NOT NULL DEFAULT '0' COMMENT '任务状态(0:待发布、1:进行中、2:已完成、3:已取消)',
+    `scheduled_time` datetime              DEFAULT NULL COMMENT '计划执行时间',
+    `description`    varchar(255)          DEFAULT '' COMMENT '任务描述',
+    `remark`         varchar(255)          DEFAULT '' COMMENT '描述',
+    `created_by`     bigint(20) DEFAULT NULL COMMENT '创建人',
+    `created_time`   datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_by`     bigint(20) DEFAULT NULL COMMENT '更新人',
+    `updated_time`   datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `created_org_id` bigint(20) DEFAULT NULL COMMENT '创建人组织',
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY              `idx_upgrade_id` (`upgrade_id`) USING BTREE COMMENT '升级包ID'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='OTA升级任务表';
+
+-- ----------------------------
+-- Records of ota_upgrade_tasks
+-- ----------------------------
+
+
+-- ----------------------------
+-- Table structure for ota_upgrade_records
+-- ----------------------------
+
+CREATE TABLE `ota_upgrade_records`
+(
+    `id`                    bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `task_id`               bigint(20) NOT NULL COMMENT '任务ID，关联ota_upgrade_tasks表',
+    `device_identification` varchar(100) NOT NULL DEFAULT '' COMMENT '设备标识',
+    `upgrade_status`        smallint(1) NOT NULL DEFAULT '0' COMMENT '升级状态(0:待升级、1:升级中、2:升级成功、3:升级失败)',
+    `progress`              smallint(3) NOT NULL DEFAULT '0' COMMENT '升级进度（百分比）',
+    `error_code`            varchar(100)          DEFAULT NULL COMMENT '错误代码',
+    `error_message`         varchar(255)          DEFAULT NULL COMMENT '错误信息',
+    `start_time`            datetime              DEFAULT NULL COMMENT '升级开始时间',
+    `end_time`              datetime              DEFAULT NULL COMMENT '升级结束时间',
+    `success_details`       longtext COMMENT '升级成功详细信息',
+    `failure_details`       longtext COMMENT '升级失败详细信息',
+    `log_details`           longtext COMMENT '升级过程日志',
+    `remark`                varchar(255)          DEFAULT '' COMMENT '描述',
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE KEY `idx_task_id_device_identification` (`task_id`,`device_identification`) USING BTREE,
+    KEY                     `idx_task_id` (`task_id`),
+    KEY                     `idx_device_identification` (`device_identification`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='OTA升级记录表';
+
+
+-- ----------------------------
+-- Records of ota_upgrade_records
+-- ----------------------------
+
+
 BEGIN;
 COMMIT;
 
-SET FOREIGN_KEY_CHECKS = 1;
+SET
+FOREIGN_KEY_CHECKS = 1;
