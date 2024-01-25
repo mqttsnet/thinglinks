@@ -84,13 +84,7 @@ public class KafkaConsumerConfig {
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
 
-/*        //配置消费者的 Json 反序列化的可信赖包，反序列化实体类需要
-        try(JsonDeserializer<String> deserializer = new JsonDeserializer<>()) {
-
-            deserializer.trustedPackages("*");
-            return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new JsonDeserializer<>(), deserializer);
-        }*/
-
+        //配置消费者的 Json 反序列化的可信赖包，反序列化实体类需要
         try (StringDeserializer stringDeserializer = new StringDeserializer()) {
             return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(), stringDeserializer);
         }
@@ -106,10 +100,10 @@ public class KafkaConsumerConfig {
         //消费监听接口监听的主题不存在时，默认会报错，所以设置为false忽略错误
         factory.setMissingTopicsFatal(missingTopicsFatal);
         //自动提交关闭，需要设置手动消息确认
-        //factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
         factory.getContainerProperties().setPollTimeout(pollTimeout);
         //设置为批量监听，需要用List接收
-        factory.setBatchListener(false);
+        factory.setBatchListener(true);
         return factory;
     }
 }

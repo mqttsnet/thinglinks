@@ -12,7 +12,6 @@ import org.springframework.kafka.transaction.KafkaTransactionManager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @program: thinglinks-cloud-pro-datasource-column
@@ -25,17 +24,17 @@ import java.util.UUID;
 @Configuration
 public class KafkaProviderConfig {
 
-    @Value("${spring.kafka.thingLinks.producer.bootstrap-servers}")
+    @Value("${spring.kafka.thingLinksPro.producer.bootstrap-servers}")
     private String bootstrapServers;
-    @Value("${spring.kafka.thingLinks.producer.transaction-id-prefix}")
+    @Value("${spring.kafka.thingLinksPro.producer.transaction-id-prefix}")
     private String transactionIdPrefix;
-    @Value("${spring.kafka.thingLinks.producer.acks}")
+    @Value("${spring.kafka.thingLinksPro.producer.acks}")
     private String acks;
-    @Value("${spring.kafka.thingLinks.producer.retries}")
+    @Value("${spring.kafka.thingLinksPro.producer.retries}")
     private String retries;
-    @Value("${spring.kafka.thingLinks.producer.batch-size}")
+    @Value("${spring.kafka.thingLinksPro.producer.batch-size}")
     private String batchSize;
-    @Value("${spring.kafka.thingLinks.producer.buffer-memory}")
+    @Value("${spring.kafka.thingLinksPro.producer.buffer-memory}")
     private String bufferMemory;
 
     @Bean
@@ -64,9 +63,6 @@ public class KafkaProviderConfig {
         //反序列化，和生产者的序列化方式对应
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        //为生产者分配一个唯一的事务 ID
-        props.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, UUID.randomUUID().toString());
-
         return props;
     }
 

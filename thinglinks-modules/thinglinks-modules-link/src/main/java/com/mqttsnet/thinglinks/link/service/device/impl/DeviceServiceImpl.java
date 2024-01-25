@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
-import com.mqttsnet.thinglinks.broker.api.RemotePublishActorService;
+import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
@@ -73,7 +73,7 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     private RedisService redisService;
     @Resource
-    private RemotePublishActorService remotePublishActorService;
+    private RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi;
     @Autowired
     private DeviceTopicService deviceTopicService;
     @Autowired
@@ -386,7 +386,7 @@ public class DeviceServiceImpl implements DeviceService {
             return false;
         }
         final List<String> clientIdentifiers = deviceList.stream().map(Device::getClientId).collect(Collectors.toList());
-        final R r = remotePublishActorService.closeConnection(clientIdentifiers);
+        final R r = remoteMqttBrokerOpenApi.closeConnection(clientIdentifiers);
         log.info("主动断开设备ID: {} 连接 , Broker 处理结果: {}", clientIdentifiers, r.toString());
         return r.getCode() == ResultEnum.SUCCESS.getCode();
     }

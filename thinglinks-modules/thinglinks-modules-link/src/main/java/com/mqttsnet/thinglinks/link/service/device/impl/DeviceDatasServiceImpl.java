@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import com.mqttsnet.thinglinks.broker.api.RemotePublishActorService;
+import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.dynamicCompilation.ClassInjector;
@@ -90,7 +90,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
     @Autowired
     private DeviceInfoService deviceInfoService;
     @Resource
-    private RemotePublishActorService remotePublishActorService;
+    private RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi;
     /**
      * 数据库名称
      */
@@ -190,7 +190,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             param.put("qos", Integer.valueOf(qos));
             param.put("retain", false);
             param.put("message", payload);
-            remotePublishActorService.sendMessage(param);
+            remoteMqttBrokerOpenApi.sendMessage(param);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/delete")) {
             final String deviceIdentification = SubStringUtil.subStr(topic, 12, -12);
             final String payload = this.processingTopoDeleteTopic(deviceIdentification, body);
@@ -199,7 +199,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             param.put("qos", Integer.valueOf(qos));
             param.put("retain", false);
             param.put("message", payload);
-            remotePublishActorService.sendMessage(param);
+            remoteMqttBrokerOpenApi.sendMessage(param);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/topo/update")) {
             final String deviceIdentification = SubStringUtil.subStr(topic, 12, -12);
             final String payload = this.processingTopoUpdateTopic(deviceIdentification, body);
@@ -208,7 +208,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             param.put("qos", Integer.valueOf(qos));
             param.put("retain", false);
             param.put("message", payload);
-            remotePublishActorService.sendMessage(param);
+            remoteMqttBrokerOpenApi.sendMessage(param);
         } else if (topic.startsWith("/v1/devices/") && topic.endsWith("/datas")) {
             final String deviceIdentification = SubStringUtil.subStr(topic, 12, -6);
             this.processingDatasTopic(deviceIdentification, body);

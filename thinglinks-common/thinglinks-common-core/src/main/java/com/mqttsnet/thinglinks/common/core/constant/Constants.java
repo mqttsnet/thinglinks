@@ -2,11 +2,15 @@ package com.mqttsnet.thinglinks.common.core.constant;
 
 /**
  * 通用常量信息
- * 
+ *
  * @author thinglinks
  */
-public class Constants
-{
+public class Constants {
+
+    /**
+     * 项目前缀
+     */
+    public static final String PROJECT_PREFIX = "thinglinks";
     /**
      * UTF-8 字符集
      */
