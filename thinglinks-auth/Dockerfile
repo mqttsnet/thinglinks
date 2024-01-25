@@ -9,10 +9,10 @@ ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # 创建工作目录
-WORKDIR /home/www/mqttsnet/thinglinks-broker
+WORKDIR /home/www/mqttsnet/thinglinks-auth
 
 # 从构建上下文（Dockerfile 所在目录的相对路径）复制 JAR 文件
-COPY target/thinglinks-auth-server.jar /app.jar
+COPY target/thinglinks-auth.jar /app.jar
 
 # 暴露服务端口
 EXPOSE 19200
