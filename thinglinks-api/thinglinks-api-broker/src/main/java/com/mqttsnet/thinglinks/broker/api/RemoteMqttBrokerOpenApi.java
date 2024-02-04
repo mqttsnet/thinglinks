@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.broker.api;
 
-import com.mqttsnet.thinglinks.broker.api.domain.PublishMessageRequest;
+import com.mqttsnet.thinglinks.broker.api.domain.model.PublishMessageRequest;
 import com.mqttsnet.thinglinks.broker.api.factory.RemoteMqttBrokerOpenApiFallback;
 import com.mqttsnet.thinglinks.common.core.constant.ServiceNameConstants;
 import com.mqttsnet.thinglinks.common.core.domain.R;

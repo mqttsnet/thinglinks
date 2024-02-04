@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.common.kafka.config;
+package com.mqttsnet.thinglinks.link.common.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: KafkaConsumerConfig
- * @packagename: com.mqttsnet.thinglinks.config.kafka
+ * @packagename: com.mqttsnet.thinglinks.common.kafka.config
  * @author: ShiHuan Sun
  * @e-mainl: 13733918655@163.com
  * @date: 2023-06-18 11:29

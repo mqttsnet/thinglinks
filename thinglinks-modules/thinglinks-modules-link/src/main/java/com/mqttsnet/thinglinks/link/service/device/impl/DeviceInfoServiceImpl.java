@@ -239,7 +239,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
                 param.put("qos", 2);
                 param.put("retain", false);
                 param.put("message", JSON.toJSONString(responseMaps));
-                remoteMqttBrokerOpenApi.sendMessage(param);
+//                remoteMqttBrokerOpenApi.sendMessage(param);
             }
             responseMaps.clear();
         });

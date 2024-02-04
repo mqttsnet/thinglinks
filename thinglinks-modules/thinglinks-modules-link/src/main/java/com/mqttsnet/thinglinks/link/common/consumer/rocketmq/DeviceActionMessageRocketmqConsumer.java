@@ -39,8 +39,8 @@ public class DeviceActionMessageRocketmqConsumer implements RocketMQListener {
     @Async("linkAsync")
     @Override
     public void onMessage(Object message) {
-        if (null == message){
-            log.warn("message cannot be empty {}",message);
+        if (null == message) {
+            log.warn("message cannot be empty {}", message);
             return;
         }
         log.info("ThingLinks物联网平台数据消费-->Received message={}", message);

@@ -1,6 +1,7 @@
 rocketmq:
   consumer:
     group: thinglinks
+    # ACL 开启时填写（未开启为空即可）
     accessKey:
     secretKey:
     # 一次拉取消息最大值，注意是拉取消息的最大值而非消费最大值

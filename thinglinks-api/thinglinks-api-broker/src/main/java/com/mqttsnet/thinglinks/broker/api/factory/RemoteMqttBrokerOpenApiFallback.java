@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.broker.api.factory;
 
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
-import com.mqttsnet.thinglinks.broker.api.domain.PublishMessageRequest;
+import com.mqttsnet.thinglinks.broker.api.domain.model.PublishMessageRequest;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

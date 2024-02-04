@@ -33,13 +33,11 @@ spring:
             refresh: false
           - dataId: database.yml
             refresh: true
-          - dataId: rocketmq.yml
-            refresh: false
         username: @nacos.username@
         password: @nacos.password@
     sentinel:
       # 取消控制台懒加载
-      eager: true
+      eager: false
       transport:
         # 控制台地址
         dashboard: @sentinel.dashboard@

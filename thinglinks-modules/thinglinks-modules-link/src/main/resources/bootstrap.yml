@@ -35,5 +35,7 @@ spring:
             refresh: true
           - dataId: rocketmq.yml
             refresh: false
+          - dataId: kafka.yml
+            refresh: false
         username: @nacos.username@
         password: @nacos.password@

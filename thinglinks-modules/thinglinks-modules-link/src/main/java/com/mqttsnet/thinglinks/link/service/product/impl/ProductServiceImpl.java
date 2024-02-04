@@ -9,7 +9,6 @@ import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
-import com.mqttsnet.thinglinks.common.core.mqs.SelectorConfig;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
@@ -35,12 +34,10 @@ import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -54,7 +51,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Description: 产品模型业务层
@@ -87,12 +83,6 @@ public class ProductServiceImpl implements ProductService {
     private RedisService redisService;
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
-
-    @Autowired
-    private KafkaTemplate<String, String> thingLinksProKafkaTemplate;
-
-    @Autowired
-    private SelectorConfig selectorConfig;
 
     /**
      * 数据库名称
@@ -675,11 +665,7 @@ public class ProductServiceImpl implements ProductService {
                     jsonObject.put("msg", JSON.toJSONString(superTableDto));
                     mqMessage.setMessage(jsonObject.toJSONString());
 
-                    if (selectorConfig.isSelectorKafka()) {
-                         thingLinksProKafkaTemplate.send(new ProducerRecord<>(mqMessage.getTopic(), mqMessage.getMessage()));
-                    } else {
-                        rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
-                    }
+                    rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
                 }
             }
         }

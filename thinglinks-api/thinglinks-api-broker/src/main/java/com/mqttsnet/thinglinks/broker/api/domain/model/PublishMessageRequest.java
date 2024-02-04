@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.broker.api.domain;
+package com.mqttsnet.thinglinks.broker.api.domain.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -30,13 +30,13 @@ public class PublishMessageRequest implements Serializable {
     @ApiModelProperty(value = "可选的调用者提供的请求ID", example = "1234567890")
     private Long reqId;
 
-    @ApiModelProperty(value = "租户ID", required = true, example = "tenant12345")
+    @ApiModelProperty(value = "租户ID", required = true, example = "thinglinks")
     private String tenantId;
 
     @ApiModelProperty(value = "消息主题", required = true, example = "exampleTopic")
     private String topic;
 
-    @ApiModelProperty(value = "QoS of the message to be distributed", required = true)
+    @ApiModelProperty(value = "QoS of the message to be distributed", required = true, example = "1")
     private String pubQos;
 
     @ApiModelProperty(value = "客户端类型", required = true, example = "web")

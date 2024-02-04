@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.common.kafka.config;
+package com.mqttsnet.thinglinks.link.common.config;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: KafkaProviderConfig
- * @packagename: com.mqttsnet.thinglinks.config.kafka
+ * @packagename: com.mqttsnet.thinglinks.common.kafka.config
  * @author: ShiHuan Sun
  * @e-mainl: 13733918655@163.com
  * @date: 2023-06-18 11:28
@@ -24,17 +24,18 @@ import java.util.Map;
 @Configuration
 public class KafkaProviderConfig {
 
-    @Value("${spring.kafka.thingLinksPro.producer.bootstrap-servers}")
+
+    @Value("${spring.kafka.thingLinks.producer.bootstrap-servers}")
     private String bootstrapServers;
-    @Value("${spring.kafka.thingLinksPro.producer.transaction-id-prefix}")
+    @Value("${spring.kafka.thingLinks.producer.transaction-id-prefix}")
     private String transactionIdPrefix;
-    @Value("${spring.kafka.thingLinksPro.producer.acks}")
+    @Value("${spring.kafka.thingLinks.producer.acks}")
     private String acks;
-    @Value("${spring.kafka.thingLinksPro.producer.retries}")
+    @Value("${spring.kafka.thingLinks.producer.retries}")
     private String retries;
-    @Value("${spring.kafka.thingLinksPro.producer.batch-size}")
+    @Value("${spring.kafka.thingLinks.producer.batch-size}")
     private String batchSize;
-    @Value("${spring.kafka.thingLinksPro.producer.buffer-memory}")
+    @Value("${spring.kafka.thingLinks.producer.buffer-memory}")
     private String bufferMemory;
 
     @Bean
@@ -82,7 +83,7 @@ public class KafkaProviderConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, String> thingLinksProKafkaTemplate() {
+    public KafkaTemplate<String, String> thingLinksKafkaTemplate() {
 
         return new KafkaTemplate<>(producerFactory());
     }

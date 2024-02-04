@@ -80,24 +80,17 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
+        <!-- thinglinks Common Kafka -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-kafka</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
         <!-- thinglinks Api link -->
         <dependency>
             <groupId>com.mqttsnet</groupId>
             <artifactId>thinglinks-api-link</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>
-
-        <!-- thinglinks Common job -->
-        <!--<dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-job</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>-->
-
-        <!-- thinglinks Common kafka -->
-        <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-kafka</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
 
