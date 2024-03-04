@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.broker.controller;
 
 import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSONObject;
-import com.mqttsnet.thinglinks.broker.api.domain.model.PublishMessageRequest;
+import com.mqttsnet.thinglinks.broker.api.domain.vo.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.broker.service.MqttBrokerService;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import io.swagger.annotations.Api;
@@ -40,15 +40,15 @@ public class MqttBrokerOpenController {
     /**
      * MQTT推送消息接口
      *
-     * @param publishMessageRequest 推送消息请求参数
+     * @param publishMessageRequestVO 推送消息请求参数
      * @return {@link R} 结果
      */
     @ApiOperation(value = "MQTT推送消息", notes = "根据提供的主题、服务质量等级、保留标志和消息内容推送MQTT消息")
     @PostMapping("/sendMessage")
     public R<?> sendMessage(@ApiParam(value = "推送消息请求参数", required = true)
-                            @RequestBody PublishMessageRequest publishMessageRequest) {
-        log.info("MQTT Broker publish {}", publishMessageRequest.toString());
-        return R.ok(mqttBrokerService.publishMessage(publishMessageRequest));
+                            @RequestBody PublishMessageRequestVO publishMessageRequestVO) {
+        log.info("MQTT Broker publish {}", publishMessageRequestVO.toString());
+        return R.ok(mqttBrokerService.publishMessage(publishMessageRequestVO));
     }
 
 

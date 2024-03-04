@@ -1,9 +1,10 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceTopicEnum;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceType;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
@@ -224,7 +225,7 @@ public class DeviceServiceImpl implements DeviceService {
         if (StringUtils.isNotNull(oneByClientIdAndDeviceIdentification)) {
             throw new Exception("设备编号或者设备标识已存在");
         }
-        device.setConnectStatus(DeviceConnectStatus.INIT.getValue());
+        device.setConnectStatus(DeviceConnectStatusEnum.INIT.getValue());
         device.setCreateBy(sysUser.getUserName());
         final int insertDeviceCount = deviceMapper.insertOrUpdateSelective(device);
         if (insertDeviceCount > 0) {
@@ -363,11 +364,11 @@ public class DeviceServiceImpl implements DeviceService {
         //设备信息缓存失效 删除缓存 更新数据库设备状态
         if (StringUtils.isNotNull(oneByClientId)) {
             //删除缓存
-            redisService.delete(Constants.DEVICE_RECORD_KEY + oneByClientId.getDeviceIdentification());
+            redisService.delete(CacheConstants.DEVICE_RECORD_KEY + oneByClientId.getDeviceIdentification());
             //更新数据库设备状态
             Device device = new Device();
             device.setId(oneByClientId.getId());
-            device.setConnectStatus(DeviceConnectStatus.OFFLINE.getValue());
+            device.setConnectStatus(DeviceConnectStatusEnum.OFFLINE.getValue());
             deviceMapper.updateByPrimaryKeySelective(device);
         }
         return true;
@@ -416,9 +417,9 @@ public class DeviceServiceImpl implements DeviceService {
         final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, username, password, deviceStatus, protocolType);
         if (Optional.ofNullable(device).isPresent()) {
             //缓存设备信息
-            redisService.setCacheObject(Constants.DEVICE_RECORD_KEY + device.getDeviceIdentification(), device, 60L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(CacheConstants.DEVICE_RECORD_KEY + device.getDeviceIdentification(), device, 60L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             //更改设备在线状态为在线
-            this.updateConnectStatusByClientId(DeviceConnectStatus.ONLINE.getValue(), clientIdentifier);
+            this.updateConnectStatusByClientId(DeviceConnectStatusEnum.ONLINE.getValue(), clientIdentifier);
             return device;
         }
         return null;

@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.broker.service;
 
-import com.mqttsnet.thinglinks.broker.api.domain.model.PublishMessageRequest;
+import com.mqttsnet.thinglinks.broker.api.domain.vo.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.common.core.exception.base.BaseException;
 
 /**
@@ -28,9 +28,9 @@ public interface MqttBrokerService {
     /**
      * Publishes a message to a specified topic and returns the content if successful.
      *
-     * @param publishMessageRequest Object containing the required parameters for publishing.
+     * @param publishMessageRequestVO Object containing the required parameters for publishing.
      * @return The content of the published message.
      * @throws BaseException If the publishing fails.
      */
-    String publishMessage(PublishMessageRequest publishMessageRequest);
+    String publishMessage(PublishMessageRequestVO publishMessageRequestVO);
 }

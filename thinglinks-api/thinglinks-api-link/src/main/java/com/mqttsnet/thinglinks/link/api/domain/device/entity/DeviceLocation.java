@@ -3,9 +3,8 @@ package com.mqttsnet.thinglinks.link.api.domain.device.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -28,8 +27,11 @@ import java.time.LocalDateTime;
  */
 @ApiModel(value = "设备位置表")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+@Accessors(chain = true)
+@Builder
 public class DeviceLocation implements Serializable {
     /**
      * 主键

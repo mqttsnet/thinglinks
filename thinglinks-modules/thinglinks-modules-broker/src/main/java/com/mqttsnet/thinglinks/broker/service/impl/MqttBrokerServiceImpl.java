@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.broker.service.impl;
 
 import com.mqttsnet.thinglinks.broker.api.BifroMQApi;
-import com.mqttsnet.thinglinks.broker.api.domain.model.PublishMessageRequest;
+import com.mqttsnet.thinglinks.broker.api.domain.vo.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.broker.service.MqttBrokerService;
 import com.mqttsnet.thinglinks.common.core.exception.base.BaseException;
 import lombok.RequiredArgsConstructor;
@@ -39,23 +39,23 @@ public class MqttBrokerServiceImpl implements MqttBrokerService {
     /**
      * Publishes a message to a specified topic and returns the content if successful.
      *
-     * @param publishMessageRequest Object containing the required parameters for publishing.
+     * @param publishMessageRequestVO Object containing the required parameters for publishing.
      * @return The content of the published message.
      * @throws BaseException If the publishing fails.
      */
     @Override
-    public String publishMessage(PublishMessageRequest publishMessageRequest) throws BaseException {
-        log.info("Preparing to publish message with topic: {}", publishMessageRequest.getTopic());
+    public String publishMessage(PublishMessageRequestVO publishMessageRequestVO) throws BaseException {
+        log.info("Preparing to publish message with topic: {}", publishMessageRequestVO.getTopic());
         try {
-            ResponseEntity<String> response = callPublishApi(publishMessageRequest);
+            ResponseEntity<String> response = callPublishApi(publishMessageRequestVO);
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                log.info("Successfully published message with topic: {}", publishMessageRequest.getTopic());
-                return publishMessageRequest.getPayload(); // Return the message content that was published
+                log.info("Successfully published message with topic: {}", publishMessageRequestVO.getTopic());
+                return publishMessageRequestVO.getPayload(); // Return the message content that was published
             } else {
                 log.error("Failed to publish message with topic: {}. Response Status: {}",
-                        publishMessageRequest.getTopic(), response.getStatusCode());
-                throw new BaseException("Failed to publish message with topic: " + publishMessageRequest.getTopic());
+                        publishMessageRequestVO.getTopic(), response.getStatusCode());
+                throw new BaseException("Failed to publish message with topic: " + publishMessageRequestVO.getTopic());
             }
         } catch (HttpClientErrorException e) {
             log.error("HTTP error occurred while publishing message: {}", e.getMessage());
@@ -70,19 +70,19 @@ public class MqttBrokerServiceImpl implements MqttBrokerService {
     /**
      * Makes the actual API call to publish a message.
      *
-     * @param publishMessageRequest Object containing the required parameters for publishing.
+     * @param publishMessageRequestVO Object containing the required parameters for publishing.
      * @return R Response indicating success or failure from the BifroMQApi.
      */
-    private ResponseEntity<String> callPublishApi(PublishMessageRequest publishMessageRequest) {
+    private ResponseEntity<String> callPublishApi(PublishMessageRequestVO publishMessageRequestVO) {
         return bifroMQApi.publishMessage(
-                publishMessageRequest.getReqId(),
-                publishMessageRequest.getTenantId(),
-                publishMessageRequest.getTopic(),
-                publishMessageRequest.getClientType(),
-                publishMessageRequest.getPubQos(),
-                publishMessageRequest.getRetain(),
-                publishMessageRequest.getClientMeta(),
-                publishMessageRequest.getPayload()
+                publishMessageRequestVO.getReqId(),
+                publishMessageRequestVO.getTenantId(),
+                publishMessageRequestVO.getTopic(),
+                publishMessageRequestVO.getClientType(),
+                publishMessageRequestVO.getPubQos(),
+                publishMessageRequestVO.getRetain(),
+                publishMessageRequestVO.getClientMeta(),
+                publishMessageRequestVO.getPayload()
         );
     }
 }

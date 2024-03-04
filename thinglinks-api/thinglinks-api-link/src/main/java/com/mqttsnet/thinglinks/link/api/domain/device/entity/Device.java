@@ -6,8 +6,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
+import lombok.experimental.Accessors;
 
 /**
 
@@ -29,6 +30,11 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @ApiModel(value = "设备管理")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+@Accessors(chain = true)
+@Builder
 public class Device  extends BaseEntity implements Serializable{
     /**
      * id
@@ -149,6 +155,50 @@ public class Device  extends BaseEntity implements Serializable{
     @Excel(name = "设备类型")
     @ApiModelProperty(value = "设备类型")
     private String deviceType;
+
+    /**
+     * 加密密钥
+     */
+    @Excel(name = "加密密钥")
+    @ApiModelProperty(value = "加密密钥")
+    private String encryptKey;
+    /**
+     * 加密向量
+     */
+    @Excel(name = "加密向量")
+    @ApiModelProperty(value = "加密向量")
+    private String encryptVector;
+    /**
+     * 签名密钥
+     */
+    @Excel(name = "签名密钥")
+    @ApiModelProperty(value = "签名密钥")
+    private String signKey;
+    /**
+     * 传输协议的加密方式：0-明文传输、1-SM4、2-AES
+     */
+    @Excel(name = "传输协议的加密方式")
+    @ApiModelProperty(value = "传输协议的加密方式：0-明文传输、1-SM4、2-AES ")
+    private Integer encryptMethod;
+
+    /**
+     * 软件版本
+     */
+    @Excel(name = "软件版本")
+    @ApiModelProperty(value = "软件版本")
+    private String swVersion;
+    /**
+     * 固件版本
+     */
+    @Excel(name = "固件版本")
+    @ApiModelProperty(value = "固件版本")
+    private String fwVersion;
+    /**
+     * sdk版本
+     */
+    @Excel(name = "sdk版本")
+    @ApiModelProperty(value = "sdk版本")
+    private String deviceSdkVersion;
 
 
     private static final long serialVersionUID = 1L;

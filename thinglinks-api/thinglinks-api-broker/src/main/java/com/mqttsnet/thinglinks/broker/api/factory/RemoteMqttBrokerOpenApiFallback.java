@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.broker.api.factory;
 
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
-import com.mqttsnet.thinglinks.broker.api.domain.model.PublishMessageRequest;
+import com.mqttsnet.thinglinks.broker.api.domain.vo.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +34,11 @@ public class RemoteMqttBrokerOpenApiFallback implements FallbackFactory<RemoteMq
             /**
              * MQTT推送消息接口
              *
-             * @param publishMessageRequest 推送消息请求参数
+             * @param publishMessageRequestVO 推送消息请求参数
              * @return {@link R} 结果
              */
             @Override
-            public R<?> sendMessage(PublishMessageRequest publishMessageRequest) {
+            public R<?> sendMessage(PublishMessageRequestVO publishMessageRequestVO) {
                 return R.fail("remoteMqttBrokerOpenApi.sendMessage() Service call failure e:{}", throwable.getMessage());
             }
 

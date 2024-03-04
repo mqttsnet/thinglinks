@@ -29,6 +29,7 @@ import java.util.Objects;
  */
 @Slf4j
 //@Component
+@Deprecated
 @RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_BROKER_GROUP, topic = ConsumerTopicConstant.THINGLINKS_LINK_MQTT_MSG, messageModel = MessageModel.CLUSTERING)
 public class DeviceActionMessageRocketmqConsumer implements RocketMQListener {
     @Autowired

@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.broker.api;
 
-import com.mqttsnet.thinglinks.broker.api.domain.model.PublishMessageRequest;
+import com.mqttsnet.thinglinks.broker.api.domain.vo.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.broker.api.factory.RemoteMqttBrokerOpenApiFallback;
 import com.mqttsnet.thinglinks.common.core.constant.ServiceNameConstants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
@@ -30,12 +30,12 @@ public interface RemoteMqttBrokerOpenApi {
     /**
      * MQTT推送消息接口
      *
-     * @param publishMessageRequest 推送消息请求参数
+     * @param publishMessageRequestVO 推送消息请求参数
      * @return {@link R} 结果
      */
     @ApiOperation(value = "MQTT推送消息", notes = "根据提供的主题、服务质量等级、保留标志和消息内容推送MQTT消息")
     @PostMapping("/sendMessage")
-    R<?> sendMessage(@ApiParam(value = "推送消息请求参数", required = true) @RequestBody PublishMessageRequest publishMessageRequest);
+    R<?> sendMessage(@ApiParam(value = "推送消息请求参数", required = true) @RequestBody PublishMessageRequestVO publishMessageRequestVO);
 
     /**
      * 关闭客户端连接

@@ -142,23 +142,8 @@ public class Constants {
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
     /**
-     * 设备信息 cache key
-     */
-    public static final String DEVICE_RECORD_KEY = "device_record:";
-
-    /**
      * 重复提交 cache key
      */
     public static final String RESUBMIT_URL_KEY = "resubmit_url:";
-
-    /**
-     * TDengine superTableFields cache key
-     */
-    public static final String TDENGINE_SUPERTABLEFILELDS = "TDengine_SuperTableFields:";
-
-    /**
-     * 设备数据上报协议脚本 cache key
-     */
-    public static final String DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT = "device_data_reported_agreement_script:";
 
 }

@@ -5,9 +5,8 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model.DeviceInfoParams;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -25,8 +24,11 @@ import java.time.LocalDateTime;
 */
 @ApiModel(value="子设备档案表")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+@Accessors(chain = true)
+@Builder
 public class DeviceInfo implements Serializable {
     /**
     * 主键

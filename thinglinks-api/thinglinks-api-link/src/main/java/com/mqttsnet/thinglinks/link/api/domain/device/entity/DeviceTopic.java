@@ -2,7 +2,8 @@ package com.mqttsnet.thinglinks.link.api.domain.device.entity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -20,6 +21,11 @@ import java.time.LocalDateTime;
 */
 @ApiModel(value="设备Topic数据表")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+@Accessors(chain = true)
+@Builder
 public class DeviceTopic implements Serializable {
     /**
     * id

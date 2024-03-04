@@ -33,5 +33,7 @@ spring:
             refresh: false
           - dataId: database.yml
             refresh: true
+          - dataId: kafka.yml
+            refresh: false
         username: @nacos.username@
         password: @nacos.password@

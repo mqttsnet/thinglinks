@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
@@ -408,11 +409,11 @@ public class ProductServiceImpl implements ProductService {
                 }
                 log.info("Create SuperTable Result: {}", cstResult.getCode());
                 //将之前存在redis里的同样的名称的超级表的表结构信息删除
-                if (redisService.hasKey(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
-                    redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName);
+                if (redisService.hasKey(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
+                    redisService.deleteObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName);
                 }
                 //在redis里存入新的超级表对的表结构信息
-                redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
+                redisService.setCacheObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
                 log.info("缓存超级表数据模型:{}", JSON.toJSONString(superTableDto));
             }
         } catch (Exception e) {
@@ -649,11 +650,11 @@ public class ProductServiceImpl implements ProductService {
                 //设置超级表标签字段列表
                 superTableDto.setTagsFields(tagsFields);
                 //将之前存在redis里的同样的名称的超级表的表结构信息删除
-                if (redisService.hasKey(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
-                    redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName);
+                if (redisService.hasKey(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
+                    redisService.deleteObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName);
                 }
                 //在redis里存入新的超级表对的表结构信息
-                redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
+                redisService.setCacheObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
                 log.info("缓存超级表数据模型:{}", JSON.toJSONString(superTableDto));
                 superTableDtoList.add(superTableDto);
                 if (Boolean.TRUE.equals(InitializeOrNot)) {

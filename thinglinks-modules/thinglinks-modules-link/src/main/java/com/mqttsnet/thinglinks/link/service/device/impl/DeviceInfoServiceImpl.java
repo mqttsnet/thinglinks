@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
@@ -181,7 +181,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         SysUser sysUser = loginUser.getSysUser();
         deviceInfo.setCreateBy(sysUser.getUserName());
         deviceInfo.setDeviceId(UUID.getUUID());
-        deviceInfo.setConnectStatus(DeviceConnectStatus.INIT.getValue());
+        deviceInfo.setConnectStatus(DeviceConnectStatusEnum.INIT.getValue());
         deviceInfo.setShadowEnable(true);
         return deviceInfoMapper.insertDeviceInfo(deviceInfo);
     }

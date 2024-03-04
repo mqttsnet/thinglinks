@@ -1,3 +1,14 @@
+# 设备表新增字段
+ALTER TABLE thinglinks_test.device ADD encrypt_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密密钥';
+ALTER TABLE thinglinks_test.device ADD encrypt_vector varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密向量';
+ALTER TABLE thinglinks_test.device ADD sign_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '签名密钥';
+ALTER TABLE thinglinks_test.device ADD encrypt_method tinyint(4) DEFAULT 0 NOT NULL COMMENT '协议加密方式';
+ALTER TABLE thinglinks_test.device ADD sw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '软件版本';
+ALTER TABLE thinglinks_test.device ADD fw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '固件版本';
+ALTER TABLE thinglinks_test.device ADD device_sdk_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'v1' NOT NULL COMMENT 'sdk版本';
+
+
+
 CREATE TABLE `ota_upgrades`
 (
     `id`                     bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -15,7 +26,6 @@ CREATE TABLE `ota_upgrades`
     `created_time`           datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_by`             bigint(20) DEFAULT NULL COMMENT '更新人',
     `updated_time`           datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `created_org_id`         bigint(20) DEFAULT NULL COMMENT '创建人组织',
     PRIMARY KEY (`id`) USING BTREE,
     KEY                      `idx_app_id` (`app_id`) USING BTREE COMMENT '应用ID',
     KEY                      `idx_product_identification` (`product_identification`) USING BTREE COMMENT '产品标识',
@@ -35,7 +45,6 @@ CREATE TABLE `ota_upgrade_tasks`
     `created_time`   datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_by`     bigint(20) DEFAULT NULL COMMENT '更新人',
     `updated_time`   datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `created_org_id` bigint(20) DEFAULT NULL COMMENT '创建人组织',
     PRIMARY KEY (`id`) USING BTREE,
     KEY              `idx_upgrade_id` (`upgrade_id`) USING BTREE COMMENT '升级包ID'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='OTA升级任务表';
@@ -55,8 +64,10 @@ CREATE TABLE `ota_upgrade_records`
     `failure_details`       longtext COMMENT '升级失败详细信息',
     `log_details`           longtext COMMENT '升级过程日志',
     `remark`                varchar(255)          DEFAULT '' COMMENT '描述',
+    `created_by`            bigint(20) DEFAULT NULL COMMENT '创建人',
     `created_time`          datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
-    `created_org_id`        bigint(20) DEFAULT NULL COMMENT '创建人组织',
+    `updated_by`            bigint(20) DEFAULT NULL COMMENT '更新人',
+    `updated_time`          datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE KEY `idx_task_id_device_identification` (`task_id`,`device_identification`) USING BTREE,
     KEY                     `idx_task_id` (`task_id`),

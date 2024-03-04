@@ -450,36 +450,43 @@ COMMIT;
 -- Table structure for device
 -- ----------------------------
 DROP TABLE IF EXISTS `device`;
+-- thinglinks_test.device definition
+
 CREATE TABLE `device`
 (
     `id`                     bigint(19) NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `client_id`              varchar(255) NOT NULL COMMENT '客户端标识',
-    `user_name`              varchar(255) NOT NULL COMMENT '用户名',
-    `password`               varchar(255) NOT NULL COMMENT '密码',
-    `app_id`                 varchar(64)  NOT NULL COMMENT '应用ID',
-    `auth_mode`              varchar(255)          DEFAULT NULL COMMENT '认证方式',
-    `device_identification`  varchar(100) NOT NULL COMMENT '设备标识',
-    `device_name`            varchar(255) NOT NULL COMMENT '设备名称',
-    `connector`              varchar(255)          DEFAULT NULL COMMENT '连接实例',
-    `device_description`     varchar(255)          DEFAULT NULL COMMENT '设备描述',
-    `device_status`          varchar(255) NOT NULL COMMENT '设备状态： 启用 || 禁用',
-    `connect_status`         varchar(255)          DEFAULT NULL COMMENT '连接状态 : 在线：ONLINE || 离线：OFFLINE || 未连接：INIT',
-    `is_will`                varchar(255)          DEFAULT NULL COMMENT '是否遗言',
-    `device_tags`            varchar(255)          DEFAULT NULL COMMENT '设备标签',
-    `product_identification` varchar(255) NOT NULL COMMENT '产品标识',
-    `protocol_type`          varchar(255) NOT NULL COMMENT '产品协议类型 ：mqtt || coap || modbus || http',
-    `device_type`            varchar(255)          DEFAULT NULL COMMENT '设备类型',
-    `create_by`              varchar(64)           DEFAULT 'ununited' COMMENT '创建者',
-    `create_time`            datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_by`              varchar(64)           DEFAULT '' COMMENT '更新者',
-    `update_time`            datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `remark`                 varchar(500)          DEFAULT NULL COMMENT '备注',
+    `client_id`              varchar(255)                       NOT NULL COMMENT '客户端标识',
+    `user_name`              varchar(255)                       NOT NULL COMMENT '用户名',
+    `password`               varchar(255)                       NOT NULL COMMENT '密码',
+    `app_id`                 varchar(64)                        NOT NULL COMMENT '应用ID',
+    `auth_mode`              varchar(255)                                DEFAULT NULL COMMENT '认证方式',
+    `device_identification`  varchar(100)                       NOT NULL COMMENT '设备标识',
+    `device_name`            varchar(255)                       NOT NULL COMMENT '设备名称',
+    `connector`              varchar(255)                                DEFAULT NULL COMMENT '连接实例',
+    `device_description`     varchar(255)                                DEFAULT NULL COMMENT '设备描述',
+    `device_status`          varchar(255)                       NOT NULL COMMENT '设备状态： 启用 || 禁用',
+    `connect_status`         varchar(255)                                DEFAULT NULL COMMENT '连接状态 : 在线：ONLINE || 离线：OFFLINE || 未连接：INIT',
+    `is_will`                varchar(255)                                DEFAULT NULL COMMENT '是否遗言',
+    `device_tags`            varchar(255)                                DEFAULT NULL COMMENT '设备标签',
+    `product_identification` varchar(255)                       NOT NULL COMMENT '产品标识',
+    `protocol_type`          varchar(255)                       NOT NULL COMMENT '产品协议类型 ：mqtt || coap || modbus || http',
+    `device_type`            varchar(255)                                DEFAULT NULL COMMENT '设备类型',
+    `create_by`              varchar(64)                                 DEFAULT 'ununited' COMMENT '创建者',
+    `create_time`            datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by`              varchar(64)                                 DEFAULT '' COMMENT '更新者',
+    `update_time`            datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `remark`                 varchar(500)                                DEFAULT NULL COMMENT '备注',
+    `encrypt_key`            varchar(255) CHARACTER SET utf8mb4          DEFAULT '' COMMENT '加密密钥',
+    `encrypt_vector`         varchar(255) CHARACTER SET utf8mb4          DEFAULT '' COMMENT '加密向量',
+    `sign_key`               varchar(255) CHARACTER SET utf8mb4          DEFAULT '' COMMENT '签名密钥',
+    `encrypt_method`         tinyint(4) NOT NULL DEFAULT '0' COMMENT '协议加密方式',
+    `sw_version`             varchar(255) CHARACTER SET utf8mb4          DEFAULT '' COMMENT '软件版本',
+    `fw_version`             varchar(255) CHARACTER SET utf8mb4          DEFAULT '' COMMENT '固件版本',
+    `device_sdk_version`     varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT 'v1' COMMENT 'sdk版本',
     PRIMARY KEY (`id`) USING BTREE,
     KEY                      `device_id` (`device_identification`) USING BTREE COMMENT '设备标识',
     KEY                      `client_id` (`client_id`) USING BTREE COMMENT '客户端标识'
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 67
-  DEFAULT CHARSET = utf8 COMMENT ='边设备档案信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=84 DEFAULT CHARSET=utf8 COMMENT='边设备档案信息表';
 
 -- ----------------------------
 -- Records of device
@@ -4321,6 +4328,8 @@ CREATE TABLE `ota_upgrades`
 -- Table structure for ota_upgrade_tasks
 -- ----------------------------
 
+-- thinglinks_test.ota_upgrade_tasks definition
+
 CREATE TABLE `ota_upgrade_tasks`
 (
     `id`             bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -4334,7 +4343,6 @@ CREATE TABLE `ota_upgrade_tasks`
     `created_time`   datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `updated_by`     bigint(20) DEFAULT NULL COMMENT '更新人',
     `updated_time`   datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `created_org_id` bigint(20) DEFAULT NULL COMMENT '创建人组织',
     PRIMARY KEY (`id`) USING BTREE,
     KEY              `idx_upgrade_id` (`upgrade_id`) USING BTREE COMMENT '升级包ID'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='OTA升级任务表';
@@ -4347,6 +4355,7 @@ CREATE TABLE `ota_upgrade_tasks`
 -- ----------------------------
 -- Table structure for ota_upgrade_records
 -- ----------------------------
+
 
 CREATE TABLE `ota_upgrade_records`
 (
@@ -4363,6 +4372,10 @@ CREATE TABLE `ota_upgrade_records`
     `failure_details`       longtext COMMENT '升级失败详细信息',
     `log_details`           longtext COMMENT '升级过程日志',
     `remark`                varchar(255)          DEFAULT '' COMMENT '描述',
+    `created_time`          datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
+    `created_by`            bigint(20) DEFAULT NULL COMMENT '创建人',
+    `updated_by`            bigint(20) DEFAULT NULL COMMENT '更新人',
+    `updated_time`          datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE KEY `idx_task_id_device_identification` (`task_id`,`device_identification`) USING BTREE,
     KEY                     `idx_task_id` (`task_id`),

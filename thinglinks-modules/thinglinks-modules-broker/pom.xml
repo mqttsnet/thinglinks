@@ -61,6 +61,20 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
+        <!-- thinglinks Common Kafka -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-kafka</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+        <!-- thinglinks Common protocol -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-protocol</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
         <!-- thinglinks API Link -->
         <dependency>
             <groupId>com.mqttsnet</groupId>
@@ -78,6 +92,13 @@
             <artifactId>thinglinks-api-broker</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-modules-link</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
 
     </dependencies>
 

@@ -7,13 +7,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.dynamicCompilation.ClassInjector;
 import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicClassLoader;
 import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicLoaderEngine;
 import com.mqttsnet.thinglinks.common.core.dynamicCompilation.bytecode.InjectionSystem;
-import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceType;
 import com.mqttsnet.thinglinks.common.core.enums.ProtocolType;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
@@ -225,7 +226,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 处理/topo/add Topic边设备添加子设备
      *
      * @param deviceIdentification 设备标识
-     * @param body                  数据
+     * @param body                 数据
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
@@ -261,7 +262,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             deviceInfo.setDescription(deviceInfos.getDescription());
             deviceInfo.setManufacturerId(deviceInfos.getManufacturerId());
             deviceInfo.setModel(deviceInfos.getModel());
-            deviceInfo.setConnectStatus(DeviceConnectStatus.INIT.getValue());
+            deviceInfo.setConnectStatus(DeviceConnectStatusEnum.INIT.getValue());
             deviceInfo.setShadowEnable(true);
             StringBuilder shadowTableNameBuilder = new StringBuilder();
             // 新增设备管理成功后，创建TD普通表
@@ -321,7 +322,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 处理/topo/delete Topic边设备删除子设备
      *
      * @param deviceIdentification 设备标识
-     * @param body                  数据
+     * @param body                 数据
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
@@ -360,7 +361,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 处理/topo/update Topic边设备更新子设备状态
      *
      * @param deviceIdentification 设备标识
-     * @param body                  数据
+     * @param body                 数据
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
@@ -389,9 +390,9 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
             }
             if ("ONLINE".equals(status)) {
-                deviceInfo.setConnectStatus(DeviceConnectStatus.ONLINE.getValue());
+                deviceInfo.setConnectStatus(DeviceConnectStatusEnum.ONLINE.getValue());
             } else if ("OFFLINE".equals(status)) {
-                deviceInfo.setConnectStatus(DeviceConnectStatus.OFFLINE.getValue());
+                deviceInfo.setConnectStatus(DeviceConnectStatusEnum.OFFLINE.getValue());
             }
             final int updateByPrimaryKeySelectiveCount = deviceInfoService.updateByPrimaryKeySelective(deviceInfo);
             if (updateByPrimaryKeySelectiveCount > 0) {
@@ -413,7 +414,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 处理datas Topic数据上报
      *
      * @param deviceIdentification 设备标识
-     * @param body                  数据
+     * @param body                 数据
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
@@ -426,12 +427,12 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
         for (Map<String, Object> item : items) {
             final Object deviceId = item.get("deviceId");
             Device device = null;
-            if (Boolean.TRUE.equals(redisService.hasKey(Constants.DEVICE_RECORD_KEY + deviceIdentification))) {
-                device = redisService.getCacheObject(Constants.DEVICE_RECORD_KEY + deviceIdentification);
+            if (Boolean.TRUE.equals(redisService.hasKey(CacheConstants.DEVICE_RECORD_KEY + deviceIdentification))) {
+                device = redisService.getCacheObject(CacheConstants.DEVICE_RECORD_KEY + deviceIdentification);
             } else {
                 device = deviceService.findOneByDeviceIdentification(deviceIdentification);
                 if (StringUtils.isNotNull(device)) {
-                    redisService.setCacheObject(Constants.DEVICE_RECORD_KEY + deviceIdentification, device);
+                    redisService.setCacheObject(CacheConstants.DEVICE_RECORD_KEY + deviceIdentification, device);
                 } else {
                     log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
                     continue;
@@ -471,7 +472,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
                 String tableName = superTableName + "_" + deviceId.toString();
                 //从redis根据超级表名称取出超级表表结构信息
-                final Object cacheObject = redisService.getCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName);
+                final Object cacheObject = redisService.getCacheObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName);
                 ObjectMapper objectMapper = new ObjectMapper();
                 SuperTableDto superTableDto = objectMapper.convertValue(cacheObject, SuperTableDto.class);
                 //获取超级表的表结构信息
@@ -554,7 +555,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 处理/commandResponse Topic边设备返回给物联网平台的命令响应
      *
      * @param deviceIdentification 设备标识
-     * @param body                  数据
+     * @param body                 数据
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
@@ -567,8 +568,8 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 根据设备找到所属产品 产品的服务及属性 转换出系统能识别的json 找到这个产品的协议内容即Java代码
      */
     public String convertToBody(String deviceIdentification, String body) {
-        if (Boolean.TRUE.equals(redisService.hasKey(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification))) {
-            String protocolContent = redisService.get(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification);
+        if (Boolean.TRUE.equals(redisService.hasKey(CacheConstants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification))) {
+            String protocolContent = redisService.get(CacheConstants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification);
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintWriter out = new PrintWriter(buffer, true);
             byte[] classBytes = DynamicLoaderEngine.compile(protocolContent, out, null);//传入要执行的代码

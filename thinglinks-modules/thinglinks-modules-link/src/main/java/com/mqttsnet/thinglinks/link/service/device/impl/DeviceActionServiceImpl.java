@@ -3,7 +3,7 @@ package com.mqttsnet.thinglinks.link.service.device.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
-import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
@@ -116,7 +116,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         Gson gson = new Gson();
         Map<String, Object> map = new HashMap<>();
         map = gson.fromJson(thinglinksMessage.toJSONString(), map.getClass());
-        deviceService.updateConnectStatusByClientId(DeviceConnectStatus.ONLINE.getValue(), String.valueOf(map.get("clientId")));
+        deviceService.updateConnectStatusByClientId(DeviceConnectStatusEnum.ONLINE.getValue(), String.valueOf(map.get("clientId")));
     }
 
     /**
@@ -129,7 +129,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         Gson gson = new Gson();
         Map<String, Object> map = new HashMap<>();
         map = gson.fromJson(thinglinksMessage.toJSONString(), map.getClass());
-        deviceService.updateConnectStatusByClientId(DeviceConnectStatus.OFFLINE.getValue(), String.valueOf(map.get("clientId")));
+        deviceService.updateConnectStatusByClientId(DeviceConnectStatusEnum.OFFLINE.getValue(), String.valueOf(map.get("clientId")));
     }
 
 
@@ -230,7 +230,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         Device device = deviceService.findOneByClientId(String.valueOf(map.get("clientId")));
         if (null != device){
             //缓存设备信息
-            redisService.setCacheObject(Constants.DEVICE_RECORD_KEY+device.getClientId(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(CacheConstants.DEVICE_RECORD_KEY+device.getClientId(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
         }
     }
 
