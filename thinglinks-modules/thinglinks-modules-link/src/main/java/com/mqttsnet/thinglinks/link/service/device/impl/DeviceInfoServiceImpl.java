@@ -1,10 +1,10 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.mqttsnet.thinglinks.broker.api.RemotePublishActorService;
+import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
@@ -67,7 +67,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
     private RemoteTdEngineService remoteTdEngineService;
 
     @Resource
-    private RemotePublishActorService remotePublishActorService;
+    private RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi;
 
     @Value("${spring.datasource.dynamic.datasource.master.dbName:thinglinks}")
     private String dataBaseName;
@@ -181,7 +181,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         SysUser sysUser = loginUser.getSysUser();
         deviceInfo.setCreateBy(sysUser.getUserName());
         deviceInfo.setDeviceId(UUID.getUUID());
-        deviceInfo.setConnectStatus(DeviceConnectStatus.INIT.getValue());
+        deviceInfo.setConnectStatus(DeviceConnectStatusEnum.INIT.getValue());
         deviceInfo.setShadowEnable(true);
         return deviceInfoMapper.insertDeviceInfo(deviceInfo);
     }
@@ -239,7 +239,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
                 param.put("qos", 2);
                 param.put("retain", false);
                 param.put("message", JSON.toJSONString(responseMaps));
-                remotePublishActorService.sendMessage(param);
+//                remoteMqttBrokerOpenApi.sendMessage(param);
             }
             responseMaps.clear();
         });

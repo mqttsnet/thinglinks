@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.common.listener;
 
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
@@ -50,9 +51,9 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
             resultLock = redisService.checkLock(expiredKey, uuid, 1000L);
             if (resultLock) {
                 log.info("获取分布式锁成功-key：{}，value：{}", expiredKey, uuid);
-                if (expiredKey.contains(Constants.DEVICE_RECORD_KEY)){
+                if (expiredKey.contains(CacheConstants.DEVICE_RECORD_KEY)){
                     log.info("设备信息缓存失效{}",expiredKey);
-                    deviceService.cacheInvalidation(expiredKey.replace(Constants.DEVICE_RECORD_KEY, ""));
+                    deviceService.cacheInvalidation(expiredKey.replace(CacheConstants.DEVICE_RECORD_KEY, ""));
                 }
             }else {
                 log.info("获取分布式锁失败-key：{}，value：{}", expiredKey, uuid);

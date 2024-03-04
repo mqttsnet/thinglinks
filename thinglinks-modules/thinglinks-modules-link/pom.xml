@@ -73,14 +73,7 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
-        <!-- thinglinks Common Rocketmq -->
-        <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-rocketmq</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>
-
-        <!-- thinglinks Common kafka -->
+        <!-- thinglinks Common Kafka -->
         <dependency>
             <groupId>com.mqttsnet</groupId>
             <artifactId>thinglinks-common-kafka</artifactId>
@@ -91,20 +84,6 @@
         <dependency>
             <groupId>com.mqttsnet</groupId>
             <artifactId>thinglinks-api-link</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>
-
-        <!-- thinglinks Common job -->
-        <!--<dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-job</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>-->
-
-        <!-- thinglinks Common kafka -->
-        <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-kafka</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
 
@@ -156,110 +135,110 @@
             </plugin>
 
         </plugins>
-<!--        <plugins>-->
-<!--            &lt;!&ndash;打包jar&ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-jar-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    &lt;!&ndash;                    &lt;!&ndash;不打包资源文件&ndash;&gt;&ndash;&gt;-->
-<!--                    <excludes>-->
-<!--                        <exclude>*.**</exclude>-->
-<!--                        <exclude>*/*.xml</exclude>-->
-<!--                    </excludes>-->
-<!--                    <archive>-->
-<!--                        <manifest>-->
-<!--                            <addClasspath>true</addClasspath>-->
-<!--                            &lt;!&ndash;MANIFEST.MF 中 Class-Path 加入前缀&ndash;&gt;-->
-<!--                            <classpathPrefix>../lib/</classpathPrefix>-->
-<!--                            &lt;!&ndash;jar包不包含唯一版本标识&ndash;&gt;-->
-<!--                            <useUniqueVersions>false</useUniqueVersions>-->
-<!--                            &lt;!&ndash;指定入口类&ndash;&gt;-->
-<!--                            <mainClass>${thinglinks.mainClass.url}</mainClass>-->
-<!--                        </manifest>-->
-<!--                        <manifestEntries>-->
-<!--                            &lt;!&ndash;MANIFEST.MF 中 Class-Path 加入资源文件目录&ndash;&gt;-->
-<!--                            <Class-Path>./resources/</Class-Path>-->
-<!--                        </manifestEntries>-->
-<!--                    </archive>-->
-<!--                    <outputDirectory>${thinglinks.package.url}</outputDirectory>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+        <!--        <plugins>-->
+        <!--            &lt;!&ndash;打包jar&ndash;&gt;-->
+        <!--            <plugin>-->
+        <!--                <groupId>org.apache.maven.plugins</groupId>-->
+        <!--                <artifactId>maven-jar-plugin</artifactId>-->
+        <!--                <configuration>-->
+        <!--                    &lt;!&ndash;                    &lt;!&ndash;不打包资源文件&ndash;&gt;&ndash;&gt;-->
+        <!--                    <excludes>-->
+        <!--                        <exclude>*.**</exclude>-->
+        <!--                        <exclude>*/*.xml</exclude>-->
+        <!--                    </excludes>-->
+        <!--                    <archive>-->
+        <!--                        <manifest>-->
+        <!--                            <addClasspath>true</addClasspath>-->
+        <!--                            &lt;!&ndash;MANIFEST.MF 中 Class-Path 加入前缀&ndash;&gt;-->
+        <!--                            <classpathPrefix>../lib/</classpathPrefix>-->
+        <!--                            &lt;!&ndash;jar包不包含唯一版本标识&ndash;&gt;-->
+        <!--                            <useUniqueVersions>false</useUniqueVersions>-->
+        <!--                            &lt;!&ndash;指定入口类&ndash;&gt;-->
+        <!--                            <mainClass>${thinglinks.mainClass.url}</mainClass>-->
+        <!--                        </manifest>-->
+        <!--                        <manifestEntries>-->
+        <!--                            &lt;!&ndash;MANIFEST.MF 中 Class-Path 加入资源文件目录&ndash;&gt;-->
+        <!--                            <Class-Path>./resources/</Class-Path>-->
+        <!--                        </manifestEntries>-->
+        <!--                    </archive>-->
+        <!--                    <outputDirectory>${thinglinks.package.url}</outputDirectory>-->
+        <!--                </configuration>-->
+        <!--            </plugin>-->
 
-<!--            &lt;!&ndash;拷贝依赖 copy-dependencies&ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-dependency-plugin</artifactId>-->
-<!--                <version>3.2.0</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>copy-dependencies</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>copy-dependencies</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <outputDirectory>-->
-<!--                                ${thinglinks.lib.package.url}-->
-<!--                            </outputDirectory>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
+        <!--            &lt;!&ndash;拷贝依赖 copy-dependencies&ndash;&gt;-->
+        <!--            <plugin>-->
+        <!--                <groupId>org.apache.maven.plugins</groupId>-->
+        <!--                <artifactId>maven-dependency-plugin</artifactId>-->
+        <!--                <version>3.2.0</version>-->
+        <!--                <executions>-->
+        <!--                    <execution>-->
+        <!--                        <id>copy-dependencies</id>-->
+        <!--                        <phase>package</phase>-->
+        <!--                        <goals>-->
+        <!--                            <goal>copy-dependencies</goal>-->
+        <!--                        </goals>-->
+        <!--                        <configuration>-->
+        <!--                            <outputDirectory>-->
+        <!--                                ${thinglinks.lib.package.url}-->
+        <!--                            </outputDirectory>-->
+        <!--                        </configuration>-->
+        <!--                    </execution>-->
+        <!--                </executions>-->
+        <!--            </plugin>-->
 
-<!--            &lt;!&ndash;拷贝资源文件 copy-resources&ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <artifactId>maven-resources-plugin</artifactId>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>copy-resources</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>copy-resources</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <resources>-->
-<!--                                <resource>-->
-<!--                                    <directory>src/main/resources</directory>-->
-<!--                                </resource>-->
-<!--                            </resources>-->
-<!--                            <outputDirectory>${thinglinks.package.url}/resources</outputDirectory>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
+        <!--            &lt;!&ndash;拷贝资源文件 copy-resources&ndash;&gt;-->
+        <!--            <plugin>-->
+        <!--                <artifactId>maven-resources-plugin</artifactId>-->
+        <!--                <executions>-->
+        <!--                    <execution>-->
+        <!--                        <id>copy-resources</id>-->
+        <!--                        <phase>package</phase>-->
+        <!--                        <goals>-->
+        <!--                            <goal>copy-resources</goal>-->
+        <!--                        </goals>-->
+        <!--                        <configuration>-->
+        <!--                            <resources>-->
+        <!--                                <resource>-->
+        <!--                                    <directory>src/main/resources</directory>-->
+        <!--                                </resource>-->
+        <!--                            </resources>-->
+        <!--                            <outputDirectory>${thinglinks.package.url}/resources</outputDirectory>-->
+        <!--                        </configuration>-->
+        <!--                    </execution>-->
+        <!--                </executions>-->
+        <!--            </plugin>-->
 
-<!--            &lt;!&ndash;spring boot repackage，依赖 maven-jar-plugin 打包的jar包 重新打包成 spring boot 的jar包&ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--                <version>2.5.5</version>-->
-<!--                <configuration>-->
-<!--                    &lt;!&ndash;重写包含依赖，包含不存在的依赖，jar里没有pom里的依赖&ndash;&gt;-->
-<!--                    <includes>-->
-<!--                        <include>-->
-<!--                            <groupId>null</groupId>-->
-<!--                            <artifactId>null</artifactId>-->
-<!--                        </include>-->
-<!--                    </includes>-->
-<!--                    <layout>ZIP</layout>-->
-<!--                    &lt;!&ndash;使用外部配置文件，jar包里没有资源文件&ndash;&gt;-->
-<!--                    <addResources>true</addResources>-->
-<!--                    <outputDirectory>${thinglinks.package.url}</outputDirectory>-->
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>repackage</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            &lt;!&ndash;配置jar包特殊标识 配置后，保留原文件，生成新文件 *-run.jar &ndash;&gt;-->
-<!--                            &lt;!&ndash;配置jar包特殊标识 不配置，原文件命名为 *.jar.original，生成新文件 *.jar &ndash;&gt;-->
-<!--                            &lt;!&ndash;<classifier>run</classifier>&ndash;&gt;-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
+        <!--            &lt;!&ndash;spring boot repackage，依赖 maven-jar-plugin 打包的jar包 重新打包成 spring boot 的jar包&ndash;&gt;-->
+        <!--            <plugin>-->
+        <!--                <groupId>org.springframework.boot</groupId>-->
+        <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+        <!--                <version>2.5.5</version>-->
+        <!--                <configuration>-->
+        <!--                    &lt;!&ndash;重写包含依赖，包含不存在的依赖，jar里没有pom里的依赖&ndash;&gt;-->
+        <!--                    <includes>-->
+        <!--                        <include>-->
+        <!--                            <groupId>null</groupId>-->
+        <!--                            <artifactId>null</artifactId>-->
+        <!--                        </include>-->
+        <!--                    </includes>-->
+        <!--                    <layout>ZIP</layout>-->
+        <!--                    &lt;!&ndash;使用外部配置文件，jar包里没有资源文件&ndash;&gt;-->
+        <!--                    <addResources>true</addResources>-->
+        <!--                    <outputDirectory>${thinglinks.package.url}</outputDirectory>-->
+        <!--                </configuration>-->
+        <!--                <executions>-->
+        <!--                    <execution>-->
+        <!--                        <goals>-->
+        <!--                            <goal>repackage</goal>-->
+        <!--                        </goals>-->
+        <!--                        <configuration>-->
+        <!--                            &lt;!&ndash;配置jar包特殊标识 配置后，保留原文件，生成新文件 *-run.jar &ndash;&gt;-->
+        <!--                            &lt;!&ndash;配置jar包特殊标识 不配置，原文件命名为 *.jar.original，生成新文件 *.jar &ndash;&gt;-->
+        <!--                            &lt;!&ndash;<classifier>run</classifier>&ndash;&gt;-->
+        <!--                        </configuration>-->
+        <!--                    </execution>-->
+        <!--                </executions>-->
+        <!--            </plugin>-->
+        <!--        </plugins>-->
     </build>
 </project>

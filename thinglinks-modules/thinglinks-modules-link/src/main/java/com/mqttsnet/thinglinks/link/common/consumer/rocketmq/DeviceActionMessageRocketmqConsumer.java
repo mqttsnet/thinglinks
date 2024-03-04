@@ -29,6 +29,7 @@ import java.util.Objects;
  */
 @Slf4j
 //@Component
+@Deprecated
 @RocketMQMessageListener(consumerGroup = ConsumerGroupConstant.THINGLINKS_BROKER_GROUP, topic = ConsumerTopicConstant.THINGLINKS_LINK_MQTT_MSG, messageModel = MessageModel.CLUSTERING)
 public class DeviceActionMessageRocketmqConsumer implements RocketMQListener {
     @Autowired
@@ -39,8 +40,8 @@ public class DeviceActionMessageRocketmqConsumer implements RocketMQListener {
     @Async("linkAsync")
     @Override
     public void onMessage(Object message) {
-        if (null == message){
-            log.warn("message cannot be empty {}",message);
+        if (null == message) {
+            log.warn("message cannot be empty {}", message);
             return;
         }
         log.info("ThingLinks物联网平台数据消费-->Received message={}", message);

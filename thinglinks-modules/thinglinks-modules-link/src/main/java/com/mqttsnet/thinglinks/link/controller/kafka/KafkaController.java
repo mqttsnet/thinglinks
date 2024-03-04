@@ -1,6 +1,5 @@
 package com.mqttsnet.thinglinks.link.controller.kafka;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -32,8 +31,8 @@ public class KafkaController {
 
     @Transactional
     @PostMapping("/send")
-    public String kafkaMessageSend(@RequestBody Map<String, String> params){
-        thingLinksProKafkaTemplate.send(new ProducerRecord<>(String.valueOf(params.get("topic")),String.valueOf(params.get("msg"))));
-        return "success-"+params.get("topic");
+    public String kafkaMessageSend(@RequestBody Map<String, String> params) {
+        thingLinksProKafkaTemplate.send(new ProducerRecord<>(String.valueOf(params.get("topic")), String.valueOf(params.get("msg"))));
+        return "success-" + params.get("topic");
     }
 }

@@ -33,7 +33,5 @@ spring:
             refresh: false
           - dataId: database.yml
             refresh: true
-          - dataId: rocketmq.yml
-            refresh: false
         username: @nacos.username@
         password: @nacos.password@

@@ -1,10 +1,8 @@
 package com.mqttsnet.thinglinks.link.controller.device;
 
-import cn.hutool.json.JSONConverter;
-import com.alibaba.fastjson.JSON;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -16,17 +14,26 @@ import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.OtaCommandResponseParam;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoAddSubDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoQueryDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoUpdateSubDeviceStatusParam;
+import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoAddDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoQueryDeviceResultVO;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -96,11 +103,11 @@ public class DeviceController extends BaseController {
 
         Map<String, Integer> countMap = new HashMap<>();
         //统计设备在线数量
-        countMap.put("onlineCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue())) ? connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()).size() : 0);
+        countMap.put("onlineCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatusEnum.ONLINE.getValue())) ? connectStatusCollect.get(DeviceConnectStatusEnum.ONLINE.getValue()).size() : 0);
         //统计设备离线数量
-        countMap.put("offlineCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue())) ? connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()).size() : 0);
+        countMap.put("offlineCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatusEnum.OFFLINE.getValue())) ? connectStatusCollect.get(DeviceConnectStatusEnum.OFFLINE.getValue()).size() : 0);
         //统计设备初始化数量
-        countMap.put("initCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.INIT.getValue())) ? connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()).size() : 0);
+        countMap.put("initCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatusEnum.INIT.getValue())) ? connectStatusCollect.get(DeviceConnectStatusEnum.INIT.getValue()).size() : 0);
 
         return AjaxResult.success(countMap);
     }
@@ -237,6 +244,7 @@ public class DeviceController extends BaseController {
      * @param params
      * @return
      */
+    @Deprecated
     @PostMapping("/clientAuthentication")
     public ResponseEntity<AjaxResult> clientAuthentication(@RequestBody Map<String, Object> params) {
         final Object clientIdentifier = params.get("clientIdentifier");
@@ -306,5 +314,169 @@ public class DeviceController extends BaseController {
     @PostMapping("/selectDeviceByDeviceIdentificationList")
     public R<?> selectDeviceByDeviceIdentificationList(@RequestBody List<String> deviceIdentificationList) {
         return R.ok(deviceService.selectDeviceByDeviceIdentificationList(deviceIdentificationList));
+    }
+
+
+    /**
+     * （MQTT）协议新增子设备档案
+     *
+     * @param topoAddSubDeviceParam 子设备参数
+     * @return {@link TopoAddDeviceResultVO} 新增结果
+     */
+    @ApiOperation(value = "（MQTT）协议新增子设备档案", httpMethod = "POST", notes = "（MQTT）协议新增子设备档案")
+    @PostMapping("/saveSubDeviceByMqtt")
+    public R<TopoAddDeviceResultVO> saveSubDeviceByMqtt(@RequestBody TopoAddSubDeviceParam topoAddSubDeviceParam) {
+        return R.ok(deviceService.saveSubDeviceByMqtt(topoAddSubDeviceParam));
+    }
+
+    /**
+     * （HTTP）协议新增子设备档案
+     *
+     * @param topoAddSubDeviceParam 子设备参数
+     * @return {@link TopoAddDeviceResultVO} 新增结果
+     */
+    @ApiOperation(value = "（HTTP）协议新增子设备档案", httpMethod = "POST", notes = "（HTTP）协议新增子设备档案")
+    @PostMapping("/saveSubDeviceByHttp")
+    public R<TopoAddDeviceResultVO> saveSubDeviceByHttp(@RequestBody TopoAddSubDeviceParam topoAddSubDeviceParam) {
+        return R.ok(deviceService.saveSubDeviceByHttp(topoAddSubDeviceParam));
+    }
+
+    /**
+     * MQTT协议修改子设备连接状态
+     *
+     * @param topoUpdateSubDeviceStatusParam 连接状态参数
+     * @return {@link TopoDeviceOperationResultVO} 修改结果
+     */
+    @ApiOperation(value = "（MQTT）协议修改子设备连接状态", httpMethod = "PUT", notes = "（MQTT）协议修改子设备连接状态")
+    @PutMapping("/updateSubDeviceConnectStatusByMqtt")
+    public R<TopoDeviceOperationResultVO> updateSubDeviceConnectStatusByMqtt(
+            @RequestBody @ApiParam(value = "连接状态参数") TopoUpdateSubDeviceStatusParam topoUpdateSubDeviceStatusParam) {
+        TopoDeviceOperationResultVO topoDeviceOperationResultVO = deviceService.updateSubDeviceConnectStatusByMqtt(topoUpdateSubDeviceStatusParam);
+        return R.ok(topoDeviceOperationResultVO);
+    }
+
+    /**
+     * HTTP协议修改子设备连接状态
+     *
+     * @param topoUpdateSubDeviceStatusParam 连接状态参数
+     * @return {@link TopoDeviceOperationResultVO} 修改结果
+     */
+    @ApiOperation(value = "（HTTP）协议修改子设备连接状态", httpMethod = "PUT", notes = "（HTTP）协议修改子设备连接状态")
+    @PutMapping("/updateSubDeviceConnectStatusByHttp")
+    public R<TopoDeviceOperationResultVO> updateSubDeviceConnectStatusByHttp(
+            @RequestBody @ApiParam(value = "连接状态参数") TopoUpdateSubDeviceStatusParam topoUpdateSubDeviceStatusParam) {
+        TopoDeviceOperationResultVO topoDeviceOperationResultVO = deviceService.updateSubDeviceConnectStatusByHttp(topoUpdateSubDeviceStatusParam);
+        return R.ok(topoDeviceOperationResultVO);
+    }
+
+    /**
+     * MQTT协议删除子设备
+     *
+     * @param topoDeleteSubDeviceParam 删除参数
+     * @return {@link TopoDeviceOperationResultVO} 修改结果
+     */
+    @ApiOperation(value = "（MQTT）协议删除子设备", httpMethod = "PUT", notes = "（MQTT）协议删除子设备")
+    @PutMapping("/deleteSubDeviceByMqtt")
+    public R<TopoDeviceOperationResultVO> deleteSubDeviceByMqtt(@RequestBody @ApiParam(value = "删除参数") TopoDeleteSubDeviceParam topoDeleteSubDeviceParam) {
+        TopoDeviceOperationResultVO topoDeviceOperationResultVO = deviceService.deleteSubDeviceByMqtt(topoDeleteSubDeviceParam);
+        return R.ok(topoDeviceOperationResultVO);
+    }
+
+    /**
+     * HTTP协议删除子设备
+     *
+     * @param topoDeleteSubDeviceParam 删除参数
+     * @return {@link TopoDeviceOperationResultVO} 修改结果
+     */
+    @ApiOperation(value = "（HTTP）协议删除子设备", httpMethod = "PUT", notes = "（HTTP）协议删除子设备")
+    @PutMapping("/deleteSubDeviceByHttp")
+    public R<TopoDeviceOperationResultVO> deleteSubDeviceByHttp(@RequestBody @ApiParam(value = "删除参数") TopoDeleteSubDeviceParam topoDeleteSubDeviceParam) {
+        TopoDeviceOperationResultVO topoDeviceOperationResultVO = deviceService.deleteSubDeviceByHttp(topoDeleteSubDeviceParam);
+        return R.ok(topoDeviceOperationResultVO);
+    }
+
+
+    /**
+     * MQTT协议数据上报
+     *
+     * @param topoDeviceDataReportParam 数据上报参数
+     * @return {@link TopoDeviceOperationResultVO} 上报结果
+     */
+    @ApiOperation(value = "（MQTT）协议数据上报", httpMethod = "POST", notes = "（MQTT）协议数据上报")
+    @PostMapping("/deviceDataReportByMqtt")
+    public R<TopoDeviceOperationResultVO> deviceDataReportByMqtt(@RequestBody @ApiParam(value = "数据上报参数") TopoDeviceDataReportParam topoDeviceDataReportParam) {
+        TopoDeviceOperationResultVO topoDeviceOperationResultVO = deviceService.deviceDataReportByMqtt(topoDeviceDataReportParam);
+        return R.ok(topoDeviceOperationResultVO);
+    }
+
+    /**
+     * HTTP协议数据上报
+     *
+     * @param topoDeviceDataReportParam 数据上报参数
+     * @return {@link TopoDeviceOperationResultVO} 上报结果
+     */
+    @ApiOperation(value = "（HTTP）协议数据上报", httpMethod = "POST", notes = "（HTTP）协议数据上报")
+    @PostMapping("/deviceDataReportByHttp")
+    public R<TopoDeviceOperationResultVO> deviceDataReportByHttp(@RequestBody @ApiParam(value = "数据上报参数") TopoDeviceDataReportParam topoDeviceDataReportParam) {
+        TopoDeviceOperationResultVO topoDeviceOperationResultVO = deviceService.deviceDataReportByHttp(topoDeviceDataReportParam);
+        return R.ok(topoDeviceOperationResultVO);
+    }
+
+    /**
+     * Queries device information using the HTTP protocol.
+     *
+     * @param topoQueryDeviceParam The device query parameters.
+     * @return {@link TopoQueryDeviceResultVO} The result of the device query.
+     */
+    @ApiOperation(value = "Query Device Information via HTTP Protocol", httpMethod = "POST", notes = "Queries device information using the HTTP protocol")
+    @PostMapping("/queryDeviceByHttp")
+    public R<TopoQueryDeviceResultVO> queryDeviceByHttp(@RequestBody TopoQueryDeviceParam topoQueryDeviceParam) {
+        return R.ok(deviceService.queryDeviceByHttp(topoQueryDeviceParam));
+    }
+
+    /**
+     * Receives and saves a new OTA upgrade record from an MQTT message. This endpoint
+     * captures the command response parameters from the MQTT message body and persists them.
+     *
+     * @param otaCommandResponseParam The response parameters from an OTA command sent via MQTT.
+     * @return {@link R<OtaCommandResponseParam>} A response entity containing the saved OTA upgrade record.
+     */
+    @ApiOperation(value = "Save OTA Upgrade Record", httpMethod = "POST", notes = "Saves a new OTA upgrade record from MQTT message data.")
+    @PostMapping("/saveOtaUpgradeRecordByMqtt")
+    public R<OtaCommandResponseParam> saveOtaUpgradeRecordByMqtt(@Valid @RequestBody OtaCommandResponseParam otaCommandResponseParam) {
+        try {
+            // Call the service method to save the record
+            OtaCommandResponseParam savedRecord = otaUpgradeRecordsService.saveOtaUpgradeRecordByMqtt(otaCommandResponseParam);
+
+            // Return a successful response entity with the saved record
+            return R.ok(savedRecord);
+        } catch (Exception e) {
+            // Log the exception and return an error response entity
+            // Assuming R.fail() is a method to create a failure response
+            return R.fail("Error saving OTA upgrade record: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Receives and saves a new OTA upgrade record from an HTTP request. This endpoint
+     * captures the command response parameters from the request body and persists them.
+     *
+     * @param otaCommandResponseParam The response parameters from an OTA command sent via HTTP.
+     * @return {@link R<OtaCommandResponseParam>} A response wrapper containing the saved OTA upgrade record.
+     */
+    @ApiOperation(value = "Save OTA Upgrade Record via HTTP", httpMethod = "POST", notes = "Saves a new OTA upgrade record from HTTP request data.")
+    @PostMapping("/saveUpgradeRecordByHttp")
+    public R<OtaCommandResponseParam> saveUpgradeRecordByHttp(@Valid @RequestBody OtaCommandResponseParam otaCommandResponseParam) {
+        try {
+            // Call the service method to save the record
+            OtaCommandResponseParam savedRecord = otaUpgradeRecordsService.saveUpgradeRecordByHttp(otaCommandResponseParam);
+
+            // Return a successful response wrapper with the saved record
+            return R.ok(savedRecord);
+        } catch (Exception e) {
+            // Log the exception and return a failure response wrapper
+            // Assuming R.fail() is a method to create a failure response
+            return R.fail("Error saving OTA upgrade record via HTTP: " + e.getMessage());
+        }
     }
 }

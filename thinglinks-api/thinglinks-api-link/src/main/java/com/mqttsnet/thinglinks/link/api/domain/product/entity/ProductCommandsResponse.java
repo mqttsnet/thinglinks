@@ -3,7 +3,8 @@ package com.mqttsnet.thinglinks.link.api.domain.product.entity;
 import com.mqttsnet.thinglinks.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -25,6 +26,11 @@ import java.io.Serializable;
     */
 @ApiModel(value="产品模型设备响应服务命令属性表")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+@Accessors(chain = true)
+@Builder
 public class ProductCommandsResponse extends BaseEntity implements Serializable {
     /**
     * id

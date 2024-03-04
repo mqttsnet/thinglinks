@@ -5,7 +5,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import lombok.Data;
+
+import lombok.*;
+import lombok.experimental.Accessors;
 
 /**
 
@@ -25,6 +27,11 @@ import lombok.Data;
     */
 @ApiModel(value="产品模型设备服务命令表")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+@Accessors(chain = true)
+@Builder
 public class ProductCommands extends BaseEntity implements Serializable {
     /**
     * 命令id

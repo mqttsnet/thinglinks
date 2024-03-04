@@ -5,11 +5,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
-import com.mqttsnet.thinglinks.common.core.mqs.SelectorConfig;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
@@ -35,12 +35,10 @@ import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -54,7 +52,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Description: 产品模型业务层
@@ -87,12 +84,6 @@ public class ProductServiceImpl implements ProductService {
     private RedisService redisService;
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
-
-    @Autowired
-    private KafkaTemplate<String, String> thingLinksProKafkaTemplate;
-
-    @Autowired
-    private SelectorConfig selectorConfig;
 
     /**
      * 数据库名称
@@ -418,11 +409,11 @@ public class ProductServiceImpl implements ProductService {
                 }
                 log.info("Create SuperTable Result: {}", cstResult.getCode());
                 //将之前存在redis里的同样的名称的超级表的表结构信息删除
-                if (redisService.hasKey(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
-                    redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName);
+                if (redisService.hasKey(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
+                    redisService.deleteObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName);
                 }
                 //在redis里存入新的超级表对的表结构信息
-                redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
+                redisService.setCacheObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
                 log.info("缓存超级表数据模型:{}", JSON.toJSONString(superTableDto));
             }
         } catch (Exception e) {
@@ -659,11 +650,11 @@ public class ProductServiceImpl implements ProductService {
                 //设置超级表标签字段列表
                 superTableDto.setTagsFields(tagsFields);
                 //将之前存在redis里的同样的名称的超级表的表结构信息删除
-                if (redisService.hasKey(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
-                    redisService.deleteObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName);
+                if (redisService.hasKey(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
+                    redisService.deleteObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName);
                 }
                 //在redis里存入新的超级表对的表结构信息
-                redisService.setCacheObject(Constants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
+                redisService.setCacheObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
                 log.info("缓存超级表数据模型:{}", JSON.toJSONString(superTableDto));
                 superTableDtoList.add(superTableDto);
                 if (Boolean.TRUE.equals(InitializeOrNot)) {
@@ -675,11 +666,7 @@ public class ProductServiceImpl implements ProductService {
                     jsonObject.put("msg", JSON.toJSONString(superTableDto));
                     mqMessage.setMessage(jsonObject.toJSONString());
 
-                    if (selectorConfig.isSelectorKafka()) {
-                         thingLinksProKafkaTemplate.send(new ProducerRecord<>(mqMessage.getTopic(), mqMessage.getMessage()));
-                    } else {
-                        rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
-                    }
+                    rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
                 }
             }
         }

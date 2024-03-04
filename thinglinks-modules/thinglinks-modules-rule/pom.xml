@@ -45,6 +45,14 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+        <!-- thinglinks Common Core -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-core</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+
         <!-- thinglinks Common DataSource -->
         <dependency>
             <groupId>com.mqttsnet</groupId>
@@ -98,13 +106,6 @@
         <dependency>
             <groupId>com.mqttsnet</groupId>
             <artifactId>thinglinks-api-job</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>
-
-        <!-- thinglinks Common kafka -->
-        <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-kafka</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
 

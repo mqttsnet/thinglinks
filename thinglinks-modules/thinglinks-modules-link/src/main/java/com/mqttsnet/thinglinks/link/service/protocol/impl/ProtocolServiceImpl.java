@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.protocol.impl;
 
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.exception.ServiceException;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
@@ -170,7 +171,7 @@ public class ProtocolServiceImpl implements ProtocolService {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             String content = StringEscapeUtils.unescapeHtml4(protocol.getContent());
             for (Device device : deviceList) {
-                redisService.set(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getProtocolType() + device.getDeviceIdentification(), content);
+                redisService.set(CacheConstants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getProtocolType() + device.getDeviceIdentification(), content);
             }
             protocolMapper.updateStatusById(Constants.ENABLE, protocol.getId());
         }
@@ -189,7 +190,7 @@ public class ProtocolServiceImpl implements ProtocolService {
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             for (Device device : deviceList) {
-                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
+                redisService.delete(CacheConstants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
             }
             protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
         }
@@ -217,7 +218,7 @@ public class ProtocolServiceImpl implements ProtocolService {
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             for (Device device : deviceList) {
-                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
+                redisService.delete(CacheConstants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
             }
             protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
         }

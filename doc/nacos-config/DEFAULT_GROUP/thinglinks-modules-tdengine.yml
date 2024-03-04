@@ -47,13 +47,6 @@ spring:
 mybatis: 
   mapper-locations: classpath:mapper/*.xml
 
-# rocketmq地址
-rocketmq:
-  name-server: 127.0.0.1:19876
-  # 默认的消息组
-  producer:
-    group: thinglinks-tdengine
-
 # seata配置
 seata:
   # 默认关闭，如需启用spring.datasource.dynami.seata需要同时开启

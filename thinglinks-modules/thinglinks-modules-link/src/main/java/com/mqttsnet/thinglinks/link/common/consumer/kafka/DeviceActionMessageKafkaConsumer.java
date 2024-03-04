@@ -3,23 +3,15 @@ package com.mqttsnet.thinglinks.link.common.consumer.kafka;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.enums.MqttEvent;
-import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerGroupConstant;
-import com.mqttsnet.thinglinks.common.kafka.constant.ConsumerTopicConstant;
+import com.mqttsnet.thinglinks.common.kafka.constant.ConsumerKafkaTopicConstant;
 import com.mqttsnet.thinglinks.link.service.device.DeviceActionService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceDatasService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.rocketmq.spring.annotation.MessageModel;
-import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
-import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -35,6 +27,7 @@ import java.util.Objects;
  */
 @Slf4j
 //@Component
+@Deprecated
 public class DeviceActionMessageKafkaConsumer {
     @Autowired
     private DeviceActionService deviceActionService;
@@ -43,15 +36,15 @@ public class DeviceActionMessageKafkaConsumer {
 
     @Async("linkAsync")
     @KafkaListener(topics = {
-            ConsumerTopicConstant.THINGLINKS_LINK_MQTT_MSG,
-            ConsumerTopicConstant.THINGLINKS_CLIENT_CONNECTED_TOPIC,
-            ConsumerTopicConstant.THINGLINKS_CLIENT_DISCONNECTED_TOPIC,
-            ConsumerTopicConstant.THINGLINKS_SERVER_CONNECTED_TOPIC,
-            ConsumerTopicConstant.THINGLINKS_DEVICE_KICKED_TOPIC,
-            ConsumerTopicConstant.THINGLINKS_SUBSCRIPTION_ACKED_TOPIC,
-            ConsumerTopicConstant.THINGLINKS_UNSUBSCRIPTION_ACKED_TOPIC,
-            ConsumerTopicConstant.THINGLINKS_DISTRIBUTION_ERROR_TOPIC,
-            ConsumerTopicConstant.THINGLINKS_DISTRIBUTION_COMPLETED_TOPIC})
+            ConsumerKafkaTopicConstant.THINGLINKS_LINK_MQTT_MSG,
+            ConsumerKafkaTopicConstant.THINGLINKS_CLIENT_CONNECTED_TOPIC,
+            ConsumerKafkaTopicConstant.THINGLINKS_CLIENT_DISCONNECTED_TOPIC,
+            ConsumerKafkaTopicConstant.THINGLINKS_SERVER_CONNECTED_TOPIC,
+            ConsumerKafkaTopicConstant.THINGLINKS_DEVICE_KICKED_TOPIC,
+            ConsumerKafkaTopicConstant.THINGLINKS_SUBSCRIPTION_ACKED_TOPIC,
+            ConsumerKafkaTopicConstant.THINGLINKS_UNSUBSCRIPTION_ACKED_TOPIC,
+            ConsumerKafkaTopicConstant.THINGLINKS_DISTRIBUTION_ERROR_TOPIC,
+            ConsumerKafkaTopicConstant.THINGLINKS_DISTRIBUTION_COMPLETED_TOPIC})
     public void onMessage(ConsumerRecord<?, ?> record) {
         if (null == record) {
             log.warn("message cannot be empty {}", record);
