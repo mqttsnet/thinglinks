@@ -18,10 +18,9 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString(callSuper = true)
 @Accessors(chain = true)
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Builder
 @ApiModel(value = "ProductModelCacheVO", description = "产品模型缓存VO")
 public class ProductModelCacheVO extends ProductModel implements Serializable {

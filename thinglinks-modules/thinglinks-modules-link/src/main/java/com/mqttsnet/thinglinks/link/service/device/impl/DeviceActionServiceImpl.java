@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;

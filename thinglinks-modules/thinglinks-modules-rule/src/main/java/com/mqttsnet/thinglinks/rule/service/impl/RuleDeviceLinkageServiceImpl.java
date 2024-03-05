@@ -7,8 +7,8 @@ import com.mqttsnet.thinglinks.common.core.enums.ConditionTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.FieldTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.OperatorEnum;
 import com.mqttsnet.thinglinks.common.core.enums.TriggeringEnum;
+import com.mqttsnet.thinglinks.common.core.mqs.ConsumerTopicConstant;
 import com.mqttsnet.thinglinks.common.core.utils.CompareUtil;
-import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
 import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.link.api.*;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
@@ -90,7 +90,7 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
     @Transactional
     public void triggerDeviceLinkageByRuleIdentification(String ruleIdentification) {
         MQMessage mqMessage = new MQMessage();
-        mqMessage.setTopic(ConsumerTopicConstant.THINGLINKS_RULE_TRIGGER);
+        mqMessage.setTopic(ConsumerTopicConstant.Rule.THINGLINKS_RULE_TRIGGER);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", ruleIdentification);
         mqMessage.setMessage(jsonObject.toJSONString());

@@ -19,6 +19,10 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.*;
+import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoAddDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoQueryDeviceResultVO;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceLocationService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
@@ -556,6 +560,116 @@ public class DeviceServiceImpl implements DeviceService {
 
     public List<Device> selectDeviceByDeviceIdentificationList(List<String> deviceIdentificationList) {
         return deviceMapper.selectDeviceByDeviceIdentificationList(deviceIdentificationList);
+    }
+
+    /**
+     * MQTT协议下添加子设备
+     *
+     * @param topoAddSubDeviceParam 子设备参数
+     * @return {@link TopoAddDeviceResultVO} 添加结果
+     */
+    @Override
+    public TopoAddDeviceResultVO saveSubDeviceByMqtt(TopoAddSubDeviceParam topoAddSubDeviceParam) {
+        return null;
+    }
+
+    /**
+     * HTTP协议下添加子设备
+     *
+     * @param topoAddSubDeviceParam 子设备参数
+     * @return {@link TopoAddDeviceResultVO} 添加结果
+     */
+    @Override
+    public TopoAddDeviceResultVO saveSubDeviceByHttp(TopoAddSubDeviceParam topoAddSubDeviceParam) {
+        return null;
+    }
+
+    /**
+     * MQTT协议下更新子设备连接状态
+     *
+     * @param topoUpdateSubDeviceStatusParam 更新参数
+     * @return {@link TopoDeviceOperationResultVO} 更新结果
+     */
+    @Override
+    public TopoDeviceOperationResultVO updateSubDeviceConnectStatusByMqtt(TopoUpdateSubDeviceStatusParam topoUpdateSubDeviceStatusParam) {
+        return null;
+    }
+
+    /**
+     * Http协议下更新子设备连接状态
+     *
+     * @param topoUpdateSubDeviceStatusParam 更新参数
+     * @return {@link TopoDeviceOperationResultVO} 更新结果
+     */
+    @Override
+    public TopoDeviceOperationResultVO updateSubDeviceConnectStatusByHttp(TopoUpdateSubDeviceStatusParam topoUpdateSubDeviceStatusParam) {
+        return null;
+    }
+
+    /**
+     * MQTT协议下删除子设备
+     *
+     * @param topoDeleteSubDeviceParam 删除参数
+     * @return {@link TopoDeviceOperationResultVO} 删除结果
+     */
+    @Override
+    public TopoDeviceOperationResultVO deleteSubDeviceByMqtt(TopoDeleteSubDeviceParam topoDeleteSubDeviceParam) {
+        return null;
+    }
+
+    /**
+     * Http协议下删除子设备
+     *
+     * @param topoDeleteSubDeviceParam 删除参数
+     * @return {@link TopoDeviceOperationResultVO} 删除结果
+     */
+    @Override
+    public TopoDeviceOperationResultVO deleteSubDeviceByHttp(TopoDeleteSubDeviceParam topoDeleteSubDeviceParam) {
+        return null;
+    }
+
+    /**
+     * MQTT协议下上报设备数据
+     *
+     * @param topoDeviceDataReportParam 上报参数
+     * @return {@link TopoDeviceOperationResultVO} 上报结果
+     */
+    @Override
+    public TopoDeviceOperationResultVO deviceDataReportByMqtt(TopoDeviceDataReportParam topoDeviceDataReportParam) {
+        return null;
+    }
+
+    /**
+     * Http协议下上报设备数据
+     *
+     * @param topoDeviceDataReportParam 上报参数
+     * @return {@link TopoDeviceOperationResultVO} 上报结果
+     */
+    @Override
+    public TopoDeviceOperationResultVO deviceDataReportByHttp(TopoDeviceDataReportParam topoDeviceDataReportParam) {
+        return null;
+    }
+
+    /**
+     * Queries device information using the MQTT protocol.
+     *
+     * @param topoQueryDeviceParam The device query parameters.
+     * @return {@link TopoQueryDeviceResultVO} The result of the device query.
+     */
+    @Override
+    public TopoQueryDeviceResultVO queryDeviceByMqtt(TopoQueryDeviceParam topoQueryDeviceParam) {
+        return null;
+    }
+
+    /**
+     * Queries device information using the HTTP protocol.
+     *
+     * @param topoQueryDeviceParam The device query parameters.
+     * @return {@link TopoQueryDeviceResultVO} The result of the device query.
+     */
+    @Override
+    public TopoQueryDeviceResultVO queryDeviceByHttp(TopoQueryDeviceParam topoQueryDeviceParam) {
+        return null;
     }
 }
 

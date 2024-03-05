@@ -14,10 +14,7 @@ import com.mqttsnet.thinglinks.common.security.annotation.PreAuthorize;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.OtaCommandResponseParam;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoAddSubDeviceParam;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoQueryDeviceParam;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoUpdateSubDeviceStatusParam;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.*;
 import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoAddDeviceResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoQueryDeviceResultVO;
@@ -26,7 +23,7 @@ import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -446,10 +443,10 @@ public class DeviceController extends BaseController {
     public R<OtaCommandResponseParam> saveOtaUpgradeRecordByMqtt(@Valid @RequestBody OtaCommandResponseParam otaCommandResponseParam) {
         try {
             // Call the service method to save the record
-            OtaCommandResponseParam savedRecord = otaUpgradeRecordsService.saveOtaUpgradeRecordByMqtt(otaCommandResponseParam);
+//            OtaCommandResponseParam savedRecord = otaUpgradeRecordsService.saveOtaUpgradeRecordByMqtt(otaCommandResponseParam);
 
             // Return a successful response entity with the saved record
-            return R.ok(savedRecord);
+            return R.ok();
         } catch (Exception e) {
             // Log the exception and return an error response entity
             // Assuming R.fail() is a method to create a failure response
@@ -469,10 +466,10 @@ public class DeviceController extends BaseController {
     public R<OtaCommandResponseParam> saveUpgradeRecordByHttp(@Valid @RequestBody OtaCommandResponseParam otaCommandResponseParam) {
         try {
             // Call the service method to save the record
-            OtaCommandResponseParam savedRecord = otaUpgradeRecordsService.saveUpgradeRecordByHttp(otaCommandResponseParam);
+//            OtaCommandResponseParam savedRecord = otaUpgradeRecordsService.saveUpgradeRecordByHttp(otaCommandResponseParam);
 
             // Return a successful response wrapper with the saved record
-            return R.ok(savedRecord);
+            return R.ok();
         } catch (Exception e) {
             // Log the exception and return a failure response wrapper
             // Assuming R.fail() is a method to create a failure response

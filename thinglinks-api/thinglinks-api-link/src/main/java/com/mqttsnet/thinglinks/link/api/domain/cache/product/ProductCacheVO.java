@@ -23,7 +23,6 @@ import java.util.Map;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-@Builder
 @ApiModel(value = "ProductCacheVO", description = "产品模型缓存VO")
 public class ProductCacheVO extends Product implements Serializable {
 

@@ -16,8 +16,6 @@ import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
-import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
-import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
@@ -35,7 +33,6 @@ import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -82,8 +79,6 @@ public class ProductServiceImpl implements ProductService {
     private RemoteTdEngineService remoteTdEngineService;
     @Autowired
     private RedisService redisService;
-    @Autowired
-    private RocketMQTemplate rocketMQTemplate;
 
     /**
      * 数据库名称
@@ -658,15 +653,15 @@ public class ProductServiceImpl implements ProductService {
                 log.info("缓存超级表数据模型:{}", JSON.toJSONString(superTableDto));
                 superTableDtoList.add(superTableDto);
                 if (Boolean.TRUE.equals(InitializeOrNot)) {
-                    //推送RocketMq消息初始化超级表
-                    MQMessage mqMessage = new MQMessage();
+                    //推送RocketMq消息初始化超级表  TODO 改为API调用
+                    /*MQMessage mqMessage = new MQMessage();
                     mqMessage.setTopic(ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE);
                     final JSONObject jsonObject = new JSONObject();
                     jsonObject.put("type", "create");
                     jsonObject.put("msg", JSON.toJSONString(superTableDto));
                     mqMessage.setMessage(jsonObject.toJSONString());
 
-                    rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
+                    rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());*/
                 }
             }
         }

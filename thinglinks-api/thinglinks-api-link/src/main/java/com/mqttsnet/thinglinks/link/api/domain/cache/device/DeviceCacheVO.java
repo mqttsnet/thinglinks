@@ -25,7 +25,6 @@ import java.util.Map;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@Builder
 @ApiModel(value = "DeviceCacheVO", description = "设备档案缓存VO")
 public class DeviceCacheVO extends Device implements Serializable {
 

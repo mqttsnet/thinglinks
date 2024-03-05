@@ -42,4 +42,11 @@ public class CacheConstants {
      */
     public static final String TDENGINE_SUPERTABLEFILELDS = "tdengine_superTableFields:";
 
+
+    /**
+     * 设备数据转换脚本 cache key
+     * link-> device_data_reported_agreement_script:deviceIdentification
+     */
+    public static final String DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT = "device_data_reported_agreement_script";
+
 }
