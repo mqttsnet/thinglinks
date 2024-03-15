@@ -11,6 +11,7 @@
 //import com.mqttsnet.thinglinks.link.service.product.ProductService;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;
+//import org.apache.ibatis.cache.CacheKey;
 //import org.springframework.stereotype.Service;
 //
 //import java.util.*;
@@ -56,7 +57,10 @@
 //        List<Device> deviceList = IntStream.range(0, totalPages)
 //                .mapToObj(currentPage -> {
 //                    Page<Device> page = new Page<>(currentPage, PAGE_SIZE);
-//                    Page<Device> content = deviceService.page(page, null);
+//                    HashMap<String, Object> pageHashMap = new HashMap<>();
+//                    Device device = new Device();
+//                    device.setParams(pageHashMap);
+//                    Page<Device> content = deviceService.findPageAll(page, null);
 //                    return Optional.ofNullable(content)
 //                            .map(Page::getRecords)
 //                            .orElse(Collections.emptyList());
