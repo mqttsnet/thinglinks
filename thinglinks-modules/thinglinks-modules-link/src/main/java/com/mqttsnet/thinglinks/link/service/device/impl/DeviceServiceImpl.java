@@ -653,5 +653,14 @@ public class DeviceServiceImpl implements DeviceService {
                 .setStatusDesc("Query completed");
         return topoQueryDeviceResultVO;
     }
+    @Override
+    public Long findDeviceTotal() {
+        return deviceMapper.findDeviceTotal();
+    }
+
+    @Override
+    public List<Device> findDevices() {
+        return deviceMapper.findDevices();
+    }
 }
 

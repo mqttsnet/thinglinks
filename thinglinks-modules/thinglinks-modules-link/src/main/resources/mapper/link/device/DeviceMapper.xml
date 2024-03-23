@@ -1840,4 +1840,14 @@
             </if>
         </where>
     </select>
+
+    <select id="findDeviceTotal" resultType="java.lang.Long">
+        select count(*) from device
+    </select>
+
+    <select id="findDevices" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM device
+    </select>
 </mapper>

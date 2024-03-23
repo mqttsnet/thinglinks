@@ -220,5 +220,12 @@ public interface DeviceService {
      * @return {@link TopoQueryDeviceResultVO} The result of the device query.
      */
     TopoQueryDeviceResultVO queryDeviceByHttp(TopoQueryDeviceParam topoQueryDeviceParam);
+
+    Long findDeviceTotal();
+
+
+
+    List<Device> findDevices();
+
 }
 

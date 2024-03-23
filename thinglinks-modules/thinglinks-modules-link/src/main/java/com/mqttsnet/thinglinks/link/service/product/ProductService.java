@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
+import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductResultVO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -185,5 +186,17 @@ public interface ProductService {
     List<Product> selectAllProductByStatus(String status);
 
     List<Product> selectProductByProductIdentificationList(List<String> productIdentificationList);
+
+    /**
+     * 根据产品标识查询产品详情
+     *
+     * @param productIdentification 产品标识
+     * @return {@link ProductResultVO} 产品详情
+     */
+    ProductResultVO findOneByProductIdentification(String productIdentification);
+
+    Long findProductTotal();
+
+    List<Product> findProductsByPage(int offset, int pageSize);
 }
 

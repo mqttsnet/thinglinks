@@ -276,7 +276,6 @@
         <module>thinglinks-api</module>
         <module>thinglinks-common</module>
         <module>thinglinks-registry</module>
-        <module>thinglinks-common/thinglinks-common-tds</module>
     </modules>
     <packaging>pom</packaging>
 
