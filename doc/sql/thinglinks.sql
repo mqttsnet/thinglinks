@@ -1856,15 +1856,16 @@ DROP TABLE IF EXISTS `product_services`;
 CREATE TABLE `product_services`
 (
     `id`                      bigint(19) NOT NULL AUTO_INCREMENT COMMENT '服务id',
-    `service_name`            varchar(255) NOT NULL COMMENT '服务名称:支持英文大小写、数字、下划线和中划线\r\n',
-    `template_identification` varchar(100)          DEFAULT NULL COMMENT '产品模版标识',
-    `product_identification`  varchar(100)          DEFAULT NULL COMMENT '产品标识',
-    `status`                  varchar(10)  NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
-    `description`             varchar(255)          DEFAULT NULL COMMENT '服务的描述信息:文本描述，不影响实际功能，可配置为空字符串""。\r\n',
-    `create_by`               varchar(64)           DEFAULT 'ununited' COMMENT '创建者',
-    `create_time`             datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_by`               varchar(64)           DEFAULT '' COMMENT '更新者',
-    `update_time`             datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `service_code`            varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '服务编码:支持英文大小写、数字、下划线和中划线',
+    `service_name`            varchar(255)                       NOT NULL COMMENT '服务名称',
+    `template_identification` varchar(100)                                DEFAULT NULL COMMENT '产品模版标识',
+    `product_identification`  varchar(100)                                DEFAULT NULL COMMENT '产品标识',
+    `status`                  varchar(10)                        NOT NULL DEFAULT '0' COMMENT '状态(字典值：0启用  1停用)',
+    `description`             varchar(255)                                DEFAULT NULL COMMENT '服务的描述信息:文本描述，不影响实际功能，可配置为空字符串""。\r\n',
+    `create_by`               varchar(64)                                 DEFAULT 'ununited' COMMENT '创建者',
+    `create_time`             datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by`               varchar(64)                                 DEFAULT '' COMMENT '更新者',
+    `update_time`             datetime                           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 72

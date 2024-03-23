@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 协议添加网关子设备响应信息
  * @packagename: com.mqttsnet.thinglinks.device.vo.result
  * @author: ShiHuan Sun

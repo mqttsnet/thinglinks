@@ -1,5 +1,8 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.text.CharSequenceUtil;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
@@ -9,6 +12,7 @@ import com.mqttsnet.thinglinks.common.core.enums.DeviceTopicEnum;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceType;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.core.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.tdengine.TdUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
@@ -16,7 +20,9 @@ import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
+import com.mqttsnet.thinglinks.link.api.domain.device.enumeration.MqttProtocolTopoStatusEnum;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
+import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model.DeviceInfoParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.api.domain.vo.param.*;
@@ -45,13 +51,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -440,8 +440,8 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public Device selectByProductIdentificationAndDeviceIdentification(String productIdentification,String deviceIdentification) {
-        return deviceMapper.selectByProductIdentificationAndDeviceIdentification(productIdentification,deviceIdentification);
+    public Device selectByProductIdentificationAndDeviceIdentification(String productIdentification, String deviceIdentification) {
+        return deviceMapper.selectByProductIdentificationAndDeviceIdentification(productIdentification, deviceIdentification);
     }
 
     /**
@@ -562,71 +562,6 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceMapper.selectDeviceByDeviceIdentificationList(deviceIdentificationList);
     }
 
-    /**
-     * MQTT协议下添加子设备
-     *
-     * @param topoAddSubDeviceParam 子设备参数
-     * @return {@link TopoAddDeviceResultVO} 添加结果
-     */
-    @Override
-    public TopoAddDeviceResultVO saveSubDeviceByMqtt(TopoAddSubDeviceParam topoAddSubDeviceParam) {
-        return null;
-    }
-
-    /**
-     * HTTP协议下添加子设备
-     *
-     * @param topoAddSubDeviceParam 子设备参数
-     * @return {@link TopoAddDeviceResultVO} 添加结果
-     */
-    @Override
-    public TopoAddDeviceResultVO saveSubDeviceByHttp(TopoAddSubDeviceParam topoAddSubDeviceParam) {
-        return null;
-    }
-
-    /**
-     * MQTT协议下更新子设备连接状态
-     *
-     * @param topoUpdateSubDeviceStatusParam 更新参数
-     * @return {@link TopoDeviceOperationResultVO} 更新结果
-     */
-    @Override
-    public TopoDeviceOperationResultVO updateSubDeviceConnectStatusByMqtt(TopoUpdateSubDeviceStatusParam topoUpdateSubDeviceStatusParam) {
-        return null;
-    }
-
-    /**
-     * Http协议下更新子设备连接状态
-     *
-     * @param topoUpdateSubDeviceStatusParam 更新参数
-     * @return {@link TopoDeviceOperationResultVO} 更新结果
-     */
-    @Override
-    public TopoDeviceOperationResultVO updateSubDeviceConnectStatusByHttp(TopoUpdateSubDeviceStatusParam topoUpdateSubDeviceStatusParam) {
-        return null;
-    }
-
-    /**
-     * MQTT协议下删除子设备
-     *
-     * @param topoDeleteSubDeviceParam 删除参数
-     * @return {@link TopoDeviceOperationResultVO} 删除结果
-     */
-    @Override
-    public TopoDeviceOperationResultVO deleteSubDeviceByMqtt(TopoDeleteSubDeviceParam topoDeleteSubDeviceParam) {
-        return null;
-    }
-
-    /**
-     * Http协议下删除子设备
-     *
-     * @param topoDeleteSubDeviceParam 删除参数
-     * @return {@link TopoDeviceOperationResultVO} 删除结果
-     */
-    @Override
-    public TopoDeviceOperationResultVO deleteSubDeviceByHttp(TopoDeleteSubDeviceParam topoDeleteSubDeviceParam) {
-        return null;
-    }
 
     /**
      * MQTT协议下上报设备数据
@@ -658,7 +593,7 @@ public class DeviceServiceImpl implements DeviceService {
      */
     @Override
     public TopoQueryDeviceResultVO queryDeviceByMqtt(TopoQueryDeviceParam topoQueryDeviceParam) {
-        return null;
+        return queryDeviceInfo(topoQueryDeviceParam);
     }
 
     /**
@@ -669,7 +604,54 @@ public class DeviceServiceImpl implements DeviceService {
      */
     @Override
     public TopoQueryDeviceResultVO queryDeviceByHttp(TopoQueryDeviceParam topoQueryDeviceParam) {
-        return null;
+        return queryDeviceInfo(topoQueryDeviceParam);
+    }
+
+
+
+    /**
+     * Queries device information based on provided parameters.
+     *
+     * @param topoQueryDeviceParam Parameters for querying device information.
+     * @return {@link TopoQueryDeviceResultVO} containing the results of the device query.
+     */
+    private TopoQueryDeviceResultVO queryDeviceInfo(TopoQueryDeviceParam topoQueryDeviceParam) {
+        // Create an instance for the result
+        TopoQueryDeviceResultVO topoQueryDeviceResultVO = new TopoQueryDeviceResultVO();
+
+        // Create a list to store the results of device information queries
+        List<TopoQueryDeviceResultVO.DataItem> deviceInfoList = Optional.ofNullable(topoQueryDeviceParam.getDeviceIds())
+                .orElse(Collections.emptyList())
+                .stream()
+                .distinct()
+                .map(deviceIdentification -> {
+                    TopoQueryDeviceResultVO.DataItem dataItem = new TopoQueryDeviceResultVO.DataItem();
+                    try {
+                        dataItem.setDeviceId(deviceIdentification);
+                        // Attempt to find device information based on the identification
+                        Optional<Device> optionalDevice = Optional.ofNullable(deviceMapper.findOneByDeviceIdentification(deviceIdentification));
+                        TopoQueryDeviceResultVO.DataItem.DeviceInfo deviceInfo = optionalDevice
+                                .map(device -> BeanUtil.toBean(device, TopoQueryDeviceResultVO.DataItem.DeviceInfo.class))
+                                .orElse(new TopoQueryDeviceResultVO.DataItem.DeviceInfo());
+
+                        // Set device information and status based on query result
+                        dataItem.setDeviceInfo(deviceInfo)
+                                .setStatusCode(optionalDevice.isPresent() ? MqttProtocolTopoStatusEnum.SUCCESS.getValue() : MqttProtocolTopoStatusEnum.FAILURE.getValue())
+                                .setStatusDesc(optionalDevice.isPresent() ? MqttProtocolTopoStatusEnum.SUCCESS.getDesc() : "Device not found");
+                    } catch (Exception e) {
+                        // Handle any exceptions and set the error information in the data item
+                        dataItem.setStatusCode(MqttProtocolTopoStatusEnum.FAILURE.getValue())
+                                .setStatusDesc("Error querying device: " + e.getMessage());
+                    }
+                    return dataItem;
+                })
+                .collect(Collectors.toList());
+
+        // Set the list of device information into the result instance
+        topoQueryDeviceResultVO.setData(deviceInfoList)
+                .setStatusCode(MqttProtocolTopoStatusEnum.SUCCESS.getValue())
+                .setStatusDesc("Query completed");
+        return topoQueryDeviceResultVO;
     }
 }
 

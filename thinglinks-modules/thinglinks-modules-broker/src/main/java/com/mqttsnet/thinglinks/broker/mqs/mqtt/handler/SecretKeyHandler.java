@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.factory.AbstractMessageHandler;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.common.cache.helper.CacheDataHelper;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 处理SECRET_KEY主题
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun
@@ -28,10 +29,10 @@ public class SecretKeyHandler extends AbstractMessageHandler implements TopicHan
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public SecretKeyHandler(CacheDataHelper cacheDataHelper,
-                            RemoteDeviceService remoteDeviceService,
+                            RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
                             RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
                             ProtocolMessageAdapter protocolMessageAdapter) {
-        super(cacheDataHelper, remoteDeviceService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
+        super(cacheDataHelper, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
     }
 
     /**

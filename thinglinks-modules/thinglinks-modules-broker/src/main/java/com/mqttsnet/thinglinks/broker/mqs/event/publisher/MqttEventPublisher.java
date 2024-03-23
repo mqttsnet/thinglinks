@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: MQTT事件发布器 用于发布MQTT事件 TODO MqttEventEnum 事件枚举类 用于定义MQTT事件 预留
  * @packagename: com.mqttsnet.thinglinks.consumer.mqtt.publisher
  * @author: ShiHuan Sun

@@ -146,4 +146,10 @@ public class Constants {
      */
     public static final String RESUBMIT_URL_KEY = "resubmit_url:";
 
+    /**
+     * 下划线
+     */
+    public static final String UNDERLINE = "_";
+
+
 }

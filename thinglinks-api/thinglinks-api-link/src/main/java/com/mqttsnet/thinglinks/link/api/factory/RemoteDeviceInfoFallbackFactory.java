@@ -30,6 +30,7 @@ public class RemoteDeviceInfoFallbackFactory implements FallbackFactory<RemoteDe
             public AjaxResult refreshDeviceInfoDataModel(Long[] ids) {
                 return AjaxResult.error("刷新子设备数据模型失败:" + throwable.getMessage());
             }
+
         };
     }
 }

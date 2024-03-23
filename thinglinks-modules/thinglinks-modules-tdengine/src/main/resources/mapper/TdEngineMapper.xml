@@ -303,4 +303,225 @@
         SELECT #{aggregate}(${fieldName})
         FROM #{dataBaseName}.#{tableName} WHERE ts BETWEEN #{startTime} AND #{endTime} interval(${interval}) LIMIT #{num}
     </select>
+
+
+
+    <update id="createSuperTableAndColumn" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.model.SuperTableDTO">
+        create table if not exists #{dataBaseName}.#{superTableName}
+        <foreach item="item" collection="schemaFields" separator=","
+                 open="(" close=")" index="">
+            <if test="item.fieldName != null || item.fieldName != ''">
+                ${item.fieldName}
+            </if>
+            <if test="item.dataType != null">
+                ${item.dataType}
+                <!-- 当dataType.quoted为true时添加size -->
+                <if test="item.dataType.quoted == true and item.size != null">
+                    (#{item.size})
+                </if>
+            </if>
+        </foreach>
+        tags
+        <!-- tdEngine不支持动态tags里的数据类型，只能使用choose标签比对 -->
+        <foreach item="item" collection="tagsFields" separator=","
+                 open="(" close=")" index="">
+            <if test="item.fieldName != null || item.fieldName != ''">
+                ${item.fieldName}
+            </if>
+            <if test="item.dataType != null">
+                ${item.dataType}
+                <!-- 当dataType.quoted为true时添加size -->
+                <if test="item.dataType.quoted == true and item.size != null">
+                    (#{item.size})
+                </if>
+            </if>
+        </foreach>
+    </update>
+
+
+    <update id="createSubTable" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.model.TableDTO">
+        create table if not exists #{dataBaseName}.#{tableName}
+        using #{dataBaseName}.#{superTableName}
+        tags
+        <foreach item="item" collection="tagsFieldValues" separator=","
+                 open="(" close=")" index="">
+            <choose>
+                <!-- Check if dataType is not null and needs quoting -->
+                <when test="item.dataType != null and item.dataType.quoted">
+                    '${item.fieldValue}'
+                </when>
+                <!-- Default behavior if dataType is null (no quotes in this case) -->
+                <when test="item.dataType == null">
+                    ${item.fieldValue}
+                </when>
+                <!-- If dataType doesn't require quotes -->
+                <otherwise>
+                    ${item.fieldValue}
+                </otherwise>
+            </choose>
+        </foreach>
+    </update>
+
+    <update id="alterSuperTableColumn">
+        ALTER
+        STABLE
+        #{dataBaseName}.#{superTableName}
+        ADD
+        COLUMN
+        <if test="fields.fieldName != null || fields.fieldName != ''">
+            ${fields.fieldName}
+        </if>
+        <if test="fields.dataType != null || fields.dataType != ''">
+            ${fields.dataType}
+            <!-- 当dataType.quoted为true时添加size -->
+            <if test="fields.dataType.quoted == true and fields.size != null">
+                (#{fields.size})
+            </if>
+        </if>
+    </update>
+
+    <update id="alterSuperTableTag">
+        ALTER
+        STABLE
+        #{dataBaseName}.#{superTableName}
+        ADD
+        TAG
+        <if test="fields.fieldName != null || fields.fieldName != ''">
+            ${fields.fieldName}
+        </if>
+        <if test="fields.dataType != null || fields.dataType != ''">
+            ${fields.dataType}
+            <!-- 当dataType.quoted为true时添加size -->
+            <if test="fields.dataType.quoted == true and fields.size != null">
+                (#{fields.size})
+            </if>
+        </if>
+    </update>
+
+    <update id="alterSuperTableTagRename">
+        ALTER
+        #{dataBaseName}.
+        #{superTableName}
+        RENAME
+        TAG
+        ${oldName}
+        ${newName};
+    </update>
+
+    <update id="createSuperTable">
+        create table if not exists #{dataBaseName}.#{superTableName}
+    </update>
+
+    <delete id="dropSuperTable">
+        DROP
+        STABLE IF EXISTS
+        #{dataBaseName}
+        .
+        #{superTableName}
+    </delete>
+
+    <delete id="dropSuperTableColumn">
+        ALTER
+        STABLE
+        #{dataBaseName}.#{superTableName}
+        DROP
+        COLUMN
+        <if test="fields.fieldName != null || fields.fieldName != ''">
+            ${fields.fieldName}
+        </if>
+    </delete>
+
+    <delete id="dropSuperTableTag">
+        ALTER
+        STABLE
+        #{dataBaseName}.#{superTableName}
+        DROP
+        TAG
+        <if test="fields.fieldName != null || fields.fieldName != ''">
+            ${fields.fieldName}
+        </if>
+    </delete>
+
+    <select id="describeSuperOrSubTable" resultType="com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO">
+        DESCRIBE #{dataBaseName}.#{tableName};
+    </select>
+
+    <insert id="insertTableData">
+        insert into #{dataBaseName}.#{tableName}
+        <foreach item="item" collection="schemaFieldValues" separator=","
+                 open="(" close=")" index="">
+            ${item.fieldName}
+        </foreach>
+        using #{dataBaseName}.#{superTableName}
+        tags
+        <foreach item="item" collection="tagsFieldValues" separator=","
+                 open="(" close=")" index="">
+            <choose>
+                <!-- Check if dataType is not null and needs quoting -->
+                <when test="item.dataType != null and item.dataType.quoted">
+                    '${item.fieldValue}'
+                </when>
+                <!-- Default behavior if dataType is null (no quotes in this case) -->
+                <when test="item.dataType == null">
+                    ${item.fieldValue}
+                </when>
+                <!-- If dataType doesn't require quotes -->
+                <otherwise>
+                    ${item.fieldValue}
+                </otherwise>
+            </choose>
+        </foreach>
+        values
+        <foreach item="item" collection="schemaFieldValues" separator=","
+                 open="(" close=")" index="">
+            <choose>
+                <!-- Check if dataType is not null and needs quoting -->
+                <when test="item.dataType != null and item.dataType.quoted">
+                    '${item.fieldValue}'
+                </when>
+                <!-- Default behavior if dataType is null (no quotes in this case) -->
+                <when test="item.dataType == null">
+                    ${item.fieldValue}
+                </when>
+                <!-- If dataType doesn't require quotes -->
+                <otherwise>
+                    ${item.fieldValue}
+                </otherwise>
+            </choose>
+        </foreach>
+    </insert>
+
+    <select id="getLastDataByTags" parameterType="com.mqttsnet.thinglinks.tdengine.api.domain.model.TagsSelectDTO" resultType="Map">
+        <!-- 判断startTime和endTime是否都存在 -->
+        <choose>
+            <!-- 如果startTime和endTime都存在，按时间范围查询最新的一条记录 -->
+            <when test="startTime != null and endTime != null">
+                select * from #{dataBaseName}.#{stableName}
+                where ts BETWEEN #{startTime} AND #{endTime}
+                group by #{tagsName}
+                order by ts desc
+                LIMIT 1
+            </when>
+            <!-- 否则使用last来查询最新的一条记录 -->
+            <otherwise>
+                select last(*) from #{dataBaseName}.#{stableName} group by #{tagsName}
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getDataInRangeOrLastRecord" resultType="Map">
+        <!-- 判断startTime和endTime是否都存在 -->
+        <choose>
+            <!-- 如果startTime和endTime都存在，按时间范围查询记录 -->
+            <when test="startTime != null and endTime != null">
+                select * from #{dataBaseName}.#{tableName}
+                where ts BETWEEN #{startTime} AND #{endTime}
+                order by ts desc
+            </when>
+            <!-- 否则使用last来查询最新的一条记录 -->
+            <otherwise>
+                select last(*) from #{dataBaseName}.#{tableName}
+            </otherwise>
+        </choose>
+    </select>
 </mapper>

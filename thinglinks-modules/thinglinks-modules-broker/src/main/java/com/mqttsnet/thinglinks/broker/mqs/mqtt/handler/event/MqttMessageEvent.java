@@ -3,7 +3,7 @@ package com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.event;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: MessageEvent
  * @packagename: com.mqttsnet.thinglinks.mqtt.handle.event
  * @author: ShiHuan Sun

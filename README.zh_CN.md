@@ -118,6 +118,7 @@ Thanks these wonderful people, welcome to join us:
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/llJam"><img src="https://avatars.githubusercontent.com/u/113015997?v=4" width="100px;" alt="llJam"/><br /><sub><b>llJam</b></sub></a><br /><a href="https://github.com/mqttsnet/thinglinks/commits?author=llJam" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/qianmenfei"><img src="https://avatars.githubusercontent.com/u/39989430?v=4" width="100px;" alt="qianmenfei"/><br /><sub><b>qianmenfei</b></sub></a><br /><a href="https://github.com/mqttsnet/thinglinks/commits?author=qianmenfei" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/wangfan1997"><img src="https://avatars.githubusercontent.com/u/108504684?v=4" width="100px;" alt="wangfan1997"/><br /><sub><b>wangfan1997</b></sub></a><br /><a href="https://github.com/mqttsnet/thinglinks/commits?author=wangfan1997" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

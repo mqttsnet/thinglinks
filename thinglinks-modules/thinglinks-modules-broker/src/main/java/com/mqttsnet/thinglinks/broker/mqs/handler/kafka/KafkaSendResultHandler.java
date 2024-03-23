@@ -8,7 +8,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: kafka消息发送回调
  * @packagename: com.mqttsnet.thinglinks.common.kafka.handler
  * @author: ShiHuan Sun

@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.broker.mqs.mqtt.handler;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description:
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun

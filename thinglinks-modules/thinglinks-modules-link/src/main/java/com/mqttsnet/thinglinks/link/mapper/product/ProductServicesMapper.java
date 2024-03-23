@@ -78,7 +78,7 @@ public interface ProductServicesMapper {
 
     List<ProductServices> findAllByProductIdentificationIdAndStatus(@Param("productIdentification") String productIdentification, @Param("status") String status);
 
-    List<ProductServices> findAllByProductIdentificationAndServiceNameAndStatus(@Param("productIdentification") String productIdentification, @Param("serviceName") String serviceName, @Param("status") String status);
+    List<ProductServices> findAllByProductIdentificationAndServiceCodeAndStatus(@Param("productIdentification") String productIdentification, @Param("serviceCode") String serviceCode, @Param("status") String status);
 
     /**
      * 查询产品模型服务

@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 协议信息适配器
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun

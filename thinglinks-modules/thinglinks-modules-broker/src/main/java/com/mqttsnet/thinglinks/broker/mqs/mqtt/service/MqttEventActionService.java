@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: MqttEventActionHandler
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun

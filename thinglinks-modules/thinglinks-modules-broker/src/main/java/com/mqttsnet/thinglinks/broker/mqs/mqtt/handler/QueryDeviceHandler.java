@@ -8,7 +8,7 @@ import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoQueryDeviceParam;
 import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoQueryDeviceResultVO;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 处理QUERY_DEVICE主题
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun
@@ -33,10 +33,10 @@ public class QueryDeviceHandler extends AbstractMessageHandler implements TopicH
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public QueryDeviceHandler(CacheDataHelper cacheDataHelper,
-                              RemoteDeviceService remoteDeviceService,
+                              RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
                               RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
                               ProtocolMessageAdapter protocolMessageAdapter) {
-        super(cacheDataHelper, remoteDeviceService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
+        super(cacheDataHelper, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
     }
 
     /**
@@ -106,7 +106,7 @@ public class QueryDeviceHandler extends AbstractMessageHandler implements TopicH
         }
 
         TopoQueryDeviceParam queryParam = (TopoQueryDeviceParam) topoQueryDeviceParam;
-        R<TopoQueryDeviceResultVO> topoQueryDeviceResultVOR = remoteDeviceService.queryDeviceByMqtt(queryParam);
+        R<TopoQueryDeviceResultVO> topoQueryDeviceResultVOR = remoteDeviceOpenAnyService.queryDeviceByMqtt(queryParam);
 
         log.info("Processing /topo/query result: {}", JSON.toJSONString(topoQueryDeviceResultVOR));
         return JSON.toJSONString(topoQueryDeviceResultVOR.getData());

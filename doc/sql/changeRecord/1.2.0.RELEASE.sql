@@ -1,11 +1,17 @@
 # 设备表新增字段
-ALTER TABLE thinglinks_test.device ADD encrypt_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密密钥';
-ALTER TABLE thinglinks_test.device ADD encrypt_vector varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密向量';
-ALTER TABLE thinglinks_test.device ADD sign_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '签名密钥';
-ALTER TABLE thinglinks_test.device ADD encrypt_method tinyint(4) DEFAULT 0 NOT NULL COMMENT '协议加密方式';
-ALTER TABLE thinglinks_test.device ADD sw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '软件版本';
-ALTER TABLE thinglinks_test.device ADD fw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '固件版本';
-ALTER TABLE thinglinks_test.device ADD device_sdk_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'v1' NOT NULL COMMENT 'sdk版本';
+ALTER TABLE device ADD encrypt_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密密钥';
+ALTER TABLE device ADD encrypt_vector varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密向量';
+ALTER TABLE device ADD sign_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '签名密钥';
+ALTER TABLE device ADD encrypt_method tinyint(4) DEFAULT 0 NOT NULL COMMENT '协议加密方式';
+ALTER TABLE device ADD sw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '软件版本';
+ALTER TABLE device ADD fw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '固件版本';
+ALTER TABLE device ADD device_sdk_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'v1' NOT NULL COMMENT 'sdk版本';
+
+
+#产品服务表
+ALTER TABLE product_services MODIFY COLUMN service_name varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '服务名称';
+ALTER TABLE product_services ADD service_code varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NOT NULL COMMENT '服务编码:支持英文大小写、数字、下划线和中划线';
+
 
 
 

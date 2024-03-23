@@ -5,7 +5,7 @@ import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.api.domain.vo.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.common.core.utils.SnowflakeIdUtil;
-import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductModelCacheVO;
 import com.mqttsnet.thinglinks.link.common.cache.helper.CacheDataHelper;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 通用逻辑处理器
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun
@@ -26,16 +26,16 @@ import java.util.List;
 public abstract class AbstractMessageHandler {
 
     protected final CacheDataHelper cacheDataHelper;
-    protected final RemoteDeviceService remoteDeviceService;
+    protected final RemoteDeviceOpenAnyService remoteDeviceOpenAnyService;
     protected final RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi;
     protected final ProtocolMessageAdapter protocolMessageAdapter;
 
     public AbstractMessageHandler(CacheDataHelper cacheDataHelper,
-                                  RemoteDeviceService remoteDeviceService,
+                                  RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
                                   RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
         this.cacheDataHelper = cacheDataHelper;
-        this.remoteDeviceService = remoteDeviceService;
+        this.remoteDeviceOpenAnyService = remoteDeviceOpenAnyService;
         this.remoteMqttBrokerOpenApi = remoteMqttBrokerOpenApi;
         this.protocolMessageAdapter = protocolMessageAdapter;
     }

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: Mqtt Message kafka监听消息
  * @packagename: com.mqttsnet.thinglinks.kafka
  * @author: ShiHuan Sun

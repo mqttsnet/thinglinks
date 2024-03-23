@@ -10,7 +10,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
-
+ 产品模型服务属性表
 * @Description:    java类作用描述
 * @Author:         ShiHuan Sun
 * @E-mail:         13733918655@163.com
@@ -20,11 +20,7 @@ import lombok.experimental.Accessors;
 * @UpdateDate:     2021/12/25$ 23:52$
 * @UpdateRemark:   修改内容
 * @Version:        1.0
-
 */
-/**
-    * 产品模型服务属性表
-    */
 @ApiModel(value="产品模型服务属性表")
 @Data
 @NoArgsConstructor
@@ -114,11 +110,10 @@ public class ProductProperties extends BaseEntity implements Serializable {
 
     /**
     * 指示单位。支持长度不超过50。
-取值根据参数确定，如：
-•温度单位：“C”或“K”
-•百分比单位：“%”
-•压强单位：“Pa”或“kPa”
-
+        取值根据参数确定，如：
+        •温度单位：“C”或“K”
+        •百分比单位：“%”
+        •压强单位：“Pa”或“kPa”
     */
     @ApiModelProperty(value="指示单位。支持长度不超过50。,取值根据参数确定，如：,•温度单位：“C”或“K”,•百分比单位：“%”,•压强单位：“Pa”或“kPa”,")
     private String unit;

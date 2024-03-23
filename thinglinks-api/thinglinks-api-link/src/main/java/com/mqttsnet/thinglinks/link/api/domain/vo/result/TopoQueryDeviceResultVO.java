@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 协议查询设备档案信息响应信息
  * @packagename: com.mqttsnet.thinglinks.device.vo.result
  * @author: ShiHuan Sun
@@ -126,6 +126,27 @@ public class TopoQueryDeviceResultVO implements Serializable {
              */
             @ApiModelProperty(value = "设备类型:0普通设备 || 1网关设备 || 2子设备 ")
             private Integer nodeType;
+
+            /**
+             * 加密密钥
+             */
+            @ApiModelProperty(value = "加密密钥")
+            private String encryptKey;
+            /**
+             * 加密向量
+             */
+            @ApiModelProperty(value = "加密向量")
+            private String encryptVector;
+            /**
+             * 签名密钥
+             */
+            @ApiModelProperty(value = "签名密钥")
+            private String signKey;
+            /**
+             * 传输协议的加密方式：0-明文传输、1-SM4、2-AES
+             */
+            @ApiModelProperty(value = "传输协议的加密方式：0-明文传输、1-SM4、2-AES ")
+            private Integer encryptMethod;
             /**
              * 备注
              */

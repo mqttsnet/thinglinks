@@ -1,9 +1,13 @@
 package com.mqttsnet.thinglinks.tdengine.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.*;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.SuperTableDTO;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.TableDTO;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.TagsSelectDTO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.visual.SelectVisualDto;
 import com.mqttsnet.thinglinks.tdengine.mapper.TdEngineMapper;
 import com.mqttsnet.thinglinks.tdengine.service.TdEngineService;
@@ -14,9 +18,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -188,6 +190,86 @@ public class TdEngineServiceImpl implements TdEngineService {
     public List<Map<String, Object>> getAggregateData(SelectVisualDto selectVisualDto) {
         List<Map<String, Object>> maps = this.tdEngineMapper.getAggregateData(selectVisualDto);
         return maps;
+    }
+
+    @Override
+    public void createSuperTable(String dataBaseName, String superTableName) {
+        tdEngineMapper.createSuperTable(dataBaseName, superTableName);
+    }
+
+    @Override
+    public void createSuperTableAndColumn(SuperTableDTO superTableDTO) {
+        tdEngineMapper.createSuperTableAndColumn(superTableDTO);
+    }
+
+    @Override
+    public void createSubTable(TableDTO tableDTO) {
+        tdEngineMapper.createSubTable(tableDTO);
+    }
+
+    @Override
+    public void dropSuperTable(String dataBaseName, String superTableName) {
+        tdEngineMapper.dropSuperTable(dataBaseName, superTableName);
+    }
+
+    @Override
+    public void alterSuperTableColumn(String dataBaseName, String superTableName, Fields fields) {
+        tdEngineMapper.alterSuperTableColumn(dataBaseName, superTableName, fields);
+    }
+
+    @Override
+    public void dropSuperTableColumn(String dataBaseName, String superTableName, Fields fields) {
+        tdEngineMapper.dropSuperTableColumn(dataBaseName, superTableName, fields);
+    }
+
+    @Override
+    public List<SuperTableDescribeVO> describeSuperOrSubTable(String dataBaseName, String tableName) {
+        List<SuperTableDescribeVO> superTableDescribeVOS = new ArrayList<>();
+        try {
+            superTableDescribeVOS = tdEngineMapper.describeSuperOrSubTable(dataBaseName, tableName);
+        } catch (Exception e) {
+            log.warn("describeSuperTable error:{}", e.getMessage());
+        }
+        return superTableDescribeVOS;
+    }
+
+    @Override
+    public void alterSuperTableTag(String dataBaseName, String superTableName, Fields fields) {
+        tdEngineMapper.alterSuperTableTag(dataBaseName, superTableName, fields);
+    }
+
+    @Override
+    public void dropSuperTableTag(String dataBaseName, String superTableName, Fields fields) {
+        tdEngineMapper.dropSuperTableTag(dataBaseName, superTableName, fields);
+    }
+
+    @Override
+    public void alterSuperTableTagRename(String dataBaseName, String superTableName, String oldName, String newName) {
+        tdEngineMapper.alterSuperTableTagRename(dataBaseName, superTableName, oldName, newName);
+    }
+
+    @Override
+    public void insertTableData(TableDTO tableDTO) {
+        tdEngineMapper.insertTableData(tableDTO);
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> getLastDataByTags(TagsSelectDTO tagsSelectDTO) {
+        List<Map<String, Object>> maps = tdEngineMapper.getLastDataByTags(tagsSelectDTO);
+        Map<String, Map<String, Object>> objectHashMap = new HashMap<>();
+
+        for (Map<String, Object> map : maps) {
+            Optional.ofNullable(map.get(tagsSelectDTO.getTagsName()))
+                    .map(Object::toString)
+                    .ifPresent(key -> objectHashMap.put(key, map));
+        }
+        return objectHashMap;
+    }
+
+
+    @Override
+    public List<Map<String, Object>> getDataInRangeOrLastRecord(String dataBaseName, String tableName, Long startTime, Long endTime) {
+        return tdEngineMapper.getDataInRangeOrLastRecord(dataBaseName, tableName, startTime, endTime);
     }
 
 }

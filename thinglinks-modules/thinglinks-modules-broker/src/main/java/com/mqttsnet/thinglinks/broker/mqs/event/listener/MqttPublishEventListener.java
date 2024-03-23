@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: MqttPublish事件监听器
  * @packagename: com.mqttsnet.thinglinks.consumer.mqtt.listener
  * @author: ShiHuan Sun

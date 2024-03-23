@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 超级表结构VO
  * @packagename: com.mqttsnet.thinglinks.tds.vo.result
  * @author: ShiHuan Sun

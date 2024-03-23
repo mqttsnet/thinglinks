@@ -5,7 +5,7 @@ import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.service.MqttEventOtaCommandResponseService;
-import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.common.cache.helper.CacheDataHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 处理OTA_COMMAND_RESPONSE主题
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun
@@ -26,10 +26,10 @@ import java.util.Map;
 @Service
 public class OtaCommandResponseHandler extends AbstractMessageHandler implements TopicHandler {
     public OtaCommandResponseHandler(CacheDataHelper cacheDataHelper,
-                              RemoteDeviceService remoteDeviceService,
-                              RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
-                              ProtocolMessageAdapter protocolMessageAdapter) {
-        super(cacheDataHelper, remoteDeviceService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
+                                     RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
+                                     RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
+                                     ProtocolMessageAdapter protocolMessageAdapter) {
+        super(cacheDataHelper, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
     }
 
     @Autowired

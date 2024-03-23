@@ -4,7 +4,7 @@ import com.mqttsnet.thinglinks.broker.api.domain.enumeration.MqttEventEnum;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: MqttDisconnectEvent
  * @packagename: com.mqttsnet.thinglinks.mqtt.event
  * @author: ShiHuan Sun

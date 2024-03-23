@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.broker.mqs.mqtt.service;
 
 import com.alibaba.fastjson.JSON;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.param.OtaCommandResponseParam;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 public class MqttEventOtaCommandResponseService {
 
     @Autowired
-    private RemoteDeviceService remoteDeviceService;
+    private RemoteDeviceOpenAnyService remoteDeviceOpenAnyService;
 
 
     /**
@@ -67,7 +67,7 @@ public class MqttEventOtaCommandResponseService {
     // This is a placeholder for the actual saving logic
     private void saveOtaCommandResponse(OtaCommandResponseParam responseParam) {
         // Implementation for saving the response in your system
-        R<OtaCommandResponseParam> otaCommandResponseParamR = remoteDeviceService.saveUpgradeRecordByMqtt(responseParam);
+        R<OtaCommandResponseParam> otaCommandResponseParamR = remoteDeviceOpenAnyService.saveUpgradeRecordByMqtt(responseParam);
         log.info("otaCommandResponseParamR:{}", JSON.toJSONString(otaCommandResponseParamR));
     }
 

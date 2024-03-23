@@ -8,7 +8,7 @@ import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoDeleteSubDeviceParam;
 import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 处理DELETE_SUB_DEVICE主题
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun
@@ -33,10 +33,10 @@ public class DeleteSubDeviceHandler extends AbstractMessageHandler implements To
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public DeleteSubDeviceHandler(CacheDataHelper cacheDataHelper,
-                                  RemoteDeviceService remoteDeviceService,
+                                  RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
                                   RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
-        super(cacheDataHelper, remoteDeviceService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
+        super(cacheDataHelper, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
     }
 
     /**
@@ -102,7 +102,7 @@ public class DeleteSubDeviceHandler extends AbstractMessageHandler implements To
      */
     @Override
     protected String processingTopicMessage(Object topoDeleteSubDeviceParam) throws Exception {
-        R<TopoDeviceOperationResultVO> mqttTopoDeleteDeviceResultVOR = remoteDeviceService.deleteSubDeviceByMqtt((TopoDeleteSubDeviceParam) topoDeleteSubDeviceParam);
+        R<TopoDeviceOperationResultVO> mqttTopoDeleteDeviceResultVOR = remoteDeviceOpenAnyService.deleteSubDeviceByMqtt((TopoDeleteSubDeviceParam) topoDeleteSubDeviceParam);
         log.info("processingTopoDeleteTopic Processing result:{}", JSON.toJSONString(mqttTopoDeleteDeviceResultVOR));
         return JSON.toJSONString(mqttTopoDeleteDeviceResultVOR.getData());
     }

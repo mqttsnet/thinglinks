@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description:
  * @packagename: com.mqttsnet.thinglinks.mqtt.handle.listener
  * @author: ShiHuan Sun

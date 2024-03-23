@@ -9,7 +9,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: kafkaListener异常处理
  * @packagename: com.mqttsnet.thinglinks.common.kafka.handler
  * @author: ShiHuan Sun

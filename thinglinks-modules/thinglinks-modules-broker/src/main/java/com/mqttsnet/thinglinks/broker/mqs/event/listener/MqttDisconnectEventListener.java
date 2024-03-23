@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: MQTT DISCONNECT事件监听器
  * @packagename: com.mqttsnet.thinglinks.mqtt.listener
  * @author: ShiHuan Sun

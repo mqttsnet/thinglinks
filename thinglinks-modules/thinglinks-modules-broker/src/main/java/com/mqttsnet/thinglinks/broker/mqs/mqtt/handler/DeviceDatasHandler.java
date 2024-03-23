@@ -7,21 +7,37 @@ import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.factory.AbstractMessageHandler;
+import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
+import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
+import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
-import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductModelCacheVO;
+import com.mqttsnet.thinglinks.link.api.domain.product.enumeration.ProductTypeEnum;
+import com.mqttsnet.thinglinks.link.api.domain.product.vo.param.ProductServiceParamVO;
+import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductPropertyResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductServiceResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoDeviceDataReportParam;
 import com.mqttsnet.thinglinks.link.common.cache.helper.CacheDataHelper;
+import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
+import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.TableDTO;
+import com.mqttsnet.thinglinks.tdengine.common.constant.TdsConstants;
+import com.mqttsnet.thinglinks.tdengine.utils.TdsUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 处理DEVICE_DATA主题
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun
@@ -33,14 +49,14 @@ import java.util.stream.Collectors;
 public class DeviceDatasHandler extends AbstractMessageHandler implements TopicHandler {
 
     public DeviceDatasHandler(CacheDataHelper cacheDataHelper,
-                                  RemoteDeviceService remoteDeviceService,
-                                  RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
-                                  ProtocolMessageAdapter protocolMessageAdapter) {
-        super(cacheDataHelper, remoteDeviceService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
+                              RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
+                              RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
+                              ProtocolMessageAdapter protocolMessageAdapter) {
+        super(cacheDataHelper, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
     }
 
-    @Autowired
-    private TdsApi tdsApi;
+    @Resource
+    private RemoteTdEngineService remoteTdEngineService;
 
 
     /**
@@ -141,7 +157,7 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
 
                 //如果是空，需要做设备的初始化动作，并缓存模型表结构
                 if (CollUtil.isEmpty(productModelSuperTableCacheVO)) {
-                    R<List<SuperTableDescribeVO>> superTableDescribeVOListR = tdsApi.describeSuperOrSubTable(subTableName);
+                    R<List<SuperTableDescribeVO>> superTableDescribeVOListR = remoteTdEngineService.describeSuperOrSubTable(subTableName);
 
                     List<SuperTableDescribeVO> existingFields = Optional.ofNullable(superTableDescribeVOListR.getData()).orElse(Collections.emptyList());
 
@@ -157,12 +173,12 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
                         fields.setDataType(DataTypeEnum.BINARY);
                         tagsFieldValues.add(fields);
                         tableDTO.setTagsFieldValues(tagsFieldValues);
-                        R subTable = tdsApi.createSubTable(tableDTO);
-                        if (Boolean.TRUE.equals(subTable.getIsSuccess())) {
+                        R subTable = remoteTdEngineService.createSubTable(tableDTO);
+                        if (ResultEnum.SUCCESS.getCode() == subTable.getCode()) {
                             log.info("设备初始化，设备标识：{}，服务标识：{}，初始化成功", deviceCacheVO.getDeviceIdentification(), service.getServiceCode());
                             // 查询新的表结构信息存redis
                             setProductModelSuperTableCacheVO(Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
-                                    service.getServiceCode(), deviceCacheVO.getDeviceIdentification(), tdsApi.describeSuperOrSubTable(superTableName).getData());
+                                    service.getServiceCode(), deviceCacheVO.getDeviceIdentification(), remoteTdEngineService.describeSuperOrSubTable(superTableName).getData());
 
                         } else {
                             log.warn("设备初始化 ，设备标识：{}，服务标识：{}，初始化失败", deviceCacheVO.getDeviceIdentification(), service.getServiceCode());
@@ -235,9 +251,9 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
                 tableDTO.setSchemaFieldValues(schemaFieldsStream);
                 tableDTO.setTagsFieldValues(tagsFieldsStream);
 
-                R insertedResult = tdsApi.insertTableData(tableDTO);
+                R insertedResult = remoteTdEngineService.insertTableData(tableDTO);
 
-                if (Boolean.TRUE.equals(insertedResult.getIsSuccess())) {
+                if (ResultEnum.SUCCESS.getCode() == insertedResult.getCode()) {
                     log.info("insert  table data success, tableName:{}", subTableName);
                 } else {
                     log.error("insert  table data failed, tableName:{}", subTableName);
@@ -262,8 +278,11 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
                     });
 
             log.info("productResultVO: {}", JSON.toJSONString(productResultVO));
-            setDeviceDataCollectionPoolCacheVO(Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
-                    deviceCacheVO.getDeviceIdentification(), productResultVO);
+
+
+            // TODO 后续处理数据收集池缓存
+            /*setDeviceDataCollectionPoolCacheVO(Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
+                    deviceCacheVO.getDeviceIdentification(), productResultVO);*/
         });
 
         return JSON.toJSONString("");

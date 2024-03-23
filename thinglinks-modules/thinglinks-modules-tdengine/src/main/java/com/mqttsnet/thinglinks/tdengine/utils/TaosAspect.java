@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.tdengine.util;
+package com.mqttsnet.thinglinks.tdengine.utils;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

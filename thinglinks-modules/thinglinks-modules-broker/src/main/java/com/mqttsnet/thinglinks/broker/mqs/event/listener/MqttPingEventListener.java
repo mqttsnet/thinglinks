@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: MQTT PING事件监听器
  * @packagename: com.mqttsnet.thinglinks.mqtt.listener
  * @author: ShiHuan Sun

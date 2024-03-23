@@ -98,6 +98,11 @@
             <artifactId>thinglinks-modules-link</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-modules-tdengine</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
 
 
     </dependencies>
