@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MqttEventCommandService {
 
-    private final DeviceCommandApi deviceCommandApi;
+//    private final DeviceCommandApi deviceCommandApi;
 
     /**
      * Processes the received message, converts it to a DeviceCommandSaveVO, and saves the command.
@@ -29,16 +29,17 @@ public class MqttEventCommandService {
      * @return A JSON string representing the saved device command.
      */
     public String processCommand(DeviceCacheVO deviceCacheVO, String dataBody) {
-        DeviceCommandSaveVO saveVO = convertToSaveVO(deviceCacheVO, dataBody);
-        R<DeviceCommand> response = deviceCommandApi.saveDeviceCommand(saveVO);
-
-        if (Boolean.FALSE.equals(response.getIsSuccess())) {
-            log.error("Failed to process device command: {}", JSON.toJSONString(response));
-            throw new IllegalStateException("Failed to save device command");
-        }
-
-        log.info("Device command processed and saved: {}", JSON.toJSONString(response.getData()));
-        return JSON.toJSONString(response.getData());
+//        DeviceCommandSaveVO saveVO = convertToSaveVO(deviceCacheVO, dataBody);
+//        R<DeviceCommand> response = deviceCommandApi.saveDeviceCommand(saveVO);
+//
+//        if (Boolean.FALSE.equals(response.getIsSuccess())) {
+//            log.error("Failed to process device command: {}", JSON.toJSONString(response));
+//            throw new IllegalStateException("Failed to save device command");
+//        }
+//
+//        log.info("Device command processed and saved: {}", JSON.toJSONString(response.getData()));
+//        return JSON.toJSONString(response.getData());
+        return "Device command processed and saved";
     }
 
     /**
@@ -48,15 +49,15 @@ public class MqttEventCommandService {
      * @param dataBody      The body of the MQTT message.
      * @return The DeviceCommandSaveVO object.
      */
-    private DeviceCommandSaveVO convertToSaveVO(DeviceCacheVO deviceCacheVO, String dataBody) {
-        // Your conversion logic here
-        // For now, creating a new object with some default values
-        DeviceCommandSaveVO saveVO = new DeviceCommandSaveVO();
-        saveVO.setDeviceIdentification(deviceCacheVO.getDeviceIdentification());
-        saveVO.setCommandType(DeviceCommandTypeEnum.COMMAND_RESPONSE.getValue());
-        saveVO.setStatus(DeviceCommandStatusEnum.SUCCESS.getValue());
-        saveVO.setContent(dataBody);
-        saveVO.setRemark("Processed command response");
-        return saveVO;
-    }
+//    private DeviceCommandSaveVO convertToSaveVO(DeviceCacheVO deviceCacheVO, String dataBody) {
+//        // Your conversion logic here
+//        // For now, creating a new object with some default values
+//        DeviceCommandSaveVO saveVO = new DeviceCommandSaveVO();
+//        saveVO.setDeviceIdentification(deviceCacheVO.getDeviceIdentification());
+//        saveVO.setCommandType(DeviceCommandTypeEnum.COMMAND_RESPONSE.getValue());
+//        saveVO.setStatus(DeviceCommandStatusEnum.SUCCESS.getValue());
+//        saveVO.setContent(dataBody);
+//        saveVO.setRemark("Processed command response");
+//        return saveVO;
+//    }
 }

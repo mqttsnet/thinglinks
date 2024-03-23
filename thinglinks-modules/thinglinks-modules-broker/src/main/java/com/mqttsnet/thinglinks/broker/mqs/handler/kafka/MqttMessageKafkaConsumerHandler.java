@@ -43,15 +43,15 @@ public class MqttMessageKafkaConsumerHandler {
      * @param ack     kafka的消息确认
      */
     @KafkaListener(topics = {ConsumerTopicConstant.Mqtt.THINGLINKS_MQS_MQTT_MSG,
-            ConsumerTopicConstant.Mqtt.THINGLINKS_CLIENT_CONNECTED_TOPIC,
-            ConsumerTopicConstant.Mqtt.THINGLINKS_CLIENT_DISCONNECTED_TOPIC,
-            ConsumerTopicConstant.Mqtt.THINGLINKS_SERVER_CONNECTED_TOPIC,
-            ConsumerTopicConstant.Mqtt.THINGLINKS_DEVICE_KICKED_TOPIC,
-            ConsumerTopicConstant.Mqtt.THINGLINKS_SUBSCRIPTION_ACKED_TOPIC,
-            ConsumerTopicConstant.Mqtt.THINGLINKS_UNSUBSCRIPTION_ACKED_TOPIC,
-            ConsumerTopicConstant.Mqtt.THINGLINKS_DISTRIBUTION_ERROR_TOPIC,
-            ConsumerTopicConstant.Mqtt.THINGLINKS_DISTRIBUTION_COMPLETED_TOPIC,
-            ConsumerTopicConstant.Mqtt.THINGLINKS_PING_REQ_TOPIC
+            ConsumerTopicConstant.Mqtt.THINGLINKS_MQTT_CLIENT_CONNECTED_TOPIC,
+            ConsumerTopicConstant.Mqtt.THINGLINKS_MQTT_CLIENT_DISCONNECTED_TOPIC,
+            ConsumerTopicConstant.Mqtt.THINGLINKS_MQTT_SERVER_CONNECTED_TOPIC,
+            ConsumerTopicConstant.Mqtt.THINGLINKS_MQTT_DEVICE_KICKED_TOPIC,
+            ConsumerTopicConstant.Mqtt.THINGLINKS_MQTT_SUBSCRIPTION_ACKED_TOPIC,
+            ConsumerTopicConstant.Mqtt.THINGLINKS_MQTT_UNSUBSCRIPTION_ACKED_TOPIC,
+            ConsumerTopicConstant.Mqtt.THINGLINKS_MQTT_DISTRIBUTION_ERROR_TOPIC,
+            ConsumerTopicConstant.Mqtt.THINGLINKS_MQTT_DISTRIBUTION_COMPLETED_TOPIC,
+            ConsumerTopicConstant.Mqtt.THINGLINKS_MQTT_PING_REQ_TOPIC
     }, errorHandler = "myKafkaListenerErrorHandler", containerFactory = "kafkaListenerContainerFactory")
     @KafkaHandler
     public void handleBatchMessages(List<ConsumerRecord<?, ?>> records, Acknowledgment ack) {
