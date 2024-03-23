@@ -5,6 +5,7 @@ import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.service.MqttEventCommandService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.common.cache.helper.CacheDataHelper;
@@ -26,10 +27,10 @@ import java.util.Map;
 @Service
 public class CommandResponseHandler extends AbstractMessageHandler implements TopicHandler {
     public CommandResponseHandler(CacheDataHelper cacheDataHelper,
-                                  RemoteDeviceService remoteDeviceService,
+                                  RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
                                   RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
-        super(cacheDataHelper, remoteDeviceService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
+        super(cacheDataHelper, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
     }
 
     @Autowired

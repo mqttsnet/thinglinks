@@ -479,7 +479,7 @@ CREATE TABLE `device`
     `encrypt_key`            varchar(255) CHARACTER SET utf8mb4          DEFAULT '' COMMENT '加密密钥',
     `encrypt_vector`         varchar(255) CHARACTER SET utf8mb4          DEFAULT '' COMMENT '加密向量',
     `sign_key`               varchar(255) CHARACTER SET utf8mb4          DEFAULT '' COMMENT '签名密钥',
-    `encrypt_method`         tinyint(4) NOT NULL DEFAULT '0' COMMENT '协议加密方式',
+    `encrypt_method`         varchar(4) NOT NULL DEFAULT '0' COMMENT '协议加密方式',
     `sw_version`             varchar(255) CHARACTER SET utf8mb4          DEFAULT '' COMMENT '软件版本',
     `fw_version`             varchar(255) CHARACTER SET utf8mb4          DEFAULT '' COMMENT '固件版本',
     `device_sdk_version`     varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT 'v1' COMMENT 'sdk版本',

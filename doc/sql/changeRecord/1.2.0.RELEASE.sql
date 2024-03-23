@@ -2,7 +2,7 @@
 ALTER TABLE device ADD encrypt_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密密钥';
 ALTER TABLE device ADD encrypt_vector varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密向量';
 ALTER TABLE device ADD sign_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '签名密钥';
-ALTER TABLE device ADD encrypt_method tinyint(4) DEFAULT 0 NOT NULL COMMENT '协议加密方式';
+ALTER TABLE device ADD encrypt_method varchar(4) DEFAULT 0 NOT NULL COMMENT '协议加密方式';
 ALTER TABLE device ADD sw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '软件版本';
 ALTER TABLE device ADD fw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '固件版本';
 ALTER TABLE device ADD device_sdk_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'v1' NOT NULL COMMENT 'sdk版本';
