@@ -179,7 +179,7 @@ public class Device  extends BaseEntity implements Serializable{
      */
     @Excel(name = "传输协议的加密方式")
     @ApiModelProperty(value = "传输协议的加密方式：0-明文传输、1-SM4、2-AES ")
-    private Integer encryptMethod;
+    private String encryptMethod;
 
     /**
      * 软件版本

@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: KafkaProviderConfig
  * @packagename: com.mqttsnet.thinglinks.config.kafka
  * @author: ShiHuan Sun

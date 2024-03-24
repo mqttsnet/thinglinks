@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 设备操作结果数据模型
  * @packagename: com.mqttsnet.thinglinks.device.vo.result
  * @author: ShiHuan Sun

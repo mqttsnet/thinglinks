@@ -86,12 +86,23 @@
     <!-- 添加或修改产品服务数据对话框 -->
     <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="500px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="服务编码" prop="serviceCode">
+          <el-col :span="22">
+            <el-input v-model="form.serviceCode" autocomplete="off" placeholder="请输入服务编码" />
+          </el-col>
+          <el-col :span="2" style="padding-left: 5px">
+            <el-tooltip content="属性编码。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
+                        placement="right">
+              <i class="el-icon-question" />
+            </el-tooltip>
+          </el-col>
+        </el-form-item>
         <el-form-item label="服务名称" prop="serviceName">
           <el-col :span="22">
             <el-input v-model="form.serviceName" autocomplete="off" placeholder="请输入服务名称" />
           </el-col>
           <el-col :span="2" style="padding-left: 5px">
-            <el-tooltip content="属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
+            <el-tooltip content="属性名称" effect="light"
               placement="right">
               <i class="el-icon-question" />
             </el-tooltip>
@@ -156,11 +167,13 @@ export default {
       // 是否显示弹出层
       openProp: false,
       serviceId: null,
+      serviceCode: null,
       serviceName: null,
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
+        serviceCode: null,
         serviceName: null,
         productIdentification: null,
         templateIdentification: null,
@@ -175,7 +188,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        serviceName: [
+        serviceCode: [
           { required: true, message: "服务名称不能为空", trigger: "blur" },
           { min: 2, max: 50, message: '服务名称长度必须介于 2 和 50 之间', trigger: 'blur' },
           {
@@ -183,6 +196,10 @@ export default {
             message: "英文小写、数字、下划线，长度[2,50]",
             trigger: "blur"
           }
+        ],
+        serviceName: [
+          { required: true, message: "服务名称不能为空", trigger: "blur" },
+          { min: 2, max: 50, message: '服务名称长度必须介于 2 和 50 之间', trigger: 'blur' }
         ],
         status: [
           { required: true, message: "状态不能为空", trigger: "blur" }
@@ -252,6 +269,7 @@ export default {
     reset() {
       this.form = {
         id: null,
+        serviceCode: null,
         serviceName: null,
         productIdentification: null,
         templateIdentification: null,

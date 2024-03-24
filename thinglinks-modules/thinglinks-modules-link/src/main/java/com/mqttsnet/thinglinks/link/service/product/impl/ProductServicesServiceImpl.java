@@ -91,8 +91,8 @@ public class ProductServicesServiceImpl implements ProductServicesService {
     }
 
     @Override
-    public List<ProductServices> findAllByProductIdentificationAndServiceNameAndStatus(String productIdentification, String serviceName, String status) {
-        return productServicesMapper.findAllByProductIdentificationAndServiceNameAndStatus(productIdentification, serviceName, status);
+    public List<ProductServices> findAllByProductIdentificationAndServiceCodeAndStatus(String productIdentification, String serviceCode, String status) {
+        return productServicesMapper.findAllByProductIdentificationAndServiceCodeAndStatus(productIdentification, serviceCode, status);
     }
 
     /**

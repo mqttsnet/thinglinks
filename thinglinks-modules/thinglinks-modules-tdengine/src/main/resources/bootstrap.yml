@@ -1,5 +1,5 @@
 # Spring
-spring: 
+spring:
   application:
     # 应用名称
     name: @project.artifactId@
@@ -30,8 +30,6 @@ spring:
           - dataId: application.yml
             refresh: true
           - dataId: redis.yml
-            refresh: false
-          - dataId: rocketmq.yml
             refresh: false
         username: @nacos.username@
         password: @nacos.password@

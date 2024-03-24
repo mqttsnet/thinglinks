@@ -5,6 +5,7 @@
         <!--@mbg.generated-->
         <!--@Table product_services-->
         <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="service_code" jdbcType="VARCHAR" property="serviceCode"/>
         <result column="service_name" jdbcType="VARCHAR" property="serviceName"/>
         <result column="template_identification" jdbcType="VARCHAR" property="templateIdentification"/>
         <result column="product_identification" jdbcType="VARCHAR" property="productIdentification"/>
@@ -18,6 +19,7 @@
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
         id,
+        service_code,
         service_name,
         template_identification,
         product_identification,
@@ -48,11 +50,11 @@
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices"
             useGeneratedKeys="true">
         <!--@mbg.generated-->
-        insert into product_services (service_name, template_identification,
+        insert into product_services (service_code, service_name, template_identification,
                                       product_identification, `status`, description,
                                       create_by, create_time, update_by,
                                       update_time)
-        values (#{serviceName,jdbcType=VARCHAR}, #{templateIdentification,jdbcType=VARCHAR},
+        values (#{serviceCode,jdbcType=VARCHAR},#{serviceName,jdbcType=VARCHAR}, #{templateIdentification,jdbcType=VARCHAR},
                 #{productIdentification,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
                 #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},
                 #{updateTime,jdbcType=TIMESTAMP})
@@ -63,6 +65,9 @@
         <!--@mbg.generated-->
         insert into product_services
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serviceCode != null">
+                service_code,
+            </if>
             <if test="serviceName != null">
                 service_name,
             </if>
@@ -92,6 +97,9 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serviceCode != null">
+                #{serviceCode,jdbcType=VARCHAR},
+            </if>
             <if test="serviceName != null">
                 #{serviceName,jdbcType=VARCHAR},
             </if>
@@ -126,6 +134,9 @@
         <!--@mbg.generated-->
         update product_services
         <set>
+            <if test="serviceCode != null">
+                service_code = #{serviceName,jdbcType=VARCHAR},
+            </if>
             <if test="serviceName != null">
                 service_name = #{serviceName,jdbcType=VARCHAR},
             </if>
@@ -160,7 +171,8 @@
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices">
         <!--@mbg.generated-->
         update product_services
-        set service_name            = #{serviceName,jdbcType=VARCHAR},
+        set service_code            = #{serviceCode,jdbcType=VARCHAR},
+            service_name            = #{serviceName,jdbcType=VARCHAR},
             template_identification = #{templateIdentification,jdbcType=VARCHAR},
             product_identification  = #{productIdentification,jdbcType=VARCHAR},
             `status`                = #{status,jdbcType=VARCHAR},
@@ -175,6 +187,11 @@
         <!--@mbg.generated-->
         update product_services
         <trim prefix="set" suffixOverrides=",">
+            <trim prefix="service_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.serviceCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
             <trim prefix="service_name = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
                     when id = #{item.id,jdbcType=BIGINT} then #{item.serviceName,jdbcType=VARCHAR}
@@ -230,6 +247,13 @@
         <!--@mbg.generated-->
         update product_services
         <trim prefix="set" suffixOverrides=",">
+            <trim prefix="service_code = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.serviceCode != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.serviceCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
             <trim prefix="service_name = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
                     <if test="item.serviceName != null">
@@ -302,11 +326,11 @@
     <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into product_services
-        (service_name, template_identification, product_identification, `status`, description,
+        (service_code,service_name, template_identification, product_identification, `status`, description,
          create_by, create_time, update_by, update_time)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.serviceName,jdbcType=VARCHAR}, #{item.templateIdentification,jdbcType=VARCHAR},
+            (#{item.serviceName,jdbcType=VARCHAR},#{item.serviceCode,jdbcType=VARCHAR}, #{item.templateIdentification,jdbcType=VARCHAR},
              #{item.productIdentification,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR},
              #{item.description,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR},
              #{item.createTime,jdbcType=TIMESTAMP},
@@ -322,6 +346,7 @@
             <if test="id != null">
                 id,
             </if>
+            service_code,
             service_name,
             template_identification,
             product_identification,
@@ -337,6 +362,7 @@
             <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
+            #{serviceCode,jdbcType=VARCHAR},
             #{serviceName,jdbcType=VARCHAR},
             #{templateIdentification,jdbcType=VARCHAR},
             #{productIdentification,jdbcType=VARCHAR},
@@ -352,6 +378,7 @@
             <if test="id != null">
                 id = #{id,jdbcType=BIGINT},
             </if>
+            service_code            = #{serviceCode,jdbcType=VARCHAR},
             service_name            = #{serviceName,jdbcType=VARCHAR},
             template_identification = #{templateIdentification,jdbcType=VARCHAR},
             product_identification  = #{productIdentification,jdbcType=VARCHAR},
@@ -371,6 +398,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
+            </if>
+            <if test="serviceCode != null">
+                service_code,
             </if>
             <if test="serviceName != null">
                 service_name,
@@ -405,6 +435,9 @@
             <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
+            <if test="serviceCode != null">
+                #{serviceCode,jdbcType=VARCHAR},
+            </if>
             <if test="serviceName != null">
                 #{serviceName,jdbcType=VARCHAR},
             </if>
@@ -437,6 +470,9 @@
         <trim suffixOverrides=",">
             <if test="id != null">
                 id = #{id,jdbcType=BIGINT},
+            </if>
+            <if test="serviceCode != null">
+                service_code = #{serviceCode,jdbcType=VARCHAR},
             </if>
             <if test="serviceName != null">
                 service_name = #{serviceName,jdbcType=VARCHAR},
@@ -500,7 +536,7 @@
     </select>
 
     <!--Author By ShiHuan Sun  E-mail: 13733918655@163.com   on 2022-04-18-->
-    <select id="findAllByProductIdentificationAndServiceNameAndStatus" resultMap="BaseResultMap">
+    <select id="findAllByProductIdentificationAndServiceCodeAndStatus" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from product_services
@@ -508,8 +544,8 @@
             <if test="productIdentification != null">
                 and product_identification = #{productIdentification,jdbcType=VARCHAR}
             </if>
-            <if test="serviceName != null">
-                and service_name = #{serviceName,jdbcType=VARCHAR}
+            <if test="serviceCode != null">
+                and service_code = #{serviceCode,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
                 and `status` = #{status,jdbcType=VARCHAR}
@@ -520,6 +556,7 @@
 
     <sql id="selectProductServicesVo">
         select id,
+               service_code,
                service_name,
                product_identification,
                template_identification,
@@ -537,6 +574,9 @@
             resultMap="BaseResultMap">
         <include refid="selectProductServicesVo"/>
         <where>
+            <if test="serviceCode != null  and serviceCode != ''">
+                and service_code like concat('%', #{serviceCode}, '%')
+            </if>
             <if test="serviceName != null  and serviceName != ''">
                 and service_name like concat('%', #{serviceName}, '%')
             </if>
@@ -565,6 +605,9 @@
             useGeneratedKeys="true">
         insert into product_services
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serviceCode != null and serviceCode != ''">
+                service_code,
+            </if>
             <if test="serviceName != null and serviceName != ''">
                 service_name,
             </if>
@@ -594,6 +637,9 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serviceCode != null and serviceCode != ''">
+                #{serviceCode},
+            </if>
             <if test="serviceName != null and serviceName != ''">
                 #{serviceName},
             </if>
@@ -628,6 +674,9 @@
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices">
         update product_services
         <trim prefix="SET" suffixOverrides=",">
+            <if test="serviceCode != null and serviceCode != ''">
+                service_code = #{serviceCode},
+            </if>
             <if test="serviceName != null and serviceName != ''">
                 service_name = #{serviceName},
             </if>
@@ -690,7 +739,7 @@
         from
             product_services
         <where>
-            <if test="serviceIdList != null ">
+            <if test="serviceIdList != null and serviceIdList.size()  &gt; 0">
                 and id in
                 <foreach collection="serviceIdList" open="(" close=")" separator="," item="item">
                     #{item}

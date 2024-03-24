@@ -51,10 +51,3 @@ export function getDeviceInfoShadow(data) {
     data: data
   })
 }
-// 初始化子设备影子数据
-export function refreshDeviceInfoDataModel(id) {
-  return request({
-    url: '/link/deviceInfo/refreshDeviceInfoDataModel/' + id,
-    method: 'get'
-  })
-}

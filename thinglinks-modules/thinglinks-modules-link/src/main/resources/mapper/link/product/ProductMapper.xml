@@ -1126,17 +1126,31 @@
     </select>
     
     <select id="selectProductByProductIdentificationList" resultMap="BaseResultMap">
-        select 
-            <include refid="Base_Column_List"></include>
+        select
+        <include refid="Base_Column_List"></include>
         from
-            product
+        product
         <where>
             <if test="productIdentificationList != null and productIdentificationList.size() &gt; 0">
                 and product_identification in
-                <foreach close=")" collection="productIdentificationList" index="index" item="item" open="(" separator=",">
+                <foreach close=")" collection="productIdentificationList" index="index" item="item" open="("
+                         separator=",">
                     #{item,jdbcType=BIGINT}
                 </foreach>
             </if>
         </where>
+    </select>
+
+
+    <select id="findProductTotal" resultType="java.lang.Long">
+        select count(*)
+        from product
+    </select>
+
+    <select id="findProductsByPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM product
+        LIMIT #{pageSize} OFFSET #{offset}
     </select>
 </mapper>

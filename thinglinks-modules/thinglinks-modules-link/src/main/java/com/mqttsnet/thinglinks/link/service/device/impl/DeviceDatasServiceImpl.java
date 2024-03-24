@@ -40,7 +40,7 @@ import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
-import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.TableDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -267,9 +267,9 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
             StringBuilder shadowTableNameBuilder = new StringBuilder();
             // 新增设备管理成功后，创建TD普通表
             List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdentificationIdAndStatus(product.getProductIdentification(), Constants.ENABLE);
-            TableDto tableDto;
+            TableDTO tableDto;
             for (ProductServices productServices : allByProductIdAndStatus) {
-                tableDto = new TableDto();
+                tableDto = new TableDTO();
                 tableDto.setDataBaseName(dataBaseName);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
                 String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceName());
@@ -282,7 +282,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 fields.setFieldValue(device.getDeviceIdentification());
                 tagsFieldValues.add(fields);
                 tableDto.setTagsFieldValues(tagsFieldValues);
-                final R<?> ctResult = remoteTdEngineService.createTable(tableDto);
+                final R<?> ctResult = remoteTdEngineService.createSubTable(tableDto);
                 if (ctResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     shadowTableNameBuilder.append(tableDto.getTableName()).append(",");
                     log.info("Create SuperTable Success: " + ctResult.getMsg());
@@ -427,12 +427,12 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
         for (Map<String, Object> item : items) {
             final Object deviceId = item.get("deviceId");
             Device device = null;
-            if (Boolean.TRUE.equals(redisService.hasKey(CacheConstants.DEVICE_RECORD_KEY + deviceIdentification))) {
-                device = redisService.getCacheObject(CacheConstants.DEVICE_RECORD_KEY + deviceIdentification);
+            if (Boolean.TRUE.equals(redisService.hasKey(CacheConstants.DEF_DEVICE + deviceIdentification))) {
+                device = redisService.getCacheObject(CacheConstants.DEF_DEVICE + deviceIdentification);
             } else {
                 device = deviceService.findOneByDeviceIdentification(deviceIdentification);
                 if (StringUtils.isNotNull(device)) {
-                    redisService.setCacheObject(CacheConstants.DEVICE_RECORD_KEY + deviceIdentification, device);
+                    redisService.setCacheObject(CacheConstants.DEF_DEVICE + deviceIdentification, device);
                 } else {
                     log.error("The side device reports data processing, but the device does not exist,DeviceIdentification:{},Body:{}", deviceIdentification, body);
                     continue;
@@ -472,7 +472,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
                 String tableName = superTableName + "_" + deviceId.toString();
                 //从redis根据超级表名称取出超级表表结构信息
-                final Object cacheObject = redisService.getCacheObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName);
+                final Object cacheObject = redisService.getCacheObject(CacheConstants.DEF_TDENGINE_SUPERTABLEFILELDS + superTableName);
                 ObjectMapper objectMapper = new ObjectMapper();
                 SuperTableDto superTableDto = objectMapper.convertValue(cacheObject, SuperTableDto.class);
                 //获取超级表的表结构信息
@@ -534,14 +534,14 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                     continue;
                 }
                 //设置插入所需参数
-                TableDto tableDto = new TableDto();
+                TableDTO tableDto = new TableDTO();
                 tableDto.setDataBaseName(superTableDto.getDataBaseName());
                 tableDto.setSuperTableName(superTableDto.getSuperTableName());
                 tableDto.setTableName(tableName);
                 tableDto.setSchemaFieldValues(schemaFieldsStream);
                 tableDto.setTagsFieldValues(tagsFieldsStream);
                 //调用插入方法插入数据 TODO 需要改为mq异步处理
-                final R<?> insertResult = this.remoteTdEngineService.insertData(tableDto);
+                final R<?> insertResult = this.remoteTdEngineService.insertTableData(tableDto);
                 if (insertResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     log.info("DeviceIdentification: {}, Insert data result: {}", deviceIdentification, ResultEnum.SUCCESS.getMessage());
                 } else {
@@ -568,8 +568,8 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
      * 根据设备找到所属产品 产品的服务及属性 转换出系统能识别的json 找到这个产品的协议内容即Java代码
      */
     public String convertToBody(String deviceIdentification, String body) {
-        if (Boolean.TRUE.equals(redisService.hasKey(CacheConstants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification))) {
-            String protocolContent = redisService.get(CacheConstants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification);
+        if (Boolean.TRUE.equals(redisService.hasKey(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification))) {
+            String protocolContent = redisService.get(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification);
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             PrintWriter out = new PrintWriter(buffer, true);
             byte[] classBytes = DynamicLoaderEngine.compile(protocolContent, out, null);//传入要执行的代码

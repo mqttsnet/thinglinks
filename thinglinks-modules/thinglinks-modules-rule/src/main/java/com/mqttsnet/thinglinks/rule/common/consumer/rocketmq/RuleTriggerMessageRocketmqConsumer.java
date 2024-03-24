@@ -39,6 +39,12 @@ public class RuleTriggerMessageRocketmqConsumer implements RocketMQListener {
             JSONObject json = JSONObject.parseObject(String.valueOf(message));
             Boolean flag = ruleDeviceLinkageService.checkRuleConditions(json.getString("msg"));
             log.info("规则匹配结果:{}", flag);
+
+            // 触发器规则匹配成功，执行动作
+            if (flag) {
+                //TODO 触发器规则匹配成功，执行动作 业务逻辑 自行补充
+//                ruleDeviceLinkageService.executeRuleAction(json.getString("msg"));
+            }
         } catch (Exception e) {
             log.error("规则引擎-触发器规则数据消费-->消费失败，失败原因：{}", e.getMessage());
         }

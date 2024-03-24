@@ -171,7 +171,7 @@ public class ProtocolServiceImpl implements ProtocolService {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             String content = StringEscapeUtils.unescapeHtml4(protocol.getContent());
             for (Device device : deviceList) {
-                redisService.set(CacheConstants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getProtocolType() + device.getDeviceIdentification(), content);
+                redisService.set(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getProtocolType() + device.getDeviceIdentification(), content);
             }
             protocolMapper.updateStatusById(Constants.ENABLE, protocol.getId());
         }
@@ -190,7 +190,7 @@ public class ProtocolServiceImpl implements ProtocolService {
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             for (Device device : deviceList) {
-                redisService.delete(CacheConstants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
+                redisService.delete(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
             }
             protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
         }
@@ -218,7 +218,7 @@ public class ProtocolServiceImpl implements ProtocolService {
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             for (Device device : deviceList) {
-                redisService.delete(CacheConstants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
+                redisService.delete(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
             }
             protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
         }

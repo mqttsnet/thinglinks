@@ -15,5 +15,5 @@ public interface ConsumerGroupConstant {
     /**
      * default-consumer-group
      */
-    String THINGLINKS_GROUP = "thinglinks";
+    String THINGLINKS_GROUP = "thingLinks";
 }

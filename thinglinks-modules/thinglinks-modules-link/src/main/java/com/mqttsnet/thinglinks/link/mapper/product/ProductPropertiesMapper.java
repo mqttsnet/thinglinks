@@ -122,4 +122,7 @@ public interface ProductPropertiesMapper {
     int deleteProductPropertiesByIds(Long[] ids);
 
     List<ProductProperties> selectPropertiesByPropertiesIdList(@Param("propertiesIdList") List<Long> propertiesIdList);
+
+
+    List<ProductProperties> selectPropertiesByServiceIdList(@Param("serviceIdList") List<Long> serviceIdList);
 }

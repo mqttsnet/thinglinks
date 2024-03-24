@@ -1,11 +1,28 @@
 # 设备表新增字段
-ALTER TABLE thinglinks_test.device ADD encrypt_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密密钥';
-ALTER TABLE thinglinks_test.device ADD encrypt_vector varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密向量';
-ALTER TABLE thinglinks_test.device ADD sign_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '签名密钥';
-ALTER TABLE thinglinks_test.device ADD encrypt_method tinyint(4) DEFAULT 0 NOT NULL COMMENT '协议加密方式';
-ALTER TABLE thinglinks_test.device ADD sw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '软件版本';
-ALTER TABLE thinglinks_test.device ADD fw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '固件版本';
-ALTER TABLE thinglinks_test.device ADD device_sdk_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'v1' NOT NULL COMMENT 'sdk版本';
+ALTER TABLE device ADD encrypt_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密密钥';
+ALTER TABLE device ADD encrypt_vector varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '加密向量';
+ALTER TABLE device ADD sign_key varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '签名密钥';
+ALTER TABLE device ADD encrypt_method varchar(4) DEFAULT 0 NOT NULL COMMENT '协议加密方式';
+ALTER TABLE device ADD sw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '软件版本';
+ALTER TABLE device ADD fw_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NULL COMMENT '固件版本';
+ALTER TABLE device ADD device_sdk_version varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT 'v1' NOT NULL COMMENT 'sdk版本';
+
+
+#产品服务表
+ALTER TABLE product_services MODIFY COLUMN service_name varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '服务名称';
+ALTER TABLE product_services ADD service_code varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NOT NULL COMMENT '服务编码:支持英文大小写、数字、下划线和中划线';
+
+UPDATE product_services SET service_code = service_name;
+
+
+#产品属性
+ALTER TABLE product_properties ADD property_code varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NOT NULL COMMENT '属性编码';
+ALTER TABLE product_properties CHANGE name property_name varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '指示属性名称。';
+
+UPDATE product_properties SET property_code = property_name;
+
+
+
 
 
 
@@ -22,9 +39,9 @@ CREATE TABLE `ota_upgrades`
     `description`            varchar(255)          DEFAULT '' COMMENT '升级包功能描述',
     `custom_info`            longtext COMMENT '自定义信息',
     `remark`                 varchar(255)          DEFAULT '' COMMENT '描述',
-    `created_by`             bigint(20) DEFAULT NULL COMMENT '创建人',
+    `created_by`             varchar(20) DEFAULT NULL COMMENT '创建人',
     `created_time`           datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_by`             bigint(20) DEFAULT NULL COMMENT '更新人',
+    `updated_by`             varchar(20) DEFAULT NULL COMMENT '更新人',
     `updated_time`           datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
     KEY                      `idx_app_id` (`app_id`) USING BTREE COMMENT '应用ID',
@@ -41,9 +58,9 @@ CREATE TABLE `ota_upgrade_tasks`
     `scheduled_time` datetime              DEFAULT NULL COMMENT '计划执行时间',
     `description`    varchar(255)          DEFAULT '' COMMENT '任务描述',
     `remark`         varchar(255)          DEFAULT '' COMMENT '描述',
-    `created_by`     bigint(20) DEFAULT NULL COMMENT '创建人',
+    `created_by`     varchar(20) DEFAULT NULL COMMENT '创建人',
     `created_time`   datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_by`     bigint(20) DEFAULT NULL COMMENT '更新人',
+    `updated_by`     varchar(20) DEFAULT NULL COMMENT '更新人',
     `updated_time`   datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
     KEY              `idx_upgrade_id` (`upgrade_id`) USING BTREE COMMENT '升级包ID'
@@ -64,9 +81,9 @@ CREATE TABLE `ota_upgrade_records`
     `failure_details`       longtext COMMENT '升级失败详细信息',
     `log_details`           longtext COMMENT '升级过程日志',
     `remark`                varchar(255)          DEFAULT '' COMMENT '描述',
-    `created_by`            bigint(20) DEFAULT NULL COMMENT '创建人',
+    `created_by`            varchar(20) DEFAULT NULL COMMENT '创建人',
     `created_time`          datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
-    `updated_by`            bigint(20) DEFAULT NULL COMMENT '更新人',
+    `updated_by`            varchar(20) DEFAULT NULL COMMENT '更新人',
     `updated_time`          datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE KEY `idx_task_id_device_identification` (`task_id`,`device_identification`) USING BTREE,

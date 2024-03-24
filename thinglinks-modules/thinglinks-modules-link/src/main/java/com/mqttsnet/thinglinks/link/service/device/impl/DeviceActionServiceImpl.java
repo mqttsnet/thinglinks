@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.nacos.shaded.com.google.gson.Gson;
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
@@ -230,7 +231,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         Device device = deviceService.findOneByClientId(String.valueOf(map.get("clientId")));
         if (null != device){
             //缓存设备信息
-            redisService.setCacheObject(CacheConstants.DEVICE_RECORD_KEY+device.getClientId(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(CacheConstants.DEF_DEVICE+device.getClientId(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
         }
     }
 

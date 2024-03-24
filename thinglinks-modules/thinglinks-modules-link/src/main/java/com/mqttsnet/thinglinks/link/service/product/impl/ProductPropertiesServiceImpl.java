@@ -149,4 +149,9 @@ public class ProductPropertiesServiceImpl implements ProductPropertiesService {
     {
         return productPropertiesMapper.selectPropertiesByPropertiesIdList(propertiesIdList);
     }
+
+    @Override
+    public List<ProductProperties> selectPropertiesByServiceIdList(List<Long> serviceIdList) {
+        return productPropertiesMapper.selectPropertiesByServiceIdList(serviceIdList);
+    }
 }

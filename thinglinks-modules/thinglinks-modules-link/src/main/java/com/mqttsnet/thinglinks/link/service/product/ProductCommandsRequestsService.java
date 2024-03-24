@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.link.service.product;
 import java.util.List;
 
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommandsRequests;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @Description: java类作用描述
@@ -79,5 +80,7 @@ public interface ProductCommandsRequestsService {
      * @return 结果
      */
     int deleteProductCommandsRequestsByIds(Long[] ids);
+
+    List<ProductCommandsRequests> selectProductCommandsRequestsByCommandIdList(@Param("commandIdList") List<Long> commandIdList);
 
 }

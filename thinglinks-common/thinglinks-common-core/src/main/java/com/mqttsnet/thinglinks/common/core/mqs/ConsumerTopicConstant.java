@@ -25,48 +25,48 @@ public interface ConsumerTopicConstant {
         /**
          * 设备上线
          */
-        String THINGLINKS_CLIENT_CONNECTED_TOPIC = "client.connected.topic";
+        String THINGLINKS_MQTT_CLIENT_CONNECTED_TOPIC = "mqtt.client.connected.topic";
 
         /**
          * 客户端设备离线
          */
-        String THINGLINKS_CLIENT_DISCONNECTED_TOPIC = "client.disconnect.topic";
+        String THINGLINKS_MQTT_CLIENT_DISCONNECTED_TOPIC = "mqtt.client.disconnect.topic";
 
         /**
-         * 服务端设备离线
+         * 服务端主动断开了与客户端的连接
          */
-        String THINGLINKS_SERVER_CONNECTED_TOPIC = "server.disconnect.topic";
+        String THINGLINKS_MQTT_SERVER_CONNECTED_TOPIC = "mqtt.server.disconnect.topic";
 
         /**
          * 设备离线
          */
-        String THINGLINKS_DEVICE_KICKED_TOPIC = "device.kicked.topic";
+        String THINGLINKS_MQTT_DEVICE_KICKED_TOPIC = "mqtt.device.kicked.topic";
 
         /**
          * 消息订阅
          */
-        String THINGLINKS_SUBSCRIPTION_ACKED_TOPIC = "subscription.acked.topic";
+        String THINGLINKS_MQTT_SUBSCRIPTION_ACKED_TOPIC = "mqtt.subscription.acked.topic";
 
         /**
          * 取消订阅
          */
-        String THINGLINKS_UNSUBSCRIPTION_ACKED_TOPIC = "unsubscription.acked.topic";
+        String THINGLINKS_MQTT_UNSUBSCRIPTION_ACKED_TOPIC = "mqtt.unsubscription.acked.topic";
 
         /**
          * 消息分发错误
          */
-        String THINGLINKS_DISTRIBUTION_ERROR_TOPIC = "distribution.error.topic";
+        String THINGLINKS_MQTT_DISTRIBUTION_ERROR_TOPIC = "mqtt.distribution.error.topic";
 
         /**
          * 消息分发
          */
-        String THINGLINKS_DISTRIBUTION_COMPLETED_TOPIC = "distribution.completed.topic";
+        String THINGLINKS_MQTT_DISTRIBUTION_COMPLETED_TOPIC = "mqtt.distribution.completed.topic";
 
 
         /**
          * PING 请求
          */
-        String THINGLINKS_PING_REQ_TOPIC = "ping.req.topic";
+        String THINGLINKS_MQTT_PING_REQ_TOPIC = "mqtt.ping.req.topic";
 
     }
 

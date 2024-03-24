@@ -137,4 +137,9 @@ public class ProductCommandsRequestsServiceImpl implements ProductCommandsReques
         return productCommandsRequestsMapper.deleteProductCommandsRequestsByIds(ids);
     }
 
+    @Override
+    public List<ProductCommandsRequests> selectProductCommandsRequestsByCommandIdList(List<Long> commandIdList) {
+        return productCommandsRequestsMapper.selectProductCommandsRequestsByCommandIdList(commandIdList);
+    }
+
 }

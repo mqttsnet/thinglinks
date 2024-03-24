@@ -2,10 +2,12 @@ package com.mqttsnet.thinglinks.broker.mqs.mqtt.handler;
 
 import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
 import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
+import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.service.MqttEventCommandService;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.link.common.cache.helper.CacheDataHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 处理COMMAND_RESPONSE主题
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun
@@ -23,11 +25,11 @@ import java.util.Map;
 @Slf4j
 @Service
 public class CommandResponseHandler extends AbstractMessageHandler implements TopicHandler {
-    public CommandResponseHandler(CacheDataHelper cacheDataHelper,
-                                  DeviceOpenAnyTenantApi deviceOpenAnyTenantApi,
-                                  MqttBrokerOpenAnyTenantApi mqttBrokerOpenAnyTenantApi,
+    public CommandResponseHandler(RedisService redisService,
+                                  RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
+                                  RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
-        super(cacheDataHelper, deviceOpenAnyTenantApi, mqttBrokerOpenAnyTenantApi, protocolMessageAdapter);
+        super(redisService, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
     }
 
     @Autowired

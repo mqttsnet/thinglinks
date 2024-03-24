@@ -1,11 +1,12 @@
 package com.mqttsnet.thinglinks.link.service.product.impl;
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
-import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
@@ -13,33 +14,39 @@ import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
-import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
-import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
+import com.mqttsnet.thinglinks.link.api.domain.empowerment.enumeration.EmpowermentStatusEnum;
+import com.mqttsnet.thinglinks.link.api.domain.empowerment.vo.result.EmpowermentRecordResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommands;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.api.domain.product.enumeration.ProductTypeEnum;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.Properties;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.Services;
+import com.mqttsnet.thinglinks.link.api.domain.product.vo.param.*;
+import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductResultVO;
+import com.mqttsnet.thinglinks.link.common.cache.helper.CacheDataHelper;
 import com.mqttsnet.thinglinks.link.mapper.product.ProductMapper;
-import com.mqttsnet.thinglinks.link.service.product.ProductPropertiesService;
-import com.mqttsnet.thinglinks.link.service.product.ProductService;
-import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
+import com.mqttsnet.thinglinks.link.service.product.*;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
+import com.mqttsnet.thinglinks.tdengine.api.constant.TdsConstants;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
-import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.FieldsVO;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.SuperTableDTO;
+import com.mqttsnet.thinglinks.tdengine.api.utils.TdsUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -51,7 +58,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 产品模型业务层
@@ -78,12 +88,23 @@ public class ProductServiceImpl implements ProductService {
     private ProductServicesService productServicesService;
     @Autowired
     private ProductPropertiesService productPropertiesService;
+
+    @Autowired
+    private ProductCommandsService productCommandsService;
+
+    @Autowired
+    private ProductCommandsRequestsService productCommandsRequestsService;
+
+    @Autowired
+    private ProductCommandsResponseService productCommandsResponseService;
+
     @Resource
     private RemoteTdEngineService remoteTdEngineService;
     @Autowired
     private RedisService redisService;
+
     @Autowired
-    private RocketMQTemplate rocketMQTemplate;
+    private CacheDataHelper cacheDataHelper;
 
     /**
      * 数据库名称
@@ -323,101 +344,14 @@ public class ProductServiceImpl implements ProductService {
                     productProperties.setServiceId(productServices.getId());
                     productProperties.setCreateBy(sysUser.getUserName());
                     final int batchInsert = productPropertiesService.insertSelective(productProperties);
+                    if (batchInsert == 0) {
+                        log.error("Property capability Data storage fails");
+                    }
                 }
             }
-            //解析入库成功创建TD超级表及子表
-            this.createSuperTable(product, services);
         } catch (Exception e) {
             log.error(e.getMessage());
             return AjaxResult.error("操作失败");
-        }
-        return AjaxResult.success("操作成功");
-    }
-
-    /**
-     * 根据产品模型创建超级表
-     *
-     * @param product
-     * @param services
-     * @return
-     * @throws Exception
-     */
-    @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public AjaxResult createSuperTable(Product product, JSONArray services) throws Exception {
-        //构建超级表入参对象
-        SuperTableDto superTableDto = new SuperTableDto();
-        try {
-            loop:
-            for (int i = 0; i < services.size(); i++) {
-                JSONObject service = services.getJSONObject(i);
-                //超级表名称命名规则:产品类型_产品标识_服务名称
-                String superTableName = product.getProductType() + "_" + product.getProductIdentification() + "_" + service.getString("serviceId");
-                //设置数据库名称和超级表名称
-                superTableDto.setDataBaseName(dataBaseName);
-                superTableDto.setSuperTableName(superTableName);
-                //构建超级表的表结构字段列表
-                JSONArray properties = service.getJSONArray("properties");
-                //如果服务下属性值为空，没必要为该服务创建超级表，跳过该循环，进入下个服务
-                if (properties.isEmpty()) {
-                    continue;
-                }
-                //构建超级表的表结构字段列表
-                List<Fields> schemaFields = new ArrayList<>();
-                //超级表第一个字段数据类型必须为时间戳,默认Ts为当前系统时间
-                Fields tsColumn = new Fields();
-                tsColumn.setFieldName("ts");
-                tsColumn.setDataType(DataTypeEnum.TIMESTAMP);
-                schemaFields.add(tsColumn);
-                //超级表第二个字段为事件发生时间数据类型必须为时间戳
-                Fields eventTimeColumn = new Fields();
-                eventTimeColumn.setFieldName("event_time");
-                eventTimeColumn.setDataType(DataTypeEnum.TIMESTAMP);
-                schemaFields.add(eventTimeColumn);
-                //根据属性对象列表循环构建超级表表结构
-                for (int j = 0; j < properties.size(); j++) {
-                    JSONObject propertie = properties.getJSONObject(j);
-                    //获取字段名称
-                    String filedName = (String) propertie.get("name");
-                    //获取该属性数据类型
-                    String datatype = (String) propertie.get("datatype");
-                    //获取该属性的数据大小
-                    Integer size = (Integer) propertie.get("maxlength");
-                    //添加超级表表结构字段
-                    Fields fields = new Fields(filedName, datatype, size);
-                    schemaFields.add(fields);
-                }
-                //构建超级表标签字段列表
-                //根据业务逻辑，将超级表的标签字段定为
-                // 1:设备标识：deviceIdentification
-                List<Fields> tagsFields = new ArrayList<>();
-                Fields tags = new Fields();
-                tags.setFieldName("device_identification");
-                tags.setDataType(DataTypeEnum.BINARY);
-                tags.setSize(64);
-                tagsFields.add(tags);
-
-                //设置超级表表结构列表
-                superTableDto.setSchemaFields(schemaFields);
-                //设置超级表标签字段列表
-                superTableDto.setTagsFields(tagsFields);
-                R<?> cstResult = remoteTdEngineService.createSuperTable(superTableDto);
-                //创建超级表报错，打印报错信息，并跳过该循环，继续为下个服务创建表
-                if (cstResult.getCode() != ResultEnum.SUCCESS.getCode()) {
-                    log.error("Create SuperTable Exception: " + cstResult.getMsg());
-                    continue loop;
-                }
-                log.info("Create SuperTable Result: {}", cstResult.getCode());
-                //将之前存在redis里的同样的名称的超级表的表结构信息删除
-                if (redisService.hasKey(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
-                    redisService.deleteObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName);
-                }
-                //在redis里存入新的超级表对的表结构信息
-                redisService.setCacheObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
-                log.info("缓存超级表数据模型:{}", JSON.toJSONString(superTableDto));
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
         }
         return AjaxResult.success("操作成功");
     }
@@ -444,6 +378,7 @@ public class ProductServiceImpl implements ProductService {
      * @param id 产品管理主键
      * @return 产品管理
      */
+    @Deprecated
     @Override
     public ProductModel selectFullProductById(Long id) {
         Product product = selectProductById(id);
@@ -566,113 +501,6 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.findAllByStatus(status);
     }
 
-
-    /**
-     * 初始化生成超级表模型
-     *
-     * @param productIds      产品ID集合  productIds==null 初始化所有产品:productIds!=null 初始化指定产品
-     * @param InitializeOrNot 是否初始化
-     * @return
-     * @throws Exception
-     */
-    @Async
-    @Override
-    public List<SuperTableDto> createSuperTableDataModel(Long[] productIds, Boolean InitializeOrNot) {
-        List<SuperTableDto> superTableDtoList = new ArrayList<>();
-        List<Product> productList;
-        if (null == productIds) {
-            productList = productMapper.findAllByStatus(Constants.ENABLE);
-        } else {
-            productList = productMapper.findAllByIdInAndStatus(Arrays.asList(productIds), Constants.ENABLE);
-        }
-        if (productList.isEmpty()) {
-            return superTableDtoList;
-        }
-        SuperTableDto superTableDto;
-        loop:
-        for (Product product : productList) {
-            List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdentificationIdAndStatus(product.getProductIdentification(), Constants.ENABLE);
-            if (StringUtils.isEmpty(allByProductIdAndStatus)) {
-                continue;
-            }
-            for (ProductServices productServices : allByProductIdAndStatus) {
-                superTableDto = new SuperTableDto();
-                if (StringUtils.isNull(productServices)) {
-                    continue loop;
-                }
-                //超级表名称命名规则:产品类型_产品标识_服务名称
-                String superTableName = product.getProductType() + "_" + product.getProductIdentification() + "_" + productServices.getServiceName();
-                //设置数据库名称和超级表名称
-                superTableDto.setDataBaseName(dataBaseName);
-                superTableDto.setSuperTableName(superTableName);
-                //构建超级表的表结构字段列表
-                List<ProductProperties> allByServiceId = productPropertiesService.findAllByServiceId(productServices.getId());
-                //如果服务下属性值为空，没必要为该服务创建超级表，跳过该循环，进入下个服务
-                if (StringUtils.isNull(allByServiceId)) {
-                    continue loop;
-                }
-                //构建超级表的表结构字段列表
-                List<Fields> schemaFields = new ArrayList<>();
-                //超级表第一个字段数据类型必须为时间戳,默认Ts为当前系统时间
-                Fields tsColumn = new Fields();
-                tsColumn.setFieldName("ts");
-                tsColumn.setDataType(DataTypeEnum.TIMESTAMP);
-                schemaFields.add(tsColumn);
-                //超级表第二个字段为事件发生时间数据类型必须为时间戳
-                Fields eventTimeColumn = new Fields();
-                eventTimeColumn.setFieldName("event_time");
-                eventTimeColumn.setDataType(DataTypeEnum.TIMESTAMP);
-                schemaFields.add(eventTimeColumn);
-                //根据属性对象列表循环构建超级表表结构
-                for (ProductProperties productProperties : allByServiceId) {
-                    //获取字段名称
-                    String filedName = productProperties.getName();
-                    //获取该属性数据类型
-                    String datatype = productProperties.getDatatype();
-                    //获取该属性的数据大小
-                    Integer size = productProperties.getMaxlength();
-                    //添加超级表表结构字段
-                    Fields fields = new Fields(filedName, datatype, size);
-                    schemaFields.add(fields);
-                }
-                //构建超级表标签字段列表
-                //根据业务逻辑，将超级表的标签字段定为
-                // 1:设备标识：deviceIdentification
-                List<Fields> tagsFields = new ArrayList<>();
-                Fields tags = new Fields();
-                tags.setFieldName("device_identification");
-                tags.setDataType(DataTypeEnum.BINARY);
-                tags.setSize(64);
-                tagsFields.add(tags);
-
-                //设置超级表表结构列表
-                superTableDto.setSchemaFields(schemaFields);
-                //设置超级表标签字段列表
-                superTableDto.setTagsFields(tagsFields);
-                //将之前存在redis里的同样的名称的超级表的表结构信息删除
-                if (redisService.hasKey(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName)) {
-                    redisService.deleteObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName);
-                }
-                //在redis里存入新的超级表对的表结构信息
-                redisService.setCacheObject(CacheConstants.TDENGINE_SUPERTABLEFILELDS + superTableName, superTableDto);
-                log.info("缓存超级表数据模型:{}", JSON.toJSONString(superTableDto));
-                superTableDtoList.add(superTableDto);
-                if (Boolean.TRUE.equals(InitializeOrNot)) {
-                    //推送RocketMq消息初始化超级表
-                    MQMessage mqMessage = new MQMessage();
-                    mqMessage.setTopic(ConsumerTopicConstant.PRODUCTSUPERTABLE_CREATEORUPDATE);
-                    final JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("type", "create");
-                    jsonObject.put("msg", JSON.toJSONString(superTableDto));
-                    mqMessage.setMessage(jsonObject.toJSONString());
-
-                    rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
-                }
-            }
-        }
-        return superTableDtoList;
-    }
-
     @Override
     public Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(String manufacturerId, String model, String protocolType, String status) {
         return productMapper.findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(manufacturerId, model, protocolType, status);
@@ -708,5 +536,313 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> selectProductByProductIdentificationList(List<String> productIdentificationList) {
         return productMapper.selectProductByProductIdentificationList(productIdentificationList);
     }
+
+    @Override
+    public ProductResultVO findOneByProductIdentification(String productIdentification) {
+        return BeanPlusUtil.toBeanIgnoreError(productMapper.selectByProductIdentification(productIdentification), ProductResultVO.class);
+    }
+
+    @Override
+    public Long findProductTotal() {
+        return productMapper.findProductTotal();
+    }
+
+    @Override
+    public List<Product> findProductsByPage(int offset, int pageSize) {
+        return productMapper.findProductsByPage(offset, pageSize);
+    }
+
+    /**
+     * 查询产品管理 带服务、属性、命令
+     *
+     * @param productIdentification 产品标识
+     * @return
+     */
+    @Override
+    public ProductParamVO selectFullProductByProductIdentification(String productIdentification) {
+        return Optional.ofNullable(this.findOneByProductIdentification(productIdentification))
+                .map(product -> {
+                    ProductParamVO productDetails = BeanPlusUtil.toBeanIgnoreError(product, ProductParamVO.class);
+                    ProductServices find = new ProductServices();
+                    find.setProductIdentification(product.getProductIdentification());
+                    find.setStatus(Constants.ENABLE);
+                    List<ProductServices> productServicesList = productServicesService.selectProductServicesList(find);
+
+                    List<Long> serviceIds = productServicesList.stream()
+                            .map(ProductServices::getId)
+                            .collect(Collectors.toList());
+
+                    List<ProductCommands> productCommandList = Optional.ofNullable(
+                                    productCommandsService.selectProductCommandsByServiceIdList(serviceIds))
+                            .orElse(Collections.emptyList());
+
+                    List<ProductProperties> productPropertiesList = Optional.ofNullable(
+                                    productPropertiesService.selectPropertiesByServiceIdList(serviceIds))
+                            .orElse(Collections.emptyList());
+
+                    List<ProductServiceParamVO> services = productServicesList.stream()
+                            .map(ps -> {
+                                ProductServiceParamVO service = BeanPlusUtil.toBeanIgnoreError(ps, ProductServiceParamVO.class);
+
+                                List<ProductCommandParamVO> commands = Optional.ofNullable(productCommandList)
+                                        .orElse(Collections.emptyList())
+                                        .stream()
+                                        .filter(command -> command.getServiceId().equals(ps.getId()))
+                                        .map(command -> {
+                                            ProductCommandParamVO commandParamVO = BeanPlusUtil.toBeanIgnoreError(command, ProductCommandParamVO.class);
+
+                                            // Simplifying the stream operations and request/response mapping
+                                            List<ProductCommandRequestParamVO> filteredRequests = Optional.ofNullable(
+                                                            productCommandsRequestsService.selectProductCommandsRequestsByCommandIdList(Arrays.asList(command.getId())))
+                                                    .orElse(Collections.emptyList())
+                                                    .stream()
+                                                    .map(request -> BeanPlusUtil.toBeanIgnoreError(request, ProductCommandRequestParamVO.class))
+                                                    .collect(Collectors.toList());
+
+                                            commandParamVO.setRequests(filteredRequests);
+
+                                            List<ProductCommandResponseParamVO> filteredResponses = Optional.ofNullable(
+                                                            productCommandsResponseService.selectProductCommandsResponseByCommandIdList(Arrays.asList(command.getId())))
+                                                    .orElse(Collections.emptyList())
+                                                    .stream()
+                                                    .map(response -> BeanPlusUtil.toBeanIgnoreError(response, ProductCommandResponseParamVO.class))
+                                                    .collect(Collectors.toList());
+
+                                            commandParamVO.setResponses(filteredResponses);
+
+                                            return commandParamVO;
+                                        })
+                                        .collect(Collectors.toList());
+                                service.setCommands(commands);
+
+                                List<ProductPropertyParamVO> properties = Optional.ofNullable(productPropertiesList)
+                                        .orElse(Collections.emptyList())
+                                        .stream()
+                                        .filter(property -> property.getServiceId().equals(ps.getId()))
+                                        .map(pp -> BeanPlusUtil.toBeanIgnoreError(pp, ProductPropertyParamVO.class))
+                                        .collect(Collectors.toList());
+                                service.setProperties(properties);
+
+                                return service;
+                            })
+                            .collect(Collectors.toList());
+
+                    productDetails.setServices(services);
+                    return productDetails;
+                })
+                .orElse(new ProductParamVO()); // Return an empty ProductParamVO object if the initial product is null
+    }
+
+    @Override
+    public String productEmpowerment(Long[] productIds) {
+        List<Product> productList;
+        if (null == productIds) {
+            productList = productMapper.findAllByStatus(Constants.ENABLE);
+        } else {
+            productList = productMapper.findAllByIdInAndStatus(Arrays.asList(productIds), Constants.ENABLE);
+        }
+        if (productList.isEmpty()) {
+            return "No product data";
+        }
+        List<EmpowermentRecordResultVO> empowermentRecordResultVOS = new ArrayList<>();
+
+        productList.forEach(product -> {
+            log.info("Processing product with identification: {}", product.getProductIdentification());
+            EmpowermentRecordResultVO record = new EmpowermentRecordResultVO();
+            LocalDateTime startTime = LocalDateTime.now();
+            record.setStartTime(startTime);
+            List<String> feedbackList = new ArrayList<>();
+
+            String productIdentification = "";
+            String productName = "";
+            String productVersion = "";
+
+            Optional<ProductParamVO> productOpt = Optional.ofNullable(this.selectFullProductByProductIdentification(product.getProductIdentification()));
+            if (productOpt.isPresent()) {
+                ProductParamVO productParamVO = productOpt.get();
+                ProductTypeEnum productTypeEnum = ProductTypeEnum.valueOf(productParamVO.getProductType());
+                record.setAppId(productParamVO.getAppId());
+                record.setEmpowermentIdentification(productParamVO.getProductIdentification());
+                record.setVersion(productParamVO.getProductVersion());
+                productIdentification = productParamVO.getProductIdentification();
+                productName = productParamVO.getProductName();
+                productVersion = productParamVO.getProductVersion();
+
+                productParamVO.getServices().forEach(service -> {
+                    String superTableName = TdsUtils.superTableName(String.valueOf(productTypeEnum.getDesc()), productParamVO.getProductIdentification(), service.getServiceCode());
+                    R<List<SuperTableDescribeVO>> superTableDescribeVOListR = remoteTdEngineService.describeSuperOrSubTable(superTableName);
+
+                    List<SuperTableDescribeVO> existingFields = Optional.ofNullable(superTableDescribeVOListR.getData()).orElse(Collections.emptyList());
+
+                    if (existingFields.isEmpty()) {
+                        String feedback = createNewSuperTableStructure(service, superTableName);
+                        feedbackList.add(feedback);
+                    } else {
+                        String feedback = updateSuperTableStructure(service, superTableName, existingFields);
+                        feedbackList.add(feedback);
+                    }
+
+                    //save to redis
+                    Optional<List<SuperTableDescribeVO>> superTableDescribeOpt = Optional.ofNullable(
+                            remoteTdEngineService.describeSuperOrSubTable(superTableName).getData()
+                    );
+                    if (superTableDescribeOpt.isPresent() && !superTableDescribeOpt.get().isEmpty()) {
+                        cacheDataHelper.setProductModelSuperTableCacheVO(productParamVO.getProductIdentification(), service.getServiceCode(), superTableDescribeOpt.get());
+                    }
+
+                });
+
+                log.info("Product processed: {}", product.getProductIdentification());
+            } else {
+                log.warn("Product not found for product ID: {}", product.getProductIdentification());
+            }
+
+            LocalDateTime endTime = LocalDateTime.now();
+            record.setEndTime(endTime);
+
+            List<Map<String, Object>> feedbacks = feedbackList.stream()
+                    .map(feedback -> {
+                        Map<String, Object> map = new HashMap<>();
+                        // Using epoch time in milliseconds as the timestamp
+                        map.put("timestamp", System.currentTimeMillis());
+                        map.put("message", feedback);
+                        return map;
+                    })
+                    .collect(Collectors.toList());
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            String jsonFeedback = "";
+            try {
+                jsonFeedback = mapper.writeValueAsString(feedbacks);
+            } catch (JsonProcessingException e) {
+                log.error("Error converting feedback to JSON. Using default empty value.", e);
+            }
+
+            record.setFeedback(jsonFeedback);
+
+
+            record.setStatus(EmpowermentStatusEnum.COMPLETED.getValue());
+
+            Duration duration = Duration.between(startTime, endTime);
+            record.setOutcome(String.format("Processed product with identification: %s, name: %s, version: %s. Total time taken: %s seconds.",
+                    productIdentification, productName, productVersion, duration.getSeconds()));
+
+
+            log.info("Empowerment record: {}", record);
+            empowermentRecordResultVOS.add(record);
+        });
+
+        // TODO save empowerment records to database
+        log.info("Empowerment records: {}, count: {}", empowermentRecordResultVOS, empowermentRecordResultVOS.size());
+        return "Empowerment process completed. Total records: " + empowermentRecordResultVOS.size();
+
+    }
+
+
+    private String createNewSuperTableStructure(ProductServiceParamVO service, String superTableName) {
+        StringBuilder feedback = new StringBuilder("Creating new super table: ").append(superTableName).append(". ");
+
+        SuperTableDTO superTableDTO = new SuperTableDTO();
+        superTableDTO.setSuperTableName(superTableName);
+
+        List<FieldsVO> schemaFields = new ArrayList<>(Arrays.asList(
+                new FieldsVO(TdsConstants.TS, DataTypeEnum.TIMESTAMP.getDataType(), null),
+                new FieldsVO(TdsConstants.EVENT_TIME, DataTypeEnum.TIMESTAMP.getDataType(), null)
+        ));
+
+        service.getProperties().forEach(property -> {
+            String fieldName = property.getPropertyCode();
+            Integer size = Optional.ofNullable(property.getMaxlength()).map(Integer::parseInt).orElse(null);
+            schemaFields.add(new FieldsVO(fieldName, DataTypeEnum.valueOfByDataType(property.getDatatype()).getDataType(), size));
+        });
+
+        List<FieldsVO> tagsFields = Collections.singletonList(new FieldsVO(TdsConstants.DEVICE_IDENTIFICATION, DataTypeEnum.BINARY.getDataType(), 64));
+
+        superTableDTO.setSchemaFields(FieldsVO.toFieldsList(schemaFields));
+        superTableDTO.setTagsFields(FieldsVO.toFieldsList(tagsFields));
+
+        log.info("catch superTableDTO:{}", JSONUtil.toJsonStr(superTableDTO));
+        R superTableAndColumn = remoteTdEngineService.createSuperTableAndColumn(superTableDTO);
+        if (ResultEnum.SUCCESS.getCode() != superTableAndColumn.getCode()) {
+            feedback.append("Creation of field(s) failed with message: ").append(superTableAndColumn.getMsg()).append(Constants.SEMICOLON);
+        } else {
+            feedback.append("Successfully created fields: ").append(FieldsVO.toFieldsList(schemaFields).stream().map(Fields::getFieldName).collect(Collectors.joining(Constants.SEPARATOR))).append(Constants.SEMICOLON);
+        }
+        return feedback.toString();
+    }
+
+    private String updateSuperTableStructure(ProductServiceParamVO service, String superTableName, List<SuperTableDescribeVO> existingFields) {
+        StringBuilder feedback = new StringBuilder("Updating super table: ").append(superTableName).append(". ");
+        SuperTableDTO superTableDTO = new SuperTableDTO();
+        superTableDTO.setDataBaseName("");
+        superTableDTO.setSuperTableName(superTableName);
+
+        List<String> existingFieldNames = existingFields.stream()
+                .filter(describeVO -> !Objects.equals(TdsConstants.TAG, describeVO.getNote()))
+                .map(SuperTableDescribeVO::getField)
+                .collect(Collectors.toList());
+
+        service.getProperties().forEach(property -> {
+            String fieldName = property.getPropertyCode();
+            DataTypeEnum dataTypeEnum = DataTypeEnum.valueOfByDataType(property.getDatatype());
+            Integer size = Optional.ofNullable(property.getMaxlength())
+                    .map(Integer::parseInt)
+                    .orElse(null);
+
+            Optional<SuperTableDescribeVO> matchedFieldOpt = existingFields.stream()
+                    .filter(f -> Objects.equals(f.getField(), fieldName))
+                    .findFirst();
+
+            boolean isTypeMatch = matchedFieldOpt.map(field -> DataTypeEnum.valueOfByDataType(field.getType()))
+                    .map(fieldTypeEnum -> dataTypeEnum.isTypeEqual(fieldTypeEnum.getDataType()))
+                    .orElse(false);
+
+            boolean isSizeMatch = matchedFieldOpt.map(SuperTableDescribeVO::getLength)
+                    .map(length -> Objects.equals(length, size))
+                    .orElse(false);
+
+            // Check if type or size mismatch
+            if (matchedFieldOpt.isPresent() && (!isTypeMatch || !isSizeMatch)) {
+                // Delete the existing field first if type or size doesn't match
+                superTableDTO.setFields(FieldsVO.toFields(new FieldsVO(fieldName, null, null)));
+                remoteTdEngineService.dropSuperTableColumn(superTableDTO);
+            }
+
+            // Check if field is absent or type or size mismatch
+            if (!matchedFieldOpt.isPresent() || !isTypeMatch || !isSizeMatch) {
+                // Add or alter field if not matched or not matching in type or size
+                FieldsVO fieldsVO = new FieldsVO(fieldName, dataTypeEnum.getDataType(), size);
+                superTableDTO.setFields(FieldsVO.toFields(fieldsVO));
+                R alterSuperTableColumn = remoteTdEngineService.alterSuperTableColumn(superTableDTO);
+                if (ResultEnum.SUCCESS.getCode() != alterSuperTableColumn.getCode()) {
+                    feedback.append("Alteration of field(s) failed with message: ").append(alterSuperTableColumn.getMsg()).append(Constants.SEMICOLON);
+                } else {
+                    feedback.append("Successfully altered fields: ").append(fieldName).append(Constants.SEMICOLON);
+                }
+            }
+        });
+
+
+        // Check for fields that should be deleted
+        existingFieldNames.stream()
+                .filter(existingFieldName -> !Arrays.asList(TdsConstants.TS, TdsConstants.EVENT_TIME).contains(existingFieldName))
+                .filter(existingFieldName -> service.getProperties().stream().noneMatch(p -> Objects.equals(p.getPropertyCode(), existingFieldName)))
+                .forEach(existingFieldName -> {
+                    FieldsVO fieldsVO = new FieldsVO();
+                    fieldsVO.setFieldName(existingFieldName);
+                    superTableDTO.setFields(FieldsVO.toFields(fieldsVO));
+                    R alterSuperTableColumn = remoteTdEngineService.dropSuperTableColumn(superTableDTO);
+                    if (ResultEnum.SUCCESS.getCode() != alterSuperTableColumn.getCode()) {
+                        feedback.append("Deletion of field: ").append(existingFieldName).append(" failed with message: ").append(alterSuperTableColumn.getMsg()).append(Constants.SEMICOLON);
+                    } else {
+                        feedback.append("Successfully deleted field: ").append(existingFieldName).append(Constants.SEMICOLON);
+                    }
+                });
+
+        return feedback.toString();
+    }
+
+
 }
 

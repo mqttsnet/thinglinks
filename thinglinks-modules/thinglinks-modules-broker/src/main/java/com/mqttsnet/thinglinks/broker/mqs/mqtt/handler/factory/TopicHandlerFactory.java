@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: MQTT系统Topic 处理工厂类
  * @packagename: com.mqttsnet.thinglinks.handler.factory
  * @author: ShiHuan Sun

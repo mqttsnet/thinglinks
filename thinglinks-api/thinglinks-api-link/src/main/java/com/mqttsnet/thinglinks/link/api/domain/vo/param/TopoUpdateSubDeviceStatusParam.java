@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.link.api.domain.vo.param;
 
-import com.mqttsnet.thinglinks.device.enumeration.DeviceConnectStatusEnum;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;

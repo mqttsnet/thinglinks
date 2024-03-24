@@ -8,18 +8,18 @@ import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoAddSubDeviceParam;
 import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoAddDeviceResultVO;
-import com.mqttsnet.thinglinks.link.common.cache.helper.CacheDataHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 处理ADD_SUB_DEVICE主题
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun
@@ -32,11 +32,11 @@ public class AddSubDeviceHandler extends AbstractMessageHandler implements Topic
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AddSubDeviceHandler(CacheDataHelper cacheDataHelper,
-                               RemoteDeviceService remoteDeviceService,
+    public AddSubDeviceHandler(RedisService redisService,
+                               RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
                                RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
                                ProtocolMessageAdapter protocolMessageAdapter) {
-        super(cacheDataHelper, remoteDeviceService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
+        super(redisService, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
     }
 
     /**
@@ -108,7 +108,7 @@ public class AddSubDeviceHandler extends AbstractMessageHandler implements Topic
         }
 
         TopoAddSubDeviceParam addParam = (TopoAddSubDeviceParam) topoAddSubDeviceParam;
-        R<TopoAddDeviceResultVO> mqttTopoAddDeviceResultVOR = remoteDeviceService.saveSubDeviceByMqtt(addParam);
+        R<TopoAddDeviceResultVO> mqttTopoAddDeviceResultVOR = remoteDeviceOpenAnyService.saveSubDeviceByMqtt(addParam);
 
         log.info("Processing /topo/add Topic result: {}", JSON.toJSONString(mqttTopoAddDeviceResultVOR));
         return JSON.toJSONString(mqttTopoAddDeviceResultVOR.getData());

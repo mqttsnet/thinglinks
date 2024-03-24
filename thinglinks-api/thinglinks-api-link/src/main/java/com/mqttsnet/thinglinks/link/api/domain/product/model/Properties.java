@@ -22,7 +22,8 @@ public class Properties{
     private Integer maxlength;
     private String method;
     private Integer min;
-    private String name;
+    private String propertyCode;
+    private String propertyName;
     private Integer required;
     private Integer step;
     private String unit;

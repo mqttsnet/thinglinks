@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 协议数据内容返回VO
  * @packagename: com.mqttsnet.thinglinks.device.vo.result
  * @author: ShiHuan Sun

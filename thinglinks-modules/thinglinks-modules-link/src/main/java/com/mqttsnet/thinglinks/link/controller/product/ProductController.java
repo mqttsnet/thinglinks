@@ -16,6 +16,7 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.system.api.RemoteFileService;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -192,27 +193,6 @@ public class ProductController extends BaseController {
     }
 
     /**
-     * 初始化数据模型
-     *
-     * @param productIds      产品ID集合
-     * @param initializeOrNot 是否初始化
-     * @return
-     * @throws Exception
-     */
-//    @NoRepeatSubmit
-    @PreAuthorize(hasPermi = "link:product:initialize")
-    @Log(title = "产品管理", businessType = BusinessType.OTHER)
-    @GetMapping(value = "/initializeDataModel/{productIds}/{initializeOrNot}")
-    public AjaxResult initializeDataModel(@PathVariable("productIds") Long[] productIds, @PathVariable("initializeOrNot") Boolean initializeOrNot) {
-        try {
-            return AjaxResult.success(productService.createSuperTableDataModel(productIds, initializeOrNot));
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return AjaxResult.error("产品数据异常,请联系管理员");
-    }
-
-    /**
      * 快捷生成产品模型json数据
      *
      * @param params (content 模型json数据、appId 应用ID、templateIdentification  产品模型模板标识、status 状态(字典值：启用  停用))
@@ -248,4 +228,19 @@ public class ProductController extends BaseController {
     public R<?> selectProductByProductIdentificationList(@RequestBody List<String> productIdentificationList) {
         return R.ok(productService.selectProductByProductIdentificationList(productIdentificationList));
     }
+
+
+//    @PreAuthorize(hasPermi = "link:product:empowerment")
+    @ApiOperation(value = "产品赋能", httpMethod = "GET", notes = "产品赋能")
+    @Log(title = "产品管理", businessType = BusinessType.OTHER)
+    @GetMapping(value = "/productEmpowerment/{productIds}")
+    public AjaxResult productEmpowerment(@PathVariable("productIds") Long[] productIds) {
+        try {
+            return AjaxResult.success(productService.productEmpowerment(productIds));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return AjaxResult.error("产品赋能异常,请联系管理员");
+    }
+
 }

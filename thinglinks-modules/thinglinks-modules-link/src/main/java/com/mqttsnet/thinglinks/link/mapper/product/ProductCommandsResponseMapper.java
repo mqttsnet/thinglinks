@@ -1,11 +1,10 @@
 package com.mqttsnet.thinglinks.link.mapper.product;
 
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommandsResponse;
-
-import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @Description: java类作用描述
@@ -117,4 +116,6 @@ public interface ProductCommandsResponseMapper {
      * @return 结果
      */
     int deleteProductCommandsResponseByIds(Long[] ids);
+
+    List<ProductCommandsResponse> selectProductCommandsResponseByCommandIdList(@Param("commandIdList") List<Long> commandIdList);
 }

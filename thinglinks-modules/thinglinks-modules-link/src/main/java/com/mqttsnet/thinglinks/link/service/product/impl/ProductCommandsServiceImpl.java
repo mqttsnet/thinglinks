@@ -140,4 +140,9 @@ public class ProductCommandsServiceImpl implements ProductCommandsService {
     public List<ProductCommands> selectProductCommandsByIdList(List<Long> commandIdList){
         return productCommandsMapper.selectProductCommandsByIdList(commandIdList);
     }
+
+    @Override
+    public List<ProductCommands> selectProductCommandsByServiceIdList(List<Long> serviceIdList) {
+        return productCommandsMapper.selectProductCommandsByServiceIdList(serviceIdList);
+    }
 }

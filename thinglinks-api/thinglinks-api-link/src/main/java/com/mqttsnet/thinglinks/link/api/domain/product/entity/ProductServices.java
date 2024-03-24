@@ -2,20 +2,20 @@ package com.mqttsnet.thinglinks.link.api.domain.product.entity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 /**
-* @program: thinglinks
-* @description: ${description}
-* @packagename: com.mqttsnet.thinglinks.link.api.domain.product.entity
-* @author: ShiHuan Sun
-* @e-mainl: 13733918655@163.com
-* @date: 2022-11-18 20:38
-**/
+ * @program: thinglinks
+ * @description: ${description}
+ * @packagename: com.mqttsnet.thinglinks.link.api.domain.product.entity
+ * @author: ShiHuan Sun
+ * @e-mainl: 13733918655@163.com
+ * @date: 2022-11-18 20:38
+ **/
 
 /**
  * 产品模型服务表
@@ -35,9 +35,15 @@ public class ProductServices implements Serializable {
     private Long id;
 
     /**
-     * 服务名称:支持英文大小写、数字、下划线和中划线
+     * 服务编码:支持英文大小写、数字、下划线和中划线
      */
-    @ApiModelProperty(value = "服务名称:支持英文大小写、数字、下划线和中划线,")
+    @ApiModelProperty(value = "服务编码:支持英文大小写、数字、下划线和中划线")
+    private String serviceCode;
+
+    /**
+     * 服务名称
+     */
+    @ApiModelProperty(value = "服务名称")
     private String serviceName;
 
     /**

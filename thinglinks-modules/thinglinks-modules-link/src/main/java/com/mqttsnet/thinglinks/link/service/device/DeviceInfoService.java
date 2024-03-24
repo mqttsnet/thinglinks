@@ -2,6 +2,11 @@ package com.mqttsnet.thinglinks.link.service.device;
 
 import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.entity.DeviceInfo;
 import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model.DeviceInfoParams;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoAddSubDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoDeleteSubDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoUpdateSubDeviceStatusParam;
+import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoAddDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
 
 import java.util.Collection;
 import java.util.List;
@@ -126,6 +131,58 @@ public interface DeviceInfoService {
 
 
 	List<DeviceInfo> findAllByStatus(String status);
+
+
+    /**
+     * MQTT协议下添加子设备
+     *
+     * @param topoAddSubDeviceParam 子设备参数
+     * @return {@link TopoAddDeviceResultVO} 添加结果
+     */
+    TopoAddDeviceResultVO saveSubDeviceByMqtt(TopoAddSubDeviceParam topoAddSubDeviceParam);
+
+    /**
+     * HTTP协议下添加子设备
+     *
+     * @param topoAddSubDeviceParam 子设备参数
+     * @return {@link TopoAddDeviceResultVO} 添加结果
+     */
+    TopoAddDeviceResultVO saveSubDeviceByHttp(TopoAddSubDeviceParam topoAddSubDeviceParam);
+
+
+    /**
+     * MQTT协议下更新子设备连接状态
+     *
+     * @param topoUpdateSubDeviceStatusParam 更新参数
+     * @return {@link TopoDeviceOperationResultVO} 更新结果
+     */
+    TopoDeviceOperationResultVO updateSubDeviceConnectStatusByMqtt(TopoUpdateSubDeviceStatusParam topoUpdateSubDeviceStatusParam);
+
+    /**
+     * Http协议下更新子设备连接状态
+     *
+     * @param topoUpdateSubDeviceStatusParam 更新参数
+     * @return {@link TopoDeviceOperationResultVO} 更新结果
+     */
+    TopoDeviceOperationResultVO updateSubDeviceConnectStatusByHttp(TopoUpdateSubDeviceStatusParam topoUpdateSubDeviceStatusParam);
+
+    /**
+     * MQTT协议下删除子设备
+     *
+     * @param topoDeleteSubDeviceParam 删除参数
+     * @return {@link TopoDeviceOperationResultVO} 删除结果
+     */
+    TopoDeviceOperationResultVO deleteSubDeviceByMqtt(TopoDeleteSubDeviceParam topoDeleteSubDeviceParam);
+
+
+    /**
+     * Http协议下删除子设备
+     *
+     * @param topoDeleteSubDeviceParam 删除参数
+     * @return {@link TopoDeviceOperationResultVO} 删除结果
+     */
+    TopoDeviceOperationResultVO deleteSubDeviceByHttp(TopoDeleteSubDeviceParam topoDeleteSubDeviceParam);
+
 
 }
 

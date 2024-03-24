@@ -61,13 +61,12 @@ export function generateProductJson(data) {
 }
 
 /**
- * 初始化数据模型
+ * 产品赋能
  * @param productIds 产品ID集合
- * @param initializeOrNot  是否初始化
  */
-export function initializeDataModel(productIds, initializeOrNot) {
+export function productEmpowerment(productIds) {
   return request({
-    url: '/link/product/initializeDataModel/' + productIds + "/" + initializeOrNot,
+    url: '/link/product/productEmpowerment/' + productIds,
     method: 'get'
   })
 }

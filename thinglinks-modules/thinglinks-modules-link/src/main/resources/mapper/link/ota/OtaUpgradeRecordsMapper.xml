@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.link.mapper.ota.OtaUpgradeRecordsMapper">
+
+    <resultMap id="OtaUpgradeRecordsResultMap" type="com.mqttsnet.thinglinks.link.api.domain.ota.entity.OtaUpgradeRecords">
+        <id column="id" property="id"/>
+        <result column="task_id" property="taskId"/>
+        <result column="device_identification" property="deviceIdentification"/>
+        <result column="upgrade_status" property="upgradeStatus"/>
+        <result column="progress" property="progress"/>
+        <result column="error_code" property="errorCode"/>
+        <result column="error_message" property="errorMessage"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="success_details" property="successDetails"/>
+        <result column="failure_details" property="failureDetails"/>
+        <result column="log_details" property="logDetails"/>
+        <result column="remark" property="remark"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, task_id, device_identification, upgrade_status, progress, error_code, error_message, start_time, end_time, success_details, failure_details, log_details, remark, created_time, created_by, updated_by, updated_time
+    </sql>
+
+    <insert id="insertOtaUpgradeRecords" parameterType="com.mqttsnet.thinglinks.link.api.domain.ota.entity.OtaUpgradeRecords">
+        INSERT INTO ota_upgrade_records
+        (task_id, device_identification, upgrade_status, progress, error_code, error_message, start_time, end_time, success_details, failure_details, log_details, remark, created_time, created_by, updated_time, updated_by)
+        VALUES
+            (#{taskId}, #{deviceIdentification}, #{upgradeStatus}, #{progress}, #{errorCode}, #{errorMessage}, #{startTime}, #{endTime}, #{successDetails}, #{failureDetails}, #{logDetails}, #{remark}, now(), #{createdBy}, now(), #{updatedBy})
+    </insert>
+
+    <delete id="deleteOtaUpgradeRecordsById" parameterType="long">
+        DELETE FROM ota_upgrade_records WHERE id = #{id}
+    </delete>
+
+    <update id="updateOtaUpgradeRecordsById" parameterType="com.mqttsnet.thinglinks.link.api.domain.ota.entity.OtaUpgradeRecords">
+        UPDATE ota_upgrade_records
+        SET task_id = #{taskId},
+            device_identification = #{deviceIdentification},
+            upgrade_status = #{upgradeStatus},
+            progress = #{progress},
+            error_code = #{errorCode},
+            error_message = #{errorMessage},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            success_details = #{successDetails},
+            failure_details = #{failureDetails},
+            log_details = #{logDetails},
+            remark = #{remark},
+            updated_by = #{updatedBy},
+            updated_time = now()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectOtaUpgradeRecordsById" parameterType="long" resultMap="OtaUpgradeRecordsResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM ota_upgrade_records WHERE id = #{id}
+    </select>
+
+    <select id="selectAllOtaUpgradeRecords" resultMap="OtaUpgradeRecordsResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM ota_upgrade_records
+    </select>
+
+</mapper>

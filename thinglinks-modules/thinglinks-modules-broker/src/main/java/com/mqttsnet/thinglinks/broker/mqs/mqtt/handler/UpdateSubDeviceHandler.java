@@ -8,18 +8,18 @@ import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
+import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoUpdateSubDeviceStatusParam;
 import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
-import com.mqttsnet.thinglinks.link.common.cache.helper.CacheDataHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 /**
- * @program: thinglinks-cloud-pro-datasource-column
+ * @program: thinglinks
  * @description: 处理UPDATE_SUB_DEVICE主题
  * @packagename: com.mqttsnet.thinglinks.mqtt.handler
  * @author: ShiHuan Sun
@@ -32,11 +32,11 @@ public class UpdateSubDeviceHandler extends AbstractMessageHandler implements To
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public UpdateSubDeviceHandler(CacheDataHelper cacheDataHelper,
-                              RemoteDeviceService remoteDeviceService,
-                              RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
-                              ProtocolMessageAdapter protocolMessageAdapter) {
-        super(cacheDataHelper, remoteDeviceService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
+    public UpdateSubDeviceHandler(RedisService redisService,
+                                  RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
+                                  RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
+                                  ProtocolMessageAdapter protocolMessageAdapter) {
+        super(redisService, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
     }
 
     /**
@@ -102,7 +102,7 @@ public class UpdateSubDeviceHandler extends AbstractMessageHandler implements To
     @Override
     protected String processingTopicMessage(Object topoUpdateSubDeviceParam) throws Exception {
         R<TopoDeviceOperationResultVO> topoDeviceOperationResultVOR =
-                remoteDeviceService.updateSubDeviceConnectStatusByMqtt((TopoUpdateSubDeviceStatusParam) topoUpdateSubDeviceParam);
+                remoteDeviceOpenAnyService.updateSubDeviceConnectStatusByMqtt((TopoUpdateSubDeviceStatusParam) topoUpdateSubDeviceParam);
         log.info("processingTopoUpdateTopic Processing result:{}", JSON.toJSONString(topoDeviceOperationResultVOR));
         return JSON.toJSONString(topoDeviceOperationResultVOR.getData());
     }

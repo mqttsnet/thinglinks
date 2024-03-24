@@ -17,6 +17,7 @@ public class Services{
     private static final long serialVersionUID = 1L;
     private Long productId;
     private String serviceId;
+    private String serviceCode;
     private String serviceName;
     private String description;
     private List<Commands> commands;

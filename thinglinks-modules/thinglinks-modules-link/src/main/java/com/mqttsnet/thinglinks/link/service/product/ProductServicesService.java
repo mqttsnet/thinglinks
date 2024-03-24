@@ -46,7 +46,7 @@ public interface ProductServicesService {
     List<ProductServices> findAllByProductIdentificationIdAndStatus(String productIdentification, String status);
 
 
-    List<ProductServices> findAllByProductIdentificationAndServiceNameAndStatus(String productIdentification, String serviceName, String status);
+    List<ProductServices> findAllByProductIdentificationAndServiceCodeAndStatus(String productIdentification, String serviceCode, String status);
 
 
     /**

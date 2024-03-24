@@ -27,10 +27,22 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
+        <!-- SpringCloud Alibaba Sentinel -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
         <!-- SpringBoot Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Mysql Connector -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
         <!-- thinglinks Common DataSource -->
@@ -47,6 +59,13 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
+        <!-- thinglinks Common Log -->
+        <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-log</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
         <!-- thinglinks Common Swagger -->
         <dependency>
             <groupId>com.mqttsnet</groupId>
@@ -54,10 +73,11 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
-        <!-- thinglinks Common Log -->
+
+        <!-- thinglinks Common Rocket -->
         <dependency>
             <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-log</artifactId>
+            <artifactId>thinglinks-common-rocketmq</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
 
@@ -74,6 +94,11 @@
             <artifactId>thinglinks-common-protocol</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
+        <!-- springboot websocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
 
         <!-- thinglinks API Link -->
         <dependency>
@@ -82,11 +107,7 @@
             <version>${thinglinks.version}</version>
         </dependency>
 
-        <!-- springboot websocket -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.mqttsnet</groupId>
             <artifactId>thinglinks-api-broker</artifactId>
@@ -95,7 +116,7 @@
 
         <dependency>
             <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-modules-link</artifactId>
+            <artifactId>thinglinks-api-tdengine</artifactId>
             <version>${thinglinks.version}</version>
         </dependency>
 

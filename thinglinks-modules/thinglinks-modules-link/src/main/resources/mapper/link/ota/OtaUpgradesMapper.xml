@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.link.mapper.ota.OtaUpgradesMapper">
+    <!-- 结果映射定义 -->
+    <resultMap id="OtaUpgradeResultMap" type="com.mqttsnet.thinglinks.link.api.domain.ota.entity.OtaUpgrades">
+        <id column="id" property="id"/>
+        <result column="app_id" property="appId"/>
+        <result column="package_name" property="packageName"/>
+        <result column="package_type" property="packageType"/>
+        <result column="product_identification" property="productIdentification"/>
+        <result column="version" property="version"/>
+        <result column="file_location" property="fileLocation"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="custom_info" property="customInfo"/>
+        <result column="remark" property="remark"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
+    </resultMap>
+
+    <!-- 基础列列表定义 -->
+    <sql id="Base_Column_List">
+        id, app_id, package_name, package_type, product_identification, version, file_location, status, description, custom_info, remark, created_by, created_time, updated_by, updated_time
+    </sql>
+
+    <insert id="insertOtaUpgrades" parameterType="com.mqttsnet.thinglinks.link.api.domain.ota.entity.OtaUpgrades">
+        INSERT INTO ota_upgrades
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null and appId != ''">
+                app_id,
+            </if>
+            <if test="packageName != null and packageName != ''">
+                package_name,
+            </if>
+            <if test="packageType != null">
+                package_type,
+            </if>
+            <if test="productIdentification != null and productIdentification != ''">
+                product_identification,
+            </if>
+            <if test="version != null and version != ''">
+                version,
+            </if>
+            <if test="fileLocation != null and fileLocation != ''">
+                file_location,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="description != null and description != ''">
+                description,
+            </if>
+            <if test="customInfo != null and customInfo != ''">
+                custom_info,
+            </if>
+            <if test="remark != null and remark != ''">
+                remark,
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                created_by,
+            </if>
+            created_time,
+            <if test="updatedBy != null and updatedBy != ''">
+                updated_by,
+            </if>
+            updated_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appId != null and appId != ''">
+                #{appId,jdbcType=VARCHAR},
+            </if>
+            <if test="packageName != null and packageName != ''">
+                #{packageName,jdbcType=VARCHAR},
+            </if>
+            <if test="packageType != null">
+                #{packageType,jdbcType=SMALLINT},
+            </if>
+            <if test="productIdentification != null and productIdentification != ''">
+                #{productIdentification,jdbcType=VARCHAR},
+            </if>
+            <if test="version != null and version != ''">
+                #{version,jdbcType=VARCHAR},
+            </if>
+            <if test="fileLocation != null and fileLocation != ''">
+                #{fileLocation,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="description != null and description != ''">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="customInfo != null and customInfo != ''">
+                #{customInfo,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="remark != null and remark != ''">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createdBy != null and createdBy != ''">
+                #{createdBy,jdbcType=VARCHAR},
+            </if>
+            now(),
+            <if test="updatedBy != null and updatedBy != ''">
+                #{updatedBy,jdbcType=VARCHAR},
+            </if>
+            now(),
+        </trim>
+    </insert>
+
+    <!-- 删除操作 -->
+    <delete id="deleteOtaUpgradeById" parameterType="long">
+        DELETE
+        FROM ota_upgrades
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 更新操作 -->
+    <update id="updateOtaUpgradeById" parameterType="com.mqttsnet.thinglinks.link.api.domain.ota.entity.OtaUpgrades">
+        UPDATE ota_upgrades
+        SET app_id                 = #{appId},
+            package_name           = #{packageName},
+            package_type           = #{packageType},
+            product_identification = #{productIdentification},
+            version                = #{version},
+            file_location          = #{fileLocation},
+            status                 = #{status},
+            description            = #{description},
+            custom_info            = #{customInfo},
+            remark                 = #{remark},
+            updated_by             = #{updatedBy},
+            updated_time           = now()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID查询 -->
+    <select id="selectOtaUpgradeById" parameterType="long" resultMap="OtaUpgradeResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM ota_upgrades WHERE id = #{id}
+    </select>
+
+    <!-- 查询所有记录 -->
+    <select id="selectAllOtaUpgrades" resultMap="OtaUpgradeResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM ota_upgrades
+    </select>
+
+    <update id="updateOtaUpgradeByStatus">
+        UPDATE ota_upgrades
+        set status = #{status}
+        WHERE id = #{id}
+    </update>
+</mapper>

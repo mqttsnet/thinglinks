@@ -48,7 +48,7 @@ public class CacheDataHelper {
             log.warn("Device identification is null");
             return null;
         }
-        Device deviceCacheObject = redisService.getCacheObject(CacheConstants.DEVICE_RECORD_KEY + deviceIdentification);
+        Device deviceCacheObject = redisService.getCacheObject(CacheConstants.DEF_DEVICE + deviceIdentification);
         return BeanPlusUtil.toBeanIgnoreError(deviceCacheObject, DeviceCacheVO.class);
     }
 
@@ -58,13 +58,13 @@ public class CacheDataHelper {
             return null;
         }
 
-        ProductModelCacheVO objectCacheResult = redisService.getCacheObject(CacheConstants.DEVICE_RECORD_KEY + productIdentification);
+        ProductModelCacheVO objectCacheResult = redisService.getCacheObject(CacheConstants.DEF_PRODUCT_MODEL + productIdentification);
         return BeanPlusUtil.toBeanIgnoreError(objectCacheResult, ProductModelCacheVO.class);
     }
 
     public List<SuperTableDescribeVO> getProductModelSuperTableCacheVO(String productIdentification, String serviceCode, String deviceIdentification) {
         // 构造缓存键
-        String cacheKey = CacheConstants.PRODUCT_MODEL_SUPER_TABLE + productIdentification + ":" + serviceCode + ":" + deviceIdentification;
+        String cacheKey = CacheConstants.DEF_PRODUCT_MODEL_SUPER_TABLE + productIdentification + ":" + serviceCode + ":" + deviceIdentification;
 
         // 尝试从缓存获取数据
         List<Object> cacheList;
@@ -104,7 +104,13 @@ public class CacheDataHelper {
 
     public void setProductModelSuperTableCacheVO(String productIdentification, String serviceCode, String deviceIdentification,
                                                  List<SuperTableDescribeVO> superTableDescribeOpt) {
-        String cacheKey = CacheConstants.PRODUCT_MODEL_SUPER_TABLE + productIdentification + ":" + serviceCode + ":" + deviceIdentification;
+        String cacheKey = CacheConstants.DEF_PRODUCT_MODEL_SUPER_TABLE + productIdentification + ":" + serviceCode + ":" + deviceIdentification;
+        redisService.delete(cacheKey);
+        redisService.setCacheObject(cacheKey, superTableDescribeOpt);
+    }
+
+    public void setProductModelSuperTableCacheVO(String productIdentification, String serviceCode, List<SuperTableDescribeVO> superTableDescribeOpt) {
+        String cacheKey = CacheConstants.DEF_PRODUCT_MODEL_SUPER_TABLE + productIdentification + ":" + serviceCode;
         redisService.delete(cacheKey);
         redisService.setCacheObject(cacheKey, superTableDescribeOpt);
     }

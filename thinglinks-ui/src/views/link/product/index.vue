@@ -62,8 +62,8 @@
       </el-col>
       <el-col :span="1.5">
         <el-button :disabled="multiple" icon="el-icon-refresh" plain size="mini" type="primary"
-          @click="initializeTheDataModel">
-          产品初始化
+          @click="productEmpowerment">
+          产品赋能
         </el-button>
       </el-col>
     </el-row>
@@ -105,9 +105,9 @@
               @click="handleDelete(scope.row)">
             </el-button>
           </el-tooltip>
-          <el-tooltip class="item" content="产品初始化" effect="light" placement="top">
+          <el-tooltip class="item" content="产品赋能" effect="light" placement="top">
             <el-button circle icon="el-icon-refresh" size="mini" type="primary"
-              @click="initializeTheDataModel(scope.row)">
+              @click="productEmpowerment(scope.row)">
             </el-button>
           </el-tooltip>
           <el-tooltip class="item" content="产品详情" effect="light" placement="top">
@@ -690,14 +690,28 @@
                   </el-form-item>
                 </div>
                 <div class="small">
-                  <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.name'"
-                    :rules="dialogquick.rules.name" label="指示属性名称">
+                  <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.propertyCode'"
+                    :rules="dialogquick.rules.propertyCode" label="指示属性编码">
                     <el-col :span="22">
-                      <el-input v-model="proItem.name" autocomplete="off" placeholder="请输入指示属性名称" />
+                      <el-input v-model="proItem.propertyCode" autocomplete="off" placeholder="请输入指示属性编码" />
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
+                      <el-tooltip content="指示属性编码。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
                         placement="right">
+                        <i class="el-icon-question" />
+                      </el-tooltip>
+                    </el-col>
+                  </el-form-item>
+                </div>
+                <div class="small">
+                  <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.propertyName'"
+                                :rules="dialogquick.rules.propertyName" label="指示属性名称">
+                    <el-col :span="22">
+                      <el-input v-model="proItem.propertyName" autocomplete="off" placeholder="请输入指示属性名称" />
+                    </el-col>
+                    <el-col :span="2" style="padding-left: 5px">
+                      <el-tooltip content="指示属性名称" effect="light"
+                                  placement="right">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </el-col>
@@ -1051,7 +1065,8 @@
             }
           ],
           required: [{ required: true, message: "是否必须不能为空", trigger: "blur" },],
-          name: [{ required: true, message: "指示属性名称不能为空", trigger: "blur" }],
+          propertyCode: [{ required: true, message: "指示属性编码不能为空", trigger: "blur" }],
+          propertyName: [{ required: true, message: "指示属性名称不能为空", trigger: "blur" }],
           method: [{ required: true, message: "指示访问模式不能为空", trigger: " change" }],
         },
       },
@@ -1069,18 +1084,17 @@
   watch: {
   },
   methods: {
-    //初始化数据模型
-    initializeTheDataModel(row) {
+    //产品赋能
+    productEmpowerment(row) {
       const ids = row.id || this.ids;
-      const initializeOrNot = true
       this.$modal
-        .confirm('是否初始化"' + ids + '"的数据项？')
+        .confirm('是否赋能"' + ids + '"的数据项？')
         .then(function () {
-          return initializeDataModel(ids, initializeOrNot);
+          return productEmpowerment(ids);
         })
         .then(() => {
           this.getList()
-          this.$modal.msgSuccess("初始化成功");
+          this.$modal.msgSuccess("赋能成功");
         })
         .catch(() => { });
     },

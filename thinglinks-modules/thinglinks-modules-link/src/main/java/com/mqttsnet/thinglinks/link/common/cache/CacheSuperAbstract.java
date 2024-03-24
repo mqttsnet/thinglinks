@@ -7,5 +7,5 @@ public abstract class CacheSuperAbstract {
 
     public static int PAGE_SIZE = 5000;
 
-
+    public static final Long THIRTY_MINUTES = 60L;
 }
