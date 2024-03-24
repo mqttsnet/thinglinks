@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
@@ -44,6 +43,7 @@ public class DeviceController extends BaseController {
     private DeviceService deviceService;
     @Autowired
     private ProductService productService;
+
 
     /**
      * 查询设备管理列表

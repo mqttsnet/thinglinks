@@ -1821,7 +1821,8 @@ DROP TABLE IF EXISTS `product_properties`;
 CREATE TABLE `product_properties`
 (
     `id`          bigint(19) NOT NULL AUTO_INCREMENT COMMENT '属性id',
-    `name`        varchar(255) NOT NULL COMMENT '指示属性名称。',
+    `property_name` varchar(255) NOT NULL COMMENT '指示属性名称。',
+    `property_code` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '属性编码',
     `service_id`  bigint(19) NOT NULL COMMENT '服务ID',
     `datatype`    varchar(255) NOT NULL COMMENT '指示数据类型：取值范围：string、int、decimal（float和double都可以使用此类型）、DateTime、jsonObject上报数据时，复杂类型数据格式如下：\r\n•DateTime:yyyyMMdd’T’HHmmss’Z’如:20151212T121212Z•jsonObject：自定义json结构体，平台不理解只透传\r\n',
     `description` varchar(255)          DEFAULT NULL COMMENT '属性描述，不影响实际功能，可配置为空字符串""。',

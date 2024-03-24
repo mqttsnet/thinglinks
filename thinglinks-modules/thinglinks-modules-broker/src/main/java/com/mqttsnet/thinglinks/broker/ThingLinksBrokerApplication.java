@@ -2,15 +2,21 @@ package com.mqttsnet.thinglinks.broker;
 
 import com.mqttsnet.thinglinks.common.security.annotation.EnableRyFeignClients;
 import com.mqttsnet.thinglinks.common.swagger.annotation.EnableCustomSwagger2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.CrossOrigin;
+
+import java.net.InetAddress;
 
 /**
  * Broker
  *
  * @author thinglinks
  */
+@Slf4j
 @EnableCustomSwagger2
 @EnableRyFeignClients
 //实现跨域注解
@@ -20,8 +26,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @SpringBootApplication(scanBasePackages = {"com.mqttsnet.thinglinks"})
 public class ThingLinksBrokerApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(ThingLinksBrokerApplication.class, args);
-        System.out.println("(♥◠‿◠)ﾉﾞ  Broker模块启动成功   ლ(´ڡ`ლ)ﾞ  ");
+    public static void main(String[] args) throws Exception {
+        ConfigurableApplicationContext application = SpringApplication.run(ThingLinksBrokerApplication.class, args);
+        Environment env = application.getEnvironment();
+        log.info("\n----------------------------------------------------------\n\t" + "应用 '{}' 启动成功! 访问连接:\n\t" + "Swagger文档: \t\thttp://{}:{}/swagger-ui.html\n\t"
+                        + "数据库监控: \t\thttp://{}:{}/druid\n" + "----------------------------------------------------------", env.getProperty("spring.application.name"),
+                InetAddress.getLocalHost().getHostAddress(), env.getProperty("server.port", "8080"), "127.0.0.1", env.getProperty("server.port", "8080"));
     }
 }

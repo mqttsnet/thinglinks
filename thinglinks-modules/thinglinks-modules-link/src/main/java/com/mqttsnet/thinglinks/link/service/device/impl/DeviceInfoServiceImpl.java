@@ -41,7 +41,7 @@ import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
-import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.TableDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -364,9 +364,9 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
             StringBuilder shadowTableNameBuilder = new StringBuilder();
             // 新增设备管理成功后，创建TD普通表
             List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdentificationIdAndStatus(product.getProductIdentification(), Constants.ENABLE);
-            TableDto tableDto;
+            TableDTO tableDto;
             for (ProductServices productServices : allByProductIdAndStatus) {
-                tableDto = new TableDto();
+                tableDto = new TableDTO();
                 tableDto.setDataBaseName(dataBaseName);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
                 String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceName());
@@ -379,7 +379,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
                 fields.setFieldValue(device.getDeviceIdentification());
                 tagsFieldValues.add(fields);
                 tableDto.setTagsFieldValues(tagsFieldValues);
-                final R<?> ctResult = remoteTdEngineService.createTable(tableDto);
+                final R<?> ctResult = remoteTdEngineService.createSubTable(tableDto);
                 if (ctResult.getCode() == ResultEnum.SUCCESS.getCode()) {
                     shadowTableNameBuilder.append(tableDto.getTableName()).append(",");
                     log.info("Create SuperTable Success: " + ctResult.getMsg());

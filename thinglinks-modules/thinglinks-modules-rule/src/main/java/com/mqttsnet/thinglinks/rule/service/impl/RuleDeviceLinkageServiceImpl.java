@@ -22,7 +22,7 @@ import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
 import com.mqttsnet.thinglinks.rule.service.RuleDeviceLinkageService;
 import com.mqttsnet.thinglinks.rule.service.RuleService;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
-import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.TagsSelectDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
@@ -137,7 +137,7 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
             log.info("maps:{}", maps.toString());
 
             // 属性名称
-            String productPropertiesName = propertiesData.getName();
+            String productPropertiesName = propertiesData.getPropertyName();
             // 属性类型
             String productPropertiesType = propertiesData.getDatatype();
             // 比较模式
@@ -258,11 +258,11 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
         String superName = product.getProductType() + "_" + conditions.getProductIdentification() + "_" + productServices.getServiceName();
 
         // 查询最新的设备记录
-        TagsSelectDao tagsSelectDao = new TagsSelectDao();
-        tagsSelectDao.setDataBaseName("thinglinks");
-        tagsSelectDao.setStableName(superName);
-        tagsSelectDao.setTagsName("device_identification");
-        R<Map<String, Map<String, Object>>> lastDataByTags = remoteTdEngineService.getLastDataByTags(tagsSelectDao);
+        TagsSelectDTO tagsSelectDTO = new TagsSelectDTO();
+        tagsSelectDTO.setDataBaseName("thinglinks");
+        tagsSelectDTO.setStableName(superName);
+        tagsSelectDTO.setTagsName("device_identification");
+        R<Map<String, Map<String, Object>>> lastDataByTags = remoteTdEngineService.getLastDataByTags(tagsSelectDTO);
         if (lastDataByTags != null && lastDataByTags.getData() != null) {
             maps = lastDataByTags.getData();
         }

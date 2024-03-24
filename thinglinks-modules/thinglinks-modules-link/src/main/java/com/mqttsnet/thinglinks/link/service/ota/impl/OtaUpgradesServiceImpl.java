@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.ota.impl;
 
+import com.mqttsnet.thinglinks.common.core.exception.ArgumentException;
 import com.mqttsnet.thinglinks.common.core.exception.ServiceException;
 import com.mqttsnet.thinglinks.common.core.utils.ArgumentAssert;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
@@ -75,7 +76,7 @@ public class OtaUpgradesServiceImpl implements OtaUpgradesService {
     }
 
     @Override
-    public Boolean updateOtaUpgradeStatus(Long id, Integer status) {
+    public Boolean updateOtaUpgradeStatus(Long id, Integer status) throws ArgumentException {
         ArgumentAssert.notNull(id, "Package ID cannot be null");
         ArgumentAssert.notNull(status, "Status cannot be null");
 
@@ -99,7 +100,7 @@ public class OtaUpgradesServiceImpl implements OtaUpgradesService {
      * @throws ServiceException if the OTA upgrade package does not exist or is in use
      */
     @Override
-    public Boolean deleteOtaUpgrade(Long id) {
+    public Boolean deleteOtaUpgrade(Long id) throws ArgumentException {
         ArgumentAssert.notNull(id, "Package ID cannot be null");
 
         OtaUpgrades otaUpgrade = otaUpgradesMapper.selectOtaUpgradeById(id);

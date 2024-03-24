@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.ota.impl;
 
+import com.mqttsnet.thinglinks.common.core.exception.ArgumentException;
 import com.mqttsnet.thinglinks.common.core.exception.ServiceException;
 import com.mqttsnet.thinglinks.common.core.utils.ArgumentAssert;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
@@ -83,7 +84,7 @@ public class OtaUpgradeTasksServiceImpl implements OtaUpgradeTasksService {
     }
 
     @Override
-    public boolean changeTaskStatus(Long id, Integer status) {
+    public boolean changeTaskStatus(Long id, Integer status) throws ArgumentException {
         ArgumentAssert.notNull(id, "Package ID cannot be null");
         ArgumentAssert.notNull(status, "Status cannot be null");
 
@@ -101,7 +102,7 @@ public class OtaUpgradeTasksServiceImpl implements OtaUpgradeTasksService {
     }
 
     @Override
-    public boolean deleteOtaUpgradeTask(Long id) {
+    public boolean deleteOtaUpgradeTask(Long id) throws ArgumentException {
         ArgumentAssert.notNull(id, "Task ID cannot be null");
 
         OtaUpgradeTasks task = otaUpgradeTasksMapper.selectOtaUpgradeTaskById(id);
@@ -115,7 +116,7 @@ public class OtaUpgradeTasksServiceImpl implements OtaUpgradeTasksService {
     }
 
     @Override
-    public OtaUpgradeTasksResultVO getUpgradeTaskDetails(Long id) {
+    public OtaUpgradeTasksResultVO getUpgradeTaskDetails(Long id) throws ArgumentException {
         ArgumentAssert.notNull(id, "Task ID cannot be null");
 
         OtaUpgradeTasks otaUpgradeTask = otaUpgradeTasksMapper.selectOtaUpgradeTaskById(id);

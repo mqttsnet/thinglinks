@@ -1,8 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.device.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
-import cn.hutool.core.text.CharSequenceUtil;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
@@ -12,7 +10,6 @@ import com.mqttsnet.thinglinks.common.core.enums.DeviceTopicEnum;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceType;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
-import com.mqttsnet.thinglinks.common.core.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.tdengine.TdUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
@@ -22,11 +19,10 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
 import com.mqttsnet.thinglinks.link.api.domain.device.enumeration.MqttProtocolTopoStatusEnum;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
-import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model.DeviceInfoParams;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.*;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoAddDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoDeviceDataReportParam;
+import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoQueryDeviceParam;
 import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoQueryDeviceResultVO;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
@@ -38,9 +34,7 @@ import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
-import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
-import com.mqttsnet.thinglinks.tdengine.api.domain.TableDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,6 +165,7 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public int updateConnectStatusByClientId(String updatedConnectStatus, String clientId) {
+        log.info("更新设备连接状态为: {} , clientId: {}", updatedConnectStatus, clientId);
         return deviceMapper.updateConnectStatusByClientId(updatedConnectStatus, clientId);
     }
 
@@ -240,23 +235,52 @@ public class DeviceServiceImpl implements DeviceService {
             //基础TOPIC集合
             Map<String, String> topicMap = new HashMap<>();
             if (DeviceType.GATEWAY.getValue().equals(device.getDeviceType())) {
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/add", "边设备添加子设备");
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/addResponse", "物联网平台返回的添加子设备的响应");
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/delete", "边设备删除子设备");
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/deleteResponse", "物联网平台返回的删除子设备的响应");
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/update", "边设备更新子设备状态");
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/topo/updateResponse", "物联网平台返回的更新子设备状态的响应");
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/datas", "边设备上报数据");
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/command", "物联网平台给设备或边设备下发命令");
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/commandResponse", "边设备返回给物联网平台的命令响应");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/add", "边设备添加子设备");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/addResponse", "物联网平台返回的添加子设备的响应");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/delete", "边设备删除子设备");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/deleteResponse", "物联网平台返回的删除子设备的响应");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/update", "边设备更新子设备状态");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/updateResponse", "物联网平台返回的更新子设备状态的响应");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/datas", "边设备上报数据");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/command", "物联网平台给设备或边设备下发命令");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/commandResponse", "边设备返回给物联网平台的命令响应");
+
+                // 添加OTA更新命令和响应
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaCommand", "物联网平台给网关设备下发OTA远程升级命令");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaCommandResponse", "网关设备返回给物联网平台的OTA远程升级命令响应");
+
+                // 添加OTA拉取命令和响应
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaPull", "网关设备拉取物联网平台的最新软固件信息");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaPullResponse", "物联网平台响应软固件信息给设备");
+
+                // 添加OTA上报命令和响应
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaReport", "网关设备向物联网平台上报软固件版本");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaReportResponse", "物联网平台接收到上报软固件信息响应");
+
+                // 添加OTA读取命令和响应
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaRead", "物联网平台读取设备软固件版本");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaReadResponse", "网关设备回复物联网平台读取设备固件版本指令");
+
             } else if (DeviceType.COMMON.getValue().equals(device.getDeviceType())) {
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/datas", "边设备上报数据");
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/command", "物联网平台给设备或边设备下发命令");
-                topicMap.put("/v1/devices/" + device.getDeviceIdentification() + "/commandResponse", "边设备返回给物联网平台的命令响应");
-                Boolean commonDeviceTDSubtable = this.createCommonDeviceTDSubtable(device);
-                if (!commonDeviceTDSubtable) {
-                    throw new Exception("创建普通设备TD子表失败");
-                }
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/datas", "普通设备上报数据");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/command", "物联网平台给普通设备下发命令");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/commandResponse", "普通设备返回给物联网平台的命令响应");
+                // 添加OTA更新命令和响应
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaCommand", "物联网平台给普通设备下发OTA远程升级命令");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaCommandResponse", "普通设备返回给物联网平台的OTA远程升级命令响应");
+
+                // 添加OTA拉取命令和响应
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaPull", "普通设备拉取物联网平台的最新软固件信息");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaPullResponse", "物联网平台响应软固件信息给普通设备");
+
+                // 添加OTA上报命令和响应
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaReport", "普通设备向物联网平台上报软固件版本");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaReportResponse", "物联网平台接收到上报软固件信息响应");
+
+                // 添加OTA读取命令和响应
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaRead", "物联网平台读取设备软固件版本");
+                topicMap.put("/" + device.getDeviceSdkVersion() + "/devices/" + device.getDeviceIdentification() + "/topo/otaReadResponse", "普通设备回复物联网平台读取设备固件版本指令");
+
             }
             //设备基础Topic数据存储
             for (Map.Entry<String, String> entry : topicMap.entrySet()) {
@@ -264,13 +288,13 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceTopic.setDeviceIdentification(device.getDeviceIdentification());
                 deviceTopic.setType(DeviceTopicEnum.BASIS.getKey());
                 deviceTopic.setTopic(entry.getKey());
-                if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("datas")) {
+                if (entry.getKey().startsWith("/" + device.getDeviceSdkVersion() + "/devices/") && entry.getKey().endsWith("datas")) {
                     deviceTopic.setPublisher("边设备");
                     deviceTopic.setSubscriber("物联网平台");
-                } else if (entry.getKey().startsWith("/v1/devices/") && entry.getKey().endsWith("commandResponse")) {
+                } else if (entry.getKey().startsWith("/" + device.getDeviceSdkVersion() + "/devices/") && entry.getKey().endsWith("commandResponse")) {
                     deviceTopic.setPublisher("边设备");
                     deviceTopic.setSubscriber("物联网平台");
-                } else if (entry.getKey().startsWith("/v1/devices/") && (entry.getKey().endsWith("Response") || entry.getKey().endsWith("command"))) {
+                } else if (entry.getKey().startsWith("/" + device.getDeviceSdkVersion() + "/devices/") && (entry.getKey().endsWith("Response") || entry.getKey().endsWith("command"))) {
                     deviceTopic.setPublisher("物联网平台");
                     deviceTopic.setSubscriber("边设备");
                 } else {
@@ -368,7 +392,7 @@ public class DeviceServiceImpl implements DeviceService {
         //设备信息缓存失效 删除缓存 更新数据库设备状态
         if (StringUtils.isNotNull(oneByClientId)) {
             //删除缓存
-            redisService.delete(CacheConstants.DEVICE_RECORD_KEY + oneByClientId.getDeviceIdentification());
+            redisService.delete(CacheConstants.DEF_DEVICE + oneByClientId.getDeviceIdentification());
             //更新数据库设备状态
             Device device = new Device();
             device.setId(oneByClientId.getId());
@@ -421,7 +445,7 @@ public class DeviceServiceImpl implements DeviceService {
         final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, username, password, deviceStatus, protocolType);
         if (Optional.ofNullable(device).isPresent()) {
             //缓存设备信息
-            redisService.setCacheObject(CacheConstants.DEVICE_RECORD_KEY + device.getDeviceIdentification(), device, 60L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(CacheConstants.DEF_DEVICE + device.getDeviceIdentification(), device, 60L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             //更改设备在线状态为在线
             this.updateConnectStatusByClientId(DeviceConnectStatusEnum.ONLINE.getValue(), clientIdentifier);
             return device;
@@ -520,43 +544,6 @@ public class DeviceServiceImpl implements DeviceService {
         return map;
     }
 
-    /**
-     * 创建普通设备TD子表
-     *
-     * @param device
-     * @return
-     */
-    public Boolean createCommonDeviceTDSubtable(Device device) {
-        final Product product = productService.findOneByProductIdentificationAndProtocolType(device.getProductIdentification(), device.getProtocolType());
-        if (StringUtils.isNull(product)) {
-            log.error("刷新子设备数据模型失败，子设备产品不存在");
-            return false;
-        }
-        List<ProductServices> allByProductIdAndStatus = productServicesService.findAllByProductIdentificationIdAndStatus(product.getProductIdentification(), Constants.ENABLE);
-        TableDto tableDto;
-        for (ProductServices productServices : allByProductIdAndStatus) {
-            tableDto = new TableDto();
-            tableDto.setDataBaseName(dataBaseName);
-            //超级表命名规则 : 产品类型_产品标识_服务名称
-            String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceName());
-            tableDto.setSuperTableName(superTableName);
-            //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
-            tableDto.setTableName(TdUtils.getSubTableName(superTableName, device.getDeviceIdentification()));
-            //Tag的处理
-            List<Fields> tagsFieldValues = new ArrayList<>();
-            Fields fields = new Fields();
-            fields.setFieldValue(device.getDeviceIdentification());
-            tagsFieldValues.add(fields);
-            tableDto.setTagsFieldValues(tagsFieldValues);
-            final R<?> ctResult = remoteTdEngineService.createTable(tableDto);
-            if (ctResult.getCode() == ResultEnum.SUCCESS.getCode()) {
-                log.info("Create SuperTable Success: " + ctResult.getMsg());
-            } else {
-                log.error("Create SuperTable Exception: " + ctResult.getMsg());
-            }
-        }
-        return true;
-    }
 
     public List<Device> selectDeviceByDeviceIdentificationList(List<String> deviceIdentificationList) {
         return deviceMapper.selectDeviceByDeviceIdentificationList(deviceIdentificationList);
@@ -608,7 +595,6 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
 
-
     /**
      * Queries device information based on provided parameters.
      *
@@ -653,6 +639,7 @@ public class DeviceServiceImpl implements DeviceService {
                 .setStatusDesc("Query completed");
         return topoQueryDeviceResultVO;
     }
+
     @Override
     public Long findDeviceTotal() {
         return deviceMapper.findDeviceTotal();

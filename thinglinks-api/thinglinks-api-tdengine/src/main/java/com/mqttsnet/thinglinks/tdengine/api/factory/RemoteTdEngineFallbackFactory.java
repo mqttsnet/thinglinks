@@ -3,9 +3,12 @@ package com.mqttsnet.thinglinks.tdengine.api.factory;
 import cn.hutool.json.JSONObject;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
-import com.mqttsnet.thinglinks.tdengine.api.domain.*;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
+import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
 import com.mqttsnet.thinglinks.tdengine.api.domain.model.SuperTableDTO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.model.TableDTO;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.TagsSelectDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -30,68 +33,6 @@ public class RemoteTdEngineFallbackFactory implements FallbackFactory<RemoteTdEn
     public RemoteTdEngineService create(Throwable throwable) {
         log.error("TDengine服务调用失败:{}", throwable.getMessage());
         return new RemoteTdEngineService() {
-
-            @Override
-            public R<?> createDataBase(String databaseName) {
-                return R.fail("创建数据库失败:{}", throwable.getMessage());
-            }
-
-            @Override
-            public R<?> createSuperTable(SuperTableDto superTableDto) {
-                return R.fail("创建超级表失败:{}", throwable.getMessage());
-            }
-
-            @Override
-            public R<?> createTable(TableDto tableDto) {
-                return R.fail("创建表失败:{}", throwable.getMessage());
-            }
-
-            @Override
-            public R<?> insertData(TableDto tableDto) {
-                return R.fail("插入数据失败:{}", throwable.getMessage());
-            }
-
-            @Override
-            public R<?> addColumnInStb(SuperTableDto superTableDto) {
-                return R.fail("超级表增加列失败:{}", throwable.getMessage());
-            }
-
-            @Override
-            public R<?> getDataByTimestamp(SelectDto selectDto) {
-                return R.fail("查询数据失败:{}", throwable.getMessage());
-            }
-
-            @Override
-            public R<?> getLastData(SelectDto selectDto) {
-                return R.fail("查询最新数据失败:{}", throwable.getMessage());
-            }
-
-            @Override
-            public R getLastDataByTags(TagsSelectDao tagsSelectDao) {
-                return R.fail("查询最新数据失败:{}", throwable.getMessage());
-            }
-
-            /**
-             * 添加列字段
-             *
-             * @param ·superTableDto
-             * @return
-             */
-            @Override
-            public R<?> addColumnForSuperTable(SuperTableDto superTableDto) {
-                return R.fail("添加列字段失败:{}", throwable.getMessage());
-            }
-
-            /**
-             * 删除列字段
-             *
-             * @param superTableDto
-             * @return
-             */
-            @Override
-            public R<?> dropColumnForSuperTable(SuperTableDto superTableDto) {
-                return R.fail("删除列字段失败:{}", throwable.getMessage());
-            }
 
             @Override
             public R createDatabase(String dataBaseName) {
@@ -167,6 +108,22 @@ public class RemoteTdEngineFallbackFactory implements FallbackFactory<RemoteTdEn
             @Override
             public R<List<Map<String, Object>>> getDataInRangeOrLastRecord(String tableName, Long startTime, Long endTime) {
                 log.error("查询超级表、子表结构失败:{}", throwable.getMessage());
+                return R.fail();
+            }
+
+            @Override
+            public R<?> getDataByTimestamp(SelectDto selectDto) {
+                return R.fail("查询数据失败:{}", throwable.getMessage());
+            }
+
+            @Override
+            public R<?> getLastData(SelectDto selectDto) {
+                return R.fail("查询最新数据失败:{}", throwable.getMessage());
+            }
+
+            @Override
+            public R<Map<String, Map<String, Object>>> getLastDataByTags(TagsSelectDTO tagsSelectDao) {
+                log.error("查询最新数据失败:{}", throwable.getMessage());
                 return R.fail();
             }
         };

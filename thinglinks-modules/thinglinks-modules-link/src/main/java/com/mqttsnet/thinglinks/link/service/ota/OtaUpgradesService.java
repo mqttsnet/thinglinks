@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.ota;
 
+import com.mqttsnet.thinglinks.common.core.exception.ArgumentException;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.save.OtaUpgradesSaveVO;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.update.OtaUpgradesUpdateVO;
 
@@ -27,7 +28,7 @@ public interface OtaUpgradesService {
      * @param status 状态
      * @return {@link Boolean} 返回结果
      */
-    Boolean updateOtaUpgradeStatus(Long id, Integer status);
+    Boolean updateOtaUpgradeStatus(Long id, Integer status) throws ArgumentException;
 
-    Boolean deleteOtaUpgrade(Long id);
+    Boolean deleteOtaUpgrade(Long id) throws ArgumentException;
 }

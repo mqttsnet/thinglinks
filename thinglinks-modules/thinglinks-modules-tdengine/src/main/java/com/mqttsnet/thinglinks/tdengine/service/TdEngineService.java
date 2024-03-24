@@ -1,11 +1,12 @@
 package com.mqttsnet.thinglinks.tdengine.service;
 
 
-import com.mqttsnet.thinglinks.tdengine.api.domain.*;
+import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.model.SuperTableDTO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.model.TableDTO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.model.TagsSelectDTO;
-import com.mqttsnet.thinglinks.tdengine.api.domain.visual.SelectVisualDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -19,33 +20,14 @@ import java.util.Map;
  * @Version 1.0
  */
 public interface TdEngineService {
-    void createDateBase(String dataBaseName) throws Exception;
+    /**
+     * 创建数据库
+     *
+     * @param dataBaseName
+     */
+    default void createDatabase(@Param("dataBaseName") String dataBaseName) {
 
-    void createSuperTable(List<FieldsVo> schemaFields, List<FieldsVo> tagsFields, String dataBaseName, String superTableName) throws Exception;
-
-    void createTable(TableDto tableDto) throws Exception;
-
-    void insertData(TableDto tableDto) throws Exception;
-
-    List<Map<String, Object>> selectByTimesTamp(SelectDto selectDto) throws Exception;
-
-    void addColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception;
-
-    void dropColumnForSuperTable(String superTableName, FieldsVo fieldsVo) throws Exception;
-
-    Long getCountByTimesTamp(SelectDto selectDto) throws Exception;
-
-    void initSTableFrame(String msg) throws Exception;
-
-    List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception;
-
-    Map<String, Map<String, Object>> getLastDataByTags(TagsSelectDao tagsSelectDao);
-
-    List<Map<String, Object>> getHistoryData(SelectVisualDto selectVisualDto);
-
-    List<Map<String, Object>> getRealtimeData(SelectVisualDto selectVisualDto);
-
-    List<Map<String, Object>> getAggregateData(SelectVisualDto selectVisualDto);
+    }
 
     /**
      * 创建超级表
@@ -188,4 +170,14 @@ public interface TdEngineService {
     default List<Map<String, Object>> getDataInRangeOrLastRecord(String dataBaseName, String tableName, Long startTime, Long endTime) {
         return null;
     }
+
+
+    default List<Map<String, Object>> selectByTimesTamp(SelectDto selectDto) throws Exception {
+        return null;
+    }
+
+    default List<Map<String, Object>> getLastData(SelectDto selectDto) throws Exception {
+        return null;
+    }
+
 }

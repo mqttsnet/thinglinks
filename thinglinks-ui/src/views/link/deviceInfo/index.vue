@@ -70,12 +70,6 @@
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button plain icon="el-icon-refresh" size="mini" type="primary" :disabled="multiple"
-          @click="initializeTheDataModel">
-          设备初始化
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
           v-hasPermi="['link:deviceInfo:export']">导出
         </el-button>
@@ -123,13 +117,6 @@
             <el-tooltip class="item" effect="light" content="删除" placement="top">
               <el-button circle size="mini" type="primary" icon="el-icon-delete" @click="handleDelete(scope.row)"
                 v-hasPermi="['link:deviceInfo:remove']">
-              </el-button>
-            </el-tooltip>
-          </span>
-          <span style="margin-right:10px">
-            <el-tooltip class="item" content="设备初始化" effect="light" placement="top">
-              <el-button circle icon="el-icon-refresh" size="mini" type="primary"
-                @click="initializeTheDataModel(scope.row)">
               </el-button>
             </el-tooltip>
           </span>
@@ -333,21 +320,6 @@
       },
       setDecive(did) {
         this.form.did = did
-      },
-      //初始化数据模型
-      initializeTheDataModel(row) {
-        const ids = row.id || this.ids;
-        this.$modal
-          .confirm('是否初始化"' + ids + '"的数据项？')
-          .then(function() {
-            console.log(ids);
-            return refreshDeviceInfoDataModel(ids);
-          })
-          .then(() => {
-            this.getList()
-            this.$modal.msgSuccess("初始化成功");
-          })
-          .catch(() => {});
       },
       // 高级搜索切换显示隐藏
       advancedSearch_toggle() {

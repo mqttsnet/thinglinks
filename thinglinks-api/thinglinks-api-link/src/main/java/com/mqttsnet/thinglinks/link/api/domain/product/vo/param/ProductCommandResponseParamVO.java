@@ -32,6 +32,13 @@ public class ProductCommandResponseParamVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * id
+     */
+    @ApiModelProperty(value = "id")
+    private Long id;
+
+
+    /**
      * 命令ID
      */
     @ApiModelProperty(value = "命令ID")

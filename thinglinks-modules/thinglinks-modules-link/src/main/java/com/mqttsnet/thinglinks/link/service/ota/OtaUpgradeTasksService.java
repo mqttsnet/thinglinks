@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.link.service.ota;
 
+import com.mqttsnet.thinglinks.common.core.exception.ArgumentException;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.result.OtaUpgradeTasksResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.save.OtaUpgradeTasksSaveVO;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.update.OtaUpgradeTasksUpdateVO;
@@ -32,7 +33,7 @@ public interface OtaUpgradeTasksService {
      * @param status 状态
      * @return {@link Boolean} 返回结果
      */
-    boolean changeTaskStatus(Long id, Integer status);
+    boolean changeTaskStatus(Long id, Integer status) throws ArgumentException;
 
     /**
      * Delete OTA Upgrade Task
@@ -40,7 +41,7 @@ public interface OtaUpgradeTasksService {
      * @param id 主键
      * @return {@link Boolean} 返回结果
      */
-    boolean deleteOtaUpgradeTask(Long id);
+    boolean deleteOtaUpgradeTask(Long id) throws ArgumentException;
 
     /**
      * Get OTA Upgrade Task Details
@@ -48,7 +49,7 @@ public interface OtaUpgradeTasksService {
      * @param id 主键
      * @return {@link OtaUpgradeTasksResultVO} 返回结果
      */
-    OtaUpgradeTasksResultVO getUpgradeTaskDetails(Long id);
+    OtaUpgradeTasksResultVO getUpgradeTaskDetails(Long id) throws ArgumentException;
 
     /**
      * Perform ota upgrade tasks based on the start time and end time, including upgrade package information.

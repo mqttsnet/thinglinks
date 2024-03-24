@@ -12,6 +12,17 @@ ALTER TABLE device ADD device_sdk_version varchar(255) CHARACTER SET utf8mb4 COL
 ALTER TABLE product_services MODIFY COLUMN service_name varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '服务名称';
 ALTER TABLE product_services ADD service_code varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NOT NULL COMMENT '服务编码:支持英文大小写、数字、下划线和中划线';
 
+UPDATE product_services SET service_code = service_name;
+
+
+#产品属性
+ALTER TABLE product_properties ADD property_code varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' NOT NULL COMMENT '属性编码';
+ALTER TABLE product_properties CHANGE name property_name varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '指示属性名称。';
+
+UPDATE product_properties SET property_code = property_name;
+
+
+
 
 
 

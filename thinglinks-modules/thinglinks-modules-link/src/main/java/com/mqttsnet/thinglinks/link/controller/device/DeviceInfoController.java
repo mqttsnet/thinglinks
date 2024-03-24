@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -107,18 +106,6 @@ public class DeviceInfoController extends BaseController {
         final Object startTime = params.get("startTime");
         final Object endTime = params.get("endTime");
         return AjaxResult.success(deviceInfoService.getDeviceInfoShadow(ids.toString(), startTime.toString(), endTime.toString()));
-    }
-
-    /**
-     * 刷新子设备数据模型
-     *
-     * @param ids
-     * @return
-     */
-    @PreAuthorize(hasPermi = "link:deviceInfo:initialize")
-    @GetMapping("/refreshDeviceInfoDataModel/{ids}")
-    public AjaxResult refreshDeviceInfoDataModel(@PathVariable("ids") Long[] ids) {
-        return toAjax(deviceInfoService.refreshDeviceInfoDataModel(Arrays.asList(ids)));
     }
 
 

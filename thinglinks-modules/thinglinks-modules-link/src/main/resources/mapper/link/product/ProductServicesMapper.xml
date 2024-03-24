@@ -739,7 +739,7 @@
         from
             product_services
         <where>
-            <if test="serviceIdList != null ">
+            <if test="serviceIdList != null and serviceIdList.size()  &gt; 0">
                 and id in
                 <foreach collection="serviceIdList" open="(" close=")" separator="," item="item">
                     #{item}

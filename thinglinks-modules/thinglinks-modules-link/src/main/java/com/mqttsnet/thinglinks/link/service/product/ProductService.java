@@ -1,15 +1,14 @@
 package com.mqttsnet.thinglinks.link.service.product;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.web.domain.AjaxResult;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.model.ProductModel;
+import com.mqttsnet.thinglinks.link.api.domain.product.vo.param.ProductParamVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductResultVO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDto;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -65,10 +64,10 @@ public interface ProductService {
     /**
      * 解析产品模型数据
      *
-     * @param content    产品模型数据
-     * @param appId      应用ID
+     * @param content                产品模型数据
+     * @param appId                  应用ID
      * @param templateIdentification 产品模型模板标识
-     * @param status     状态(字典值：启用  停用)
+     * @param status                 状态(字典值：启用  停用)
      * @return 解析结果
      * @throws Exception
      */
@@ -148,28 +147,7 @@ public interface ProductService {
     Product findOneByManufacturerIdAndModelAndDeviceType(String manufacturerId, String model, String deviceType);
 
 
-    /**
-     * 根据产品模型创建超级表
-     *
-     * @param product
-     * @param services
-     * @return
-     * @throws Exception
-     */
-    AjaxResult createSuperTable(Product product, JSONArray services) throws Exception;
-
-
     List<Product> findAllByStatus(String status);
-
-    /**
-     * 初始化生成超级表模型
-     *
-     * @param productIds      产品ID集合  productIds==null 初始化所有产品:productIds!=null 初始化指定产品
-     * @param InitializeOrNot 是否初始化
-     * @return
-     * @throws Exception
-     */
-    List<SuperTableDto> createSuperTableDataModel(Long[] productIds, Boolean InitializeOrNot);
 
 
     Product findOneByManufacturerIdAndModelAndProtocolTypeAndStatus(String manufacturerId, String model, String protocolType, String status);
@@ -198,5 +176,21 @@ public interface ProductService {
     Long findProductTotal();
 
     List<Product> findProductsByPage(int offset, int pageSize);
+
+    /**
+     * 查询产品管理 带服务、属性、命令
+     *
+     * @param productIdentification 产品标识
+     * @return 产品管理
+     */
+    ProductParamVO selectFullProductByProductIdentification(String productIdentification);
+
+    /**
+     * 产品赋能
+     *
+     * @param productIds 产品ID集合
+     * @return 赋能结果
+     */
+    String productEmpowerment(Long[] productIds);
 }
 

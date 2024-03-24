@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.link.common.cache.service;
 
 
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductCacheVO;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -48,7 +48,6 @@ public class ProductCacheService extends CacheSuperAbstract {
 
     /**
      * Refreshes the product cache for a specific tenant.
-     *
      */
     public void refreshProductCacheForTenant() {
         int totalDataCount = productService.findProductTotal().intValue();
@@ -81,7 +80,7 @@ public class ProductCacheService extends CacheSuperAbstract {
      *
      * @param productList List of products to be cached.
      */
-    private void cacheProductsForTenant( List<Product> productList) {
+    private void cacheProductsForTenant(List<Product> productList) {
         productList.stream()
                 .map(this::transformToProductCacheVO)
                 .forEach(this::cacheProduct);
@@ -90,10 +89,10 @@ public class ProductCacheService extends CacheSuperAbstract {
     /**
      * Transforms a product object into a ProductCacheVO object.
      *
-     * @param product  Product object to be transformed.
+     * @param product Product object to be transformed.
      * @return Transformed ProductCacheVO object.
      */
-    private ProductCacheVO transformToProductCacheVO( Product product) {
+    private ProductCacheVO transformToProductCacheVO(Product product) {
         return BeanPlusUtil.toBeanIgnoreError(product, ProductCacheVO.class);
     }
 
@@ -103,9 +102,9 @@ public class ProductCacheService extends CacheSuperAbstract {
      * @param productCacheVO ProductCacheVO object to be cached.
      */
     private void cacheProduct(ProductCacheVO productCacheVO) {
-        String cacheKey = productCacheVO.getProductIdentification();
+        String cacheKey = CacheConstants.DEF_PRODUCT +productCacheVO.getProductIdentification();
         redisService.delete(cacheKey);
-        redisService.setCacheObject(cacheKey, productCacheVO,THIRTY_MINUTES, TimeUnit.MINUTES);
+        redisService.setCacheObject( cacheKey, productCacheVO, THIRTY_MINUTES, TimeUnit.MINUTES);
     }
 
 }

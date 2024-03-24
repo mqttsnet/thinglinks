@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.link.controller.ota;
 
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.exception.ArgumentException;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.result.OtaUpgradeTasksResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.save.OtaUpgradeTasksSaveVO;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+
 @Validated
 @RestController
 @RequestMapping("/otaUpgradeTasks")
@@ -47,22 +49,40 @@ public class OtaUpgradeTasksController extends BaseController {
             @ApiParam(value = "任务ID", required = true) @PathVariable("id") Long id,
             @ApiParam(value = "新任务状态（0：待处理，1：进行中，2：已完成，3：已取消）", required = true, allowableValues = "0,1,2,3") @RequestParam("status") Integer status) {
         log.info("更改任务状态 id:{}, 状态:{}", id, status);
-        return R.ok(otaUpgradeTasksService.changeTaskStatus(id, status));
+        try {
+            return R.ok(otaUpgradeTasksService.changeTaskStatus(id, status));
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
     }
 
     @ApiOperation(value = "删除OTA升级任务", httpMethod = "DELETE", notes = "通过其ID删除OTA升级任务")
     @DeleteMapping("/deleteOtaUpgradeTask/{id}")
     public R<Boolean> deleteOtaUpgradeTask(@ApiParam(value = "OTA升级任务ID", required = true) @PathVariable("id") Long id) {
         log.info("删除OTA升级任务 id: {}", id);
-        return R.ok(otaUpgradeTasksService.deleteOtaUpgradeTask(id));
+        try {
+            return R.ok(otaUpgradeTasksService.deleteOtaUpgradeTask(id));
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
     }
 
     @ApiOperation(value = "批量删除OTA升级任务", httpMethod = "DELETE", notes = "通过它们的ID批量删除OTA升级任务")
     @DeleteMapping("/deleteOtaUpgradeTasks")
     public R<Boolean> deleteOtaUpgradeTasks(@ApiParam(value = "OTA升级任务ID", required = true) @RequestBody List<Long> ids) {
         log.info("批量删除OTA升级任务 ids: {}", ids);
-        boolean allDeleted = ids.stream().distinct().allMatch(id -> otaUpgradeTasksService.deleteOtaUpgradeTask(id));
-        return R.ok(allDeleted);
+        try {
+            boolean allDeleted = ids.stream().distinct().allMatch(id -> {
+                try {
+                    return otaUpgradeTasksService.deleteOtaUpgradeTask(id);
+                } catch (ArgumentException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return R.ok(allDeleted);
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
     }
 
     /**
@@ -74,8 +94,13 @@ public class OtaUpgradeTasksController extends BaseController {
     @ApiOperation(value = "获取OTA升级任务详情", httpMethod = "GET", notes = "通过ID检索OTA升级任务的详细信息。")
     @GetMapping("/details/{id}")
     public R<OtaUpgradeTasksResultVO> getUpgradeTaskDetails(@ApiParam(value = "OTA升级任务的唯一标识符。", required = true) @PathVariable Long id) {
-        return R.ok(otaUpgradeTasksService.getUpgradeTaskDetails(id));
+        try {
+            return R.ok(otaUpgradeTasksService.getUpgradeTaskDetails(id));
+        } catch (ArgumentException e) {
+            return R.fail(e.getMessage());
+        }
     }
+
     /**
      * 根据开始时间及结束时间执行ota升级任务，包括相关升级包信息。
      *

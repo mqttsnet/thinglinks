@@ -36,10 +36,15 @@ public class ProductProperties extends BaseEntity implements Serializable {
     private Long id;
 
     /**
-    * 指示属性名称。
-    */
-    @ApiModelProperty(value="指示属性名称。")
-    private String name;
+     * 指示属性编码
+     */
+    @ApiModelProperty(value = "指示属性编码")
+    private String propertyCode;
+    /**
+     * 指示属性名称
+     */
+    @ApiModelProperty(value = "指示属性名称")
+    private String propertyName;
 
     /**
     * 服务ID

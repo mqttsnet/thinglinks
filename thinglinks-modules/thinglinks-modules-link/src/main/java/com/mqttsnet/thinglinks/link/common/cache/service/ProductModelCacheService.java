@@ -1,21 +1,21 @@
 package com.mqttsnet.thinglinks.link.common.cache.service;
 
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductModelCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.vo.param.ProductParamVO;
 import com.mqttsnet.thinglinks.link.common.cache.CacheSuperAbstract;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.cache.CacheKey;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -48,12 +48,10 @@ public class ProductModelCacheService extends CacheSuperAbstract {
 
     /**
      * Refreshes the product model cache for a specific tenant.
-     *
      */
     public void refreshProductModelCache() {
         int totalDataCount = productService.findProductTotal().intValue();
         int totalPages = (int) Math.ceil((double) totalDataCount / PAGE_SIZE);
-
         List<Product> productList = IntStream.range(0, totalPages)
                 .mapToObj(this::fetchProductPageContent)
                 .flatMap(Collection::stream)
@@ -71,7 +69,9 @@ public class ProductModelCacheService extends CacheSuperAbstract {
      * @return List of products from the specified page.
      */
     private List<Product> fetchProductPageContent(int currentPage) {
-        return null;
+        int offset = currentPage * PAGE_SIZE;
+        List<Product> products = productService.findProductsByPage(offset, PAGE_SIZE);
+        return products != null ? products : Collections.emptyList();
     }
 
     /**
@@ -79,7 +79,7 @@ public class ProductModelCacheService extends CacheSuperAbstract {
      *
      * @param productList List of products to be cached as product models.
      */
-    private void cacheProductModelsForTenant( List<Product> productList) {
+    private void cacheProductModelsForTenant(List<Product> productList) {
         productList.stream()
                 .map(this::transformToProductModelCacheVO)
                 .forEach(this::cacheProductModel);
@@ -88,11 +88,12 @@ public class ProductModelCacheService extends CacheSuperAbstract {
     /**
      * Transforms a product object into a ProductModelCacheVO object.
      *
-     * @param product  Product object to be transformed.
+     * @param product Product object to be transformed.
      * @return Transformed ProductModelCacheVO object.
      */
-    private ProductModelCacheVO transformToProductModelCacheVO( Product product) {
-        return null;
+    private ProductModelCacheVO transformToProductModelCacheVO(Product product) {
+        ProductParamVO productParamVO = productService.selectFullProductByProductIdentification(product.getProductIdentification());
+        return BeanPlusUtil.toBeanIgnoreError(productParamVO, ProductModelCacheVO.class);
     }
 
     /**
@@ -101,7 +102,9 @@ public class ProductModelCacheService extends CacheSuperAbstract {
      * @param productModelCacheVO ProductModelCacheVO object to be cached.
      */
     private void cacheProductModel(ProductModelCacheVO productModelCacheVO) {
-
+        String cacheKey = CacheConstants.DEF_PRODUCT_MODEL + productModelCacheVO.getProductIdentification();
+        redisService.delete(cacheKey);
+        redisService.setCacheObject(cacheKey, productModelCacheVO, THIRTY_MINUTES, TimeUnit.MINUTES);
     }
 
 }

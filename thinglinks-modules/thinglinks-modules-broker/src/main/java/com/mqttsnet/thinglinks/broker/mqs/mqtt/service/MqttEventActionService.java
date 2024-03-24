@@ -43,12 +43,14 @@ public class MqttEventActionService {
         map = gson.fromJson(eventMessage, map.getClass());
         String clientId = String.valueOf(map.get("clientId"));
 
+        log.info("Save MQTT event action: clientId={}, actionType={}, describable={}", clientId, actionType, describable);
+
         // save device action
         DeviceAction deviceAction = new DeviceAction()
                 .setDeviceIdentification(clientId)
                 .setActionType(actionType.getAction())
                 .setStatus(ResultEnum.SUCCESS.getMessage())
-                .setMessage(describable);
+                .setMessage(eventMessage);
 
         R deviceActionR = remoteDeviceActionService.add(deviceAction);
         if (ResultEnum.SUCCESS.getCode() != deviceActionR.getCode()) {

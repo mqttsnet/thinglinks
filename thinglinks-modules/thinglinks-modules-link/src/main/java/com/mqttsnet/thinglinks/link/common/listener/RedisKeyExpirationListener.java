@@ -51,9 +51,9 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
             resultLock = redisService.checkLock(expiredKey, uuid, 1000L);
             if (resultLock) {
                 log.info("获取分布式锁成功-key：{}，value：{}", expiredKey, uuid);
-                if (expiredKey.contains(CacheConstants.DEVICE_RECORD_KEY)){
+                if (expiredKey.contains(CacheConstants.DEF_DEVICE)){
                     log.info("设备信息缓存失效{}",expiredKey);
-                    deviceService.cacheInvalidation(expiredKey.replace(CacheConstants.DEVICE_RECORD_KEY, ""));
+                    deviceService.cacheInvalidation(expiredKey.replace(CacheConstants.DEF_DEVICE, ""));
                 }
             }else {
                 log.info("获取分布式锁失败-key：{}，value：{}", expiredKey, uuid);

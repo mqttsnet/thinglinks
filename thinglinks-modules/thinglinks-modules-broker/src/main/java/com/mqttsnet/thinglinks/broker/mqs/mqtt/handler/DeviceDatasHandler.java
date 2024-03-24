@@ -13,6 +13,7 @@ import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductModelCacheVO;
@@ -22,13 +23,12 @@ import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductProperty
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductServiceResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoDeviceDataReportParam;
-import com.mqttsnet.thinglinks.link.common.cache.helper.CacheDataHelper;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.model.TableDTO;
-import com.mqttsnet.thinglinks.tdengine.common.constant.TdsConstants;
-import com.mqttsnet.thinglinks.tdengine.utils.TdsUtils;
+import com.mqttsnet.thinglinks.tdengine.api.constant.TdsConstants;
+import com.mqttsnet.thinglinks.tdengine.api.utils.TdsUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -48,11 +48,11 @@ import java.util.stream.Collectors;
 @Service
 public class DeviceDatasHandler extends AbstractMessageHandler implements TopicHandler {
 
-    public DeviceDatasHandler(CacheDataHelper cacheDataHelper,
+    public DeviceDatasHandler(RedisService redisService,
                               RemoteDeviceOpenAnyService remoteDeviceOpenAnyService,
                               RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi,
                               ProtocolMessageAdapter protocolMessageAdapter) {
-        super(cacheDataHelper, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
+        super(redisService, remoteDeviceOpenAnyService, remoteMqttBrokerOpenApi, protocolMessageAdapter);
     }
 
     @Resource

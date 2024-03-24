@@ -30,6 +30,13 @@ import java.io.Serializable;
 public class ProductCommandRequestParamVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * id
+     */
+    @ApiModelProperty(value = "id")
+    private Long id;
+
+
 
     /**
      * 服务ID

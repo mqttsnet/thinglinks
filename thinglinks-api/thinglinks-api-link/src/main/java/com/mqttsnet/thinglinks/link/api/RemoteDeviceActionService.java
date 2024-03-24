@@ -5,7 +5,8 @@ import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction;
 import com.mqttsnet.thinglinks.link.api.factory.RemoteDeviceActionFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * 设备动作服务
@@ -21,6 +22,6 @@ public interface RemoteDeviceActionService {
      * @param mqttsDeviceAction
      * @return
      */
-    @PostMapping("/device/action/add")
+    @PostMapping("/action")
     public R add(@RequestBody DeviceAction mqttsDeviceAction);
 }

@@ -1,9 +1,8 @@
 package com.mqttsnet.thinglinks.link.service.product;
 
-import java.util.List;
-
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
-import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * @Description: java类作用描述
@@ -84,5 +83,7 @@ public interface ProductPropertiesService {
      */
     int deleteProductPropertiesByIds(Long[] ids);
 
-    List<ProductProperties> selectPropertiesByPropertiesIdList( List<Long> propertiesIdList);
+    List<ProductProperties> selectPropertiesByPropertiesIdList(List<Long> propertiesIdList);
+
+    List<ProductProperties> selectPropertiesByServiceIdList(List<Long> serviceIdList);
 }

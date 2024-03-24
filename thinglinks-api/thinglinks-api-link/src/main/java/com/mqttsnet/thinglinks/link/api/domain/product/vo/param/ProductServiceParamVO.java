@@ -33,10 +33,11 @@ public class ProductServiceParamVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 产品ID
+     * 服务id
      */
-    @ApiModelProperty(value = "产品ID")
-    private Long productId;
+    @ApiModelProperty(value = "服务id")
+    private Long id;
+
     /**
      * 服务编码:支持英文大小写、数字、下划线和中划线
      */
@@ -50,6 +51,19 @@ public class ProductServiceParamVO implements Serializable {
     @ApiModelProperty(value = "服务名称")
     @Size(max = 255, message = "服务名称长度不能超过{max}")
     private String serviceName;
+
+    /**
+     * 产品模版标识
+     */
+    @ApiModelProperty(value = "产品模版标识")
+    private String templateIdentification;
+
+    /**
+     * 产品标识
+     */
+    @ApiModelProperty(value = "产品标识")
+    private String productIdentification;
+
     /**
      * 服务类型
      */

@@ -1,8 +1,8 @@
 package com.mqttsnet.thinglinks.link.common.cache.service;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
 import com.github.pagehelper.PageHelper;
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
-
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -39,9 +37,8 @@ public class DeviceCacheService extends CacheSuperAbstract {
         int totalDataCount = deviceService.findDeviceTotal().intValue();
         int totalPages = (int) Math.ceil((double) totalDataCount / PAGE_SIZE);
         List<Device> deviceList = IntStream.range(0, totalPages).mapToObj(currentPage -> {
-                    PageHelper.startPage(currentPage+1, PAGE_SIZE);
-                    List<Device> pageDevices = deviceService.findDevices();
-                    return pageDevices;
+                    PageHelper.startPage(currentPage + 1, PAGE_SIZE);
+                    return deviceService.findDevices();
                 })
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
@@ -91,9 +88,9 @@ public class DeviceCacheService extends CacheSuperAbstract {
      * @param deviceCacheVO DeviceCacheVO object to be cached.
      */
     private void cacheDeviceBasedOnIdentification(DeviceCacheVO deviceCacheVO) {
-        String deviceIdentKey = deviceCacheVO.getDeviceIdentification();
-        redisService.delete(deviceIdentKey);
-        redisService.setCacheObject(deviceIdentKey, deviceCacheVO, THIRTY_MINUTES, TimeUnit.MINUTES);
+        String cacheKey = CacheConstants.DEF_DEVICE + deviceCacheVO.getDeviceIdentification();
+        redisService.delete(cacheKey);
+        redisService.setCacheObject(cacheKey, deviceCacheVO, THIRTY_MINUTES, TimeUnit.MINUTES);
     }
 
     /**
@@ -102,9 +99,9 @@ public class DeviceCacheService extends CacheSuperAbstract {
      * @param deviceCacheVO DeviceCacheVO object to be cached.
      */
     private void cacheDeviceBasedOnClientId(DeviceCacheVO deviceCacheVO) {
-        String clientId = deviceCacheVO.getClientId();
-        redisService.delete(clientId);
-        redisService.setCacheObject(clientId, deviceCacheVO, THIRTY_MINUTES, TimeUnit.MINUTES);
+        String cacheKey = CacheConstants.DEF_DEVICE + deviceCacheVO.getClientId();
+        redisService.delete(cacheKey);
+        redisService.setCacheObject(cacheKey, deviceCacheVO, THIRTY_MINUTES, TimeUnit.MINUTES);
     }
 
 }

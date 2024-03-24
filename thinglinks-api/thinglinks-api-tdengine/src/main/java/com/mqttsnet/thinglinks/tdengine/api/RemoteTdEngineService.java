@@ -11,9 +11,12 @@ package com.mqttsnet.thinglinks.tdengine.api;
 import cn.hutool.json.JSONObject;
 import com.mqttsnet.thinglinks.common.core.constant.ServiceNameConstants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.tdengine.api.domain.*;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SelectDto;
+import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
+import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
 import com.mqttsnet.thinglinks.tdengine.api.domain.model.SuperTableDTO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.model.TableDTO;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.TagsSelectDTO;
 import com.mqttsnet.thinglinks.tdengine.api.factory.RemoteTdEngineFallbackFactory;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -27,96 +30,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Map;
 
-@FeignClient(contextId = "remoteTdEngineService", value = ServiceNameConstants.THINGLINKS_TDENGINE, fallbackFactory = RemoteTdEngineFallbackFactory.class)
+@FeignClient(contextId = "remoteTdEngineService", value = ServiceNameConstants.THINGLINKS_TDENGINE, fallbackFactory = RemoteTdEngineFallbackFactory.class, path = "/dataOperation")
 public interface RemoteTdEngineService {
-
-    /**
-     * @param databaseName 数据库名称
-     * @return R
-     * @MethodDescription 创建tdEngine数据库
-     * @author thinglinks
-     * @Date 2021/12/31 11:05
-     */
-    @PostMapping("/dataOperation/createDb")
-    R<?> createDataBase(@RequestParam("databaseName") String databaseName);
-
-    /**
-     * @param superTableDto 创建超级表需要的入参的实体类
-     * @return R
-     * @MethodDescription 创建超级表
-     * @author thinglinks
-     * @Date 2021/12/27 11:05
-     */
-    @PostMapping("/dataOperation/createSTb")
-    R<?> createSuperTable(@Validated @RequestBody SuperTableDto superTableDto);
-
-    /**
-     * @param tableDto 创建超级表的子表需要的入参的实体类
-     * @return R
-     * @MethodDescription 创建超级表的子表
-     * @author thinglinks
-     * @Date 2021/12/27 11:06
-     */
-    @PostMapping("/dataOperation/createTb")
-    R<?> createTable(@Validated @RequestBody TableDto tableDto);
-
-    /**
-     * @param tableDto 插入数据需要的入参的实体类
-     * @return R
-     * @MethodDescription 插入数据
-     * @author thinglinks
-     * @Date 2022/1/10 14:44
-     */
-    @PostMapping("/dataOperation/insertData")
-    R<?> insertData(@Validated @RequestBody TableDto tableDto);
-
-    @PostMapping("/dataOperation/addColumnInStb")
-    R<?> addColumnInStb(@RequestBody SuperTableDto superTableDto);
-
-    /**
-     * @param selectDto 查询数据需要的入参的实体类
-     * @return R
-     * @MethodDescription 根据时间戳查询数据
-     * @author thinglinks
-     * @Date 2022/1/10 14:44
-     */
-    @PostMapping("/dataOperation/getDataByTimestamp")
-    R<?> getDataByTimestamp(@Validated @RequestBody SelectDto selectDto);
-
-    /**
-     * @param selectDto
-     * @return
-     * @MethodDescription 查询最新数据
-     */
-    @PostMapping("/dataOperation/getLastData")
-    R<?> getLastData(@Validated @RequestBody SelectDto selectDto);
-
-    /**
-     * 查询最新的数据带标签
-     *
-     * @param tagsSelectDao
-     * @return
-     */
-    @PostMapping("/dataOperation/getLastDataByTags")
-    public R<Map<String, Map<String, Object>>> getLastDataByTags(@Validated @RequestBody TagsSelectDao tagsSelectDao);
-
-    /**
-     * 添加列字段
-     *
-     * @param superTableDto
-     * @return
-     */
-    @PostMapping("/dataOperation/addColumnInStb")
-    R<?> addColumnForSuperTable(@RequestBody SuperTableDto superTableDto);
-
-    /**
-     * 删除列字段
-     *
-     * @param superTableDto
-     * @return
-     */
-    @PostMapping("/dataOperation/dropColumnInStb")
-    R<?> dropColumnForSuperTable(@RequestBody SuperTableDto superTableDto);
 
     /**
      * 创建时序数据库
@@ -124,8 +39,8 @@ public interface RemoteTdEngineService {
      * @param dataBaseName 数据库名称
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/createDatabase")
-    public R createDatabase(@RequestParam String dataBaseName);
+    @PostMapping("/createDatabase")
+    public R createDatabase(@RequestParam(name = "dataBaseName") String dataBaseName);
 
     /**
      * 创建超级表
@@ -133,8 +48,8 @@ public interface RemoteTdEngineService {
      * @param superTableName 超级表名称
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/createSuperTable")
-    public R createSuperTable(@RequestParam String superTableName);
+    @PostMapping("/createSuperTable")
+    public R createSuperTable(@RequestParam(name = "superTableName") String superTableName);
 
     /**
      * 创建超级表及字段
@@ -142,7 +57,7 @@ public interface RemoteTdEngineService {
      * @param superTableDTO 超级表信息
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/createSuperTableAndColumn")
+    @PostMapping("/createSuperTableAndColumn")
     public R createSuperTableAndColumn(@RequestBody SuperTableDTO superTableDTO);
 
     /**
@@ -151,7 +66,7 @@ public interface RemoteTdEngineService {
      * @param object 超级表json信息
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/createSuperTableAndColumnTwo")
+    @PostMapping("/createSuperTableAndColumnTwo")
     public R createSuperTableAndColumnTwo(@RequestBody JSONObject object);
 
     /**
@@ -160,7 +75,7 @@ public interface RemoteTdEngineService {
      * @param tableDTO 子表信息
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/createSubTable")
+    @PostMapping("/createSubTable")
     public R createSubTable(@RequestBody TableDTO tableDTO);
 
     /**
@@ -169,7 +84,7 @@ public interface RemoteTdEngineService {
      * @param object 子表json信息
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/createSubTableTwo")
+    @PostMapping("/createSubTableTwo")
     public R createSubTableTwo(@RequestBody JSONObject object);
 
     /**
@@ -178,8 +93,8 @@ public interface RemoteTdEngineService {
      * @param superTableName
      * @return
      */
-    @PostMapping("/dataOperation/dropSuperTable")
-    public R dropSuperTable(@RequestParam String superTableName);
+    @PostMapping("/dropSuperTable")
+    public R dropSuperTable(@RequestParam(value = "superTableName") String superTableName);
 
     /**
      * 超级表新增字段
@@ -187,7 +102,7 @@ public interface RemoteTdEngineService {
      * @param superTableDTO 数据信息
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/alterSuperTableColumn")
+    @PostMapping("/alterSuperTableColumn")
     public R alterSuperTableColumn(@RequestBody SuperTableDTO superTableDTO);
 
     /**
@@ -196,7 +111,7 @@ public interface RemoteTdEngineService {
      * @param superTableDTO 数据信息
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/dropSuperTableColumn")
+    @PostMapping("/dropSuperTableColumn")
     public R dropSuperTableColumn(@RequestBody SuperTableDTO superTableDTO);
 
     /**
@@ -205,7 +120,7 @@ public interface RemoteTdEngineService {
      * @param superTableDTO 数据信息
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/alterSuperTableTag")
+    @PostMapping("/alterSuperTableTag")
     public R alterSuperTableTag(@RequestBody SuperTableDTO superTableDTO);
 
     /**
@@ -214,7 +129,7 @@ public interface RemoteTdEngineService {
      * @param superTableDTO 数据信息
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/dropSuperTableTag")
+    @PostMapping("/dropSuperTableTag")
     public R dropSuperTableTag(@RequestBody SuperTableDTO superTableDTO);
 
     /**
@@ -225,8 +140,8 @@ public interface RemoteTdEngineService {
      * @param newName
      * @return
      */
-    @PostMapping("/dataOperation/alterSuperTableTagRename")
-    public R alterSuperTableTagRename(@RequestParam String superTableName, @RequestParam String oldName, @RequestParam String newName);
+    @PostMapping("/alterSuperTableTagRename")
+    public R alterSuperTableTagRename(@RequestParam(value = "superTableName") String superTableName, @RequestParam(value = "oldName") String oldName, @RequestParam(value = "newName") String newName);
 
 
     /**
@@ -235,7 +150,7 @@ public interface RemoteTdEngineService {
      * @param tableName
      * @return
      */
-    @GetMapping("/dataOperation/describeSuperOrSubTable")
+    @GetMapping("/describeSuperOrSubTable")
     public R<List<SuperTableDescribeVO>> describeSuperOrSubTable(@RequestParam(value = "tableName") String tableName);
 
     /**
@@ -244,7 +159,7 @@ public interface RemoteTdEngineService {
      * @param tableDTO 数据信息
      * @return 执行结果
      */
-    @PostMapping("/dataOperation/insertTableData")
+    @PostMapping("/insertTableData")
     public R insertTableData(@RequestBody TableDTO tableDTO);
 
 
@@ -258,10 +173,41 @@ public interface RemoteTdEngineService {
      * @return {@link R<List<<Map<String,Object>>>} The query result.
      */
     @ApiOperation(value = "Query Data from a Regular Table Within a Time Range", notes = "Fetches data within the specified time range if both start and end times are provided; otherwise, retrieves the latest record.")
-    @GetMapping("/dataOperation/getDataInRangeOrLastRecord")
+    @GetMapping("/getDataInRangeOrLastRecord")
     public R<List<Map<String, Object>>> getDataInRangeOrLastRecord(
             @ApiParam(value = "Name of the regular table", required = true) @RequestParam(value = "tableName") String tableName,
             @ApiParam(value = "Start time for the query", example = "1634572800000", required = false) @RequestParam(value = "startTime", required = false) Long startTime,
             @ApiParam(value = "End time for the query", example = "1634659200000", required = false) @RequestParam(value = "endTime", required = false) Long endTime);
+
+
+    /**
+     * @param selectDto 查询数据需要的入参的实体类
+     * @return R
+     * @MethodDescription 根据时间戳查询数据
+     * @author thinglinks
+     * @Date 2022/1/10 14:44
+     */
+    @PostMapping("/getDataByTimestamp")
+    R<?> getDataByTimestamp(@Validated @RequestBody SelectDto selectDto);
+
+    /**
+     * @param selectDto
+     * @return
+     * @MethodDescription 查询最新数据
+     */
+    @PostMapping("/getLastData")
+    R<?> getLastData(@Validated @RequestBody SelectDto selectDto);
+
+
+    /**
+     * 查询最新的数据带标签
+     *
+     * @param tagsSelectDao
+     * @return
+     */
+    @PostMapping("/getLastDataByTags")
+    public R<Map<String, Map<String, Object>>> getLastDataByTags(@Validated @RequestBody TagsSelectDTO tagsSelectDao);
+
+
 
 }

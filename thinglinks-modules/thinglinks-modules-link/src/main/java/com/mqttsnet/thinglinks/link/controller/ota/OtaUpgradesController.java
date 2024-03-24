@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.link.controller.ota;
 
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.exception.ArgumentException;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.save.OtaUpgradesSaveVO;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.update.OtaUpgradesUpdateVO;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
+
 @Validated
 @RestController
 @RequestMapping("/otaUpgrades")
@@ -50,28 +52,45 @@ public class OtaUpgradesController extends BaseController {
             @ApiParam(value = "新状态值（1：启用，-1：禁用）", required = true) @RequestParam("status") Integer status) {
         // 记录信息
         log.info("更新OTA升级状态 id:{}, 状态:{}", id, status);
-        // 返回更新状态的成功响应
-        return R.ok(otaUpgradesService.updateOtaUpgradeStatus(id, status));
+        try {
+            // 返回更新状态的成功响应
+            return R.ok(otaUpgradesService.updateOtaUpgradeStatus(id, status));
+        } catch (ArgumentException e) {
+            // 返回更新状态的失败响应
+            return R.fail(e.getMessage());
+        }
+
     }
 
     @ApiOperation(value = "删除OTA升级包", httpMethod = "DELETE", notes = "通过其ID删除一个OTA升级包")
     @DeleteMapping("/deleteOtaUpgrade/{id}")
     public R<Boolean> deleteOtaUpgrade(@ApiParam(value = "OTA升级包ID", required = true) @PathVariable("id") Long id) {
-        // 记录信息
         log.info("删除OTA升级包 id: {}", id);
-        // 返回删除操作的成功响应
-        return R.ok(otaUpgradesService.deleteOtaUpgrade(id));
+        try {
+            // 返回删除操作的成功响应
+            return R.ok(otaUpgradesService.deleteOtaUpgrade(id));
+        } catch (ArgumentException e) {
+            // 返回删除操作的失败响应
+            return R.fail(e.getMessage());
+        }
     }
 
     @ApiOperation(value = "批量删除OTA升级包", httpMethod = "DELETE", notes = "通过它们的ID批量删除OTA升级包")
     @DeleteMapping("/deleteOtaUpgrades")
     public R<Boolean> deleteOtaUpgrades(@ApiParam(value = "OTA升级包ID", required = true) @RequestBody List<Long> ids) {
-        // 记录信息
         log.info("批量删除OTA升级包 ids: {}", ids);
-        // 检查是否所有ID对应的OTA升级包都已被删除
-        boolean allDeleted = ids.stream().distinct().allMatch(id -> otaUpgradesService.deleteOtaUpgrade(id));
-        // 返回批量删除操作的成功响应
-        return R.ok(allDeleted);
+        try {
+            boolean allDeleted = ids.stream().distinct().allMatch(id -> {
+                try {
+                    return otaUpgradesService.deleteOtaUpgrade(id);
+                } catch (ArgumentException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return R.ok(allDeleted);
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
     }
 
 }

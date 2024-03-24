@@ -67,8 +67,6 @@ public class DeviceActionController extends BaseController
     /**
      * 新增设备动作数据
      */
-    @PreAuthorize(hasPermi = "link:action:add")
-    @Log(title = "设备动作数据", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody DeviceAction deviceAction)
     {
