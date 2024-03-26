@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -46,11 +47,11 @@ public enum ProductTypeEnum {
      */
     public static final List<String> TYPE_COLLECTION = Arrays.asList(COMMON.value, GATEWAY.value, UNKNOWN.value);
 
-    public static ProductTypeEnum valueOf(Integer value) {
-        return Arrays.stream(values())
-                .filter(type -> type.getValue().equals(Optional.ofNullable(value).orElse(-1))) // 使用一个不存在的默认值，如-1
+    public static Optional<ProductTypeEnum> fromValue(String value) {
+        return Optional.of(Stream.of(ProductTypeEnum.values())
+                .filter(e -> e.getValue().equals(value))
                 .findFirst()
-                .orElse(UNKNOWN); // 或者您可以选择返回一个默认的枚举值，比如UNKNOWN
+                .orElse(UNKNOWN));
     }
 
     public String getValue() {

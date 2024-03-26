@@ -1794,4 +1794,19 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         long thirtySec = 1000 * 30;
         return ts + (thirtySec);
     }
+
+    /**
+     * Date转换为LocalDateTime
+     *
+     * @param date 日期
+     */
+    public static LocalDateTime date2LocalDateTime(Date date) {
+        if (date == null) {
+            return LocalDateTime.now();
+        }
+        Instant instant = date.toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+        return instant.atZone(zoneId).toLocalDateTime();
+    }
+
 }

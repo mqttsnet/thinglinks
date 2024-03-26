@@ -6,12 +6,10 @@ import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.api.domain.vo.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.utils.SnowflakeIdUtil;
-import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductModelCacheVO;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,8 +48,7 @@ public abstract class AbstractMessageHandler {
             log.warn("Device identification is null");
             return null;
         }
-        Device deviceCacheObject = redisService.getCacheObject(CacheConstants.DEF_DEVICE + deviceIdentification);
-        return BeanPlusUtil.toBeanIgnoreError(deviceCacheObject, DeviceCacheVO.class);
+        return redisService.getCacheObject(CacheConstants.DEF_DEVICE + deviceIdentification);
     }
 
     protected ProductModelCacheVO getProductModelCacheVO(String productIdentification) {
@@ -59,46 +56,28 @@ public abstract class AbstractMessageHandler {
             log.warn("Product identification is null");
             return null;
         }
-
-        ProductModelCacheVO objectCacheResult = redisService.getCacheObject(CacheConstants.DEF_PRODUCT_MODEL + productIdentification);
-        return BeanPlusUtil.toBeanIgnoreError(objectCacheResult, ProductModelCacheVO.class);
+        return redisService.getCacheObject(CacheConstants.DEF_PRODUCT_MODEL + productIdentification);
     }
 
+    @SuppressWarnings("unchecked")
     protected List<SuperTableDescribeVO> getProductModelSuperTableCacheVO(String productIdentification, String serviceCode, String deviceIdentification) {
-        // 构造缓存键
         String cacheKey = CacheConstants.DEF_PRODUCT_MODEL_SUPER_TABLE + productIdentification + ":" + serviceCode + ":" + deviceIdentification;
 
-        // 尝试从缓存获取数据
-        List<Object> cacheList;
         try {
-            cacheList = redisService.getCacheList(cacheKey);
+            // 直接获取缓存的对象
+            Object cachedObject = redisService.getCacheObject(cacheKey);
+            if (cachedObject == null) {
+                log.warn("The product model super table is not in the cache for key: {}", cacheKey);
+                return Collections.emptyList();
+            }
+
+            // 尝试将对象转换为预期的列表类型
+            return (List<SuperTableDescribeVO>) cachedObject;
+        } catch (ClassCastException e) {
+            log.error("Unexpected type in cached object for key: {}", cacheKey, e);
+            return Collections.emptyList();
         } catch (Exception e) {
             log.error("Error fetching from cache for key: {}", cacheKey, e);
-            return Collections.emptyList();
-        }
-
-        // 检查缓存结果是否为空
-        if (cacheList == null || cacheList.isEmpty()) {
-            log.warn("The product model super table is not in the cache for key: {}", cacheKey);
-            return Collections.emptyList();
-        }
-
-        // 尝试将缓存结果转换为预期类型的列表
-        try {
-            // 这里假设所有缓存的对象都已经是SuperTableDescribeVO类型的实例
-            // 为了安全起见，我们进行一次类型检查
-            @SuppressWarnings("unchecked")
-            List<SuperTableDescribeVO> result = (List<SuperTableDescribeVO>) cacheList.stream()
-                    .filter(SuperTableDescribeVO.class::isInstance)
-                    .map(SuperTableDescribeVO.class::cast)
-                    .collect(Collectors.toList());
-
-            if (result.isEmpty()) {
-                log.warn("The product model super table cache list is empty for key: {}", cacheKey);
-            }
-            return result;
-        } catch (ClassCastException e) {
-            log.error("Unexpected type in cached list for key: {}", cacheKey, e);
             return Collections.emptyList();
         }
     }
