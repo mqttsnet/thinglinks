@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +125,14 @@ public class DeviceShadowServiceImpl implements DeviceShadowService {
 
     private ProductPropertyResultVO buildPropertyResultVO(ProductPropertyResultVO propertyResultVO, Map<String, Object> data) {
         Optional.ofNullable(data.get(TdsConstants.TS))
-                .map(ts -> DateUtils.parseDate(ts.toString()))
+                .map(ts -> {
+                    try {
+                        return DateUtils.date2LocalDateTime(DateUtils.parseDatetime(ts.toString()));
+                    } catch (ParseException e) {
+                        log.error("时间转换异常: {}", e.getMessage());
+                        return null;
+                    }
+                })
                 .ifPresent(propertyResultVO::setCreateTime);
         propertyResultVO.setPropertyValue(data.get(propertyResultVO.getPropertyCode()));
         return propertyResultVO;

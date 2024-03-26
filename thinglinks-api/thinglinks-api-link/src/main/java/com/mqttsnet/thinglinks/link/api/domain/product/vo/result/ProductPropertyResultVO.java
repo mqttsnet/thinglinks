@@ -9,6 +9,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -125,8 +126,8 @@ public class ProductPropertyResultVO implements Serializable {
     private String remark;
 
     /** 创建时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
+    @ApiModelProperty(value = "创建时间")
+    private LocalDateTime createTime;
 
 
 }
