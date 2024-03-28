@@ -10,6 +10,7 @@ import com.mqttsnet.thinglinks.common.core.enums.DeviceTopicEnum;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceType;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
+import com.mqttsnet.thinglinks.common.core.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.tdengine.TdUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
@@ -220,10 +221,6 @@ public class DeviceServiceImpl implements DeviceService {
         SysUser sysUser = loginUser.getSysUser();
         Device device = new Device();
         BeanUtils.copyProperties(deviceParams, device);
-        Device oneByClientIdAndDeviceIdentification = deviceMapper.findOneByClientIdOrDeviceIdentification(device.getClientId(), device.getDeviceIdentification());
-        if (StringUtils.isNotNull(oneByClientIdAndDeviceIdentification)) {
-            throw new Exception("设备编号或者设备标识已存在");
-        }
         device.setConnectStatus(DeviceConnectStatusEnum.INIT.getValue());
         device.setCreateBy(sysUser.getUserName());
         final int insertDeviceCount = deviceMapper.insertOrUpdateSelective(device);
@@ -231,6 +228,7 @@ public class DeviceServiceImpl implements DeviceService {
             //设备位置信息存储
             DeviceLocation deviceLocation = new DeviceLocation();
             BeanUtils.copyProperties(deviceParams.getDeviceLocation(), deviceLocation);
+            deviceLocation.setDeviceIdentification(device.getDeviceIdentification());
             deviceLocationService.insertOrUpdateSelective(deviceLocation);
             //基础TOPIC集合
             Map<String, String> topicMap = new HashMap<>();
@@ -445,7 +443,7 @@ public class DeviceServiceImpl implements DeviceService {
         final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, username, password, deviceStatus, protocolType);
         if (Optional.ofNullable(device).isPresent()) {
             //缓存设备信息
-            redisService.setCacheObject(CacheConstants.DEF_DEVICE + device.getDeviceIdentification(), device, 60L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(CacheConstants.DEF_DEVICE + device.getDeviceIdentification(), device, 300L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             //更改设备在线状态为在线
             this.updateConnectStatusByClientId(DeviceConnectStatusEnum.ONLINE.getValue(), clientIdentifier);
             return device;
@@ -511,7 +509,7 @@ public class DeviceServiceImpl implements DeviceService {
                 return;
             }
             productServicesLis.forEach(productServices -> {
-                String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceName());
+                String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceCode());
                 String shadowTableName = TdUtils.getSubTableName(superTableName, device.getDeviceIdentification());
                 SelectDto selectDto = new SelectDto();
                 selectDto.setDataBaseName(dataBaseName);

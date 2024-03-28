@@ -35,45 +35,85 @@ public class ProductParamVO implements Serializable {
     private Long id;
 
 
-
+    /**
+     * 应用ID
+     */
     @ApiModelProperty(value = "应用ID")
     private String appId;
 
+    /**
+     * 产品模版标识
+     */
+    @ApiModelProperty(value = "产品模版标识")
+    private String templateIdentification;
+
+    /**
+     * 产品名称:自定义，支持中文、英文大小写、数字、下划线和中划线
+     */
+    @ApiModelProperty(value = "产品名称:自定义，支持中文、英文大小写、数字、下划线和中划线")
+    private String productName;
+
+    /**
+     * 产品标识
+     */
     @ApiModelProperty(value = "产品标识")
     private String productIdentification;
 
-    @ApiModelProperty(value = "模板ID")
-    private Long templateId;
+    /**
+     * 支持以下两种产品类型•COMMON：普通产品，需直连设备。
+     * •GATEWAY：网关产品，可挂载子设备。
+     */
+    @ApiModelProperty(value = "支持以下两种产品类型•COMMON：普通产品，需直连设备。,•GATEWAY：网关产品，可挂载子设备。,")
+    private String productType;
 
-    @ApiModelProperty(value = "产品名称")
-    private String productName;
-
-    @ApiModelProperty(value = "产品类型")
-    private Integer productType;
-
-    @ApiModelProperty(value = "厂商ID")
+    /**
+     * 厂商ID:支持英文大小写，数字，下划线和中划线
+     */
+    @ApiModelProperty(value = "厂商ID:支持英文大小写，数字，下划线和中划线")
     private String manufacturerId;
 
-    @ApiModelProperty(value = "厂商名称")
+    /**
+     * 厂商名称 :支持中文、英文大小写、数字、下划线和中划线
+     */
+    @ApiModelProperty(value = "厂商名称 :支持中文、英文大小写、数字、下划线和中划线")
     private String manufacturerName;
 
-    @ApiModelProperty(value = "产品型号")
+    /**
+     * 产品型号，建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线
+     */
+    @ApiModelProperty(value = "产品型号，建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线,")
     private String model;
 
-    @ApiModelProperty(value = "数据格式")
+    /**
+     * 数据格式，默认为JSON无需修改。
+     */
+    @ApiModelProperty(value = "数据格式，默认为JSON无需修改。")
     private String dataFormat;
 
-    @ApiModelProperty(value = "设备类型")
+    /**
+     * 设备类型:支持英文大小写、数字、下划线和中划线
+     */
+    @ApiModelProperty(value = "设备类型:支持英文大小写、数字、下划线和中划线,")
     private String deviceType;
 
-    @ApiModelProperty(value = "协议类型")
+    /**
+     * 设备接入平台的协议类型，默认为MQTT无需修改。
+     */
+    @ApiModelProperty(value = "设备接入平台的协议类型，默认为MQTT无需修改。, ")
     private String protocolType;
 
-    @ApiModelProperty(value = "产品版本")
-    private String productVersion;
+    /**
+     * 状态(字典值：0启用  1停用)
+     */
+    @ApiModelProperty(value = "状态(字典值：0启用  1停用)")
+    private String status;
 
+    /**
+     * 产品描述
+     */
     @ApiModelProperty(value = "产品描述")
     private String remark;
+
 
     @ApiModelProperty(value = "产品模型服务")
     private List<ProductServiceParamVO> services;

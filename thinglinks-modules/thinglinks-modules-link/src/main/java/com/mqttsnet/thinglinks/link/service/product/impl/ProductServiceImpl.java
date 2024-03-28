@@ -13,6 +13,7 @@ import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
+import com.mqttsnet.thinglinks.common.core.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
@@ -438,7 +439,7 @@ public class ProductServiceImpl implements ProductService {
         if (StringUtils.isNotNull(oneByProductName)) {
             return -1;
         }
-        product.setProductIdentification(UUID.getUUID());
+        product.setProductIdentification(SnowflakeIdUtil.nextId());
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         product.setCreateBy(sysUser.getUserName());
@@ -655,18 +656,15 @@ public class ProductServiceImpl implements ProductService {
 
             String productIdentification = "";
             String productName = "";
-            String productVersion = "";
 
             Optional<ProductParamVO> productOpt = Optional.ofNullable(this.selectFullProductByProductIdentification(product.getProductIdentification()));
             if (productOpt.isPresent()) {
                 ProductParamVO productParamVO = productOpt.get();
-                ProductTypeEnum productTypeEnum = ProductTypeEnum.valueOf(productParamVO.getProductType());
+                ProductTypeEnum productTypeEnum = ProductTypeEnum.fromValue(productParamVO.getProductType()).get();
                 record.setAppId(productParamVO.getAppId());
                 record.setEmpowermentIdentification(productParamVO.getProductIdentification());
-                record.setVersion(productParamVO.getProductVersion());
                 productIdentification = productParamVO.getProductIdentification();
                 productName = productParamVO.getProductName();
-                productVersion = productParamVO.getProductVersion();
 
                 productParamVO.getServices().forEach(service -> {
                     String superTableName = TdsUtils.superTableName(String.valueOf(productTypeEnum.getDesc()), productParamVO.getProductIdentification(), service.getServiceCode());
@@ -725,8 +723,8 @@ public class ProductServiceImpl implements ProductService {
             record.setStatus(EmpowermentStatusEnum.COMPLETED.getValue());
 
             Duration duration = Duration.between(startTime, endTime);
-            record.setOutcome(String.format("Processed product with identification: %s, name: %s, version: %s. Total time taken: %s seconds.",
-                    productIdentification, productName, productVersion, duration.getSeconds()));
+            record.setOutcome(String.format("Processed product with identification: %s, name: %s. Total time taken: %s seconds.",
+                    productIdentification, productName, duration.getSeconds()));
 
 
             log.info("Empowerment record: {}", record);

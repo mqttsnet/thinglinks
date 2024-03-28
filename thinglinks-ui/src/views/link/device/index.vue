@@ -2,13 +2,13 @@
   <div class="app-container">
     <div class="equipment_status">
       <div class="status_num">
-        <img src="@/assets/logo/deviceManagement.gif" alt="" />
+        <img src="@/assets/logo/deviceManagement.gif" alt=""/>
         <p>
           ：
           <span style="color: #71e2a3">{{ onlineCount }}</span
           >/ <span style="color: #ff9292">{{ offlineCount }}</span
-          >/ <span style="color: #eeb422">{{ initCount }}</span
-          >/
+        >/ <span style="color: #eeb422">{{ initCount }}</span
+        >/
           <span>{{ total }}</span>
         </p>
       </div>
@@ -40,10 +40,10 @@
           <span>二次开发：</span>
           <a href="#" style="color: #357df5; margin-right: 20px">下载Demo</a>
           <a
-            href="https://bbs.csdn.net/forums/thingiots"
+            href="https://mqttsnet.yuque.com/gt6zkc/thinglinks/"
             style="color: #357df5"
             target="_blank"
-            >开发文档</a
+          >开发文档</a
           >
         </p>
       </div>
@@ -207,16 +207,19 @@
           size="mini"
           type="primary"
           @click="handleQuery"
-          >搜索</el-button
+        >搜索
+        </el-button
         >
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
+        >重置
+        </el-button
         >
         <el-button
           :icon="icon"
           size="mini"
           @click="advancedSearch_toggle($event)"
-          >高级搜索</el-button
+        >高级搜索
+        </el-button
         >
       </el-form-item>
     </el-form>
@@ -230,7 +233,7 @@
           size="mini"
           type="primary"
           @click="handleAdd"
-          >新增
+        >新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -242,7 +245,7 @@
           size="mini"
           type="danger"
           @click="handleDelete"
-          >删除
+        >删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -254,7 +257,7 @@
           size="mini"
           type="danger"
           @click="handleDisconnect"
-          >断开连接
+        >断开连接
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -265,7 +268,7 @@
           size="mini"
           type="warning"
           @click="handleExport"
-          >导出
+        >导出
         </el-button>
       </el-col>
       <right-toolbar
@@ -279,8 +282,8 @@
       :data="deviceList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column align="center" type="selection" width="50" />
-      <el-table-column align="center" label="id" prop="id" />
+      <el-table-column align="center" type="selection" width="50"/>
+      <el-table-column align="center" label="id" prop="id"/>
       <el-table-column
         align="center"
         label="设备标识"
@@ -317,11 +320,11 @@
               @click="copy(deviceList[scope.$index].password)"
             ></i>
             <span v-show="currentIndex !== scope.$index" ref="start"
-              >********</span
+            >********</span
             >
             <span v-show="currentIndex === scope.$index" ref="pWord">{{
-              deviceList[scope.$index].password
-            }}</span>
+                deviceList[scope.$index].password
+              }}</span>
             <i
               :ind="scope.$index"
               class="el-icon-view"
@@ -432,7 +435,7 @@
       :title="title"
       :visible.sync="open"
       append-to-body
-      width="40%"
+      width="48%"
       @opened="opened"
       @closed="closed"
     >
@@ -449,7 +452,7 @@
           </el-col>
           <el-col :span="11">
             <el-form-item label="用户名" prop="userName">
-              <el-input v-model="form.userName" placeholder="请输入用户名" />
+              <el-input v-model="form.userName" placeholder="请输入用户名"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -489,13 +492,20 @@
             </el-form-item>
           </el-col>
           <el-col :span="11">
-            <el-form-item label="设备标识" prop="deviceIdentification">
-              <el-input
-                v-model="form.deviceIdentification"
+            <el-form-item label="所属产品" prop="productIdentification">
+              <el-select
+                v-model="form.productIdentification"
                 :disabled="set ? true : false"
-                placeholder="请输入设备标识"
-                @keyup.native="deviceIdentification"
-              />
+                placeholder="请选择所属产品"
+              >
+                <el-option
+                  v-for="item in productOptions"
+                  :key="item.productIdentification"
+                  :disabled="item.status === 0"
+                  :label="item.productName"
+                  :value="item.productIdentification"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -543,11 +553,19 @@
         </el-row>
         <el-row>
           <el-col :span="11">
-            <el-form-item label="设备描述" prop="deviceDescription">
-              <el-input
-                v-model="form.deviceDescription"
-                placeholder="请输入设备描述"
-              />
+            <el-form-item label="设备类型" prop="deviceType">
+              <el-select
+                v-model="form.deviceType"
+                placeholder="请选择设备类型"
+                :disabled="set ? true : false"
+              >
+                <el-option
+                  v-for="dict in dict.type.link_device_device_type"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -569,6 +587,80 @@
 
         <el-row>
           <el-col :span="11">
+            <el-form-item label="加密方式" prop="encryptMethod">
+              <el-select
+                v-model="form.encryptMethod"
+                placeholder="请选择加密方式"
+                :disabled="set ? true : false"
+              >
+                <el-option
+                  v-for="dict in dict.type.link_device_encrypt_method"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="加密密钥" prop="encryptKey">
+              <el-input
+                v-model="form.encryptKey"
+                placeholder="请输入加密密钥"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="加密向量" prop="encryptVector">
+              <el-input
+                v-model="form.encryptVector"
+                placeholder="请输入加密向量"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="签名密钥" prop="signKey">
+              <el-input
+                v-model="form.signKey"
+                placeholder="请输入签名密钥"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="软件版本" prop="swVersion">
+              <el-input
+                v-model="form.swVersion"
+                placeholder="请输入软件版本"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="固件版本" prop="fwVersion">
+              <el-input
+                v-model="form.fwVersion"
+                placeholder="请输入固件版本"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="11">
+            <el-form-item label="sdk版本" prop="deviceSdkVersion">
+              <el-input
+                v-model="form.deviceSdkVersion"
+                placeholder="请输入sdk版本"
+
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
             <el-form-item label="协议类型" prop="protocolType">
               <el-select
                 v-model="form.protocolType"
@@ -584,47 +676,22 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="11">
-            <el-form-item label="设备类型" prop="deviceType">
-              <el-select
-                v-model="form.deviceType"
-                placeholder="请选择设备类型"
-                :disabled="set ? true : false"
-              >
-                <el-option
-                  v-for="dict in dict.type.link_device_device_type"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
         </el-row>
 
         <el-row>
-          <el-col :span="11">
-            <el-form-item label="所属产品" prop="productIdentification">
-              <el-select
-                v-model="form.productIdentification"
-                :disabled="set ? true : false"
-                placeholder="请选择所属产品"
-              >
-                <el-option
-                  v-for="item in productOptions"
-                  :key="item.productIdentification"
-                  :disabled="item.status === 0"
-                  :label="item.productName"
-                  :value="item.productIdentification"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
           <el-col :span="11">
             <el-form-item label="设备标签" prop="deviceTags">
               <el-input
                 v-model="form.deviceTags"
                 placeholder="请输入设备标签"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="11">
+            <el-form-item label="设备描述" prop="deviceDescription">
+              <el-input
+                v-model="form.deviceDescription"
+                placeholder="请输入设备描述"
               />
             </el-form-item>
           </el-col>
@@ -645,11 +712,11 @@
       <div slot="footer" class="dialog-footer">
         <el-button
           :disabled="
-            check.clientId && check.deviceIdentification ? false : true
+            check.clientId ? false : true
           "
           type="primary"
           @click="submitForm"
-          >确 定
+        >确 定
         </el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
@@ -659,21 +726,20 @@
 
 <script>
 import {
+  addDevice,
+  delDevice,
+  disconnectDevice,
+  getDevice,
   listDevice,
   listStatusCount,
-  getDevice,
-  delDevice,
-  addDevice,
   updateDevice,
-  disconnectDevice,
   validationDeviceIdentification_clientId,
   validationDeviceIdentification_deviceIdentification,
 } from "@/api/link/device/device";
-import { listProduct } from "@/api/link/product/product";
-import { addDeviceLocation } from "@/api/link/deviceLocation";
 import mapView from "./mapView";
+
 export default {
-  components: { mapView },
+  components: {mapView},
   props: ["appId", "productIdentification"],
   name: "Device",
   dicts: [
@@ -685,6 +751,7 @@ export default {
     "link_device_connector",
     "link_device_is_will",
     "link_application_type",
+    "link_device_encrypt_method",
   ],
   data() {
     return {
@@ -739,32 +806,32 @@ export default {
       // 表单校验
       rules: {
         clientId: [
-          { required: true, message: "客户端标识不能为空", trigger: "blur" },
+          {required: true, message: "客户端标识不能为空", trigger: "blur"},
         ],
         userName: [
-          { required: true, message: "用户名不能为空", trigger: "blur" },
+          {required: true, message: "用户名不能为空", trigger: "blur"},
         ],
         password: [
-          { required: true, message: "密码不能为空", trigger: "blur" },
+          {required: true, message: "密码不能为空", trigger: "blur"},
         ],
-        appId: [{ required: true, message: "应用ID不能为空", trigger: "blur" }],
+        appId: [{required: true, message: "应用ID不能为空", trigger: "blur"}],
         authMode: [
-          { required: true, message: "认证方式不能为空", trigger: "change" },
+          {required: true, message: "认证方式不能为空", trigger: "change"},
         ],
         deviceIdentification: [
-          { required: true, message: "设备标识不能为空", trigger: "blur" },
+          {required: true, message: "设备标识不能为空", trigger: "blur"},
         ],
         deviceName: [
-          { required: true, message: "设备名称不能为空", trigger: "blur" },
+          {required: true, message: "设备名称不能为空", trigger: "blur"},
         ],
         connector: [
-          { required: true, message: "连接实例不能为空", trigger: "change" },
+          {required: true, message: "连接实例不能为空", trigger: "change"},
         ],
         deviceStatus: [
-          { required: true, message: "设备状态不能为空", trigger: "change" },
+          {required: true, message: "设备状态不能为空", trigger: "change"},
         ],
         productIdentification: [
-          { required: true, message: "产品标识不能为空", trigger: "blur" },
+          {required: true, message: "产品标识不能为空", trigger: "blur"},
         ],
         protocolType: [
           {
@@ -773,8 +840,24 @@ export default {
             trigger: "change",
           },
         ],
+        encryptMethod: [
+          {
+            required: true,
+            message: "加密方式不能为空",
+            trigger: "change",
+          },
+        ],
+        swVersion: [
+          {required: true, message: "软件版本不能为空", trigger: "blur"},
+        ],
+        fwVersion: [
+          {required: true, message: "固件版本不能为空", trigger: "blur"},
+        ],
+        deviceSdkVersion: [
+          {required: true, message: "sdk版本不能为空", trigger: "blur"},
+        ],
         deviceType: [
-          { required: true, message: "设备类型不能为空", trigger: "change" },
+          {required: true, message: "设备类型不能为空", trigger: "change"},
         ],
       },
       onlineCount: 0, //在线设备
@@ -940,6 +1023,13 @@ export default {
         connector: null,
         deviceDescription: null,
         deviceStatus: null,
+        encryptKey: null,
+        encryptMethod: null,
+        encryptVector: null,
+        signKey: null,
+        swVersion: null,
+        fwVersion: null,
+        deviceSdkVersion: "v1",
         connectStatus: null,
         isWill: null,
         deviceTags: null,
@@ -1011,7 +1101,7 @@ export default {
         } else {
           this.lonLat = [];
         }
-        if(response.products !== null && response.products.length > 0){
+        if (response.products !== null && response.products.length > 0) {
           this.productOptions = response.products;
         }
         this.open = true;
@@ -1060,7 +1150,8 @@ export default {
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     /** 断开连接按钮操作 */
     handleDisconnect(row) {
@@ -1074,7 +1165,8 @@ export default {
           this.getList();
           this.$modal.msgSuccess("操作成功");
         })
-        .catch(() => {});
+        .catch(() => {
+        });
     },
     /** 导出按钮操作 */
     handleExport() {

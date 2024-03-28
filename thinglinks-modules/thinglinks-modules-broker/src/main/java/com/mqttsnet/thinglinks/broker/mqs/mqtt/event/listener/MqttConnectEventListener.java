@@ -3,10 +3,13 @@ package com.mqttsnet.thinglinks.broker.mqs.mqtt.event.listener;
 import com.google.gson.Gson;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.event.MqttConnectEvent;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.service.MqttEventActionService;
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
+import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceService;
+import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.enumeration.DeviceActionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +41,9 @@ public class MqttConnectEventListener {
     @Autowired
     private MqttEventActionService mqttEventActionService;
 
+    @Autowired
+    private RedisService redisService;
+
 
     /**
      * 发布MQTT CONNECT事件
@@ -53,7 +59,12 @@ public class MqttConnectEventListener {
         map = gson.fromJson(event.getMessage(), map.getClass());
         String clientId = String.valueOf(map.get("clientId"));
 
-        // TODO 从缓存中获取设备信息 校验设备是否存在
+        DeviceCacheVO deviceCacheVO = redisService.getCacheObject(CacheConstants.DEF_DEVICE + clientId);
+        if (deviceCacheVO == null) {
+            log.warn("processingDeviceDataTopic Device not found clientId:{}", clientId);
+            return;
+        }
+
 
         // 构造设备对象并设置客户端ID和连接状态
         Device deviceToUpdate = new Device()
@@ -76,6 +87,6 @@ public class MqttConnectEventListener {
                 .map(desc -> "The device connection status is updated to " + desc)
                 .orElse("The device connection status is updated to ONLINE");
 
-        mqttEventActionService.saveMqttEventAction(event.getMessage(), DeviceActionTypeEnum.CONNECT, describable);
+        mqttEventActionService.saveMqttEventAction(deviceCacheVO.getDeviceIdentification(), event.getMessage(), DeviceActionTypeEnum.CONNECT, describable);
     }
 }

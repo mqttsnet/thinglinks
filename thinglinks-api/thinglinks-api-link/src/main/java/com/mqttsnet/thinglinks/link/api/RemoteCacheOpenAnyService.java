@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author thinglinks
  */
-@FeignClient(contextId = "remoteCacheOpenService", value = ServiceNameConstants.THINGLINKS_LINK, fallbackFactory = RemoteCacheOpenAnyFallbackFactory.class, path = "/dataOperation")
+@FeignClient(contextId = "remoteCacheOpenService", value = ServiceNameConstants.THINGLINKS_LINK, fallbackFactory = RemoteCacheOpenAnyFallbackFactory.class, path = "/cache/open/any")
 public interface RemoteCacheOpenAnyService {
 
     /**

@@ -24,10 +24,10 @@ import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductResultVO
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductServiceResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoDeviceDataReportParam;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
+import com.mqttsnet.thinglinks.tdengine.api.constant.TdsConstants;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.model.TableDTO;
-import com.mqttsnet.thinglinks.tdengine.api.constant.TdsConstants;
 import com.mqttsnet.thinglinks.tdengine.api.utils.TdsUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

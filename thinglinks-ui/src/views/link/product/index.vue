@@ -33,7 +33,7 @@
       <el-col :span="1.5">
         <el-button v-hasPermi="['link:product:edit']" :disabled="single" icon="el-icon-document-copy" plain size="mini"
                    type="success" @click="handleUpdate">
-          复制
+          修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -174,13 +174,15 @@
             </el-form-item>
           </el-col>
           <el-col :span="11">
-            <el-form-item label="产品标识" prop="productIdentification">
+            <el-form-item label="协议类型" prop="protocolType">
               <el-col :span="22">
-                <el-input v-model="form.productIdentification" placeholder="请输入产品标识"/>
+                <el-select v-model="form.protocolType" placeholder="请选择协议类型">
+                  <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
+                             :value="dict.value"></el-option>
+                </el-select>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="产品标识需全局唯一，默认为：UUID" effect="light"
-                            placement="right-start">
+                <el-tooltip class="item" content="默认为MQTT无需修改。" effect="light" placement="right-start">
                   <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
@@ -276,21 +278,6 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="11">
-            <el-form-item label="协议类型" prop="protocolType">
-              <el-col :span="22">
-                <el-select v-model="form.protocolType" placeholder="请选择协议类型">
-                  <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
-                             :value="dict.value"></el-option>
-                </el-select>
-              </el-col>
-              <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="默认为MQTT无需修改。" effect="light" placement="right-start">
-                  <i class="el-icon-question"/>
-                </el-tooltip>
-              </el-col>
-            </el-form-item>
-          </el-col>
           <el-col :span="11">
             <el-form-item label="状态" prop="status">
               <el-col :span="22">
@@ -1350,7 +1337,7 @@ export default {
       this.open = true;
       this.title = "添加产品";
     },
-    /** 修改按钮操作 */
+    /** 复制按钮操作 */
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids;

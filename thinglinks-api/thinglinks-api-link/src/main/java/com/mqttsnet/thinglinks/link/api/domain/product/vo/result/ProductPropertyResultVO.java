@@ -2,12 +2,15 @@ package com.mqttsnet.thinglinks.link.api.domain.product.vo.result;
 
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.map.MapUtil;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -121,11 +124,10 @@ public class ProductPropertyResultVO implements Serializable {
      */
     @ApiModelProperty(value = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @ApiModelProperty(value = "创建人组织")
-    private Long createdOrgId;
+
+    /** 创建时间 */
+    @ApiModelProperty(value = "创建时间")
+    private LocalDateTime createTime;
 
 
 }

@@ -26,7 +26,7 @@ public class ThingLinksGatewayApplication {
     public static void main(String[] args) throws Exception {
         ConfigurableApplicationContext application = SpringApplication.run(ThingLinksGatewayApplication.class, args);
         Environment env = application.getEnvironment();
-        log.info("\n----------------------------------------------------------\n\t" + "应用 '{}' 启动成功! 访问连接:\n\t" + "Swagger文档: \t\thttp://{}:{}/swagger-ui.html\n\t"
+        log.info("\n----------------------------------------------------------\n\t" + "应用 '{}' 启动成功! 访问连接:\n\t" + "Swagger文档(默认请使用网关访问): \t\thttp://{}:{}/swagger-ui.html\n\t"
                         + "数据库监控: \t\thttp://{}:{}/druid\n" + "----------------------------------------------------------", env.getProperty("spring.application.name"),
                 InetAddress.getLocalHost().getHostAddress(), env.getProperty("server.port", "8080"), "127.0.0.1", env.getProperty("server.port", "8080"));
     }
