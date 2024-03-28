@@ -1707,7 +1707,7 @@
         from device
         <where>
             <if test="clientId != null">
-                and client_id=#{clientId}
+                and client_id= #{clientId,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

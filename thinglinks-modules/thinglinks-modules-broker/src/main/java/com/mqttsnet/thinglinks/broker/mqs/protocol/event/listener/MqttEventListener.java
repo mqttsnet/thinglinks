@@ -58,11 +58,10 @@ public class MqttEventListener {
             JSONObject thinglinksMessage = JSON.parseObject(String.valueOf(event.getMessage()));
             String eventStr = Optional.ofNullable(thinglinksMessage.getString("event"))
                     .orElse("");
-            Long tenantId = Optional.ofNullable(thinglinksMessage.getString("tenantId"))
+            Optional<String> tenantId = Optional.ofNullable(thinglinksMessage.getString("tenantId"))
                     .filter(StringUtils::isNotBlank)
-                    .map(Long::valueOf)
-                    .orElse(null);
-            if (StringUtils.isEmpty(eventStr) || tenantId == null) {
+                    .map(String::valueOf);
+            if (StringUtils.isEmpty(eventStr) || !tenantId.isPresent()) {
                 log.warn("event or tenantId cannot be empty {}", eventStr);
                 return;
             }

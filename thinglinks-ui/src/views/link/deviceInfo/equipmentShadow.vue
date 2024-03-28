@@ -21,7 +21,7 @@
                     <span>{{ deviceInfo.appId }}</span>
                 </p>
                 <p>
-                    <span>设备唯一标识</span>
+                    <span>设备标识</span>
                     <span>
                         {{ deviceInfo.nodeId }}
                     </span>
@@ -54,7 +54,7 @@
                                 :value="deviceInfo.shadowEnable" />
                         </p>
                         <p>
-                            <span>边设备唯一标识</span>
+                            <span>边设备标识</span>
                             <span>
                                 {{ deviceInfo.edgeDevicesIdentification }}
                             </span>

@@ -8,18 +8,23 @@
         </p>
         <p>
           <span>设备状态</span>
-          <dict-tag :options="dict.type.link_device_connect_status" :value="deviceInfo.connectStatus" />
+          <dict-tag :options="dict.type.link_device_connect_status" :value="deviceInfo.connectStatus"/>
         </p>
       </div>
       <div class="device_attribute">
         <p>
-          <span>产品名称</span>
-          <span>{{ deviceInfo.password }}</span>
+          <span>设备标识</span>
+          <span>
+            <i class="el-icon-copy-document" style="cursor: pointer;" title="复制"
+               @click="copy(deviceInfo.deviceIdentification)"></i>
+            {{ deviceInfo.deviceIdentification }}
+          </span>
         </p>
         <p>
           <span>客户端标识</span>
           <span>
-            <i class="el-icon-copy-document" style="cursor: pointer;" title="复制" @click="copy(deviceInfo.clientId)"></i>
+            <i class="el-icon-copy-document" style="cursor: pointer;" title="复制"
+               @click="copy(deviceInfo.clientId)"></i>
             {{ deviceInfo.clientId }}
           </span>
         </p>
@@ -28,7 +33,8 @@
         <p>
           <span>用户名</span>
           <span>
-            <i class="el-icon-copy-document" style="cursor: pointer;" title="复制" @click="copy(deviceInfo.userName)"></i>
+            <i class="el-icon-copy-document" style="cursor: pointer;" title="复制"
+               @click="copy(deviceInfo.userName)"></i>
             {{ deviceInfo.userName }}
           </span>
         </p>
@@ -50,16 +56,14 @@
         <el-tab-pane label="基本信息" name="first">
           <div class="device_attribute">
             <p>
-              <span>设备标识</span>
-              <span>{{ deviceInfo.deviceIdentification }}</span>
+              <span>产品标识</span>
+              <span>{{ deviceInfo.productIdentification }}</span>
             </p>
             <p>
-              <span>创建者</span>
-              <span>{{ deviceInfo.createBy }}</span>
-            </p>
-            <p>
-              <span>更新者</span>
-              <span>{{ deviceInfo.updateBy }}</span>
+              <span>设备类型</span>
+              <span>
+                <dict-tag :options="dict.type.link_device_device_type" :value="deviceInfo.deviceType"/>
+              </span>
             </p>
             <p>
               <span>认证方式</span>
@@ -69,13 +73,61 @@
               <span>产品协议类型</span>
               <span>{{ deviceInfo.protocolType }}</span>
             </p>
+
           </div>
           <div class="device_attribute">
             <p>
-              <span>设备类型</span>
+              <span>加密方式</span>
               <span>
-                <dict-tag :options="dict.type.link_device_device_type" :value="deviceInfo.deviceType" />
+                <dict-tag :options="dict.type.link_device_encrypt_method" :value="deviceInfo.encryptMethod"/>
               </span>
+            </p>
+            <p>
+              <span>加密密钥</span>
+              <span>{{ deviceInfo.encryptKey }}</span>
+            </p>
+            <p>
+              <span>加密向量</span>
+              <span>{{ deviceInfo.encryptVector }}</span>
+            </p>
+            <p>
+              <span>签名密钥</span>
+              <span>{{ deviceInfo.signKey }}</span>
+            </p>
+
+          </div>
+          <div class="device_attribute">
+
+            <p>
+              <span>软件版本</span>
+              <span>{{ deviceInfo.swVersion }}</span>
+            </p>
+
+            <p>
+              <span>固件版本</span>
+              <span>{{ deviceInfo.fwVersion }}</span>
+            </p>
+
+            <p>
+              <span>sdk版本</span>
+              <span>{{ deviceInfo.deviceSdkVersion }}</span>
+            </p>
+
+
+            <p>
+              <span>是否遗言</span>
+              <span v-text="deviceInfo.isWill == null ? '否' : deviceInfo.isWill"></span>
+            </p>
+          </div>
+
+          <div class="device_attribute">
+            <p>
+              <span>创建者</span>
+              <span>{{ deviceInfo.createBy }}</span>
+            </p>
+            <p>
+              <span>更新者</span>
+              <span>{{ deviceInfo.updateBy }}</span>
             </p>
             <p>
               <span>创建时间</span>
@@ -84,14 +136,6 @@
             <p>
               <span>更新时间</span>
               <span>{{ deviceInfo.updateTime }}</span>
-            </p>
-            <p>
-              <span>是否遗言</span>
-              <span v-text="deviceInfo.isWill == null ? '否' : deviceInfo.isWill"></span>
-            </p>
-            <p>
-              <span>产品标识</span>
-              <span>{{ deviceInfo.productIdentification }}</span>
             </p>
           </div>
         </el-tab-pane>
@@ -109,22 +153,23 @@
           <el-tabs v-model="shadowActiveName" style="width:100%;height: 100%;">
             <el-tab-pane label="列表" name="first" style="width:100%;height:100%;">
               <el-date-picker @change="timeControls" style="margin-bottom: 10px;" v-model="value1" type="datetimerange"
-                value-format="yyyy-MM-dd HH:mm:ss" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+                              value-format="yyyy-MM-dd HH:mm:ss" range-separator="至" start-placeholder="开始日期"
+                              end-placeholder="结束日期">
               </el-date-picker>
               <el-button style="position: absolute;right:20px" icon="el-icon-refresh" @click="getShadowData"
-                circle></el-button>
+                         circle></el-button>
               <el-tabs v-model="editableTabsValue" type="card">
                 <el-tab-pane v-for="(value, name, index) in ShadowData" :key="index" :label="name"
-                  :name="String(index + 1)" style="width:100%;height: 100%;">
+                             :name="String(index + 1)" style="width:100%;height: 100%;">
                   <el-table v-if="Array.isArray(value)" :data="value" style="width: 100%" max-height="450"
-                    :fit="true">
+                            :fit="true">
                     <el-table-column prop="index" label="序号" style="width: 25%">
                       <template slot-scope="scope">
                         {{ scope.$index + 1 }}
                       </template>
                     </el-table-column>
                     <el-table-column v-for="(ShadowValue, ShadowName, index1) in value[0]" :key="index1"
-                      :label="ShadowName" :prop="ShadowName" style="width: 25%">
+                                     :label="ShadowName" :prop="ShadowName" style="width: 25%">
                     </el-table-column>
                   </el-table>
                 </el-tab-pane>
@@ -135,7 +180,7 @@
                 格式化
               </el-button>
               <el-input class="textJson" type="textarea" style="width:100%" :autosize="{ minRows: 5 }" resize="none"
-                :value="detailJSON" placeholder="无内容">
+                        :value="detailJSON" placeholder="无内容">
               </el-input>
             </el-tab-pane>
           </el-tabs>
@@ -145,16 +190,17 @@
   </div>
 </template>
 <script>
-import { getDevice, getDeviceShadow } from "@/api/link/device/device";
+import {getDevice, getDeviceShadow} from "@/api/link/device/device";
 import Topic from "@/views/link/device/topic";
 import Action from "@/views/link/device/action";
 
 export default {
   name: "device-detail",
-  components: { Action, Topic },
+  components: {Action, Topic},
   dicts: [
     "link_device_device_type",
     "link_device_connect_status",
+    "link_device_encrypt_method",
   ],
   data() {
     return {

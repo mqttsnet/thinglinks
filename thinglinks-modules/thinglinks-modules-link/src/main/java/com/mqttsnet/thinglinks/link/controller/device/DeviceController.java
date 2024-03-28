@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.link.controller.device;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
+import com.mqttsnet.thinglinks.common.core.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -139,6 +140,7 @@ public class DeviceController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody DeviceParams deviceParams) {
         try {
+            deviceParams.setDeviceIdentification(SnowflakeIdUtil.nextId());
             return toAjax(deviceService.insertDevice(deviceParams));
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());

@@ -13,6 +13,7 @@ import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.text.CharsetKit;
 import com.mqttsnet.thinglinks.common.core.text.UUID;
+import com.mqttsnet.thinglinks.common.core.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanUtils;
@@ -438,7 +439,7 @@ public class ProductServiceImpl implements ProductService {
         if (StringUtils.isNotNull(oneByProductName)) {
             return -1;
         }
-        product.setProductIdentification(UUID.getUUID());
+        product.setProductIdentification(SnowflakeIdUtil.nextId());
         LoginUser loginUser = tokenService.getLoginUser();
         SysUser sysUser = loginUser.getSysUser();
         product.setCreateBy(sysUser.getUserName());

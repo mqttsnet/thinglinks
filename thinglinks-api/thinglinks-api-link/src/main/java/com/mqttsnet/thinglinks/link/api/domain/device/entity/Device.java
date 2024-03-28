@@ -197,7 +197,7 @@ public class Device  extends BaseEntity implements Serializable{
      * sdk版本
      */
     @Excel(name = "sdk版本")
-    @ApiModelProperty(value = "sdk版本")
+    @ApiModelProperty(value = "sdk版本" ,example = "v1",notes = "sdk版本,如v1,v2,v3等")
     private String deviceSdkVersion;
 
 

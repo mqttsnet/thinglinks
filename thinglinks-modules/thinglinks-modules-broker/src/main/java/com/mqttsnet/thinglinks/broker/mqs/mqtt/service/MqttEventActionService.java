@@ -1,6 +1,5 @@
 package com.mqttsnet.thinglinks.broker.mqs.mqtt.service;
 
-import com.google.gson.Gson;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceActionService;
@@ -11,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @program: thinglinks
@@ -33,21 +30,17 @@ public class MqttEventActionService {
     /**
      * 保存MQTT事件动作
      *
-     * @param eventMessage 事件消息
-     * @param actionType   动作类型
-     * @param describable  描述
+     * @param deviceIdentification 设备标识
+     * @param eventMessage         事件消息
+     * @param actionType           动作类型
+     * @param describable          描述
      */
-    public void saveMqttEventAction(String eventMessage, DeviceActionTypeEnum actionType, String describable) {
-        Gson gson = new Gson();
-        Map<Object, Object> map = new HashMap<>();
-        map = gson.fromJson(eventMessage, map.getClass());
-        String clientId = String.valueOf(map.get("clientId"));
-
-        log.info("Save MQTT event action: clientId={}, actionType={}, describable={}", clientId, actionType, describable);
+    public void saveMqttEventAction(String deviceIdentification, String eventMessage, DeviceActionTypeEnum actionType, String describable) {
+        log.info("Save MQTT event action: deviceIdentification={}, actionType={}, describable={}", deviceIdentification, actionType, describable);
 
         // save device action
         DeviceAction deviceAction = new DeviceAction()
-                .setDeviceIdentification(clientId)
+                .setDeviceIdentification(deviceIdentification)
                 .setActionType(actionType.getAction())
                 .setStatus(ResultEnum.SUCCESS.getMessage())
                 .setMessage(eventMessage);
