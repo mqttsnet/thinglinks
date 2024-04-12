@@ -1,0 +1,47 @@
+<!--
+  Copyright JS Foundation and other contributors, http://js.foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/html" data-help-name="tcp in">
+    <p>TCP-Eingang zur Verbindung mit einem entfernten TCP-Port oder Akzeptanz eingehender Verbindungen.</p>
+    <p><b>Hinweis</b>: Auf einigen Systemen benötigen Sie möglicherweise Root- oder Administrator-Zugriffsrechte,
+       um Ports unter 1024 und/oder Broadcast nutzen zu können.</p>
+</script>
+
+<script type="text/html" data-help-name="tcp out">
+    <p>TCP-Ausgang zur Verbindung mit einem entfernten TCP-Port, Akzeptanz eingehender Verbindungen oder
+       Antwort auf Nachrichten, die von einem <b>tcp&nbsp;in</b>-Node empfangen werden.</p>
+    <p>Nur der <code>msg.payload</code>-Inhalt wird gesendet.</p>
+    <p>Wenn <code>msg.payload</code> einen String mit Base64-Kodierung von binären Daten beinhaltet,
+       bewirkt die Option <i>Base64-Nachricht dekodieren</i>,
+       dass sie vorm Senden wieder in Binärdaten umgewandelt wird.</p>
+    <p>Wenn <code>msg._session</code> nicht vorhanden ist,
+       werden die Nutzdaten (Payload) an <b>alle</b> verbundenen Clients gesendet.</p>
+    <p><b>Hinweis</b>: Auf einigen Systemen benötigen Sie möglicherweise Root- oder Administrator-Zugriffsrechte,
+       um Ports unter 1024 und/oder Broadcast nutzen zu können.</p>
+</script>
+
+<script type="text/html" data-help-name="tcp request">
+    <p>Einfacher TCP-Anforderungs-Node zum
+       Senden von <code>msg.payload</code> an einen Server-TCP-Port und erwarten einer Antwort.</p>
+    <p>Der Node verbindet sich, sendet einen <i>request</i> (Anfrage) und liest den <i>response</i> (Antwort).
+       Er kann entweder eine vorgegebene Zeichenanzahl in einem festen Puffer abzählen,
+       auf ein passendes Zeichen zur Rückkehr reagieren, ein festes Zeitlimit ab der ersten Antwort abwarten und dann rückkehren,
+       endlos auf Daten warten oder sofort die Verbindug schliessen, ohne auf Antwort zu warten.</p>
+    <p>Die Antwort wird in <code>msg.payload</code> als binärer Puffer (buffer) ausgegeben,
+       sodass sie ggf. mit der <code>.toString()</code>-Funktion umgewandelt werden kann.</p>
+    <p>Wenn <i>Server</i> oder <i>Port</code> nicht vorgegeben werden,
+       müssen diese mit den <code>msg.host</code>- und <code>msg.port</code>-Eigenschaften übergeben werden.</p>
+</script>

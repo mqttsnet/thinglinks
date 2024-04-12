@@ -1,0 +1,54 @@
+<!--
+  Copyright JS Foundation and other contributors, http://js.foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/html" data-help-name="xml">
+    <p>Konvertierung zwischen XML-Zeichenfolge (string) und JavaScript-Objekt in beiden Richtungen.</p>
+    <h3>Eingangsdaten</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object | string</span></dt>
+        <dd>JavaScript-Objekt oder XML-Zeichenfolge (string).</dd>
+        <dt class="optional">options <span class="property-type">object</span></dt>
+        <dd>Optionale Eigenschaft zur Übergabe von Optionen an die Konvertier-Bibliothek von und zu XML.
+            Siehe <a href="https://github.com/Leonidas-from-XIV/node-xml2js/blob/master/README.md#options" target="_blank">xml2js Dokumente</a>
+            für weitere Informationen.</dd>
+    </dl>
+    <h3>Ausgangsdaten</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object | string</span></dt>
+        <dd>
+            <ul>
+                <li>Wenn die Eingangsdaten eine Zeichenfolge (string) sind,
+                    wird versucht sie als XML zu analysieren (parse) und daraus ein JavaScript-Objekt zu erstellen.</li>
+                <li>Wenn die Eingangsdaten ein JavaScript-Objekt darstellen,
+                    wird versucht daraus ein XML-Zeichenfolge (string) zu erstellen.</li>
+            </ul>
+        </dd>
+    </dl>
+    <h3>Details</h3>
+    <p>Bei der Konvertierung zwischen XML und einem Objekt werden standardmäßig alle XML-Attribute als Eigenschaft mit Namen <code>$</code> hinzugefügt.
+       Jeder Textinhalt wird als Eigenschaft mit Namen <code>_</code> hinzugefügt.
+       Diese Eigenschaftsnamen können in der Node-Konfiguration angegeben werden.</p>
+    <p>Zum Beispiel wird das folgende XML wie dargestellt konvertiert:</p>
+    <pre>&lt;p class="tag"&gt;Hello World&lt;/p&gt;</pre>
+    <pre>{
+  "p": {
+    "$": {
+      "class": "tag"
+    },
+    "_": "Hello World"
+  }
+}</pre>
+</script>
