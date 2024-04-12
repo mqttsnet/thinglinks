@@ -2,6 +2,8 @@
 
 https://www.mqttsnet.com/
 
+操作说明：https://mqttsnet.yuque.com/gt6zkc/thinglinks/lftzvi5sgwenrdoy
+
 1. Install the node-red dependencies
 
         npm install
