@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,23 +45,20 @@ public class DeviceOpenAnyController extends BaseController {
     /**
      * 客户端连接认证
      *
-     * @param request
-     * @param params  clientIdentifier 客户端标识
-     *                username 用户名
-     *                password 密码
-     *                authMode 认证方式
-     *                protocolType 协议类型
+     * @param deviceAuthenticationQuery 设备认证参数
      * @return 认证结果
      */
-    @RequestMapping("/clientConnectionAuthentication")
-    public ResponseEntity clientConnectionAuthentication(HttpServletRequest request, @RequestBody Map<String, Object> params) {
+    @ApiOperation(value = "客户端连接认证", httpMethod = "POST", notes = "客户端连接认证")
+    @PostMapping("/clientConnectionAuthentication")
+    public ResponseEntity clientConnectionAuthentication(@RequestBody DeviceAuthenticationQuery deviceAuthenticationQuery) {
 
-        final Object clientIdentifier = params.get("clientIdentifier");
-        final Object username = params.get("username");
-        final Object password = params.get("password");
-        final Object deviceStatus = "ENABLE";// params.get("deviceStatus");
-        final Object protocolType = "MQTT";// params.get("protocolType");
-        Device device = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
+        log.info("clientConnectionAuthentication,客户端ID:{},用户名:{},密码:{}", deviceAuthenticationQuery.getClientIdentifier(), deviceAuthenticationQuery.getUsername(), deviceAuthenticationQuery.getPassword());
+        final String clientIdentifier = deviceAuthenticationQuery.getClientIdentifier();
+        final String username = deviceAuthenticationQuery.getUsername();
+        final String password = deviceAuthenticationQuery.getPassword();
+        final Object deviceStatus = "ENABLE";
+        final Object protocolType = "MQTT";
+        Device device = deviceService.clientAuthentication(clientIdentifier, username, password, deviceStatus.toString(), protocolType.toString());
         log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, device != null ? "成功" : "失败");
 
         Map<String, Object> result = new HashMap<>();

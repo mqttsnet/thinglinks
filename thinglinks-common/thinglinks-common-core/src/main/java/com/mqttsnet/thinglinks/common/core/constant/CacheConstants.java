@@ -45,8 +45,8 @@ public class CacheConstants {
 
     /**
      * 设备数据转换脚本 cache key
-     * link-> DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT:deviceIdentification
+     * link-> def_device_data_reported_agreement_script:deviceIdentification
      */
-    public static final String DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT = "def_DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT:";
+    public static final String DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT = "def_device_data_reported_agreement_script:";
 
 }

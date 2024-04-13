@@ -1,0 +1,54 @@
+/**
+ * Copyright JS Foundation and other contributors, http://js.foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+
+var i18n = require("@node-red/util").i18n; // TODO: separate module
+
+var runtimeAPI;
+
+function loadResource(lang, namespace) {
+    var catalog = i18n.i.getResourceBundle(lang, namespace);
+    if (!catalog) {
+        var parts = lang.split("-");
+        if (parts.length == 2) {
+            var new_lang = parts[0];
+            return i18n.i.getResourceBundle(new_lang, namespace);
+        }
+    }
+    return catalog;
+}
+
+module.exports = {
+    init: function(_runtimeAPI) {
+        runtimeAPI = _runtimeAPI;
+    },
+    get: function(req,res) {
+        var namespace = req.params[0];
+        namespace = namespace.replace(/\.json$/,"");
+        var lang = req.query.lng || i18n.defaultLang; //apiUtil.determineLangFromHeaders(req.acceptsLanguages() || []);
+        if (/[^0-9a-z=\-\*]/i.test(lang)) {
+            res.json({});
+            return;
+        }
+        var prevLang = i18n.i.language;
+        // Trigger a load from disk of the language if it is not the default
+        i18n.i.changeLanguage(lang, function(){
+            i18n.i.changeLanguage(prevLang, function() {
+                var catalog = loadResource(lang, namespace);
+                res.json(catalog||{});
+            });
+        });
+    }
+}

@@ -7,8 +7,14 @@ import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
 import com.mqttsnet.thinglinks.broker.api.RemoteMqttBrokerOpenApi;
 import com.mqttsnet.thinglinks.broker.mqs.mqtt.handler.factory.AbstractMessageHandler;
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.dynamicCompilation.ClassInjector;
+import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicClassLoader;
+import com.mqttsnet.thinglinks.common.core.dynamicCompilation.DynamicLoaderEngine;
+import com.mqttsnet.thinglinks.common.core.dynamicCompilation.bytecode.InjectionSystem;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
+import com.mqttsnet.thinglinks.common.core.enums.ProtocolType;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
@@ -33,6 +39,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -91,6 +100,8 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
                     .build();
             String dataBody = protocolMessageAdapter.decryptMessage(body, encryptionDetailsDTO);
 
+            //协议脚本转换处理
+            dataBody = convertToBody(deviceCacheVO.getDeviceIdentification(), dataBody);
 
             // Parse body
             TopoDeviceDataReportParam deviceDataParam = new TopoDeviceDataReportParam();
@@ -339,6 +350,27 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
                 })
                 .filter(Objects::nonNull) // Filter out any nulls if the property code was not present in dataList
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 协议转换处理
+     * 根据设备找到所属产品 产品的服务及属性 转换出系统能识别的json 找到这个产品的协议内容即Java代码
+     */
+    public String convertToBody(String deviceIdentification, String body) {
+        if (Boolean.TRUE.equals(redisService.hasKey(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification))) {
+            String protocolContent = redisService.get(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + ProtocolType.MQTT.getValue() + deviceIdentification);
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            PrintWriter out = new PrintWriter(buffer, true);
+            byte[] classBytes = DynamicLoaderEngine.compile(protocolContent, out, null);//传入要执行的代码
+            byte[] injectedClass = ClassInjector.injectSystem(classBytes);
+            InjectionSystem.inject(null, new PrintStream(buffer, true), null);
+            DynamicClassLoader classLoader = new DynamicClassLoader(this.getClass().getClassLoader());
+            DynamicLoaderEngine.executeMain(classLoader, injectedClass, out, body);
+            body = buffer.toString().trim();
+            return body;
+        } else {
+            return body;
+        }
     }
 
 

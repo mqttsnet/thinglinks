@@ -1,0 +1,61 @@
+<!--
+  Copyright JS Foundation and other contributors, http://js.foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/html" data-help-name="function">
+    <p>JavaScript-Funktion zur Weiterverarbeitung eingehender Nachrichten.</p>
+    <p>Die empfangenen Nachrichten werden der Funktion als JavaScript-Objekt mit dem Namen <code>msg</code> übergeben.</p>
+    <p>Per Konvention enthält die <code>msg.payload</code>-Eigenschaft die eigentliche Nachricht.</p>
+    <p>Von der Funktion wird erwartet, dass sie ein (oder mehrere) Nachrichtenobjekt(e) zurückgibt.
+       Es kann aber auch nichts zurückgeben werden, um einen Flow zu stoppen.</p>
+    <p>In den <b>Start</b>-Tab kann Code eingetragen werden, der beim Node-Start ausgeführt wird.
+       In den <b>Stopp</b>-Tab kann Code eingetragen werden, der beim Node-Stopp ausgeführt wird.</p>
+    <p>Wenn ein promise-Objekt aus dem Start-Code zurückgegeben wird,
+       beginnt danach die reguläre Verarbeitung der Eingangsnachrichten.</p>
+    <h3>Details</h3>
+    <p>Siehe  <a target="_blank" href="https://nodered.org/docs/writing-functions.html">Onlinedokumentation</a>
+       für weitere Informationen zum Schreiben von Funktionen.</p>
+    <h4><b>Nachrichten senden</b></h4>
+    <p>Die Funktion kann die Nachrichten zurückgeben, die sie an die nächsten Nodes im Flow weitergeben möchte,
+       oder kann <code>node.send(msg)</code> aufrufen.</p>
+    <p>Es kann folgendes zurückgeben/senden werden:</p>
+    <ul>
+        <li>Ein einzelnes Nachrichtenobjekt, das an Nodes am ersten Ausgang übergeben wird</li>
+        <li>Ein Array von Nachrichtenobjekten, die an die Nodes an den entsprechenden Ausgängen übergeben werden</li>
+    </ul>
+    <p><b>Hinweis</b>: Der Start-Code wird nur während der Initialisierung des Nodes ausgeführt.
+       Wenn <code>node.send</code> im Start-Code aufgerufen wird, können nachfolgende Nodes die Nachricht möglicherweise nicht empfangen.</p>
+    <p>Wenn ein Element des Arrays selbst ein Array von Nachrichten ist, werden mehrere Nachrichten an den entsprechenden Ausgang gesendet.</p>
+    <p>Wenn null zurückgegeben wird, entweder direkt oder als ein Array-Element, wird keine Nachricht weitergegeben.</p>
+    <h4><b>Protokollierung und Fehlerbehandlung</b></h4>
+    <p>Um alle Informationen zu protokollieren oder einen Fehler zu melden, sind die folgenden Funktionen verfügbar:</p>
+    <ul>
+        <li><code>node.log("Protokollnachricht")</code></li>
+        <li><code>node.warn("Warnmeldungstext")</code></li>
+        <li><code>node.error("Fehlermeldungstext")</code></li>
+    </ul>
+    </p>
+    <p>Der catch-Node kann auch zur Bearbeitung von Fehlern verwendet werden.
+       Er wird aufgerufen, indem <code>msg</code> als zweites Argument an <code>node.error</code> übergeben wird:</p>
+    <pre>node.error("Fehlermeldungstext" ,msg);</pre>
+    <h4><b>Zugriff auf Node-Informationen</b></h4>
+    <p>Im Funktionsblock können die ID und der Name des Nodes mit den folgenden Eigenschaften referenziert werden:</p>
+    <ul>
+        <li><code>node.id</code> - ID des Nodes</li>
+        <li><code>node.name</code> - Name des Nodes</li>
+    </ul>
+    <h4><b>Umgebungsvariablen verwenden</b></h4>
+    <p>Auf Umgebungsvariablen kann mit <code>env.get("Umgebungsvariablenname")</code> zugegriffen werden.</p>
+</script>
