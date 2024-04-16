@@ -36,85 +36,30 @@ public class BifroMQApiFallback implements FallbackFactory<BifroMQApi> {
 
         return new BifroMQApi() {
 
-            /**
-             * Publish a message to a given topic.
-             *
-             * @param reqId      Optional caller provided request id.
-             * @param tenantId   The tenant id.
-             * @param topic      The message topic.
-             * @param clientType The client type.
-             * @param pubQos     QoS of the message to be distributed.
-             * @param retain     The message should be retained.
-             * @param clientMeta Metadata header about the kicker client.
-             * @param payload    Message payload.
-             * @return Response indicating success or failure.
-             */
+
             @Override
-            public ResponseEntity<String> publishMessage(Long reqId, String tenantId, String topic, String clientType, String pubQos, String retain, String clientMeta, String payload) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            public ResponseEntity<String> publishMessage(Long reqId, String tenantId, String topic, String qos, String expirySeconds, String clientType, String clientMetadata, byte[] payload) {
+                return new ResponseEntity<>("BifroMQApiFallback.publishMessage() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            /**
-             * Manually expires the inbox based on the provided parameters.
-             *
-             * @param reqId         Optional caller provided request id.
-             * @param tenantId      The tenant id.
-             * @param expirySeconds The inbox's expiry time.
-             * @return ResponseEntity indicating the result of the operation.
-             */
             @Override
             public ResponseEntity<String> expireInbox(Long reqId, String tenantId, String expirySeconds) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("BifroMQApiFallback.expireInbox() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            /**
-             * Disconnects a MQTT client connection based on the provided parameters.
-             *
-             * @param reqId      Optional caller provided request id.
-             * @param tenantId   The tenant id.
-             * @param userId     The user id of the MQTT client connection to be disconnected.
-             * @param clientId   The client id of the MQTT client connection to be disconnected.
-             * @param clientType The client type.
-             * @param clientMeta Metadata header about the kicker client, must start with client_meta_.
-             * @return ResponseEntity indicating the result of the operation.
-             */
             @Override
             public ResponseEntity<String> killClientConnection(Long reqId, String tenantId, String userId, String clientId, String clientType, String clientMeta) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("BifroMQApiFallback.killClientConnection() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-
-            /**
-             * Adds a topic subscription to an inbox.
-             *
-             * @param reqId        Optional caller provided request id.
-             * @param tenantId     The tenant id.
-             * @param topicFilter  The topic filter to add.
-             * @param subQos       The QoS of the subscription.
-             * @param inboxId      The inbox for receiving subscribed messages.
-             * @param delivererKey Deliverer key for subBroker.
-             * @param subBrokerId  The ID of the subbroker hosting the inbox.
-             * @return ResponseEntity indicating the result of the operation.
-             */
             @Override
-            public ResponseEntity<String> addTopicSubscription(Long reqId, String tenantId, String topicFilter, String subQos, String inboxId, String delivererKey, Integer subBrokerId) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            public ResponseEntity<String> addTopicSubscription(Long reqId, String tenantId, String userId, String clientId, String topicFilter, String subQos) {
+                return new ResponseEntity<>("BifroMQApiFallback.addTopicSubscription() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            /**
-             * Removes a topic subscription from an inbox.
-             *
-             * @param reqId        Optional caller provided request id.
-             * @param tenantId     The tenant id.
-             * @param topicFilter  The topic filter to remove.
-             * @param inboxId      The inbox for receiving subscribed messages.
-             * @param delivererKey Deliverer key for subBroker.
-             * @param subBrokerId  The ID of the subbroker hosting the inbox.
-             * @return ResponseEntity indicating the result of the operation.
-             */
             @Override
-            public ResponseEntity<String> removeTopicSubscription(Long reqId, String tenantId, String topicFilter, String inboxId, String delivererKey, Integer subBrokerId) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            public ResponseEntity<String> removeTopicSubscription(Long reqId, String tenantId, String userId, String clientId, String topicFilter) {
+                return new ResponseEntity<>("BifroMQApiFallback.removeTopicSubscription() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         };
     }

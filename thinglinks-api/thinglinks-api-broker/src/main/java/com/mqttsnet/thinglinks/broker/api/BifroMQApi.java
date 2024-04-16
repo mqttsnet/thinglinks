@@ -31,26 +31,26 @@ public interface BifroMQApi {
     /**
      * Publish a message to a given topic.
      *
-     * @param reqId      Optional caller provided request id.
-     * @param tenantId   The tenant id.
-     * @param topic      The message topic.
-     * @param clientType The client type.
-     * @param pubQos     QoS of the message to be distributed.
-     * @param retain     The message should be retained.
-     * @param clientMeta Metadata header about the kicker client.
-     * @param payload    Message payload.
-     * @return Response indicating success or failure.
+     * @param reqId          Optional caller provided request id, expected as a Long.
+     * @param tenantId       The tenant ID, required.
+     * @param topic          The message topic, required.
+     * @param qos            QoS of the message to be published, required.
+     * @param expirySeconds  The message expiry seconds, optional.
+     * @param clientType     The publisher type, required.
+     * @param clientMetadata Metadata headers about the publisher, must start with 'client_meta_', optional.
+     * @param payload        Message payload will be treated as binary, required.
+     * @return ResponseEntity indicating success or failure.
      */
-    @PostMapping(path = "/pub", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    ResponseEntity<String> publishMessage(
+    @PostMapping(path = "/pub", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> publishMessage(
             @RequestHeader(name = "req_id", required = false) Long reqId,
-            @RequestHeader(name = "tenant_id") String tenantId,
-            @RequestHeader(name = "topic") String topic,
-            @RequestHeader(name = "client_type") String clientType,
-            @RequestHeader(name = "pub_qos") String pubQos,
-            @RequestHeader(name = "retain", required = false) String retain,
-            @RequestHeader(name = "client_meta_*", required = false) String clientMeta,
-            @RequestBody String payload
+            @RequestHeader(name = "tenant_id", required = true) String tenantId,
+            @RequestHeader(name = "topic", required = true) String topic,
+            @RequestHeader(name = "qos", required = true) String qos,
+            @RequestHeader(name = "expiry_seconds", required = false) String expirySeconds,
+            @RequestHeader(name = "client_type", required = true) String clientType,
+            @RequestHeader(name = "client_meta_*", required = false) String clientMetadata,
+            @RequestBody byte[] payload
     );
 
     /**
@@ -86,51 +86,47 @@ public interface BifroMQApi {
             @RequestHeader("user_id") String userId,
             @RequestHeader("client_id") String clientId,
             @RequestHeader("client_type") String clientType,
-            @RequestHeader(name = "client_meta_*", required = false) String clientMeta  // Note: This logic needs further implementation
+            @RequestHeader(name = "client_meta_*", required = false) String clientMeta
     );
 
     /**
-     * Adds a topic subscription to an inbox.
+     * Adds a topic subscription to an MQTT session.
      *
-     * @param reqId        Optional caller provided request id.
-     * @param tenantId     The tenant id.
-     * @param topicFilter  The topic filter to add.
-     * @param subQos       The QoS of the subscription.
-     * @param inboxId      The inbox for receiving subscribed messages.
-     * @param delivererKey Deliverer key for subBroker.
-     * @param subBrokerId  The ID of the subbroker hosting the inbox.
+     * @param reqId       Optional caller provided request id.
+     * @param tenantId    The tenant id.
+     * @param userId      The id of user who established the session.
+     * @param clientId    The client id of the MQTT session.
+     * @param topicFilter The topic filter to add.
+     * @param subQos      The QoS of the subscription.
      * @return ResponseEntity indicating the result of the operation.
      */
     @PutMapping("/sub")
     ResponseEntity<String> addTopicSubscription(
             @RequestHeader(name = "req_id", required = false) Long reqId,
-            @RequestHeader("tenant_id") String tenantId,
-            @RequestHeader("topic_filter") String topicFilter,
-            @RequestHeader("sub_qos") String subQos,
-            @RequestHeader("inbox_id") String inboxId,
-            @RequestHeader(name = "deliverer_key", required = false) String delivererKey,
-            @RequestHeader("subbroker_id") Integer subBrokerId
+            @RequestHeader(name = "tenant_id", required = true) String tenantId,
+            @RequestHeader(name = "user_id", required = true) String userId,
+            @RequestHeader(name = "client_id", required = true) String clientId,
+            @RequestHeader(name = "topic_filter", required = true) String topicFilter,
+            @RequestHeader(name = "sub_qos", required = true) String subQos
     );
 
     /**
      * Removes a topic subscription from an inbox.
      *
-     * @param reqId        Optional caller provided request id.
-     * @param tenantId     The tenant id.
-     * @param topicFilter  The topic filter to remove.
-     * @param inboxId      The inbox for receiving subscribed messages.
-     * @param delivererKey Deliverer key for subBroker.
-     * @param subBrokerId  The ID of the subbroker hosting the inbox.
+     * @param reqId       Optional caller provided request id.
+     * @param tenantId    The tenant id.
+     * @param userId      The id of user who established the session.
+     * @param clientId    The client id of the MQTT session.
+     * @param topicFilter The topic filter to add.
      * @return ResponseEntity indicating the result of the operation.
      */
     @DeleteMapping("/unsub")
     ResponseEntity<String> removeTopicSubscription(
             @RequestHeader(name = "req_id", required = false) Long reqId,
-            @RequestHeader("tenant_id") String tenantId,
-            @RequestHeader("topic_filter") String topicFilter,
-            @RequestHeader("inbox_id") String inboxId,
-            @RequestHeader(name = "deliverer_key", required = false) String delivererKey,
-            @RequestHeader("subbroker_id") Integer subBrokerId
+            @RequestHeader(name = "tenant_id", required = true) String tenantId,
+            @RequestHeader(name = "user_id", required = true) String userId,
+            @RequestHeader(name = "client_id", required = true) String clientId,
+            @RequestHeader(name = "topic_filter", required = true) String topicFilter
     );
 
 }

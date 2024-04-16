@@ -36,18 +36,19 @@ public class PublishMessageRequestVO implements Serializable {
     @ApiModelProperty(value = "消息主题", required = true, example = "exampleTopic")
     private String topic;
 
-    @ApiModelProperty(value = "QoS of the message to be distributed", required = true, example = "1")
-    private String pubQos;
+    @ApiModelProperty(value = "QoS of the message to be published", required = true, example = "1")
+    private String qos;
 
-    @ApiModelProperty(value = "客户端类型", required = true, example = "web")
+    @ApiModelProperty(value = "消息过期秒数", example = "3600")
+    private String expirySeconds;
+
+    @ApiModelProperty(value = "发布者类型", required = true, example = "web")
     private String clientType;
 
-    @ApiModelProperty(value = "消息是否应保留", example = "true")
-    private String retain;
+    @ApiModelProperty(value = "关于发布者的元数据头，必须以client_meta_开头", example = "client_meta_exampleKey: value")
+    private String clientMetadata;
 
-    @ApiModelProperty(value = "关于kicker客户端的元数据头，必须以client_meta_开头", example = "client_meta_exampleKey")
-    private String clientMeta;
+    @ApiModelProperty(value = "消息负载，将作为二进制处理", required = true)
+    private byte[] payload;
 
-    @ApiModelProperty(value = "payload", required = true)
-    private String payload;
 }
