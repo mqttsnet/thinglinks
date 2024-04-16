@@ -43,6 +43,21 @@ public class BifroMQApiFallback implements FallbackFactory<BifroMQApi> {
             }
 
             @Override
+            public ResponseEntity<String> retainMessage(Long reqId, String tenantId, String topic, String qos, String expirySeconds, String clientType, String clientMetadata, byte[] payload) {
+                return new ResponseEntity<>("BifroMQApiFallback.retainMessage() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            @Override
+            public ResponseEntity<String> getSessionInfo(Long reqId, String tenantId, String userId, String clientId) {
+                return new ResponseEntity<>("BifroMQApiFallback.getSessionInfo() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            @Override
+            public ResponseEntity<String> expireSession(Long reqId, String tenantId, String expirySeconds) {
+                return new ResponseEntity<>("BifroMQApiFallback.expireSession() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            @Override
             public ResponseEntity<String> expireInbox(Long reqId, String tenantId, String expirySeconds) {
                 return new ResponseEntity<>("BifroMQApiFallback.expireInbox() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
             }
