@@ -44,7 +44,7 @@ public class MqttBrokerServiceImpl implements MqttBrokerService {
      * @throws BaseException If the publishing fails.
      */
     @Override
-    public String publishMessage(PublishMessageRequestVO publishMessageRequestVO) throws BaseException {
+    public byte[] publishMessage(PublishMessageRequestVO publishMessageRequestVO) throws BaseException {
         log.info("Preparing to publish message with topic: {}", publishMessageRequestVO.getTopic());
         try {
             ResponseEntity<String> response = callPublishApi(publishMessageRequestVO);
@@ -71,17 +71,17 @@ public class MqttBrokerServiceImpl implements MqttBrokerService {
      * Makes the actual API call to publish a message.
      *
      * @param publishMessageRequestVO Object containing the required parameters for publishing.
-     * @return R Response indicating success or failure from the BifroMQApi.
+     * @return ResponseEntity indicating success or failure from the API.
      */
     private ResponseEntity<String> callPublishApi(PublishMessageRequestVO publishMessageRequestVO) {
         return bifroMQApi.publishMessage(
                 publishMessageRequestVO.getReqId(),
                 publishMessageRequestVO.getTenantId(),
                 publishMessageRequestVO.getTopic(),
+                publishMessageRequestVO.getQos(),
+                publishMessageRequestVO.getExpirySeconds(),
                 publishMessageRequestVO.getClientType(),
-                publishMessageRequestVO.getPubQos(),
-                publishMessageRequestVO.getRetain(),
-                publishMessageRequestVO.getClientMeta(),
+                publishMessageRequestVO.getClientMetadata(),
                 publishMessageRequestVO.getPayload()
         );
     }

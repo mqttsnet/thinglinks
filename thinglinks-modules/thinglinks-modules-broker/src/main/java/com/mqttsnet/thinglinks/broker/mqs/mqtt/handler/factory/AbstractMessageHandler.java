@@ -13,9 +13,9 @@ import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductModelCacheVO
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @program: thinglinks
@@ -94,10 +94,10 @@ public abstract class AbstractMessageHandler {
         publishMessageRequestVO.setReqId(Long.valueOf(SnowflakeIdUtil.nextId()));
         publishMessageRequestVO.setTenantId(tenantId);
         publishMessageRequestVO.setTopic(topic);
-        publishMessageRequestVO.setPubQos(qos);
+        publishMessageRequestVO.setQos(qos);
         publishMessageRequestVO.setClientType("web");
-        publishMessageRequestVO.setPayload(message);
-        publishMessageRequestVO.setRetain("false");
+        publishMessageRequestVO.setPayload(message.getBytes(StandardCharsets.UTF_8));
+        publishMessageRequestVO.setExpirySeconds("3600");
         remoteMqttBrokerOpenApi.sendMessage(publishMessageRequestVO);
     }
 
