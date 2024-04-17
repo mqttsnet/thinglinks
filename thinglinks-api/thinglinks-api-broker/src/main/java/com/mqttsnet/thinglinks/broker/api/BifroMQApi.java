@@ -1,10 +1,13 @@
 package com.mqttsnet.thinglinks.broker.api;
 
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
+import io.netty.buffer.ByteBuf;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.ByteBuffer;
 
 /**
  * -----------------------------------------------------------------------------
@@ -50,7 +53,7 @@ public interface BifroMQApi {
             @RequestHeader(name = "expiry_seconds", required = false) String expirySeconds,
             @RequestHeader(name = "client_type", required = true) String clientType,
             @RequestHeader(name = "client_meta_*", required = false) String clientMetadata,
-            @RequestBody byte[] payload
+            @RequestBody ByteBuffer payload
     );
 
     /**
@@ -76,7 +79,7 @@ public interface BifroMQApi {
             @RequestHeader(name = "expiry_seconds", required = false) String expirySeconds,
             @RequestHeader(name = "client_type", required = true) String clientType,
             @RequestHeader(name = "client_meta_*", required = false) String clientMetadata,
-            @RequestBody byte[] payload
+            @RequestBody ByteBuffer payload
     );
 
     /**

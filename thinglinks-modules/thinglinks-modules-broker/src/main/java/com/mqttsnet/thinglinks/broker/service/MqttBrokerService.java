@@ -32,5 +32,5 @@ public interface MqttBrokerService {
      * @return The content of the published message.
      * @throws BaseException If the publishing fails.
      */
-    byte[] publishMessage(PublishMessageRequestVO publishMessageRequestVO);
+    String publishMessage(PublishMessageRequestVO publishMessageRequestVO);
 }

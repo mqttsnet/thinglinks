@@ -13,6 +13,7 @@ import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductModelCacheVO
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -96,7 +97,7 @@ public abstract class AbstractMessageHandler {
         publishMessageRequestVO.setTopic(topic);
         publishMessageRequestVO.setQos(qos);
         publishMessageRequestVO.setClientType("web");
-        publishMessageRequestVO.setPayload(message.getBytes(StandardCharsets.UTF_8));
+        publishMessageRequestVO.setPayload(ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8)));
         publishMessageRequestVO.setExpirySeconds("3600");
         remoteMqttBrokerOpenApi.sendMessage(publishMessageRequestVO);
     }
