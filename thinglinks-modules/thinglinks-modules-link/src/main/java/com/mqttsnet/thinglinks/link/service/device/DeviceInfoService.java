@@ -2,11 +2,11 @@ package com.mqttsnet.thinglinks.link.service.device;
 
 import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.entity.DeviceInfo;
 import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model.DeviceInfoParams;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoAddSubDeviceParam;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoDeleteSubDeviceParam;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoUpdateSubDeviceStatusParam;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoAddDeviceResultVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoAddSubDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeleteSubDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoUpdateSubDeviceStatusParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoAddDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
 
 import java.util.Collection;
 import java.util.List;

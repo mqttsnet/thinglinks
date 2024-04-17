@@ -6,7 +6,6 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 
 /**
  * @program: thinglinks
@@ -50,6 +49,6 @@ public class PublishMessageRequestVO implements Serializable {
     private String clientMetadata;
 
     @ApiModelProperty(value = "消息负载，将作为二进制处理", required = true)
-    private ByteBuffer payload;
+    private String payload;
 
 }

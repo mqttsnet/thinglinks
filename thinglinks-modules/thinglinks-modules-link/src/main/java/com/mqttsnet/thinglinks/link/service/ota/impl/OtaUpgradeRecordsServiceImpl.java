@@ -6,7 +6,7 @@ import com.mqttsnet.thinglinks.common.security.service.TokenService;
 import com.mqttsnet.thinglinks.link.api.domain.ota.entity.OtaUpgradeRecords;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.save.OtaUpgradeRecordsSaveVO;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.update.OtaUpgradeRecordsUpdateVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.OtaCommandResponseParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.OtaCommandResponseParam;
 import com.mqttsnet.thinglinks.link.mapper.ota.OtaUpgradeRecordsMapper;
 import com.mqttsnet.thinglinks.link.service.ota.OtaUpgradeRecordsService;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;

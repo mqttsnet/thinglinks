@@ -94,16 +94,23 @@
             <version>${thinglinks.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.mqttsnet</groupId>
+            <artifactId>thinglinks-common-protocol</artifactId>
+            <version>${thinglinks.version}</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
         </dependency>
+
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>2.3.3</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>

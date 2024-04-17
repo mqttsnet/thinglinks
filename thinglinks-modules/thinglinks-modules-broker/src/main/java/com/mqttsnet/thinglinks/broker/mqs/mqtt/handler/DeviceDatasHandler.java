@@ -28,7 +28,7 @@ import com.mqttsnet.thinglinks.link.api.domain.product.vo.param.ProductServicePa
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductPropertyResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductServiceResultVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoDeviceDataReportParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeviceDataReportParam;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.constant.TdsConstants;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;

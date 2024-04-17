@@ -11,8 +11,8 @@ import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.TopoDeleteSubDeviceParam;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeleteSubDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

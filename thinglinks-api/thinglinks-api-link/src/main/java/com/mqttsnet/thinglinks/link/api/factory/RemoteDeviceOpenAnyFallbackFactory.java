@@ -3,10 +3,10 @@ package com.mqttsnet.thinglinks.link.api.factory;
 
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.*;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoAddDeviceResultVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoQueryDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.*;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoAddDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoQueryDeviceResultVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;

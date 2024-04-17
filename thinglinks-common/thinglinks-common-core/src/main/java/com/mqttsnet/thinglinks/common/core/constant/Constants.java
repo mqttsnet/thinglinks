@@ -162,6 +162,10 @@ public class Constants {
      */
     public static final String SEMICOLON = ";";
 
+    /**
+     * all(全部)
+     */
+    public static final String ALL = "all";
 
 
 }
