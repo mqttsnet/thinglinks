@@ -44,14 +44,14 @@ public class MqttBrokerServiceImpl implements MqttBrokerService {
      * @throws BaseException If the publishing fails.
      */
     @Override
-    public byte[] publishMessage(PublishMessageRequestVO publishMessageRequestVO) throws BaseException {
+    public String publishMessage(PublishMessageRequestVO publishMessageRequestVO) throws BaseException {
         log.info("Preparing to publish message with topic: {}", publishMessageRequestVO.getTopic());
         try {
             ResponseEntity<String> response = callPublishApi(publishMessageRequestVO);
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 log.info("Successfully published message with topic: {}", publishMessageRequestVO.getTopic());
-                return publishMessageRequestVO.getPayload(); // Return the message content that was published
+                return publishMessageRequestVO.getPayload().toString();
             } else {
                 log.error("Failed to publish message with topic: {}. Response Status: {}",
                         publishMessageRequestVO.getTopic(), response.getStatusCode());

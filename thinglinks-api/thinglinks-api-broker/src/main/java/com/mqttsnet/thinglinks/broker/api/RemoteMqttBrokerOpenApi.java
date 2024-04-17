@@ -23,7 +23,7 @@ import java.util.List;
  * @UpdateRemark: 调整入参格式
  * @Version: V2.0
  */
-@FeignClient(contextId = "remoteMqttBrokerOpenApi", value = ServiceNameConstants.THINGLINKS_BROKER, fallbackFactory = RemoteMqttBrokerOpenApiFallback.class)
+@FeignClient(contextId = "remoteMqttBrokerOpenApi", value = ServiceNameConstants.THINGLINKS_BROKER, fallbackFactory = RemoteMqttBrokerOpenApiFallback.class, path = "/mqttBrokerOpen")
 public interface RemoteMqttBrokerOpenApi {
 
 

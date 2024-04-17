@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.nio.ByteBuffer;
+
 /**
  * -----------------------------------------------------------------------------
  * File Name: BifroMQApiFallback.java
@@ -38,12 +40,12 @@ public class BifroMQApiFallback implements FallbackFactory<BifroMQApi> {
 
 
             @Override
-            public ResponseEntity<String> publishMessage(Long reqId, String tenantId, String topic, String qos, String expirySeconds, String clientType, String clientMetadata, byte[] payload) {
+            public ResponseEntity<String> publishMessage(Long reqId, String tenantId, String topic, String qos, String expirySeconds, String clientType, String clientMetadata, ByteBuffer payload) {
                 return new ResponseEntity<>("BifroMQApiFallback.publishMessage() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             @Override
-            public ResponseEntity<String> retainMessage(Long reqId, String tenantId, String topic, String qos, String expirySeconds, String clientType, String clientMetadata, byte[] payload) {
+            public ResponseEntity<String> retainMessage(Long reqId, String tenantId, String topic, String qos, String expirySeconds, String clientType, String clientMetadata, ByteBuffer payload) {
                 return new ResponseEntity<>("BifroMQApiFallback.retainMessage() Service call failure e:{}", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
