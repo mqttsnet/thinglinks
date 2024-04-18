@@ -6,6 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * -----------------------------------------------------------------------------
  * File Name: BifroMQApi.java
@@ -50,7 +52,7 @@ public interface BifroMQApi {
             @RequestHeader(name = "qos", required = true) String qos,
             @RequestHeader(name = "expiry_seconds", required = false) String expirySeconds,
             @RequestHeader(name = "client_type", required = true) String clientType,
-            @RequestHeader(name = "client_meta_*", required = false) String clientMetadata,
+            @RequestHeader Map<String, String> clientMetadata,
             @RequestBody String payload
     );
 
@@ -76,7 +78,7 @@ public interface BifroMQApi {
             @RequestHeader(name = "qos", required = true) String qos,
             @RequestHeader(name = "expiry_seconds", required = false) String expirySeconds,
             @RequestHeader(name = "client_type", required = true) String clientType,
-            @RequestHeader(name = "client_meta_*", required = false) String clientMetadata,
+            @RequestHeader Map<String, String> clientMetadata,
             @RequestBody String payload
     );
 
