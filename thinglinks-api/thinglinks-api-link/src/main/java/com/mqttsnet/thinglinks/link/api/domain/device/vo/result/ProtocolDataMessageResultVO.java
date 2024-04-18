@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.link.api.domain.vo.result;
+package com.mqttsnet.thinglinks.link.api.domain.device.vo.result;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -2,10 +2,10 @@ package com.mqttsnet.thinglinks.link.service.device;
 
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.*;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoAddDeviceResultVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoQueryDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeviceDataReportParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoQueryDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoQueryDeviceResultVO;
 
 import java.util.Collection;
 import java.util.List;
@@ -222,7 +222,6 @@ public interface DeviceService {
     TopoQueryDeviceResultVO queryDeviceByHttp(TopoQueryDeviceParam topoQueryDeviceParam);
 
     Long findDeviceTotal();
-
 
 
     List<Device> findDevices();

@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.OtaCommandResponseParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.OtaCommandResponseParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

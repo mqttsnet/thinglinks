@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.link.api.domain.vo.result;
+package com.mqttsnet.thinglinks.link.api.domain.device.vo.result;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;

@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.link.api.domain.vo.param;
+package com.mqttsnet.thinglinks.link.api.domain.device.vo.param;
 
 import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
 import io.swagger.annotations.ApiModel;

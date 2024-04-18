@@ -4,7 +4,7 @@ import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.save.OtaUpgradeRecordsSaveVO;
 import com.mqttsnet.thinglinks.link.api.domain.ota.vo.update.OtaUpgradeRecordsUpdateVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.OtaCommandResponseParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.OtaCommandResponseParam;
 import com.mqttsnet.thinglinks.link.service.ota.OtaUpgradeRecordsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

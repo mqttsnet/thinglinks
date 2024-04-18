@@ -3,10 +3,10 @@ package com.mqttsnet.thinglinks.link.api;
 
 import com.mqttsnet.thinglinks.common.core.constant.ServiceNameConstants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.link.api.domain.vo.param.*;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoAddDeviceResultVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoDeviceOperationResultVO;
-import com.mqttsnet.thinglinks.link.api.domain.vo.result.TopoQueryDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.*;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoAddDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoQueryDeviceResultVO;
 import com.mqttsnet.thinglinks.link.api.factory.RemoteDeviceOpenAnyFallbackFactory;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -146,7 +146,7 @@ public interface RemoteDeviceOpenAnyService {
      * captures the command response parameters from the MQTT message body and persists them.
      *
      * @param otaCommandResponseParam The response parameters from an OTA command sent via MQTT.
-     * @return {@link R<OtaCommandResponseParam>} A response entity containing the saved OTA upgrade record.
+     * @return {@link R< OtaCommandResponseParam >} A response entity containing the saved OTA upgrade record.
      */
     @ApiOperation(value = "Save OTA Upgrade Record", httpMethod = "POST", notes = "Saves a new OTA upgrade record from MQTT message data.")
     @PostMapping("/deviceOpenAny/saveUpgradeRecordByMqtt")
