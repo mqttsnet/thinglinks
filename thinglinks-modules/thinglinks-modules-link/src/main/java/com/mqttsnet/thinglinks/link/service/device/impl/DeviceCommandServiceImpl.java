@@ -361,7 +361,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         publishMessageRequestVO.setClientType("web");
         publishMessageRequestVO.setPayload(publishMessageRequestParam.getPayload());
         publishMessageRequestVO.setExpirySeconds(publishMessageRequestParam.getExpirySeconds());
-        publishMessageRequestVO.setClientMetadata(JSONUtil.toJsonStr(publishMessageRequestParam.getMetadata()));
+        publishMessageRequestVO.setClientMetadata(publishMessageRequestParam.getMetadata());
 
         R response = remoteMqttBrokerOpenApi.sendMessage(publishMessageRequestVO);
         if (!response.isSuccess()) {
