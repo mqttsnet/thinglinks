@@ -26,7 +26,7 @@
       </el-form-item>
       <el-form-item label="Metadata:" prop="metadata">
         <div v-for="(entry, index) in metadataEntries" :key="index" class="metadata-entry">
-          <el-input v-model="entry.key" placeholder="Key" class="metadata-key" @input="updateMetadata"></el-input>
+          <el-input v-model="entry.key" placeholder="Enter metadata key (without 'client_meta_' prefix)" class="metadata-key" @input="updateMetadata"></el-input>
           <el-input v-model="entry.value" placeholder="Value" class="metadata-value" @input="updateMetadata"></el-input>
           <el-button icon="el-icon-delete" @click="removeMetadataField(index)"></el-button>
         </div>
@@ -83,7 +83,7 @@ export default {
       let newMetadata = {};
       this.metadataEntries.forEach(entry => {
         if (entry.key && entry.value) {
-          newMetadata[entry.key] = entry.value;
+          newMetadata[`client_meta_${entry.key}`] = entry.value;
         }
       });
       this.form.metadata = newMetadata;

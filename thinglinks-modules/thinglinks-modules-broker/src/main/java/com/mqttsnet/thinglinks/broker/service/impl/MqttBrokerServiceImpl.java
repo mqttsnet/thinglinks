@@ -50,6 +50,7 @@ public class MqttBrokerServiceImpl implements MqttBrokerService {
             log.info("Calling publish API to publish message with payload: {}", publishMessageRequestVO.getPayload().toString());
             ResponseEntity<String> response = callPublishApi(publishMessageRequestVO);
 
+            log.info("Response from BifroMQApi to publishMessage: {}", response);
             if (response.getStatusCode().is2xxSuccessful()) {
                 log.info("Successfully published message with topic: {}", publishMessageRequestVO.getTopic());
                 return publishMessageRequestVO.getPayload();
@@ -75,12 +76,13 @@ public class MqttBrokerServiceImpl implements MqttBrokerService {
      * @return ResponseEntity indicating success or failure from the API.
      */
     private ResponseEntity<String> callPublishApi(PublishMessageRequestVO publishMessageRequestVO) {
+        // TODO expirySeconds 设置为空，临时解决mqtt5.0版本消息过期问题
         return bifroMQApi.publishMessage(
                 publishMessageRequestVO.getReqId(),
                 publishMessageRequestVO.getTenantId(),
                 publishMessageRequestVO.getTopic(),
                 publishMessageRequestVO.getQos(),
-                publishMessageRequestVO.getExpirySeconds(),
+                "",
                 publishMessageRequestVO.getClientType(),
                 publishMessageRequestVO.getClientMetadata(),
                 publishMessageRequestVO.getPayload()
