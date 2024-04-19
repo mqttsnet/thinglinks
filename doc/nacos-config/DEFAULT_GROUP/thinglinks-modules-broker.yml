@@ -7,5 +7,5 @@ thinglinks:
   feign:
     #bifromq 服务API
     bifromq:
-      #api-service的HTTP端口
+      #api-service的HTTP端口(注意：这填写Bifromq的API端口，默认8091，请填写服务器真实IP，避免使用127.0.0.1)
       bifromq-api-server: http://127.0.0.1:8091

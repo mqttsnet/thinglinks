@@ -363,12 +363,17 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         publishMessageRequestVO.setExpirySeconds(publishMessageRequestParam.getExpirySeconds());
         publishMessageRequestVO.setClientMetadata(publishMessageRequestParam.getMetadata());
 
-        R response = remoteMqttBrokerOpenApi.sendMessage(publishMessageRequestVO);
-        if (!response.isSuccess()) {
-            log.warn("Failed to send MQTT message: " + response.getMsg());
-            //  throw BizException.wrap("Failed to send MQTT message: " + response.getMsg());
+        try {
+            R response = remoteMqttBrokerOpenApi.sendMessage(publishMessageRequestVO);
+            if (!response.isSuccess()) {
+                log.warn("Failed to send MQTT message: " + response.getMsg());
+                //  throw BizException.wrap("Failed to send MQTT message: " + response.getMsg());
+            }
+            return response;
+        } catch (Exception e) {
+            log.warn("Failed to send MQTT message: " + e.getMessage());
+            return R.fail("Failed to send MQTT message: " + e.getMessage());
         }
-        return response;
     }
 
 
