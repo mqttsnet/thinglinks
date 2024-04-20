@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -47,7 +48,7 @@ public class PublishMessageRequestVO implements Serializable {
     private String clientType;
 
     @ApiModelProperty(value = "关于发布者的元数据头，必须以client_meta_开头", example = "client_meta_exampleKey: value")
-    private Map<String, String> clientMetadata;
+    private Map<String, String> clientMetadata = Collections.emptyMap();
 
     @ApiModelProperty(value = "消息负载，将作为二进制处理", required = true)
     private String payload;
