@@ -445,7 +445,7 @@ public class DeviceServiceImpl implements DeviceService {
         final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, username, password, deviceStatus, protocolType);
         if (Optional.ofNullable(device).isPresent()) {
             //缓存设备信息
-            redisService.setCacheObject(CacheConstants.DEF_DEVICE + device.getDeviceIdentification(), transformToDeviceCacheVO(device), 300L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(CacheConstants.DEF_DEVICE + device.getDeviceIdentification(), transformToDeviceCacheVO(device), 30L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.MILLISECONDS);
             //更改设备在线状态为在线
             this.updateConnectStatusByClientId(DeviceConnectStatusEnum.ONLINE.getValue(), clientIdentifier);
             return device;
