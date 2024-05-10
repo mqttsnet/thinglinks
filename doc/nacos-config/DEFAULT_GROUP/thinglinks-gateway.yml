@@ -105,10 +105,7 @@ security:
       - /*/v2/api-docs
       - /csrf
       #MQTT消息推送接口
-      - /broker/publish/sendMessage
-      #Broker WebSocket推送日志
-      - /broker/websocket/logging
+      - /broker/mqttBrokerOpen/sendMessage
       #客户端身份认证接口
-      - /link/device/clientAuthentication
-      - /link/device/clientConnectionAuthentication
+      - /link/deviceOpenAny/clientConnectionAuthentication
       - /tdengine/**

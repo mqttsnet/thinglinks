@@ -1,8 +1,11 @@
 <template>
   <div class="app-container">
     <el-form v-show="showSearch" ref="queryForm" :inline="true" :model="queryParams" label-width="68px" size="small">
-      <el-form-item label="属性名称" prop="name">
-        <el-input v-model="queryParams.name" clearable placeholder="请输入属性名称" @keyup.enter.native="handleQuery" />
+      <el-form-item label="属性编码" prop="propertyCode">
+        <el-input v-model="queryParams.propertyCode" clearable placeholder="请输入属性编码" @keyup.enter.native="handleQuery" />
+      </el-form-item>
+      <el-form-item label="属性名称" prop="propertyName">
+        <el-input v-model="queryParams.propertyName" clearable placeholder="请输入属性名称" @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="属性描述" prop="description">
         <el-input v-model="queryParams.description" clearable placeholder="请输入属性描述" @keyup.enter.native="handleQuery" />
@@ -41,7 +44,8 @@
       <el-table-column align="center" type="selection" width="55" />
       <!--      <el-table-column align="center" label="属性id" prop="id"/>-->
       <!--      <el-table-column align="center" label="服务ID" prop="serviceId"/>-->
-      <el-table-column align="center" label="属性名称" prop="name" />
+      <el-table-column align="center" label="属性编码" prop="propertyCode" />
+      <el-table-column align="center" label="属性名称" prop="propertyName" />
       <el-table-column align="center" label="数据类型" prop="datatype" />
       <el-table-column align="center" label="访问方式" prop="method" />
       <el-table-column align="center" label="属性描述" prop="description" />
@@ -85,12 +89,25 @@
         <el-row>
           <div class="disply">
             <div class="small">
-              <el-form-item label="属性名称" prop="name">
+              <el-form-item label="属性编码" prop="propertyCode">
                 <el-col :span="20">
-                  <el-input v-model="form.name" autocomplete="off" placeholder="请输入指示属性名称" />
+                  <el-input v-model="form.propertyCode" autocomplete="off" placeholder="请输入指示属性编码" />
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
-                  <el-tooltip content="指示属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
+                  <el-tooltip content="指示属性编码。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
+                              placement="right">
+                    <i class="el-icon-question" />
+                  </el-tooltip>
+                </el-col>
+              </el-form-item>
+            </div>
+            <div class="small">
+              <el-form-item label="属性名称" prop="propertyName">
+                <el-col :span="20">
+                  <el-input v-model="form.propertyName" autocomplete="off" placeholder="请输入指示属性名称" />
+                </el-col>
+                <el-col :span="2" style="padding-left: 5px">
+                  <el-tooltip content="指示属性名称" effect="light"
                     placement="right">
                     <i class="el-icon-question" />
                   </el-tooltip>
@@ -300,14 +317,18 @@ export default {
         serviceId: [
           { required: true, message: "服务ID不能为空", trigger: "blur" }
         ],
-        name: [
-          { required: true, message: "属性名称不能为空", trigger: "blur" },
-          { min: 2, max: 50, message: '属性名称长度必须介于 2 和 50 之间', trigger: 'blur' },
+        propertyCode: [
+          { required: true, message: "属性编码不能为空", trigger: "blur" },
+          { min: 2, max: 50, message: '属性编码长度必须介于 2 和 50 之间', trigger: 'blur' },
           {
             pattern: /^[a-z0-9_]+$/,
             message: "英文小写、数字、下划线，长度[2,50]",
             trigger: "blur"
           }
+        ],
+        propertyName: [
+          { required: true, message: "属性名称不能为空", trigger: "blur" },
+          { min: 2, max: 50, message: '属性名称长度必须介于 2 和 50 之间', trigger: 'blur' }
         ],
         datatype: [
           { required: true, message: "数据类型不能为空", trigger: "change" }

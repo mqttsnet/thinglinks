@@ -55,10 +55,11 @@ public interface RemoteDeviceService {
      */
     @GetMapping("/device/selectByProductIdentificationAndDeviceIdentification/{productIdentification}/{deviceIdentification}")
     public R<Device> selectByProductIdentificationAndDeviceIdentification(@PathVariable("productIdentification") String productIdentification,
-                                                                     @PathVariable("deviceIdentification") String deviceIdentification);
+                                                                          @PathVariable("deviceIdentification") String deviceIdentification);
 
     /**
      * 根据客户端标识获取设备信息
+     *
      * @param clientId
      * @return
      */
@@ -67,6 +68,7 @@ public interface RemoteDeviceService {
 
     /**
      * 根据产品标识获取产品所有关联设备
+     *
      * @param productIdentification
      * @return
      */
@@ -75,4 +77,5 @@ public interface RemoteDeviceService {
 
     @PostMapping("/device/selectDeviceByDeviceIdentificationList")
     public R<?> selectDeviceByDeviceIdentificationList(@RequestBody List<String> deviceIdentificationList);
+
 }

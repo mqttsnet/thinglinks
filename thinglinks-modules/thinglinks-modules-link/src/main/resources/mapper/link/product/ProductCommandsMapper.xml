@@ -528,7 +528,7 @@
         from
         product_commands
         <where>
-            <if test="commandIdList != null ">
+            <if test="commandIdList != null and commandIdList.size() &gt; 0">
                 and id in
                 <foreach collection="commandIdList" open="(" close=")" separator="," item="item">
                     #{item}
@@ -536,4 +536,20 @@
             </if>
         </where>
     </select>
+
+    <select id="selectProductCommandsByServiceIdList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        product_commands
+        <where>
+            <if test="serviceIdList != null and serviceIdList.size() &gt; 0">
+                service_id in
+                <foreach collection="serviceIdList" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
 </mapper>

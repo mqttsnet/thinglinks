@@ -3,6 +3,8 @@ package com.mqttsnet.thinglinks.tdengine.api.domain;
 import com.mqttsnet.thinglinks.common.core.enums.DataTypeEnum;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @ClassDescription: 建表的字段实体类
  * @ClassName: Fields
@@ -11,8 +13,9 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
-public class Fields {
-    private static final long serialVersionUID = 1L;
+public class Fields implements Serializable {
+
+    private static final long serialVersionUID = -1L;
 
     /**
      * 字段名称
@@ -37,37 +40,25 @@ public class Fields {
     public Fields() {
     }
 
-    public Fields(String fieldName, String dataType, Integer size) {
+    public Fields(String fieldName) {
         this.fieldName = fieldName;
-        //根据规则匹配字段数据类型
-        switch (dataType.toLowerCase()) {
-            case ("json"):
-                this.dataType = DataTypeEnum.JSON;
-                this.size = size;
-                break;
-            case ("string"):
-                this.dataType = DataTypeEnum.NCHAR;
-                this.size = size;
-                break;
-            case ("binary"):
-                this.dataType = DataTypeEnum.BINARY;
-                this.size = size;
-                break;
-            case ("int"):
-                this.dataType = DataTypeEnum.INT;
-                break;
-            case ("bool"):
-                this.dataType = DataTypeEnum.BOOL;
-                break;
-            case ("decimal"):
-                this.dataType = DataTypeEnum.DOUBLE;
-                break;
-            case ("timestamp"):
-                if ("eventTime".equals(fieldName)) {
-                    this.fieldName = "eventTime";
-                }
-                this.dataType = DataTypeEnum.TIMESTAMP;
-                break;
-        }
+    }
+
+    public Fields(String fieldName, DataTypeEnum dataType) {
+        this.fieldName = fieldName;
+        this.dataType = dataType;
+    }
+
+    public Fields(String fieldName, DataTypeEnum dataType, Integer size) {
+        this.fieldName = fieldName;
+        this.dataType = dataType;
+        this.size = size;
+    }
+
+    public Fields(String fieldName, Object fieldValue, DataTypeEnum dataType, Integer size) {
+        this.fieldName = fieldName;
+        this.fieldValue = fieldValue;
+        this.dataType = dataType;
+        this.size = size;
     }
 }

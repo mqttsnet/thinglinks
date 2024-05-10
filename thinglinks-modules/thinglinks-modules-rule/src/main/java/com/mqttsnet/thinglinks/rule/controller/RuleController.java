@@ -25,6 +25,7 @@ import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
 import com.mqttsnet.thinglinks.rule.service.RuleService;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.TagsSelectDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -147,7 +148,7 @@ public class RuleController extends BaseController {
             // 获取该产品下的所有设备数据
             Map<String, Map<String, Object>> maps = extractedDeviceData(conditions);
             // 属性名称
-            String productPropertiesName = propertiesData.getName();
+            String productPropertiesName = propertiesData.getPropertyName();
             // 属性类型
             String productPropertiesType = propertiesData.getDatatype();
             // 比较模式
@@ -232,7 +233,7 @@ public class RuleController extends BaseController {
         String superName = product.getProductType() + "_" + conditions.getProductIdentification() + "_" + productServices.getServiceName();
 
         // 查询最新的设备记录
-        TagsSelectDao tagsSelectDao = new TagsSelectDao();
+        TagsSelectDTO tagsSelectDao = new TagsSelectDTO();
         tagsSelectDao.setDataBaseName("thinglinks");
         tagsSelectDao.setStableName(superName);
         R<?> lastDataByTags = remoteTdEngineService.getLastDataByTags(tagsSelectDao);

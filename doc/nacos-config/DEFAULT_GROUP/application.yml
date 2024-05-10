@@ -15,7 +15,7 @@ ribbon:
 
 # feign 配置
 feign:
-  hystrix: 
+  hystrix:
     enabled: true
   sentinel:
     enabled: true
@@ -36,9 +36,9 @@ feign:
 
 # 暴露监控端点
 management:
-  metrics: 
-    export: 
-      influx: 
+  metrics:
+    export:
+      influx:
         enabled: false
   endpoints:
     web:
@@ -57,6 +57,3 @@ threadBus:
     queue-capacity: 1000
     #线程池名前缀
     thread-name-prefix: thinglinksAsync-
-#消息队列转发true kafka | false rocketmq,默认为kakfa 自行选择
-mqs:
-  selector-kafka: true

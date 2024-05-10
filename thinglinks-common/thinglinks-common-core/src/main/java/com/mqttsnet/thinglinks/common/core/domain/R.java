@@ -103,4 +103,8 @@ public class R<T> implements Serializable
     {
         this.data = data;
     }
+
+    public boolean isSuccess() {
+        return this.code == SUCCESS;
+    }
 }

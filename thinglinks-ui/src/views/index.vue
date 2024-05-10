@@ -13,7 +13,7 @@
         <br>
         <h5>
           <p>
-            <img  src="@/assets/images/index/device-topology.png" alt="device-topology">
+            <img src="@/assets/images/index/device-topology.png" alt="device-topology">
           </p>
         </h5>
         <p>
@@ -29,14 +29,16 @@
             icon="el-icon-cloudy"
             plain
             @click="goTarget('https://github.com/mqttsnet/thinglinks.git')"
-            >访问GitHub</el-button
+          >访问GitHub
+          </el-button
           >
           <el-button
             size="mini"
             icon="el-icon-s-home"
             plain
             @click="goTarget('http://thinglinks.mqttsnet.com')"
-            >访问主页</el-button
+          >访问主页
+          </el-button
           >
         </p>
       </el-col>
@@ -47,12 +49,9 @@
           使用指引帮助您快速了解ThingLinks平台的使用，包括产品、设备的创建、数据转发和命令下发等操作。
         </p>
         <br>
-        <h5>
-          待更新
-        </h5>
       </el-col>
     </el-row>
-    <el-divider />
+    <el-divider/>
     <el-row :gutter="20">
       <el-col :xs="24" :sm="24" :md="12" :lg="8">
         <el-card class="update-log">
@@ -61,17 +60,16 @@
           </div>
           <div class="body">
             <p>
-              <i class="el-icon-s-promotion"></i> 官网：<el-link
+              <i class="el-icon-s-promotion"></i> 官网：
+              <el-link
                 href="http://thinglinks.mqttsnet.com"
-                target="_blank"
-                >http://thinglinks.mqttsnet.com</el-link
-              >
+                target="_blank">https://www.mqttsnet.com
+              </el-link>
             </p>
             <p>
               <i class="el-icon-chat-dot-round"></i> MQTTSNET团队邮箱：<a
-                href="javascript:;"
-                >/ *mqttsnet@163.com</a
-              >
+              href="javascript:;"
+            >/ *mqttsnet@163.com</a>
             </p>
           </div>
         </el-card>
@@ -82,7 +80,17 @@
             <span>更新日志</span>
           </div>
           <el-collapse accordion>
-            <el-collapse-item title="V1.1.0 - 开发中">
+            <el-collapse-item title="V1.2.0 - - 2024-05-01">
+              <ol>
+                <li>产品模型初始化功能优化</li>
+                <li>新增规则引擎-链式规则</li>
+                <li>新增OTA远程升级功能</li>
+                <li>设备接入支持协议加密</li>
+                <li>支持MQTT5.0协议</li>
+                <li>其他细节优化</li>
+              </ol>
+            </el-collapse-item>
+            <el-collapse-item title="V1.1.0 - - 2023-01-02">
               <ol>
                 <li>设备管理页面列表布局调整</li>
                 <li>支持Td时序数据库保存在线离线记录</li>
@@ -116,7 +124,7 @@ export default {
   data() {
     return {
       // 版本号
-      version: "1.0.0",
+      version: "1.2.0",
     };
   },
   methods: {
@@ -135,12 +143,14 @@ export default {
     font-size: 17.5px;
     border-left: 5px solid #eee;
   }
+
   hr {
     margin-top: 20px;
     margin-bottom: 20px;
     border: 0;
     border-top: 1px solid #eee;
   }
+
   .col-item {
     margin-bottom: 20px;
   }

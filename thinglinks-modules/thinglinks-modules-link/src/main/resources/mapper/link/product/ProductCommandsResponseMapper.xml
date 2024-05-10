@@ -60,17 +60,17 @@
             useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into product_commands_response (commands_id, service_id, datatype,
-                                               enumlist, `max`, maxlength,
-                                               `min`, parameter_description, `parameter_name`,
-                                               required, step, unit,
-                                               create_by, create_time, update_by,
-                                               update_time)
+        enumlist, `max`, maxlength,
+        `min`, parameter_description, `parameter_name`,
+        required, step, unit,
+        create_by, create_time, update_by,
+        update_time)
         values (#{commandsId,jdbcType=BIGINT}, #{serviceId,jdbcType=BIGINT}, #{datatype,jdbcType=VARCHAR},
-                #{enumlist,jdbcType=VARCHAR}, #{max,jdbcType=VARCHAR}, #{maxlength,jdbcType=VARCHAR},
-                #{min,jdbcType=VARCHAR}, #{parameterDescription,jdbcType=VARCHAR}, #{parameterName,jdbcType=VARCHAR},
-                #{required,jdbcType=VARCHAR}, #{step,jdbcType=VARCHAR}, #{unit,jdbcType=VARCHAR},
-                #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},
-                #{updateTime,jdbcType=TIMESTAMP})
+        #{enumlist,jdbcType=VARCHAR}, #{max,jdbcType=VARCHAR}, #{maxlength,jdbcType=VARCHAR},
+        #{min,jdbcType=VARCHAR}, #{parameterDescription,jdbcType=VARCHAR}, #{parameterName,jdbcType=VARCHAR},
+        #{required,jdbcType=VARCHAR}, #{step,jdbcType=VARCHAR}, #{unit,jdbcType=VARCHAR},
+        #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR},
+        #{updateTime,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommandsResponse"
@@ -238,22 +238,22 @@
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductCommandsResponse">
         <!--@mbg.generated-->
         update product_commands_response
-        set commands_id           = #{commandsId,jdbcType=BIGINT},
-            service_id            = #{serviceId,jdbcType=BIGINT},
-            datatype              = #{datatype,jdbcType=VARCHAR},
-            enumlist              = #{enumlist,jdbcType=VARCHAR},
-            `max`                 = #{max,jdbcType=VARCHAR},
-            maxlength             = #{maxlength,jdbcType=VARCHAR},
-            `min`                 = #{min,jdbcType=VARCHAR},
-            parameter_description = #{parameterDescription,jdbcType=VARCHAR},
-            `parameter_name`      = #{parameterName,jdbcType=VARCHAR},
-            required              = #{required,jdbcType=VARCHAR},
-            step                  = #{step,jdbcType=VARCHAR},
-            unit                  = #{unit,jdbcType=VARCHAR},
-            create_by             = #{createBy,jdbcType=VARCHAR},
-            create_time           = #{createTime,jdbcType=TIMESTAMP},
-            update_by             = #{updateBy,jdbcType=VARCHAR},
-            update_time           = #{updateTime,jdbcType=TIMESTAMP}
+        set commands_id = #{commandsId,jdbcType=BIGINT},
+        service_id = #{serviceId,jdbcType=BIGINT},
+        datatype = #{datatype,jdbcType=VARCHAR},
+        enumlist = #{enumlist,jdbcType=VARCHAR},
+        `max` = #{max,jdbcType=VARCHAR},
+        maxlength = #{maxlength,jdbcType=VARCHAR},
+        `min` = #{min,jdbcType=VARCHAR},
+        parameter_description = #{parameterDescription,jdbcType=VARCHAR},
+        `parameter_name` = #{parameterName,jdbcType=VARCHAR},
+        required = #{required,jdbcType=VARCHAR},
+        step = #{step,jdbcType=VARCHAR},
+        unit = #{unit,jdbcType=VARCHAR},
+        create_by = #{createBy,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_by = #{updateBy,jdbcType=VARCHAR},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateBatch" parameterType="java.util.List">
@@ -472,17 +472,17 @@
         <!--@mbg.generated-->
         insert into product_commands_response
         (commands_id, service_id, datatype, enumlist, `max`, maxlength, `min`, parameter_description,
-         `parameter_name`, required, step, unit, create_by, create_time, update_by, update_time)
+        `parameter_name`, required, step, unit, create_by, create_time, update_by, update_time)
         values
         <foreach collection="list" item="item" separator=",">
             (#{item.commandsId,jdbcType=BIGINT}, #{item.serviceId,jdbcType=BIGINT}, #{item.datatype,jdbcType=VARCHAR},
-             #{item.enumlist,jdbcType=VARCHAR}, #{item.max,jdbcType=VARCHAR}, #{item.maxlength,jdbcType=VARCHAR},
-             #{item.min,jdbcType=VARCHAR}, #{item.parameterDescription,jdbcType=VARCHAR},
-             #{item.parameterName,jdbcType=VARCHAR},
-             #{item.required,jdbcType=VARCHAR}, #{item.step,jdbcType=VARCHAR}, #{item.unit,jdbcType=VARCHAR},
-             #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
-             #{item.updateBy,jdbcType=VARCHAR},
-             #{item.updateTime,jdbcType=TIMESTAMP})
+            #{item.enumlist,jdbcType=VARCHAR}, #{item.max,jdbcType=VARCHAR}, #{item.maxlength,jdbcType=VARCHAR},
+            #{item.min,jdbcType=VARCHAR}, #{item.parameterDescription,jdbcType=VARCHAR},
+            #{item.parameterName,jdbcType=VARCHAR},
+            #{item.required,jdbcType=VARCHAR}, #{item.step,jdbcType=VARCHAR}, #{item.unit,jdbcType=VARCHAR},
+            #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateBy,jdbcType=VARCHAR},
+            #{item.updateTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
     <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
@@ -538,22 +538,22 @@
             <if test="id != null">
                 id = #{id,jdbcType=BIGINT},
             </if>
-            commands_id           = #{commandsId,jdbcType=BIGINT},
-            service_id            = #{serviceId,jdbcType=BIGINT},
-            datatype              = #{datatype,jdbcType=VARCHAR},
-            enumlist              = #{enumlist,jdbcType=VARCHAR},
-            `max`                 = #{max,jdbcType=VARCHAR},
-            maxlength             = #{maxlength,jdbcType=VARCHAR},
-            `min`                 = #{min,jdbcType=VARCHAR},
+            commands_id = #{commandsId,jdbcType=BIGINT},
+            service_id = #{serviceId,jdbcType=BIGINT},
+            datatype = #{datatype,jdbcType=VARCHAR},
+            enumlist = #{enumlist,jdbcType=VARCHAR},
+            `max` = #{max,jdbcType=VARCHAR},
+            maxlength = #{maxlength,jdbcType=VARCHAR},
+            `min` = #{min,jdbcType=VARCHAR},
             parameter_description = #{parameterDescription,jdbcType=VARCHAR},
-            `parameter_name`      = #{parameterName,jdbcType=VARCHAR},
-            required              = #{required,jdbcType=VARCHAR},
-            step                  = #{step,jdbcType=VARCHAR},
-            unit                  = #{unit,jdbcType=VARCHAR},
-            create_by             = #{createBy,jdbcType=VARCHAR},
-            create_time           = #{createTime,jdbcType=TIMESTAMP},
-            update_by             = #{updateBy,jdbcType=VARCHAR},
-            update_time           = #{updateTime,jdbcType=TIMESTAMP},
+            `parameter_name` = #{parameterName,jdbcType=VARCHAR},
+            required = #{required,jdbcType=VARCHAR},
+            step = #{step,jdbcType=VARCHAR},
+            unit = #{unit,jdbcType=VARCHAR},
+            create_by = #{createBy,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_by = #{updateBy,jdbcType=VARCHAR},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
         </trim>
     </insert>
     <insert id="insertOrUpdateSelective" keyColumn="id" keyProperty="id"
@@ -963,4 +963,19 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectProductCommandsResponseByCommandIdList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        product_commands_response
+        <where>
+            <if test="commandIdList != null and commandIdList.size() &gt; 0">
+                and commands_id in
+                <foreach collection="commandIdList" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
 </mapper>

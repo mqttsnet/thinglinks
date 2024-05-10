@@ -1,0 +1,42 @@
+<!--
+  Copyright JS Foundation and other contributors, http://js.foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/html" data-help-name="websocket in">
+    <p>WebSocket-Eingangs-Node.</p>
+    <p>Standardmäßig befinden sich die vom WebSocket empfangenen Daten in <code>msg.payload</code>.
+       Der Socket kann eingestellt werden, einen korrekt gebildeten JSON-Zeichenfolge (string) zu erwarten.
+       In diesem Fall wird das JSON analysiert (parse) und das resultierende Objekt als gesamte Nachricht gesendet.</p>
+</script>
+
+<script type="text/html" data-help-name="websocket out">
+    <p>WebSocket-Ausgang-Node.</p>
+    <p>Standardmäßig wird <code>msg.payload</code> über den WebSocket gesendet.
+       Der Socket kann eingestellt werden, das gesamte <code>msg</code>-Objekt als JSON-Zeichenfolge (string) zu kodieren und
+       über den WebSocket zu senden.</p>
+    <p>Wenn die an diesem Node ankommende Nachricht von einem WebSocket-Eingangs-Node ausgeht,
+       wird die Nachricht an den Client zurückgesendet, der den Flow ausgelöst hat.
+       Andernfalls wird die Nachricht an alle verbundenen Clients gesendet.</p>
+    <p>Wenn eine von einem WebSocket-Eingangs-Node ausgehende Nachricht an alle verbundenen Clients gesendet werden soll,
+       muss die <code>msg._session</code>-Eigenschaft im Flow gelöscht werden.</p>
+</script>
+
+<script type="text/html" data-help-name="websocket-listener">
+    <p>Konfigurations-Node zur Erstellung eines WebSocket-Server-Endpunktes mit vorgegebenen Pfad.</p>
+</script>
+
+<script type="text/html" data-help-name="websocket-client">
+    <p>Konfigurations-Node zur Verbindung eines WebSocket-Clients mit vorgegebener URL.</p>
+</script>

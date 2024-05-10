@@ -20,6 +20,7 @@
         <module>thinglinks-common-job</module>
         <module>thinglinks-common-kafka</module>
         <module>thinglinks-common-seata</module>
+        <module>thinglinks-common-protocol</module>
     </modules>
 
     <artifactId>thinglinks-common</artifactId>

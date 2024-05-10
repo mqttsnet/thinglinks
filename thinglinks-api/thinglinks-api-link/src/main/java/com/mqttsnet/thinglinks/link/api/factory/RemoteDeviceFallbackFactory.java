@@ -62,14 +62,15 @@ public class RemoteDeviceFallbackFactory implements FallbackFactory<RemoteDevice
              * @return
              */
             @Override
-            public R<?> selectAllByProductIdentification(String productIdentification){
+            public R<?> selectAllByProductIdentification(String productIdentification) {
                 return R.fail("查询产品下的设备:" + throwable.getMessage());
             }
-            @Override
-            public R<?> selectDeviceByDeviceIdentificationList(List<String> deviceIdentificationList){
 
+            @Override
+            public R<?> selectDeviceByDeviceIdentificationList(List<String> deviceIdentificationList) {
                 return R.fail("根据设备标识列表查询设备失败:" + throwable.getMessage());
             }
+
         };
     }
 }

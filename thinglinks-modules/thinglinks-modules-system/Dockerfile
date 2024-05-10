@@ -1,11 +1,25 @@
+# 使用 Java 运行环境
 FROM openjdk:8-jre
-MAINTAINER mqttsnet mqttsnet@163.com
 
-RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && echo "Asia/Shanghai" > /etc/timezone
+# 维护者信息
+LABEL maintainer="mqttsnet mqttsnet@163.com"
 
-ARG JAR_FILE
-COPY ${JAR_FILE} /app.jar
+# 设置时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-ENTRYPOINT ["java", "-Xmx512m", "-Djava.security.egd=file:/dev/./urandom", "-Ddruid.mysql.usePingMethod=false", "-jar", "/app.jar"]
-CMD ["--spring.profiles.active=docker"]
+# 创建工作目录
+WORKDIR /home/www/mqttsnet/thinglinks-modules-system
+
+# 从构建上下文（Dockerfile 所在目录的相对路径）复制 JAR 文件
+COPY target/thinglinks-modules-system.jar /app.jar
+
+# 暴露服务端口
+EXPOSE 19303
+
+# 添加健康检查，确保应用健康状态
+HEALTHCHECK --interval=30s --timeout=30s --retries=3 \
+  CMD curl -f http://localhost:19303/actuator/health || exit 1
+
+# 启动 Java 应用
+ENTRYPOINT ["java", "-Xmx512m", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]

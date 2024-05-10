@@ -26,17 +26,9 @@
     <el-table v-loading="loading" :data="ruleList">
       <el-table-column align="center" width="60" label="id" prop="id" />
       <el-table-column align="center" label="规则名称" prop="ruleName" />
-      <el-table-column
-        align="center"
-        label="规则标识"
-        prop="jobIdentification"
-      />
+      <el-table-column align="center" label="规则标识" prop="ruleIdentification"/>
       <el-table-column align="center" label="appId" prop="appId" width="180" />
-      <el-table-column
-        align="center"
-        label="规则描述"
-        prop="remark"
-        width="280"
+      <el-table-column align="center" label="规则描述" prop="remark" width="280"
       />
       <el-table-column fixed="right" label="操作" width="180">
         <template slot-scope="scope">

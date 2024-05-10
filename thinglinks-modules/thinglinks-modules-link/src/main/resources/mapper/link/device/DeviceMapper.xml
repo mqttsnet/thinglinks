@@ -21,6 +21,13 @@
         <result column="product_identification" jdbcType="VARCHAR" property="productIdentification"/>
         <result column="protocol_type" jdbcType="VARCHAR" property="protocolType"/>
         <result column="device_type" jdbcType="VARCHAR" property="deviceType"/>
+        <result column="encrypt_key" jdbcType="VARCHAR" property="encryptKey"/>
+        <result column="encrypt_vector" jdbcType="VARCHAR" property="encryptVector"/>
+        <result column="sign_key" jdbcType="VARCHAR" property="signKey"/>
+        <result column="encrypt_method" jdbcType="VARCHAR" property="encryptMethod"/>
+        <result column="sw_version" jdbcType="VARCHAR" property="swVersion"/>
+        <result column="fw_version" jdbcType="VARCHAR" property="fwVersion"/>
+        <result column="device_sdk_version" jdbcType="VARCHAR" property="deviceSdkVersion"/>
         <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
@@ -46,6 +53,13 @@
         product_identification,
         protocol_type,
         device_type,
+        encrypt_key,
+        encrypt_vector,
+        sign_key,
+        encrypt_method,
+        sw_version,
+        fw_version,
+        device_sdk_version,
         create_by,
         create_time,
         update_by,
@@ -73,7 +87,13 @@
                             device_name, connector, device_description,
                             device_status, connect_status, is_will,
                             device_tags, product_identification, protocol_type,
-                            device_type, create_by, create_time,
+                            device_type,encrypt_key,
+        encrypt_vector,
+        sign_key,
+        encrypt_method,
+        sw_version,
+        fw_version,
+        device_sdk_version,  create_by, create_time,
                             update_by, update_time, remark)
         values (#{clientId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
                 #{appId,jdbcType=VARCHAR}, #{authMode,jdbcType=VARCHAR}, #{deviceIdentification,jdbcType=VARCHAR},
@@ -81,7 +101,7 @@
                 #{deviceStatus,jdbcType=VARCHAR}, #{connectStatus,jdbcType=VARCHAR}, #{isWill,jdbcType=VARCHAR},
                 #{deviceTags,jdbcType=VARCHAR}, #{productIdentification,jdbcType=VARCHAR},
                 #{protocolType,jdbcType=VARCHAR},
-                #{deviceType,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+                #{deviceType,jdbcType=VARCHAR},#{encryptKey,jdbcType=VARCHAR},#{encryptVector,jdbcType=VARCHAR},#{signKey,jdbcType=VARCHAR},#{encryptMethod,jdbcType=VARCHAR},#{swVersion,jdbcType=VARCHAR},#{fwVersion,jdbcType=VARCHAR},#{deviceSdkVersion,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
                 #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
@@ -136,6 +156,27 @@
             </if>
             <if test="deviceType != null">
                 device_type,
+            </if>
+            <if test="encryptKey != null">
+                encrypt_key,
+            </if>
+            <if test="encryptVector != null">
+                encrypt_vector,
+            </if>
+            <if test="signKey != null">
+                sign_key,
+            </if>
+            <if test="encryptMethod != null">
+                encrypt_method,
+            </if>
+            <if test="swVersion != null">
+                sw_version,
+            </if>
+            <if test="fwVersion != null">
+                fw_version,
+            </if>
+            <if test="deviceSdkVersion != null">
+                device_sdk_version,
             </if>
             <if test="createBy != null">
                 create_by,
@@ -201,6 +242,27 @@
             </if>
             <if test="deviceType != null">
                 #{deviceType,jdbcType=VARCHAR},
+            </if>
+            <if test="encryptKey != null">
+                #{encryptKey,jdbcType=VARCHAR},
+            </if>
+            <if test="encryptVector != null">
+                #{encryptVector,jdbcType=VARCHAR},
+            </if>
+            <if test="signKey != null">
+                #{signKey,jdbcType=VARCHAR},
+            </if>
+            <if test="encryptMethod != null">
+                #{encryptMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="swVersion != null">
+                #{swVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="fwVersion != null">
+                #{fwVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="deviceSdkVersion != null">
+                #{deviceSdkVersion,jdbcType=VARCHAR},
             </if>
             <if test="createBy != null">
                 #{createBy,jdbcType=VARCHAR},
@@ -272,6 +334,27 @@
             <if test="deviceType != null">
                 device_type = #{deviceType,jdbcType=VARCHAR},
             </if>
+            <if test="encryptKey != null">
+                encrypt_key = #{encryptKey,jdbcType=VARCHAR},
+            </if>
+            <if test="encryptVector != null">
+                encrypt_vector = #{encryptVector,jdbcType=VARCHAR},
+            </if>
+            <if test="signKey != null">
+                sign_key = #{signKey,jdbcType=VARCHAR},
+            </if>
+            <if test="encryptMethod != null">
+                encrypt_method = #{encryptMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="swVersion != null">
+                sw_version = #{swVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="fwVersion != null">
+                fw_version = #{fwVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="deviceSdkVersion != null">
+                device_sdk_version = #{deviceSdkVersion,jdbcType=VARCHAR},
+            </if>
             <if test="createBy != null">
                 create_by = #{createBy,jdbcType=VARCHAR},
             </if>
@@ -309,6 +392,13 @@
             product_identification = #{productIdentification,jdbcType=VARCHAR},
             protocol_type          = #{protocolType,jdbcType=VARCHAR},
             device_type            = #{deviceType,jdbcType=VARCHAR},
+            encrypt_key            = #{encryptKey,jdbcType=VARCHAR},
+            encrypt_vector         = #{encryptVector,jdbcType=VARCHAR},
+            sign_key               = #{signKey,jdbcType=VARCHAR},
+            encrypt_method         = #{encryptMethod,jdbcType=VARCHAR},
+            sw_version             = #{swVersion,jdbcType=VARCHAR},
+            fw_version             = #{fwVersion,jdbcType=VARCHAR},
+            device_sdk_version     = #{deviceSdkVersion,jdbcType=VARCHAR},
             create_by              = #{createBy,jdbcType=VARCHAR},
             create_time            = #{createTime,jdbcType=TIMESTAMP},
             update_by              = #{updateBy,jdbcType=VARCHAR},
@@ -398,6 +488,41 @@
             <trim prefix="device_type = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
                     when id = #{item.id,jdbcType=BIGINT} then #{item.deviceType,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="encrypt_key = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.encryptKey,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="encrypt_vector = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.encryptVector,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="sign_key = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.signKey,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="encrypt_method = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.encryptMethod,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="sw_version = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.swVersion,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="fw_version = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.fwVersion,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="device_sdk_version = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.deviceSdkVersion,jdbcType=VARCHAR}
                 </foreach>
             </trim>
             <trim prefix="create_by = case" suffix="end,">
@@ -547,6 +672,55 @@
                     </if>
                 </foreach>
             </trim>
+            <trim prefix="encrypt_key = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.encryptKey != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.encryptKey,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="encrypt_vector = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.encryptVector != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.encryptVector,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sign_key = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.signKey != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.signKey,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="encrypt_method = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.encryptMethod != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.encryptMethod,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sw_version = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.swVersion != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.swVersion,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="fw_version = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.fwVersion != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.fwVersion,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="device_sdk_version = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.deviceSdkVersion != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.deviceSdkVersion,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
             <trim prefix="create_by = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
                     <if test="item.createBy != null">
@@ -593,7 +767,8 @@
         insert into device
         (client_id, user_name, `password`, app_id, auth_mode, device_identification, device_name,
          connector, device_description, device_status, connect_status, is_will, device_tags,
-         product_identification, protocol_type, device_type, create_by, create_time, update_by,
+         product_identification, protocol_type, device_type, encryptKey, encryptVector, signKey, encryptMethod, swVersion, fwVersion, deviceSdkVersion,
+         create_by, create_time, update_by,
          update_time, remark)
         values
         <foreach collection="list" item="item" separator=",">
@@ -606,6 +781,10 @@
              #{item.isWill,jdbcType=VARCHAR}, #{item.deviceTags,jdbcType=VARCHAR},
              #{item.productIdentification,jdbcType=VARCHAR},
              #{item.protocolType,jdbcType=VARCHAR}, #{item.deviceType,jdbcType=VARCHAR},
+                #{item.encryptKey,jdbcType=VARCHAR}, #{item.encryptVector,jdbcType=VARCHAR},
+                #{item.signKey,jdbcType=VARCHAR}, #{item.encryptMethod,jdbcType=VARCHAR},
+                #{item.swVersion,jdbcType=VARCHAR}, #{item.fwVersion,jdbcType=VARCHAR},
+                #{item.deviceSdkVersion,jdbcType=VARCHAR},
              #{item.createBy,jdbcType=VARCHAR},
              #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateBy,jdbcType=VARCHAR},
              #{item.updateTime,jdbcType=TIMESTAMP},
@@ -636,6 +815,13 @@
             product_identification,
             protocol_type,
             device_type,
+            encrypt_key,
+            encrypt_vector,
+            sign_key,
+            encrypt_method,
+            sw_version,
+            fw_version,
+            device_sdk_version,
             create_by,
             create_time,
             update_by,
@@ -663,6 +849,13 @@
             #{productIdentification,jdbcType=VARCHAR},
             #{protocolType,jdbcType=VARCHAR},
             #{deviceType,jdbcType=VARCHAR},
+            #{encryptKey,jdbcType=VARCHAR},
+            #{encryptVector,jdbcType=VARCHAR},
+            #{signKey,jdbcType=VARCHAR},
+            #{encryptMethod,jdbcType=VARCHAR},
+            #{swVersion,jdbcType=VARCHAR},
+            #{fwVersion,jdbcType=VARCHAR},
+            #{deviceSdkVersion,jdbcType=VARCHAR},
             #{createBy,jdbcType=VARCHAR},
             #{createTime,jdbcType=TIMESTAMP},
             #{updateBy,jdbcType=VARCHAR},
@@ -690,6 +883,13 @@
             product_identification = #{productIdentification,jdbcType=VARCHAR},
             protocol_type          = #{protocolType,jdbcType=VARCHAR},
             device_type            = #{deviceType,jdbcType=VARCHAR},
+            encrypt_key            = #{encryptKey,jdbcType=VARCHAR},
+            encrypt_vector         = #{encryptVector,jdbcType=VARCHAR},
+            sign_key               = #{signKey,jdbcType=VARCHAR},
+            encrypt_method         = #{encryptMethod,jdbcType=VARCHAR},
+            sw_version             = #{swVersion,jdbcType=VARCHAR},
+            fw_version             = #{fwVersion,jdbcType=VARCHAR},
+            device_sdk_version     = #{deviceSdkVersion,jdbcType=VARCHAR},
             create_by              = #{createBy,jdbcType=VARCHAR},
             create_time            = #{createTime,jdbcType=TIMESTAMP},
             update_by              = #{updateBy,jdbcType=VARCHAR},
@@ -752,6 +952,27 @@
             </if>
             <if test="deviceType != null">
                 device_type,
+            </if>
+            <if test="encryptKey != null">
+                encrypt_key,
+            </if>
+            <if test="encryptVector != null">
+                encrypt_vector,
+            </if>
+            <if test="signKey != null">
+                sign_key,
+            </if>
+            <if test="encryptMethod != null">
+                encrypt_method,
+            </if>
+            <if test="swVersion != null">
+                sw_version,
+            </if>
+            <if test="fwVersion != null">
+                fw_version,
+            </if>
+            <if test="deviceSdkVersion != null">
+                device_sdk_version,
             </if>
             <if test="createBy != null">
                 create_by,
@@ -822,6 +1043,27 @@
             <if test="deviceType != null">
                 #{deviceType,jdbcType=VARCHAR},
             </if>
+            <if test="encryptKey != null">
+                #{encryptKey,jdbcType=VARCHAR},
+            </if>
+            <if test="encryptVector != null">
+                #{encryptVector,jdbcType=VARCHAR},
+            </if>
+            <if test="signKey != null">
+                #{signKey,jdbcType=VARCHAR},
+            </if>
+            <if test="encryptMethod != null">
+                #{encryptMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="swVersion != null">
+                #{swVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="fwVersion != null">
+                #{fwVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="deviceSdkVersion != null">
+                #{deviceSdkVersion,jdbcType=VARCHAR},
+            </if>
             <if test="createBy != null">
                 #{createBy,jdbcType=VARCHAR},
             </if>
@@ -890,6 +1132,27 @@
             </if>
             <if test="deviceType != null">
                 device_type = #{deviceType,jdbcType=VARCHAR},
+            </if>
+            <if test="encryptKey != null">
+                encrypt_key = #{encryptKey,jdbcType=VARCHAR},
+            </if>
+            <if test="encryptVector != null">
+                encrypt_vector = #{encryptVector,jdbcType=VARCHAR},
+            </if>
+            <if test="signKey != null">
+                sign_key = #{signKey,jdbcType=VARCHAR},
+            </if>
+            <if test="encryptMethod != null">
+                encrypt_method = #{encryptMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="swVersion != null">
+                sw_version = #{swVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="fwVersion != null">
+                fw_version = #{fwVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="deviceSdkVersion != null">
+                device_sdk_version = #{deviceSdkVersion,jdbcType=VARCHAR},
             </if>
             <if test="createBy != null">
                 create_by = #{createBy,jdbcType=VARCHAR},
@@ -1002,6 +1265,27 @@
             <if test="deviceType != null and deviceType != ''">
                 and device_type = #{deviceType,jdbcType=VARCHAR}
             </if>
+            <if test="encryptKey != null and encryptKey != ''">
+                and encrypt_key = #{encryptKey,jdbcType=VARCHAR}
+            </if>
+            <if test="encryptVector != null and encryptVector != ''">
+                and encrypt_vector = #{encryptVector,jdbcType=VARCHAR}
+            </if>
+            <if test="signKey != null and signKey != ''">
+                and sign_key = #{signKey,jdbcType=VARCHAR}
+            </if>
+            <if test="encryptMethod != null and encryptMethod != ''">
+                and encrypt_method = #{encryptMethod,jdbcType=VARCHAR}
+            </if>
+            <if test="swVersion != null and swVersion != ''">
+                and sw_version = #{swVersion,jdbcType=VARCHAR}
+            </if>
+            <if test="fwVersion != null and fwVersion != ''">
+                and fw_version = #{fwVersion,jdbcType=VARCHAR}
+            </if>
+            <if test="deviceSdkVersion != null and deviceSdkVersion != ''">
+                and device_sdk_version = #{deviceSdkVersion,jdbcType=VARCHAR}
+            </if>
             <if test="createBy != null and createBy != ''">
                 and create_by = #{createBy,jdbcType=VARCHAR}
             </if>
@@ -1049,6 +1333,13 @@
                product_identification,
                protocol_type,
                device_type,
+                encrypt_key,
+                encrypt_vector,
+                sign_key,
+                encrypt_method,
+                sw_version,
+                fw_version,
+                device_sdk_version,
                create_by,
                create_time,
                update_by,
@@ -1093,6 +1384,30 @@
             </if>
             <if test="deviceType != null  and deviceType != ''">
                 and device_type = #{deviceType}
+            </if>
+            <if test="encryptKey != null  and encryptKey != ''">
+                and encrypt_key = #{encryptKey}
+            </if>
+            <if test="encryptVector != null  and encryptVector != ''">
+                and encrypt_vector = #{encryptVector}
+            </if>
+            <if test="signKey != null  and signKey != ''">
+                and sign_key = #{signKey}
+            </if>
+            <if test="encryptMethod != null  and encryptMethod != ''">
+                and encrypt_method = #{encryptMethod}
+            </if>
+            <if test="swVersion != null  and swVersion != ''">
+                and sw_version = #{swVersion}
+            </if>
+            <if test="fwVersion != null  and fwVersion != ''">
+                and fw_version = #{fwVersion}
+            </if>
+            <if test="deviceSdkVersion != null  and deviceSdkVersion != ''">
+                and device_sdk_version = #{deviceSdkVersion}
+            </if>
+            <if test="createBy != null  and createBy != ''">
+                and create_by = #{createBy}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
@@ -1158,6 +1473,27 @@
             <if test="deviceType != null and deviceType != ''">
                 device_type,
             </if>
+            <if test="encryptKey != null">
+                encrypt_key,
+            </if>
+            <if test="encryptVector != null">
+                encrypt_vector,
+            </if>
+            <if test="signKey != null">
+                sign_key,
+            </if>
+            <if test="encryptMethod != null">
+                encrypt_method,
+            </if>
+            <if test="swVersion != null">
+                sw_version,
+            </if>
+            <if test="fwVersion != null">
+                fw_version,
+            </if>
+            <if test="deviceSdkVersion != null">
+                device_sdk_version,
+            </if>
             <if test="createBy != null">
                 create_by,
             </if>
@@ -1222,6 +1558,27 @@
             </if>
             <if test="deviceType != null and deviceType != ''">
                 #{deviceType},
+            </if>
+            <if test="encryptKey != null">
+                #{encryptKey},
+            </if>
+            <if test="encryptVector != null">
+                #{encryptVector},
+            </if>
+            <if test="signKey != null">
+                #{signKey},
+            </if>
+            <if test="encryptMethod != null">
+                #{encryptMethod},
+            </if>
+            <if test="swVersion != null">
+                #{swVersion},
+            </if>
+            <if test="fwVersion != null">
+                #{fwVersion},
+            </if>
+            <if test="deviceSdkVersion != null">
+                #{deviceSdkVersion},
             </if>
             <if test="createBy != null">
                 #{createBy},
@@ -1292,6 +1649,27 @@
             <if test="deviceType != null and deviceType != ''">
                 device_type = #{deviceType},
             </if>
+            <if test="encryptKey != null">
+                encrypt_key = #{encryptKey},
+            </if>
+            <if test="encryptVector != null">
+                encrypt_vector = #{encryptVector},
+            </if>
+            <if test="signKey != null">
+                sign_key = #{signKey},
+            </if>
+            <if test="encryptMethod != null">
+                encrypt_method = #{encryptMethod},
+            </if>
+            <if test="swVersion != null">
+                sw_version = #{swVersion},
+            </if>
+            <if test="fwVersion != null">
+                fw_version = #{fwVersion},
+            </if>
+            <if test="deviceSdkVersion != null">
+                device_sdk_version = #{deviceSdkVersion},
+            </if>
             <if test="createBy != null">
                 create_by = #{createBy},
             </if>
@@ -1329,7 +1707,7 @@
         from device
         <where>
             <if test="clientId != null">
-                and client_id=#{clientId}
+                and client_id= #{clientId,jdbcType=VARCHAR}
             </if>
         </where>
     </select>
@@ -1461,5 +1839,15 @@
                 </foreach>
             </if>
         </where>
+    </select>
+
+    <select id="findDeviceTotal" resultType="java.lang.Long">
+        select count(*) from device
+    </select>
+
+    <select id="findDevices" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM device
     </select>
 </mapper>

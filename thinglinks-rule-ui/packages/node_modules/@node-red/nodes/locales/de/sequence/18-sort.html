@@ -1,0 +1,45 @@
+<!--
+  Copyright JS Foundation and other contributors, http://js.foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/html" data-help-name="sort">
+    <p>Sortierung einer Nachrichteneigenschaft oder einer Nachrichtensequenz.</p>
+    <p>Der Node sortiert entweder das Array der vorgegebenen Nachrichteneigenschaft oder
+       die Reihenfolge einer Nachrichtensequenz neu.</p>
+    <p>Die Sortierreihenfolge kann sein:</p>
+    <ul>
+        <li><b>aufsteigend</b> oder</li>
+        <li><b>absteigend</b></li>
+    </ul>
+    <p>Für Zahlenwerte kann die numerische Sortierreihenfolge festgelegt werden.</p>
+    <p>Der Sortierschlüssel kann ein Elementwert oder ein JSONata-Ausdruck beim Sortieren einer Nachrichteneigenschaft
+       bzw. eine Nachrichteneigenschaft oder ein JSONata-Ausdruck beim Sortieren einer Nachrichtensequenz sein.<p>
+    <p>Zum Sortieren einer Nachrichtensequenz benötigt der sort-Node die gesetzte <code>msg.parts</code>-Eigenschaft bei den empfangenen Nachrichten.
+       Diese Eigenschaft wird vom split-Node erzeugt und kann aber auch manuell erzeugt werden.
+       Sie hat die folgenden Eigenschaften:</p>
+    <p>
+        <ul>
+            <li><code>id</code>: Identifikator der Nachrichten-Gruppe</li>
+            <li><code>index</code>: Position innerhalb der Gruppe</li>
+            <li><code>count</code>: Gesamtzahl der Nachrichten in der Gruppe</li>
+        </ul>
+    </p>
+    <p><b>Hinweis</b>: Dieser Node speichert intern Nachrichten um seine Aufgabe erfüllen zu können.
+       Um einen unerwarteten Speicherverbrauch zu vermeiden, kann die Anzahl der gespeicherten Nachrichten begrenzt werden.
+       Standardmäßig ist die Nachrichtenanzahl nicht begrenzt.
+       Mit der Laufzeiteinstellung <code>nodeMessageBufferMaxLength</code> kann begrenzt werden,
+       wie viele Nachrichten im Node zwischengespeichert werden sollen.</p>
+    </p>
+</script>

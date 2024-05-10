@@ -1,8 +1,11 @@
 package com.mqttsnet.thinglinks.link.service.device;
 
-import com.mqttsnet.thinglinks.common.core.web.page.TableDataInfo;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeviceDataReportParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoQueryDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoQueryDeviceResultVO;
 
 import java.util.Collection;
 import java.util.List;
@@ -162,7 +165,7 @@ public interface DeviceService {
 
     List<Device> findAllByProductIdentification(String productIdentification);
 
-    Device selectByProductIdentificationAndDeviceIdentification(String productIdentification,String deviceIdentification);
+    Device selectByProductIdentificationAndDeviceIdentification(String productIdentification, String deviceIdentification);
 
     /**
      * 查询设备详细信息
@@ -175,14 +178,53 @@ public interface DeviceService {
     /**
      * 查询普通设备影子数据
      *
-     * @param ids 需要查询的普通设备id
+     * @param ids       需要查询的普通设备id
      * @param startTime 开始时间 格式：yyyy-MM-dd HH:mm:ss
-     * @param endTime 结束时间 格式：yyyy-MM-dd HH:mm:ss
+     * @param endTime   结束时间 格式：yyyy-MM-dd HH:mm:ss
      * @return 普通设备影子数据
      */
     public Map<String, List<Map<String, Object>>> getDeviceShadow(String ids, String startTime, String endTime);
 
-    public List<Device>  selectDeviceByDeviceIdentificationList( List<String> deviceIdentificationList);
+    public List<Device> selectDeviceByDeviceIdentificationList(List<String> deviceIdentificationList);
+
+    /**
+     * MQTT协议下上报设备数据
+     *
+     * @param topoDeviceDataReportParam 上报参数
+     * @return {@link TopoDeviceOperationResultVO} 上报结果
+     */
+    TopoDeviceOperationResultVO deviceDataReportByMqtt(TopoDeviceDataReportParam topoDeviceDataReportParam);
+
+
+    /**
+     * Http协议下上报设备数据
+     *
+     * @param topoDeviceDataReportParam 上报参数
+     * @return {@link TopoDeviceOperationResultVO} 上报结果
+     */
+    TopoDeviceOperationResultVO deviceDataReportByHttp(TopoDeviceDataReportParam topoDeviceDataReportParam);
+
+
+    /**
+     * Queries device information using the MQTT protocol.
+     *
+     * @param topoQueryDeviceParam The device query parameters.
+     * @return {@link TopoQueryDeviceResultVO} The result of the device query.
+     */
+    TopoQueryDeviceResultVO queryDeviceByMqtt(TopoQueryDeviceParam topoQueryDeviceParam);
+
+    /**
+     * Queries device information using the HTTP protocol.
+     *
+     * @param topoQueryDeviceParam The device query parameters.
+     * @return {@link TopoQueryDeviceResultVO} The result of the device query.
+     */
+    TopoQueryDeviceResultVO queryDeviceByHttp(TopoQueryDeviceParam topoQueryDeviceParam);
+
+    Long findDeviceTotal();
+
+
+    List<Device> findDevices();
 
 }
 

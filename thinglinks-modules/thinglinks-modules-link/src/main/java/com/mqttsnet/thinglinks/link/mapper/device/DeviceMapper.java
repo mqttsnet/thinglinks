@@ -172,4 +172,9 @@ public interface DeviceMapper {
     List<Device> selectDeviceByDeviceIdentificationList(@Param("deviceIdentificationList") List<String> deviceIdentificationList);
 
 
+    Long findDeviceTotal();
+
+
+
+    List<Device> findDevices();
 }

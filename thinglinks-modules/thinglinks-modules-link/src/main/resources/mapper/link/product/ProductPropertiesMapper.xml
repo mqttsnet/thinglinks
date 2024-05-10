@@ -5,7 +5,8 @@
         <!--@mbg.generated-->
         <!--@Table product_properties-->
         <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="property_code" jdbcType="VARCHAR" property="propertyCode"/>
+        <result column="property_name" jdbcType="VARCHAR" property="propertyName"/>
         <result column="service_id" jdbcType="BIGINT" property="serviceId"/>
         <result column="datatype" jdbcType="VARCHAR" property="datatype"/>
         <result column="description" jdbcType="VARCHAR" property="description"/>
@@ -25,7 +26,8 @@
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
         id,
-        `name`,
+        property_code,
+        property_name,
         service_id,
         datatype,
         description,
@@ -59,18 +61,19 @@
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties"
             useGeneratedKeys="true">
         <!--@mbg.generated-->
-        insert into product_properties (`name`, service_id,
-                                        datatype, description, enumlist,
-                                        `max`, maxlength, `method`,
-                                        `min`, required, step,
-                                        unit, create_by, create_time,
-                                        update_by, update_time)
-        values (#{name,jdbcType=VARCHAR}, #{serviceId,jdbcType=BIGINT},
-                #{datatype,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{enumlist,jdbcType=VARCHAR},
-                #{max,jdbcType=VARCHAR}, #{maxlength,jdbcType=BIGINT}, #{method,jdbcType=VARCHAR},
-                #{min,jdbcType=VARCHAR}, #{required,jdbcType=BIGINT}, #{step,jdbcType=BIGINT},
-                #{unit,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
-                #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+        insert into product_properties ( property_code,
+        property_name, service_id,
+        datatype, description, enumlist,
+        `max`, maxlength, `method`,
+        `min`, required, step,
+        unit, create_by, create_time,
+        update_by, update_time)
+        values (#{propertyCode},#{propertyName}, #{serviceId,jdbcType=BIGINT},
+        #{datatype,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{enumlist,jdbcType=VARCHAR},
+        #{max,jdbcType=VARCHAR}, #{maxlength,jdbcType=BIGINT}, #{method,jdbcType=VARCHAR},
+        #{min,jdbcType=VARCHAR}, #{required,jdbcType=BIGINT}, #{step,jdbcType=BIGINT},
+        #{unit,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+        #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties"
@@ -78,8 +81,11 @@
         <!--@mbg.generated-->
         insert into product_properties
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="name != null and name != ''">
-                `name`,
+            <if test="propertyCode != null and propertyCode != ''">
+                property_code,
+            </if>
+            <if test="propertyName != null and propertyName != ''">
+                property_name,
             </if>
             <if test="serviceId != null">
                 service_id,
@@ -128,8 +134,11 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="name != null and name != ''">
-                #{name,jdbcType=VARCHAR},
+            <if test="propertyCode != null and propertyCode != ''">
+                #{propertyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="propertyName != null and propertyName != ''">
+                #{propertyName,jdbcType=VARCHAR},
             </if>
             <if test="serviceId != null">
                 #{serviceId,jdbcType=BIGINT},
@@ -183,8 +192,11 @@
         <!--@mbg.generated-->
         update product_properties
         <set>
-            <if test="name != null and name != ''">
-                `name` = #{name,jdbcType=VARCHAR},
+            <if test="propertyCode != null and propertyCode != ''">
+                property_code = #{propertyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="propertyName != null and propertyName != ''">
+                property_name = #{propertyName,jdbcType=VARCHAR},
             </if>
             <if test="serviceId != null">
                 service_id = #{serviceId,jdbcType=BIGINT},
@@ -238,31 +250,38 @@
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties">
         <!--@mbg.generated-->
         update product_properties
-        set `name`      = #{name,jdbcType=VARCHAR},
-            service_id  = #{serviceId,jdbcType=BIGINT},
-            datatype    = #{datatype,jdbcType=VARCHAR},
-            description = #{description,jdbcType=VARCHAR},
-            enumlist    = #{enumlist,jdbcType=VARCHAR},
-            `max`       = #{max,jdbcType=VARCHAR},
-            maxlength   = #{maxlength,jdbcType=BIGINT},
-            `method`    = #{method,jdbcType=VARCHAR},
-            `min`       = #{min,jdbcType=VARCHAR},
-            required    = #{required,jdbcType=BIGINT},
-            step        = #{step,jdbcType=BIGINT},
-            unit        = #{unit,jdbcType=VARCHAR},
-            create_by   = #{createBy,jdbcType=VARCHAR},
-            create_time = #{createTime,jdbcType=TIMESTAMP},
-            update_by   = #{updateBy,jdbcType=VARCHAR},
-            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        set
+        property_code = #{propertyCode,jdbcType=VARCHAR},
+        property_name = #{propertyName,jdbcType=VARCHAR},
+        service_id = #{serviceId,jdbcType=BIGINT},
+        datatype = #{datatype,jdbcType=VARCHAR},
+        description = #{description,jdbcType=VARCHAR},
+        enumlist = #{enumlist,jdbcType=VARCHAR},
+        `max` = #{max,jdbcType=VARCHAR},
+        maxlength = #{maxlength,jdbcType=BIGINT},
+        `method` = #{method,jdbcType=VARCHAR},
+        `min` = #{min,jdbcType=VARCHAR},
+        required = #{required,jdbcType=BIGINT},
+        step = #{step,jdbcType=BIGINT},
+        unit = #{unit,jdbcType=VARCHAR},
+        create_by = #{createBy,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_by = #{updateBy,jdbcType=VARCHAR},
+        update_time = #{updateTime,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateBatch" parameterType="java.util.List">
         <!--@mbg.generated-->
         update product_properties
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="`name` = case" suffix="end,">
+            <trim prefix="property_code = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
-                    when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.propertyCode,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+            <trim prefix="property_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    when id = #{item.id,jdbcType=BIGINT} then #{item.propertyName,jdbcType=VARCHAR}
                 </foreach>
             </trim>
             <trim prefix="service_id = case" suffix="end,">
@@ -350,10 +369,17 @@
         <!--@mbg.generated-->
         update product_properties
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="`name` = case" suffix="end,">
+            <trim prefix="property_code = case" suffix="end,">
                 <foreach collection="list" index="index" item="item">
-                    <if test="item.name != null">
-                        when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
+                    <if test="item.propertyCode != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.propertyCode,jdbcType=VARCHAR}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="property_name = case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.propertyName != null">
+                        when id = #{item.id,jdbcType=BIGINT} then #{item.propertyName,jdbcType=VARCHAR}
                     </if>
                 </foreach>
             </trim>
@@ -471,16 +497,17 @@
     <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into product_properties
-        (`name`, service_id, datatype, description, enumlist, `max`, maxlength,
-         `method`, `min`, required, step, unit, create_by, create_time, update_by, update_time)
+        (property_code, property_name, service_id, datatype, description, enumlist, `max`, maxlength, `method`, `min`,
+        required, step, unit, create_by, create_time, update_by, update_time)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.name,jdbcType=VARCHAR}, #{item.serviceId,jdbcType=BIGINT},
-             #{item.datatype,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.enumlist,jdbcType=VARCHAR},
-             #{item.max,jdbcType=VARCHAR}, #{item.maxlength,jdbcType=BIGINT}, #{item.method,jdbcType=VARCHAR},
-             #{item.min,jdbcType=VARCHAR}, #{item.required,jdbcType=BIGINT}, #{item.step,jdbcType=BIGINT},
-             #{item.unit,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
-             #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP})
+            (#{item.propertyCode,jdbcType=VARCHAR}, #{item.propertyName,jdbcType=VARCHAR},
+            #{item.serviceId,jdbcType=BIGINT},
+            #{item.datatype,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.enumlist,jdbcType=VARCHAR},
+            #{item.max,jdbcType=VARCHAR}, #{item.maxlength,jdbcType=BIGINT}, #{item.method,jdbcType=VARCHAR},
+            #{item.min,jdbcType=VARCHAR}, #{item.required,jdbcType=BIGINT}, #{item.step,jdbcType=BIGINT},
+            #{item.unit,jdbcType=VARCHAR}, #{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateBy,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
     <insert id="insertOrUpdate" keyColumn="id" keyProperty="id"
@@ -492,7 +519,8 @@
             <if test="id != null">
                 id,
             </if>
-            `name`,
+            property_code,
+            property_name,
             service_id,
             datatype,
             description,
@@ -514,7 +542,8 @@
             <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
-            #{name,jdbcType=VARCHAR},
+            #{propertyCode,jdbcType=VARCHAR},
+            #{propertyName,jdbcType=VARCHAR},
             #{serviceId,jdbcType=BIGINT},
             #{datatype,jdbcType=VARCHAR},
             #{description,jdbcType=VARCHAR},
@@ -536,21 +565,22 @@
             <if test="id != null">
                 id = #{id,jdbcType=BIGINT},
             </if>
-            `name`      = #{name,jdbcType=VARCHAR},
-            service_id  = #{serviceId,jdbcType=BIGINT},
-            datatype    = #{datatype,jdbcType=VARCHAR},
+            property_code = #{propertyCode,jdbcType=VARCHAR},
+            property_name = #{propertyName,jdbcType=VARCHAR},
+            service_id = #{serviceId,jdbcType=BIGINT},
+            datatype = #{datatype,jdbcType=VARCHAR},
             description = #{description,jdbcType=VARCHAR},
-            enumlist    = #{enumlist,jdbcType=VARCHAR},
-            `max`       = #{max,jdbcType=VARCHAR},
-            maxlength   = #{maxlength,jdbcType=BIGINT},
-            `method`    = #{method,jdbcType=VARCHAR},
-            `min`       = #{min,jdbcType=VARCHAR},
-            required    = #{required,jdbcType=BIGINT},
-            step        = #{step,jdbcType=BIGINT},
-            unit        = #{unit,jdbcType=VARCHAR},
-            create_by   = #{createBy,jdbcType=VARCHAR},
+            enumlist = #{enumlist,jdbcType=VARCHAR},
+            `max` = #{max,jdbcType=VARCHAR},
+            maxlength = #{maxlength,jdbcType=BIGINT},
+            `method` = #{method,jdbcType=VARCHAR},
+            `min` = #{min,jdbcType=VARCHAR},
+            required = #{required,jdbcType=BIGINT},
+            step = #{step,jdbcType=BIGINT},
+            unit = #{unit,jdbcType=VARCHAR},
+            create_by = #{createBy,jdbcType=VARCHAR},
             create_time = #{createTime,jdbcType=TIMESTAMP},
-            update_by   = #{updateBy,jdbcType=VARCHAR},
+            update_by = #{updateBy,jdbcType=VARCHAR},
             update_time = #{updateTime,jdbcType=TIMESTAMP},
         </trim>
     </insert>
@@ -563,8 +593,11 @@
             <if test="id != null">
                 id,
             </if>
-            <if test="name != null and name != ''">
-                `name`,
+            <if test="propertyCode != null and propertyCode != ''">
+                property_code,
+            </if>
+            <if test="propertyName != null and propertyName != ''">
+                property_name,
             </if>
             <if test="serviceId != null">
                 service_id,
@@ -617,8 +650,11 @@
             <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
-            <if test="name != null and name != ''">
-                #{name,jdbcType=VARCHAR},
+            <if test="propertyCode != null and propertyCode != ''">
+                #{propertyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="propertyName != null and propertyName != ''">
+                #{propertyName,jdbcType=VARCHAR},
             </if>
             <if test="serviceId != null">
                 #{serviceId,jdbcType=BIGINT},
@@ -671,8 +707,11 @@
             <if test="id != null">
                 id = #{id,jdbcType=BIGINT},
             </if>
-            <if test="name != null and name != ''">
-                `name` = #{name,jdbcType=VARCHAR},
+            <if test="propertyCode != null and propertyCode != ''">
+                property_code = #{propertyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="propertyName != null and propertyName != ''">
+                property_name = #{propertyName,jdbcType=VARCHAR},
             </if>
             <if test="serviceId != null">
                 service_id = #{serviceId,jdbcType=BIGINT},
@@ -736,7 +775,8 @@
 
     <sql id="selectProductPropertiesVo">
         select id,
-               `name`,
+               property_code,
+               property_name,
                service_id,
                datatype,
                description,
@@ -760,8 +800,11 @@
             resultMap="BaseResultMap">
         <include refid="selectProductPropertiesVo"/>
         <where>
-            <if test="name != null  and name != ''">
-                and name like concat('%', #{name}, '%')
+            <if test="propertyCode != null and propertyCode != ''">
+                and property_code = #{propertyCode}
+            </if>
+            <if test="propertyName != null and propertyName != ''">
+                and property_name = #{propertyName}
             </if>
             <if test="serviceId != null">
                 and service_id = #{serviceId}
@@ -809,8 +852,11 @@
             useGeneratedKeys="true" keyProperty="id">
         insert into product_properties
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="name != null and name != ''">
-                name,
+            <if test="propertyCode != null">
+                property_code,
+            </if>
+            <if test="propertyName != null">
+                property_name,
             </if>
             <if test="serviceId != null">
                 service_id,
@@ -859,8 +905,11 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="name != null and name != ''">
-                #{name},
+            <if test="propertyCode != null">
+                #{propertyCode},
+            </if>
+            <if test="propertyName != null">
+                #{propertyName},
             </if>
             <if test="serviceId != null">
                 #{serviceId},
@@ -914,8 +963,11 @@
             parameterType="com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties">
         update product_properties
         <trim prefix="SET" suffixOverrides=",">
-            <if test="name != null and name != ''">
-                name = #{name},
+            <if test="propertyCode != null">
+                property_code = #{propertyCode},
+            </if>
+            <if test="propertyName != null">
+                property_name = #{propertyName},
             </if>
             <if test="serviceId != null">
                 service_id = #{serviceId},
@@ -976,13 +1028,28 @@
 
     <select id="selectPropertiesByPropertiesIdList" resultMap="BaseResultMap">
         select
-            <include refid="Base_Column_List"></include>
+        <include refid="Base_Column_List"></include>
         from
-            product_properties
+        product_properties
         <where>
-            <if test="propertiesIdList != null">
+            <if test="propertiesIdList != null and propertiesIdList.size() &gt; 0">
                 and id in
                 <foreach collection="propertiesIdList" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPropertiesByServiceIdList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        product_properties
+        <where>
+            <if test="serviceIdList != null and serviceIdList.size() &gt; 0">
+                and service_id in
+                <foreach collection="serviceIdList" open="(" close=")" separator="," item="item">
                     #{item}
                 </foreach>
             </if>

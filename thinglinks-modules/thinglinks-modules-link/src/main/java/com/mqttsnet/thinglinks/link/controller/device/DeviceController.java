@@ -1,10 +1,9 @@
 package com.mqttsnet.thinglinks.link.controller.device;
 
-import cn.hutool.json.JSONConverter;
-import com.alibaba.fastjson.JSON;
 import com.mqttsnet.thinglinks.common.core.annotation.NoRepeatSubmit;
 import com.mqttsnet.thinglinks.common.core.domain.R;
-import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatus;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceConnectStatusEnum;
+import com.mqttsnet.thinglinks.common.core.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.core.utils.poi.ExcelUtil;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
@@ -19,13 +18,11 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,6 +44,7 @@ public class DeviceController extends BaseController {
     private DeviceService deviceService;
     @Autowired
     private ProductService productService;
+
 
     /**
      * 查询设备管理列表
@@ -96,11 +94,11 @@ public class DeviceController extends BaseController {
 
         Map<String, Integer> countMap = new HashMap<>();
         //统计设备在线数量
-        countMap.put("onlineCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue())) ? connectStatusCollect.get(DeviceConnectStatus.ONLINE.getValue()).size() : 0);
+        countMap.put("onlineCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatusEnum.ONLINE.getValue())) ? connectStatusCollect.get(DeviceConnectStatusEnum.ONLINE.getValue()).size() : 0);
         //统计设备离线数量
-        countMap.put("offlineCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue())) ? connectStatusCollect.get(DeviceConnectStatus.OFFLINE.getValue()).size() : 0);
+        countMap.put("offlineCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatusEnum.OFFLINE.getValue())) ? connectStatusCollect.get(DeviceConnectStatusEnum.OFFLINE.getValue()).size() : 0);
         //统计设备初始化数量
-        countMap.put("initCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatus.INIT.getValue())) ? connectStatusCollect.get(DeviceConnectStatus.INIT.getValue()).size() : 0);
+        countMap.put("initCount", !connectStatusCollect.isEmpty() && !CollectionUtils.isEmpty(connectStatusCollect.get(DeviceConnectStatusEnum.INIT.getValue())) ? connectStatusCollect.get(DeviceConnectStatusEnum.INIT.getValue()).size() : 0);
 
         return AjaxResult.success(countMap);
     }
@@ -142,6 +140,7 @@ public class DeviceController extends BaseController {
     @PostMapping
     public AjaxResult add(@RequestBody DeviceParams deviceParams) {
         try {
+            deviceParams.setDeviceIdentification(SnowflakeIdUtil.nextId());
             return toAjax(deviceService.insertDevice(deviceParams));
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
@@ -237,6 +236,7 @@ public class DeviceController extends BaseController {
      * @param params
      * @return
      */
+    @Deprecated
     @PostMapping("/clientAuthentication")
     public ResponseEntity<AjaxResult> clientAuthentication(@RequestBody Map<String, Object> params) {
         final Object clientIdentifier = params.get("clientIdentifier");
@@ -250,34 +250,6 @@ public class DeviceController extends BaseController {
 
         return device != null ? ResponseEntity.ok().body(AjaxResult.success("认证成功")) : ResponseEntity.status(403).body(AjaxResult.error("认证失败"));
     }
-
-    /**
-     * bifromq客户端身份认证
-     *
-     * @param params
-     * @return
-     */
-    @RequestMapping("/clientConnectionAuthentication")
-    public ResponseEntity clientConnectionAuthentication(HttpServletRequest request, @RequestBody Map<String, Object> params) {
-
-        final Object clientIdentifier = params.get("clientIdentifier");
-        final Object username = params.get("username");
-        final Object password = params.get("password");
-        final Object deviceStatus = "ENABLE";// params.get("deviceStatus");
-        final Object protocolType = "MQTT";// params.get("protocolType");
-        Device device = deviceService.clientAuthentication(clientIdentifier.toString(), username.toString(), password.toString(), deviceStatus.toString(), protocolType.toString());
-        log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, device != null ? "成功" : "失败");
-
-        Map<String, Object> resultValue = new HashMap<>();
-        resultValue.put("clientId", clientIdentifier.toString());
-        Map<String, Object> result = new HashMap<>();
-        result.put("certificationResult", device == null ? false : true);
-        result.put("tenantId", device == null ? "" : device.getAppId());
-        result.put("deviceResult", resultValue);
-
-        return ResponseEntity.ok().body(result);
-    }
-
 
     /**
      * 根据客户端标识获取设备信息
@@ -307,4 +279,6 @@ public class DeviceController extends BaseController {
     public R<?> selectDeviceByDeviceIdentificationList(@RequestBody List<String> deviceIdentificationList) {
         return R.ok(deviceService.selectDeviceByDeviceIdentificationList(deviceIdentificationList));
     }
+
+
 }

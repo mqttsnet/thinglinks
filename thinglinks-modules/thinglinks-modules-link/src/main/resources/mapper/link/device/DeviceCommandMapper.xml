@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.link.mapper.device.DeviceCommandMapper">
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceCommand">
+        <!--@mbg.generated-->
+        <!--@Table device_command-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="device_identification" jdbcType="VARCHAR" property="deviceIdentification"/>
+        <result column="command_identification" jdbcType="VARCHAR" property="commandIdentification"/>
+        <result column="command_type" jdbcType="TINYINT" property="commandType"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id,
+        device_identification,
+        command_identification,
+        command_type,
+        `status`,
+        content,
+        remark,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from device_command
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        <!--@mbg.generated-->
+        delete
+        from device_command
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceCommand" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into device_command (device_identification, command_identification,
+                                    command_type, `status`, content,
+                                    remark, create_by, create_time,
+                                    update_by, update_time)
+        values (#{deviceIdentification,jdbcType=VARCHAR}, #{commandIdentification,jdbcType=VARCHAR},
+                #{commandType,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{content,jdbcType=LONGVARCHAR},
+                #{remark,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+                #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceCommand" useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into device_command
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deviceIdentification != null and deviceIdentification != ''">
+                device_identification,
+            </if>
+            <if test="commandIdentification != null and commandIdentification != ''">
+                command_identification,
+            </if>
+            <if test="commandType != null">
+                command_type,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="content != null and content != ''">
+                content,
+            </if>
+            <if test="remark != null and remark != ''">
+                remark,
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deviceIdentification != null and deviceIdentification != ''">
+                #{deviceIdentification,jdbcType=VARCHAR},
+            </if>
+            <if test="commandIdentification != null and commandIdentification != ''">
+                #{commandIdentification,jdbcType=VARCHAR},
+            </if>
+            <if test="commandType != null">
+                #{commandType,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+            <if test="content != null and content != ''">
+                #{content,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="remark != null and remark != ''">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceCommand">
+        <!--@mbg.generated-->
+        update device_command
+        <set>
+            <if test="deviceIdentification != null and deviceIdentification != ''">
+                device_identification = #{deviceIdentification,jdbcType=VARCHAR},
+            </if>
+            <if test="commandIdentification != null and commandIdentification != ''">
+                command_identification = #{commandIdentification,jdbcType=VARCHAR},
+            </if>
+            <if test="commandType != null">
+                command_type = #{commandType,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceCommand">
+        <!--@mbg.generated-->
+        update device_command
+        set device_identification  = #{deviceIdentification,jdbcType=VARCHAR},
+            command_identification = #{commandIdentification,jdbcType=VARCHAR},
+            command_type           = #{commandType,jdbcType=TINYINT},
+            `status`               = #{status,jdbcType=TINYINT},
+            content                = #{content,jdbcType=LONGVARCHAR},
+            remark                 = #{remark,jdbcType=VARCHAR},
+            create_by              = #{createBy,jdbcType=VARCHAR},
+            create_time            = #{createTime,jdbcType=TIMESTAMP},
+            update_by              = #{updateBy,jdbcType=VARCHAR},
+            update_time            = #{updateTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

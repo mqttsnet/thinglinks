@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.common.core.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * @Description: 设备类型
@@ -20,18 +21,18 @@ public enum DeviceType {
     /**
      * 普通设备（无子设备也无父设备）
      */
-    COMMON("COMMON","COMMON"),
+    COMMON("COMMON", "COMMON"),
 
     /**
      * 网关设备(可挂载子设备)
      */
-    GATEWAY("GATEWAY","GATEWAY"),
+    GATEWAY("GATEWAY", "GATEWAY"),
 
     /**
      * 子设备(归属于某个网关设备)
      */
-    SUBSET("SUBSET","SUBSET");
+    SUBSET("SUBSET", "SUBSET");
 
-    private  String key;
-    private  String value;
+    private String key;
+    private String value;
 }

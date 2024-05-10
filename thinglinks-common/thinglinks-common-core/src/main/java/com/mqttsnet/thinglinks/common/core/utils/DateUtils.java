@@ -1,5 +1,9 @@
 package com.mqttsnet.thinglinks.common.core.utils;
 
+import com.alibaba.fastjson.JSONArray;
+import com.github.pagehelper.util.StringUtil;
+import org.apache.commons.lang3.time.DateFormatUtils;
+
 import java.lang.management.ManagementFactory;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -9,17 +13,12 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import com.alibaba.fastjson.JSONArray;
-import com.github.pagehelper.util.StringUtil;
-import org.apache.commons.lang3.time.DateFormatUtils;
-
 /**
  * 时间工具类
- * 
+ *
  * @author thinglinks
  */
-public class DateUtils extends org.apache.commons.lang3.time.DateUtils
-{
+public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static String YYYY = "yyyy";
 
     public static String YYYY_MM = "yyyy-MM";
@@ -29,9 +28,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     public static String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 
     public static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
-    
+
     private static String[] parsePatterns = {
-            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM", 
+            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
             "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
             "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
 
@@ -91,6 +90,26 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         return date;
     }
 
+    /**
+     * 将字符转换成日期
+     *
+     * @param dateStr 日期字符串
+     * @param format  解析格式
+     * @return 解析后的日期
+     */
+    public static Date parse(String dateStr, String format) {
+        Date date = null;
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        dateFormat.setLenient(false);
+        try {
+            date = dateFormat.parse(dateStr);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
     public static String getDateString(Date date) {
         return getString(date, YYYY_MM_DD);
     }
@@ -137,57 +156,46 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
 
     /**
      * 获取当前Date型日期
-     * 
+     *
      * @return Date() 当前日期
      */
-    public static Date getNowDate()
-    {
+    public static Date getNowDate() {
         return new Date();
     }
 
     /**
      * 获取当前日期, 默认格式为yyyy-MM-dd
-     * 
+     *
      * @return String
      */
-    public static String getDate()
-    {
+    public static String getDate() {
         return dateTimeNow(YYYY_MM_DD);
     }
 
-    public static final String getTime()
-    {
+    public static final String getTime() {
         return dateTimeNow(YYYY_MM_DD_HH_MM_SS);
     }
 
-    public static final String dateTimeNow()
-    {
+    public static final String dateTimeNow() {
         return dateTimeNow(YYYYMMDDHHMMSS);
     }
 
-    public static final String dateTimeNow(final String format)
-    {
+    public static final String dateTimeNow(final String format) {
         return parseDateToStr(format, new Date());
     }
 
-    public static final String dateTime(final Date date)
-    {
+    public static final String dateTime(final Date date) {
         return parseDateToStr(YYYY_MM_DD, date);
     }
 
-    public static final String parseDateToStr(final String format, final Date date)
-    {
+    public static final String parseDateToStr(final String format, final Date date) {
         return new SimpleDateFormat(format).format(date);
     }
 
-    public static final Date dateTime(final String format, final String ts)
-    {
-        try
-        {
+    public static final Date dateTime(final String format, final String ts) {
+        try {
             return new SimpleDateFormat(format).parse(ts);
-        }
-        catch (ParseException e)
-        {
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -195,8 +203,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     /**
      * 日期路径 即年/月/日 如2018/08/08
      */
-    public static final String datePath()
-    {
+    public static final String datePath() {
         Date now = new Date();
         return DateFormatUtils.format(now, "yyyy/MM/dd");
     }
@@ -204,8 +211,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     /**
      * 日期路径 即年/月/日 如20180808
      */
-    public static final String dateTime()
-    {
+    public static final String dateTime() {
         Date now = new Date();
         return DateFormatUtils.format(now, "yyyyMMdd");
     }
@@ -213,27 +219,21 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     /**
      * 日期型字符串转化为日期 格式
      */
-    public static Date parseDate(Object str)
-    {
-        if (str == null)
-        {
+    public static Date parseDate(Object str) {
+        if (str == null) {
             return null;
         }
-        try
-        {
+        try {
             return parseDate(str.toString(), parsePatterns);
-        }
-        catch (ParseException e)
-        {
+        } catch (ParseException e) {
             return null;
         }
     }
-    
+
     /**
      * 获取服务器启动时间
      */
-    public static Date getServerStartDate()
-    {
+    public static Date getServerStartDate() {
         long time = ManagementFactory.getRuntimeMXBean().getStartTime();
         return new Date(time);
     }
@@ -241,8 +241,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     /**
      * 计算两个时间差
      */
-    public static String getDatePoor(Date endDate, Date nowDate)
-    {
+    public static String getDatePoor(Date endDate, Date nowDate) {
         long nd = 1000 * 24 * 60 * 60;
         long nh = 1000 * 60 * 60;
         long nm = 1000 * 60;
@@ -869,7 +868,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
      */
     public static String daFormatHHMMSSAddEight(Long date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date time =dateAddHours(new Date(date),8);
+        Date time = dateAddHours(new Date(date), 8);
         String dateString = formatter.format(time);
         return dateString;
     }
@@ -1160,32 +1159,25 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         Date dd = strToDate(sdate);
         Calendar c = Calendar.getInstance();
         c.setTime(dd);
-        if ("1".equals(num))
-        {
+        if ("1".equals(num)) {
             // 返回星期一所在的日期
             c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        } else if ("2".equals(num))
-        {
+        } else if ("2".equals(num)) {
             // 返回星期二所在的日期
             c.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
-        } else if ("3".equals(num))
-        {
+        } else if ("3".equals(num)) {
             // 返回星期三所在的日期
             c.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
-        } else if ("4".equals(num))
-        {
+        } else if ("4".equals(num)) {
             // 返回星期四所在的日期
             c.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
-        } else if ("5".equals(num))
-        {
+        } else if ("5".equals(num)) {
             // 返回星期五所在的日期
             c.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
-        } else if ("6".equals(num))
-        {
+        } else if ("6".equals(num)) {
             // 返回星期六所在的日期
             c.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
-        } else if ("0".equals(num))
-        {
+        } else if ("0".equals(num)) {
             // 返回星期日所在的日期
             c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
         }
@@ -1682,10 +1674,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     }
 
     public static boolean isValidDate(String str) {
-        boolean convertSuccess=true;
+        boolean convertSuccess = true;
         // 指定日期格式为四位年/两位月份/两位日期，注意yyyy/MM/dd区分大小写；
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if(str.length()==10){
+        if (str.length() == 10) {
             format = new SimpleDateFormat("yyyy-MM-dd");
         }
         try {
@@ -1693,7 +1685,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
             format.setLenient(false);
             format.parse(str);
         } catch (ParseException e) {
-            convertSuccess=false;
+            convertSuccess = false;
         }
         return convertSuccess;
     }
@@ -1717,6 +1709,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
 
     /**
      * 时间范围添加连接符
+     *
      * @param jsonArray
      * @param type
      * @param format
@@ -1724,15 +1717,15 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
      */
     public static JSONArray addCon(JSONArray jsonArray, String type, String format) {
 
-        if("timeRange".equals(type)){
+        if ("timeRange".equals(type)) {
             String value1 = jsonArray.get(0).toString();
             String value2 = jsonArray.get(1).toString();
             jsonArray.clear();
             jsonArray.add(value1 + "至");
             jsonArray.add(value2);
         }
-        if("dateRange".equals(type)){
-            DateTimeFormatter ftfDateRange =DateTimeFormatter.ofPattern(format);
+        if ("dateRange".equals(type)) {
+            DateTimeFormatter ftfDateRange = DateTimeFormatter.ofPattern(format);
             long date1 = Long.parseLong(String.valueOf(jsonArray.get(0)));
             long date2 = Long.parseLong(String.valueOf(jsonArray.get(1)));
             String value1 = ftfDateRange.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(date1), ZoneId.systemDefault()));
@@ -1743,42 +1736,56 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         }
         return jsonArray;
     }
-    /** 获取时间戳 */
+
+    /**
+     * 获取时间戳
+     */
     public static Long getMillis2() {
         return Instant.now().toEpochMilli();
     }
 
-    /** LocalDateTime转时间戳 */
+    /**
+     * LocalDateTime转时间戳
+     */
     public static Long localDateTime2Millis(LocalDateTime localDateTime) {
         return localDateTime.toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
     }
 
-    /** LocalDate转时间戳 */
+    /**
+     * LocalDate转时间戳
+     */
     public static Long localDate2Millis(LocalDate localDate) {
         return LocalDateTime.of(localDate, LocalTime.MIN).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
     }
 
-    /** Clock转时间戳 */
+    /**
+     * Clock转时间戳
+     */
     public static Long clock2Millis(Clock clock) {
         return clock.millis();
     }
 
-    /** ZoneDateTIme转时间戳(这个不常用吧~) */
+    /**
+     * ZoneDateTIme转时间戳(这个不常用吧~)
+     */
     public static Long zoneDateTime2Millis(ZonedDateTime zonedDateTime) {
         return zonedDateTime.toLocalDateTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
     }
 
-    /** String转时间戳(JDK8) */
-    public static Long string2MillisWithJdk8(String dateStr , String formatStr) {
-        return LocalDateTime.parse(dateStr , DateTimeFormatter.ofPattern(formatStr)).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+    /**
+     * String转时间戳(JDK8)
+     */
+    public static Long string2MillisWithJdk8(String dateStr, String formatStr) {
+        return LocalDateTime.parse(dateStr, DateTimeFormatter.ofPattern(formatStr)).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
     }
 
     /**
      * ZonedDateTime转String
+     *
      * @param zonedDateTime
      * @return
      */
-    public static String getZonedDateTimeToString(ZonedDateTime zonedDateTime){
+    public static String getZonedDateTimeToString(ZonedDateTime zonedDateTime) {
         ZonedDateTime zoneDateTime1 = zonedDateTime.plusHours(11);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return zoneDateTime1.format(formatter);
@@ -1794,4 +1801,23 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         long thirtySec = 1000 * 30;
         return ts + (thirtySec);
     }
+
+    /**
+     * Date转换为LocalDateTime
+     *
+     * @param date 日期
+     */
+    public static LocalDateTime date2LocalDateTime(Date date) {
+        if (date == null) {
+            return LocalDateTime.now();
+        }
+        Instant instant = date.toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+        return instant.atZone(zoneId).toLocalDateTime();
+    }
+
+    public static Date parseDatetime(String datetimeStr) throws ParseException {
+        return parse(datetimeStr, YYYY_MM_DD_HH_MM_SS);
+    }
+
 }

@@ -4,7 +4,6 @@ import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -148,5 +147,10 @@ public interface ProductMapper {
     List<Product> findAllByIdInAndStatus(@Param("ids") List<Long> ids, @Param("status") String status);
 
     List<Product> selectAllProductByStatus(@Param("status") String status);
+
     List<Product> selectProductByProductIdentificationList(@Param("productIdentificationList") List<String> productIdentificationList);
+
+    Long findProductTotal();
+
+    List<Product> findProductsByPage(@Param("offset") int offset, @Param("pageSize") int pageSize);
 }

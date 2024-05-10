@@ -1,20 +1,16 @@
 package com.mqttsnet.thinglinks.rule.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.ConditionTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.FieldTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.OperatorEnum;
 import com.mqttsnet.thinglinks.common.core.enums.TriggeringEnum;
-import com.mqttsnet.thinglinks.common.core.mqs.SelectorConfig;
+import com.mqttsnet.thinglinks.common.core.mqs.ConsumerTopicConstant;
 import com.mqttsnet.thinglinks.common.core.utils.CompareUtil;
-import com.mqttsnet.thinglinks.common.rocketmq.constant.ConsumerTopicConstant;
 import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.link.api.*;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
@@ -26,13 +22,11 @@ import com.mqttsnet.thinglinks.rule.service.RuleConditionsService;
 import com.mqttsnet.thinglinks.rule.service.RuleDeviceLinkageService;
 import com.mqttsnet.thinglinks.rule.service.RuleService;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
-import com.mqttsnet.thinglinks.tdengine.api.domain.TagsSelectDao;
+import com.mqttsnet.thinglinks.tdengine.api.domain.model.TagsSelectDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
@@ -52,14 +46,9 @@ import java.util.*;
 @Service
 public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
 
-    @Autowired
-    private KafkaTemplate<String, String> thingLinksProKafkaTemplate;
 
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
-
-    @Autowired
-    private SelectorConfig selectorConfig;
 
     @Autowired
     private ActionCommandsService actionCommandsService;
@@ -101,7 +90,7 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
     @Transactional
     public void triggerDeviceLinkageByRuleIdentification(String ruleIdentification) {
         MQMessage mqMessage = new MQMessage();
-        mqMessage.setTopic(ConsumerTopicConstant.THINGLINKS_RULE_TRIGGER);
+        mqMessage.setTopic(ConsumerTopicConstant.Rule.THINGLINKS_RULE_TRIGGER);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg", ruleIdentification);
         mqMessage.setMessage(jsonObject.toJSONString());
@@ -109,11 +98,7 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
         log.info("topic:{}", mqMessage.getTopic());
         log.info("message:{}", mqMessage.getMessage());
 
-        if (selectorConfig.isSelectorKafka()) {
-            thingLinksProKafkaTemplate.send(new ProducerRecord<>(mqMessage.getTopic(), mqMessage.getMessage()));
-        } else {
-            rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
-        }
+        rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
     }
 
     /**
@@ -152,7 +137,7 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
             log.info("maps:{}", maps.toString());
 
             // 属性名称
-            String productPropertiesName = propertiesData.getName();
+            String productPropertiesName = propertiesData.getPropertyName();
             // 属性类型
             String productPropertiesType = propertiesData.getDatatype();
             // 比较模式
@@ -273,11 +258,11 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
         String superName = product.getProductType() + "_" + conditions.getProductIdentification() + "_" + productServices.getServiceName();
 
         // 查询最新的设备记录
-        TagsSelectDao tagsSelectDao = new TagsSelectDao();
-        tagsSelectDao.setDataBaseName("thinglinks");
-        tagsSelectDao.setStableName(superName);
-        tagsSelectDao.setTagsName("device_identification");
-        R<Map<String, Map<String, Object>>> lastDataByTags = remoteTdEngineService.getLastDataByTags(tagsSelectDao);
+        TagsSelectDTO tagsSelectDTO = new TagsSelectDTO();
+        tagsSelectDTO.setDataBaseName("thinglinks");
+        tagsSelectDTO.setStableName(superName);
+        tagsSelectDTO.setTagsName("device_identification");
+        R<Map<String, Map<String, Object>>> lastDataByTags = remoteTdEngineService.getLastDataByTags(tagsSelectDTO);
         if (lastDataByTags != null && lastDataByTags.getData() != null) {
             maps = lastDataByTags.getData();
         }

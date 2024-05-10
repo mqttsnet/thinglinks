@@ -4,8 +4,8 @@
       <el-form-item label="选择网关设备" prop="did" label-width="120px">
         <deviceList :flag="flag" @searchDecive='searchDecive'></deviceList>
       </el-form-item>
-      <el-form-item label="子设备唯一标识" prop="nodeId" label-width="182px">
-        <el-input v-model="queryParams.nodeId" placeholder="请输入设备唯一标识" clearable size="small"
+      <el-form-item label="子设备标识" prop="nodeId" label-width="182px">
+        <el-input v-model="queryParams.nodeId" placeholder="请输入设备标识" clearable size="small"
           @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="子设备名称" prop="nodeName" label-width="100px">
@@ -70,12 +70,6 @@
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button plain icon="el-icon-refresh" size="mini" type="primary" :disabled="multiple"
-          @click="initializeTheDataModel">
-          设备初始化
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
           v-hasPermi="['link:deviceInfo:export']">导出
         </el-button>
@@ -86,9 +80,9 @@
     <el-table v-loading="loading" :data="deviceInfoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="边设备唯一标识" align="center" prop="edgeDevicesIdentification" />
+      <el-table-column label="边设备标识" align="center" prop="edgeDevicesIdentification" />
       <el-table-column label="应用ID" align="center" prop="appId" />
-      <el-table-column label="设备唯一标识" align="center" prop="nodeId" />
+      <el-table-column label="设备标识" align="center" prop="nodeId" />
       <el-table-column label="设备名称" align="center" prop="nodeName" />
       <el-table-column label="子设备标识" align="center" prop="deviceId" width="200px" />
       <el-table-column label="设备描述" align="center" prop="description" />
@@ -127,13 +121,6 @@
             </el-tooltip>
           </span>
           <span style="margin-right:10px">
-            <el-tooltip class="item" content="设备初始化" effect="light" placement="top">
-              <el-button circle icon="el-icon-refresh" size="mini" type="primary"
-                @click="initializeTheDataModel(scope.row)">
-              </el-button>
-            </el-tooltip>
-          </span>
-          <span style="margin-right:10px">
             <el-tooltip class="item" effect="light" content="设备影子" placement="top">
               <router-link :to="{ name: 'equipmentShadow', query: { id: scope.row.id } }">
                 <el-button circle size="mini" type="primary" icon="el-icon-s-operation"></el-button>
@@ -152,56 +139,56 @@
       width="50%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-row style="display: flex;justify-content: space-between;">
-          <el-col :span="10">
+          <el-col :span="11">
             <el-form-item label="选择网关设备" prop="did">
               <deviceList ref="DeviceList" @setDecive='setDecive' @addDecive='addDecive' :flag="flag" :set_did='did'
                 :set_edgeDevicesIdentification='edgeDevicesIdentification'></deviceList>
             </el-form-item>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="11">
             <el-form-item label="应用ID" prop="appId">
               <el-input v-model="form.appId" :disabled='set ? true : false' placeholder="请输入应用ID" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="display: flex;justify-content: space-between;">
-          <el-col :span="10">
-            <el-form-item label="设备唯一标识" prop="nodeId">
-              <el-input v-model="form.nodeId" :disabled='set ? true : false' placeholder="请输入设备唯一标识" />
+          <el-col :span="11">
+            <el-form-item label="设备标识" prop="nodeId">
+              <el-input v-model="form.nodeId" :disabled='set ? true : false' placeholder="请输入设备标识" />
             </el-form-item>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="11">
             <el-form-item label="设备名称" prop="nodeName">
               <el-input v-model="form.nodeName" placeholder="请输入设备名称" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="display: flex;justify-content: space-between;">
-          <el-col :span="10">
+          <el-col :span="11">
             <el-form-item label="子设备标识" prop="deviceId">
               <el-input v-model="form.deviceId" :disabled='set ? true : false' placeholder="请输入子设备标识" />
             </el-form-item>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="11">
             <el-form-item label="设备描述" prop="description">
               <el-input v-model="form.description" placeholder="请输入设备描述" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="display: flex;justify-content: space-between;">
-          <el-col :span="10">
+          <el-col :span="11">
             <el-form-item label="厂商ID" prop="manufacturerId">
               <el-input v-model="form.manufacturerId" :disabled='set ? true : false' placeholder="请输入厂商ID" />
             </el-form-item>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="11">
             <el-form-item label="设备型号" prop="model">
               <el-input v-model="form.model" :disabled='set ? true : false' placeholder="请输入设备型号" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row style="display: flex;justify-content: space-between;">
-          <el-col :span="10">
+          <el-col :span="11">
             <el-form-item label="设备状态" prop="status">
               <el-select style='width:100%' v-model="form.status" placeholder="请选择状态(字典值：0启用  1停用)">
                 <el-option v-for="dict in dict.type.business_data_status" :key="dict.value" :label="dict.label"
@@ -209,7 +196,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="11">
             <el-form-item label="是否支持设备影子" prop="shadowEnable">
               <el-select style='width:100%' v-model="form.shadowEnable" placeholder="请选择是否支持设备影子">
                 <el-option v-for="dict in dict.type.link_deviceInfo_shadow_enable" :key="dict.value" :label="dict.label"
@@ -333,21 +320,6 @@
       },
       setDecive(did) {
         this.form.did = did
-      },
-      //初始化数据模型
-      initializeTheDataModel(row) {
-        const ids = row.id || this.ids;
-        this.$modal
-          .confirm('是否初始化"' + ids + '"的数据项？')
-          .then(function() {
-            console.log(ids);
-            return refreshDeviceInfoDataModel(ids);
-          })
-          .then(() => {
-            this.getList()
-            this.$modal.msgSuccess("初始化成功");
-          })
-          .catch(() => {});
       },
       // 高级搜索切换显示隐藏
       advancedSearch_toggle() {

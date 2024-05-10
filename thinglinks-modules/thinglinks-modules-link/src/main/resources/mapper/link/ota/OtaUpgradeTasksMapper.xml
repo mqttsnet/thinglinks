@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.link.mapper.ota.OtaUpgradeTasksMapper">
+
+    <resultMap id="OtaUpgradeTaskResultMap" type="com.mqttsnet.thinglinks.link.api.domain.ota.entity.OtaUpgradeTasks">
+        <id column="id" property="id"/>
+        <result column="upgrade_id" property="upgradeId"/>
+        <result column="task_name" property="taskName"/>
+        <result column="task_status" property="taskStatus"/>
+        <result column="scheduled_time" property="scheduledTime"/>
+        <result column="description" property="description"/>
+        <result column="remark" property="remark"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="updated_time" property="updatedTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, upgrade_id, task_name, task_status, scheduled_time, description, remark, created_by, created_time, updated_by, updated_time
+    </sql>
+
+    <insert id="insertOtaUpgradeTask" parameterType="com.mqttsnet.thinglinks.link.api.domain.ota.entity.OtaUpgradeTasks">
+        INSERT INTO ota_upgrade_tasks (upgrade_id, task_name, task_status, scheduled_time, description, remark, created_by, created_time, updated_by, updated_time)
+        VALUES (#{upgradeId}, #{taskName}, #{taskStatus}, #{scheduledTime}, #{description}, #{remark}, #{createdBy}, now(), #{updatedBy}, now())
+    </insert>
+
+    <delete id="deleteOtaUpgradeTaskById" parameterType="long">
+        DELETE FROM ota_upgrade_tasks WHERE id = #{id}
+    </delete>
+
+    <update id="updateOtaUpgradeTaskById" parameterType="com.mqttsnet.thinglinks.link.api.domain.ota.entity.OtaUpgradeTasks">
+        UPDATE ota_upgrade_tasks
+        SET upgrade_id = #{upgradeId},
+            task_name = #{taskName},
+            task_status = #{taskStatus},
+            scheduled_time = #{scheduledTime},
+            description = #{description},
+            remark = #{remark},
+            updated_by = #{updatedBy},
+            updated_time = now()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectOtaUpgradeTaskById" parameterType="long" resultMap="OtaUpgradeTaskResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM ota_upgrade_tasks WHERE id = #{id}
+    </select>
+
+    <select id="selectAllOtaUpgradeTasks" resultMap="OtaUpgradeTaskResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM ota_upgrade_tasks
+    </select>
+
+    <select id="getOtaUpgradeTasksByOtaUpgradeId" resultType="int">
+        select count(*)
+        from ota_upgrade_tasks
+        where upgrade_id = #{id}
+    </select>
+
+    <update id="updateOtaUpgradeTasksByStatus">
+        UPDATE ota_upgrade_tasks
+        set task_status = #{status}
+        WHERE id = #{id}
+    </update>
+</mapper>

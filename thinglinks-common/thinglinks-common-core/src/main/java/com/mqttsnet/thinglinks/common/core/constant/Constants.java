@@ -2,11 +2,15 @@ package com.mqttsnet.thinglinks.common.core.constant;
 
 /**
  * 通用常量信息
- * 
+ *
  * @author thinglinks
  */
-public class Constants
-{
+public class Constants {
+
+    /**
+     * 项目前缀
+     */
+    public static final String PROJECT_PREFIX = "thinglinks";
     /**
      * UTF-8 字符集
      */
@@ -138,23 +142,30 @@ public class Constants
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
     /**
-     * 设备信息 cache key
-     */
-    public static final String DEVICE_RECORD_KEY = "device_record:";
-
-    /**
      * 重复提交 cache key
      */
     public static final String RESUBMIT_URL_KEY = "resubmit_url:";
 
     /**
-     * TDengine superTableFields cache key
+     * 下划线
      */
-    public static final String TDENGINE_SUPERTABLEFILELDS = "TDengine_SuperTableFields:";
+    public static final String UNDERLINE = "_";
 
     /**
-     * 设备数据上报协议脚本 cache key
+     * 分隔符
      */
-    public static final String DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT = "device_data_reported_agreement_script:";
+    public static final String SEPARATOR = ",";
+
+
+    /**
+     * 分号
+     */
+    public static final String SEMICOLON = ";";
+
+    /**
+     * all(全部)
+     */
+    public static final String ALL = "all";
+
 
 }

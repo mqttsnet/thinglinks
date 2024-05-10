@@ -4,7 +4,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import lombok.Data;
+
+import lombok.*;
+import lombok.experimental.Accessors;
 
 /**
 
@@ -24,6 +26,11 @@ import lombok.Data;
     */
 @ApiModel(value="设备动作数据")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+@Accessors(chain = true)
+@Builder
 public class DeviceAction implements Serializable {
     /**
     * id

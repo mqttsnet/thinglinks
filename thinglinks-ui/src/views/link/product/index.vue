@@ -3,19 +3,19 @@
     <el-form ref="queryForm" :inline="true" :model="queryParams" label-width="68px">
       <el-form-item label="产品名称" prop="productName">
         <el-input v-model="queryParams.productName" clearable placeholder="请输入产品名称" size="small"
-          @keyup.enter.native="handleQuery" />
+                  @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="厂商ID" prop="manufacturerId">
         <el-input v-model="queryParams.manufacturerId" clearable placeholder="请输入厂商ID" size="small"
-          @keyup.enter.native="handleQuery" />
+                  @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="厂商名称" prop="manufacturerName">
         <el-input v-model="queryParams.manufacturerName" clearable placeholder="请输入厂商名称" size="small"
-          @keyup.enter.native="handleQuery" />
+                  @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="产品型号" prop="model">
         <el-input v-model="queryParams.model" clearable placeholder="请输入产品型号" size="small"
-          @keyup.enter.native="handleQuery" />
+                  @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
@@ -26,100 +26,100 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button v-hasPermi="['link:product:add']" icon="el-icon-plus" plain size="mini" type="primary"
-          @click="handleAdd">
+                   @click="handleAdd">
           新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button v-hasPermi="['link:product:edit']" :disabled="single" icon="el-icon-document-copy" plain size="mini"
-          type="success" @click="handleUpdate">
-          复制
+                   type="success" @click="handleUpdate">
+          修改
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button v-hasPermi="['link:product:remove']" :disabled="multiple" icon="el-icon-delete" plain size="mini"
-          type="danger" @click="handleDelete">
+                   type="danger" @click="handleDelete">
           删除
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button v-hasPermi="['link:product:import']" icon="el-icon-upload2" plain size="mini" type="info"
-          @click="handleImport">
+                   @click="handleImport">
           导入
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button v-hasPermi="['link:product:export']" icon="el-icon-download" plain size="mini" type="warning"
-          @click="handleExport">
+                   @click="handleExport">
           导出
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button v-hasPermi="['link:product:generate']" icon="el-icon-s-promotion" plain size="mini" type="primary"
-          @click="onQuick">
+                   @click="onQuick">
           快捷生成
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button :disabled="multiple" icon="el-icon-refresh" plain size="mini" type="primary"
-          @click="initializeTheDataModel">
-          产品初始化
+                   @click="productEmpowerment">
+          产品赋能
         </el-button>
       </el-col>
     </el-row>
 
     <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
-      <el-table-column align="center" type="selection" width="55" />
-      <el-table-column align="center" label="id" prop="id" />
+      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" label="id" prop="id"/>
       <el-table-column align="center" label="应用ID" prop="appId" width="180">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_application_type" :value="scope.row.appId" />
+          <dict-tag :options="dict.type.link_application_type" :value="scope.row.appId"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="产品名称" prop="productName" width="180" />
-      <el-table-column align="center" label="产品标识" prop="productIdentification" width="180" />
-      <el-table-column align="center" label="厂商ID" prop="manufacturerId" width="180" />
-      <el-table-column align="center" label="厂商名称" prop="manufacturerName" width="180" />
-      <el-table-column align="center" label="产品型号" prop="model" width="180" />
-      <el-table-column align="center" label="设备类型" prop="deviceType" width="180" />
+      <el-table-column align="center" label="产品名称" prop="productName" width="180"/>
+      <el-table-column align="center" label="产品标识" prop="productIdentification" width="180"/>
+      <el-table-column align="center" label="厂商ID" prop="manufacturerId" width="180"/>
+      <el-table-column align="center" label="厂商名称" prop="manufacturerName" width="180"/>
+      <el-table-column align="center" label="产品型号" prop="model" width="180"/>
+      <el-table-column align="center" label="设备类型" prop="deviceType" width="180"/>
       <el-table-column align="center" label="协议类型" prop="protocolType" width="180">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.protocolType" />
+          <dict-tag :options="dict.type.link_device_protocol_type" :value="scope.row.protocolType"/>
         </template>
       </el-table-column>
       <el-table-column align="center" label="状态" prop="status">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.business_data_status" :value="scope.row.status" />
+          <dict-tag :options="dict.type.business_data_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="产品描述" prop="remark" width="180" />
+      <el-table-column align="center" label="产品描述" prop="remark" width="180"/>
       <el-table-column align="center" fixed="right" label="操作" width="200">
         <template slot-scope="scope">
           <el-tooltip class="item" content="复制" effect="light" placement="top">
             <el-button v-hasPermi="['link:product:edit']" circle icon="el-icon-document-copy" size="mini" type="primary"
-              @click="handleUpdate(scope.row)">
+                       @click="handleUpdate(scope.row)">
             </el-button>
           </el-tooltip>
           <el-tooltip class="item" content="删除" effect="light" placement="top">
             <el-button v-hasPermi="['link:product:remove']" circle icon="el-icon-delete" size="mini" type="primary"
-              @click="handleDelete(scope.row)">
+                       @click="handleDelete(scope.row)">
             </el-button>
           </el-tooltip>
-          <el-tooltip class="item" content="产品初始化" effect="light" placement="top">
+          <el-tooltip class="item" content="产品赋能" effect="light" placement="top">
             <el-button circle icon="el-icon-refresh" size="mini" type="primary"
-              @click="initializeTheDataModel(scope.row)">
+                       @click="productEmpowerment(scope.row)">
             </el-button>
           </el-tooltip>
           <el-tooltip class="item" content="产品详情" effect="light" placement="top">
             <el-button v-hasPermi="['link:product:detail']" circle icon="el-icon-s-operation" size="mini" type="primary"
-              @click="handleProductDetail(scope.row)"></el-button>
+                       @click="handleProductDetail(scope.row)"></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total > 0" :limit.sync="queryParams.pageSize" :page.sync="queryParams.pageNum" :total="total"
-      @pagination="getList" />
+                @pagination="getList"/>
 
     <!-- 添加或修改产品管理对话框 -->
     <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body width="48%">
@@ -130,12 +130,13 @@
               <el-col :span="22">
                 <el-select v-model="form.appId" placeholder="请选择应用ID" @change="changeApp">
                   <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label"
-                    :value="dict.value" />
+                             :value="dict.value"/>
                 </el-select>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="应用ID需全局唯一，应用ID创建后无法变更" effect="light" placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" content="应用ID需全局唯一，应用ID创建后无法变更" effect="light"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -144,13 +145,15 @@
             <el-form-item label="产品模型模板" prop="templateIdentification">
               <el-col :span="22">
                 <el-select v-model="form.templateIdentification" placeholder="请选择产品模型模板">
-                  <el-option v-for="item in templateList" :key="item.templateIdentification" :label="item.templateName" :value="item.templateIdentification" />
+                  <el-option v-for="item in templateList" :key="item.templateIdentification" :label="item.templateName"
+                             :value="item.templateIdentification"/>
                 </el-select>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="标准化的物模型可以沉淀为平台资产，供用户快速创建产品Profile" effect="light"
-                  placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" content="标准化的物模型可以沉淀为平台资产，供用户快速创建产品Profile"
+                            effect="light"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -160,23 +163,27 @@
           <el-col :span="11">
             <el-form-item label="产品名称" prop="productName">
               <el-col :span="22">
-                <el-input v-model="form.productName" placeholder="请输入产品名称" />
+                <el-input v-model="form.productName" placeholder="请输入产品名称"/>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="自定义，支持中文、英文大小写、数字、下划线和中划线" effect="light" placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" content="自定义，支持中文、英文大小写、数字、下划线和中划线" effect="light"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
           </el-col>
           <el-col :span="11">
-            <el-form-item label="产品标识" prop="productIdentification">
+            <el-form-item label="协议类型" prop="protocolType">
               <el-col :span="22">
-                <el-input v-model="form.productIdentification" placeholder="请输入产品标识" />
+                <el-select v-model="form.protocolType" placeholder="请选择协议类型">
+                  <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
+                             :value="dict.value"></el-option>
+                </el-select>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="产品标识需全局唯一，默认为：UUID" effect="light" placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" content="默认为MQTT无需修改。" effect="light" placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -188,13 +195,14 @@
               <el-col :span="22">
                 <el-select v-model="form.productType" placeholder="请选择产品类型">
                   <el-option v-for="dict in dict.type.link_product_type" :key="dict.value" :label="dict.label"
-                    :value="dict.value"></el-option>
+                             :value="dict.value"></el-option>
                 </el-select>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="支持以下两种产品类型•0：普通产品，需直连设备。•1：网关产品，可挂载子设备。" effect="light"
-                  placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" content="支持以下两种产品类型•0：普通产品，需直连设备。•1：网关产品，可挂载子设备。"
+                            effect="light"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -202,11 +210,12 @@
           <el-col :span="11">
             <el-form-item label="厂商ID" prop="manufacturerId">
               <el-col :span="22">
-                <el-input v-model="form.manufacturerId" placeholder="请输入厂商ID" />
+                <el-input v-model="form.manufacturerId" placeholder="请输入厂商ID"/>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="支持英文大小写，数字，下划线和中划线" effect="light" placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" content="支持英文大小写，数字，下划线和中划线" effect="light"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -216,11 +225,12 @@
           <el-col :span="11">
             <el-form-item label="厂商名称" prop="manufacturerName">
               <el-col :span="22">
-                <el-input v-model="form.manufacturerName" placeholder="请输入厂商名称" />
+                <el-input v-model="form.manufacturerName" placeholder="请输入厂商名称"/>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="支持英文大小写，数字，下划线和中划线" effect="light" placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" content="支持英文大小写，数字，下划线和中划线" effect="light"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -228,12 +238,13 @@
           <el-col :span="11">
             <el-form-item label="产品型号" prop="model">
               <el-col :span="22">
-                <el-input v-model="form.model" placeholder="请输入产品型号" />
+                <el-input v-model="form.model" placeholder="请输入产品型号"/>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线" effect="light"
-                  placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" content="建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线"
+                            effect="light"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -243,11 +254,11 @@
           <el-col :span="11">
             <el-form-item label="数据格式" prop="dataFormat">
               <el-col :span="22">
-                <el-input v-model="form.dataFormat" placeholder="请输入数据格式" />
+                <el-input v-model="form.dataFormat" placeholder="请输入数据格式"/>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
                 <el-tooltip class="item" content="默认为JSON无需修改。" effect="light" placement="right-start">
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -255,11 +266,12 @@
           <el-col :span="11">
             <el-form-item label="设备类型" prop="deviceType">
               <el-col :span="22">
-                <el-input v-model="form.deviceType" placeholder="请选择设备类型" />
+                <el-input v-model="form.deviceType" placeholder="请选择设备类型"/>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="支持英文大小写、数字、下划线和中划线" effect="light" placement="right-start">
-                  <i class="el-icon-question" />
+                <el-tooltip class="item" content="支持英文大小写、数字、下划线和中划线" effect="light"
+                            placement="right-start">
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -267,31 +279,16 @@
         </el-row>
         <el-row>
           <el-col :span="11">
-            <el-form-item label="协议类型" prop="protocolType">
-              <el-col :span="22">
-                <el-select v-model="form.protocolType" placeholder="请选择协议类型">
-                  <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
-                    :value="dict.value"></el-option>
-                </el-select>
-              </el-col>
-              <el-col :span="2" style="padding-left: 5px">
-                <el-tooltip class="item" content="默认为MQTT无需修改。" effect="light" placement="right-start">
-                  <i class="el-icon-question" />
-                </el-tooltip>
-              </el-col>
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
             <el-form-item label="状态" prop="status">
               <el-col :span="22">
                 <el-select v-model="form.status" placeholder="请选择状态">
                   <el-option v-for="dict in dict.type.business_data_status" :key="dict.value" :label="dict.label"
-                    :value="dict.value"></el-option>
+                             :value="dict.value"></el-option>
                 </el-select>
               </el-col>
               <el-col :span="2" style="padding-left: 5px">
                 <el-tooltip class="item" content="字典值：默认启用、停用" effect="light" placement="right-start">
-                  <i class="el-icon-question" />
+                  <i class="el-icon-question"/>
                 </el-tooltip>
               </el-col>
             </el-form-item>
@@ -300,7 +297,7 @@
         <el-row>
           <el-col :span="22">
             <el-form-item label="产品描述" prop="remark">
-              <el-input v-model="form.remark" placeholder="请输入产品描述" type="textarea" />
+              <el-input v-model="form.remark" placeholder="请输入产品描述" type="textarea"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -313,12 +310,12 @@
 
     <!-- 产品模型导入对话框 -->
     <el-dialog :close-on-click-modal="false" :title="upload.title" :visible.sync="upload.open" append-to-body
-      width="400px">
+               width="400px">
       <el-upload ref="upload"
-        :action="upload.url + '?updateSupport=' + upload.updateSupport + '&appId=' + upload.appId + '&templateIdentification=' + upload.templateIdentification + '&status=' + upload.status"
-        :auto-upload="false" :disabled="upload.isUploading" :headers="upload.headers" :limit="1"
-        :on-change="fileUploadChanges" :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess"
-        accept=".json" drag>
+                 :action="upload.url + '?updateSupport=' + upload.updateSupport + '&appId=' + upload.appId + '&templateIdentification=' + upload.templateIdentification + '&status=' + upload.status"
+                 :auto-upload="false" :disabled="upload.isUploading" :headers="upload.headers" :limit="1"
+                 :on-change="fileUploadChanges" :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess"
+                 accept=".json" drag>
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">
           将文件拖到此处,或<em>点击上传</em>,<span>仅允许导入json格式文件。</span>
@@ -329,24 +326,24 @@
             <el-col :span="12">
               <el-select v-model="upload.appId" placeholder="请选择应用ID" style="width:95%;margin-bottom: 15px;">
                 <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label"
-                  :value="dict.value"></el-option>
+                           :value="dict.value"></el-option>
               </el-select>
             </el-col>
             <el-col :span="12">
-              <el-input v-model="upload.templateIdentification" placeholder="请输入产品模型模板标识" style="width:95%" />
+              <el-input v-model="upload.templateIdentification" placeholder="请输入产品模型模板标识" style="width:95%"/>
             </el-col>
             <el-col :span="12" hidden="hidden">
-              <el-input v-model="upload.status" hidden="hidden" value="0" />
+              <el-input v-model="upload.status" hidden="hidden" value="0"/>
             </el-col>
           </div>
           <div slot="tip" class="el-upload__tip text-center">
             <div slot="tip" class="el-upload__tip">
-              <el-checkbox v-model="upload.updateSupport" />
+              <el-checkbox v-model="upload.updateSupport"/>
               是否更新已经存在的产品模型数据
             </div>
             <span>仅允许导入json格式文件。</span>
             <el-link :underline="false" style="font-size: 12px; vertical-align: baseline" type="primary"
-              @click="importTemplate">下载模板
+                     @click="importTemplate">下载模板
             </el-link>
           </div>
         </div>
@@ -358,7 +355,7 @@
     </el-dialog>
     <!-- 快捷生成 -->
     <el-dialog :close-on-click-modal="false" :visible.sync="dialogquick.visiblequick" class="quickproductbox"
-      title="产品模型信息" width="900px" @close="closequick('QuickForm')">
+               title="产品模型信息" width="900px" @close="closequick('QuickForm')">
       <el-scrollbar style="height: 500px">
         <el-form ref="QuickForm" :model="dialogquick.form" :rules="dialogquick.rules" inline label-width="110px">
           <div class="disply">
@@ -367,12 +364,13 @@
                 <el-col :span="22">
                   <el-select v-model="dialogquick.form.appId" placeholder="请选择应用ID" @change="changeApp">
                     <el-option v-for="dict in dict.type.link_application_type" :key="dict.value" :label="dict.label"
-                      :value="dict.value" />
+                               :value="dict.value"/>
                   </el-select>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
-                  <el-tooltip class="item" content="应用ID需全局唯一，应用ID创建后无法变更" effect="light" placement="right-start">
-                    <i class="el-icon-question" />
+                  <el-tooltip class="item" content="应用ID需全局唯一，应用ID创建后无法变更" effect="light"
+                              placement="right-start">
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -380,11 +378,12 @@
             <div class="small">
               <el-form-item label="产品名称" prop="productName">
                 <el-col :span="22">
-                  <el-input v-model="dialogquick.form.productName" autocomplete="off" placeholder="请输入产品名称" />
+                  <el-input v-model="dialogquick.form.productName" autocomplete="off" placeholder="请输入产品名称"/>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
-                  <el-tooltip content="自定义，支持中文、英文大小写、数字、下划线和中划线，长度[2,64]。" effect="light" placement="right">
-                    <i class="el-icon-question" />
+                  <el-tooltip content="自定义，支持中文、英文大小写、数字、下划线和中划线，长度[2,64]。" effect="light"
+                              placement="right">
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -394,13 +393,14 @@
                 <el-col :span="22">
                   <el-select v-model="dialogquick.form.productType" placeholder="请选择产品类型">
                     <el-option v-for="dict in dict.type.link_product_type" :key="dict.value" :label="dict.label"
-                      :value="dict.value" />
+                               :value="dict.value"/>
                   </el-select>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
-                  <el-tooltip class="item" content="支持以下两种产品类型•普通产品：需直连设备。•网关产品：可挂载子设备。" effect="light"
-                    placement="right-start">
-                    <i class="el-icon-question" />
+                  <el-tooltip class="item" content="支持以下两种产品类型•普通产品：需直连设备。•网关产品：可挂载子设备。"
+                              effect="light"
+                              placement="right-start">
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -408,11 +408,11 @@
             <div class="small">
               <el-form-item label="厂商ID" prop="manufacturerId">
                 <el-col :span="22">
-                  <el-input v-model="dialogquick.form.manufacturerId" autocomplete="off" placeholder="请输入厂商ID" />
+                  <el-input v-model="dialogquick.form.manufacturerId" autocomplete="off" placeholder="请输入厂商ID"/>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
                   <el-tooltip content="支持英文大小写，数字，下划线和中划线，长度[2,50]。" effect="light" placement="right">
-                    <i class="el-icon-question" />
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -420,11 +420,13 @@
             <div class="small">
               <el-form-item label="厂商名称" prop="manufacturerName">
                 <el-col :span="22">
-                  <el-input v-model="dialogquick.form.manufacturerName" autocomplete="off" placeholder="请输入厂商名称" />
+                  <el-input v-model="dialogquick.form.manufacturerName" autocomplete="off"
+                            placeholder="请输入厂商名称"/>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
-                  <el-tooltip content="支持中文、英文大小写、数字、下划线和中划线，长度[2,64]。" effect="light" placement="right">
-                    <i class="el-icon-question" />
+                  <el-tooltip content="支持中文、英文大小写、数字、下划线和中划线，长度[2,64]。" effect="light"
+                              placement="right">
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -432,11 +434,12 @@
             <div class="small">
               <el-form-item label="产品型号" prop="model">
                 <el-col :span="22">
-                  <el-input v-model="dialogquick.form.model" autocomplete="off" placeholder="请输入产品型号" />
+                  <el-input v-model="dialogquick.form.model" autocomplete="off" placeholder="请输入产品型号"/>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
-                  <el-tooltip content="建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线，长度[2,50]。" effect="light" placement="right">
-                    <i class="el-icon-question" />
+                  <el-tooltip content="建议包含字母或数字来保证可扩展性。支持英文大小写、数字、下划线和中划线，长度[2,50]。"
+                              effect="light" placement="right">
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -444,11 +447,11 @@
             <div class="small">
               <el-form-item label="数据格式" prop="dataFormat">
                 <el-col :span="22">
-                  <el-input v-model="dialogquick.form.dataFormat" placeholder="请输入数据格式" />
+                  <el-input v-model="dialogquick.form.dataFormat" placeholder="请输入数据格式"/>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
                   <el-tooltip content="默认为JSON无需修改" effect="light" placement="right">
-                    <i class="el-icon-question" />
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -456,12 +459,12 @@
             <div class="small">
               <el-form-item label="设备类型" prop="deviceType">
                 <el-col :span="22">
-                  <el-input v-model="dialogquick.form.deviceType" placeholder="请输入设备类型" />
+                  <el-input v-model="dialogquick.form.deviceType" placeholder="请输入设备类型"/>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
                   <el-tooltip class="item" content="支持英文大小写、数字、下划线和中划线，长度[3,50]。" effect="light"
-                    placement="right-start">
-                    <i class="el-icon-question" />
+                              placement="right-start">
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -471,12 +474,13 @@
                 <el-col :span="22">
                   <el-select v-model="dialogquick.form.protocolType" placeholder="请选择协议类型">
                     <el-option v-for="dict in dict.type.link_device_protocol_type" :key="dict.value" :label="dict.label"
-                      :value="dict.value" />
+                               :value="dict.value"/>
                   </el-select>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
-                  <el-tooltip class="item" content="设备接入平台的协议类型，默认为MQTT无需修改。" effect="light" placement="right-start">
-                    <i class="el-icon-question" />
+                  <el-tooltip class="item" content="设备接入平台的协议类型，默认为MQTT无需修改。" effect="light"
+                              placement="right-start">
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -484,11 +488,11 @@
             <div class="small">
               <el-form-item label="产品描述" prop="remark">
                 <el-col :span="22">
-                  <el-input v-model="dialogquick.form.remark" autocomplete="off" placeholder="请输入产品描述" />
+                  <el-input v-model="dialogquick.form.remark" autocomplete="off" placeholder="请输入产品描述"/>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
                   <el-tooltip content="产品描述信息。" effect="light" placement="right">
-                    <i class="el-icon-question" />
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -497,14 +501,16 @@
               <el-form-item label="产品模板" prop="templateIdentification">
                 <el-col :span="22">
                   <el-select v-model="dialogquick.form.templateIdentification" placeholder="请选择产品模型模板">
-                    <el-option v-for="item in templateList" :key="item.templateIdentification" :label="item.templateName"
-                      :value="item.templateIdentification" />
+                    <el-option v-for="item in templateList" :key="item.templateIdentification"
+                               :label="item.templateName"
+                               :value="item.templateIdentification"/>
                   </el-select>
                 </el-col>
                 <el-col :span="2" style="padding-left: 5px">
-                  <el-tooltip class="item" content="标准化的物模型可以沉淀为平台资产，供用户快速创建产品Profile" effect="light"
-                    placement="right-start">
-                    <i class="el-icon-question" />
+                  <el-tooltip class="item" content="标准化的物模型可以沉淀为平台资产，供用户快速创建产品Profile"
+                              effect="light"
+                              placement="right-start">
+                    <i class="el-icon-question"/>
                   </el-tooltip>
                 </el-col>
               </el-form-item>
@@ -513,119 +519,126 @@
             <div v-for="(item, index) in dialogquick.form.services" :key="index" class="onebox">
               <div class="small">
                 <el-form-item :prop="'services.' + index + '.serviceId'" :rules="dialogquick.rules.serviceId"
-                  label="服务名称">
+                              label="服务名称">
                   <el-col :span="22">
-                    <el-input v-model="item.serviceId" autocomplete="off" placeholder="请输入服务名称" />
+                    <el-input v-model="item.serviceId" autocomplete="off" placeholder="请输入服务名称"/>
                   </el-col>
                   <el-col :span="2" style="padding-left: 5px">
-                    <el-tooltip content="支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
+                    <el-tooltip
+                      content="支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]"
+                      effect="light"
                       placement="right">
-                      <i class="el-icon-question" />
+                      <i class="el-icon-question"/>
                     </el-tooltip>
                   </el-col>
                 </el-form-item>
               </div>
               <div class="small">
                 <el-form-item :prop="'services.' + index + '.description'" :rules="dialogquick.rules.description"
-                  label="服务的描述信息">
+                              label="服务的描述信息">
                   <el-col :span="22">
-                    <el-input v-model="item.description" autocomplete="off" placeholder="请输入服务的描述信息" />
+                    <el-input v-model="item.description" autocomplete="off" placeholder="请输入服务的描述信息"/>
                   </el-col>
                   <el-col :span="2" style="padding-left: 5px">
                     <el-tooltip content="文本描述，不影响实际功能，可配置为空。" effect="light" placement="right">
-                      <i class="el-icon-question" />
+                      <i class="el-icon-question"/>
                     </el-tooltip>
                   </el-col>
                 </el-form-item>
               </div>
               <div class="small">
-                <el-form-item :prop="'services.' + index + '.commands'" :rules="dialogquick.rules.commands" label="指令">
+                <el-form-item :prop="'services.' + index + '.commands'" :rules="dialogquick.rules.commands"
+                              label="指令">
                   <el-col :span="22">
-                    <el-input v-model="item.commands" autocomplete="off" placeholder="请输入指令" />
+                    <el-input v-model="item.commands" autocomplete="off" placeholder="请输入指令"/>
                   </el-col>
                   <el-col :span="2" style="padding-left: 5px">
-                    <el-tooltip content=" 指示设备可以执行的命令，如果本服务无命令则配置为[]" effect="light" placement="right">
-                      <i class="el-icon-question" />
+                    <el-tooltip content=" 指示设备可以执行的命令，如果本服务无命令则配置为[]" effect="light"
+                                placement="right">
+                      <i class="el-icon-question"/>
                     </el-tooltip>
                   </el-col>
                 </el-form-item>
               </div>
               <div class="btn-box">
                 <i v-if="index === dialogquick.form.services.length - 1" class="el-icon-circle-plus-outline"
-                  @click="addonebox"></i>
+                   @click="addonebox"></i>
                 <i v-else class="el-icon-remove-outline" @click="deleteonebox(index)"></i>
               </div>
               <!--  properties数组-->
               <div v-for="(proItem, proindex) in item.properties" :key="proindex" class="twobox">
                 <div class="small">
                   <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.datatype'"
-                    :rules="dialogquick.rules.datatype" label="指示数据类型">
+                                :rules="dialogquick.rules.datatype" label="指示数据类型">
                     <el-col :span="22">
                       <el-select v-model="proItem.datatype" placeholder="请选择指示数据类型">
                         <el-option v-for="(item, index) in dict.type.link_product_datatype" :key="index"
-                          :label="item.label" :value="item.value">
+                                   :label="item.label" :value="item.value">
                         </el-option>
                       </el-select>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
                       <el-tooltip content="取值范围：string、brnary、int、bool、decimal（float和double都可以使用此类型）、timestamp、json、上报数据时，复杂类型数据格式如下：
                       json：自定义json结构体，平台不理解只透传" effect="light" placement="right">
-                        <i class="el-icon-question" />
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
                   </el-form-item>
                 </div>
                 <div class="small">
                   <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.description'"
-                    :rules="dialogquick.rules.descriptions" label="属性描述">
+                                :rules="dialogquick.rules.descriptions" label="属性描述">
                     <el-col :span="22">
-                      <el-input v-model="proItem.description" autocomplete="off" placeholder="请输入描述" />
+                      <el-input v-model="proItem.description" autocomplete="off" placeholder="请输入描述"/>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
                       <el-tooltip content="属性描述,不影响实际功能,可配置为空字符串" effect="light" placement="right">
-                        <i class="el-icon-question" />
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
                   </el-form-item>
                 </div>
                 <div class="small">
                   <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.enumlist'"
-                    :rules="dialogquick.rules.enumlist" label="指示枚举值">
+                                :rules="dialogquick.rules.enumlist" label="指示枚举值">
                     <el-col :span="22">
-                      <el-input v-model="proItem.enumlist" autocomplete="off" placeholder="请输入指示枚举值" />
+                      <el-input v-model="proItem.enumlist" autocomplete="off" placeholder="请输入指示枚举值"/>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="如开关状态status可有如下取值'enumList' : ['OPEN','CLOSE'] 目前本字段是非功能性字段，仅起到描述作用。建议准确定义。"
+                      <el-tooltip
+                        content="如开关状态status可有如下取值'enumList' : ['OPEN','CLOSE'] 目前本字段是非功能性字段，仅起到描述作用。建议准确定义。"
                         effect="light" placement="right">
-                        <i class="el-icon-question" />
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
                   </el-form-item>
                 </div>
                 <div class="small">
                   <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.max'"
-                    :rules="dialogquick.rules.max" label="指示最大值">
+                                :rules="dialogquick.rules.max" label="指示最大值">
                     <el-col :span="22">
                       <el-input v-model="proItem.max" autocomplete="off" placeholder="最大值"
-                        @change="maxValue(proItem.max, $event)">
+                                @change="maxValue(proItem.max, $event)">
                         <el-button slot="prepend" icon="el-icon-minus" @click="handleMinus('max', index)"></el-button>
                         <el-button slot="append" icon="el-icon-plus" @click="handlePlus('max', index)"></el-button>
                       </el-input>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示最大值,支持长度不超过50的数字。 仅当dataType为int、decimal时生效，逻辑小于等于。" effect="light"
+                      <el-tooltip
+                        content="指示最大值,支持长度不超过50的数字。 仅当dataType为int、decimal时生效，逻辑小于等于。"
+                        effect="light"
                         placement="right">
-                        <i class="el-icon-question" />
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
                   </el-form-item>
                 </div>
                 <div class="small">
                   <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.maxlength'"
-                    :rules="dialogquick.rules.maxlength" label="字符串长度">
+                                :rules="dialogquick.rules.maxlength" label="字符串长度">
                     <el-col :span="22">
                       <el-input v-model="proItem.maxlength" autocomplete="off" placeholder="请输入指示字符串长度"
-                        @change="maxValue(proItem.maxlength, $event)">
+                                @change="maxValue(proItem.maxlength, $event)">
                         <el-button slot="prepend" icon="el-icon-minus" @click="handleMinus('maxlength', index)">
                         </el-button>
                         <el-button slot="append" icon="el-icon-plus" @click="handlePlus('maxlength', index)">
@@ -633,16 +646,17 @@
                       </el-input>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示字符串长度。 仅当dataType为string、binary时生效。（string最长为4093，binary最长为 16000 字节）"
+                      <el-tooltip
+                        content="指示字符串长度。 仅当dataType为string、binary时生效。（string最长为4093，binary最长为 16000 字节）"
                         effect="light" placement="right">
-                        <i class="el-icon-question" />
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
                   </el-form-item>
                 </div>
                 <div class="small">
                   <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.min'"
-                    :rules="dialogquick.rules.min" label="指示最小值">
+                                :rules="dialogquick.rules.min" label="指示最小值">
                     <el-col :span="22">
                       <el-input v-model="proItem.min" autocomplete="off" placeholder="最小值">
                         <el-button slot="prepend" icon="el-icon-minus" @click="handleMinus('min', index)"></el-button>
@@ -650,15 +664,16 @@
                       </el-input>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示最小值。仅当dataType为int、decimal时生效，逻辑大于等于。" effect="light" placement="right">
-                        <i class="el-icon-question" />
+                      <el-tooltip content="指示最小值。仅当dataType为int、decimal时生效，逻辑大于等于。" effect="light"
+                                  placement="right">
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
                   </el-form-item>
                 </div>
                 <div class="small">
                   <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.step'"
-                    :rules="dialogquick.rules.step" label="指示步长">
+                                :rules="dialogquick.rules.step" label="指示步长">
                     <el-col :span="22">
                       <el-input v-model="proItem.step" autocomplete="off" placeholder="请输入指示步长">
                         <el-button slot="prepend" icon="el-icon-minus" @click="handleMinus('step', index)"></el-button>
@@ -667,70 +682,90 @@
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
                       <el-tooltip content="指示步长，即合法数字间隔" effect="light" placement="right">
-                        <i class="el-icon-question" />
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
                   </el-form-item>
                 </div>
                 <div class="small">
                   <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.required'"
-                    :rules="dialogquick.rules.required" label="属性是否必填">
+                                :rules="dialogquick.rules.required" label="属性是否必填">
                     <el-col :span="22">
                       <el-select v-model="proItem.required" placeholder="请选择是否必填">
                         <el-option v-for="dict in dict.type.link_product_isRequired" :key="dict.value"
-                          :label="dict.label" :value="parseInt(dict.value)" />
+                                   :label="dict.label" :value="parseInt(dict.value)"/>
                       </el-select>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。" effect="light"
+                      <el-tooltip
+                        content="指示本条属性是否必填，取值为0或1，默认取值1（必填）。目前本字段是非功能性字段，仅起到描述作用。"
+                        effect="light"
                         placement="right">
-                        <i class="el-icon-question" />
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
                   </el-form-item>
                 </div>
                 <div class="small">
-                  <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.name'"
-                    :rules="dialogquick.rules.name" label="指示属性名称">
+                  <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.propertyCode'"
+                                :rules="dialogquick.rules.propertyCode" label="指示属性编码">
                     <el-col :span="22">
-                      <el-input v-model="proItem.name" autocomplete="off" placeholder="请输入指示属性名称" />
+                      <el-input v-model="proItem.propertyCode" autocomplete="off" placeholder="请输入指示属性编码"/>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示属性名称。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]" effect="light"
+                      <el-tooltip
+                        content="指示属性编码。支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]"
+                        effect="light"
                         placement="right">
-                        <i class="el-icon-question" />
+                        <i class="el-icon-question"/>
+                      </el-tooltip>
+                    </el-col>
+                  </el-form-item>
+                </div>
+                <div class="small">
+                  <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.propertyName'"
+                                :rules="dialogquick.rules.propertyName" label="指示属性名称">
+                    <el-col :span="22">
+                      <el-input v-model="proItem.propertyName" autocomplete="off" placeholder="请输入指示属性名称"/>
+                    </el-col>
+                    <el-col :span="2" style="padding-left: 5px">
+                      <el-tooltip content="指示属性名称" effect="light"
+                                  placement="right">
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
                   </el-form-item>
                 </div>
                 <div class="small">
                   <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.unit'"
-                    :rules="dialogquick.rules.unit" label="指示单位">
+                                :rules="dialogquick.rules.unit" label="指示单位">
                     <el-col :span="22">
-                      <el-input v-model="proItem.unit" autocomplete="off" placeholder="请输入指示单位" />
+                      <el-input v-model="proItem.unit" autocomplete="off" placeholder="请输入指示单位"/>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="指示单位,支持长度不超过50。 取值根据参数确定，如：• 温度单位：“C”或“K” • 百分比单位：“%” • 压强单位：“Pa”或“kPa”"
+                      <el-tooltip
+                        content="指示单位,支持长度不超过50。 取值根据参数确定，如：• 温度单位：“C”或“K” • 百分比单位：“%” • 压强单位：“Pa”或“kPa”"
                         effect="light" placement="right">
-                        <i class="el-icon-question" />
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
                   </el-form-item>
                 </div>
                 <div class="small">
                   <el-form-item :prop="'services.' + index + '.properties.' + proindex + '.method'"
-                    :rules="dialogquick.rules.method" label="指示访问模式">
+                                :rules="dialogquick.rules.method" label="指示访问模式">
                     <el-col :span="22">
                       <!--                      <el-input v-model="proItem.method" autocomplete="off" placeholder="请输入指示访问模式" />-->
                       <el-select v-model="proItem.method" placeholder="请选择访问模式">
                         <el-option v-for="dict in methodlist" :key="dict.value" :label="dict.label"
-                          :value="dict.value" />
+                                   :value="dict.value"/>
                       </el-select>
                     </el-col>
                     <el-col :span="2" style="padding-left: 5px">
-                      <el-tooltip content="	指示访问模式。R:可读；W:可写；E属性值更改时上报数据,取值范围：R、RW、RE、RWE" effect="light"
-                        placement=" right">
-                        <i class="el-icon-question" />
+                      <el-tooltip content="	指示访问模式。R:可读；W:可写；E属性值更改时上报数据,取值范围：R、RW、RE、RWE"
+                                  effect="light"
+                                  placement=" right">
+                        <i class="el-icon-question"/>
                       </el-tooltip>
                     </el-col>
 
@@ -738,7 +773,7 @@
                 </div>
                 <div class="btn-box">
                   <i v-if="proindex === item.properties.length - 1" class="el-icon-circle-plus-outline"
-                    @click="addtwobox(index)"></i>
+                     @click="addtwobox(index)"></i>
                   <i v-else class="el-icon-remove-outline" @click="deletetwobox(index, proindex)"></i>
                 </div>
               </div>
@@ -755,19 +790,19 @@
 </template>
 
 <script>
-  import {
-    addProduct,
-    delProduct,
-    generateProductJson,
-    getProduct,
-    initializeDataModel,
-    listProduct,
-    updateProduct,
-  } from "@/api/link/product/product";
-  import {listProductTemplate} from "@/api/link/product/productTemplate";
-  import {getToken} from "@/utils/auth";
+import {
+  addProduct,
+  delProduct,
+  generateProductJson,
+  getProduct,
+  listProduct,
+  productEmpowerment,
+  updateProduct,
+} from "@/api/link/product/product";
+import {listProductTemplate} from "@/api/link/product/productTemplate";
+import {getToken} from "@/utils/auth";
 
-  export default {
+export default {
   name: "Product",
   dicts: [
     "link_application_type",
@@ -828,7 +863,7 @@
         // 是否更新已经存在的用户数据
         updateSupport: 0,
         // 设置上传的请求头部
-        headers: { Authorization: "Bearer " + getToken() },
+        headers: {Authorization: "Bearer " + getToken()},
         // 上传的地址
         url:
           process.env.VUE_APP_BASE_API + "/link/product/importProductJsonFile",
@@ -838,11 +873,11 @@
       // 表单校验
       rules: {
         appId: [
-          { required: true, message: "应用ID不能为空", trigger: "change" },
+          {required: true, message: "应用ID不能为空", trigger: "change"},
         ],
         productName: [
-          { required: true, message: "产品名称不能为空", trigger: "blur" },
-          { min: 2, max: 64, message: '产品名称长度必须介于 2 和 64 之间', trigger: 'blur' },
+          {required: true, message: "产品名称不能为空", trigger: "blur"},
+          {min: 2, max: 64, message: '产品名称长度必须介于 2 和 64 之间', trigger: 'blur'},
           {
             //pattern: /^(?!_)(?!.*?_$)(?!-)(?!.*?-$)[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
             //message: "中文、英文大小写、数字、下划线和中划线，不能以下划线中划线开头和结尾，长度[2,64]",
@@ -852,8 +887,8 @@
           }
         ],
         productIdentification: [
-          { required: true, message: "产品标识不能为空", trigger: "blur" },
-          { min: 2, max: 50, message: '产品标识长度必须介于 2 和 50 之间', trigger: 'blur' },
+          {required: true, message: "产品标识不能为空", trigger: "blur"},
+          {min: 2, max: 50, message: '产品标识长度必须介于 2 和 50 之间', trigger: 'blur'},
           {
             pattern: /^[a-zA-Z0-9_-]+$/,
             message: "英文大小写、数字、下划线和中划线，长度[2,50]",
@@ -861,11 +896,11 @@
           }
         ],
         productType: [
-          { required: true, message: "产品类型不能为空", trigger: "change" },
+          {required: true, message: "产品类型不能为空", trigger: "change"},
         ],
         manufacturerId: [
-          { required: true, message: "厂商ID不能为空", trigger: "blur" },
-          { min: 2, max: 50, message: '厂商ID长度必须介于 2 和 50 之间', trigger: 'blur' },
+          {required: true, message: "厂商ID不能为空", trigger: "blur"},
+          {min: 2, max: 50, message: '厂商ID长度必须介于 2 和 50 之间', trigger: 'blur'},
           {
             pattern: /^[a-zA-Z0-9_-]+$/,
             message: "英文大小写、数字、下划线和中划线，长度[2,50]",
@@ -873,8 +908,8 @@
           }
         ],
         manufacturerName: [
-          { required: true, message: "厂商名称不能为空", trigger: "blur" },
-          { min: 2, max: 64, message: '厂商名称长度必须介于 2 和 64 之间', trigger: 'blur' },
+          {required: true, message: "厂商名称不能为空", trigger: "blur"},
+          {min: 2, max: 64, message: '厂商名称长度必须介于 2 和 64 之间', trigger: 'blur'},
           {
             pattern: /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
             message: "中文、英文大小写、数字、下划线和中划线，长度[2,64]",
@@ -882,8 +917,8 @@
           }
         ],
         model: [
-          { required: true, message: "产品型号不能为空", trigger: "blur" },
-          { min: 2, max: 50, message: '产品型号长度必须介于 2 和 50 之间', trigger: 'blur' },
+          {required: true, message: "产品型号不能为空", trigger: "blur"},
+          {min: 2, max: 50, message: '产品型号长度必须介于 2 和 50 之间', trigger: 'blur'},
           {
             pattern: /^[a-zA-Z0-9_-]+$/,
             message: "英文大小写、数字、下划线和中划线，长度[2,50]",
@@ -891,11 +926,11 @@
           }
         ],
         dataFormat: [
-          { required: true, message: "数据格式不能为空", trigger: "change" },
+          {required: true, message: "数据格式不能为空", trigger: "change"},
         ],
         deviceType: [
-          { required: true, message: "设备类型不能为空", trigger: "change" },
-          { min: 3, max: 50, message: '设备类型长度必须介于 3 和 50 之间', trigger: 'blur' },
+          {required: true, message: "设备类型不能为空", trigger: "change"},
+          {min: 3, max: 50, message: '设备类型长度必须介于 3 和 50 之间', trigger: 'blur'},
           {
             pattern: /^[a-zA-Z0-9_-]+$/,
             message: "英文大小写、数字、下划线和中划线，长度[3,50]",
@@ -903,10 +938,10 @@
           }
         ],
         protocolType: [
-          { required: true, message: "设备接入平台的协议类型不能为空", trigger: "change" },
+          {required: true, message: "设备接入平台的协议类型不能为空", trigger: "change"},
         ],
         status: [
-          { required: true, message: "状态不能为空", trigger: "change" },
+          {required: true, message: "状态不能为空", trigger: "change"},
         ],
       },
       //快捷生成
@@ -950,21 +985,21 @@
         },
         rules: {
           appId: [
-            { required: true, message: "应用ID不能为空", trigger: "change" },
+            {required: true, message: "应用ID不能为空", trigger: "change"},
           ],
           productName: [
-            { required: true, message: "产品名称不能为空", trigger: "blur" },
-            { min: 2, max: 64, message: '产品名称长度必须介于 2 和 64 之间', trigger: 'blur' },
+            {required: true, message: "产品名称不能为空", trigger: "blur"},
+            {min: 2, max: 64, message: '产品名称长度必须介于 2 和 64 之间', trigger: 'blur'},
             {
               pattern: /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
               message: "中文、英文大小写、数字、下划线和中划线，长度[2,64]",
               trigger: "blur"
             }
           ],
-          productType: [{ required: true, message: "产品类型不能为空", trigger: "change" }],
+          productType: [{required: true, message: "产品类型不能为空", trigger: "change"}],
           manufacturerId: [
-            { required: true, message: "厂商ID不能为空", trigger: "blur" },
-            { min: 2, max: 50, message: '厂商ID长度必须介于 2 和 50 之间', trigger: 'blur' },
+            {required: true, message: "厂商ID不能为空", trigger: "blur"},
+            {min: 2, max: 50, message: '厂商ID长度必须介于 2 和 50 之间', trigger: 'blur'},
             {
               pattern: /^[a-zA-Z0-9_-]+$/,
               message: "英文大小写、数字、下划线和中划线，长度[2,50]",
@@ -972,18 +1007,18 @@
             }
           ],
           manufacturerName: [
-            { required: true, message: "厂商名称不能为空", trigger: "blur" },
-            { min: 2, max: 64, message: '厂商名称长度必须介于 2 和 64 之间', trigger: 'blur' },
+            {required: true, message: "厂商名称不能为空", trigger: "blur"},
+            {min: 2, max: 64, message: '厂商名称长度必须介于 2 和 64 之间', trigger: 'blur'},
             {
               pattern: /^[\u4e00-\u9fa5a-zA-Z0-9_-]+$/,
               message: "中文、英文大小写、数字、下划线和中划线，长度[2,64]",
               trigger: "blur"
             }
           ],
-          dataFormat: [{ required: true, message: "数据格式不能为空", trigger: "change" }],
+          dataFormat: [{required: true, message: "数据格式不能为空", trigger: "change"}],
           deviceType: [
-            { required: true, message: "设备类型不能为空", trigger: "blur" },
-            { min: 2, max: 50, message: '设备类型长度必须介于 3 和 50 之间', trigger: 'blur' },
+            {required: true, message: "设备类型不能为空", trigger: "blur"},
+            {min: 2, max: 50, message: '设备类型长度必须介于 3 和 50 之间', trigger: 'blur'},
             {
               pattern: /^[a-zA-Z0-9_-]+$/,
               message: "英文大小写、数字、下划线和中划线，长度[3,50]",
@@ -991,37 +1026,37 @@
             }
           ],
           model: [
-            { required: true, message: "产品型号不能为空", trigger: "blur" },
-            { min: 2, max: 50, message: '产品型号长度必须介于 2 和 50 之间', trigger: 'blur' },
+            {required: true, message: "产品型号不能为空", trigger: "blur"},
+            {min: 2, max: 50, message: '产品型号长度必须介于 2 和 50 之间', trigger: 'blur'},
             {
               pattern: /^[a-zA-Z0-9_-]+$/,
               message: "英文大小写、数字、下划线和中划线，长度[2,50]",
               trigger: "blur"
             }
           ],
-          protocolType: [{ required: true, message: "协议类型不能为空", trigger: "change" }],
-          status: [{ required: true, message: "请输入状态", trigger: "blur" }],
-          version: [{ required: true, message: "请输入版本", trigger: "blur" }],
-          remark: [{ message: "请输入备注", trigger: "blur" }],
+          protocolType: [{required: true, message: "协议类型不能为空", trigger: "change"}],
+          status: [{required: true, message: "请输入状态", trigger: "blur"}],
+          version: [{required: true, message: "请输入版本", trigger: "blur"}],
+          remark: [{message: "请输入备注", trigger: "blur"}],
           //services
           serviceId: [
-            { required: true, message: "服务名称不能为空", trigger: "blur" },
-            { min: 2, max: 50, message: '服务名称长度必须介于 2 和 50 之间', trigger: 'blur' },
+            {required: true, message: "服务名称不能为空", trigger: "blur"},
+            {min: 2, max: 50, message: '服务名称长度必须介于 2 和 50 之间', trigger: 'blur'},
             {
               pattern: /^[a-z0-9_]+$/,
               message: "英文小写、数字、下划线，长度[2,50]",
               trigger: "blur"
             }
           ],
-          description: [{ required: false, message: "服务描述不能为空", trigger: "blur" },],
-          commands: [{ required: true, message: "指令不能为空", trigger: "blur" },],
-          statuss: [{ required: true, message: "请输入状态", trigger: "blur" },],
+          description: [{required: false, message: "服务描述不能为空", trigger: "blur"},],
+          commands: [{required: true, message: "指令不能为空", trigger: "blur"},],
+          statuss: [{required: true, message: "请输入状态", trigger: "blur"},],
           //properties
-          datatype: [{ required: true, message: "指示数据类型不能为空", trigger: "change" },],
-          descriptions: [{ message: "请输入属性描述", trigger: "blur" },],
-          enumlist: [{ required: true, message: "指示枚举值不能为空", trigger: "blur" },],
+          datatype: [{required: true, message: "指示数据类型不能为空", trigger: "change"},],
+          descriptions: [{message: "请输入属性描述", trigger: "blur"},],
+          enumlist: [{required: true, message: "指示枚举值不能为空", trigger: "blur"},],
           maxlength: [
-            { required: true, message: "字符串长度不能为空", trigger: "blur" },
+            {required: true, message: "字符串长度不能为空", trigger: "blur"},
             {
               pattern: /^[0-9]+$/,
               message: "请输入合法数字",
@@ -1043,46 +1078,45 @@
             }
           ],
           step: [
-            { required: true, message: "请输入指示步长", trigger: "blur" },
+            {required: true, message: "请输入指示步长", trigger: "blur"},
             {
               pattern: /^[0-9]+$/,
               message: "请输入合法数字",
               trigger: "blur"
             }
           ],
-          required: [{ required: true, message: "是否必须不能为空", trigger: "blur" },],
-          name: [{ required: true, message: "指示属性名称不能为空", trigger: "blur" }],
-          method: [{ required: true, message: "指示访问模式不能为空", trigger: " change" }],
+          required: [{required: true, message: "是否必须不能为空", trigger: "blur"},],
+          propertyCode: [{required: true, message: "指示属性编码不能为空", trigger: "blur"}],
+          propertyName: [{required: true, message: "指示属性名称不能为空", trigger: "blur"}],
+          method: [{required: true, message: "指示访问模式不能为空", trigger: " change"}],
         },
       },
       methodlist: [
-        { value: "R", label: "R" },
-        { value: "RW", label: "RW" },
-        { value: "RE", label: "RE" },
-        { value: "RWE", label: "RWE" }
+        {value: "R", label: "R"},
+        {value: "RW", label: "RW"},
+        {value: "RE", label: "RE"},
+        {value: "RWE", label: "RWE"}
       ],
     };
   },
   created() {
     this.getList();
   },
-  watch: {
-  },
+  watch: {},
   methods: {
-    //初始化数据模型
-    initializeTheDataModel(row) {
+    //产品赋能
+    async productEmpowerment(row) {
       const ids = row.id || this.ids;
-      const initializeOrNot = true
-      this.$modal
-        .confirm('是否初始化"' + ids + '"的数据项？')
-        .then(function () {
-          return initializeDataModel(ids, initializeOrNot);
-        })
-        .then(() => {
+      const isConfirm = await this.$modal.confirm('是否赋能"' + ids + '"的数据项？');
+      if (isConfirm) {
+        const {code, msg} = await productEmpowerment(ids);
+        if (code === 200) {
+          this.$modal.msgSuccess(msg);
           this.getList()
-          this.$modal.msgSuccess("初始化成功");
-        })
-        .catch(() => { });
+        } else {
+          this.$modal.msgWarning(msg);
+        }
+      }
     },
     //加减操作
     handleMinus(value, index) {
@@ -1101,8 +1135,7 @@
         if (this.dialogquick.form.services[index].properties[index].min < 0) {
           this.dialogquick.form.services[index].properties[index].min = 0
         }
-      }
-      else if (value === 'step') {
+      } else if (value === 'step') {
         this.dialogquick.form.services[index].properties[index].step--
         if (this.dialogquick.form.services[index].properties[index].step < 0) {
           this.dialogquick.form.services[index].properties[index].step = 0
@@ -1116,8 +1149,7 @@
         this.dialogquick.form.services[index].properties[index].maxlength++
       } else if (value === 'min') {
         this.dialogquick.form.services[index].properties[index].min++
-      }
-      else if (value === 'step') {
+      } else if (value === 'step') {
         this.dialogquick.form.services[index].properties[index].step++
       }
     },
@@ -1294,6 +1326,7 @@
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      console.log(selection)
       this.ids = selection.map((item) => item.id);
       this.single = selection.length !== 1;
       this.multiple = !selection.length;
@@ -1304,7 +1337,7 @@
       this.open = true;
       this.title = "添加产品";
     },
-    /** 修改按钮操作 */
+    /** 复制按钮操作 */
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids;
@@ -1314,7 +1347,7 @@
         this.form.productIdentification = null;
         this.open = true;
         this.title = "复制产品";
-        if(!this.isEmptyStr(response.data.appId) && this.templateList.length == 0){
+        if (!this.isEmptyStr(response.data.appId) && this.templateList.length == 0) {
           this.getTemplateList(response.data.appId)
         }
       });
@@ -1357,7 +1390,8 @@
           this.getList();
           this.$modal.msgSuccess("删除成功");
         })
-        .catch(() => { });
+        .catch(() => {
+        });
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -1393,7 +1427,7 @@
       this.upload.open = false;
       this.upload.isUploading = false;
       this.$refs.upload.clearFiles();
-      this.$alert(response.msg, "导入结果", { dangerouslyUseHTMLString: true });
+      this.$alert(response.msg, "导入结果", {dangerouslyUseHTMLString: true});
       this.getList();
     },
     //文件状态改变

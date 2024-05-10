@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.link.service.protocol.impl;
 
+import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
-import com.mqttsnet.thinglinks.common.core.exception.ServiceException;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.protocol.Protocol;
@@ -123,11 +123,7 @@ public class ProtocolServiceImpl implements ProtocolService {
      */
     @Override
     public int insertProtocol(Protocol protocol) {
-        int iexe = protocolMapper.insertProtocol(protocol);
-        if (iexe != 1) {
-            throw new ServiceException("执行插入失败", 1000);
-        }
-        return Integer.parseInt(protocol.getId().toString());
+        return protocolMapper.insertProtocol(protocol);
     }
 
     /**
@@ -170,7 +166,7 @@ public class ProtocolServiceImpl implements ProtocolService {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             String content = StringEscapeUtils.unescapeHtml4(protocol.getContent());
             for (Device device : deviceList) {
-                redisService.set(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getProtocolType() + device.getDeviceIdentification(), content);
+                redisService.set(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + device.getProtocolType() + device.getDeviceIdentification(), content);
             }
             protocolMapper.updateStatusById(Constants.ENABLE, protocol.getId());
         }
@@ -189,7 +185,7 @@ public class ProtocolServiceImpl implements ProtocolService {
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             for (Device device : deviceList) {
-                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
+                redisService.delete(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
             }
             protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
         }
@@ -213,13 +209,16 @@ public class ProtocolServiceImpl implements ProtocolService {
      */
     @Override
     public int protocolScriptCacheRefresh() {
-        List<Protocol> protocolList = protocolMapper.findAllByStatus(Constants.ENABLE);
+        List<Protocol> protocolList = protocolMapper.selectProtocolList(Protocol.builder().build());
         for (Protocol protocol : protocolList) {
             List<Device> deviceList = deviceService.findAllByProductIdentification(protocol.getProductIdentification());
             for (Device device : deviceList) {
-                redisService.delete(Constants.DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
+                if (Constants.DISABLE.equals(protocol.getStatus())) {
+                    redisService.delete(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification());
+                } else {
+                    redisService.set(CacheConstants.DEF_DEVICE_DATA_REPORTED_AGREEMENT_SCRIPT + protocol.getProtocolType() + device.getDeviceIdentification(), StringEscapeUtils.unescapeHtml4(protocol.getContent()));
+                }
             }
-            protocolMapper.updateStatusById(Constants.DISABLE, protocol.getId());
         }
         return protocolList.size();
     }
