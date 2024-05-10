@@ -69,7 +69,7 @@ public class DeviceCacheService extends CacheSuperAbstract {
      * @param device Device object to be transformed.
      * @return Transformed DeviceCacheVO object.
      */
-    private DeviceCacheVO transformToDeviceCacheVO(Device device) {
+    public DeviceCacheVO transformToDeviceCacheVO(Device device) {
         DeviceCacheVO deviceCacheVO = BeanUtil.toBeanIgnoreError(device, DeviceCacheVO.class);
 
         Optional.ofNullable(deviceCacheVO.getProductIdentification())

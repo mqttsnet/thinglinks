@@ -19,12 +19,13 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
 import com.mqttsnet.thinglinks.link.api.domain.device.enumeration.MqttProtocolTopoStatusEnum;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeviceDataReportParam;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoQueryDeviceParam;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoQueryDeviceResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
+import com.mqttsnet.thinglinks.link.common.cache.service.DeviceCacheService;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceLocationService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
@@ -71,6 +72,8 @@ public class DeviceServiceImpl implements DeviceService {
     private TokenService tokenService;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private DeviceCacheService deviceCacheService;
     @Resource
     private RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi;
     @Autowired
@@ -442,7 +445,7 @@ public class DeviceServiceImpl implements DeviceService {
         final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, username, password, deviceStatus, protocolType);
         if (Optional.ofNullable(device).isPresent()) {
             //缓存设备信息
-            redisService.setCacheObject(CacheConstants.DEF_DEVICE + device.getDeviceIdentification(), device, 300L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(CacheConstants.DEF_DEVICE + device.getDeviceIdentification(), deviceCacheService.transformToDeviceCacheVO(device), 300L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             //更改设备在线状态为在线
             this.updateConnectStatusByClientId(DeviceConnectStatusEnum.ONLINE.getValue(), clientIdentifier);
             return device;
