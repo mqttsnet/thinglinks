@@ -231,7 +231,7 @@ public class DeviceActionServiceImpl implements DeviceActionService {
         Device device = deviceService.findOneByClientId(String.valueOf(map.get("clientId")));
         if (null != device){
             //缓存设备信息
-            redisService.setCacheObject(CacheConstants.DEF_DEVICE+device.getClientId(),device,60L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(CacheConstants.DEF_DEVICE+device.getClientId(),device,30L+ Long.parseLong(DateUtils.getRandom(1)), TimeUnit.MILLISECONDS);
         }
     }
 

@@ -243,8 +243,6 @@
     delProtocol,
     addProtocol,
     updateProtocol,
-    enable,
-    disable,
     dynamicallyXcode
   } from "@/api/link/protocol";
   import theCodeEditor from "./TheCodeEditor/theCodeEditor"
@@ -436,7 +434,6 @@
                 this.$modal.msgSuccess("修改成功");
                 this.open = false;
                 this.getList();
-                this.handlestatus(this.form.id);
               });
             } else {
               this.form.content = this.$refs.CodeEditor.code
@@ -445,21 +442,10 @@
                 this.$refs.CodeEditor.code = ''
                 this.open = false;
                 this.getList();
-                this.handlestatus(response.data);
               });
             }
           }
         });
-      },
-      /** 启用禁用状态 */
-      handlestatus(id) {
-        if (this.status != this.form.status) {
-          if (this.form.status == "0") {
-            enable(id); //新增的时候没有id
-          } else {
-            disable(id);
-          }
-        }
       },
       /** 删除按钮操作 */
       handleDelete(row) {
