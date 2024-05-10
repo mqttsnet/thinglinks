@@ -11,9 +11,12 @@ import com.mqttsnet.thinglinks.common.core.enums.DeviceType;
 import com.mqttsnet.thinglinks.common.core.enums.ResultEnum;
 import com.mqttsnet.thinglinks.common.core.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.core.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.core.utils.tdengine.TdUtils;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.common.security.service.TokenService;
+import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
+import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
@@ -25,7 +28,6 @@ import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperat
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoQueryDeviceResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
-import com.mqttsnet.thinglinks.link.common.cache.service.DeviceCacheService;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceLocationService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
@@ -72,8 +74,6 @@ public class DeviceServiceImpl implements DeviceService {
     private TokenService tokenService;
     @Autowired
     private RedisService redisService;
-    @Autowired
-    private DeviceCacheService deviceCacheService;
     @Resource
     private RemoteMqttBrokerOpenApi remoteMqttBrokerOpenApi;
     @Autowired
@@ -445,7 +445,7 @@ public class DeviceServiceImpl implements DeviceService {
         final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(clientIdentifier, username, password, deviceStatus, protocolType);
         if (Optional.ofNullable(device).isPresent()) {
             //缓存设备信息
-            redisService.setCacheObject(CacheConstants.DEF_DEVICE + device.getDeviceIdentification(), deviceCacheService.transformToDeviceCacheVO(device), 300L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
+            redisService.setCacheObject(CacheConstants.DEF_DEVICE + device.getDeviceIdentification(), transformToDeviceCacheVO(device), 300L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.SECONDS);
             //更改设备在线状态为在线
             this.updateConnectStatusByClientId(DeviceConnectStatusEnum.ONLINE.getValue(), clientIdentifier);
             return device;
@@ -648,6 +648,25 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public List<Device> findDevices() {
         return deviceMapper.findDevices();
+    }
+
+    /**
+     * Transforms a device object into a DeviceCacheVO object with associated product data.
+     *
+     * @param device Device object to be transformed.
+     * @return Transformed DeviceCacheVO object.
+     */
+    private DeviceCacheVO transformToDeviceCacheVO(Device device) {
+        DeviceCacheVO deviceCacheVO = BeanUtil.toBeanIgnoreError(device, DeviceCacheVO.class);
+
+        Optional.ofNullable(deviceCacheVO.getProductIdentification())
+                .map(productService::findOneByProductIdentification)
+                .ifPresent(product -> {
+                    ProductCacheVO productCacheVO = BeanPlusUtil.toBeanIgnoreError(product, ProductCacheVO.class);
+                    deviceCacheVO.setProductCacheVO(productCacheVO);
+                });
+
+        return deviceCacheVO;
     }
 }
 
