@@ -1,5 +1,5 @@
 # 使用 Java 运行环境
-FROM openjdk:8-jre
+FROM eclipse-temurin:17-jre
 
 # 维护者信息
 LABEL maintainer="mqttsnet mqttsnet@163.com"
