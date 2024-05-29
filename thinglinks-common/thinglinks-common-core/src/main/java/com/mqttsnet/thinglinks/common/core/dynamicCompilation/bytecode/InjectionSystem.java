@@ -148,7 +148,7 @@ public class InjectionSystem {
 
     @Deprecated
     public static void runFinalizersOnExit(boolean value) {
-        System.runFinalizersOnExit(value);
+        System.gc();
     }
 
     public static void load(String filename) {
