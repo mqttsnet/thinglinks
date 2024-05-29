@@ -1,11 +1,11 @@
 # Spring
-spring: 
+spring:
   application:
     # 应用名称
     name: @project.artifactId@
   profiles:
     # 环境配置
-    active: @spring.profile@
+    active: ${SPRING_PROFILES_ACTIVE:@spring.profile@}
   main:
     allow-circular-references: true
     allow-bean-definition-overriding: true
@@ -13,16 +13,16 @@ spring:
     nacos:
       discovery:
         # 服务注册地址
-        server-addr: @nacos.ip@:@nacos.port@
-        #命名空间
-        namespace: @nacos.namespace@
-        username: @nacos.username@
-        password: @nacos.password@
+        server-addr: ${NACOS_IP:@nacos.ip@}:${NACOS_PORT:@nacos.port@}
+        # 命名空间
+        namespace: ${NACOS_NAMESPACE:@nacos.namespace@}
+        username: ${NACOS_USERNAME:@nacos.username@}
+        password: ${NACOS_PASSWORD:@nacos.password@}
       config:
         # 配置中心地址
-        server-addr: @nacos.ip@:@nacos.port@
-        #命名空间
-        namespace: @nacos.namespace@
+        server-addr: ${NACOS_IP:@nacos.ip@}:${NACOS_PORT:@nacos.port@}
+        # 命名空间
+        namespace: ${NACOS_NAMESPACE:@nacos.namespace@}
         # 配置文件格式
         file-extension: yml
         # 共享配置
@@ -33,21 +33,21 @@ spring:
             refresh: false
           - dataId: database.yml
             refresh: true
-        username: @nacos.username@
-        password: @nacos.password@
+        username: ${NACOS_USERNAME:@nacos.username@}
+        password: ${NACOS_PASSWORD:@nacos.password@}
     sentinel:
       # 取消控制台懒加载
       eager: false
       transport:
         # 控制台地址
-        dashboard: @sentinel.dashboard@
+        dashboard: ${SENTINEL_DASHBOARD:@sentinel.dashboard@}
       # nacos配置持久化
       datasource:
         ds1:
           nacos:
-            server-addr: @nacos.ip@:@nacos.port@
-            #命名空间
-            namespace: @nacos.namespace@
+            server-addr: ${NACOS_IP:@nacos.ip@}:${NACOS_PORT:@nacos.port@}
+            # 命名空间
+            namespace: ${NACOS_NAMESPACE:@nacos.namespace@}
             dataId: sentinel-thinglinks-gateway
             groupId: DEFAULT_GROUP
             data-type: json
