@@ -100,50 +100,24 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="设备影子" name="second" style="width:100%;height: 100%;">
-                    <el-tabs v-model="shadowActiveName" style="width:100%;height: 100%;">
-                        <el-tab-pane label="列表" name="first" style="width:100%;height:100%;">
-                            <el-date-picker @change="timeControls" style="margin-bottom: 10px;" v-model="value1"
-                                type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" range-separator="至"
-                                start-placeholder="开始日期" end-placeholder="结束日期">
-                            </el-date-picker>
-                            <el-button style="position: absolute;right:20px" icon="el-icon-refresh"
-                                @click="getShadowData" circle></el-button>
-                            <el-tabs v-model="editableTabsValue" type="card">
-                                <el-tab-pane v-for="(value, name, index) in ShadowData" :key="index" :label="name"
-                                    :name="String(index + 1)" style="width:100%;height: 100%;">
-                                    <el-table v-if="JSON.stringify(value) !== '[]'" :data="value" style="width: 100%"
-                                        max-height="450" :fit="true">
-                                        <el-table-column prop="index" label="序号" style="width: 25%">
-                                            <template slot-scope="scope">
-                                                {{ scope.$index + 1 }}
-                                            </template>
-                                        </el-table-column>
-                                        <el-table-column v-for="(ShadowValue, ShadowName, index1) in value[0]"
-                                            :key="index1" :label="ShadowName" :prop="ShadowName" style="width: 25%">
-                                        </el-table-column>
-                                    </el-table>
-                                </el-tab-pane>
-                            </el-tabs>
-                        </el-tab-pane>
-                        <el-tab-pane label="JSON" name="second" style="width: 100%;height:100%">
-                            <el-button size="medium" style="margin: 10px 0 10px 0" type="primary" @click="decoration">
-                                格式化
-                            </el-button>
-                            <el-input class="textJson" type="textarea" style="width:100%" :autosize="{ minRows: 5 }"
-                                resize="none" :value="detailJSON" placeholder="无内容">
-                            </el-input>
-                        </el-tab-pane>
-                    </el-tabs>
+                    <device-shadow 
+                        ref="deviceShaDow"
+                        :deviceIdentification="deviceInfo.nodeId"
+                    >
+                    </device-shadow>
                 </el-tab-pane>
             </el-tabs>
         </div>
     </div>
 </template>
 <script>
+// api
 import {
     getDeviceInfo,
     getDeviceInfoShadow,
 } from "@/api/link/deviceInfo";
+// components
+import DeviceShadow from "@/views/components/device/deviceShaDow.vue";
 export default {
     dicts: [
         "business_data_status",
@@ -191,12 +165,14 @@ export default {
             },
         }
     },
-
+    components: {
+        [DeviceShadow.name]: DeviceShadow,
+    },
     watch: {
         activeName(value) {
             if (value === 'second') {
                 this.data.ids = this.deviceInfo.id
-                this.getShadowData()
+                this.$refs.deviceShaDow.getShadowData()
             }
         },
     },
@@ -204,7 +180,7 @@ export default {
         timeControls() {
             this.data.startTime = this.value1[0]
             this.data.endTime = this.value1[1]
-            this.getShadowData()
+            this.$refs.deviceShaDow.getShadowData()
         },
         // 查询子设备影子数据
         getShadowData() {
