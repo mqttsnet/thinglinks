@@ -1,5 +1,5 @@
 # 使用 Java 运行环境
-FROM eclipse-temurin:17-jre
+FROM registry.cn-hangzhou.aliyuncs.com/mqttsnet-community/openjdk:17-jdk
 
 # 维护者信息
 LABEL maintainer="mqttsnet mqttsnet@163.com"
@@ -22,4 +22,16 @@ HEALTHCHECK --interval=30s --timeout=30s --retries=3 \
   CMD curl -f http://localhost:19305/actuator/health || exit 1
 
 # 启动 Java 应用
-ENTRYPOINT ["java", "-Xmx512m", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]
+ENTRYPOINT ["java", \
+  "--add-opens=java.base/java.lang=ALL-UNNAMED", \
+  "-Xms512m", "-Xmx1024m", \
+  "-XX:ReservedCodeCacheSize=256m", \
+  "-XX:InitialCodeCacheSize=256m", \
+  "-XX:+UnlockExperimentalVMOptions", \
+  "-XX:+UseZGC", \
+  "-XX:ConcGCThreads=1", "-XX:ParallelGCThreads=2", \
+  "-XX:ZCollectionInterval=30", "-XX:ZAllocationSpikeTolerance=5", \
+  "-XX:+UnlockDiagnosticVMOptions", "-XX:-ZProactive", \
+  "-Dfile.encoding=UTF-8", \
+  "-Djava.security.egd=file:/dev/./urandom", \
+  "-jar", "/app.jar"]
