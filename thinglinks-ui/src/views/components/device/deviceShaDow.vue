@@ -8,7 +8,7 @@
           <span class="shadow-name">{{ value.serviceName }}</span>
           <span class="shadow-info">{{ value.description }}</span>
         </div>
-      </div>123
+      </div>
     </div>
     <div v-loading="loading" class="shadow-property-list">
       <template>
