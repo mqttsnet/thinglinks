@@ -150,19 +150,19 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <!-- <el-button
-          v-hasPermi="['link:device:add']"
+        <el-button
+          v-hasPermi="['link:ota:add']"
           icon="el-icon-plus"
           plain
           size="mini"
           type="primary"
           @click="handleAdd"
         >新增
-        </el-button> -->
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['link:device:remove']"
+          v-hasPermi="['link:ota:remove']"
           :disabled="multiple"
           icon="el-icon-delete"
           plain
@@ -174,7 +174,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          v-hasPermi="['link:device:export']"
+          v-hasPermi="['link:ota:export']"
           icon="el-icon-download"
           plain
           size="mini"
@@ -289,7 +289,7 @@
               placement="top"
             >
               <el-button
-                v-hasPermi="['link:device:edit']"
+                v-hasPermi="['link:ota:edit']"
                 circle
                 icon="el-icon-edit"
                 size="mini"
@@ -306,7 +306,7 @@
               placement="top"
             >
               <el-button
-                v-hasPermi="['link:device:remove']"
+                v-hasPermi="['link:ota:remove']"
                 circle
                 icon="el-icon-delete"
                 size="mini"
@@ -315,7 +315,7 @@
               ></el-button>
             </el-tooltip>
           </span>
-          <span style="margin-right: 10px">
+          <!-- <span style="margin-right: 10px">
             <el-tooltip
               class="item"
               content="设备详情"
@@ -323,7 +323,7 @@
               placement="top"
             >
               <el-button
-                v-hasPermi="['link:device:detail']"
+                v-hasPermi="['link:ota:detail']"
                 circle
                 icon="el-icon-s-operation"
                 size="mini"
@@ -331,7 +331,7 @@
                 @click="handleDeviceDetail(scope.row)"
               ></el-button>
             </el-tooltip>
-          </span>
+          </span> -->
         </template>
       </el-table-column>
     </el-table>
@@ -351,246 +351,124 @@
       :visible.sync="open"
       append-to-body
       width="48%"
+      custom-class="ota-dialog"
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="客户端标识" prop="clientId">
-              <el-input
-                v-model="form.clientId"
-                placeholder="请输入客户端标识"
-                @keyup.native="clientId"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="用户名" prop="userName">
-              <el-input v-model="form.userName" placeholder="请输入用户名"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="密码" prop="password">
-              <el-input
-                v-model="form.password"
-                placeholder="请输入密码"
-                show-password
-                type="password"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="认证方式" prop="authMode">
-              <el-select v-model="form.authMode" placeholder="请选择认证方式">
-                <el-option
-                  v-for="dict in dict.type.link_device_auth_mode"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="设备名称" prop="deviceName">
-              <el-input
-                v-model="form.deviceName"
-                placeholder="请输入设备名称"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="集成应用" prop="appId">
-              <el-select
-                v-model="form.appId"
-                placeholder="请选择集成应用"
-              >
-                <el-option
-                  v-for="dict in dict.type.link_application_type"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="连接实例" prop="connector">
-              <el-select v-model="form.connector" placeholder="请选择连接实例">
-                <el-option
-                  v-for="dict in dict.type.link_device_connector"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="设备类型" prop="deviceType">
-              <el-select
-                v-model="form.deviceType"
-                placeholder="请选择设备类型"
-              >
-                <el-option
-                  v-for="dict in dict.type.link_device_device_type"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="设备状态" prop="deviceStatus">
-              <el-select
-                v-model="form.deviceStatus"
-                placeholder="请选择设备状态"
-              >
-                <el-option
-                  v-for="dict in dict.type.link_device_status"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="加密方式" prop="encryptMethod">
-              <el-select
-                v-model="form.encryptMethod"
-                placeholder="请选择加密方式"
-              >
-                <el-option
-                  v-for="dict in dict.type.link_device_encrypt_method"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="加密密钥" prop="encryptKey">
-              <el-input
-                v-model="form.encryptKey"
-                placeholder="请输入加密密钥"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="加密向量" prop="encryptVector">
-              <el-input
-                v-model="form.encryptVector"
-                placeholder="请输入加密向量"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="签名密钥" prop="signKey">
-              <el-input
-                v-model="form.signKey"
-                placeholder="请输入签名密钥"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="软件版本" prop="swVersion">
-              <el-input
-                v-model="form.swVersion"
-                placeholder="请输入软件版本"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="固件版本" prop="fwVersion">
-              <el-input
-                v-model="form.fwVersion"
-                placeholder="请输入固件版本"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="sdk版本" prop="deviceSdkVersion">
-              <el-input
-                v-model="form.deviceSdkVersion"
-                placeholder="请输入sdk版本"
-
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="协议类型" prop="protocolType">
-              <el-select
-                v-model="form.protocolType"
-                placeholder="请选择协议类型"
-              >
-                <el-option
-                  v-for="dict in dict.type.link_device_protocol_type"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="11">
-            <el-form-item label="设备标签" prop="deviceTags">
-              <el-input
-                v-model="form.deviceTags"
-                placeholder="请输入设备标签"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="11">
-            <el-form-item label="设备描述" prop="deviceDescription">
-              <el-input
-                v-model="form.deviceDescription"
-                placeholder="请输入设备描述"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row>
-          <el-col :span="22">
-            <el-form-item label="备注" prop="remark">
-              <el-input
-                v-model="form.remark"
-                placeholder="请输入内容"
-                type="textarea"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item label="应用场景" prop="appId">
+          <el-select
+            v-model="form.appId"
+            clearable
+            placeholder="请选择应用场景"
+            size="small"
+          >
+            <el-option
+              v-for="dict in dict.type.ota_app_id"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="包名称" prop="packageName">
+          <el-input
+            v-model="form.packageName"
+            placeholder="请输入包名称"
+            @keyup.native="packageName"
+          />
+        </el-form-item>
+        <el-form-item label="升级包类型" prop="packageType">
+          <el-select
+            v-model="form.packageType"
+            clearable
+            placeholder="请选择升级包类型"
+            size="small"
+          >
+            <el-option
+              v-for="dict in dict.type.ota_package_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="产品标识" prop="productIdentification">
+          <el-input
+            v-model="form.productIdentification"
+            placeholder="请输入产品标识"
+            @keyup.native="productIdentification"
+          />
+        </el-form-item>
+        <el-form-item label="升级包版本号" prop="version">
+          <el-input
+            v-model="form.version"
+            placeholder="请输入升级包版本号"
+            @keyup.native="version"
+          />
+        </el-form-item>
+        <el-form-item label="升级包位置" prop="fileLocation">
+          <el-upload
+            class="upload-demo"
+            action="/api/base/file/anyTenant/upload"
+            :data="{bizType: 'LINK_OTA_PACK'}"
+            :before-upload="beforeUpload"
+            :on-success="updateOtaFileLocation"
+            :limit="1"
+            accept=".zip">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传zip文件，且不超过2048MB</div>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-select
+            v-model="form.status"
+            clearable
+            placeholder="请选择状态"
+            size="small"
+          >
+            <el-option
+              v-for="dict in dict.type.ota_status"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="升级包功能描述" prop="description">
+          <el-input
+            type="textarea"
+            v-model="form.description"
+            clearable
+            placeholder="请输入升级包功能描述"
+            size="small"
+          />
+        </el-form-item>
+        <el-form-item label="自定义信息" prop="customInfo">
+          <el-input
+            type="textarea"
+            v-model="form.customInfo"
+            clearable
+            placeholder="请输入自定义信息"
+            size="small"
+          />
+        </el-form-item>
+        <el-form-item label="描述" prop="remark">
+          <el-input
+            type="textarea"
+            v-model="form.remark"
+            clearable
+            placeholder="请输入描述"
+            size="small"
+          />
+        </el-form-item>
+        <el-form-item label="创建人组织" prop="createdOrgId">
+          <el-input
+            type="textarea"
+            v-model="form.createdOrgId"
+            clearable
+            placeholder="请输入创建人组织"
+            size="small"
+          />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -611,13 +489,9 @@
 import {
   addDevice,
   deleteOta,
-  disconnectDevice,
-  getDevice,
   listOta,
-  listStatusCount,
-  updateDevice,
-  validationDeviceIdentification_clientId,
-  validationDeviceIdentification_deviceIdentification,
+  updateOta,
+  getCreateBaseInfo,
 } from "@/api/link/ota/otaList.js";
 
 import { otaList } from "./mock/otaList"
@@ -625,16 +499,9 @@ export default {
   props: ["appId", "productIdentification"],
   name: "Ota",
   dicts: [
+    "ota_app_id",
     "ota_package_type",
     "ota_status",
-    "link_device_status",
-    "link_device_connect_status",
-    "link_device_protocol_type",
-    "link_device_device_type",
-    "link_device_auth_mode",
-    "link_device_connector",
-    "link_application_type",
-    "link_device_encrypt_method",
   ],
   data() {
     return {
@@ -683,59 +550,23 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        clientId: [
-          {required: true, message: "客户端标识不能为空", trigger: "blur"},
+        appId: [
+          {required: true, message: "应用场景不能为空", trigger: "blur"},
         ],
-        userName: [
-          {required: true, message: "用户名不能为空", trigger: "blur"},
+        packageName: [
+          {required: true, message: "包名称不能为空", trigger: "blur"},
         ],
-        password: [
-          {required: true, message: "密码不能为空", trigger: "blur"},
-        ],
-        appId: [{required: true, message: "应用ID不能为空", trigger: "blur"}],
-        authMode: [
-          {required: true, message: "认证方式不能为空", trigger: "change"},
-        ],
-        deviceIdentification: [
-          {required: true, message: "设备标识不能为空", trigger: "blur"},
-        ],
-        deviceName: [
-          {required: true, message: "设备名称不能为空", trigger: "blur"},
-        ],
-        connector: [
-          {required: true, message: "连接实例不能为空", trigger: "change"},
-        ],
-        deviceStatus: [
-          {required: true, message: "设备状态不能为空", trigger: "change"},
+        packageType: [
+          {required: true, message: "升级包类型不能为空", trigger: "blur"},
         ],
         productIdentification: [
-          {required: true, message: "产品标识不能为空", trigger: "blur"},
+          { required: true, message: "产品标识不能为空", trigger: "blur" }
         ],
-        protocolType: [
-          {
-            required: true,
-            message: "协议类型不能为空",
-            trigger: "change",
-          },
+        version: [
+          {required: true, message: "升级包版本号不能为空", trigger: "change"},
         ],
-        encryptMethod: [
-          {
-            required: true,
-            message: "加密方式不能为空",
-            trigger: "change",
-          },
-        ],
-        swVersion: [
-          {required: true, message: "软件版本不能为空", trigger: "blur"},
-        ],
-        fwVersion: [
-          {required: true, message: "固件版本不能为空", trigger: "blur"},
-        ],
-        deviceSdkVersion: [
-          {required: true, message: "sdk版本不能为空", trigger: "blur"},
-        ],
-        deviceType: [
-          {required: true, message: "设备类型不能为空", trigger: "change"},
+        status: [
+          {required: true, message: "状态不能为空", trigger: "blur"},
         ],
       },
       check: {
@@ -846,20 +677,28 @@ export default {
       this.single = selection.length !== 1;
       this.multiple = !selection.length;
     },
+    beforeUpload(file) {
+      const isLt2M = file.size > 2048; // 小于2MB
+      if (!isLt2M) {
+        this.$message.error('上传的文件大小不能超过 2048MB!');
+      }
+      return isLt2M;
+    },
+    updateOtaFileLocation(response) {
+      console.log(response)
+      const { data } = response;
+      this.form['fileLocation'] = data['id'];
+    },
     /** 新增按钮操作 */
-    handleAdd() {
+    async handleAdd() {
       this.check = {
         clientId: false,
         deviceIdentification: false,
       };
       this.reset();
-      this.form.appId = this.appId;
-      // if (this.appId)
-      //   this.changeApp(this.appId);
-      this.form.productIdentification = this.productIdentification;
       this.set = false;
       this.open = true;
-      this.title = "添加ota";
+      this.title = "添加ota资源";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -868,31 +707,23 @@ export default {
         deviceIdentification: true,
       };
       this.reset();
+      this.form = { ...row };      
+      console.log(this.form)
       this.set = true;
-      const id = row.id || this.ids;
-
       this.open = true;
-      this.title = "修改ota";
+      this.title = "修改ota资源";
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != null) {
-            this.deviceLocation.deviceIdentification =
-              this.form.deviceIdentification;
-            this.deviceLocation.id = this.form.id;
-            this.form.deviceLocation = this.deviceLocation;
-            updateDevice(this.form).then((response) => {
+            updateOta(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.deviceLocation.deviceIdentification =
-              this.form.deviceIdentification;
-            this.deviceLocation.id = this.form.id;
-            this.form.deviceLocation = this.deviceLocation;
             addDevice(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
@@ -968,5 +799,15 @@ export default {
 
 .inputDeep {
   border: 0 !important;
+}
+
+.ota-dialog{
+  .el-dialog__body{
+    .el-form{
+      ::v-deep .el-select{
+        width: 100% !important;
+      }
+    }
+  }
 }
 </style>

@@ -20,3 +20,21 @@ export function deleteOta(data) {
     data: data
   })
 }
+
+// 查询新建ota base信息
+export function getCreateBaseInfo(data) {
+  return request({
+    url: '/oauth/anyUser/dict/findDictMapItemListByKey',
+    method: 'post',
+    data: data
+  })
+}
+
+// 更新Ota资源
+export function updateOta(data) {
+  return request({
+    url: '/link/otaUpgrades',
+    method: 'put',
+    data: data
+  })
+}
