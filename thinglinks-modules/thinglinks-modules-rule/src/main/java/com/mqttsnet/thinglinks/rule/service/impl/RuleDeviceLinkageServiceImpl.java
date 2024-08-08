@@ -1,15 +1,12 @@
 package com.mqttsnet.thinglinks.rule.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
 import com.mqttsnet.thinglinks.common.core.enums.ConditionTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.FieldTypeEnum;
 import com.mqttsnet.thinglinks.common.core.enums.OperatorEnum;
 import com.mqttsnet.thinglinks.common.core.enums.TriggeringEnum;
-import com.mqttsnet.thinglinks.common.core.mqs.ConsumerTopicConstant;
 import com.mqttsnet.thinglinks.common.core.utils.CompareUtil;
-import com.mqttsnet.thinglinks.common.rocketmq.domain.MQMessage;
 import com.mqttsnet.thinglinks.link.api.*;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductProperties;
@@ -25,7 +22,6 @@ import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.domain.model.TagsSelectDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,10 +41,6 @@ import java.util.*;
 @Slf4j
 @Service
 public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
-
-
-    @Autowired
-    private RocketMQTemplate rocketMQTemplate;
 
     @Autowired
     private ActionCommandsService actionCommandsService;
@@ -89,16 +81,8 @@ public class RuleDeviceLinkageServiceImpl implements RuleDeviceLinkageService {
     @Override
     @Transactional
     public void triggerDeviceLinkageByRuleIdentification(String ruleIdentification) {
-        MQMessage mqMessage = new MQMessage();
-        mqMessage.setTopic(ConsumerTopicConstant.Rule.THINGLINKS_RULE_TRIGGER);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("msg", ruleIdentification);
-        mqMessage.setMessage(jsonObject.toJSONString());
+        // TODO API 调用触发规则
 
-        log.info("topic:{}", mqMessage.getTopic());
-        log.info("message:{}", mqMessage.getMessage());
-
-        rocketMQTemplate.convertAndSend(mqMessage.getTopic(), mqMessage.getMessage());
     }
 
     /**

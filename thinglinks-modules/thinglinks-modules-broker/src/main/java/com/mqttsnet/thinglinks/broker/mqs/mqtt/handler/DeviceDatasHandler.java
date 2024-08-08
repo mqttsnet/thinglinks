@@ -23,12 +23,12 @@ import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductModelCacheVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeviceDataReportParam;
 import com.mqttsnet.thinglinks.link.api.domain.product.enumeration.ProductTypeEnum;
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.param.ProductServiceParamVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductPropertyResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.vo.result.ProductServiceResultVO;
-import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeviceDataReportParam;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
 import com.mqttsnet.thinglinks.tdengine.api.constant.TdsConstants;
 import com.mqttsnet.thinglinks.tdengine.api.domain.Fields;
@@ -187,17 +187,29 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
                         R subTable = remoteTdEngineService.createSubTable(tableDTO);
                         if (ResultEnum.SUCCESS.getCode() == subTable.getCode()) {
                             log.info("设备初始化，设备标识：{}，服务标识：{}，初始化成功", deviceCacheVO.getDeviceIdentification(), service.getServiceCode());
-                            // 查询新的表结构信息存redis
-                            setProductModelSuperTableCacheVO(Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
-                                    service.getServiceCode(), deviceCacheVO.getDeviceIdentification(), remoteTdEngineService.describeSuperOrSubTable(superTableName).getData());
+                            // 查询新的表结构信息存redis，并更新本地变量
+                            productModelSuperTableCacheVO = Optional.ofNullable(
+                                    remoteTdEngineService.describeSuperOrSubTable(superTableName).getData()
+                            ).orElse(Collections.emptyList());
+
+                            setProductModelSuperTableCacheVO(
+                                    Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
+                                    service.getServiceCode(),
+                                    deviceCacheVO.getDeviceIdentification(),
+                                    productModelSuperTableCacheVO);
 
                         } else {
                             log.warn("设备初始化 ，设备标识：{}，服务标识：{}，初始化失败", deviceCacheVO.getDeviceIdentification(), service.getServiceCode());
                             return;
                         }
                     } else {
-                        setProductModelSuperTableCacheVO(Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
-                                service.getServiceCode(), deviceCacheVO.getDeviceIdentification(), existingFields);
+                        productModelSuperTableCacheVO = existingFields;
+                        setProductModelSuperTableCacheVO(
+                                Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
+                                service.getServiceCode(),
+                                deviceCacheVO.getDeviceIdentification(),
+                                productModelSuperTableCacheVO
+                        );
                     }
 
                 }

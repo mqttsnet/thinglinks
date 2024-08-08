@@ -44,10 +44,9 @@ export function delDeviceInfo(id) {
 }
 
 // 查询子设备影子数据
-export function getDeviceInfoShadow(data) {
+export function getDeviceInfoShadow(deviceIdentification) {
   return request({
-    url: '/link/deviceInfo/getDeviceInfoShadow',
-    method: 'post',
-    data: data
+    url: '/link/shadow/queryDeviceShadow?deviceIdentification=' + deviceIdentification,
+    method: 'get',
   })
 }
