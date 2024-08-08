@@ -5,7 +5,7 @@ spring:
     name: @project.artifactId@
   profiles:
     # 环境配置
-    active: ${SPRING_PROFILES_ACTIVE:@spring.profile@}
+    active: @spring.profile@
   main:
     allow-circular-references: true
     allow-bean-definition-overriding: true
@@ -13,16 +13,16 @@ spring:
     nacos:
       discovery:
         # 配置中心地址
-        server-addr: ${NACOS_IP:@nacos.ip@}:${NACOS_PORT:@nacos.port@}
-        # 命名空间
-        namespace: ${NACOS_NAMESPACE:@nacos.namespace@}
-        username: ${NACOS_USERNAME:@nacos.username@}
-        password: ${NACOS_PASSWORD:@nacos.password@}
+        server-addr: @nacos.ip@:@nacos.port@
+        #命名空间
+        namespace: @nacos.namespace@
+        username: @nacos.username@
+        password: @nacos.password@
       config:
         # 配置中心地址
-        server-addr: ${NACOS_IP:@nacos.ip@}:${NACOS_PORT:@nacos.port@}
-        # 命名空间
-        namespace: ${NACOS_NAMESPACE:@nacos.namespace@}
+        server-addr: @nacos.ip@:@nacos.port@
+        #命名空间
+        namespace: @nacos.namespace@
         # 配置文件格式
         file-extension: yml
         # 共享配置
@@ -31,5 +31,5 @@ spring:
             refresh: true
           - dataId: redis.yml
             refresh: false
-        username: ${NACOS_USERNAME:@nacos.username@}
-        password: ${NACOS_PASSWORD:@nacos.password@}
+        username: @nacos.username@
+        password: @nacos.password@

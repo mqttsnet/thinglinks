@@ -74,12 +74,6 @@
         </dependency>
 
 
-        <!-- thinglinks Common Rocket -->
-        <dependency>
-            <groupId>com.mqttsnet</groupId>
-            <artifactId>thinglinks-common-rocketmq</artifactId>
-            <version>${thinglinks.version}</version>
-        </dependency>
 
         <!-- thinglinks Common Kafka -->
         <dependency>
