@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @program: thinglinks
@@ -85,7 +86,7 @@ public abstract class AbstractMessageHandler {
                                                     List<SuperTableDescribeVO> superTableDescribeOpt) {
         String cacheKey = CacheConstants.DEF_PRODUCT_MODEL_SUPER_TABLE + productIdentification + ":" + serviceCode + ":" + deviceIdentification;
         redisService.delete(cacheKey);
-        redisService.setCacheObject(cacheKey, superTableDescribeOpt);
+        redisService.setCacheObject(cacheKey, superTableDescribeOpt, 10L, TimeUnit.MINUTES);
     }
 
     protected void sendMessage(String topic, String qos, String message, String tenantId) {

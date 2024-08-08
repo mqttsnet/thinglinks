@@ -1,5 +1,5 @@
 # Spring
-spring: 
+spring:
   application:
     # 应用名称
     name: @project.artifactId@
@@ -33,8 +33,6 @@ spring:
             refresh: false
           - dataId: database.yml
             refresh: true
-          - dataId: rocketmq.yml
-            refresh: false
           - dataId: kafka.yml
             refresh: false
         username: @nacos.username@

@@ -13,4 +13,4 @@ mybatis:
 swagger:
   title: 定时任务接口文档
   license: Powered By thinglinks
-  licenseUrl: https://doc.thinglinks.mqttsnet.com
+  licenseUrl: http://www.mqttsnet.com/

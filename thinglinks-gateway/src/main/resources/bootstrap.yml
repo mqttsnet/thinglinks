@@ -1,5 +1,5 @@
 # Spring
-spring: 
+spring:
   application:
     # 应用名称
     name: @project.artifactId@
@@ -52,3 +52,4 @@ spring:
             groupId: DEFAULT_GROUP
             data-type: json
             rule-type: flow
+

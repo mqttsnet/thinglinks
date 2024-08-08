@@ -79,11 +79,10 @@ export function validationDeviceIdentification_deviceIdentification(deviceIdenti
 }
 
 // 查询普通设备影子数据
-export function getDeviceShadow(data) {
+export function getDeviceShadow(deviceIdentification) {
   return request({
-    url: '/link/shadow/getDeviceShadow',
-    method: 'post',
-    data: data
+    url: '/link/shadow/queryDeviceShadow?deviceIdentification=' + deviceIdentification,
+    method: 'get',
   })
 }
 // 查询设备告警信息列表
