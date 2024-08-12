@@ -100,9 +100,9 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="设备影子" name="second" style="width:100%;height: 100%;">
-                    <device-shadow 
+                    <device-shadow
                         ref="deviceShaDow"
-                        :deviceIdentification="deviceInfo.nodeId"
+                        :deviceIdentification="deviceInfo.deviceId"
                     >
                     </device-shadow>
                 </el-tab-pane>

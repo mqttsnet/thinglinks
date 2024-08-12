@@ -230,7 +230,7 @@ public class RuleController extends BaseController {
             return maps;
         }
         // 获取超级表名称 产品类型+产品标识+服务名称
-        String superName = product.getProductType() + "_" + conditions.getProductIdentification() + "_" + productServices.getServiceName();
+        String superName = product.getProductType() + "_" + conditions.getProductIdentification() + "_" + productServices.getServiceCode();
 
         // 查询最新的设备记录
         TagsSelectDTO tagsSelectDao = new TagsSelectDTO();

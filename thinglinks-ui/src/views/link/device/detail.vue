@@ -150,7 +150,7 @@
           </div>
         </el-tab-pane>
         <el-tab-pane v-if="shadowShow" label="设备影子" name="fourth" style="width:100%;height: 100%;">
-          <device-shadow ref="deviceShaDow" :deviceIdentification="deviceInfo.nodeId">
+          <device-shadow ref="deviceShaDow" :deviceIdentification="deviceInfo.deviceIdentification">
           </device-shadow>
         </el-tab-pane>
       </el-tabs>
@@ -167,6 +167,7 @@ import DeviceShadow from "@/views/components/device/deviceShaDow.vue";
 export default {
   name: "device-detail",
   components: {
+    DeviceShadow,
     Action,
     Topic,
     [DeviceShadow.name]: DeviceShadow,

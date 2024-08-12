@@ -272,7 +272,7 @@ public class DeviceDatasServiceImpl implements DeviceDatasService {
                 tableDto = new TableDTO();
                 tableDto.setDataBaseName(dataBaseName);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
-                String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceName());
+                String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceCode());
                 tableDto.setSuperTableName(superTableName);
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
                 tableDto.setTableName(TdUtils.getSubTableName(superTableName, deviceInfo.getDeviceId()));
