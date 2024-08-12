@@ -369,7 +369,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
                 tableDto = new TableDTO();
                 tableDto.setDataBaseName(dataBaseName);
                 //超级表命名规则 : 产品类型_产品标识_服务名称
-                String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceName());
+                String superTableName = TdUtils.getSuperTableName(product.getProductType(), product.getProductIdentification(), productServices.getServiceCode());
                 tableDto.setSuperTableName(superTableName);
                 //子表命名规则 : 产品类型_产品标识_服务名称_设备标识（设备唯一标识）
                 tableDto.setTableName(TdUtils.getSubTableName(superTableName, item.getDeviceId()));
@@ -387,7 +387,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
                     log.error("Create SuperTable Exception: " + ctResult.getMsg());
                 }
             }
-            if (shadowTableNameBuilder.length() > 0) {
+            if (!shadowTableNameBuilder.isEmpty()) {
                 item.setShadowTableName(shadowTableNameBuilder.substring(0, shadowTableNameBuilder.length() - 1));
             }
             shadowTableNameBuilder.replace(0, shadowTableNameBuilder.length(), "");
@@ -564,7 +564,7 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
         }
 
         // 根据错误消息长度判断是否有错误，并设置相应的状态码和状态描述
-        if (errorMessage.length() > 0) {
+        if (!errorMessage.isEmpty()) {
             dataItem.setStatusCode(MqttProtocolTopoStatusEnum.FAILURE.getValue())
                     .setStatusDesc(errorMessage.toString());
         } else {
