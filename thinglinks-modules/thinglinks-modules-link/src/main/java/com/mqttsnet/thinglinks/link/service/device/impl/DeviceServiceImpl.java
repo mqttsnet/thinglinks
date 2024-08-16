@@ -22,8 +22,11 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceLocation;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceTopic;
 import com.mqttsnet.thinglinks.link.api.domain.device.enumeration.MqttProtocolTopoStatusEnum;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.DeviceAuthenticationQuery;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeviceDataReportParam;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoQueryDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.DeviceAuthenticationResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.DeviceResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoQueryDeviceResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
@@ -34,6 +37,7 @@ import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceTopicService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import com.mqttsnet.thinglinks.link.service.product.ProductServicesService;
+import com.mqttsnet.thinglinks.link.utils.CertificateVerifierUtil;
 import com.mqttsnet.thinglinks.system.api.domain.SysUser;
 import com.mqttsnet.thinglinks.system.api.model.LoginUser;
 import com.mqttsnet.thinglinks.tdengine.api.RemoteTdEngineService;
@@ -48,6 +52,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -648,6 +655,94 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public List<Device> findDevices() {
         return deviceMapper.findDevices();
+    }
+
+    @Override
+    public DeviceAuthenticationResultVO authMqttClientByAccountMode(DeviceAuthenticationQuery deviceAuthenticationQuery) {
+        final Device device = this.findOneByClientIdAndUserNameAndPasswordAndDeviceStatusAndProtocolType(deviceAuthenticationQuery.getClientIdentifier(), deviceAuthenticationQuery.getUsername(), deviceAuthenticationQuery.getPassword(), "ENABLE", deviceAuthenticationQuery.getProtocolType());
+        if (Optional.ofNullable(device).isPresent()) {
+            log.info("The device authentication is successful, clientId: [{}]", deviceAuthenticationQuery.getClientIdentifier());
+            //缓存设备信息
+            redisService.setCacheObject(CacheConstants.DEF_DEVICE + device.getDeviceIdentification(), transformToDeviceCacheVO(device), 30L + Long.parseLong(DateUtils.getRandom(1)), TimeUnit.MILLISECONDS);
+            //更改设备在线状态为在线
+            this.updateConnectStatusByClientId(DeviceConnectStatusEnum.ONLINE.getValue(), deviceAuthenticationQuery.getClientIdentifier());
+            DeviceResultVO deviceResult = BeanPlusUtil.toBeanIgnoreError(device, DeviceResultVO.class);
+            return DeviceAuthenticationResultVO.builder()
+                    .certificationResult(true)
+                    .deviceResult(deviceResult)
+                    .tenantId(deviceResult.getAppId())
+                    .build();
+        } else {
+            return DeviceAuthenticationResultVO.builder()
+                    .certificationResult(false)
+                    .errorMessage("Invalid username or password")
+                    .build();
+        }
+    }
+
+    @Override
+    public DeviceAuthenticationResultVO authMqttClientBySslMode(DeviceAuthenticationQuery deviceAuthenticationQuery) {
+        // 从数据库中查询设备信息
+        Device device = findOneByClientId(deviceAuthenticationQuery.getClientIdentifier());
+        if (Objects.isNull(device)) {
+            return DeviceAuthenticationResultVO.builder()
+                    .certificationResult(false)
+                    .errorMessage("The device does not exist")
+                    .build();
+        }
+
+
+        // 校验设备是否为禁用或未激活，如果禁用则不允许连接
+        if (!"ENABLE".equals(device.getDeviceStatus())) {
+            log.warn("The device is locked or unactivated, Reject connection, clientId: [{}]", deviceAuthenticationQuery.getClientIdentifier());
+            return DeviceAuthenticationResultVO.builder()
+                    .certificationResult(false)
+                    .errorMessage("The device is locked or unactivated")
+                    .build();
+        }
+
+        // 验证SSL证书
+        String clientCertificate = deviceAuthenticationQuery.getClientCertificate();
+        if (clientCertificate == null || clientCertificate.isEmpty()) {
+            return DeviceAuthenticationResultVO.builder()
+                    .certificationResult(false)
+                    .errorMessage("客户端证书为空")
+                    .build();
+        }
+
+        String caCertificate;
+        try {
+            caCertificate = getCaCertificate();
+            CertificateVerifierUtil.setTrustedCertificate(caCertificate);
+        } catch (Exception e) {
+            log.error("Failed to set trusted CA certificate", e);
+            return DeviceAuthenticationResultVO.builder()
+                    .certificationResult(false)
+                    .errorMessage("Failed to set trusted CA certificate")
+                    .build();
+        }
+
+        boolean success = CertificateVerifierUtil.verifyCertificate(clientCertificate);
+        if (success) {
+            log.info("The device authentication is successful, clientId: [{}]", deviceAuthenticationQuery.getClientIdentifier());
+            DeviceResultVO deviceResult = BeanPlusUtil.toBeanIgnoreError(device, DeviceResultVO.class);
+            return DeviceAuthenticationResultVO.builder()
+                    .certificationResult(true)
+                    .deviceResult(deviceResult)
+                    .tenantId(deviceResult.getAppId())
+                    .build();
+        } else {
+            return DeviceAuthenticationResultVO.builder()
+                    .certificationResult(false)
+                    .errorMessage("Invalid SSL certificate")
+                    .build();
+        }
+    }
+
+    private String getCaCertificate() throws IOException {
+        //TODO 从数据库获取CA证书 验证
+        byte[] bytes = Files.readAllBytes(Paths.get(""));
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
     /**

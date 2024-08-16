@@ -1,27 +1,27 @@
 
 package com.mqttsnet.thinglinks.link.controller.device;
 
-import com.mqttsnet.thinglinks.common.core.constant.Constants;
 import com.mqttsnet.thinglinks.common.core.domain.R;
+import com.mqttsnet.thinglinks.common.core.enums.ProtocolType;
+import com.mqttsnet.thinglinks.common.core.utils.ArgumentAssert;
 import com.mqttsnet.thinglinks.common.core.web.controller.BaseController;
-import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.api.domain.device.enumeration.DeviceAuthModeEnum;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.*;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.DeviceAuthenticationResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoAddDeviceResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoQueryDeviceResultVO;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
-import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 设备管理开放Controller
@@ -38,8 +38,6 @@ public class DeviceOpenAnyController extends BaseController {
     private DeviceService deviceService;
     @Autowired
     private DeviceInfoService deviceInfoService;
-    @Autowired
-    private ProductService productService;
 
 
     /**
@@ -50,26 +48,39 @@ public class DeviceOpenAnyController extends BaseController {
      */
     @ApiOperation(value = "客户端连接认证", httpMethod = "POST", notes = "客户端连接认证")
     @PostMapping("/clientConnectionAuthentication")
-    public ResponseEntity clientConnectionAuthentication(@RequestBody DeviceAuthenticationQuery deviceAuthenticationQuery) {
+    public ResponseEntity<DeviceAuthenticationResultVO> clientConnectionAuthentication(@RequestBody DeviceAuthenticationQuery deviceAuthenticationQuery) {
 
         log.info("clientConnectionAuthentication,客户端ID:{},用户名:{},密码:{}", deviceAuthenticationQuery.getClientIdentifier(), deviceAuthenticationQuery.getUsername(), deviceAuthenticationQuery.getPassword());
-        final String clientIdentifier = deviceAuthenticationQuery.getClientIdentifier();
-        final String username = deviceAuthenticationQuery.getUsername();
-        final String password = deviceAuthenticationQuery.getPassword();
-        final Object deviceStatus = "ENABLE";
-        final Object protocolType = "MQTT";
-        Device device = deviceService.clientAuthentication(clientIdentifier, username, password, deviceStatus.toString(), protocolType.toString());
-        log.info("{} 协议设备正在进行身份认证,客户端ID:{},用户名:{},密码:{},认证结果:{}", protocolType, clientIdentifier, username, password, device != null ? "成功" : "失败");
+        try {
+            if (ProtocolType.MQTT.getValue().equals(deviceAuthenticationQuery.getProtocolType())) {
+                // Check parameter
+                ArgumentAssert.notBlank(deviceAuthenticationQuery.getClientIdentifier(), "clientIdentifier Cannot be null");
+                ArgumentAssert.notBlank(deviceAuthenticationQuery.getUsername(), "username Cannot be null");
+                ArgumentAssert.notBlank(deviceAuthenticationQuery.getPassword(), "password Cannot be null");
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("certificationResult", device != null);
-        result.put("tenantId", device == null ? Constants.PROJECT_PREFIX : device.getAppId());
+                DeviceAuthenticationResultVO authenticationResult;
+                if (DeviceAuthModeEnum.ACCOUNT_MODE.getValue().equals(deviceAuthenticationQuery.getAuthMode())) {
+                    authenticationResult = deviceService.authMqttClientByAccountMode(deviceAuthenticationQuery);
+                } else {
+                    //SSL证书模式
+                    authenticationResult = deviceService.authMqttClientBySslMode(deviceAuthenticationQuery);
+                }
 
-        Map<String, Object> resultValue = new HashMap<>();
-        resultValue.put("clientId", clientIdentifier.toString());
-        result.put("deviceResult", resultValue);
+                if (authenticationResult.isCertificationResult()) {
+                    log.info("clientConnectionAuthentication {} Device connection authentication result：{}", deviceAuthenticationQuery.getClientIdentifier(), authenticationResult.isCertificationResult());
+                    return ResponseEntity.ok().body(authenticationResult);
+                } else {
+                    log.warn("clientConnectionAuthentication {} The device connection authentication failed. Procedure：{}", deviceAuthenticationQuery.getClientIdentifier(), authenticationResult.getErrorMessage());
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(authenticationResult);
+                }
+            }
+        } catch (Exception e) {
+            log.error("An exception occurred during authentication. Procedure: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new DeviceAuthenticationResultVO<>());
+        }
 
-        return ResponseEntity.ok().body(result);
+        log.info("clientConnectionAuthentication skipped for unsupported protocol type: {}", deviceAuthenticationQuery.getProtocolType());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new DeviceAuthenticationResultVO<>());
     }
 
 

@@ -3,12 +3,16 @@ package com.mqttsnet.thinglinks.link.common.cache.service;
 import cn.hutool.core.bean.BeanUtil;
 import com.github.pagehelper.PageHelper;
 import com.mqttsnet.thinglinks.common.core.constant.CacheConstants;
+import com.mqttsnet.thinglinks.common.core.enums.DeviceType;
 import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
+import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceInfoCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
+import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.entity.DeviceInfo;
 import com.mqttsnet.thinglinks.link.common.cache.CacheSuperAbstract;
+import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceService;
 import com.mqttsnet.thinglinks.link.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +25,18 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
+/**
+ * 设备缓存处理
+ *
+ * @author xiaonannet
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DeviceCacheService extends CacheSuperAbstract {
     private final RedisService redisService;
     private final DeviceService deviceService;
+    private final DeviceInfoService deviceInfoService;
     private final ProductService productService;
 
 
@@ -91,7 +101,40 @@ public class DeviceCacheService extends CacheSuperAbstract {
         String cacheKey = CacheConstants.DEF_DEVICE + deviceCacheVO.getDeviceIdentification();
         redisService.delete(cacheKey);
         redisService.setCacheObject(cacheKey, deviceCacheVO, THIRTY_MINUTES, TimeUnit.MINUTES);
+
+        // If the device is a gateway, process and cache sub-devices
+        if (DeviceType.GATEWAY.getValue().equals(deviceCacheVO.getDeviceType())) {
+            List<DeviceInfo> deviceInfos = deviceInfoService.selectDeviceInfoList(DeviceInfo.builder().did(deviceCacheVO.getId()).build());
+            if (!deviceInfos.isEmpty()) {
+                deviceInfos.forEach(subDevice -> {
+                    // Create DeviceInfoCacheVO directly for sub-device
+                    DeviceInfoCacheVO subDeviceCacheVO = transformToDeviceInfoCacheVO(deviceCacheVO, subDevice);
+
+                    // Generate the cache key for the sub-device and store it
+                    String subCacheKey = CacheConstants.DEF_DEVICE_INFO + subDeviceCacheVO.getDeviceId();
+                    redisService.delete(subCacheKey);
+                    redisService.setCacheObject(subCacheKey, subDeviceCacheVO, THIRTY_MINUTES, TimeUnit.MINUTES);
+                });
+            }
+        }
     }
+
+    /**
+     * Transforms a DeviceInfo object and parent DeviceCacheVO into a DeviceInfoCacheVO.
+     *
+     * @param parentDeviceCacheVO The parent DeviceCacheVO object.
+     * @param deviceInfo          The DeviceInfo object representing the sub-device.
+     * @return Transformed DeviceInfoCacheVO object.
+     */
+    private DeviceInfoCacheVO transformToDeviceInfoCacheVO(DeviceCacheVO parentDeviceCacheVO, DeviceInfo deviceInfo) {
+        DeviceInfoCacheVO deviceInfoCacheVO = BeanUtil.toBeanIgnoreError(deviceInfo, DeviceInfoCacheVO.class);
+
+        // Include parent device data in sub-device cache
+        deviceInfoCacheVO.setDeviceCacheVO(parentDeviceCacheVO);
+
+        return deviceInfoCacheVO;
+    }
+
 
     /**
      * Cache the DeviceCacheVO object based on its client ID.

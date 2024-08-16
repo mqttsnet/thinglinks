@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import java.util.List;
 @Builder
 @ApiModel(value = "TopoAddDeviceSaveVO", description = "网关设备添加子设备数据模型")
 public class TopoAddSubDeviceParam implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "网关设备标识", notes = "网关设备自身的唯一标识")
