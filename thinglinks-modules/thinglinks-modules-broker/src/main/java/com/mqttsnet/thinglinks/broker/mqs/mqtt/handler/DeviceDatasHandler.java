@@ -22,6 +22,8 @@ import com.mqttsnet.thinglinks.common.core.utils.bean.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
+import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceInfoCacheVO;
+import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductModelCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeviceDataReportParam;
 import com.mqttsnet.thinglinks.link.api.domain.product.enumeration.ProductTypeEnum;
@@ -141,30 +143,47 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
         TopoDeviceDataReportParam dataReportParam = BeanPlusUtil.toBeanIgnoreError(deviceDataParam, TopoDeviceDataReportParam.class);
         dataReportParam.getDevices().forEach(device -> {
             log.info("processingDeviceDataTopic Processing result:{}", JSON.toJSONString(device));
+            String deviceIdentification;
+            ProductCacheVO productCacheVO;
+
             String deviceId = device.getDeviceId();
             DeviceCacheVO deviceCacheVO = getDeviceCacheVO(deviceId);
-            if (deviceCacheVO == null) {
-                log.warn("processingDeviceDataTopic Device not found:{}", deviceId);
+            if (Objects.nonNull(deviceCacheVO)) {
+                deviceIdentification = deviceCacheVO.getDeviceIdentification();
+                productCacheVO = deviceCacheVO.getProductCacheVO();
+            } else {
+                DeviceInfoCacheVO deviceInfoCacheVO = getDeviceInfoCacheVO(deviceId);
+                if (Objects.isNull(deviceInfoCacheVO)) {
+                    log.warn("processingDeviceDataTopic Device not found:{}", deviceId);
+                    return;
+                }
+                deviceIdentification = deviceInfoCacheVO.getDeviceId();
+                productCacheVO = deviceInfoCacheVO.getDeviceCacheVO().getProductCacheVO();
+            }
+
+            if (StringUtils.isBlank(deviceIdentification) || Objects.isNull(productCacheVO)) {
+                log.warn("The basic information of equipment and products is wrong. Please try again after verification");
                 return;
             }
-            ProductModelCacheVO productModelCacheVO = getProductModelCacheVO(deviceCacheVO.getProductIdentification());
+
+            ProductModelCacheVO productModelCacheVO = getProductModelCacheVO(productCacheVO.getProductIdentification());
             if (productModelCacheVO == null) {
-                log.warn("processingDeviceDataTopic Product Model not found:{}", deviceCacheVO.getProductIdentification());
+                log.warn("processingDeviceDataTopic Product Model not found:{}", productCacheVO.getProductIdentification());
                 return;
             }
 
             Map<String, Map<String, Object>> dataMap = new HashMap<>();
 
             device.getServices().forEach(service -> {
-                String superTableName = TdsUtils.superTableName(ProductTypeEnum.valueOf(deviceCacheVO.getProductCacheVO().getProductType()).getDesc(),
-                        deviceCacheVO.getProductIdentification(),
+                String superTableName = TdsUtils.superTableName(ProductTypeEnum.valueOf(productCacheVO.getProductType()).getDesc(),
+                        productCacheVO.getProductIdentification(),
                         service.getServiceCode());
 
-                String subTableName = TdsUtils.subTableName(superTableName, deviceCacheVO.getDeviceIdentification());
+                String subTableName = TdsUtils.subTableName(superTableName, deviceIdentification);
 
                 List<SuperTableDescribeVO> productModelSuperTableCacheVO =
-                        getProductModelSuperTableCacheVO(Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
-                                service.getServiceCode(), deviceCacheVO.getDeviceIdentification());
+                        getProductModelSuperTableCacheVO(Optional.ofNullable(productCacheVO.getProductIdentification()).orElse(""),
+                                service.getServiceCode(), deviceIdentification);
 
                 //如果是空，需要做设备的初始化动作，并缓存模型表结构
                 if (CollUtil.isEmpty(productModelSuperTableCacheVO)) {
@@ -173,41 +192,41 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
                     List<SuperTableDescribeVO> existingFields = Optional.ofNullable(superTableDescribeVOListR.getData()).orElse(Collections.emptyList());
 
                     if (existingFields.isEmpty()) {
-                        log.info("设备初始化，设备标识：{}，服务标识：{}", deviceCacheVO.getDeviceIdentification(), service.getServiceCode());
+                        log.info("设备初始化，设备标识：{}，服务标识：{}", deviceIdentification, service.getServiceCode());
                         TableDTO tableDTO = new TableDTO();
                         tableDTO.setSuperTableName(superTableName);
                         tableDTO.setTableName(subTableName);
                         List<Fields> tagsFieldValues = new ArrayList<>();
                         Fields fields = new Fields();
                         fields.setFieldName(TdsConstants.DEVICE_IDENTIFICATION);
-                        fields.setFieldValue(deviceCacheVO.getDeviceIdentification());
+                        fields.setFieldValue(deviceIdentification);
                         fields.setDataType(DataTypeEnum.BINARY);
                         tagsFieldValues.add(fields);
                         tableDTO.setTagsFieldValues(tagsFieldValues);
                         R subTable = remoteTdEngineService.createSubTable(tableDTO);
                         if (ResultEnum.SUCCESS.getCode() == subTable.getCode()) {
-                            log.info("设备初始化，设备标识：{}，服务标识：{}，初始化成功", deviceCacheVO.getDeviceIdentification(), service.getServiceCode());
+                            log.info("设备初始化，设备标识：{}，服务标识：{}，初始化成功", deviceIdentification, service.getServiceCode());
                             // 查询新的表结构信息存redis，并更新本地变量
                             productModelSuperTableCacheVO = Optional.ofNullable(
                                     remoteTdEngineService.describeSuperOrSubTable(superTableName).getData()
                             ).orElse(Collections.emptyList());
 
                             setProductModelSuperTableCacheVO(
-                                    Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
+                                    Optional.ofNullable(productCacheVO.getProductIdentification()).orElse(""),
                                     service.getServiceCode(),
-                                    deviceCacheVO.getDeviceIdentification(),
+                                    deviceIdentification,
                                     productModelSuperTableCacheVO);
 
                         } else {
-                            log.warn("设备初始化 ，设备标识：{}，服务标识：{}，初始化失败", deviceCacheVO.getDeviceIdentification(), service.getServiceCode());
+                            log.warn("设备初始化 ，设备标识：{}，服务标识：{}，初始化失败", deviceIdentification, service.getServiceCode());
                             return;
                         }
                     } else {
                         productModelSuperTableCacheVO = existingFields;
                         setProductModelSuperTableCacheVO(
-                                Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
+                                Optional.ofNullable(productCacheVO.getProductIdentification()).orElse(""),
                                 service.getServiceCode(),
-                                deviceCacheVO.getDeviceIdentification(),
+                                deviceIdentification,
                                 productModelSuperTableCacheVO
                         );
                     }
@@ -250,7 +269,7 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
 
                     if (TdsConstants.TAG.equals(superTableDescribeVO.getNote())) {
                         if (!StringUtils.isEmpty(superTableDescribeVO.getField()) && TdsConstants.DEVICE_IDENTIFICATION.equals(superTableDescribeVO.getField())) {
-                            fields.setFieldValue(deviceCacheVO.getDeviceIdentification());
+                            fields.setFieldValue(deviceIdentification);
                         }
                         tagsFieldsList.add(fields);
                     } else {

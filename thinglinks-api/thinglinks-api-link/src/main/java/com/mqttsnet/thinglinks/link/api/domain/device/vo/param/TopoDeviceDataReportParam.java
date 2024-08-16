@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import java.util.List;
 @Builder
 @ApiModel(value = "TopoDeviceDataReportParam", description = "设备数据上报数据模型")
 public class TopoDeviceDataReportParam implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "设备数据", notes = "设备数据")
@@ -43,6 +45,7 @@ public class TopoDeviceDataReportParam implements Serializable {
     @Accessors(chain = true)
     @ApiModel(value = "DeviceS", description = "设备数据模型")
     public static class DeviceS implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @ApiModelProperty(value = "设备唯一标识", notes = "平台生成的设备唯一标识")
@@ -60,6 +63,7 @@ public class TopoDeviceDataReportParam implements Serializable {
         @Accessors(chain = true)
         @ApiModel(value = "Services", description = "服务数据模型")
         public static class Services implements Serializable {
+            @Serial
             private static final long serialVersionUID = 1L;
 
             @ApiModelProperty(value = "服务编码", notes = "服务编码，对应平台产品服务编码")
