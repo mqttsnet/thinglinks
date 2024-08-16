@@ -19,6 +19,12 @@ public class CacheConstants {
     public static final String DEF_DEVICE = "def_device:";
 
     /**
+     * 子设备信息 cache key
+     * link-> def_device_info:deviceIdentification
+     */
+    public static final String DEF_DEVICE_INFO = "def_device_info:";
+
+    /**
      * 全局产品信息 前缀
      * link-> def_product:productIdentification
      */

@@ -9,6 +9,7 @@ import com.mqttsnet.thinglinks.common.core.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.common.redis.service.RedisService;
 import com.mqttsnet.thinglinks.link.api.RemoteDeviceOpenAnyService;
 import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceCacheVO;
+import com.mqttsnet.thinglinks.link.api.domain.cache.device.DeviceInfoCacheVO;
 import com.mqttsnet.thinglinks.link.api.domain.cache.product.ProductModelCacheVO;
 import com.mqttsnet.thinglinks.tdengine.api.domain.SuperTableDescribeVO;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,14 @@ public abstract class AbstractMessageHandler {
             return null;
         }
         return redisService.getCacheObject(CacheConstants.DEF_DEVICE + deviceIdentification);
+    }
+
+    protected DeviceInfoCacheVO getDeviceInfoCacheVO(String deviceIdentification) {
+        if (deviceIdentification == null) {
+            log.warn("Device identification is null");
+            return null;
+        }
+        return redisService.getCacheObject(CacheConstants.DEF_DEVICE_INFO + deviceIdentification);
     }
 
     protected ProductModelCacheVO getProductModelCacheVO(String productIdentification) {

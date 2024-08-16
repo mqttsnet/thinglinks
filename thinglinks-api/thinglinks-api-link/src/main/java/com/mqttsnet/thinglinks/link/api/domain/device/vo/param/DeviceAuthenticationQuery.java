@@ -62,4 +62,10 @@ public class DeviceAuthenticationQuery implements Serializable {
     @ApiModelProperty(value = "认证方式0-用户名密码，1-ssl证书")
     @NotNull(message = "请填写认证方式0-用户名密码，1-ssl证书")
     private Integer authMode;
+
+    /**
+     * 客户端证书（Base64编码）
+     */
+    @ApiModelProperty(value = "客户端证书（Base64编码）")
+    private String clientCertificate;
 }

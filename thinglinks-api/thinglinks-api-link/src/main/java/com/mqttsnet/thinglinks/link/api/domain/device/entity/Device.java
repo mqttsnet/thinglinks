@@ -4,6 +4,8 @@ import com.mqttsnet.thinglinks.common.core.annotation.Excel;
 import com.mqttsnet.thinglinks.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -36,6 +38,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Builder
 public class Device  extends BaseEntity implements Serializable{
+
+    @Serial
+    private static final long serialVersionUID = 1L;
     /**
      * id
      */
@@ -199,7 +204,4 @@ public class Device  extends BaseEntity implements Serializable{
     @Excel(name = "sdk版本")
     @ApiModelProperty(value = "sdk版本" ,example = "v1",notes = "sdk版本,如v1,v2,v3等")
     private String deviceSdkVersion;
-
-
-    private static final long serialVersionUID = 1L;
 }

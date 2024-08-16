@@ -2,8 +2,10 @@ package com.mqttsnet.thinglinks.link.service.device;
 
 import com.mqttsnet.thinglinks.link.api.domain.device.entity.Device;
 import com.mqttsnet.thinglinks.link.api.domain.device.model.DeviceParams;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.DeviceAuthenticationQuery;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeviceDataReportParam;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoQueryDeviceParam;
+import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.DeviceAuthenticationResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoQueryDeviceResultVO;
 
@@ -226,5 +228,20 @@ public interface DeviceService {
 
     List<Device> findDevices();
 
+    /**
+     * 客户端认证（用户名密码模式）
+     *
+     * @param deviceAuthenticationQuery 设备认证查询对象
+     * @return 认证结果 {@link DeviceAuthenticationResultVO}
+     */
+    DeviceAuthenticationResultVO authMqttClientByAccountMode(DeviceAuthenticationQuery deviceAuthenticationQuery);
+
+    /**
+     * 客户端认证（客户端证书模式）
+     *
+     * @param deviceAuthenticationQuery 设备认证查询对象
+     * @return 认证结果 {@link DeviceAuthenticationResultVO}
+     */
+    DeviceAuthenticationResultVO authMqttClientBySslMode(DeviceAuthenticationQuery deviceAuthenticationQuery);
 }
 

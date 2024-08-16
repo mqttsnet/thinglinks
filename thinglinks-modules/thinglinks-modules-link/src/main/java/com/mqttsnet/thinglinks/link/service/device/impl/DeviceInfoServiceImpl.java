@@ -21,15 +21,15 @@ import com.mqttsnet.thinglinks.link.api.domain.device.entity.DeviceAction;
 import com.mqttsnet.thinglinks.link.api.domain.device.enumeration.DeviceActionStatusEnum;
 import com.mqttsnet.thinglinks.link.api.domain.device.enumeration.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.link.api.domain.device.enumeration.MqttProtocolTopoStatusEnum;
-import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.entity.DeviceInfo;
-import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model.DeviceInfoParams;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
-import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoAddSubDeviceParam;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoDeleteSubDeviceParam;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.param.TopoUpdateSubDeviceStatusParam;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoAddDeviceResultVO;
 import com.mqttsnet.thinglinks.link.api.domain.device.vo.result.TopoDeviceOperationResultVO;
+import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.entity.DeviceInfo;
+import com.mqttsnet.thinglinks.link.api.domain.deviceInfo.model.DeviceInfoParams;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.Product;
+import com.mqttsnet.thinglinks.link.api.domain.product.entity.ProductServices;
 import com.mqttsnet.thinglinks.link.mapper.device.DeviceInfoMapper;
 import com.mqttsnet.thinglinks.link.service.device.DeviceActionService;
 import com.mqttsnet.thinglinks.link.service.device.DeviceInfoService;
@@ -475,7 +475,12 @@ public class DeviceInfoServiceImpl implements DeviceInfoService {
 
                     // 转换并保存子设备信息
                     DeviceInfoParams deviceInfoParams = conversionDeviceBySaveSubDevice(gatewayDevice, item);
-                    int insertCount = this.insertDeviceInfo(deviceInfoParams);
+                    DeviceInfo deviceInfo = new DeviceInfo();
+                    deviceInfo.convertEntity(deviceInfoParams);
+                    deviceInfo.setDeviceId(UUID.getUUID());
+                    deviceInfo.setConnectStatus(DeviceConnectStatusEnum.INIT.getValue());
+                    deviceInfo.setShadowEnable(true);
+                    int insertCount = deviceInfoMapper.insertDeviceInfo(deviceInfo);
 
                     // TODO 存储子设备经纬度信息
                     /*DeviceLocationPageQuery deviceLocationPageQuery = new DeviceLocationPageQuery();

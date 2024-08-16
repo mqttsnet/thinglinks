@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import java.util.Map;
 @ApiModel(value = "DeviceCacheVO", description = "设备档案缓存VO")
 public class DeviceCacheVO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Map<String, Object> echoMap = MapUtil.newHashMap();
