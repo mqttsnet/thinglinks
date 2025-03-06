@@ -140,6 +140,7 @@ High-efficiency MQTT Broker: SMQTTX
 
 - [Github](https://github.com/quickmsg/smqttx)
 - [Gitee](https://gitee.com/quickmsg/smqttx)
+- [GitCode](https://gitcode.com/quickmsg/smqttx)
 
 ## Issues (Feedback is appreciated)
 
