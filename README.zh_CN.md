@@ -136,6 +136,7 @@ BifroMQ 是一个高性能的 MQTT 消息中间件，采用原生多租户架构
 
 - [Github](https://github.com/quickmsg/smqttx)
 - [Gitee](https://gitee.com/quickmsg/smqttx)
+- [GitCode](https://gitcode.com/quickmsg/smqttx)
 
 ## issues(欢迎大家提出宝贵意见)
 
