@@ -1,14 +1,14 @@
 <div align="center">
 
-[![MQTTSNET Logo](./doc/imgs/logo.png)](http://www.mqttsnet.com)
+[![MQTTSNET Logo](./docs/images/logo.png)](http://www.mqttsnet.com)
 
 </div>
 
 ## ThingLinks | [English Documentation](README.md)
 
-# ThingLinks平台简介
+# ThingLinks云物联网SaaS平台 简介
 
-本系统采用Spring Cloud 微服务架构,一款高性、高吞吐量、高扩展性的物联网平台!
+本系统采用Spring Cloud Alibaba微服务架构,一款高性、高吞吐量、高扩展性的物联网平台!
 单机可以支持百万链接,同时支持自定义扩展功能多种协议交互，支持插件化开发!
 
 [![OSCS Status](https://www.oscs1024.com/platform/badge/mqttsnet/thinglinks.svg?size=small)](https://www.oscs1024.com/project/mqttsnet/thinglinks?ref=badge_small)
