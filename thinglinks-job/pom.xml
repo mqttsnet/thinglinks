@@ -1,0 +1,77 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>com.mqttsnet.basic</groupId>
+		<artifactId>thinglinks-parent</artifactId>
+		<version>1.0.6</version>
+		<relativePath/>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>thinglinks-job</artifactId>
+	<version>${revision}</version>
+	<packaging>pom</packaging>
+
+	<name>${project.artifactId}</name>
+	<description>A distributed task scheduling framework.</description>
+	<url>https://github.com/mqttsnet</url>
+
+	<distributionManagement>
+		<!-- 快照版本用的仓库 -->
+		<snapshotRepository>
+			<id>rdc-snapshots</id>
+			<url>https://packages.aliyun.com/maven/repository/2446134-snapshot-FpCQNY/</url>
+		</snapshotRepository>
+		<!-- 发布版本用的仓库 -->
+		<repository>
+			<id>rdc-releases</id>
+			<url>https://packages.aliyun.com/maven/repository/2446134-release-cMMjMp/</url>
+		</repository>
+	</distributionManagement>
+
+	<modules>
+		<module>thinglinks-job-admin</module>
+    </modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.test.skip>true</maven.test.skip>
+
+		<netty-all.version>4.1.54.Final</netty-all.version>
+		<gson.version>2.8.6</gson.version>
+
+		<mybatis-spring-boot-starter.version>3.0.3</mybatis-spring-boot-starter.version>
+
+		<slf4j-api.version>1.7.30</slf4j-api.version>
+		<junit.version>4.21.2</junit.version>
+		<jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
+
+		<groovy.version>4.0.0</groovy.version>
+
+		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+		<maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+		<maven-war-plugin.version>3.3.1</maven-war-plugin.version>
+	</properties>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License version 3</name>
+			<url>https://opensource.org/licenses/GPL-3.0</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>mqttsnet</id>
+			<name>mqttsnet</name>
+			<email>mqttsnet@163.com</email>
+			<url>https://github.com/mqttsnet</url>
+		</developer>
+	</developers>
+
+</project>
