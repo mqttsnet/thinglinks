@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.mqttsnet.thinglinks.common.datascope.aspect.DataScopeAspect
-
-  

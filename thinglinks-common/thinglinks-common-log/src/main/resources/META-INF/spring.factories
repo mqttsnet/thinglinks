@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.mqttsnet.thinglinks.common.log.service.AsyncLogService,\
-  com.mqttsnet.thinglinks.common.log.aspect.LogAspect

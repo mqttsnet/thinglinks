@@ -1,0 +1,62 @@
+# 网络配置
+networks:
+  backend:
+    driver: bridge
+
+# 作者及社区信息
+x-metadata-config: &metadata-config
+  maintainer: "mqttsnet"
+  community: "mqttsnet"
+  copyright: "Copyright © 2019–present mqttsnet"
+
+# 共享环境配置
+x-env-config: &env-config
+  TZ: Asia/Shanghai
+  # Nacos 服务器 IP
+  NACOS_IP: 127.0.0.1
+  # Nacos 服务器端口
+  NACOS_PORT: 18848
+  # Nacos 的命名空间
+  NACOS_NAMESPACE: c0858b2e-960e-47b9-9b2d-17294dda787c
+  # Nacos 用户名
+  NACOS_USERNAME: thinglinks-test
+  # Nacos 密码
+  NACOS_PASSWORD: 12345678
+  # 指定服务注册 IP
+  NACOS_DISCOVERY_IP: 127.0.0.1
+
+# 共享配置
+x-common-config: &common-config
+  environment:
+    - TZ=Asia/Shanghai
+  volumes:
+    - /data01/mqttsnet/thinglinks:/data01/mqttsnet/thinglinks
+    - /etc/localtime:/etc/localtime
+  restart: always
+  networks:
+    - backend
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+# 服务定义
+services:
+  thinglinks-job-admin:
+    container_name: thinglinks-job-admin
+    build:
+      context: ../thinglinks-job-admin
+      dockerfile: Dockerfile
+    ports:
+      - "18767:18767" # 映射端口
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18767
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:18767/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *common-config  # 只引用 common-config，因为 metadata-config 不应用于服务定义

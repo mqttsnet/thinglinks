@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-    com.mqttsnet.thinglinks.rule.api.factory.RemoteRuleFallbackFactory
