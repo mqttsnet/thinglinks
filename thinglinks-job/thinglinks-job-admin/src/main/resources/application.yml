@@ -1,0 +1,38 @@
+thinglinks:
+  nacos:
+    ip: ${NACOS_IP:127.0.0.1}
+    port: ${NACOS_PORT:18848}
+    namespace: ${NACOS_NAMESPACE:c6c2e945-c911-4afa-8f2b-abc81f5c7834}
+    username: ${NACOS_USERNAME:thinglinks-test}
+    password: ${NACOS_PASSWORD:12345678}
+    group: DEFAULT_GROUP
+    discovery:
+      ip: ${NACOS_DISCOVERY_IP:127.0.0.1}
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: thinglinks-job-admin
+  profiles:
+    active: dev
+  config:
+    import:
+      - nacos:common.yml?group=${thinglinks.nacos.group}&refresh=true
+      - nacos:${spring.application.name}.yml?refresh=true
+  cloud:
+    nacos:
+      server-addr: ${thinglinks.nacos.ip}:${thinglinks.nacos.port}
+      username: ${thinglinks.nacos.username}
+      password: ${thinglinks.nacos.password}
+      config:
+        file-extension: yml
+        namespace: ${thinglinks.nacos.namespace}
+        enabled: true
+      discovery:
+        server-addr: ${thinglinks.nacos.ip}:${thinglinks.nacos.port}
+        namespace: ${thinglinks.nacos.namespace}
+        ip: ${thinglinks.nacos.discovery.ip}
+        metadata: # 元数据，用于权限服务实时获取各个服务的所有接口
+          management.context-path: ${server.servlet.context-path:}${spring.mvc.servlet.path:}${management.endpoints.web.base-path:}
+          gray_version: mqttsnet
