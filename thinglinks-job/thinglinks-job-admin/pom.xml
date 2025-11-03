@@ -9,6 +9,9 @@
     </parent>
     <artifactId>thinglinks-job-admin</artifactId>
     <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <description>A distributed task scheduling platform.</description>
+    <url>https://github.com/mqttsnet</url>
 
     <dependencies>
         <dependency>
@@ -90,7 +93,7 @@
         <dependency>
             <groupId>com.mqttsnet.basic</groupId>
             <artifactId>thinglinks-xxl-job-core</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${thinglinks-util.version}</version>
         </dependency>
 
     </dependencies>

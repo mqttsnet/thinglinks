@@ -34,6 +34,10 @@
     </modules>
 
 	<properties>
+		<!-- 本项目的版本 -->
+		<revision>1.1.3</revision>
+		<!-- util基础库的版本 -->
+		<thinglinks-util.version>1.0.6</thinglinks-util.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
