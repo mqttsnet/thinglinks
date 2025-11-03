@@ -35,7 +35,7 @@
 
 	<properties>
 		<!-- 本项目的版本 -->
-		<revision>1.1.3</revision>
+		<revision>1.3.0</revision>
 		<!-- util基础库的版本 -->
 		<thinglinks-util.version>1.0.6</thinglinks-util.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
