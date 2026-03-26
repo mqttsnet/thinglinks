@@ -24,12 +24,12 @@
         <div :class="`${prefixCls}-toolbar`">
           <Upload :fileList="[]" accept="image/*" :beforeUpload="handleBeforeUpload">
             <Tooltip :title="t('component.cropper.selectImage')" placement="bottom">
-              <a-button size="small" preIcon="ant-design:upload-outlined" type="primary" />
+              <Button size="small" preIcon="ant-design:upload-outlined" type="primary" />
             </Tooltip>
           </Upload>
           <Space>
             <Tooltip :title="t('component.cropper.btn_reset')" placement="bottom">
-              <a-button
+              <Button
                 type="primary"
                 preIcon="ant-design:reload-outlined"
                 size="small"
@@ -38,7 +38,7 @@
               />
             </Tooltip>
             <Tooltip :title="t('component.cropper.btn_rotate_left')" placement="bottom">
-              <a-button
+              <Button
                 type="primary"
                 preIcon="ant-design:rotate-left-outlined"
                 size="small"
@@ -47,7 +47,7 @@
               />
             </Tooltip>
             <Tooltip :title="t('component.cropper.btn_rotate_right')" placement="bottom">
-              <a-button
+              <Button
                 type="primary"
                 preIcon="ant-design:rotate-right-outlined"
                 size="small"
@@ -56,7 +56,7 @@
               />
             </Tooltip>
             <Tooltip :title="t('component.cropper.btn_scale_x')" placement="bottom">
-              <a-button
+              <Button
                 type="primary"
                 preIcon="vaadin:arrows-long-h"
                 size="small"
@@ -65,7 +65,7 @@
               />
             </Tooltip>
             <Tooltip :title="t('component.cropper.btn_scale_y')" placement="bottom">
-              <a-button
+              <Button
                 type="primary"
                 preIcon="vaadin:arrows-long-v"
                 size="small"
@@ -74,7 +74,7 @@
               />
             </Tooltip>
             <Tooltip :title="t('component.cropper.btn_zoom_in')" placement="bottom">
-              <a-button
+              <Button
                 type="primary"
                 preIcon="ant-design:zoom-in-outlined"
                 size="small"
@@ -83,7 +83,7 @@
               />
             </Tooltip>
             <Tooltip :title="t('component.cropper.btn_zoom_out')" placement="bottom">
-              <a-button
+              <Button
                 type="primary"
                 preIcon="ant-design:zoom-out-outlined"
                 size="small"
@@ -126,6 +126,7 @@
   import { isFunction } from '/@/utils/is';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { uploadFile } from '/@/api/thinglinks/file/upload';
+  import { Button } from '/@/components/Button';
 
   const props = {
     circled: { type: Boolean, default: true },
@@ -148,7 +149,7 @@
 
   export default defineComponent({
     name: 'CropperModal',
-    components: { BasicModal, Space, CropperImage, Upload, Avatar, Tooltip },
+    components: { BasicModal, Space, CropperImage, Upload, Avatar, Tooltip, Button },
     props,
     emits: ['uploadSuccess', 'register'],
     setup(props, { emit }) {
