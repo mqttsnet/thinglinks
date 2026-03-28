@@ -1,9 +1,9 @@
 package com.mqttsnet.thinglinks.product.event.listener;
 
 import com.mqttsnet.basic.context.ContextUtil;
-import com.mqttsnet.thinglinks.product.event.ProductInfoUpdatedEvent;
-import com.mqttsnet.thinglinks.product.event.handler.ProductInfoUpdatedCacheHandler;
-import com.mqttsnet.thinglinks.product.event.source.ProductInfoUpdatedEventSource;
+import com.mqttsnet.thinglinks.product.event.ProductModelUpdatedEvent;
+import com.mqttsnet.thinglinks.product.event.handler.ProductModelUpdatedCacheHandler;
+import com.mqttsnet.thinglinks.product.event.source.ProductModelUpdatedEventSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -14,32 +14,32 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Description:
- * 产品信息更新事件监听器
+ * 产品物模型更新事件监听器
  *
  * @author mqttsnet
  * @version 1.0.0
- * @since 2026/1/19
+ * @since 2026/3/27
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ProductInfoUpdatedEventListener {
+public class ProductModelUpdatedEventListener {
 
-    private final ProductInfoUpdatedCacheHandler productInfoUpdatedCacheHandler;
+    private final ProductModelUpdatedCacheHandler productModelUpdatedCacheHandler;
 
     @EventListener
-    public CompletableFuture<Boolean> handleProductInfoUpdatedEvent(ProductInfoUpdatedEvent event) {
+    public CompletableFuture<Boolean> handleProductModelUpdatedEvent(ProductModelUpdatedEvent event) {
         Map<String, String> localMap = ContextUtil.getLocalMap();
         return CompletableFuture.supplyAsync(() -> {
             ContextUtil.setLocalMap(localMap);
-            if (event.getSource() instanceof ProductInfoUpdatedEventSource source) {
-                return productInfoUpdatedCacheHandler.handleProductUpdatedCache(source.getProductIdentificationList());
+            if (event.getSource() instanceof ProductModelUpdatedEventSource source) {
+                return productModelUpdatedCacheHandler.handleProductModelUpdatedCache(source.getProductIdentificationList());
             }
 
             log.warn("无效的事件源类型: {}", event.getSource().getClass());
             return false;
         }).exceptionally(ex -> {
-            log.error("处理产品更新事件失败", ex);
+            log.error("处理产品物模型更新事件失败", ex);
             return false;
         });
     }

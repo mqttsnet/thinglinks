@@ -8,7 +8,14 @@ import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
+import com.mqttsnet.thinglinks.product.entity.Product;
+import com.mqttsnet.thinglinks.product.event.publisher.ProductEventPublisher;
+import com.mqttsnet.thinglinks.product.event.source.ProductModelUpdatedEventSource;
+import com.mqttsnet.thinglinks.product.manager.ProductManager;
 import com.mqttsnet.thinglinks.productproperty.entity.ProductProperty;
+
+import java.util.Collections;
+import java.util.Optional;
 import com.mqttsnet.thinglinks.productproperty.enumeration.DataTypeEnum;
 import com.mqttsnet.thinglinks.productproperty.manager.ProductPropertyManager;
 import com.mqttsnet.thinglinks.productproperty.service.ProductPropertyService;
@@ -40,6 +47,8 @@ import java.util.List;
 public class ProductPropertyServiceImpl extends SuperServiceImpl<ProductPropertyManager, Long, ProductProperty> implements ProductPropertyService {
 
     private final ProductServiceManager productServiceManager;
+    private final ProductManager productManager;
+    private final ProductEventPublisher productEventPublisher;
 
     /**
      * 保存产品模型服务属性
@@ -53,10 +62,12 @@ public class ProductPropertyServiceImpl extends SuperServiceImpl<ProductProperty
         //校验参数
         checkedProductPropertySaveVO(saveVO);
         //构建参数
-        ProductProperty ProductProperty = builderProductPropertySaveVO(saveVO);
+        ProductProperty productProperty = builderProductPropertySaveVO(saveVO);
         //更新
-        superManager.save(ProductProperty);
-        return ProductProperty;
+        superManager.save(productProperty);
+        // 发布产品物模型更新事件
+        publishProductModelCacheEvent(saveVO.getServiceId());
+        return productProperty;
     }
 
     /**
@@ -74,6 +85,8 @@ public class ProductPropertyServiceImpl extends SuperServiceImpl<ProductProperty
         ProductProperty productProperty = BeanPlusUtil.toBeanIgnoreError(updateVO, ProductProperty.class);
         //更新
         superManager.updateById(productProperty);
+        // 发布产品物模型更新事件
+        publishProductModelCacheEvent(updateVO.getServiceId());
         return productProperty;
     }
 
@@ -84,7 +97,10 @@ public class ProductPropertyServiceImpl extends SuperServiceImpl<ProductProperty
         if (null == productProperty) {
             throw BizException.wrap("The productProperty does not exist");
         }
-        return superManager.removeById(id);
+        boolean result = superManager.removeById(id);
+        // 发布产品物模型更新事件
+        publishProductModelCacheEvent(productProperty.getServiceId());
+        return result;
     }
 
     @Override
@@ -102,6 +118,21 @@ public class ProductPropertyServiceImpl extends SuperServiceImpl<ProductProperty
      *
      * @param saveVO
      */
+    /**
+     * 发布产品物模型缓存更新事件
+     *
+     * @param serviceId 服务ID
+     */
+    private void publishProductModelCacheEvent(Long serviceId) {
+        Optional.ofNullable(productServiceManager.findOneByProductServiceId(serviceId))
+                .map(ps -> productManager.findOneByProductId(ps.getProductId()))
+                .map(Product::getProductIdentification)
+                .ifPresent(identification ->
+                        productEventPublisher.publishProductModelUpdatedEvent(ProductModelUpdatedEventSource.builder()
+                                .productIdentificationList(Collections.singletonList(identification))
+                                .build()));
+    }
+
     private void checkedProductPropertySaveVO(ProductPropertySaveVO saveVO) {
         ArgumentAssert.notNull(saveVO.getServiceId(), "serviceId Cannot be null");
         //校验产品模型服务是否存在

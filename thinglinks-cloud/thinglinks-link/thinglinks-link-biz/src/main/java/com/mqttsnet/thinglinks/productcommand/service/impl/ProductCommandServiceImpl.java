@@ -8,7 +8,14 @@ import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
+import com.mqttsnet.thinglinks.product.entity.Product;
+import com.mqttsnet.thinglinks.product.event.publisher.ProductEventPublisher;
+import com.mqttsnet.thinglinks.product.event.source.ProductModelUpdatedEventSource;
+import com.mqttsnet.thinglinks.product.manager.ProductManager;
 import com.mqttsnet.thinglinks.productcommand.entity.ProductCommand;
+
+import java.util.Collections;
+import java.util.Optional;
 import com.mqttsnet.thinglinks.productcommand.manager.ProductCommandManager;
 import com.mqttsnet.thinglinks.productcommand.service.ProductCommandService;
 import com.mqttsnet.thinglinks.productcommand.vo.save.ProductCommandSaveVO;
@@ -39,6 +46,8 @@ import java.util.List;
 public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandManager, Long, ProductCommand> implements ProductCommandService {
 
     private final ProductServiceManager productServiceManager;
+    private final ProductManager productManager;
+    private final ProductEventPublisher productEventPublisher;
 
     /**
      * 保存产品模型设备服务命令
@@ -55,6 +64,8 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
         ProductCommand productCommand = builderProductCommandSaveVO(saveVO);
         //更新
         superManager.save(productCommand);
+        // 发布产品物模型更新事件
+        publishProductModelCacheEvent(saveVO.getServiceId());
         return productCommand;
     }
 
@@ -73,6 +84,8 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
         ProductCommand productCommand = BeanPlusUtil.toBeanIgnoreError(updateVO, ProductCommand.class);
         //更新
         superManager.updateById(productCommand);
+        // 发布产品物模型更新事件
+        publishProductModelCacheEvent(updateVO.getServiceId());
         return productCommand;
     }
 
@@ -83,7 +96,10 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
         if (null == productCommand) {
             throw BizException.wrap("The productCommand does not exist");
         }
-        return superManager.removeById(id);
+        boolean result = superManager.removeById(id);
+        // 发布产品物模型更新事件
+        publishProductModelCacheEvent(productCommand.getServiceId());
+        return result;
     }
 
     @Override
@@ -96,6 +112,21 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
      *
      * @param saveVO
      */
+    /**
+     * 发布产品物模型缓存更新事件
+     *
+     * @param serviceId 服务ID
+     */
+    private void publishProductModelCacheEvent(Long serviceId) {
+        Optional.ofNullable(productServiceManager.findOneByProductServiceId(serviceId))
+                .map(ps -> productManager.findOneByProductId(ps.getProductId()))
+                .map(Product::getProductIdentification)
+                .ifPresent(identification ->
+                        productEventPublisher.publishProductModelUpdatedEvent(ProductModelUpdatedEventSource.builder()
+                                .productIdentificationList(Collections.singletonList(identification))
+                                .build()));
+    }
+
     private void checkedProductCommandSaveVO(ProductCommandSaveVO saveVO) {
         ArgumentAssert.notNull(saveVO.getServiceId(), "serviceId Cannot be null");
         //校验产品模型服务是否存在
@@ -116,7 +147,7 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
      */
     private ProductCommand builderProductCommandSaveVO(ProductCommandSaveVO saveVO) {
         saveVO.setCreatedOrgId(ContextUtil.getCurrentDeptId());
-        return BeanPlusUtil.copyProperties(saveVO, ProductCommand.class);
+        return BeanPlusUtil.toBeanIgnoreError(saveVO, ProductCommand.class);
     }
 
     /**
