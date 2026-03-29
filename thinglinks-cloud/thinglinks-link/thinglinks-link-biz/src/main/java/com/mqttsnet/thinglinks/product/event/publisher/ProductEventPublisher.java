@@ -2,7 +2,9 @@ package com.mqttsnet.thinglinks.product.event.publisher;
 
 import cn.hutool.json.JSONUtil;
 import com.mqttsnet.thinglinks.product.event.ProductInfoUpdatedEvent;
+import com.mqttsnet.thinglinks.product.event.ProductModelUpdatedEvent;
 import com.mqttsnet.thinglinks.product.event.source.ProductInfoUpdatedEventSource;
+import com.mqttsnet.thinglinks.product.event.source.ProductModelUpdatedEventSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,5 +27,10 @@ public class ProductEventPublisher {
     public void publishProductInfoUpdatedEvent(ProductInfoUpdatedEventSource source) {
         log.info("Publishing Product Info Updated event:{}", JSONUtil.toJsonStr(source));
         eventPublisher.publishEvent(new ProductInfoUpdatedEvent(source));
+    }
+
+    public void publishProductModelUpdatedEvent(ProductModelUpdatedEventSource source) {
+        log.info("Publishing Product Model Updated event:{}", JSONUtil.toJsonStr(source));
+        eventPublisher.publishEvent(new ProductModelUpdatedEvent(source));
     }
 }

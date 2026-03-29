@@ -40,7 +40,7 @@ public class ProductInfoUpdatedEventListener {
             return false;
         }).exceptionally(ex -> {
             log.error("处理产品更新事件失败", ex);
-            return null;
+            return false;
         });
     }
 }

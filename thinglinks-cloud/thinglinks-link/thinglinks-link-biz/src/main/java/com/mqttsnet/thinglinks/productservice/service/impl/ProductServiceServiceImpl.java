@@ -8,8 +8,14 @@ import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
+import com.mqttsnet.thinglinks.product.entity.Product;
+import com.mqttsnet.thinglinks.product.event.publisher.ProductEventPublisher;
+import com.mqttsnet.thinglinks.product.event.source.ProductModelUpdatedEventSource;
 import com.mqttsnet.thinglinks.product.manager.ProductManager;
 import com.mqttsnet.thinglinks.productservice.entity.ProductServices;
+
+import java.util.Collections;
+import java.util.Optional;
 import com.mqttsnet.thinglinks.productservice.enumeration.ProductServiceStatusEnum;
 import com.mqttsnet.thinglinks.productservice.manager.ProductServiceManager;
 import com.mqttsnet.thinglinks.productservice.service.ProductServiceService;
@@ -40,6 +46,7 @@ import java.util.List;
 public class ProductServiceServiceImpl extends SuperServiceImpl<ProductServiceManager, Long, ProductServices> implements ProductServiceService {
 
     private final ProductManager productManager;
+    private final ProductEventPublisher productEventPublisher;
 
     /**
      * 保存产品模型服务
@@ -56,6 +63,8 @@ public class ProductServiceServiceImpl extends SuperServiceImpl<ProductServiceMa
         ProductServices productService = builderProductServiceSaveVO(saveVO);
         //更新
         superManager.save(productService);
+        // 发布产品物模型更新事件
+        publishProductModelCacheEvent(saveVO.getProductId());
         return productService;
     }
 
@@ -74,6 +83,8 @@ public class ProductServiceServiceImpl extends SuperServiceImpl<ProductServiceMa
         ProductServices productServices = BeanPlusUtil.toBeanIgnoreError(updateVO, ProductServices.class);
         //更新
         superManager.updateById(productServices);
+        // 发布产品物模型更新事件
+        publishProductModelCacheEvent(updateVO.getProductId());
         return productServices;
     }
 
@@ -90,7 +101,10 @@ public class ProductServiceServiceImpl extends SuperServiceImpl<ProductServiceMa
         if (null == productService) {
             throw BizException.wrap("The productService does not exist");
         }
-        return superManager.removeById(id);
+        boolean result = superManager.removeById(id);
+        // 发布产品物模型更新事件
+        publishProductModelCacheEvent(productService.getProductId());
+        return result;
     }
 
     @Override
@@ -108,6 +122,20 @@ public class ProductServiceServiceImpl extends SuperServiceImpl<ProductServiceMa
      *
      * @param saveVO
      */
+    /**
+     * 发布产品物模型缓存更新事件
+     *
+     * @param productId 产品ID
+     */
+    private void publishProductModelCacheEvent(Long productId) {
+        Optional.ofNullable(productManager.findOneByProductId(productId))
+                .map(Product::getProductIdentification)
+                .ifPresent(identification ->
+                        productEventPublisher.publishProductModelUpdatedEvent(ProductModelUpdatedEventSource.builder()
+                                .productIdentificationList(Collections.singletonList(identification))
+                                .build()));
+    }
+
     private void checkedProductServiceSaveVO(ProductServiceSaveVO saveVO) {
 
         ArgumentAssert.notNull(saveVO.getProductId(), "productId Cannot be null");
