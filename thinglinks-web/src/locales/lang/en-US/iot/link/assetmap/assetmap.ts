@@ -10,4 +10,8 @@ export default {
   noMatchDevice: 'No matching devices',
   inputKeyword: 'Enter keyword to search',
   loadingDeviceData: 'Loading device data',
+  configTitle: 'API Retry Config',
+  configMaxRetries: 'Max Retries',
+  configRetryInterval: 'Retry Interval (s)',
+  configTimes: 'times',
 };

@@ -10,4 +10,8 @@ export default {
   noMatchDevice: '暂无匹配设备',
   inputKeyword: '输入关键词搜索设备',
   loadingDeviceData: '加载设备数据',
+  configTitle: '接口重试配置',
+  configMaxRetries: '超时重试次数',
+  configRetryInterval: '重试间隔（秒）',
+  configTimes: '次',
 };

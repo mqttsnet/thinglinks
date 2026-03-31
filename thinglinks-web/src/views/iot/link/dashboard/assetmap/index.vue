@@ -2,10 +2,17 @@
   <div class="map-wrap" style="position: relative;">
     <div ref="mapRef" class="map-container"></div>
 
+    <!-- 右侧面板容器 -->
+    <div class="panel-container">
     <!-- 搜索面板 -->
     <div class="search-panel" :class="{ collapsed: panelCollapsed }">
-      <div v-if="panelCollapsed" class="panel-toggle-btn" @click="panelCollapsed = false">
-        <SearchOutlined />
+      <div v-if="panelCollapsed" class="collapsed-btns">
+        <div class="panel-toggle-btn" @click="panelCollapsed = false">
+          <SearchOutlined />
+        </div>
+        <div class="panel-toggle-btn config-btn" @click="configVisible = !configVisible">
+          <SettingOutlined :class="{ spinning: configVisible }" />
+        </div>
       </div>
       <template v-else>
         <div class="panel-header">
@@ -13,8 +20,13 @@
             {{ t('iot.link.assetmap.assetmap.panelTitle') }}
             <span v-if="searchResults.length" class="panel-badge">{{ searchResults.length }}</span>
           </span>
-          <span class="panel-collapse-btn" @click="panelCollapsed = true">
-            <MenuFoldOutlined />
+          <span class="panel-header-actions">
+            <span class="panel-collapse-btn" @click="configVisible = !configVisible">
+              <SettingOutlined :class="{ spinning: configVisible }" />
+            </span>
+            <span class="panel-collapse-btn" @click="panelCollapsed = true">
+              <MenuFoldOutlined />
+            </span>
           </span>
         </div>
         <div class="panel-search">
@@ -76,6 +88,40 @@
       </template>
     </div>
 
+    <!-- 重试配置卡片 -->
+    <transition name="config-fade">
+      <div v-if="configVisible" class="retry-config-card" :class="{ compact: panelCollapsed }">
+        <div class="config-title">{{ t('iot.link.assetmap.assetmap.configTitle') }}</div>
+        <div class="config-row">
+          <span class="config-label">{{ t('iot.link.assetmap.assetmap.configMaxRetries') }}</span>
+          <InputNumber
+            v-model:value="retryConfig.maxRetries"
+            :min="1"
+            :max="10"
+            :precision="0"
+            size="small"
+            class="config-input"
+            @change="saveRetryConfig"
+          />
+          <span class="config-unit">{{ t('iot.link.assetmap.assetmap.configTimes') }}</span>
+        </div>
+        <div class="config-row">
+          <span class="config-label">{{ t('iot.link.assetmap.assetmap.configRetryInterval') }}</span>
+          <InputNumber
+            v-model:value="retryConfig.retryInterval"
+            :min="1"
+            :max="60"
+            :precision="0"
+            size="small"
+            class="config-input"
+            @change="saveRetryConfig"
+          />
+          <span class="config-unit">s</span>
+        </div>
+      </div>
+    </transition>
+    </div><!-- /panel-container -->
+
     <!-- 加载指示器 -->
     <div v-if="dataLoading" class="loading-indicator">
       <LoadingOutlined spin />
@@ -130,7 +176,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, reactive, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, reactive, computed, nextTick } from 'vue'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { useDebounceFn } from '@vueuse/core'
 import { useRouter } from 'vue-router'
@@ -139,8 +185,8 @@ import { useI18n } from '/@/hooks/web/useI18n'
 import { DictEnum } from '/@/enums/commonEnum'
 import { getDeviceLocationPage } from '/@/api/iot/link/deviceLocation/deviceLocation'
 import { detailBydeviceIdentification, getDeviceDetailsPage } from '/@/api/iot/link/device/device'
-import { Input, Select } from 'ant-design-vue'
-import { SearchOutlined, LoadingOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
+import { Input, Select, InputNumber } from 'ant-design-vue'
+import { SearchOutlined, LoadingOutlined, MenuFoldOutlined, SettingOutlined } from '@ant-design/icons-vue'
 
 const { getDictLabel, initGetDictList } = useDict()
 const { t } = useI18n()
@@ -190,6 +236,31 @@ function drawDrop(ctx, cx, circleY, tipY, r, fillColor) {
   ctx.fillStyle = fillColor
   ctx.fill()
 }
+
+// =====================================================================
+//  重试配置（localStorage 持久化）
+// =====================================================================
+const RETRY_CONFIG_KEY = 'assetmap_retry_config'
+const DEFAULT_RETRY_CONFIG = { maxRetries: 3, retryInterval: 5 }
+
+const configVisible = ref(false)
+const retryConfig = reactive({ ...DEFAULT_RETRY_CONFIG })
+
+const loadRetryConfig = () => {
+  try {
+    const saved = localStorage.getItem(RETRY_CONFIG_KEY)
+    if (saved) Object.assign(retryConfig, JSON.parse(saved))
+  } catch (_) { /* 读取失败保持默认值 */ }
+}
+
+const saveRetryConfig = () => {
+  try {
+    localStorage.setItem(RETRY_CONFIG_KEY, JSON.stringify({ maxRetries: retryConfig.maxRetries, retryInterval: retryConfig.retryInterval }))
+  } catch (_) { /* 存储失败静默处理 */ }
+}
+
+loadRetryConfig()
+
 
 // ========== 搜索相关 ==========
 const searchKeyword = ref('')
@@ -370,7 +441,7 @@ const initMap = async (key) => {
   })
 
   // 控件
-  map.addControl(new AMap.ToolBar({ position: { top: '20px', right: '60px' } }))
+  map.addControl(new AMap.ToolBar({ position: { bottom: '40px', right: '20px' } }))
 
   // 创建水滴标记图标（主题色）
   const iconUrl = createMarkerIcon('#1890ff', MARKER_W, MARKER_H)
@@ -426,13 +497,40 @@ function processBatch(records) {
   }
 }
 
+/** 判断是否为超时错误 */
+function isTimeoutError(err) {
+  return (
+    err?.code === 'ECONNABORTED' ||
+    err?.code === 'ETIMEDOUT' ||
+    err?.message?.toLowerCase().includes('timeout') ||
+    err?.response?.status === 408
+  )
+}
+
+/** 带重试的单页加载，失败时重试同一 page */
+async function loadPageWithRetry(page, size) {
+  let attempts = 0
+  while (true) {
+    try {
+      return await getDeviceLocationPage({ current: page, size, model: {}, extra: {} })
+    } catch (err) {
+      if (isTimeoutError(err) && attempts < retryConfig.maxRetries && !isUnmounted) {
+        attempts++
+        await new Promise((resolve) => setTimeout(resolve, retryConfig.retryInterval * 1000))
+        continue
+      }
+      throw err
+    }
+  }
+}
+
 const loadAllDeviceLocations = async () => {
   dataLoading.value = true
   let page = 1
   const size = 5000
 
   while (!isUnmounted) {
-    const res = await getDeviceLocationPage({ current: page, size, model: {}, extra: {} })
+    const res = await loadPageWithRetry(page, size)
     const records = res.records || []
     totalCount.value = parseInt(res.total) || 0
     processBatch(records)
@@ -465,6 +563,9 @@ onMounted(async () => {
     return
   }
   await initMap(key)
+  // 等 DOM 稳定后触发 resize，修复容器尺寸未就绪导致的顶部空白
+  await nextTick()
+  map?.resize()
   loadAllDeviceLocations()
 })
 
@@ -489,11 +590,13 @@ onBeforeUnmount(() => {
 .map-wrap {
   overflow: hidden;
   background: #f0f2f5;
+  width: 100%;
+  height: 100%;
 }
 
 .map-container {
   width: 100%;
-  height: 100vh;
+  height: 100%;
 }
 
 /* ========== 加载指示器 ========== */
@@ -514,12 +617,20 @@ onBeforeUnmount(() => {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* ========== 搜索面板 ========== */
-.search-panel {
+/* ========== 面板容器（统一定位） ========== */
+.panel-container {
   position: absolute;
   z-index: 10;
   top: 20px;
   right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+/* ========== 搜索面板 ========== */
+.search-panel {
   width: 340px;
   background: #fff;
   border-radius: 12px;
@@ -532,6 +643,12 @@ onBeforeUnmount(() => {
     background: transparent;
     box-shadow: none;
   }
+}
+
+.collapsed-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .panel-toggle-btn {
@@ -552,6 +669,14 @@ onBeforeUnmount(() => {
     color: @primary-color;
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
   }
+
+  &.config-btn {
+    font-size: 16px;
+  }
+}
+
+.spinning {
+  color: @primary-color;
 }
 
 .panel-header {
@@ -559,6 +684,81 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px 8px;
+}
+
+.panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ========== 重试配置卡片 ========== */
+.retry-config-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  width: 340px;
+
+  &.compact {
+    width: auto;
+    min-width: 200px;
+  }
+}
+
+.config-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.config-label {
+  flex: 1;
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.config-input {
+  width: 64px;
+
+  :deep(.ant-input-number-input) {
+    text-align: center;
+    padding: 0 6px;
+    font-size: 13px;
+  }
+}
+
+.config-unit {
+  font-size: 12px;
+  color: #999;
+  white-space: nowrap;
+}
+
+/* 配置卡片过渡 */
+.config-fade-enter-active,
+.config-fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.config-fade-enter-from,
+.config-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.97);
 }
 
 .panel-title {
