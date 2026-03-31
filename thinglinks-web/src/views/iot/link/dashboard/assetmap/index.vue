@@ -120,6 +120,11 @@
         </div>
       </div>
     </transition>
+
+    <!-- 2D/3D 切换按钮 -->
+    <div class="view-mode-btn" :class="{ active: is3D }" @click="toggleViewMode">
+      {{ is3D ? '2D' : '3D' }}
+    </div>
     </div><!-- /panel-container -->
 
     <!-- 加载指示器 -->
@@ -244,6 +249,13 @@ const RETRY_CONFIG_KEY = 'assetmap_retry_config'
 const DEFAULT_RETRY_CONFIG = { maxRetries: 3, retryInterval: 5 }
 
 const configVisible = ref(false)
+const is3D = ref(false)
+
+const toggleViewMode = () => {
+  if (!map) return
+  is3D.value = !is3D.value
+  map.setPitch(is3D.value ? 45 : 0, true)  // true = 动画过渡
+}
 const retryConfig = reactive({ ...DEFAULT_RETRY_CONFIG })
 
 const loadRetryConfig = () => {
@@ -432,7 +444,8 @@ const initMap = async (key) => {
   })
 
   map = new AMap.Map(mapRef.value, {
-    viewMode: '2D',
+    viewMode: '3D',   // 固定 3D 引擎，通过 pitch 控制 2D/3D 视角
+    pitch: 0,         // 初始俯仰角 0 = 2D 平视
     zoom: 5,
     center: [104.5, 35.5],
     resizeEnable: true,
@@ -462,6 +475,12 @@ const initMap = async (key) => {
   massMarks.on('click', (e) => {
     const d = e.data
     const [lng, lat] = d.lnglat
+    const currentZoom = map.getZoom()
+    if (currentZoom < 14) {
+      map.setZoomAndCenter(14, [lng, lat], false, 400)
+    } else {
+      map.setCenter([lng, lat], false, 400)
+    }
     showPopupAt(lng, lat, d.did)
   })
 
@@ -759,6 +778,37 @@ onBeforeUnmount(() => {
 .config-fade-leave-to {
   opacity: 0;
   transform: translateY(-6px) scale(0.97);
+}
+
+/* ========== 2D/3D 切换 ========== */
+.view-mode-btn {
+  align-self: flex-end;
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: #666;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  user-select: none;
+
+  &:hover {
+    color: @primary-color;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  &.active {
+    background: @primary-color;
+    color: #fff;
+    box-shadow: 0 2px 12px fade(@primary-color, 30%);
+  }
 }
 
 .panel-title {
