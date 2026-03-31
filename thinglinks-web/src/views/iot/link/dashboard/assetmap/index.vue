@@ -10,7 +10,7 @@
       <template v-else>
         <div class="panel-header">
           <span class="panel-title">
-            设备搜索
+            {{ t('iot.link.assetmap.assetmap.panelTitle') }}
             <span v-if="searchResults.length" class="panel-badge">{{ searchResults.length }}</span>
           </span>
           <span class="panel-collapse-btn" @click="panelCollapsed = true">
@@ -18,22 +18,32 @@
           </span>
         </div>
         <div class="panel-search">
-          <Input
-            v-model:value="searchKeyword"
-            placeholder="搜索设备名称/标识/产品标识"
-            allow-clear
-            @input="onSearchInput"
-            @change="onSearchChange"
-          >
-            <template #prefix>
-              <SearchOutlined style="color: #bfbfbf" />
-            </template>
-          </Input>
+          <div class="search-input-group">
+            <Select
+              v-model:value="searchField"
+              class="search-field-select"
+              :dropdown-match-select-width="false"
+              :options="searchFieldOptions"
+              @change="onFieldChange"
+            />
+            <Input
+              v-model:value="searchKeyword"
+              class="search-keyword-input"
+              :placeholder="searchPlaceholder"
+              allow-clear
+              @input="onSearchInput"
+              @change="onSearchChange"
+            >
+              <template #suffix>
+                <SearchOutlined style="color: #bfbfbf; font-size: 13px;" />
+              </template>
+            </Input>
+          </div>
         </div>
         <div class="panel-results">
           <div v-if="searchLoading" class="panel-loading">
             <LoadingOutlined spin />
-            <span>搜索中...</span>
+            <span>{{ t('iot.link.assetmap.assetmap.searching') }}</span>
           </div>
           <div v-else-if="searchResults.length > 0" class="result-list">
             <div
@@ -57,10 +67,10 @@
             </div>
           </div>
           <div v-else-if="searchKeyword && !searchLoading" class="panel-empty">
-            暂无匹配设备
+            {{ t('iot.link.assetmap.assetmap.noMatchDevice') }}
           </div>
           <div v-else class="panel-hint">
-            输入关键词搜索设备
+            {{ t('iot.link.assetmap.assetmap.inputKeyword') }}
           </div>
         </div>
       </template>
@@ -69,7 +79,7 @@
     <!-- 加载指示器 -->
     <div v-if="dataLoading" class="loading-indicator">
       <LoadingOutlined spin />
-      <span>加载设备数据 {{ loadProgress }}...</span>
+      <span>{{ t('iot.link.assetmap.assetmap.loadingDeviceData') }} {{ loadProgress }}...</span>
     </div>
 
     <!-- 设备弹窗 -->
@@ -129,7 +139,7 @@ import { useI18n } from '/@/hooks/web/useI18n'
 import { DictEnum } from '/@/enums/commonEnum'
 import { getDeviceLocationPage } from '/@/api/iot/link/deviceLocation/deviceLocation'
 import { detailBydeviceIdentification, getDeviceDetailsPage } from '/@/api/iot/link/device/device'
-import { Input } from 'ant-design-vue'
+import { Input, Select } from 'ant-design-vue'
 import { SearchOutlined, LoadingOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
 
 const { getDictLabel, initGetDictList } = useDict()
@@ -188,6 +198,20 @@ const searchLoading = ref(false)
 const panelCollapsed = ref(false)
 let searchRequestId = 0
 
+// 搜索字段选项（computed 支持切换语言自动更新）
+const searchField = ref('deviceName')
+
+const searchFieldOptions = computed(() => [
+  { value: 'deviceName', label: t('iot.link.assetmap.assetmap.fieldDeviceName') },
+  { value: 'deviceIdentification', label: t('iot.link.assetmap.assetmap.fieldDeviceIdentification') },
+  { value: 'productIdentification', label: t('iot.link.assetmap.assetmap.fieldProductIdentification') },
+])
+
+const searchPlaceholder = computed(() => {
+  const opt = searchFieldOptions.value.find((o) => o.value === searchField.value)
+  return t('iot.link.assetmap.assetmap.searchPlaceholder').replace('{field}', opt?.label ?? '')
+})
+
 const doSearch = async (keyword) => {
   const kw = keyword.trim()
   if (!kw) {
@@ -197,30 +221,22 @@ const doSearch = async (keyword) => {
   }
   const currentRequestId = ++searchRequestId
   searchLoading.value = true
-
   try {
-    const pageParams = { current: 1, size: 20, extra: {} }
-    const results = await Promise.allSettled([
-      getDeviceDetailsPage({ ...pageParams, model: { deviceName: kw } }),
-      getDeviceDetailsPage({ ...pageParams, model: { deviceIdentification: kw } }),
-      getDeviceDetailsPage({ ...pageParams, model: { productIdentification: kw } }),
-    ])
+    const res = await getDeviceDetailsPage({
+      current: 1,
+      size: 50,
+      extra: {},
+      model: { [searchField.value]: kw },
+    })
     if (currentRequestId !== searchRequestId) return
-
-    const seen = new Set()
-    const merged = []
-    for (const result of results) {
-      if (result.status !== 'fulfilled') continue
-      for (const item of result.value?.records || []) {
-        if (!item.deviceIdentification || seen.has(item.deviceIdentification)) continue
-        if (!item.deviceLocationResultVO?.longitude || !item.deviceLocationResultVO?.latitude) continue
-        seen.add(item.deviceIdentification)
-        merged.push(item)
-        if (merged.length >= 50) break
-      }
-      if (merged.length >= 50) break
+    const list = []
+    for (const item of res?.records || []) {
+      if (!item.deviceIdentification) continue
+      if (!item.deviceLocationResultVO?.longitude || !item.deviceLocationResultVO?.latitude) continue
+      list.push(item)
+      if (list.length >= 50) break
     }
-    searchResults.value = merged
+    searchResults.value = list
   } catch (err) {
     console.error('搜索设备失败', err)
     if (currentRequestId === searchRequestId) searchResults.value = []
@@ -229,13 +245,17 @@ const doSearch = async (keyword) => {
   }
 }
 
-const debouncedSearch = useDebounceFn((kw) => doSearch(kw), 500)
+const debouncedSearch = useDebounceFn((kw) => doSearch(kw), 400)
 const onSearchInput = () => debouncedSearch(searchKeyword.value)
 const onSearchChange = (e) => {
   if (!e.target.value) {
     searchResults.value = []
     searchLoading.value = false
   }
+}
+// 切换字段时若已有关键词则重新搜索
+const onFieldChange = () => {
+  if (searchKeyword.value.trim()) doSearch(searchKeyword.value)
 }
 
 const onSelectDevice = (item) => {
@@ -500,7 +520,7 @@ onBeforeUnmount(() => {
   z-index: 10;
   top: 20px;
   right: 20px;
-  width: 260px;
+  width: 340px;
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
@@ -577,15 +597,74 @@ onBeforeUnmount(() => {
 
 .panel-search {
   padding: 0 12px 10px;
+}
 
-  :deep(.ant-input-affix-wrapper) {
-    border-radius: 8px;
-    border-color: #e8e8e8;
+// 搜索框整体容器 —— 下拉 + 输入框合并为一个圆角矩形
+.search-input-group {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
 
-    &:hover,
-    &-focused {
-      border-color: @primary-color;
-      box-shadow: 0 0 0 2px fade(@primary-color, 10%);
+  &:focus-within {
+    border-color: @primary-color;
+    box-shadow: 0 0 0 2px fade(@primary-color, 10%);
+  }
+
+  // 字段选择下拉
+  .search-field-select {
+    flex-shrink: 0;
+    width: 100px;
+    text-align: center;
+
+    :deep(.ant-select-selector) {
+      border: none !important;
+      border-right: 1px solid #e8e8e8 !important;
+      border-radius: 0 !important;
+      background: #fafafa !important;
+      box-shadow: none !important;
+      padding: 0 8px 0 10px !important;
+      height: 32px !important;
+    }
+
+    :deep(.ant-select-selection-item) {
+      font-size: 12px;
+      color: #555;
+      line-height: 32px !important;
+    }
+
+    :deep(.ant-select-arrow) {
+      color: #bbb;
+      font-size: 10px;
+      right: 8px;
+    }
+
+    &:deep(.ant-select-focused .ant-select-selector) {
+      box-shadow: none !important;
+    }
+  }
+
+  // 关键词输入框
+  .search-keyword-input {
+    flex: 1;
+    min-width: 0;
+
+    :deep(.ant-input-affix-wrapper) {
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: 0 8px !important;
+      height: 32px !important;
+
+      &-focused {
+        box-shadow: none !important;
+      }
+    }
+
+    :deep(.ant-input) {
+      font-size: 13px;
     }
   }
 }
