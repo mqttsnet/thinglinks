@@ -111,8 +111,8 @@ importers:
         specifier: ^0.2.5-beta
         version: 0.2.5-beta(@vue/compiler-sfc@3.5.30)(vue@3.5.30(typescript@4.6.3))
       vue3-sketch-ruler:
-        specifier: ^1.3.3
-        version: 1.3.16(vue@3.5.30(typescript@4.6.3))
+        specifier: ^2.4.1
+        version: 2.4.1
       vuedraggable:
         specifier: ^4.1.0
         version: 4.1.0(vue@3.5.30(typescript@4.6.3))
@@ -722,42 +722,36 @@ packages:
     engines: {node: '>= 10.0.0'}
     cpu: [arm]
     os: [linux]
-    libc: [glibc]
 
   '@parcel/watcher-linux-arm-musl@2.5.6':
     resolution: {integrity: sha512-Ve3gUCG57nuUUSyjBq/MAM0CzArtuIOxsBdQ+ftz6ho8n7s1i9E1Nmk/xmP323r2YL0SONs1EuwqBp2u1k5fxg==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm]
     os: [linux]
-    libc: [musl]
 
   '@parcel/watcher-linux-arm64-glibc@2.5.6':
     resolution: {integrity: sha512-f2g/DT3NhGPdBmMWYoxixqYr3v/UXcmLOYy16Bx0TM20Tchduwr4EaCbmxh1321TABqPGDpS8D/ggOTaljijOA==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@parcel/watcher-linux-arm64-musl@2.5.6':
     resolution: {integrity: sha512-qb6naMDGlbCwdhLj6hgoVKJl2odL34z2sqkC7Z6kzir8b5W65WYDpLB6R06KabvZdgoHI/zxke4b3zR0wAbDTA==}
     engines: {node: '>= 10.0.0'}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@parcel/watcher-linux-x64-glibc@2.5.6':
     resolution: {integrity: sha512-kbT5wvNQlx7NaGjzPFu8nVIW1rWqV780O7ZtkjuWaPUgpv2NMFpjYERVi0UYj1msZNyCzGlaCWEtzc+exjMGbQ==}
     engines: {node: '>= 10.0.0'}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@parcel/watcher-linux-x64-musl@2.5.6':
     resolution: {integrity: sha512-1JRFeC+h7RdXwldHzTsmdtYR/Ku8SylLgTU/reMuqdVD7CtLwf0VR1FqeprZ0eHQkO0vqsbvFLXUmYm/uNKJBg==}
     engines: {node: '>= 10.0.0'}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@parcel/watcher-win32-arm64@2.5.6':
     resolution: {integrity: sha512-3ukyebjc6eGlw9yRt678DxVF7rjXatWiHvTXqphZLvo7aC5NdEgFufVwjFfY51ijYEWpXbqF5jtrK275z52D4Q==}
@@ -3769,18 +3763,8 @@ packages:
       '@vue/compiler-sfc': '>=3.0.0'
       vue: '>=3.0.0'
 
-  vue3-sketch-ruler@1.3.16:
-    resolution: {integrity: sha512-k/TBOwbueU9eWOF7k/emsZMwtEqFk/FxG+h//TlaZ2B8RWbxhIe6hPFgggO4Jng10ARsuH4cMGAR+ZOuN4ozgg==}
-    deprecated: This version is deprecated. Please upgrade to version 2X for better features and performance.See https://github.com/kakajun/vue3-sketch-ruler
-    hasBin: true
-    peerDependencies:
-      '@vue/composition-api': ^1.1.0
-      vue: ^2.6.0 || ^3.2.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-      vue:
-        optional: true
+  vue3-sketch-ruler@2.4.1:
+    resolution: {integrity: sha512-TMMJ5v3cqDA94DPUa1iFHBx4D+FqEqpNXwzGU310aaMDllqyvyFfZigBFryeCRO7Q7EuOD5J5Zwc++LOCHB7Jw==}
 
   vue@3.5.30:
     resolution: {integrity: sha512-hTHLc6VNZyzzEH/l7PFGjpcTvUgiaPK5mdLkbjrTeWSRcEfxFrv56g/XckIYlE9ckuobsdwqd5mk2g1sBkMewg==}
@@ -7739,9 +7723,7 @@ snapshots:
       '@vue/compiler-sfc': 3.5.30
       vue: 3.5.30(typescript@4.6.3)
 
-  vue3-sketch-ruler@1.3.16(vue@3.5.30(typescript@4.6.3)):
-    optionalDependencies:
-      vue: 3.5.30(typescript@4.6.3)
+  vue3-sketch-ruler@2.4.1: {}
 
   vue@3.5.30(typescript@4.6.3):
     dependencies:

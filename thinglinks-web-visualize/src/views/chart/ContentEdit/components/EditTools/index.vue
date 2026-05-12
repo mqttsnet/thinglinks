@@ -225,6 +225,7 @@ $asideBottom: 70px;
 
 @include go('chart-edit-tools') {
   @extend .go-background-filter;
+  z-index: 9;
   position: absolute;
   display: flex;
   justify-content: space-around;

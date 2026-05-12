@@ -162,6 +162,9 @@ const chartsTabList = computed(() => [
 </script>
 
 <style lang="scss" scoped>
+::v-deep .n-layout-sider {
+  z-index: 9;
+}
 @include go(content-configurations) {
   overflow: hidden;
   .tabs-box {
