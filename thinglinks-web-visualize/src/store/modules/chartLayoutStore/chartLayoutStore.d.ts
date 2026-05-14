@@ -15,7 +15,7 @@ export enum ChartLayoutStoreEnum {
   Chart_TYPE = 'chartType',
   LAYER_TYPE = 'layerType',
   PERCENTAGE = 'percentage',
-  RE_POSITION_CANVAS = 'rePositionCanvas'
+
 }
 
 export interface ChartLayoutType {
@@ -31,6 +31,5 @@ export interface ChartLayoutType {
   [ChartLayoutStoreEnum.LAYER_TYPE]: LayerModeEnum
   // 当前正在加载的数量
   [ChartLayoutStoreEnum.PERCENTAGE]: number
-  // 是否重置当前画布位置
-  [ChartLayoutStoreEnum.RE_POSITION_CANVAS]: boolean
+
 }
