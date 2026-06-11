@@ -1288,6 +1288,7 @@ CREATE TABLE "ota_upgrades"
     "product_identification" VARCHAR(100),
     "version" VARCHAR(255),
     "file_location" VARCHAR(255),
+    "sign_method" SMALLINT NOT NULL DEFAULT 0,
     "status" SMALLINT DEFAULT 0,
     "description" VARCHAR(255),
     "custom_info" CLOB,
@@ -1307,6 +1308,7 @@ COMMENT ON COLUMN "ota_upgrades"."created_time" IS '创建时间';
 COMMENT ON COLUMN "ota_upgrades"."custom_info" IS '自定义信息';
 COMMENT ON COLUMN "ota_upgrades"."description" IS '升级包功能描述';
 COMMENT ON COLUMN "ota_upgrades"."file_location" IS '升级包的位置';
+COMMENT ON COLUMN "ota_upgrades"."sign_method" IS '签名方法(0-MD5、1-SHA256)';
 COMMENT ON COLUMN "ota_upgrades"."id" IS '主键';
 COMMENT ON COLUMN "ota_upgrades"."package_name" IS '包名称';
 COMMENT ON COLUMN "ota_upgrades"."package_type" IS '升级包类型(0:软件包、1:固件包)';

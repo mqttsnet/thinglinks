@@ -999,6 +999,7 @@ CREATE TABLE `ota_upgrades` (
   `product_identification` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '产品标识',
   `version` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '升级包版本号',
   `file_location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '升级包的位置',
+  `sign_method` smallint NOT NULL DEFAULT '0' COMMENT '签名方法(0-MD5、1-SHA256)',
   `status` smallint NOT NULL DEFAULT '0' COMMENT '状态',
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '升级包功能描述',
   `custom_info` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '自定义信息',
