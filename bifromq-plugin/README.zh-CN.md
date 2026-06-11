@@ -2,7 +2,7 @@
 
 <a href="https://mqttsnet.com"><img src="https://avatars.githubusercontent.com/u/94173946?s=200&v=4" alt="ThingLinks" width="160"></a>
 
-# bifromq-plugin — 旗舰版
+# bifromq-plugin — 社区版
 
 **ThingLinks 物联网平台 — BifroMQ MQTT Broker 插件库**
 
@@ -10,7 +10,7 @@
 
 [![JDK](https://img.shields.io/badge/JDK-17+-orange?style=flat-square&logo=openjdk)](https://openjdk.org/)
 [![BifroMQ](https://img.shields.io/badge/BifroMQ-3.3.5-blue?style=flat-square)](https://github.com/baidu/bifromq)
-[![Edition](https://img.shields.io/badge/版本-旗舰版-gold?style=flat-square)](LICENSE-COMMERCIAL)
+[![Edition](https://img.shields.io/badge/版本-社区版-blue?style=flat-square)](../LICENSE-COMMERCIAL)
 
 </div>
 
@@ -18,7 +18,7 @@
 
 ## 简介
 
-`bifromq-plugin` 是 [ThingLinks](https://mqttsnet.com) 物联网平台的 BifroMQ MQTT Broker 插件库（旗舰版），通过 BifroMQ 插件机制实现自定义业务逻辑与 ThingLinks IoT 系统的运行时集成。
+`bifromq-plugin` 是 [ThingLinks](https://mqttsnet.com) 物联网平台的 BifroMQ MQTT Broker 插件库（社区版），通过 BifroMQ 插件机制实现自定义业务逻辑与 ThingLinks IoT 系统的运行时集成。
 
 ## 插件列表
 
@@ -37,7 +37,7 @@ mvn clean package -DskipTests
 
 ## 授权激活
 
-购买旗舰版后，请将授权 ID 填入 [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL) 并通过 git commit 提交。
+如需旗舰版（商业授权），详见 [LICENSE-COMMERCIAL](../LICENSE-COMMERCIAL)。
 
 ## 🤖 Agent Skills(AI 辅助开发)
 
@@ -52,6 +52,6 @@ npx skills add mqttsnet/thinglinks-skills@bifromq-plugin -g
 
 ## 开源协议
 
-基于 [Apache License 2.0](LICENSE)，附加条款详见 [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL)。
+基于 [Apache License 2.0](../LICENSE)，附加条款详见 [LICENSE-COMMERCIAL](../LICENSE-COMMERCIAL)。
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

@@ -1,12 +1,12 @@
 <div align="center">
 
-# bifromq-plugin — Enterprise Edition
+# bifromq-plugin — Community Edition
 
 **ThingLinks IoT — BifroMQ 플러그인 라이브러리**
 
 [English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | 한국어
 
-[![Edition](https://img.shields.io/badge/Edition-Enterprise-gold?style=flat-square)](LICENSE-COMMERCIAL)
+[![Edition](https://img.shields.io/badge/Edition-Community-blue?style=flat-square)](../LICENSE-COMMERCIAL)
 
 </div>
 
@@ -27,6 +27,6 @@ BifroMQ 인증/ACL, 이벤트 컬렉터(Kafka), 설정/리소스 provider, `Even
 
 ## 라이선스
 
-[Apache License 2.0](LICENSE) + [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL)
+[Apache License 2.0](../LICENSE) + [LICENSE-COMMERCIAL](../LICENSE-COMMERCIAL)
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

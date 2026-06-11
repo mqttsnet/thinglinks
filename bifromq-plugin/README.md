@@ -2,7 +2,7 @@
 
 <a href="https://mqttsnet.com"><img src="https://avatars.githubusercontent.com/u/94173946?s=200&v=4" alt="ThingLinks" width="160"></a>
 
-# bifromq-plugin — Enterprise Edition
+# bifromq-plugin — Community Edition
 
 **ThingLinks IoT Platform — BifroMQ MQTT Broker Plugin Library**
 
@@ -10,7 +10,7 @@
 
 [![JDK](https://img.shields.io/badge/JDK-17+-orange?style=flat-square&logo=openjdk)](https://openjdk.org/)
 [![BifroMQ](https://img.shields.io/badge/BifroMQ-3.3.5-blue?style=flat-square)](https://github.com/baidu/bifromq)
-[![Edition](https://img.shields.io/badge/Edition-Enterprise-gold?style=flat-square)](LICENSE-COMMERCIAL)
+[![Edition](https://img.shields.io/badge/Edition-Community-blue?style=flat-square)](../LICENSE-COMMERCIAL)
 
 </div>
 
@@ -18,7 +18,7 @@
 
 ## About
 
-`bifromq-plugin` is the BifroMQ MQTT broker plugin library for the [ThingLinks](https://mqttsnet.com) IoT platform (Enterprise Edition). It enables runtime integration of custom business logic with the ThingLinks IoT system through BifroMQ's plugin mechanism.
+`bifromq-plugin` is the BifroMQ MQTT broker plugin library for the [ThingLinks](https://mqttsnet.com) IoT platform (Community Edition). It enables runtime integration of custom business logic with the ThingLinks IoT system through BifroMQ's plugin mechanism.
 
 ## Plugins
 
@@ -58,7 +58,7 @@ Auto-triggers when you work on BifroMQ auth/ACL, the event collector (Kafka), se
 
 ## License
 
-Licensed under [Apache License 2.0](LICENSE) with additional terms — see [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL).
+Licensed under [Apache License 2.0](../LICENSE) with additional terms — see [LICENSE-COMMERCIAL](../LICENSE-COMMERCIAL).
 
 ---
 
