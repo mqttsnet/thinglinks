@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import com.mqttsnet.basic.base.service.SuperService;
 import com.mqttsnet.thinglinks.cacert.entity.license.CaCertLicense;
+import com.mqttsnet.thinglinks.cacert.vo.result.license.CaCertLicenseImpactResultVO;
 import com.mqttsnet.thinglinks.cacert.vo.result.license.CaCertLicenseResultVO;
 import com.mqttsnet.thinglinks.cacert.vo.save.license.CaCertPemImportSaveVO;
 import jakarta.validation.constraints.Future;
@@ -65,6 +66,15 @@ public interface CaCertLicenseService extends SuperService<Long, CaCertLicense> 
      * @return {@link File} 客户端证书包
      */
     File generateClientCertPackage(@NotNull Long id, @Future LocalDateTime notAfter) throws Exception;
+
+    /**
+     * 评估 CA 证书影响面 ── 返回绑定此 CA 的设备总数 / 在线数 / 前 50 条设备简要。
+     * 用于吊销前评估或运维定位。
+     *
+     * @param id CA 证书 ID
+     * @return 影响面;CA 不存在返 null
+     */
+    CaCertLicenseImpactResultVO getImpact(@NotNull Long id);
 }
 
 

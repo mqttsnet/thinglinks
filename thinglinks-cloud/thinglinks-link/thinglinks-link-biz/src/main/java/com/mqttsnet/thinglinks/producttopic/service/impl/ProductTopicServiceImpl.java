@@ -1,10 +1,14 @@
 package com.mqttsnet.thinglinks.producttopic.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
 import com.mqttsnet.basic.context.ContextUtil;
@@ -118,6 +122,39 @@ public class ProductTopicServiceImpl extends SuperServiceImpl<ProductTopicManage
         log.info("成功为产品[{}]初始化了{}个基础Topic", productIdentification, productTopics.size());
 
     }
+
+    /** 单次查询最大 ID 数,防止用户传超大列表撑爆 SQL IN。 */
+    private static final int MAX_IDS_PER_QUERY = 500;
+
+    /**
+     * 批量根据 ID 查 topic 模板字符串。fail-soft:任何异常路径都返回空列表。
+     *
+     * @author mqttsnet
+     * @since 2026-05-06
+     */
+    @Override
+    public List<String> findTopicsByIds(List<Long> ids) {
+        if (CollectionUtil.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        // 过滤 null 元素 + 去重 + 截到上限,防御脏入参 / SQL IN 爆量
+        List<Long> safeIds = ids.stream()
+                .filter(Objects::nonNull)
+                .distinct()
+                .limit(MAX_IDS_PER_QUERY)
+                .collect(Collectors.toList());
+        if (safeIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Optional.ofNullable(superManager.listByIds(safeIds))
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(ProductTopic::getTopic)
+                .filter(StrUtil::isNotBlank)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
 
     /**
      * 根据产品标识删除所有基础Topic

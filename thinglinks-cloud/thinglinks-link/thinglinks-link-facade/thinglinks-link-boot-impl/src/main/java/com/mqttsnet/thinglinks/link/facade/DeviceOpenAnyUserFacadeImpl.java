@@ -65,13 +65,31 @@ public class DeviceOpenAnyUserFacadeImpl implements DeviceOpenAnyUserFacade {
                 .map(id -> StrUtil.subAfter(id, ContextConstants.SPECIAL_CHARACTER, true))
                 .orElse(ContextConstants.BUILT_IN_TENANT_ID_STR);
 
-        ContextUtil.setTenantId(tenantId);
+        ContextUtil.setTenantIdStr(tenantId);
 
 
         DeviceResultVO deviceResultVO = deviceService.findOneByClientId(clientIdentifier);
         ArgumentAssert.notNull(deviceResultVO, "设备不存在");
 
         return R.success(deviceService.updateDeviceConnectionStatusById(deviceResultVO.getId(), connectionStatus));
+    }
+
+    @Override
+    public R<Boolean> updateDeviceConnectionStatusByEvent(String clientIdentifier, Integer connectionStatus, Long eventHlc) {
+        log.info("updateDeviceConnectionStatusByEvent clientIdentifier:{} status:{} hlc:{}",
+                clientIdentifier, connectionStatus, eventHlc);
+        ArgumentAssert.notBlank(clientIdentifier, "clientIdentifier cannot be blank");
+        ArgumentAssert.notNull(connectionStatus, "connectionStatus cannot be null");
+        ArgumentAssert.isTrue(eventHlc != null && eventHlc > 0, "eventHlc must be > 0");
+
+        // 与老方法同模式:从 clientIdentifier 解析租户(clientId 格式 deviceIdentifier@tenantId)
+        String tenantId = Optional.ofNullable(clientIdentifier)
+                .filter(StrUtil::isNotBlank)
+                .map(id -> StrUtil.subAfter(id, ContextConstants.SPECIAL_CHARACTER, true))
+                .orElse(ContextConstants.BUILT_IN_TENANT_ID_STR);
+        ContextUtil.setTenantIdStr(tenantId);
+
+        return R.success(deviceService.updateDeviceConnectionStatusByEvent(clientIdentifier, connectionStatus, eventHlc));
     }
 
     @Override
@@ -167,11 +185,11 @@ public class DeviceOpenAnyUserFacadeImpl implements DeviceOpenAnyUserFacade {
     }
 
     @Override
-    public R<Boolean> reportDeviceHeartbeat(String clientIdentifier, Long heartbeatTime) {
+    public R<Boolean> reportDeviceHeartbeat(String clientIdentifier, Long heartbeatTime, Long eventHlc) {
         try {
-            log.info("reportDeviceHeartbeat clientIdentifier:{} heartbeatTime:{}", clientIdentifier, heartbeatTime);
+            log.info("reportDeviceHeartbeat clientIdentifier:{} heartbeatTime:{} eventHlc:{}", clientIdentifier, heartbeatTime, eventHlc);
             // Call the service method to handle the report event
-            boolean report = deviceService.reportDeviceHeartbeat(clientIdentifier, heartbeatTime);
+            boolean report = deviceService.reportDeviceHeartbeat(clientIdentifier, heartbeatTime, eventHlc);
             return R.success(report);
         } catch (Exception e) {
             // Log the exception and return a failure response wrapper

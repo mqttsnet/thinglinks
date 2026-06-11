@@ -121,11 +121,11 @@ public class ProductUpdateVO implements Serializable {
     @NotNull(message = "请填写状态(字典值：0启用  1停用)")
     private Integer productStatus;
     /**
-     * 产品版本
+     * 版本序号(只读字段,系统在 publish 时自动生成 / 切换,update 请求中不会被采纳)。
      */
-    @Schema(description = "产品版本")
-    @Size(max = 255, message = "产品版本长度不能超过{max}")
-    private String productVersion;
+    @Schema(description = "版本序号(只读,系统在发布时自动切换,update 请求中不会被采纳)")
+    @Size(max = 255, message = "版本序号长度不能超过{max}")
+    private String activeVersionNo;
     /**
      * 图标
      */

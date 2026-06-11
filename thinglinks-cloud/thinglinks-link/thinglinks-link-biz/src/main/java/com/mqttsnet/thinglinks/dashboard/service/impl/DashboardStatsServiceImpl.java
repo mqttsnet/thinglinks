@@ -33,7 +33,7 @@ import com.mqttsnet.thinglinks.dashboard.vo.result.DashboardDetailsResultVO;
 import com.mqttsnet.thinglinks.dashboard.vo.result.DashboardSummaryResultVO;
 import com.mqttsnet.thinglinks.dashboard.vo.result.DashboardTopologySummaryResultVO;
 import com.mqttsnet.thinglinks.device.service.DeviceService;
-import com.mqttsnet.thinglinks.product.service.ProductService;
+import com.mqttsnet.thinglinks.product.service.ProductQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -69,7 +69,7 @@ public class DashboardStatsServiceImpl implements DashboardStatsService {
     private static final DateTimeFormatter YYYYMMDD_FORMATTER = DateTimeFormatter.ofPattern(DateUtils.YYYYMMDD_FORMAT);
 
     private final DeviceService deviceService;
-    private final ProductService productService;
+    private final ProductQueryService productQueryService;
     private final CachePlusOps cachePlusOps;
     private final ContextAwareExecutor contextAwareExecutor;
 
@@ -89,7 +89,7 @@ public class DashboardStatsServiceImpl implements DashboardStatsService {
         Optional.ofNullable(deviceService.getDeviceOverview())
                 .ifPresent(dashboardSummary::setDeviceOverviewResultVO);
 
-        Optional.ofNullable(productService.getProductOverview())
+        Optional.ofNullable(productQueryService.getProductOverview())
                 .ifPresent(dashboardSummary::setProductOverviewResultVO);
 
         return dashboardSummary;

@@ -6,7 +6,6 @@ import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.thinglinks.cache.device.DeviceCacheService;
 import com.mqttsnet.thinglinks.cache.product.ProductCacheService;
 import com.mqttsnet.thinglinks.cache.product.ProductModelCacheService;
-import com.mqttsnet.thinglinks.device.service.DeviceAclRuleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -52,8 +51,6 @@ public class CacheAnyUserController {
     private final ProductCacheService productCacheService;
 
     private final ProductModelCacheService productModelCacheService;
-
-    private final DeviceAclRuleService deviceAclRuleService;
 
 
     /**
@@ -110,30 +107,8 @@ public class CacheAnyUserController {
         ArgumentAssert.notNull(tenantId, "tenantId Cannot be null");
         log.info("Refreshing product model cache for tenant ID: {}", tenantId);
         ContextUtil.setTenantId(tenantId);
-        productModelCacheService.refreshProductModelCache(tenantId);
+        productModelCacheService.refreshAllProductModelCacheForTenant(tenantId);
         return R.success();
     }
-
-    /**
-     * 刷新指定租户的设备ACL规则缓存
-     *
-     * <p>此接口用于手动触发刷新特定租户的ACL规则缓存，适用于管理员操作或系统维护场景。</p>
-     *
-     * @param tenantId 需要刷新缓存的租户ID
-     * @return Response indicating the result of the cache refresh operation.
-     */
-    @Operation(summary = "刷新设备ACL规则缓存", description = "刷新指定租户的设备ACL规则缓存")
-    @Parameters({
-            @Parameter(name = "tenantId", description = "租户ID", required = true)
-    })
-    @PostMapping("/refreshAclRuleCache")
-    public R<?> refreshAclRuleCache(@RequestParam("tenantId") Long tenantId) {
-        ArgumentAssert.notNull(tenantId, "tenantId Cannot be null");
-        log.info("Refreshing ACL rule cache for tenant ID: {}", tenantId);
-        ContextUtil.setTenantId(tenantId);
-        deviceAclRuleService.refreshAllDeviceAclRuleCache(tenantId);
-        return R.success();
-    }
-
 
 }

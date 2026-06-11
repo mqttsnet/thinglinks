@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mqttsnet.basic.base.request.PageParams;
@@ -18,7 +19,7 @@ import com.mqttsnet.thinglinks.cache.CacheSuperAbstract;
 import com.mqttsnet.thinglinks.cache.vo.product.ProductCacheVO;
 import com.mqttsnet.thinglinks.common.cache.link.product.ProductCacheKeyBuilder;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
-import com.mqttsnet.thinglinks.product.service.ProductService;
+import com.mqttsnet.thinglinks.product.service.ProductQueryService;
 import com.mqttsnet.thinglinks.product.vo.query.ProductPageQuery;
 import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
 import lombok.RequiredArgsConstructor;
@@ -26,22 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * -----------------------------------------------------------------------------
- * File Name: ProductCacheService.java
- * -----------------------------------------------------------------------------
- * Description:
- * Service layer for Product cache management.
- * -----------------------------------------------------------------------------
+ * 产品(基础元数据)缓存服务,仅供 LinkCacheDataHelper#getProductCacheVO 的 read-through loader 和预热刷新调用,业务方禁止直接 inject。
+ * 承担 Product → ProductCacheVO 转换 + 字段裁剪;持有 leaf {@link ProductQueryService}(零下游依赖,DAG),
+ * @DS(BASE_TENANT) 在本类上保证跨租户切库。
  *
  * @author mqttsnet
- * @version 1.1
- * -----------------------------------------------------------------------------
- * Revision History:
- * Date         Author          Version     Description
- * 2025-07-31    mqttsnet     1.1         优化日志记录和性能优化。
- * --------      --------     -------   --------------------
- * <p>
- * -----------------------------------------------------------------------------
  */
 @DS(DsConstant.BASE_TENANT)
 @Service
@@ -49,7 +39,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ProductCacheService extends CacheSuperAbstract {
     private final CachePlusOps cachePlusOps;
-    private final ProductService productService;
+    private final ProductQueryService productQueryService;
 
     private static final String BATCH_LOG_FORMAT =
             "[产品缓存-开始] 租户ID={} | 操作类型={} | 总产品数={} | 分页大小={} | 预计批次={}";
@@ -64,19 +54,16 @@ public class ProductCacheService extends CacheSuperAbstract {
             "[产品缓存-详情] 租户ID={} | 产品标识={} | 状态={} | 耗时={}ms | 错误={}";
 
     /**
-     * 刷新指定租户的产品缓存（全量）
+     * 刷新指定租户的产品缓存(全量)。
      *
      * @param tenantId 租户ID，不能为null
-     * @throws IllegalArgumentException 如果tenantId为null
-     * @throws RuntimeException         当缓存刷新过程中出现异常时抛出
-     * @see #processProductsBatch(Long, List, AtomicInteger, AtomicInteger)
      */
     public void refreshProductCacheForTenant(Long tenantId) {
         long startTime = System.currentTimeMillis();
         AtomicInteger totalSuccess = new AtomicInteger();
         AtomicInteger totalFail = new AtomicInteger();
 
-        int totalProducts = productService.findProductTotal().intValue();
+        int totalProducts = productQueryService.findProductTotal().intValue();
         int totalPages = (int) Math.ceil((double) totalProducts / PAGE_SIZE);
 
         log.info(BATCH_LOG_FORMAT, tenantId, "产品缓存全量刷新", totalProducts, PAGE_SIZE, totalPages);
@@ -99,32 +86,28 @@ public class ProductCacheService extends CacheSuperAbstract {
     }
 
     /**
-     * 获取分页产品数据
+     * 获取分页产品数据,查询失败返回空列表。
      *
      * @param currentPage 页码(从1开始)
-     * @return 当前页的产品列表，如果查询失败返回空列表
-     * @throws IllegalArgumentException 如果currentPage小于1
-     * @see ProductService#getPage(PageParams)
+     * @return 当前页产品列表;查询失败返回空列表
+     * @see ProductQueryService#getPage(PageParams)
      */
     private List<ProductResultVO> fetchProductPage(int currentPage) {
         ArgumentAssert.isTrue(currentPage >= 1, "currentPage must be greater than or equal to 1");
         PageParams<ProductPageQuery> params = new PageParams<>(currentPage, PAGE_SIZE);
         params.setModel(ProductPageQuery.builder().build());
-        return Optional.ofNullable(productService.getPage(params))
+        return Optional.ofNullable(productQueryService.getPage(params))
                 .map(IPage::getRecords)
                 .orElse(Collections.emptyList());
     }
 
     /**
-     * 处理产品批次数据
+     * 处理产品批次数据。
      *
-     * @param tenantId     租户ID，不能为null
-     * @param products     当前批次的产品列表，不能为null
-     * @param totalSuccess 成功计数器(累计)，不能为null
-     * @param totalFail    失败计数器(累计)，不能为null
-     * @throws IllegalArgumentException 如果任何参数为null
-     * @see #transformToProductCacheVO(Long, ProductResultVO)
-     * @see #cacheProduct(ProductCacheVO)
+     * @param tenantId     租户 ID
+     * @param products     当前批次产品列表
+     * @param totalSuccess 成功累计计数器
+     * @param totalFail    失败累计计数器
      */
     private void processProductsBatch(Long tenantId,
                                       List<ProductResultVO> products,
@@ -150,14 +133,11 @@ public class ProductCacheService extends CacheSuperAbstract {
     }
 
     /**
-     * 转换产品结果为缓存对象
+     * 转换产品结果为缓存对象。
      *
-     * @param tenantId 租户ID，不能为null
-     * @param product  产品结果VO，不能为null
-     * @return 产品缓存VO，不会返回null
-     * @throws IllegalArgumentException 如果参数为null
-     * @throws RuntimeException         当转换失败时抛出
-     * @see BeanPlusUtil#toBeanIgnoreError(Object, Class)
+     * @param tenantId 租户 ID
+     * @param product  产品结果 VO
+     * @return 产品缓存 VO
      */
     private ProductCacheVO transformToProductCacheVO(Long tenantId, ProductResultVO product) {
         ProductCacheVO cacheVO = BeanPlusUtil.toBeanIgnoreError(product, ProductCacheVO.class);
@@ -166,10 +146,9 @@ public class ProductCacheService extends CacheSuperAbstract {
     }
 
     /**
-     * 缓存单个产品
+     * 缓存单个产品。
      *
-     * @param cacheVO 产品缓存VO，不能为null
-     * @throws IllegalArgumentException 如果cacheVO为null
+     * @param cacheVO 产品缓存 VO
      * @see ProductCacheKeyBuilder#build(String)
      */
     private void cacheProduct(ProductCacheVO cacheVO) {
@@ -184,21 +163,18 @@ public class ProductCacheService extends CacheSuperAbstract {
     }
 
     /**
-     * 刷新单个产品的缓存
+     * 刷新单个产品的缓存。
      *
      * @param productIdentification 产品标识，不能为空
      * @return 刷新是否成功
-     * @throws IllegalArgumentException 如果productIdentification为空
-     * @see ProductService#findOneByProductIdentification(String)
-     * @see #transformToProductCacheVO(Long, ProductResultVO)
-     * @see #cacheProduct(ProductCacheVO)
+     * @see ProductQueryService#findOneByProductIdentification(String)
      */
     public boolean refreshProductCache(String productIdentification) {
         ArgumentAssert.notBlank(productIdentification, "productIdentification is null");
         try {
             Long tenantId = ContextUtil.getTenantId();
             log.info("开始刷新{}产品缓存: {}", tenantId, productIdentification);
-            ProductResultVO product = productService.findOneByProductIdentification(productIdentification);
+            ProductResultVO product = productQueryService.findOneByProductIdentification(productIdentification);
             if (product == null) {
                 log.warn("未找到产品信息: {}", productIdentification);
                 return false;
@@ -210,6 +186,36 @@ public class ProductCacheService extends CacheSuperAbstract {
         } catch (Exception e) {
             log.error("刷新产品缓存失败: {}", productIdentification, e);
             return false;
+        }
+    }
+
+    /**
+     * 仅从 DB 加载产品 VO,不写缓存 ── 供 LinkCacheDataHelper#getProductCacheVO 的 read-through 回源使用,
+     * 写缓存由 CachePlusUtil 的 loader 链统一负责避免双写竞态。tenantId 从 {@link ContextUtil} 取与 helper 上下文一致;
+     * 参数空 / DB 不存在 / 转换异常返 null(由调用方决定是否缓存 null sentinel 防穿透)。
+     *
+     * @param productIdentification 产品标识
+     * @return 产品缓存 VO;失败返 null
+     */
+    public ProductCacheVO loadProductFromDb(String productIdentification) {
+        if (StrUtil.isBlank(productIdentification)) {
+            return null;
+        }
+        try {
+            Long tenantId = ContextUtil.getTenantId();
+            ProductResultVO product = productQueryService.findOneByProductIdentification(productIdentification);
+            if (product == null) {
+                log.warn("[product-fallback] DB miss productIdentification={} tenantId={}",
+                        productIdentification, tenantId);
+                return null;
+            }
+            ProductCacheVO vo = transformToProductCacheVO(tenantId, product);
+            log.info("[product-fallback] resolved productIdentification={} tenantId={} activeVersionNo={}",
+                    productIdentification, tenantId, vo.getActiveVersionNo());
+            return vo;
+        } catch (Exception e) {
+            log.error("[product-fallback] load failed productIdentification={}", productIdentification, e);
+            return null;
         }
     }
 

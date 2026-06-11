@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.request.PageParams;
@@ -376,7 +375,7 @@ public class OtaUpgradeTasksServiceImpl extends SuperServiceImpl<OtaUpgradeTasks
      * @return {@link TopoOtaPullResponseParam} OTA upgrade task
      */
     private TopoOtaPullResponseParam handleOtaPull(TopoOtaPullParam topoOtaPullParam) {
-        log.info("OTA pull request: {}", JSONUtil.toJsonStr(topoOtaPullParam));
+        log.info("OTA pull request: {}", JSON.toJSONString(topoOtaPullParam));
         OtaPackageTypeEnum.fromValue(topoOtaPullParam.getPackageType()).orElseThrow(() -> BizException.wrap("Invalid package type"));
         // Check if the device exists
         DeviceDetailsResultVO deviceDetailsResultVO = deviceService.findOneByDeviceIdentification(topoOtaPullParam.getDeviceIdentification());

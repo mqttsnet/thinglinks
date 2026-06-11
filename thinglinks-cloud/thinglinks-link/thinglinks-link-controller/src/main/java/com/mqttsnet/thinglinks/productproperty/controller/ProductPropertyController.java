@@ -25,6 +25,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -80,7 +81,7 @@ public class ProductPropertyController extends SuperController<ProductPropertySe
     @Operation(summary = "保存产品模型服务属性")
     @PostMapping("/saveProductProperty")
     @WebLog(value = "保存产品模型服务属性", request = false)
-    public R<ProductProperty> saveProductProperty(@RequestBody ProductPropertySaveVO saveVO) {
+    public R<ProductProperty> saveProductProperty(@Valid @RequestBody ProductPropertySaveVO saveVO) {
         try {
             CacheKey lockCacheKey = LinkLockKeyBuilder.forSaveProductPropertyByUserId(ContextUtil.getUserId());
             LockRunResult<ProductProperty> lockRunResult = distributedLock.tryLockAndRun(
@@ -110,7 +111,7 @@ public class ProductPropertyController extends SuperController<ProductPropertySe
     @Operation(summary = "修改产品模型服务属性")
     @PutMapping("/updateProductProperty")
     @WebLog(value = "修改产品模型服务属性", request = false)
-    public R<ProductProperty> updateProductProperty(@RequestBody ProductPropertyUpdateVO updateVO) {
+    public R<ProductProperty> updateProductProperty(@Valid @RequestBody ProductPropertyUpdateVO updateVO) {
         try {
             CacheKey lockCacheKey = LinkLockKeyBuilder.forUpdateProductPropertyByUserId(ContextUtil.getUserId());
             LockRunResult<ProductProperty> lockRunResult = distributedLock.tryLockAndRun(

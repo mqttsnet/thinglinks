@@ -81,7 +81,18 @@ public class DeviceGroupResultVO extends TreeEntity<DeviceGroupResultVO, Long> i
      * 创建人组织
      */
     @Schema(description = "创建人组织")
+    @Echo(api = EchoApi.ORG_ID_CLASS)
     private Long createdOrgId;
+
+    /** shadow Entity<Long>.createdBy,挂 @Echo 让 echoService 回填用户昵称到 echoMap.createdBy。 */
+    @Schema(description = "创建人")
+    @Echo(api = EchoApi.DEF_USER_ID_CLASS)
+    private Long createdBy;
+
+    /** shadow Entity<Long>.updatedBy,同上。 */
+    @Schema(description = "最后修改人")
+    @Echo(api = EchoApi.DEF_USER_ID_CLASS)
+    private Long updatedBy;
 
     @Schema(description = "父节点")
     protected Long parentId;

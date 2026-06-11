@@ -33,17 +33,23 @@ import com.mqttsnet.basic.utils.DateUtils;
 import com.mqttsnet.basic.utils.StrPool;
 import com.mqttsnet.thinglinks.cacert.dto.SubjectObjectDN;
 import com.mqttsnet.thinglinks.cacert.entity.license.CaCertLicense;
+import com.mqttsnet.thinglinks.cacert.event.CaRevokedEvent;
 import com.mqttsnet.thinglinks.cacert.enumeration.CaCertAlgorithmEnum;
+import com.mqttsnet.thinglinks.cacert.enumeration.CaCertAuditTypeEnum;
 import com.mqttsnet.thinglinks.cacert.enumeration.CaCertSignAlgorithmEnum;
 import com.mqttsnet.thinglinks.cacert.enumeration.CaCertStatusEnum;
 import com.mqttsnet.thinglinks.cacert.manager.license.CaCertLicenseManager;
+import com.mqttsnet.thinglinks.cacert.service.audit.CaCertAuditLogService;
 import com.mqttsnet.thinglinks.cacert.service.license.CaCertLicenseService;
+import com.mqttsnet.thinglinks.cacert.vo.result.license.CaCertLicenseImpactResultVO;
 import com.mqttsnet.thinglinks.cacert.vo.result.license.CaCertLicenseResultVO;
 import com.mqttsnet.thinglinks.cacert.vo.save.license.CaCertLicenseSaveVO;
 import com.mqttsnet.thinglinks.cacert.vo.save.license.CaCertPemImportSaveVO;
 import com.mqttsnet.thinglinks.cacert.vo.update.license.CaCertLicenseUpdateVO;
 import com.mqttsnet.thinglinks.common.constant.AppendixType;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
+import com.mqttsnet.thinglinks.device.entity.Device;
+import com.mqttsnet.thinglinks.device.service.DeviceQueryService;
 import com.mqttsnet.thinglinks.common.utils.FileUploadUtils;
 import com.mqttsnet.thinglinks.common.utils.FreeMarkerUtil;
 import com.mqttsnet.thinglinks.file.facade.FileFacade;
@@ -53,6 +59,7 @@ import com.mqttsnet.thinglinks.utils.x509.X509Util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,6 +80,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class CaCertLicenseServiceImpl extends SuperServiceImpl<CaCertLicenseManager, Long, CaCertLicense> implements CaCertLicenseService {
 
     private final FileFacade fileApi;
+
+    private final DeviceQueryService deviceQueryService;
+
+    private final ApplicationEventPublisher eventPublisher;
+
+    private final CaCertAuditLogService auditLogService;
 
 
     @Override
@@ -138,6 +151,10 @@ public class CaCertLicenseServiceImpl extends SuperServiceImpl<CaCertLicenseMana
 
             // 保存到数据库
             superManager.save(entity);
+
+            // 审计
+            auditLogService.record(CaCertAuditTypeEnum.IMPORT, entity.getId(), entity.getSerialNumber(),
+                    "name=" + entity.getCertName());
 
             //返回标准化VO
             return BeanPlusUtil.toBean(entity, CaCertLicenseResultVO.class);
@@ -327,16 +344,71 @@ public class CaCertLicenseServiceImpl extends SuperServiceImpl<CaCertLicenseMana
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean revokeCertificate(Long id, String revocationReason) {
-
-
-        return null;
+        CaCertLicense ca = getById(id);
+        ArgumentAssert.notNull(ca, "CA 证书不存在: id=" + id);
+        if (CaCertStatusEnum.REVOKED.getValue().equals(ca.getState())) {
+            log.warn("[CaCert] revoke skipped: ca already revoked id={}", id);
+            return true;
+        }
+        ca.setState(CaCertStatusEnum.REVOKED.getValue());
+        ca.setRevokeTime(LocalDateTime.now());
+        ca.setRevokeReason(revocationReason);
+        boolean ok = superManager.updateById(ca);
+        if (!ok) {
+            throw new BizException("CA 证书状态更新失败");
+        }
+        log.info("[CaCert] revoked id={} serialNumber={} reason={}",
+                id, ca.getSerialNumber(), revocationReason);
+        // 发布事件 → 触发关联设备 cache 失效
+        eventPublisher.publishEvent(new CaRevokedEvent(this, id, ca.getSerialNumber(), revocationReason));
+        // 审计
+        auditLogService.record(CaCertAuditTypeEnum.REVOKE, id, ca.getSerialNumber(),
+                "reason=" + revocationReason);
+        return true;
     }
 
     @Override
     public CaCertLicenseResultVO getByCertSerialNumber(String certSerialNumber) {
         CaCertLicense caCertLicense = superManager.getByCertSerialNumber(certSerialNumber);
         return BeanPlusUtil.toBeanIgnoreError(caCertLicense, CaCertLicenseResultVO.class);
+    }
+
+    @Override
+    public CaCertLicenseImpactResultVO getImpact(Long id) {
+        CaCertLicense ca = getById(id);
+        if (ca == null) {
+            return null;
+        }
+        String serialNumber = ca.getSerialNumber();
+
+        long bound = deviceQueryService.countByCertSerialNumber(serialNumber);
+        long online = deviceQueryService.countOnlineByCertSerialNumber(serialNumber);
+
+        List<Device> top = deviceQueryService.listTopBoundDevicesByCertSerialNumber(serialNumber, 50);
+
+        List<Map<String, Object>> topBrief = top.stream()
+                .map(d -> {
+                    Map<String, Object> m = new HashMap<>(6);
+                    m.put("id", d.getId());
+                    m.put("deviceIdentification", d.getDeviceIdentification());
+                    m.put("deviceName", d.getDeviceName());
+                    m.put("productIdentification", d.getProductIdentification());
+                    m.put("connectStatus", d.getConnectStatus());
+                    m.put("lastHeartbeatTime", d.getLastHeartbeatTime());
+                    return m;
+                })
+                .collect(Collectors.toList());
+
+        return CaCertLicenseImpactResultVO.builder()
+                .caId(id)
+                .caSerialNumber(serialNumber)
+                .caName(ca.getCertName())
+                .boundDeviceCount(bound)
+                .onlineDeviceCount(online)
+                .topDevices(topBrief)
+                .build();
     }
 
     @Override
@@ -379,7 +451,11 @@ public class CaCertLicenseServiceImpl extends SuperServiceImpl<CaCertLicenseMana
                     DateUtils.localDateTime2Date(notAfter));
 
             // 生成文件包
-            return createCertPackage(tempDir, clientCert, clientKeyPair, caCert);
+            File zipFile = createCertPackage(tempDir, clientCert, clientKeyPair, caCert);
+            // 审计:下载客户端证书包
+            auditLogService.record(CaCertAuditTypeEnum.DOWNLOAD_PACK, id, caCertLicense.getSerialNumber(),
+                    "notAfter=" + notAfter);
+            return zipFile;
         } finally {
             if (tempDir != null) {
                 FileUtils.deleteQuietly(tempDir.toFile());

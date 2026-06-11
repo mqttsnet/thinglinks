@@ -40,6 +40,11 @@ public class DeviceOpenAnyUserApiFallback implements DeviceOpenAnyUserApi {
     }
 
     @Override
+    public R<Boolean> updateDeviceConnectionStatusByEvent(String clientIdentifier, Integer connectionStatus, Long eventHlc) {
+        return R.timeout();
+    }
+
+    @Override
     public R<TopoAddDeviceResultVO> saveSubDeviceByMqtt(TopoAddSubDeviceParam topoAddSubDeviceParam) {
         return R.timeout();
     }
@@ -102,7 +107,7 @@ public class DeviceOpenAnyUserApiFallback implements DeviceOpenAnyUserApi {
     }
 
     @Override
-    public R<Boolean> reportDeviceHeartbeat(String clientIdentifier, Long heartbeatTime) {
+    public R<Boolean> reportDeviceHeartbeat(String clientIdentifier, Long heartbeatTime, Long eventHlc) {
         return R.timeout();
     }
 

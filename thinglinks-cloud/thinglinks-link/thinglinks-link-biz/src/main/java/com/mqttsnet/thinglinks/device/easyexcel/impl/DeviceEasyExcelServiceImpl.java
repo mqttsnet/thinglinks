@@ -30,7 +30,7 @@ import com.mqttsnet.thinglinks.device.event.source.DeviceInfoUpdatedEventSource;
 import com.mqttsnet.thinglinks.device.service.DeviceService;
 import com.mqttsnet.thinglinks.device.vo.query.DevicePageQuery;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceResultVO;
-import com.mqttsnet.thinglinks.product.service.ProductService;
+import com.mqttsnet.thinglinks.product.service.ProductQueryService;
 import com.mqttsnet.thinglinks.product.vo.query.ProductPageQuery;
 import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeviceEasyExcelServiceImpl implements DeviceEasyExcelService {
 
     private final DeviceService deviceService;
-    private final ProductService productService;
+    private final ProductQueryService productQueryService;
     private final DeviceEventPublisher deviceEventPublisher;
 
 
@@ -108,10 +108,19 @@ public class DeviceEasyExcelServiceImpl implements DeviceEasyExcelService {
             }
         }
 
-        // Log and save successful items
-        if (CollUtil.isNotEmpty(successList)) {
+        // 入库 ── 严格"全有或全无"原子语义:
+        //   - errList 非空 → 本批存在错行,即使 successList 部分通过校验也不写入 DB,
+        //     与 Controller 错误下载链路 + 前端 "导入失败" 提示对齐,用户修订错行后整批重传
+        //   - 否则 successList 全量入库;同时带入产品索引,导入时按 activeVersionNo 默认绑定版本快照,
+        //     避免之后 mqs 主流程为每条数据再次回填造成额外 UPDATE
+        // 历史实现只判断 successList 非空就入库,造成"前端报失败但部分行已落库",
+        // 用户修完整批重传 → 之前成功行第二次入库 → 重复设备 / 绑错产品。
+        if (!errList.isEmpty()) {
+            log.warn("Importing aborted ── batch has {} error rows, skip persisting the {} valid rows",
+                    errList.size(), successList.size());
+        } else if (CollUtil.isNotEmpty(successList)) {
             log.info("Saving {} successful items to the database", successList.size());
-            saveSuccessList(successList);
+            saveSuccessList(successList, existenceProductResultVOMap);
         }
 
         return new ExcelCheckResult<>(successList, errList);
@@ -134,7 +143,7 @@ public class DeviceEasyExcelServiceImpl implements DeviceEasyExcelService {
         ProductPageQuery productQuery = new ProductPageQuery();
         productQuery.setProductIdentificationList(productIdentificationCollect);
 
-        List<ProductResultVO> productResultVOList = Optional.ofNullable(productService.getProductResultVOList(productQuery))
+        List<ProductResultVO> productResultVOList = Optional.ofNullable(productQueryService.getProductResultVOList(productQuery))
                 .orElse(Collections.emptyList());
 
         return productResultVOList.stream()
@@ -166,12 +175,13 @@ public class DeviceEasyExcelServiceImpl implements DeviceEasyExcelService {
         }
     }
 
-    private void saveSuccessList(List<DeviceImportData> successList) {
+    private void saveSuccessList(List<DeviceImportData> successList,
+                                 Map<String, ProductResultVO> existenceProductResultVOMap) {
         if (CollUtil.isEmpty(successList)) {
             return;
         }
         List<Device> devicesToSave = successList.stream()
-                .map(this::convertToDeviceEntity)
+                .map(data -> convertToDeviceEntity(data, existenceProductResultVOMap))
                 .collect(Collectors.toList());
         log.info("Importing device files ,Saving {} count devices to the database", devicesToSave.size());
         boolean saveFlag = deviceService.saveBatch(devicesToSave);
@@ -187,7 +197,15 @@ public class DeviceEasyExcelServiceImpl implements DeviceEasyExcelService {
 
     }
 
-    private Device convertToDeviceEntity(DeviceImportData data) {
+    /**
+     * Excel 行 → Device 实体。
+     *
+     * <p>boundProductVersionNo 默认按导入时所属产品的 activeVersionNo 绑定 ──
+     * 跟单设备新增保持同一语义,避免后续物模型解析按产品当前版本回填造成多余 UPDATE。
+     * 若 Excel 行显式带了版本号(灰度白名单批量导入场景),则保留入参不覆盖。</p>
+     */
+    private Device convertToDeviceEntity(DeviceImportData data,
+                                         Map<String, ProductResultVO> existenceProductResultVOMap) {
         Device device = new Device();
         device.setAppId(data.getAppId());
         device.setDeviceIdentification(StrUtil.isNotBlank(data.getDeviceIdentification()) ? data.getDeviceIdentification() : SnowflakeIdUtil.nextId());
@@ -209,7 +227,14 @@ public class DeviceEasyExcelServiceImpl implements DeviceEasyExcelService {
         device.setDeviceSdkVersion(data.getDeviceSdkVersion());
         device.setDeviceStatus(Integer.valueOf(data.getDeviceStatus()));
         device.setNodeType(Integer.valueOf(data.getNodeType()));
-        // 设置其他需要的字段
+
+        // 默认绑定产品当前生效版本快照(activeVersionNo);Excel 显式带值时保留不覆盖
+        if (StrUtil.isBlank(device.getBoundProductVersionNo()) && existenceProductResultVOMap != null) {
+            ProductResultVO product = existenceProductResultVOMap.get(data.getProductIdentification());
+            if (product != null && StrUtil.isNotBlank(product.getActiveVersionNo())) {
+                device.setBoundProductVersionNo(product.getActiveVersionNo());
+            }
+        }
         return device;
     }
 

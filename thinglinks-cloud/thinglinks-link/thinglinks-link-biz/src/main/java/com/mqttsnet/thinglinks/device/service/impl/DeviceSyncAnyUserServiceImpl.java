@@ -34,7 +34,6 @@ import com.mqttsnet.thinglinks.device.vo.query.DevicePageQuery;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceResultVO;
 import com.mqttsnet.thinglinks.device.vo.save.DeviceActionSaveVO;
 import com.mqttsnet.thinglinks.product.enumeration.ProtocolTypeEnum;
-import com.mqttsnet.thinglinks.vo.result.MqttSessionDetailsResultVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,22 +41,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * -----------------------------------------------------------------------------
- * File Name: DeviceSyncAnyUserServiceImpl
- * -----------------------------------------------------------------------------
- * Description:
- * 设备数据同步业务层接口实现
- * -----------------------------------------------------------------------------
+ * 设备数据同步业务层接口实现。
  *
  * @author xiaonannet
  * @version 1.0
- * -----------------------------------------------------------------------------
- * Revision History:
- * Date         Author          Version     Description
- * --------      --------     -------   --------------------
- * 2025/1/11       xiaonannet        1.0        Initial creation
- * -----------------------------------------------------------------------------
- * @email
  * @date 2025/1/11 17:23
  */
 
@@ -91,9 +78,9 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
             "[设备状态同步-设备] 租户ID={} | 设备标识={} | 协议类型={} | 状态={} | 耗时={}ms | 错误={}";
 
     /**
-     * 同步设备连接状态
+     * 同步设备连接状态。
      *
-     * @param tenantId 租户ID
+     * @param tenantId 租户 ID
      */
     @Override
     public void syncDeviceConnectionStatus(Long tenantId) {
@@ -155,11 +142,11 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
     }
 
     /**
-     * 获取分页设备数据
+     * 获取分页设备数据。
      *
      * @param currentPage 当前页码
-     * @param queryModel  查询条件
-     * @return 设备列表
+     * @param queryModel  设备分页查询条件
+     * @return 当前页设备列表;无数据返回空列表
      */
     private List<DeviceResultVO> fetchDevicePage(int currentPage, DevicePageQuery queryModel) {
         PageParams<DevicePageQuery> params = new PageParams<>(currentPage, PAGE_SIZE);
@@ -170,12 +157,12 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
     }
 
     /**
-     * 处理设备批次数据
+     * 处理设备批次数据。
      *
-     * @param tenantId     租户ID
-     * @param devices      设备列表
-     * @param totalSuccess 成功计数器
-     * @param totalFail    失败计数器
+     * @param tenantId     租户 ID
+     * @param devices      当前批次设备列表
+     * @param totalSuccess 全局成功累计计数器
+     * @param totalFail    全局失败累计计数器
      */
     private void processDevicesBatch(Long tenantId, List<DeviceResultVO> devices,
                                      AtomicInteger totalSuccess, AtomicInteger totalFail) {
@@ -211,71 +198,99 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
     }
 
     /**
-     * 同步设备状态
+     * 同步单个设备状态。
      *
-     * @param device 设备信息
+     * <p>缓存 miss(分页查出来的设备 cache 还未构建,常见竞态)直接 skip,不计 failed ──
+     * 由后续事件 / 下次 job 兜底纠正。
+     *
+     * @param device 待同步设备
      */
     private void syncDeviceStatus(DeviceResultVO device) {
         long startTime = System.currentTimeMillis();
-
+        Optional<DeviceCacheVO> cacheOpt = linkCacheDataHelper.getDeviceCacheVO(device.getDeviceIdentification());
+        if (cacheOpt.isEmpty()) {
+            log.warn("[Sync] cache miss, skip deviceId={}", device.getDeviceIdentification());
+            return;
+        }
+        DeviceCacheVO cache = cacheOpt.get();
+        // 产品 protocolType 不再内嵌在 deviceCacheVO 上 ── 走 LinkCacheDataHelper 共享解析入口:
+        // 优先按 (productIdentification, boundProductVersionNo) 取版本快照 protocolType,
+        // 版本号缺失则回退到产品当前 activeVersionNo 维度的基础元数据。
+        String protocolType = linkCacheDataHelper
+                .resolveProtocolType(cache.getProductIdentification(), cache.getBoundProductVersionNo())
+                .orElse(null);
+        if (protocolType == null) {
+            log.warn("[Sync] cannot resolve protocolType, skip deviceId={} productIdentification={} boundVer={}",
+                    device.getDeviceIdentification(), cache.getProductIdentification(),
+                    cache.getBoundProductVersionNo());
+            return;
+        }
         try {
-            DeviceCacheVO deviceCacheVO = linkCacheDataHelper.getDeviceCacheVO(device.getDeviceIdentification())
-                    .orElseThrow(() -> new IllegalArgumentException("Device does not exist: " + device.getDeviceIdentification()));
-
-            String protocolType = deviceCacheVO.getProductCacheVO().getProtocolType();
-
-            // 根据协议类型分发处理
-            ProtocolTypeEnum.fromValue(protocolType).ifPresent(protocol -> {
-                switch (protocol) {
-                    case MQTT:
-                        handleMqttProtocol(device, deviceCacheVO);
-                        break;
-                    case WEBSOCKET:
-                        handleWebsocketProtocol(device, deviceCacheVO);
-                        break;
-                    case TCP:
-                        handleTcpProtocol(device, deviceCacheVO);
-                        break;
-                    case HTTP:
-                        handleHttpProtocol(device, deviceCacheVO);
-                        break;
-                    default:
-                        handleUnknownProtocol(device, deviceCacheVO, protocol);
-                        break;
-                }
-            });
-
+            ProtocolTypeEnum.fromValue(protocolType)
+                    .ifPresent(protocol -> dispatchByProtocol(protocol, device, cache));
             log.debug(DEVICE_DETAIL_LOG, ContextUtil.getTenantId(), device.getDeviceIdentification(),
                     protocolType, "成功", System.currentTimeMillis() - startTime, "无");
-
         } catch (Exception e) {
             log.error(DEVICE_DETAIL_LOG, ContextUtil.getTenantId(), device.getDeviceIdentification(),
-                    "未知", "失败", System.currentTimeMillis() - startTime, e.getMessage(), e);
+                    protocolType, "失败", System.currentTimeMillis() - startTime, e.getMessage(), e);
             throw e;
         }
     }
 
     /**
-     * 处理MQTT协议设备
+     * 按设备协议类型分发到对应同步处理方法,未知协议走 handleUnknownProtocol 兜底不报错。
      *
-     * @param device        设备信息
-     * @param deviceCacheVO 设备缓存信息
+     * @param protocol 设备协议类型
+     * @param device   待同步设备
+     * @param cache    设备缓存
      */
-    private void handleMqttProtocol(DeviceResultVO device, DeviceCacheVO deviceCacheVO) {
-        handleMqttProtocol(deviceCacheVO).ifPresent(targetStatus -> {
-            DeviceConnectStatusEnum.fromValue(device.getConnectStatus()).ifPresent(currentStatus -> {
-                if (!targetStatus.equals(currentStatus)) {
-                    updateDeviceStatus(device, currentStatus, targetStatus);
-                }
-            });
-        });
+    private void dispatchByProtocol(ProtocolTypeEnum protocol, DeviceResultVO device, DeviceCacheVO cache) {
+        switch (protocol) {
+            case MQTT -> handleMqttProtocol(device, cache);
+            case WEBSOCKET -> handleWebsocketProtocol(device, cache);
+            case TCP -> handleTcpProtocol(device, cache);
+            case HTTP -> handleHttpProtocol(device, cache);
+            default -> handleUnknownProtocol(device, cache, protocol);
+        }
     }
 
     /**
-     * 处理Websocket协议设备
+     * 处理 MQTT 协议设备 ── 以 BifroMQ session 为权威真相同步 connect_status。
      *
-     * @param device        设备信息
-     * @param deviceCacheVO 设备缓存信息
+     * <p>不确定状态(broker 异常 / 临时不可达)不动 DB,等下次 job 或实时事件再纠正。
+     *
+     * @param device        待同步设备
+     * @param deviceCacheVO 设备缓存
+     */
+    private void handleMqttProtocol(DeviceResultVO device, DeviceCacheVO deviceCacheVO) {
+        resolveMqttSessionStatus(deviceCacheVO)
+                .filter(target -> isStatusChanged(target, device.getConnectStatus()))
+                .ifPresent(target -> updateDeviceStatus(
+                        device,
+                        DeviceConnectStatusEnum.fromValue(device.getConnectStatus())
+                                .orElse(DeviceConnectStatusEnum.UNCONNECTED),
+                        target));
+    }
+
+    /**
+     * 判断 DB 当前 connect_status 与目标状态是否不同。
+     * 当前值为 null 或非法枚举时一律返回 true,触发后续 update 把 DB 拉回合法值。
+     *
+     * @param target       目标连接状态
+     * @param currentValue DB 当前连接状态值
+     * @return 与目标状态不同返回 true
+     */
+    private boolean isStatusChanged(DeviceConnectStatusEnum target, Integer currentValue) {
+        return DeviceConnectStatusEnum.fromValue(currentValue)
+                .map(current -> !target.equals(current))
+                .orElse(true);
+    }
+
+    /**
+     * 处理 Websocket 协议设备。
+     *
+     * @param device        待同步设备
+     * @param deviceCacheVO 设备缓存
      */
     private void handleWebsocketProtocol(DeviceResultVO device, DeviceCacheVO deviceCacheVO) {
         log.debug("Websocket protocol device {} - protocol specific handling needed",
@@ -284,10 +299,10 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
     }
 
     /**
-     * 处理TCP协议设备
+     * 处理 TCP 协议设备。
      *
-     * @param device        设备信息
-     * @param deviceCacheVO 设备缓存信息
+     * @param device        待同步设备
+     * @param deviceCacheVO 设备缓存
      */
     private void handleTcpProtocol(DeviceResultVO device, DeviceCacheVO deviceCacheVO) {
         log.debug("TCP protocol device {} - protocol specific handling needed",
@@ -296,10 +311,10 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
     }
 
     /**
-     * 处理HTTP协议设备
+     * 处理 HTTP 协议设备。
      *
-     * @param device        设备信息
-     * @param deviceCacheVO 设备缓存信息
+     * @param device        待同步设备
+     * @param deviceCacheVO 设备缓存
      */
     private void handleHttpProtocol(DeviceResultVO device, DeviceCacheVO deviceCacheVO) {
         log.debug("HTTP protocol device {} - protocol specific handling needed",
@@ -309,11 +324,11 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
 
 
     /**
-     * 处理未知协议设备
+     * 处理未知协议设备。
      *
-     * @param device        设备信息
-     * @param deviceCacheVO 设备缓存信息
-     * @param protocol      协议类型
+     * @param device        待同步设备
+     * @param deviceCacheVO 设备缓存
+     * @param protocol      未知协议类型
      */
     private void handleUnknownProtocol(DeviceResultVO device, DeviceCacheVO deviceCacheVO, ProtocolTypeEnum protocol) {
         log.debug("Unknown protocol {} for device {}, skipping sync",
@@ -321,37 +336,35 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
     }
 
     /**
-     * MQTT协议具体实现
+     * 查 BifroMQ session 实时状态,语义与 mqs 侧 SessionStatusResolver 对齐(三态):
+     * ONLINE=明确在线;OFFLINE=明确离线(session not found);empty=不确定(broker 临时异常/超时),保留现状不动 DB。
      *
-     * @param deviceCacheVO 设备缓存信息
-     * @return 设备连接状态
+     * @param cache 设备缓存
+     * @return 在线 / 离线状态;不确定时返回 empty
      */
-    private Optional<DeviceConnectStatusEnum> handleMqttProtocol(DeviceCacheVO deviceCacheVO) {
-        try {
-            R<MqttSessionDetailsResultVO> sessionInfoR = mqttBrokerOpenAnyUserFacade.getSessionInfo(
-                    ContextUtil.getTenantIdStr(), deviceCacheVO.getDeviceIdentification(), deviceCacheVO.getClientId());
-
-            if (sessionInfoR == null || R.TIMEOUT_CODE == sessionInfoR.getCode()) {
-                log.error("mqttBrokerOpenAnyUserFacade.getSessionInfo timeout for device: {}",
-                        deviceCacheVO.getDeviceIdentification());
-                return Optional.empty();
-            }
-
-            return Optional.of(sessionInfoR.getIsSuccess() ?
-                    DeviceConnectStatusEnum.ONLINE : DeviceConnectStatusEnum.OFFLINE);
-        } catch (Exception e) {
-            log.error("Failed to fetch session info for device {}", deviceCacheVO.getDeviceIdentification(), e);
+    private Optional<DeviceConnectStatusEnum> resolveMqttSessionStatus(DeviceCacheVO cache) {
+        R<Boolean> r = mqttBrokerOpenAnyUserFacade.isOnline(
+                ContextUtil.getTenantIdStr(),
+                cache.getDeviceIdentification(),
+                cache.getClientId());
+        if (r == null || !r.getIsSuccess()) {
+            log.warn("[Sync] session unknown deviceId={} code={} msg={}",
+                    cache.getDeviceIdentification(),
+                    r == null ? "null" : r.getCode(),
+                    r == null ? "null" : r.getMsg());
             return Optional.empty();
         }
+        return Optional.ofNullable(r.getData())
+                .map(online -> online ? DeviceConnectStatusEnum.ONLINE : DeviceConnectStatusEnum.OFFLINE);
     }
 
 
     /**
-     * 更新设备状态，并记录设备动作
+     * 更新设备状态,并记录设备动作。
      *
-     * @param device        设备信息
-     * @param currentStatus 当前状态
-     * @param targetStatus  目标状态
+     * @param device        待更新设备
+     * @param currentStatus 当前连接状态
+     * @param targetStatus  目标连接状态
      */
     private void updateDeviceStatus(DeviceResultVO device, DeviceConnectStatusEnum currentStatus, DeviceConnectStatusEnum targetStatus) {
         try {
@@ -368,11 +381,11 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
 
 
     /**
-     * 记录设备动作数据
+     * 记录设备动作数据。
      *
-     * @param device        设备信息
-     * @param currentStatus 当前状态
-     * @param targetStatus  目标状态
+     * @param device        关联设备
+     * @param currentStatus 当前连接状态
+     * @param targetStatus  目标连接状态
      */
     private void recordDeviceAction(DeviceResultVO device, DeviceConnectStatusEnum currentStatus, DeviceConnectStatusEnum targetStatus) {
         // 构建设备动作描述和类型
@@ -394,20 +407,20 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
         // 构建并保存设备动作记录
         DeviceActionSaveVO deviceActionSaveVO = new DeviceActionSaveVO();
         deviceActionSaveVO.setDeviceIdentification(device.getDeviceIdentification());
-        deviceActionSaveVO.setActionType(actionType.getAction());
-        deviceActionSaveVO.setMessage(actionType.getDescription());
+        deviceActionSaveVO.setActionType(actionType.getValue());
+        deviceActionSaveVO.setMessage(actionType.getDesc());
         deviceActionSaveVO.setStatus(DeviceActionStatusEnum.SUCCESSFUL.getValue());
         deviceActionSaveVO.setRemark(describable);
         return deviceActionSaveVO;
     }
 
     /**
-     * 构建设备状态描述
+     * 构建设备状态描述。
      *
-     * @param device        设备信息
-     * @param currentStatus 当前状态
-     * @param targetStatus  目标状态
-     * @return
+     * @param device        关联设备
+     * @param currentStatus 当前连接状态
+     * @param targetStatus  目标连接状态
+     * @return 设备状态描述文本
      */
     private String buildDeviceStatusDescription(DeviceResultVO device, DeviceConnectStatusEnum currentStatus, DeviceConnectStatusEnum targetStatus) {
         // 生成详细的描述
@@ -432,10 +445,10 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
     }
 
     /**
-     * 获取设备状态对应的动作类型
+     * 获取设备状态对应的动作类型。
      *
-     * @param targetStatus 连接状态
-     * @return {@link DeviceActionTypeEnum} 设备动作类型
+     * @param targetStatus 目标连接状态
+     * @return 对应的设备动作类型
      */
     private DeviceActionTypeEnum getActionTypeForStatus(DeviceConnectStatusEnum targetStatus) {
         return switch (targetStatus) {
@@ -444,6 +457,5 @@ public class DeviceSyncAnyUserServiceImpl extends CacheSuperAbstract implements 
             default -> DeviceActionTypeEnum.UNKNOWN;
         };
     }
-
 
 }

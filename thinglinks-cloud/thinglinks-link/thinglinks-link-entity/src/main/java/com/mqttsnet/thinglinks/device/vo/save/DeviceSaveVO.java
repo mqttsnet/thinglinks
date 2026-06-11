@@ -170,9 +170,10 @@ public class DeviceSaveVO implements Serializable {
     @Size(max = 255, message = "sdk版本长度不能超过{max}")
     private String deviceSdkVersion;
     /**
-     * 网关设备id
+     * 子设备所属网关的 deviceIdentification（业务唯一标识，String；非主键 id）。
+     * 仅 nodeType=SUBDEVICE 时有意义。
      */
-    @Schema(description = "网关设备id")
+    @Schema(description = "网关设备的 deviceIdentification（业务唯一标识，String 类型；非主键 id）")
     private String gatewayId;
     /**
      * 设备类型:0普通设备 || 1网关设备 || 2子设备

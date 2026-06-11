@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
@@ -112,15 +112,20 @@ public class OtaTaskExecutionHandler {
                     .build();
 
             // 构建命令消息
-            String commandMessageJson = JSONUtil.toJsonStr(commandRequest);
+            String commandMessageJson = JSON.toJSONString(commandRequest);
             ProtocolDataMessageDTO protocolMessage = protocolMessageAdapter.buildResponse(commandMessageJson, encryptionDetails);
 
             // 发送消息
-            String messageContent = JSONUtil.toJsonStr(protocolMessage);
+            String messageContent = JSON.toJSONString(protocolMessage);
             String responseTopic = generateResponseTopic(deviceCache.getDeviceSdkVersion(), deviceIdentification);
 
             R result;
-            ProtocolTypeEnum protocolType = ProtocolTypeEnum.fromValue(deviceCache.getProductCacheVO().getProtocolType())
+            // 产品 protocolType 不再内嵌在 deviceCacheVO ── 走 LinkCacheDataHelper 共享解析入口,
+            // 两者都拿不到默认走 MQTT。
+            ProtocolTypeEnum protocolType = linkCacheDataHelper
+                    .resolveProtocolType(deviceCache.getProductIdentification(),
+                            deviceCache.getBoundProductVersionNo())
+                    .flatMap(ProtocolTypeEnum::fromValue)
                     .orElse(ProtocolTypeEnum.MQTT);
 
             if (ProtocolTypeEnum.WEBSOCKET.equals(protocolType)) {
@@ -236,7 +241,7 @@ public class OtaTaskExecutionHandler {
             OtaUpgradeRecordsUpdateVO otaUpgradeRecordsUpdateVO = OtaUpgradeRecordsUpdateVO.builder()
                     .id(otaUpgradeRecordsResultVO.getId())
                     .commandSendStatus(recordCommandSendStatusEnum.getValue())
-                    .commandContent(JSONUtil.toJsonStr(commandRequest))
+                    .commandContent(JSON.toJSONString(commandRequest))
                     .lastCommandSendTime(LocalDateTime.now())
                     .build();
             otaUpgradeRecordsService.updateOtaUpgradeRecord(otaUpgradeRecordsUpdateVO);
@@ -245,4 +250,5 @@ public class OtaTaskExecutionHandler {
             log.error("更新升级记录命令状态失败 - 设备标识: {}, 任务ID: {}", deviceIdentification, taskId, e);
         }
     }
+
 }

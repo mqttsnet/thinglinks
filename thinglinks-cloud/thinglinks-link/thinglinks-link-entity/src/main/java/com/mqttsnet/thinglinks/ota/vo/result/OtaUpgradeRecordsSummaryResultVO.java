@@ -1,8 +1,6 @@
 package com.mqttsnet.thinglinks.ota.vo.result;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +11,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Map;
 
 /**
  * -----------------------------------------------------------------------------
@@ -43,11 +39,9 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "OtaUpgradeRecordsSummaryResultVO", description = "OTA升级记录统计VO")
-public class OtaUpgradeRecordsSummaryResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class OtaUpgradeRecordsSummaryResultVO extends AuditableResultVO {
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "任务ID")
     private Long taskId;

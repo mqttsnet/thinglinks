@@ -59,8 +59,8 @@ public class ProductModelJsonResultVO implements Serializable {
     @Schema(description = "协议类型")
     private String protocolType;
 
-    @Schema(description = "产品版本")
-    private String productVersion;
+    @Schema(description = "版本序号(系统发布时生成的快照标识,导出 JSON 包含本字段供导入端对照)")
+    private String activeVersionNo;
 
     @Schema(description = "产品描述")
     private String remark;

@@ -100,6 +100,20 @@ public class ProductManagerImpl extends SuperManagerImpl<ProductMapper, Product>
         return productMapper.selectCount(null);
     }
 
+    @Override
+    public Long countPublishedProducts() {
+        LbQueryWrap<Product> wrap = Wraps.lbQ();
+        wrap.isNotNull(Product::getActiveVersionNo).ne(Product::getActiveVersionNo, "");
+        return productMapper.selectCount(wrap);
+    }
+
+    @Override
+    public Long countCanaryInProgressProducts() {
+        LbQueryWrap<Product> wrap = Wraps.lbQ();
+        wrap.isNotNull(Product::getPreviousFullVersionNo).ne(Product::getPreviousFullVersionNo, "");
+        return productMapper.selectCount(wrap);
+    }
+
 }
 
 

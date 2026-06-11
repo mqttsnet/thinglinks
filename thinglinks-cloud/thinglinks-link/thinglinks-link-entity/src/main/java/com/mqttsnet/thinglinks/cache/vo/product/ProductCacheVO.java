@@ -106,10 +106,10 @@ public class ProductCacheVO extends Entity<Long> implements Serializable, EchoVO
     @Schema(description = "状态(字典值：0启用  1停用)")
     private Integer productStatus;
     /**
-     * 产品版本
+     * 当前生效版本序号(系统最新发布时生成的快照标识,缓存值与 product.active_version_no 同步)。
      */
-    @Schema(description = "产品版本")
-    private String productVersion;
+    @Schema(description = "版本序号(系统最新发布时生成的快照标识)")
+    private String activeVersionNo;
     /**
      * 图标
      */

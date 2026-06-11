@@ -1,13 +1,12 @@
 package com.mqttsnet.thinglinks.device.vo.result;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Map;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.basic.annotation.echo.Echo;
+import com.mqttsnet.thinglinks.model.constant.EchoApi;
+import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -35,12 +34,10 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "DeviceResultVO", description = "设备档案信息表")
-public class DeviceResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class DeviceResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -74,6 +71,7 @@ public class DeviceResultVO extends Entity<Long> implements Serializable, EchoVO
      * 认证方式0-用户名密码，1-ssl证书
      */
     @Schema(description = "认证方式0-用户名密码，1-ssl证书")
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Link.LINK_DEVICE_AUTH_MODE)
     private Integer authMode;
     /**
      * 加密密钥
@@ -94,6 +92,7 @@ public class DeviceResultVO extends Entity<Long> implements Serializable, EchoVO
      * 传输协议的加密方式：0-明文传输、1-SM4、2-AES
      */
     @Schema(description = "传输协议的加密方式：0-明文传输、1-SM4、2-AES")
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Link.LINK_DEVICE_ENCRYPT_METHOD)
     private Integer encryptMethod;
     /**
      * 设备标识
@@ -119,11 +118,13 @@ public class DeviceResultVO extends Entity<Long> implements Serializable, EchoVO
      * 设备状态:1启用ENABLE || 2禁用DISABLE||未激活NOTACTIVE 0
      */
     @Schema(description = "设备状态:1启用ENABLE || 2禁用DISABLE||未激活NOTACTIVE 0")
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Link.LINK_DEVICE_STATUS)
     private Integer deviceStatus;
     /**
      * 连接状态:在线：1ONLINE || 离线：2OFFLINE || 未连接：INIT 0
      */
     @Schema(description = "连接状态:在线：1ONLINE || 离线：2OFFLINE || 未连接：INIT 0")
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Link.LINK_DEVICE_CONNECT_STATUS)
     private Integer connectStatus;
 
     /**
@@ -143,6 +144,12 @@ public class DeviceResultVO extends Entity<Long> implements Serializable, EchoVO
     @Schema(description = "产品标识")
     private String productIdentification;
     /**
+     * 绑定的产品版本序号(系统在设备注册 / 产品发布时写入,数据上报路径按此快照解析物模型,
+     * 不随产品发布新版本变化 ── 灰度发布的关键路由依据)。
+     */
+    @Schema(description = "绑定的产品版本序号(系统在注册 / 发布灰度时写入,数据上报按此快照解析物模型,灰度路由依据)")
+    private String boundProductVersionNo;
+    /**
      * 软件版本
      */
     @Schema(description = "软件版本")
@@ -158,25 +165,22 @@ public class DeviceResultVO extends Entity<Long> implements Serializable, EchoVO
     @Schema(description = "sdk版本")
     private String deviceSdkVersion;
     /**
-     * 网关设备id
+     * 子设备所属网关的 deviceIdentification（业务唯一标识，String；非主键 id）。
+     * 仅 nodeType=SUBDEVICE 时有意义。前端按此值调 getDeviceDetailsByIdentification 拉网关详情。
      */
-    @Schema(description = "网关设备id")
+    @Schema(description = "网关设备的 deviceIdentification（业务唯一标识，String 类型；非主键 id）")
     private String gatewayId;
     /**
      * 设备类型:0普通设备 || 1网关设备 || 2子设备
      */
     @Schema(description = "设备类型:0普通设备 || 1网关设备 || 2子设备 ")
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Link.LINK_DEVICE_NODE_TYPE)
     private Integer nodeType;
     /**
      * 备注
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
 
     @Schema(description = "产品详情结果VO")

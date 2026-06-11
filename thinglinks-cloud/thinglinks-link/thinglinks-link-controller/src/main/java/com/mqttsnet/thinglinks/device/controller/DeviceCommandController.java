@@ -60,7 +60,9 @@ public class DeviceCommandController extends SuperController<DeviceCommandServic
     @Operation(summary = "Issue commands to devices", description = "Issues a list of commands to devices, handling both serial and parallel execution.")
     @PostMapping("/issueCommands")
     public R<List<DeviceCommandResultVO>> issueCommands(@RequestBody @Valid DeviceCommandWrapperParam commandWrapper) {
-        return R.success(superService.processDeviceCommands(commandWrapper));
+        List<DeviceCommandResultVO> result = superService.processDeviceCommands(commandWrapper);
+        echoService.action(result);
+        return R.success(result);
     }
 
     /**

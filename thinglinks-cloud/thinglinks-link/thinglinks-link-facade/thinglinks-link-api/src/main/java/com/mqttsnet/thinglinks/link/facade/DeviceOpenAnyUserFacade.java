@@ -33,13 +33,32 @@ public interface DeviceOpenAnyUserFacade {
 
 
     /**
-     * 更改设备连接状态
+     * 无条件更新设备连接状态.
+     * <p>
+     * 语义:**人为 / 后台 / 运维触发** 的状态变更(控制台踢线、xxl-job 探活补偿、批量运维、
+     * 非事件驱动的 TCP / WS 老监听器等无上游 HLC 的场景).
+     * 不带 event-time CAS 保护,直接覆盖 connect_status;不更新 {@code last_status_event_hlc},
+     * 不影响后续上游事件的 CAS 单调写.
      *
      * @param clientIdentifier 客户端标识
-     * @param connectionStatus 连接状态
-     * @return
+     * @param connectionStatus 目标连接状态(0=OFFLINE, 1=ONLINE)
+     * @return 写入是否成功
      */
     R<Boolean> updateDeviceConnectionStatus(String clientIdentifier, Integer connectionStatus);
+
+    /**
+     * 基于上游事件的连接状态变更 ── event-time LWW CAS.
+     * <p>
+     * 语义:**上游事件流驱动** 的状态变更(CONNECT/DISCONNECT/KICKED 等).
+     * 仅当 {@code last_status_event_hlc < eventHlc} 时才覆盖,防止异步消费 / 乱序 /
+     * 抖动重连导致状态回退;同时更新 {@code last_status_event_hlc} 作为下次 CAS 基准.
+     *
+     * @param clientIdentifier 客户端标识
+     * @param connectionStatus 目标连接状态(由 actionType 推导)
+     * @param eventHlc         上游因果时钟 HLC(必须 &gt; 0,否则调用方应跳过)
+     * @return true=CAS 写入生效, false=过期事件被拒绝(DB 已有更新的 hlc)
+     */
+    R<Boolean> updateDeviceConnectionStatusByEvent(String clientIdentifier, Integer connectionStatus, Long eventHlc);
 
 
     /**
@@ -151,10 +170,11 @@ public interface DeviceOpenAnyUserFacade {
      * Reports the heartbeat of a device.
      *
      * @param clientIdentifier The unique identifier of the device.
-     * @param heartbeatTime    The timestamp of the heartbeat.
+     * @param heartbeatTime    The timestamp of the heartbeat (always refreshes last_heartbeat_time).
+     * @param eventHlc         Causal-clock HLC; when non-null and &gt;0, drives a monotonic CAS write to ONLINE; absent leaves connect status untouched.
      * @return {@link R<Boolean>} A response wrapper indicating the success of the heartbeat report.
      */
-    R<Boolean> reportDeviceHeartbeat(String clientIdentifier, Long heartbeatTime);
+    R<Boolean> reportDeviceHeartbeat(String clientIdentifier, Long heartbeatTime, Long eventHlc);
 
     /**
      * 北向API-保存设备

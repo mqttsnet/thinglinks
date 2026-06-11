@@ -1,11 +1,9 @@
 package com.mqttsnet.thinglinks.product.vo.result;
 
-import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.annotation.echo.Echo;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
 import com.mqttsnet.thinglinks.model.constant.EchoApi;
 import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import com.mqttsnet.thinglinks.productservice.vo.result.ProductServiceResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -17,9 +15,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -38,12 +34,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "ProductResultVO", description = "产品模型")
-public class ProductResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class ProductResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    @Builder.Default
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -113,10 +107,15 @@ public class ProductResultVO extends Entity<Long> implements Serializable, EchoV
     @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Link.LINK_PRODUCT_STATUS)
     private Integer productStatus;
     /**
-     * 产品版本
+     * 当前生效的版本序号(系统发布时生成的不可变快照标识,按时间有序的全局唯一,非用户语义化版本号)。
      */
-    @Schema(description = "产品版本")
-    private String productVersion;
+    @Schema(description = "版本序号(系统发布时生成,按时间有序的全局唯一快照标识)")
+    private String activeVersionNo;
+    /**
+     * 灰度切换前的全量版本序号(仅当前处于灰度态时有值,灰度晋升 / 回滚后清空),供回滚定位 / 灰度路由用。
+     */
+    @Schema(description = "灰度切换前的全量版本序号(仅灰度态有值,晋升 / 回滚后清空)")
+    private String previousFullVersionNo;
     /**
      * 图标
      */
@@ -127,12 +126,6 @@ public class ProductResultVO extends Entity<Long> implements Serializable, EchoV
      */
     @Schema(description = "产品描述")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    @Echo(api = EchoApi.ORG_ID_CLASS)
-    private Long createdOrgId;
 
 
     @Schema(description = "产品模型服务")

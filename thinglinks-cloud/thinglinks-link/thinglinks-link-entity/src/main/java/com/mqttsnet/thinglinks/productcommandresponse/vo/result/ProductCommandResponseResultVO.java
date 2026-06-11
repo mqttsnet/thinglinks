@@ -1,11 +1,10 @@
 package com.mqttsnet.thinglinks.productcommandresponse.vo.result;
 
-import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.annotation.echo.Echo;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.productversionchangelog.vo.DiffIgnore;
 import com.mqttsnet.thinglinks.model.constant.EchoApi;
 import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,8 +15,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Map;
 
 /**
  * <p>
@@ -36,25 +33,25 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "ProductCommandResponseResultVO", description = "产品模型服务命令属性响应参数")
-public class ProductCommandResponseResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class ProductCommandResponseResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
 
     /**
-     * 命令ID
+     * 命令ID(结构外键,不参与变更记录 diff)
      */
     @Schema(description = "命令ID")
+    @DiffIgnore
     private Long commandId;
     /**
-     * 服务ID
+     * 服务ID(结构外键,不参与变更记录 diff)
      */
     @Schema(description = "服务ID")
+    @DiffIgnore
     private Long serviceId;
     /**
      * 指示数据类型。取值范围：string、int、decimal
@@ -117,11 +114,6 @@ public class ProductCommandResponseResultVO extends Entity<Long> implements Seri
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
 
 }

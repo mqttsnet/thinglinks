@@ -106,10 +106,10 @@ public class DeviceActionServiceImpl extends SuperServiceImpl<DeviceActionManage
             DeviceActionTypeEnum deviceActionTypeEnum = DeviceActionTypeEnum.DISCONNECT;
             DeviceActionSaveVO deviceActionSaveVO = new DeviceActionSaveVO();
             deviceActionSaveVO.setDeviceIdentification(deviceCacheVO.getDeviceIdentification());
-            deviceActionSaveVO.setActionType(deviceActionTypeEnum.getAction());
+            deviceActionSaveVO.setActionType(deviceActionTypeEnum.getValue());
             deviceActionSaveVO.setMessage(JSON.toJSONString(killClientRequestVO));
             deviceActionSaveVO.setStatus(DeviceActionStatusEnum.SUCCESSFUL.getValue());
-            deviceActionSaveVO.setRemark("Manual Operation..." + deviceActionTypeEnum.getDescription());
+            deviceActionSaveVO.setRemark("Manual Operation..." + deviceActionTypeEnum.getDesc());
             saveDeviceAction(deviceActionSaveVO);
         }
         return r.getIsSuccess();

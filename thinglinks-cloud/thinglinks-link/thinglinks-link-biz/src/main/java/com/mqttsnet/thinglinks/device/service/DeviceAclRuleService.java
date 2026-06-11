@@ -8,8 +8,6 @@ import com.mqttsnet.thinglinks.device.entity.DeviceAclRule;
 import com.mqttsnet.thinglinks.device.vo.query.DeviceAclCheckQuery;
 import com.mqttsnet.thinglinks.protocol.vo.result.DeviceAclCheckResultVO;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 
 /**
@@ -35,20 +33,13 @@ public interface DeviceAclRuleService extends SuperService<Long, DeviceAclRule> 
 
 
     /**
-     * Refreshes the cache for all device ACL rules.
+     * 拉指定设备生效的全部 ACL 规则(产品级 + 设备级)
      *
-     * @param tenantId The identifier of the tenant for which the cache needs to be refreshed.
+     * @param productIdentification 产品标识
+     * @param deviceIdentificationr 设备标识
+     * @return 排序后的规则列表;设备未注册 / 无规则返空 List
      */
-    void refreshAllDeviceAclRuleCache(@NotNull Long tenantId);
-
-
-    /**
-     * Retrieves the ACL rules cache for a given product and device, sorted by priority.
-     *
-     * @param clientIdentifier clientId
-     * @return {@link List<DeviceAclRuleCacheVO>} The list of ACL rules cache for the given product and device, sorted by priority.
-     */
-    List<DeviceAclRuleCacheVO> getDeviceAclRuleCacheVOList(@NotBlank String clientIdentifier);
+    List<DeviceAclRuleCacheVO> getDeviceAclRuleCacheVOList(String productIdentification, String deviceIdentificationr);
 }
 
 

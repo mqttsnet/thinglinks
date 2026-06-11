@@ -21,7 +21,8 @@
         <result column="device_type" property="deviceType"/>
         <result column="protocol_type" property="protocolType"/>
         <result column="product_status" property="productStatus"/>
-        <result column="product_version" property="productVersion"/>
+        <result column="active_version_no" property="activeVersionNo"/>
+        <result column="previous_full_version_no" property="previousFullVersionNo"/>
         <result column="remark" property="remark"/>
         <result column="deleted" property="deleted"/>
         <result column="created_time" property="createdTime"/>
@@ -35,7 +36,7 @@
     <sql id="Base_Column_List">
         id, app_id, template_id, product_name, product_identification, product_type, 
         manufacturer_id, manufacturer_name, model, data_format, device_type, protocol_type, 
-        product_status, product_version, remark, deleted, created_time, created_by, updated_time, 
+        product_status, active_version_no, previous_full_version_no, remark, deleted, created_time, created_by, updated_time,
         updated_by, created_org_id
     </sql>
 

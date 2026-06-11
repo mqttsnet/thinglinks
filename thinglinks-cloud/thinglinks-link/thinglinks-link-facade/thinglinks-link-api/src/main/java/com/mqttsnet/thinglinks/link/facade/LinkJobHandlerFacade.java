@@ -67,12 +67,4 @@ public interface LinkJobHandlerFacade {
      * @return Response indicating the result of the OTA upgrade task execution.
      */
     R<?> otaUpgradeTasksExecute(Long tenantId);
-
-    /**
-     * Refreshes the device ACL cache for a specific tenant.
-     *
-     * @param tenantId tenantId
-     * @return Response indicating the result of the cache refresh operation.
-     */
-    R<?> refreshDeviceAclCache(Long tenantId);
 }

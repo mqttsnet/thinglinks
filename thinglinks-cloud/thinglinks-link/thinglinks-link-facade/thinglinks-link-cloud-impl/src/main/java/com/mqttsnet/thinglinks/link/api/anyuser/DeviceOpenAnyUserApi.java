@@ -46,10 +46,18 @@ import org.springframework.web.bind.annotation.RequestParam;
         fallback = DeviceOpenAnyUserApiFallback.class, path = "/anyUser/deviceOpen")
 public interface DeviceOpenAnyUserApi {
 
-    @Operation(summary = "修改设备连接状态", description = "根据客户端标识修改设备连接状态")
+    @Operation(summary = "修改设备连接状态", description = "根据客户端标识修改设备连接状态（无条件覆盖,供运维/后台/非事件驱动场景使用）")
     @PutMapping("/updateDeviceConnectionStatus/{clientIdentifier}")
     R<Boolean> updateDeviceConnectionStatus(@Parameter(description = "客户端标识符", required = true) @PathVariable("clientIdentifier") String clientIdentifier,
                                             @Parameter(description = "新连接状态值（0:未连接、1:在线、2:离线）", required = true, example = "0,1,2") @RequestParam("connectionStatus") Integer connectionStatus);
+
+    @Operation(summary = "基于上游事件的连接状态变更(HLC CAS)",
+            description = "基于上游因果时钟 HLC 做 event-time LWW CAS,防止异步/乱序事件回退状态;返回 false 表示事件过期被拒绝")
+    @PutMapping("/updateDeviceConnectionStatusByEvent/{clientIdentifier}")
+    R<Boolean> updateDeviceConnectionStatusByEvent(
+            @Parameter(description = "客户端标识符", required = true) @PathVariable("clientIdentifier") String clientIdentifier,
+            @Parameter(description = "新连接状态值（0:未连接、1:在线、2:离线）", required = true, example = "0,1,2") @RequestParam("connectionStatus") Integer connectionStatus,
+            @Parameter(description = "上游因果时钟 HLC,必须 > 0", required = true) @RequestParam("eventHlc") Long eventHlc);
 
 
     /**
@@ -190,7 +198,8 @@ public interface DeviceOpenAnyUserApi {
     @Operation(summary = "上报设备心跳信息", description = "上报设备心跳信息")
     @PutMapping(path = "/reportDeviceHeartbeat/{clientIdentifier}")
     R<Boolean> reportDeviceHeartbeat(@Parameter(description = "客户端标识符", required = true) @PathVariable("clientIdentifier") String clientIdentifier,
-                                     @Parameter(description = "心跳时间", required = true) @RequestParam("heartbeatTime") Long heartbeatTime);
+                                     @Parameter(description = "心跳时间", required = true) @RequestParam("heartbeatTime") Long heartbeatTime,
+                                     @Parameter(description = "事件因果时钟 HLC,非空走 CAS 置在线") @RequestParam(value = "eventHlc", required = false) Long eventHlc);
 
     /**
      * 下发设备命令（串行和并行）

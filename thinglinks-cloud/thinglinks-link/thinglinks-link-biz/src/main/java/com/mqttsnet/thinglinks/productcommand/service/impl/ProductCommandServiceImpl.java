@@ -1,6 +1,8 @@
 package com.mqttsnet.thinglinks.productcommand.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ReUtil;
+import java.util.Optional;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
 import com.mqttsnet.basic.context.ContextUtil;
@@ -8,19 +10,20 @@ import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
-import com.mqttsnet.thinglinks.product.entity.Product;
+import com.mqttsnet.thinglinks.product.constant.ThingModelCodeRule;
 import com.mqttsnet.thinglinks.product.event.publisher.ProductEventPublisher;
-import com.mqttsnet.thinglinks.product.event.source.ProductModelUpdatedEventSource;
-import com.mqttsnet.thinglinks.product.manager.ProductManager;
+import com.mqttsnet.thinglinks.product.event.source.ProductModelChangedSource;
+import com.mqttsnet.thinglinks.product.service.ProductQueryService;
+import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
 import com.mqttsnet.thinglinks.productcommand.entity.ProductCommand;
-
-import java.util.Collections;
-import java.util.Optional;
 import com.mqttsnet.thinglinks.productcommand.manager.ProductCommandManager;
 import com.mqttsnet.thinglinks.productcommand.service.ProductCommandService;
+import com.mqttsnet.thinglinks.productcommand.vo.result.ProductCommandResultVO;
 import com.mqttsnet.thinglinks.productcommand.vo.save.ProductCommandSaveVO;
 import com.mqttsnet.thinglinks.productcommand.vo.update.ProductCommandUpdateVO;
-import com.mqttsnet.thinglinks.productservice.manager.ProductServiceManager;
+import com.mqttsnet.thinglinks.productservice.service.ProductServiceService;
+import com.mqttsnet.thinglinks.productversionchangelog.enumeration.ProductChangeTargetTypeEnum;
+import com.mqttsnet.thinglinks.productversionchangelog.enumeration.ProductVersionChangeTypeEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,8 +48,12 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandManager, Long, ProductCommand> implements ProductCommandService {
 
-    private final ProductServiceManager productServiceManager;
-    private final ProductManager productManager;
+    private final ProductServiceService productServiceService;
+    /**
+     * 注入只读 {@link ProductQueryService}(独立 bean,零下游 Service 依赖),
+     * 切库经过 Service AOP 边界,且类图天然为 DAG,从根本规避反向依赖循环。
+     */
+    private final ProductQueryService productQueryService;
     private final ProductEventPublisher productEventPublisher;
 
     /**
@@ -64,8 +71,7 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
         ProductCommand productCommand = builderProductCommandSaveVO(saveVO);
         //更新
         superManager.save(productCommand);
-        // 发布产品物模型更新事件
-        publishProductModelCacheEvent(saveVO.getServiceId());
+        publishChange(ProductVersionChangeTypeEnum.CREATE, null, productCommand, "新增命令「" + productCommand.getCommandName() + "」");
         return productCommand;
     }
 
@@ -80,12 +86,13 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
         log.info("updateProductCommand updateVO:{}", updateVO);
         //校验参数
         checkedProductCommandUpdateVO(updateVO);
+        ProductCommand before = superManager.getById(updateVO.getId());
         //构建参数
         ProductCommand productCommand = BeanPlusUtil.toBeanIgnoreError(updateVO, ProductCommand.class);
         //更新
         superManager.updateById(productCommand);
-        // 发布产品物模型更新事件
-        publishProductModelCacheEvent(updateVO.getServiceId());
+        ProductCommand after = superManager.getById(updateVO.getId());
+        publishChange(ProductVersionChangeTypeEnum.UPDATE, before, after, "编辑命令「" + (after != null ? after.getCommandName() : updateVO.getCommandName()) + "」");
         return productCommand;
     }
 
@@ -97,8 +104,7 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
             throw BizException.wrap("The productCommand does not exist");
         }
         boolean result = superManager.removeById(id);
-        // 发布产品物模型更新事件
-        publishProductModelCacheEvent(productCommand.getServiceId());
+        publishChange(ProductVersionChangeTypeEnum.DELETE, productCommand, null, "删除命令「" + productCommand.getCommandName() + "」");
         return result;
     }
 
@@ -112,26 +118,15 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
      *
      * @param saveVO
      */
-    /**
-     * 发布产品物模型缓存更新事件
-     *
-     * @param serviceId 服务ID
-     */
-    private void publishProductModelCacheEvent(Long serviceId) {
-        Optional.ofNullable(productServiceManager.findOneByProductServiceId(serviceId))
-                .map(ps -> productManager.findOneByProductId(ps.getProductId()))
-                .map(Product::getProductIdentification)
-                .ifPresent(identification ->
-                        productEventPublisher.publishProductModelUpdatedEvent(ProductModelUpdatedEventSource.builder()
-                                .productIdentificationList(Collections.singletonList(identification))
-                                .build()));
-    }
-
     private void checkedProductCommandSaveVO(ProductCommandSaveVO saveVO) {
         ArgumentAssert.notNull(saveVO.getServiceId(), "serviceId Cannot be null");
         //校验产品模型服务是否存在
-        ArgumentAssert.notNull(productServiceManager.findOneByProductServiceId(saveVO.getServiceId()), "productService not found");
+        ArgumentAssert.notNull(productServiceService.findOneByProductServiceId(saveVO.getServiceId()), "productService not found");
         ArgumentAssert.notBlank(saveVO.getCommandCode(), "commandCode Cannot be null");
+        //校验编码命名规范
+        if (!ReUtil.isMatch(ThingModelCodeRule.PATTERN, saveVO.getCommandCode())) {
+            throw BizException.wrap(ThingModelCodeRule.PATTERN_MSG);
+        }
         //校验CODE
         if (CollUtil.isNotEmpty(superManager.checkCode(saveVO.getServiceId(), saveVO.getCommandCode()))) {
             throw BizException.wrap("commandCode already exists");
@@ -150,6 +145,25 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
         return BeanPlusUtil.toBeanIgnoreError(saveVO, ProductCommand.class);
     }
 
+    private void publishChange(ProductVersionChangeTypeEnum changeType, ProductCommand before, ProductCommand after, String summary) {
+        ProductCommand ref = after != null ? after : before;
+        if (ref == null) {
+            return;
+        }
+        Optional.ofNullable(productServiceService.findOneByProductServiceId(ref.getServiceId()))
+                .map(ps -> productQueryService.findOneByProductId(ps.getProductId()))
+                .map(ProductResultVO::getProductIdentification)
+                .ifPresent(pid -> productEventPublisher.publishProductModelChangedEvent(
+                        ProductModelChangedSource.builder()
+                                .productIdentification(pid)
+                                .changeType(changeType)
+                                .targetType(ProductChangeTargetTypeEnum.COMMAND)
+                                .before(before == null ? null : BeanPlusUtil.toBeanIgnoreError(before, ProductCommandResultVO.class))
+                                .after(after == null ? null : BeanPlusUtil.toBeanIgnoreError(after, ProductCommandResultVO.class))
+                                .changeSummary(summary)
+                                .build()));
+    }
+
     /**
      * 修改 校验参数
      *
@@ -159,8 +173,12 @@ public class ProductCommandServiceImpl extends SuperServiceImpl<ProductCommandMa
         ArgumentAssert.notNull(updateVO.getId(), "id Cannot be null");
         ArgumentAssert.notNull(updateVO.getServiceId(), "serviceId Cannot be null");
         //校验产品模型是否存在
-        ArgumentAssert.notNull(productServiceManager.findOneByProductServiceId(updateVO.getServiceId()), "productService not found");
+        ArgumentAssert.notNull(productServiceService.findOneByProductServiceId(updateVO.getServiceId()), "productService not found");
         ArgumentAssert.notBlank(updateVO.getCommandCode(), "commandCode Cannot be null");
+        //校验编码命名规范
+        if (!ReUtil.isMatch(ThingModelCodeRule.PATTERN, updateVO.getCommandCode())) {
+            throw BizException.wrap(ThingModelCodeRule.PATTERN_MSG);
+        }
         ArgumentAssert.notBlank(updateVO.getCommandName(), "commandName Cannot be null");
 
         //校验CODE

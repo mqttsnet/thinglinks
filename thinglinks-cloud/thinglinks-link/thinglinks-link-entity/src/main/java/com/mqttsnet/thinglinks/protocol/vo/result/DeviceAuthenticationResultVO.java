@@ -1,14 +1,10 @@
 package com.mqttsnet.thinglinks.protocol.vo.result;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceAclRuleCacheVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,12 +30,10 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "DeviceAuthenticationResultVO", description = "设备认证结果")
-public class DeviceAuthenticationResultVO<T> extends Entity<Long> implements Serializable, EchoVO {
+public class DeviceAuthenticationResultVO<T> extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "认证结果")
     private Boolean certificationResult;

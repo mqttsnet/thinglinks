@@ -1,8 +1,10 @@
 package com.mqttsnet.thinglinks.productcommandrequest.vo.save;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import com.mqttsnet.thinglinks.product.constant.ThingModelCodeRule;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,10 +52,11 @@ public class ProductCommandRequestSaveVO implements Serializable {
     @NotNull(message = "请填写命令ID")
     private Long commandId;
     /**
-     * 参数编码
+     * 参数编码。
      */
-    @Schema(description = "参数编码")
-    @Size(max = 255, message = "参数编码长度不能超过{max}")
+    @Schema(description = "参数编码:小写字母开头,仅含小写字母、数字、下划线,长度2-50")
+    @NotEmpty(message = "请填写参数编码")
+    @Pattern(regexp = ThingModelCodeRule.PATTERN, message = ThingModelCodeRule.PATTERN_MSG)
     private String parameterCode;
     /**
      * 命令中参数的名字。

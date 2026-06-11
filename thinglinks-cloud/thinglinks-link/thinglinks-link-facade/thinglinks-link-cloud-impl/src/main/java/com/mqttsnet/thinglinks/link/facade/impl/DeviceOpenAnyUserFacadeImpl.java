@@ -43,6 +43,11 @@ public class DeviceOpenAnyUserFacadeImpl implements DeviceOpenAnyUserFacade {
     }
 
     @Override
+    public R<Boolean> updateDeviceConnectionStatusByEvent(String clientIdentifier, Integer connectionStatus, Long eventHlc) {
+        return deviceOpenAnyUserApi.updateDeviceConnectionStatusByEvent(clientIdentifier, connectionStatus, eventHlc);
+    }
+
+    @Override
     public R<TopoAddDeviceResultVO> saveSubDeviceByMqtt(TopoAddSubDeviceParam topoAddSubDeviceParam) {
         return deviceOpenAnyUserApi.saveSubDeviceByMqtt(topoAddSubDeviceParam);
     }
@@ -103,8 +108,8 @@ public class DeviceOpenAnyUserFacadeImpl implements DeviceOpenAnyUserFacade {
     }
 
     @Override
-    public R<Boolean> reportDeviceHeartbeat(String clientIdentifier, Long heartbeatTime) {
-        return deviceOpenAnyUserApi.reportDeviceHeartbeat(clientIdentifier, heartbeatTime);
+    public R<Boolean> reportDeviceHeartbeat(String clientIdentifier, Long heartbeatTime, Long eventHlc) {
+        return deviceOpenAnyUserApi.reportDeviceHeartbeat(clientIdentifier, heartbeatTime, eventHlc);
     }
 
     @Override

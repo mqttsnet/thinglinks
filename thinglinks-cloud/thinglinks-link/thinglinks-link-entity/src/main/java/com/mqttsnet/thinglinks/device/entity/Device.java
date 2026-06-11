@@ -21,10 +21,7 @@ import lombok.experimental.Accessors;
 
 
 /**
- * <p>
- * 实体类
- * 设备档案信息表
- * </p>
+ * 设备档案信息表实体。
  *
  * @author mqttsnet
  * @date 2023-03-14 19:39:59
@@ -123,6 +120,14 @@ public class Device extends Entity<Long> {
     private Integer connectStatus;
 
     /**
+     * 最近一次连接状态事件的因果时钟(HLC,64-bit),作 connect_status 的 event-time LWW CAS 对比基准:
+     * 仅当 DB 内本字段严格小于新事件 hlc 才允许覆盖 connect_status,防止异步消费/乱序/抖动重连导致状态回退。
+     * 非事件驱动的更新(运维强制下线 / xxl-job 探活补偿等)不更新本字段。
+     */
+    @TableField(value = "last_status_event_hlc")
+    private Long lastStatusEventHlc;
+
+    /**
      * 最新心跳时间
      */
     @TableField(value = "last_heartbeat_time", condition = EQUAL)
@@ -154,7 +159,9 @@ public class Device extends Entity<Long> {
     @TableField(value = "device_sdk_version", condition = LIKE)
     private String deviceSdkVersion;
     /**
-     * 网关设备id
+     * 子设备所属网关的 deviceIdentification(业务唯一标识 String,不是网关实体的主键 id),仅 nodeType=SUBDEVICE 时有值。
+     * 字段名叫 gatewayId 但语义是 gatewayDeviceIdentification:须用 getDeviceDetailsByIdentification(gatewayId) 换网关详情,
+     * 不能用 getDeviceDetails(id) 这类按主键查询的接口。
      */
     @TableField(value = "gateway_id", condition = LIKE)
     private String gatewayId;
@@ -173,6 +180,11 @@ public class Device extends Entity<Long> {
      */
     @TableField(value = "created_org_id", condition = EQUAL)
     private Long createdOrgId;
+    /**
+     * 绑定的产品版本序号(对应 product_version.version_no),数据上报路径的物模型解析依据。
+     */
+    @TableField(value = "bound_product_version_no", condition = EQUAL)
+    private String boundProductVersionNo;
     /**
      * 逻辑删除标识:0-未删除 1-已删除
      */

@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.anyuser.controller;
 
 import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
+import com.mqttsnet.basic.interfaces.echo.EchoService;
 import com.mqttsnet.thinglinks.product.service.ProductService;
 import com.mqttsnet.thinglinks.product.vo.param.ProductParamVO;
 import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
@@ -33,6 +34,9 @@ public class ProductOpenAnyUserController {
     @Resource
     private ProductService productService;
 
+    @Resource
+    private EchoService echoService;
+
     /**
      * 北向API-根据产品标识查询产品详情
      *
@@ -46,6 +50,7 @@ public class ProductOpenAnyUserController {
         try {
             log.info("getProductDetailByNorthbound productIdentification:{}", productIdentification);
             ProductResultVO result = productService.findOneByProductIdentification(productIdentification);
+            echoService.action(result);
             return R.success(result);
         } catch (Exception e) {
             log.error("查询产品详情失败,productIdentification:{}", productIdentification, e);

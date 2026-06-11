@@ -106,10 +106,10 @@ public class ProductPageQuery implements Serializable {
     @Schema(description = "状态(字典值：0启用  1停用)")
     private Integer productStatus;
     /**
-     * 产品版本
+     * 按版本序号精确匹配过滤(系统发布生成的快照标识)。
      */
-    @Schema(description = "产品版本")
-    private String productVersion;
+    @Schema(description = "版本序号(系统发布时生成的快照标识,等值匹配)")
+    private String activeVersionNo;
     /**
      * 产品描述
      */

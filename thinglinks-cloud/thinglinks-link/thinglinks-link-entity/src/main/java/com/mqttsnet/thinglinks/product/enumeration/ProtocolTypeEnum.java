@@ -31,7 +31,12 @@ public enum ProtocolTypeEnum {
 
     TCP("TCP", "TCP协议"),
 
-    WEBSOCKET("WEBSOCKET", "WEBSOCKET协议");
+    WEBSOCKET("WEBSOCKET", "WEBSOCKET协议"),
+
+    /**
+     * 桥接入站(订阅源拉取的外部数据)──{@code SubscriptionSourceLifecycleManager} 用此标识。
+     */
+    BRIDGE_INGRESS("BRIDGE_INGRESS", "桥接入站协议(订阅源)");
 
     private String value;
     private String desc;

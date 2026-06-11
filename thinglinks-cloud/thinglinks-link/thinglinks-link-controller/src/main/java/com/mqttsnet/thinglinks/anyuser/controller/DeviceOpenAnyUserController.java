@@ -9,6 +9,7 @@ import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.context.ContextConstants;
 import com.mqttsnet.basic.context.ContextUtil;
+import com.mqttsnet.basic.interfaces.echo.EchoService;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.thinglinks.device.entity.DeviceAction;
 import com.mqttsnet.thinglinks.device.entity.DeviceCommand;
@@ -78,6 +79,9 @@ public class DeviceOpenAnyUserController {
     @Autowired
     private DeviceShadowService deviceShadowService;
 
+    @Autowired
+    private EchoService echoService;
+
 
     /**
      * 修改设备连接状态
@@ -98,13 +102,47 @@ public class DeviceOpenAnyUserController {
                 .map(id -> StrUtil.subAfter(id, ContextConstants.SPECIAL_CHARACTER, true))
                 .orElse(ContextConstants.BUILT_IN_TENANT_ID_STR);
 
-        ContextUtil.setTenantId(tenantId);
+        ContextUtil.setTenantIdStr(tenantId);
 
 
         DeviceResultVO deviceResultVO = deviceService.findOneByClientId(clientIdentifier);
         ArgumentAssert.notNull(deviceResultVO, "设备不存在");
 
         return R.success(deviceService.updateDeviceConnectionStatusById(deviceResultVO.getId(), connectionStatus));
+    }
+
+    /**
+     * 基于上游事件的连接状态变更(HLC CAS).
+     * <p>
+     * 仅当 device.last_status_event_hlc 严格小于入参 eventHlc 时才覆盖,
+     * 防止异步 / 乱序事件回退状态;返回 false 表示 CAS 拒绝(过期事件).
+     * 供 mqs DeviceConnectStatusSyncer 通过 Feign 调用.
+     *
+     * @param clientIdentifier 客户端标识
+     * @param connectionStatus 目标连接状态
+     * @param eventHlc         上游因果时钟 HLC,必须 &gt; 0
+     * @return true=CAS 写入生效, false=过期事件被拒绝
+     */
+    @Operation(summary = "基于上游事件的连接状态变更(HLC CAS)",
+            description = "用于上游事件流驱动的状态同步,event-time LWW CAS 保护")
+    @PutMapping("/updateDeviceConnectionStatusByEvent/{clientIdentifier}")
+    public R<Boolean> updateDeviceConnectionStatusByEvent(
+            @Parameter(description = "客户端标识符", required = true) @PathVariable("clientIdentifier") String clientIdentifier,
+            @Parameter(description = "新连接状态值（0:未连接、1:在线、2:离线）", required = true) @RequestParam("connectionStatus") Integer connectionStatus,
+            @Parameter(description = "上游因果时钟 HLC", required = true) @RequestParam("eventHlc") Long eventHlc) {
+        log.info("updateDeviceConnectionStatusByEvent clientId:{} status:{} hlc:{}",
+                clientIdentifier, connectionStatus, eventHlc);
+        ArgumentAssert.notBlank(clientIdentifier, "clientIdentifier cannot be blank");
+        ArgumentAssert.notNull(connectionStatus, "connectionStatus cannot be null");
+        ArgumentAssert.isTrue(eventHlc != null && eventHlc > 0, "eventHlc must be > 0");
+
+        String tenantId = Optional.ofNullable(clientIdentifier)
+                .filter(StrUtil::isNotBlank)
+                .map(id -> StrUtil.subAfter(id, ContextConstants.SPECIAL_CHARACTER, true))
+                .orElse(ContextConstants.BUILT_IN_TENANT_ID_STR);
+        ContextUtil.setTenantIdStr(tenantId);
+
+        return R.success(deviceService.updateDeviceConnectionStatusByEvent(clientIdentifier, connectionStatus, eventHlc));
     }
 
 
@@ -301,10 +339,11 @@ public class DeviceOpenAnyUserController {
     @Operation(summary = "上报设备心跳信息", description = "上报设备心跳信息")
     @PutMapping(path = "/reportDeviceHeartbeat/{clientIdentifier}")
     public R<Boolean> reportDeviceHeartbeat(@Parameter(description = "客户端标识符", required = true) @PathVariable("clientIdentifier") String clientIdentifier,
-                                            @Parameter(description = "心跳时间(毫秒时间戳)", required = true) @RequestParam("heartbeatTime") Long heartbeatTime) {
+                                            @Parameter(description = "心跳时间(毫秒时间戳)", required = true) @RequestParam("heartbeatTime") Long heartbeatTime,
+                                            @Parameter(description = "事件因果时钟 HLC,非空走 CAS 置在线") @RequestParam(value = "eventHlc", required = false) Long eventHlc) {
         try {
-            log.info("reportDeviceHeartbeat clientIdentifier:{}, heartbeatTime:{}", clientIdentifier, heartbeatTime);
-            Boolean result = deviceService.reportDeviceHeartbeat(clientIdentifier, heartbeatTime);
+            log.info("reportDeviceHeartbeat clientIdentifier:{}, heartbeatTime:{}, eventHlc:{}", clientIdentifier, heartbeatTime, eventHlc);
+            Boolean result = deviceService.reportDeviceHeartbeat(clientIdentifier, heartbeatTime, eventHlc);
             return R.success(result);
         } catch (Exception e) {
             log.error("上报设备心跳失败,clientIdentifier:{}", clientIdentifier, e);
@@ -324,6 +363,7 @@ public class DeviceOpenAnyUserController {
         try {
             log.info("saveDeviceByNorthbound deviceSaveVO:{}", JSON.toJSONString(deviceSaveVO));
             DeviceResultVO result = deviceService.saveDeviceByNorthbound(deviceSaveVO);
+            echoService.action(result);
             return R.success(result);
         } catch (Exception e) {
             log.error("保存设备失败", e);
@@ -343,6 +383,7 @@ public class DeviceOpenAnyUserController {
         try {
             log.info("getDeviceDetailByNorthbound deviceIdentification:{}", deviceIdentification);
             DeviceDetailsResultVO result = deviceService.findOneByDeviceIdentification(deviceIdentification);
+            echoService.action(result);
             return R.success(result);
         } catch (Exception e) {
             log.error("查询设备详情失败,deviceIdentification:{}", deviceIdentification, e);
@@ -363,6 +404,7 @@ public class DeviceOpenAnyUserController {
         try {
             log.info("issueCommands commandWrapper:{}", JSON.toJSONString(commandWrapper));
             List<DeviceCommandResultVO> results = deviceCommandService.processDeviceCommands(commandWrapper);
+            echoService.action(results);
             return R.success(results);
         } catch (Exception e) {
             log.error("下发设备命令失败", e);
@@ -418,6 +460,7 @@ public class DeviceOpenAnyUserController {
             deviceShadowPageQuery.setEndTime(endTime);
             deviceShadowPageQuery.setServiceCode(serviceCode);
             ProductResultVO productResultVO = deviceShadowService.queryDeviceShadow(deviceShadowPageQuery);
+            echoService.action(productResultVO);
             return R.success(productResultVO);
         } catch (Exception e) {
             log.error("查询设备影子失败", e);

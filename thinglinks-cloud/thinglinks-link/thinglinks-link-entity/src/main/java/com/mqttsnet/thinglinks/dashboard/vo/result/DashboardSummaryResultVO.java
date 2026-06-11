@@ -1,14 +1,10 @@
 package com.mqttsnet.thinglinks.dashboard.vo.result;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Map;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceOverviewResultVO;
 import com.mqttsnet.thinglinks.device.vo.result.ProductOverviewResultVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,11 +42,9 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "DashboardSummaryResultVO", description = "仪表板概要统计VO")
-public class DashboardSummaryResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class DashboardSummaryResultVO extends AuditableResultVO {
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "设备概况统计")
     private DeviceOverviewResultVO deviceOverviewResultVO;

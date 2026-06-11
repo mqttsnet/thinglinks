@@ -38,7 +38,9 @@ import com.mqttsnet.thinglinks.device.entity.Device;
 import com.mqttsnet.thinglinks.device.service.DeviceService;
 import com.mqttsnet.thinglinks.device.vo.query.DeviceDetailsPageQuery;
 import com.mqttsnet.thinglinks.device.vo.query.DevicePageQuery;
+import com.mqttsnet.thinglinks.device.vo.query.DeviceSslTestQuery;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceDetailsResultVO;
+import com.mqttsnet.thinglinks.device.vo.result.DeviceSslTestResultVO;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceOverviewResultVO;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceResultVO;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceVersionResultVO;
@@ -221,14 +223,15 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
      * @param ids List of device IDs to delete.
      * @return Deletion result.
      */
-    @Operation(summary = "批量删除设备", description = "根据设备ID列表删除多个设备")
+    @Operation(summary = "批量删除设备", description = "根据设备ID列表删除多个设备,整批事务:任一失败回滚全部")
     @DeleteMapping("/deleteDevices")
     @WebLog(value = "批量删除设备", request = false)
     public R<Boolean> deleteDevices(@RequestBody List<Long> ids) {
         log.info("deleteDevices ids:{}", ids);
         try {
-            boolean allDeleted = ids.stream().distinct().allMatch(id -> superService.deleteDevice(id));
-            return R.success(allDeleted);
+            // 走 service 层 deleteDevices ── 整批单事务,避免老 stream().allMatch
+            // "N 个独立事务串行,失败后前 K-1 条已提交"造成的孤儿设备 / 孤儿分组关系
+            return R.success(superService.deleteDevices(ids));
         } catch (BizException be) {
             return R.fail(be);
         } catch (Exception e) {
@@ -296,6 +299,7 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
             // 开启数据权限
             DataScopeHelper.startDataScope("device");
             DeviceVersionResultVO result = superService.getDeviceVersionByProduct(productIdentification);
+            echoService.action(result);
             return R.success(result);
         } catch (BizException be) {
             return R.fail(be);
@@ -340,7 +344,9 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
     public R<DeviceDetailsResultVO> getDeviceDetailsByIdentification(@PathVariable("deviceIdentification") String deviceIdentification) {
         log.info("getDeviceDetailsByIdentification deviceIdentification:{}", deviceIdentification);
         try {
-            return R.success(superService.findOneByDeviceIdentification(deviceIdentification));
+            DeviceDetailsResultVO result = superService.findOneByDeviceIdentification(deviceIdentification);
+            echoService.action(result);
+            return R.success(result);
         } catch (BizException be) {
             return R.fail(be);
         } catch (Exception e) {
@@ -371,6 +377,7 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
                 }
             }).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 
+            echoService.action(deviceDetailsList);
             return R.success(deviceDetailsList);
         } catch (BizException be) {
             return R.fail(be);
@@ -393,7 +400,9 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
     public R<IPage<DeviceDetailsResultVO>> getDeviceDetailsPage(@RequestBody PageParams<DeviceDetailsPageQuery> params) {
         log.info("getDeviceDetailsPage params:{}", params);
         try {
-            return R.success(superService.getDeviceDetailsPage(params));
+            IPage<DeviceDetailsResultVO> page = superService.getDeviceDetailsPage(params);
+            echoService.action(page.getRecords());
+            return R.success(page);
         } catch (BizException be) {
             return R.fail(be);
         } catch (Exception e) {
@@ -475,5 +484,14 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
         }
     }
 
+    /**
+     * SSL 证书认证测试器 ── 端到端模拟设备 SSL 认证流程,分步返回每步结果。
+     * 仅给运维端测试器页面使用,不参与设备主认证主流程。
+     */
+    @Operation(summary = "SSL 证书认证测试", description = "端到端模拟设备 SSL 认证,分步返回结果")
+    @PostMapping("/sslTest")
+    public R<DeviceSslTestResultVO> sslTest(@Validated @RequestBody DeviceSslTestQuery query) {
+        return R.success(superService.sslTest(query));
+    }
 
 }

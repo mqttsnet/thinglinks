@@ -10,142 +10,86 @@ import java.security.cert.X509Certificate;
 import java.util.Base64;
 
 import com.mqttsnet.thinglinks.utils.x509.CertSerialNumberUtil;
-import com.mqttsnet.thinglinks.utils.x509.X509Util;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * -----------------------------------------------------------------------------
- * File Name: CertificateVerifierUtil
- * -----------------------------------------------------------------------------
- * Description:
- * CA证书验证工具类
- * -----------------------------------------------------------------------------
+ * X.509 客户端证书与 CA 证书的链式校验工具(无状态,线程安全)。
  *
- * @author xiaonannet
- * @version 1.0
- * -----------------------------------------------------------------------------
- * Revision History:
- * Date         Author          Version     Description
- * --------      --------     -------   --------------------
- * 2024/8/6       xiaonannet        1.0        Initial creation
- * -----------------------------------------------------------------------------
- * @email
- * @date 2024/8/6 16:37
+ * <p>核心 API:{@link #verify(String, String)} 在一次调用内完成 CA 解析 + 客户端证书解析 +
+ * 有效期 / 签发者 DN / <b>密码学签名</b>四步校验,杜绝旧版静态字段并发污染。
+ *
+ * @author mqttsnet
  */
 @Slf4j
-public class CertificateVerifierUtil {
+public final class CertificateVerifierUtil {
 
-    private static X509Certificate trustedCertificate;
-
-    /**
-     * 设置受信任的CA证书
-     *
-     * @param base64Cert Base64编码的CA证书
-     * @throws CertificateException 证书解析异常
-     */
-    public static void setTrustedCertificate(String base64Cert) throws CertificateException {
-        try {
-            trustedCertificate = decodeCertificate(base64Cert);
-            log.info("Trusted CA certificate set successfully...Serial number:{}", CertSerialNumberUtil.getOpenSSLSerial(trustedCertificate));
-        } catch (CertificateException e) {
-            log.error("Failed to decode trusted CA certificate: {}", e.getMessage(), e);
-            throw e;
-        }
+    private CertificateVerifierUtil() {
     }
 
     /**
-     * 验证客户端证书
+     * 验证客户端证书是否由指定 CA 签发且仍有效。
      *
-     * @param base64Cert Base64编码的客户端证书
-     * @return 证书是否有效
+     * @param caCertBase64     Base64 编码的 CA 证书(必填)
+     * @param clientCertBase64 Base64 编码的客户端证书(必填)
+     * @return true=通过;false=拒绝(原因走 {@code log.warn})
      */
-    public static boolean verifyCertificate(String base64Cert) {
+    public static boolean verify(String caCertBase64, String clientCertBase64) {
+        if (caCertBase64 == null || caCertBase64.isBlank()
+                || clientCertBase64 == null || clientCertBase64.isBlank()) {
+            log.warn("[Cert] verify skipped: blank input (caBlank={}, clientBlank={})",
+                    caCertBase64 == null || caCertBase64.isBlank(),
+                    clientCertBase64 == null || clientCertBase64.isBlank());
+            return false;
+        }
         try {
-            // 解码客户端证书
-            X509Certificate clientCert = decodeCertificate(base64Cert);
-            log.info("\n============== 开始证书验证 ==============");
-            log.info("【客户端证书信息】");
-            log.info("Subject DN: {}", clientCert.getSubjectX500Principal());
-            log.info("Issuer DN: {}", clientCert.getIssuerX500Principal());
-            log.info("序列号: {}", CertSerialNumberUtil.getOpenSSLSerial(clientCert));
-            log.info("有效期: {} 至 {}", clientCert.getNotBefore(), clientCert.getNotAfter());
-            log.info("签名算法: {}", clientCert.getSigAlgName());
-            log.info("公钥算法: {}", clientCert.getPublicKey().getAlgorithm());
+            X509Certificate ca = decode(caCertBase64);
+            X509Certificate client = decode(clientCertBase64);
 
-            // CA证书信息
-            log.info("\n【CA证书信息】");
-            log.info("Subject DN: {}", trustedCertificate.getSubjectX500Principal());
-            log.info("公钥算法: {}", trustedCertificate.getPublicKey().getAlgorithm());
+            // ① 有效期
+            client.checkValidity();
 
-            // 指纹信息
-            log.info("客户端证书指纹原始DER编码SHA-256: {}", X509Util.getFingerPrint(clientCert));
-            log.info("CA证书指纹原始DER编码SHA-256: {}", X509Util.getFingerPrint(trustedCertificate));
-
-            // 有效期检查
-            clientCert.checkValidity();
-            log.info("\n【有效期验证】通过");
-
-            // 签名验证
-            log.info("\n【签名验证】开始...");
-            log.info("使用CA公钥验证客户端证书签名算法");
-            String sigAlg = clientCert.getSigAlgName();
-            if (!sigAlg.equals(trustedCertificate.getSigAlgName())) {
-                log.warn("算法不匹配: 客户端使用{}，CA使用{}", sigAlg, trustedCertificate.getSigAlgName());
-                return false;
-            }
-            log.info("√ 签名算法验证通过（客户端证书与CA根证书签名算法相同）");
-
-            // CA是否是客户端证书的实际签发者
-            if (!clientCert.getIssuerX500Principal().equals(trustedCertificate.getSubjectX500Principal())) {
-                log.error("× 签发者不匹配！客户端证书签发者: {} \n 但CA证书主题: {}",
-                        clientCert.getIssuerX500Principal(),
-                        trustedCertificate.getSubjectX500Principal());
+            // ② 签发者 DN(快速短路)
+            if (!client.getIssuerX500Principal().equals(ca.getSubjectX500Principal())) {
+                log.warn("[Cert] issuer DN mismatch clientSerial={} clientIssuer={} caSubject={}",
+                        CertSerialNumberUtil.getOpenSSLSerial(client),
+                        client.getIssuerX500Principal(),
+                        ca.getSubjectX500Principal());
                 return false;
             }
 
-//            clientCert.verify(trustedCertificate.getPublicKey());
+            // ③ 密码学签名验证 ── PKI 灵魂,旧版被注释,本版恢复
+            client.verify(ca.getPublicKey());
 
-            log.info("√ 签发者匹配验证通过");
-
-            log.info("\n============== 所有验证通过 ==============");
+            log.debug("[Cert] verify ok clientSerial={} caSerial={}",
+                    CertSerialNumberUtil.getOpenSSLSerial(client),
+                    CertSerialNumberUtil.getOpenSSLSerial(ca));
             return true;
-
         } catch (CertificateExpiredException e) {
-            log.error("× 证书已过期: {}", e.getMessage());
+            log.warn("[Cert] client certificate expired: {}", e.getMessage());
         } catch (CertificateNotYetValidException e) {
-            log.error("× 证书尚未生效: {}", e.getMessage());
+            log.warn("[Cert] client certificate not yet valid: {}", e.getMessage());
+        } catch (SignatureException e) {
+            log.warn("[Cert] signature verify failed (client not signed by this CA)");
         } catch (CertificateException e) {
-            log.error("× 证书解析失败: {}", e.getMessage());
+            log.warn("[Cert] certificate decode failed: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("× 验证过程出现异常: {}", e.getMessage());
-            if (e instanceof SignatureException) {
-                log.error("签名验证失败原因可能是：\n"
-                        + "1. 客户端证书不是由该CA签发\n"
-                        + "2. 证书内容被篡改\n"
-                        + "3. 使用了错误的CA证书");
-            }
+            log.warn("[Cert] verify unexpected error: {}", e.getMessage(), e);
         }
         return false;
     }
 
     /**
-     * 解码Base64编码的证书
+     * 解析 Base64 证书为 X.509 对象。
      *
-     * @param base64Cert Base64编码的证书
-     * @return X509Certificate对象
-     * @throws CertificateException 证书解析异常
+     * @throws CertificateException Base64 / X.509 解码失败
      */
-    private static X509Certificate decodeCertificate(String base64Cert) throws CertificateException {
+    public static X509Certificate decode(String base64Cert) throws CertificateException {
         try {
             byte[] decoded = Base64.getDecoder().decode(base64Cert);
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
             return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(decoded));
         } catch (IllegalArgumentException e) {
-            log.error("Invalid Base64 input: {}", e.getMessage(), e);
             throw new CertificateException("Invalid Base64 input", e);
-        } catch (CertificateException e) {
-            log.error("Failed to generate certificate from input: {}", e.getMessage(), e);
-            throw e;
         }
     }
 }

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
@@ -19,6 +19,8 @@ import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.basic.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.broker.MqttBrokerOpenAnyUserFacade;
 import com.mqttsnet.thinglinks.broker.WebSocketBrokerOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.broker.DeviceDownlinkFacade;
+import com.mqttsnet.thinglinks.vo.query.DownlinkCommand;
 import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.BizConstant;
@@ -36,7 +38,6 @@ import com.mqttsnet.thinglinks.device.vo.query.DevicePageQuery;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceResultVO;
 import com.mqttsnet.thinglinks.device.vo.save.DeviceCommandSaveVO;
 import com.mqttsnet.thinglinks.enumeration.QosEnum;
-import com.mqttsnet.thinglinks.product.enumeration.ProtocolTypeEnum;
 import com.mqttsnet.thinglinks.protocol.vo.param.CommandIssueRequestParam;
 import com.mqttsnet.thinglinks.protocol.vo.param.DeviceCommandWrapperParam;
 import com.mqttsnet.thinglinks.protocol.vo.param.PublishMqttMessageRequestParam;
@@ -67,6 +68,7 @@ public class DeviceCommandServiceImpl extends SuperServiceImpl<DeviceCommandMana
     private final LinkCacheDataHelper linkCacheDataHelper;
     private final MqttBrokerOpenAnyUserFacade mqttBrokerOpenAnyUserFacade;
     private final WebSocketBrokerOpenAnyUserFacade webSocketBrokerOpenAnyUserFacade;
+    private final DeviceDownlinkFacade deviceDownlinkFacade;
     private final DeviceService deviceService;
     private final ProtocolMessageAdapter protocolMessageAdapter;
 
@@ -102,6 +104,7 @@ public class DeviceCommandServiceImpl extends SuperServiceImpl<DeviceCommandMana
      * Processes both serial and parallel device command requests.
      *
      * @param commandWrapper wrapper containing both serial and parallel command requests
+     * @return list of device command results
      */
     @Override
     public List<DeviceCommandResultVO> processDeviceCommands(DeviceCommandWrapperParam commandWrapper) {
@@ -191,6 +194,7 @@ public class DeviceCommandServiceImpl extends SuperServiceImpl<DeviceCommandMana
      * Validate the DeviceCommandSaveVO object.
      *
      * @param deviceCommandSaveVO the input VO to validate
+     * @return true if validation passes
      */
     private Boolean checkDeviceCommandSaveVO(DeviceCommandSaveVO deviceCommandSaveVO) {
         ArgumentAssert.notNull(deviceCommandSaveVO, "deviceCommandSaveVO cannot be null");
@@ -301,24 +305,26 @@ public class DeviceCommandServiceImpl extends SuperServiceImpl<DeviceCommandMana
         // Build the encryption details if all necessary information is present
         Optional<EncryptionDetailsDTO> encryptionDetailsOpt = Optional.of(deviceCacheVO).map(drv -> EncryptionDetailsDTO.builder().mId(Long.valueOf(SnowflakeIdUtil.nextId())).signKey(drv.getSignKey()).encryptKey(drv.getEncryptKey()).encryptVector(drv.getEncryptVector()).cipherFlag(drv.getEncryptMethod()).build());
 
-        // Construct the command message JSON string
-        String commandMessageJson = Optional.ofNullable(commandRequest).map(cr -> buildCommandMessage(deviceCacheVO, cr)).map(JSONUtil::toJsonStr).orElse("{}");
+        // 构造命令业务体 JSON 串。buildCommandMessage 内部已 JSON.toJSONString 一次,
+        // 这里不能再 .map(JSON::toJSONString)(会把 JSON 串当对象再序列化 → dataBody 多重转义)。
+        // 单次序列化的 JSON 串交给 buildResponse,明文时其内部会还原成对象塞进 dataBody。
+        String commandMessageJson = Optional.ofNullable(commandRequest).map(cr -> buildCommandMessage(deviceCacheVO, cr)).orElse("{}");
 
         // Try to build the response using the encryption details
         Optional<ProtocolDataMessageDTO> handleResultOpt = encryptionDetailsOpt.flatMap(encryptionDetails -> {
-            log.info("处理报文加密....commandMessageJson:{},encryptionDetails:{}", commandMessageJson, JSONUtil.toJsonStr(encryptionDetails));
+            log.info("处理报文加密....commandMessageJson:{},encryptionDetails:{}", commandMessageJson, JSON.toJSONString(encryptionDetails));
             try {
                 // Attempt to build the response with encryption details and return as an Optional
                 return Optional.ofNullable(protocolMessageAdapter.buildResponse(commandMessageJson, encryptionDetails));
             } catch (Exception e) {
                 // Log and handle any exceptions that occur during response building
-                log.error("Failed to build the response due to an exception....commandMessageJson:{},encryptionDetails:{}", commandMessageJson, JSONUtil.toJsonStr(encryptionDetails), e);
+                log.error("Failed to build the response due to an exception....commandMessageJson:{},encryptionDetails:{}", commandMessageJson, JSON.toJSONString(encryptionDetails), e);
                 return Optional.empty();
             }
         });
 
         // Prepare the MQTT message content with a default response if handleResult is absent
-        String messageContent = handleResultOpt.map(JSONUtil::toJsonStr).orElseGet(() -> {
+        String messageContent = handleResultOpt.map(JSON::toJSONString).orElseGet(() -> {
             // Log the absence of handleResult and use a default empty message
             log.warn("No response object was constructed; using default empty message.");
             return "{}";
@@ -327,16 +333,21 @@ public class DeviceCommandServiceImpl extends SuperServiceImpl<DeviceCommandMana
         // Generate the response topic string
         String responseTopic = generateResponseTopic(deviceCacheVO);
 
-        R results;
-        Optional<ProtocolTypeEnum> protocolTypeEnum = ProtocolTypeEnum.fromValue(deviceCacheVO.getProductCacheVO().getProtocolType());
-        if (ProtocolTypeEnum.WEBSOCKET.equals(protocolTypeEnum.get())) {
-            results = sendWebSocketMessage(responseTopic, deviceCacheVO.getClientId(), messageContent);
-        } else {
-            results = sendMessage(responseTopic, QosEnum.EXACTLY_ONCE.getValue().toString(), messageContent);
-        }
-
-        // Send the constructed message to the MQTT broker and return the result
-        return results;
+        // 按产品协议类型分流下行,收敛到共享派发器;协议解析不出由派发器兜底 MQTT。
+        // protocolType 取值同 ProtocolTypeEnum.getValue():MQTT 走 topic,WebSocket 走 clientId。
+        String protocolType = linkCacheDataHelper
+                .resolveProtocolType(deviceCacheVO.getProductIdentification(),
+                        deviceCacheVO.getBoundProductVersionNo())
+                .orElse(null);
+        return deviceDownlinkFacade.dispatch(DownlinkCommand.builder()
+                .protocolType(protocolType)
+                .tenantId(String.valueOf(ContextUtil.getTenantId()))
+                .clientId(deviceCacheVO.getClientId())
+                .deviceIdentification(deviceCacheVO.getDeviceIdentification())
+                .topic(responseTopic)
+                .qos(QosEnum.EXACTLY_ONCE.getValue().toString())
+                .payload(messageContent)
+                .build());
     }
 
 
@@ -380,71 +391,8 @@ public class DeviceCommandServiceImpl extends SuperServiceImpl<DeviceCommandMana
     private String buildCommandMessage(DeviceCacheVO deviceCacheVO, CommandIssueRequestParam commandRequest) {
         // Adapter logic to build the command message should be placed here.
         commandRequest.setDeviceIdentification(deviceCacheVO.getDeviceIdentification());
-        return JSONUtil.toJsonStr(commandRequest);
+        return JSON.toJSONString(commandRequest);
     }
-
-    /**
-     * Sends a message to the specified MQTT topic with the provided QoS and payload.
-     *
-     * @param topic   The MQTT topic to publish the message to.
-     * @param qos     The quality of service for the message.
-     * @param message The payload of the message.
-     * @return The response from the MQTT broker.
-     */
-    private R sendMessage(String topic, String qos, String message) {
-        PublishMessageRequestVO publishMessageRequestVO = new PublishMessageRequestVO();
-        publishMessageRequestVO.setReqId(Long.valueOf(SnowflakeIdUtil.nextId()));
-        publishMessageRequestVO.setTenantId(String.valueOf(ContextUtil.getTenantId()));
-        publishMessageRequestVO.setTopic(topic);
-        publishMessageRequestVO.setQos(qos);
-        publishMessageRequestVO.setClientType("web");
-        publishMessageRequestVO.setPayloadData(message);
-        publishMessageRequestVO.setExpirySeconds("3600");
-
-        log.info("发送消息 - Topic: {}, 是否为Base64: {}", topic, publishMessageRequestVO.getForceBase64Decode());
-
-        long startTime = System.currentTimeMillis();
-
-        // 执行发送
-        R response = mqttBrokerOpenAnyUserFacade.sendMessage(publishMessageRequestVO);
-
-        long costTime = System.currentTimeMillis() - startTime;
-
-        // 处理响应结果
-        if (!response.getIsSuccess()) {
-            log.error("【MQTT消息发送失败】耗时: {}ms, 错误信息: {}", costTime, response.getMsg());
-            throw BizException.wrap("MQTT message sending failed. Please try again! Time consumed: {}ms", costTime);
-        } else {
-            log.info("【MQTT消息发送成功】<<< 耗时: {}ms, 响应信息: {}", costTime, response.getMsg());
-        }
-        return response;
-    }
-
-
-    /**
-     * Sends a message to the specified WebSocket topic with the provided QoS and payload.
-     *
-     * @param topic    The topic to publish the message to.
-     * @param clientId clientId
-     * @param message  The payload of the message.
-     * @return The response from the MQTT broker.
-     */
-    private R sendWebSocketMessage(String topic, String clientId, String message) {
-        PublishWebSocketMessageRequestVO publishMessageRequestVO = new PublishWebSocketMessageRequestVO();
-        publishMessageRequestVO.setReqId(Long.valueOf(SnowflakeIdUtil.nextId()));
-        publishMessageRequestVO.setTenantId(String.valueOf(ContextUtil.getTenantId()));
-        publishMessageRequestVO.setTopic(topic);
-        publishMessageRequestVO.setClientId(clientId);
-        publishMessageRequestVO.setClientType("web");
-        publishMessageRequestVO.setPayload(message);
-
-        R response = webSocketBrokerOpenAnyUserFacade.sendMessage(publishMessageRequestVO);
-        if (!response.getIsSuccess()) {
-            log.warn("Failed to send WebSocket message: {}", response.getMsg());
-        }
-        return response;
-    }
-
 
 }
 

@@ -44,9 +44,4 @@ public class LinkJobHandlerFacadeImpl implements LinkJobHandlerFacade {
     public R<?> otaUpgradeTasksExecute(Long tenantId) {
         return linkJobHandlerApi.otaUpgradeTasksExecute(tenantId);
     }
-
-    @Override
-    public R<?> refreshDeviceAclCache(Long tenantId) {
-        return linkJobHandlerApi.refreshAclRuleCache(tenantId);
-    }
 }

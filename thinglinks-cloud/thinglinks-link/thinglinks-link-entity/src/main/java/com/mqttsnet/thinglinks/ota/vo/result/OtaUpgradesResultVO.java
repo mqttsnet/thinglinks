@@ -1,15 +1,11 @@
 package com.mqttsnet.thinglinks.ota.vo.result;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Map;
 
-import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.annotation.echo.Echo;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
 import com.mqttsnet.thinglinks.model.constant.EchoApi;
 import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,12 +32,10 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "OtaUpgradesResultVO", description = "OTA升级包")
-public class OtaUpgradesResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class OtaUpgradesResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    @Builder.Default
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "主键")
     private Long id;
@@ -105,11 +99,6 @@ public class OtaUpgradesResultVO extends Entity<Long> implements Serializable, E
      */
     @Schema(description = "描述")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
 
 }

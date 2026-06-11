@@ -1,12 +1,11 @@
 package com.mqttsnet.thinglinks.productservice.vo.result;
 
 import cn.hutool.core.collection.ListUtil;
-import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.annotation.echo.Echo;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.productversionchangelog.vo.DiffIgnore;
 import com.mqttsnet.thinglinks.model.constant.EchoApi;
 import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import com.mqttsnet.thinglinks.productcommand.vo.result.ProductCommandResultVO;
 import com.mqttsnet.thinglinks.productproperty.vo.result.ProductPropertyResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,7 +18,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -40,13 +38,12 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "ProductServiceResultVO", description = "产品模型服务表")
-public class ProductServiceResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class ProductServiceResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
-
+    @DiffIgnore
     private List<Map<String, Object>> echoList = ListUtil.toList();
 
 
@@ -54,9 +51,10 @@ public class ProductServiceResultVO extends Entity<Long> implements Serializable
     private Long id;
 
     /**
-     * 产品ID
+     * 产品ID(结构外键,不参与变更记录 diff)
      */
     @Schema(description = "产品ID")
+    @DiffIgnore
     private Long productId;
     /**
      * 服务编码:支持英文大小写、数字、下划线和中划线
@@ -89,11 +87,6 @@ public class ProductServiceResultVO extends Entity<Long> implements Serializable
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
     @Schema(description = "产品服务命令")
     private List<ProductCommandResultVO> commands;

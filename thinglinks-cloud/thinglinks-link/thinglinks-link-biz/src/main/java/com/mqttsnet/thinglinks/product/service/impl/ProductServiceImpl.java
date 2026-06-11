@@ -20,24 +20,21 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mqttsnet.basic.base.request.PageParams;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
 import com.mqttsnet.basic.context.ContextUtil;
-import com.mqttsnet.basic.database.mybatis.conditions.Wraps;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.basic.utils.SnowflakeIdUtil;
-import com.mqttsnet.basic.utils.VersionValidator;
 import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
-import com.mqttsnet.thinglinks.device.entity.Device;
-import com.mqttsnet.thinglinks.device.manager.DeviceManager;
-import com.mqttsnet.thinglinks.device.vo.query.DeviceDetailsPageQuery;
+import com.mqttsnet.thinglinks.device.service.DeviceService;
 import com.mqttsnet.thinglinks.device.vo.result.ProductOverviewResultVO;
 import com.mqttsnet.thinglinks.product.entity.Product;
 import com.mqttsnet.thinglinks.product.enumeration.ProductStatusEnum;
 import com.mqttsnet.thinglinks.product.enumeration.ProductTypeEnum;
 import com.mqttsnet.thinglinks.product.enumeration.ProtocolTypeEnum;
 import com.mqttsnet.thinglinks.product.event.publisher.ProductEventPublisher;
-import com.mqttsnet.thinglinks.product.event.source.ProductInfoUpdatedEventSource;
+import com.mqttsnet.thinglinks.product.event.source.ProductCacheEvictSource;
+import com.mqttsnet.thinglinks.product.event.source.ProductModelChangedSource;
 import com.mqttsnet.thinglinks.product.manager.ProductManager;
 import com.mqttsnet.thinglinks.product.service.ProductService;
 import com.mqttsnet.thinglinks.product.vo.param.ProductParamVO;
@@ -67,6 +64,9 @@ import com.mqttsnet.thinglinks.productservice.service.ProductServiceService;
 import com.mqttsnet.thinglinks.productservice.vo.param.ProductServiceParamVO;
 import com.mqttsnet.thinglinks.productservice.vo.save.ProductServiceSaveVO;
 import com.mqttsnet.thinglinks.producttopic.service.ProductTopicService;
+import com.mqttsnet.thinglinks.productversion.service.ProductVersionService;
+import com.mqttsnet.thinglinks.productversionchangelog.enumeration.ProductChangeTargetTypeEnum;
+import com.mqttsnet.thinglinks.productversionchangelog.enumeration.ProductVersionChangeTypeEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -100,13 +100,19 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
 
     private final ProductCommandResponseService productCommandResponseService;
 
-    private final DeviceManager deviceManager;
+    private final DeviceService deviceService;
 
     private final ProductTopicService productTopicService;
 
     private final LinkCacheDataHelper linkCacheDataHelper;
 
     private final ProductEventPublisher productEventPublisher;
+
+    /**
+     * 产品 CRUD 时同步刷新草稿快照 + 产品删除时级联软删 product_version 行。
+     * ProductVersionServiceImpl 依赖 ProductQueryService(不是 ProductService),无循环依赖。
+     */
+    private final ProductVersionService productVersionService;
 
     @Override
     public IPage<ProductResultVO> getPage(PageParams<ProductPageQuery> params) {
@@ -142,9 +148,13 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
         // 初始化产品Topic
         initProductBaseTopics(product.getProductIdentification(), Boolean.FALSE);
 
-        // 发布产品信息更新事件
-        productEventPublisher.publishProductInfoUpdatedEvent(ProductInfoUpdatedEventSource.builder()
-                .productIdentificationList(Collections.singletonList(product.getProductIdentification()))
+        // 发布产品物模型变更事件
+        productEventPublisher.publishProductModelChangedEvent(ProductModelChangedSource.builder()
+                .productIdentification(product.getProductIdentification())
+                .changeType(ProductVersionChangeTypeEnum.CREATE)
+                .targetType(ProductChangeTargetTypeEnum.PRODUCT_INFO)
+                .after(BeanPlusUtil.toBeanIgnoreError(product, ProductResultVO.class))
+                .changeSummary("新增产品「" + product.getProductName() + "」")
                 .build());
 
         return saveVO;
@@ -162,16 +172,23 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
         log.info("updateProduct updateVO:{}", updateVO);
         //校验参数
         checkedProductUpdateVO(updateVO);
+        Product before = superManager.getById(updateVO.getId());
         //构建参数
         Product product = BeanPlusUtil.toBeanIgnoreError(updateVO, Product.class);
         //更新
         superManager.updateById(BeanPlusUtil.toBeanIgnoreError(updateVO, Product.class));
+        Product after = superManager.getById(updateVO.getId());
         // 初始化产品Topic
         initProductBaseTopics(product.getProductIdentification(), Boolean.TRUE);
 
-        // 发布产品信息更新事件
-        productEventPublisher.publishProductInfoUpdatedEvent(ProductInfoUpdatedEventSource.builder()
-                .productIdentificationList(Collections.singletonList(product.getProductIdentification()))
+        // 发布产品物模型变更事件
+        productEventPublisher.publishProductModelChangedEvent(ProductModelChangedSource.builder()
+                .productIdentification(product.getProductIdentification())
+                .changeType(ProductVersionChangeTypeEnum.UPDATE)
+                .targetType(ProductChangeTargetTypeEnum.PRODUCT_INFO)
+                .before(BeanPlusUtil.toBeanIgnoreError(before, ProductResultVO.class))
+                .after(BeanPlusUtil.toBeanIgnoreError(after, ProductResultVO.class))
+                .changeSummary("编辑产品「" + (after != null ? after.getProductName() : updateVO.getProductName()) + "」")
                 .build());
 
         return updateVO;
@@ -190,15 +207,24 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
         if (null == product) {
             throw BizException.wrap("The product does not exist");
         }
-        PageParams<DeviceDetailsPageQuery> params = new PageParams<>();
-        params.setModel(new DeviceDetailsPageQuery().setProductIdentification(product.getProductIdentification()));
-        IPage<Device> deviceIPage = deviceManager.getDeviceDetailsPage(params);
-        if (deviceIPage.getTotal() > 0) {
+        if (deviceService.isProductInUseByDevices(product.getProductIdentification())) {
             throw BizException.wrap("The product is bound to the device and cannot be deleted");
         }
-        // 删除产品缓存
-        linkCacheDataHelper.deleteProductModelCacheVO(product.getProductIdentification());
-        return superManager.removeById(id);
+        String productIdentification = product.getProductIdentification();
+        // 级联软删 product_version 所有版本行(DRAFT + 历史 PUBLISHED/CANARY/SHADOW),
+        // TD 历史资源由 purgeHistory 独立流程处理,本方法仅清基础表关系。
+        int affectedVersions = productVersionService.softDeleteAllByProductIdentification(productIdentification);
+        if (affectedVersions > 0) {
+            log.info("[deleteProduct] cascade softDelete product_version productIdentification={} affected={}", productIdentification, affectedVersions);
+        }
+        Boolean removed = superManager.removeById(id);
+        // 发缓存失效事件:产品已删,监听器 AFTER_COMMIT 失效产品基础缓存。
+        // 物模型缓存按 (productIdentification, versionNo) 切分,版本快照不可变 + 7d TTL 自动过期,
+        // 产品被删后老缓存不会再被命中(因为没人能再查到该 product),不需要主动清。
+        productEventPublisher.publishProductCacheEvictEvent(
+                ProductCacheEvictSource.builder().productIdentification(productIdentification)
+                        .contextMap(ContextUtil.getLocalMap()).build());
+        return removed;
     }
 
     /**
@@ -212,28 +238,28 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
     public ProductParamVO selectFullProductByProductIdentification(String productIdentification) {
         // 查询产品，如果不存在则抛出异常
         Product product = Optional.ofNullable(superManager.findOneByProductIdentification(productIdentification))
-                .orElseThrow(() -> BizException.wrap("Product not found: " + productIdentification));
+            .orElseThrow(() -> BizException.wrap("Product not found: " + productIdentification));
 
         // 转换基本产品信息
         ProductParamVO productDetails = BeanPlusUtil.toBeanIgnoreError(product, ProductParamVO.class);
 
         // 查询产品服务列表（只查询已激活的服务）
         List<ProductServices> productServicesList = Optional.of(new ProductServices())
-                .map(find -> {
-                    find.setProductId(product.getId());
-                    find.setServiceStatus(ProductServiceStatusEnum.ACTIVATED.getValue());
-                    return productServiceService.selectProductServicesList(find);
-                })
-                .orElse(Collections.emptyList());
+            .map(find -> {
+                find.setProductId(product.getId());
+                find.setServiceStatus(ProductServiceStatusEnum.ACTIVATED.getValue());
+                return productServiceService.selectProductServicesList(find);
+            })
+            .orElse(Collections.emptyList());
 
         List<Long> serviceIds = productServicesList.stream().map(ProductServices::getId).collect(Collectors.toList());
 
         // 查询所有服务的命令和属性
         List<ProductCommand> productCommandList = Optional.ofNullable(productCommandService.findAllByServiceIds(serviceIds))
-                .orElse(Collections.emptyList());
+            .orElse(Collections.emptyList());
 
         List<ProductProperty> productPropertiesList = Optional.ofNullable(productPropertyService.findAllByServiceIds(serviceIds))
-                .orElse(Collections.emptyList());
+            .orElse(Collections.emptyList());
 
         // 组装服务信息（包含命令和属性）
         List<ProductServiceParamVO> services = productServicesList.stream().map(ps -> {
@@ -241,39 +267,39 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
 
             // 组装服务的命令列表
             List<ProductCommandParamVO> commands = productCommandList.stream()
-                    .filter(command -> Objects.equals(command.getServiceId(), ps.getId()))  // Filter by Service ID
-                    .map(command -> {
-                        ProductCommandParamVO commandParamVO = BeanPlusUtil.toBeanIgnoreError(command,
-                                ProductCommandParamVO.class);
+                .filter(command -> Objects.equals(command.getServiceId(), ps.getId()))  // Filter by Service ID
+                .map(command -> {
+                    ProductCommandParamVO commandParamVO = BeanPlusUtil.toBeanIgnoreError(command,
+                        ProductCommandParamVO.class);
 
-                        // 组装命令的请求参数
-                        List<ProductCommandRequestParamVO> filteredRequests =
-                                productCommandRequestService.selectCommandRequests(Collections.singletonList(command.getId()))
-                                        .stream()
-                                        .map(request -> BeanPlusUtil.toBeanIgnoreError(request, ProductCommandRequestParamVO.class))
-                                        .filter(request -> Objects.equals(request.getCommandId(), command.getId()))
-                                        .collect(Collectors.toList());
-                        commandParamVO.setRequests(filteredRequests);
+                    // 组装命令的请求参数
+                    List<ProductCommandRequestParamVO> filteredRequests =
+                        productCommandRequestService.selectCommandRequests(Collections.singletonList(command.getId()))
+                            .stream()
+                            .map(request -> BeanPlusUtil.toBeanIgnoreError(request, ProductCommandRequestParamVO.class))
+                            .filter(request -> Objects.equals(request.getCommandId(), command.getId()))
+                            .collect(Collectors.toList());
+                    commandParamVO.setRequests(filteredRequests);
 
-                        // 组装命令的响应参数
-                        List<ProductCommandResponseParamVO> filteredResponses =
-                                productCommandResponseService.selectCommandResponses(Collections.singletonList(command.getId()))
-                                        .stream()
-                                        .map(response -> BeanPlusUtil.toBeanIgnoreError(response, ProductCommandResponseParamVO.class))
-                                        .filter(response -> Objects.equals(response.getCommandId(), command.getId()))
-                                        .collect(Collectors.toList());
-                        commandParamVO.setResponses(filteredResponses);
+                    // 组装命令的响应参数
+                    List<ProductCommandResponseParamVO> filteredResponses =
+                        productCommandResponseService.selectCommandResponses(Collections.singletonList(command.getId()))
+                            .stream()
+                            .map(response -> BeanPlusUtil.toBeanIgnoreError(response, ProductCommandResponseParamVO.class))
+                            .filter(response -> Objects.equals(response.getCommandId(), command.getId()))
+                            .collect(Collectors.toList());
+                    commandParamVO.setResponses(filteredResponses);
 
-                        return commandParamVO;
-                    })
-                    .collect(Collectors.toList());
+                    return commandParamVO;
+                })
+                .collect(Collectors.toList());
             service.setCommands(commands);
 
             // 组装服务的属性列表
             List<ProductPropertyParamVO> properties = productPropertiesList.stream()
-                    .filter(property -> Objects.equals(property.getServiceId(), ps.getId()))  // Filter by Service ID
-                    .map(pp -> BeanPlusUtil.toBeanIgnoreError(pp, ProductPropertyParamVO.class))
-                    .collect(Collectors.toList());
+                .filter(property -> Objects.equals(property.getServiceId(), ps.getId()))  // Filter by Service ID
+                .map(pp -> BeanPlusUtil.toBeanIgnoreError(pp, ProductPropertyParamVO.class))
+                .collect(Collectors.toList());
             service.setProperties(properties);
 
             return service;
@@ -431,19 +457,10 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
         ArgumentAssert.notNull(saveVO.getProductStatus(), "productStatus Cannot be null");
         ProductStatusEnum.fromValue(saveVO.getProductStatus()).orElseThrow(() -> BizException.wrap("productStatus is not exist"));
 
-        //校验产品版本号
-        if (!VersionValidator.isValidVersion(saveVO.getProductVersion())) {
-            throw BizException.wrap("productVersion is not valid");
-        }
-
-        //校验产品版本号是否重复
-        if (superManager.count(Wraps.<Product>lbQ().eq(Product::getManufacturerId, saveVO.getManufacturerId())
-                .eq(Product::getModel, saveVO.getModel())
-                .eq(Product::getDeviceType, saveVO.getDeviceType())
-                .eq(Product::getProductVersion, saveVO.getProductVersion())) > 0) {
-            throw BizException.wrap("productVersion already exists");
-        }
-
+        // 注:产品版本号(product_version)不再由创建/编辑表单维护。
+        // 版本生命周期由 ProductVersionService 的草稿/发布流程接管 ──
+        // 创建时 activeVersionNo 为空,发布时雪花生成版本号并回写。
+        // 产品唯一性已由上方 manufacturerId+model+deviceType 校验覆盖。
     }
 
     /**
@@ -488,19 +505,8 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
         ArgumentAssert.notNull(updateVO.getProductStatus(), "productStatus Cannot be null");
         ProductStatusEnum.fromValue(updateVO.getProductStatus()).orElseThrow(() -> BizException.wrap("productStatus is not exist"));
 
-        //校验产品版本号
-        if (!VersionValidator.isValidVersion(updateVO.getProductVersion())) {
-            throw BizException.wrap("productVersion is not valid");
-        }
-
-        //校验产品版本号是否重复
-        if (superManager.count(Wraps.<Product>lbQ().eq(Product::getManufacturerId, updateVO.getManufacturerId())
-                .eq(Product::getModel, updateVO.getModel())
-                .eq(Product::getDeviceType, updateVO.getDeviceType())
-                .eq(Product::getProductVersion, updateVO.getProductVersion())
-                .ne(Product::getId, updateVO.getId())) > 0) {
-            throw BizException.wrap("productVersion already exists");
-        }
+        // 注:产品版本号(product_version)不再由创建/编辑表单维护,
+        // 版本生命周期由 ProductVersionService 的草稿/发布流程接管。
     }
 
     /**
@@ -600,10 +606,64 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
         // 初始化产品Topic
         initProductBaseTopics(product.getProductIdentification(), Boolean.TRUE);
 
-        // 发布产品信息更新事件
-        productEventPublisher.publishProductInfoUpdatedEvent(ProductInfoUpdatedEventSource.builder()
-                .productIdentificationList(Collections.singletonList(product.getProductIdentification()))
+        // 发布产品物模型变更事件
+        productEventPublisher.publishProductModelChangedEvent(ProductModelChangedSource.builder()
+                .productIdentification(product.getProductIdentification())
+                .changeType(ProductVersionChangeTypeEnum.CREATE)
+                .targetType(ProductChangeTargetTypeEnum.PRODUCT_INFO)
+                .after(BeanPlusUtil.toBeanIgnoreError(product, ProductResultVO.class))
+                .changeSummary("新增产品「" + product.getProductName() + "」")
                 .build());
     }
 
+    // ────────────── 产品版本指针切换 service 入口 ──────────────
+    //
+    // 为什么独立两个方法而不是合成一个带 boolean / enum 参数:
+    //   * 灰度发布需要"捕获 切换前 activeVersionNo 写入 previousFullVersionNo",外部传不了"之前的值"
+    //     的语义,Service 内部读出来最安全
+    //   * 回滚的"清空 previousFullVersionNo"动作只属于回滚链路,跟发布完全不同步
+    //
+    // 跨域调用方(productversion 域)调本 Service 而非 ProductManager:
+    //   * 走 @DS(BASE_TENANT) 切租户库;Manager 无 @DS 会 fallback 默认库
+    //   * 禁止跨层级调用 ── 类约束已在团队规约里反复明确
+
+    @Override
+    public Product switchActiveVersionForPublish(String productIdentification, String newActiveVersion,
+                                                 boolean recordCurrentAsPrevious) {
+        ArgumentAssert.notBlank(productIdentification, "productIdentification must not be blank");
+        ArgumentAssert.notBlank(newActiveVersion, "newActiveVersion must not be blank");
+
+        Product product = Optional.ofNullable(superManager.findOneByProductIdentification(productIdentification))
+                .orElseThrow(() -> BizException.wrap("Product not found: " + productIdentification));
+        String previousActive = product.getActiveVersionNo();
+        product.setActiveVersionNo(newActiveVersion);
+        if (recordCurrentAsPrevious) {
+            // 灰度发布:把切换前的版本号记入备忘指针,供后续回滚 / 灰度路由
+            product.setPreviousFullVersionNo(previousActive);
+        }
+        superManager.updateById(product);
+        // 发缓存失效事件:activeVersionNo 已变,监听器 AFTER_COMMIT 失效产品基础缓存
+        productEventPublisher.publishProductCacheEvictEvent(
+                ProductCacheEvictSource.builder().productIdentification(productIdentification)
+                        .contextMap(ContextUtil.getLocalMap()).build());
+        return product;
+    }
+
+    @Override
+    public Product rollbackActiveVersion(String productIdentification, String targetVersion) {
+        ArgumentAssert.notBlank(productIdentification, "productIdentification must not be blank");
+        ArgumentAssert.notBlank(targetVersion, "targetVersion must not be blank");
+
+        Product product = Optional.ofNullable(superManager.findOneByProductIdentification(productIdentification))
+                .orElseThrow(() -> BizException.wrap("Product not found: " + productIdentification));
+        product.setActiveVersionNo(targetVersion);
+        // 回滚后产品不再处于灰度切换中,清空 previousFullVersionNo 避免 statistics 误统计为"灰度中"
+        product.setPreviousFullVersionNo(null);
+        superManager.updateById(product);
+        // 发缓存失效事件:activeVersionNo 已变,监听器 AFTER_COMMIT 失效产品基础缓存
+        productEventPublisher.publishProductCacheEvictEvent(
+                ProductCacheEvictSource.builder().productIdentification(productIdentification)
+                        .contextMap(ContextUtil.getLocalMap()).build());
+        return product;
+    }
 }

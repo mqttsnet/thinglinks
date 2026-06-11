@@ -68,7 +68,9 @@ public class DeviceGroupController extends SuperController<DeviceGroupService, L
     @PostMapping("/tree")
     @WebLog("级联查询")
     public R<List<DeviceGroupResultVO>> tree(@RequestBody DeviceGroupPageQuery pageQuery) {
-        return success(superService.findTree(pageQuery));
+        List<DeviceGroupResultVO> result = superService.findTree(pageQuery);
+        echoService.action(result);
+        return success(result);
     }
 }
 

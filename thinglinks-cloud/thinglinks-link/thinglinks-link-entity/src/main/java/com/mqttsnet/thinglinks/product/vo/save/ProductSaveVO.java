@@ -118,11 +118,12 @@ public class ProductSaveVO implements Serializable {
     @NotNull(message = "请填写状态(字典值：0启用  1停用)")
     private Integer productStatus;
     /**
-     * 产品版本
+     * 版本序号(系统在发布时自动生成,创建产品时无需手填;若客户端误传,服务端会忽略并以
+     * publish 流程生成的雪花值为准)。
      */
-    @Schema(description = "产品版本")
-    @Size(max = 255, message = "产品版本长度不能超过{max}")
-    private String productVersion;
+    @Schema(description = "版本序号(系统发布时生成,创建产品时无需手填,客户端传入会被忽略)")
+    @Size(max = 255, message = "版本序号长度不能超过{max}")
+    private String activeVersionNo;
     /**
      * 图标
      */

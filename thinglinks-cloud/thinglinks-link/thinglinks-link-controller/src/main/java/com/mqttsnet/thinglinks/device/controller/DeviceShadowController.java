@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.device.controller;
 
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.exception.BizException;
+import com.mqttsnet.basic.interfaces.echo.EchoService;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.thinglinks.device.service.DeviceShadowService;
 import com.mqttsnet.thinglinks.device.vo.query.DeviceShadowPageQuery;
@@ -43,6 +44,9 @@ public class DeviceShadowController {
     @Autowired
     private DeviceShadowService deviceShadowService;
 
+    @Autowired
+    private EchoService echoService;
+
     /**
      * 查询设备影子信息
      *
@@ -64,8 +68,12 @@ public class DeviceShadowController {
             @RequestParam(value = "endTime", required = false) Long endTime,
 
             @Parameter(description = "服务编码，选填参数，用于指定查询的服务代码。如果不传，则查询产品下所有服务。", example = "serviceCode1")
-            @RequestParam(value = "serviceCode", required = false) String serviceCode) {
-        log.info("查询设备影子，设备标识: {}, 开始时间戳: {}, 结束时间戳: {}, 服务编码: {}", deviceIdentification, startTime, endTime, serviceCode);
+            @RequestParam(value = "serviceCode", required = false) String serviceCode,
+
+            @Parameter(description = "产品版本序号,选填。不传默认按设备绑定版本查;传入则按指定历史版本快照解析物模型 + 读对应 TD 子表(用户回看上一版本影子)。", example = "1900512345678901")
+            @RequestParam(value = "versionNo", required = false) String versionNo) {
+        log.info("查询设备影子,设备标识: {}, 开始时间戳: {}, 结束时间戳: {}, 服务编码: {}, 版本: {}",
+                deviceIdentification, startTime, endTime, serviceCode, versionNo);
         ArgumentAssert.isTrue((startTime == null && endTime == null) || (startTime != null && endTime != null),
                 "开始时间和结束时间必须同时提供，或者都不提供。");
         if (startTime != null) {
@@ -78,7 +86,10 @@ public class DeviceShadowController {
             deviceShadowPageQuery.setStartTime(startTime);
             deviceShadowPageQuery.setEndTime(endTime);
             deviceShadowPageQuery.setServiceCode(serviceCode);
-            return R.success(deviceShadowService.queryDeviceShadow(deviceShadowPageQuery));
+            deviceShadowPageQuery.setVersionNo(versionNo);
+            ProductResultVO result = deviceShadowService.queryDeviceShadow(deviceShadowPageQuery);
+            echoService.action(result);
+            return R.success(result);
         } catch (BizException be) {
             return R.fail(be);
         } catch (Exception e) {
