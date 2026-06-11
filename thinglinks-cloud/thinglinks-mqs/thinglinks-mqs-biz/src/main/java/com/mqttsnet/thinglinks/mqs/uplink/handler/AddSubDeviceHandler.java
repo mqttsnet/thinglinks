@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.mqtt.handler;
+package com.mqttsnet.thinglinks.mqs.uplink.handler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -12,12 +12,12 @@ import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
 import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
-import com.mqttsnet.thinglinks.broker.MqttBrokerOpenAnyUserFacade;
 import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.entity.mqtt.source.MqttMessageEventSource;
+import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
+import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
 import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
-import com.mqttsnet.thinglinks.mqtt.handler.factory.AbstractMessageHandler;
+import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoAddSubDeviceParam;
 import com.mqttsnet.thinglinks.protocol.vo.result.TopoAddDeviceResultVO;
 import lombok.extern.slf4j.Slf4j;
@@ -38,9 +38,20 @@ public class AddSubDeviceHandler extends AbstractMessageHandler implements Topic
 
     public AddSubDeviceHandler(LinkCacheDataHelper linkCacheDataHelper,
                                DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
-                               MqttBrokerOpenAnyUserFacade mqttBrokerOpenAnyTenantApi,
                                ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, mqttBrokerOpenAnyTenantApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+    }
+
+    /**
+     * 本处理器完整匹配的 topic 正则。
+     *
+     * @return ADD_SUB_DEVICE 主题正则
+     * @author mqttsnet
+     * @since 2026-06-03
+     */
+    @Override
+    public String topicPattern() {
+        return "^/([^/]+)/devices/([^/]+)/topo/add$";
     }
 
     /**
@@ -49,7 +60,7 @@ public class AddSubDeviceHandler extends AbstractMessageHandler implements Topic
      * @param eventSource the MQTT message event source.
      */
     @Override
-    public void handle(MqttMessageEventSource eventSource) {
+    public void handle(UplinkMessageEventSource eventSource) {
         String topic = eventSource.getTopic();
         String qos = eventSource.getQos();
         byte[] payloadBytes = eventSource.getPayloadBytes();
@@ -62,10 +73,10 @@ public class AddSubDeviceHandler extends AbstractMessageHandler implements Topic
         }
         // 解析Topic
         Map<String, String> stringStringMap = protocolMessageAdapter.extractVariables(topic);
-        String version = stringStringMap.get("version");
-        String deviceId = stringStringMap.get("deviceId");
+        String version = stringStringMap.get(CommonIotConstants.VERSION);
+        String deviceId = stringStringMap.get(CommonIotConstants.DEVICE_ID);
 
-        DeviceCacheVO deviceCacheVO = getDeviceCacheVO(deviceId);
+        DeviceCacheVO deviceCacheVO = resolveDeviceCache(eventSource, deviceId);
         if (deviceCacheVO == null) {
             log.warn("Device {} not found in cache", deviceId);
             return;
@@ -76,11 +87,11 @@ public class AddSubDeviceHandler extends AbstractMessageHandler implements Topic
             ProtocolDataMessageDTO protocolDataMessageDTO = protocolMessageAdapter.parseProtocolDataMessage(body);
             // 构造 EncryptionDetails 对象
             EncryptionDetailsDTO encryptionDetailsDTO = EncryptionDetailsDTO.builder()
-                    .signKey(deviceCacheVO.getSignKey())
-                    .encryptKey(deviceCacheVO.getEncryptKey())
-                    .encryptVector(deviceCacheVO.getEncryptVector())
-                    .cipherFlag(deviceCacheVO.getEncryptMethod())
-                    .build();
+                .signKey(deviceCacheVO.getSignKey())
+                .encryptKey(deviceCacheVO.getEncryptKey())
+                .encryptVector(deviceCacheVO.getEncryptVector())
+                .cipherFlag(deviceCacheVO.getEncryptMethod())
+                .build();
             String dataBody = protocolMessageAdapter.decryptMessage(body, encryptionDetailsDTO);
 
             // 解析body
@@ -100,7 +111,7 @@ public class AddSubDeviceHandler extends AbstractMessageHandler implements Topic
             String resultData = OBJECT_MAPPER.writeValueAsString(handleResult);
 
             // 推送消息到 MQTT 通知设备添加子设备成功&失败
-            sendMessage(responseTopicStr, qos, resultData, String.valueOf(ContextUtil.getTenantId()));
+            sendMessage(responseTopicStr, qos, resultData, String.valueOf(ContextUtil.getTenantId()), deviceCacheVO);
         } catch (Exception e) {
             log.error("Failed to decrypt the message", e);
         }

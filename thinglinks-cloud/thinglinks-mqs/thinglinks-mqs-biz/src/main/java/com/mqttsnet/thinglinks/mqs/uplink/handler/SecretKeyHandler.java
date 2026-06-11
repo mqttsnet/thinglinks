@@ -1,23 +1,22 @@
-package com.mqttsnet.thinglinks.mqtt.handler;
+package com.mqttsnet.thinglinks.mqs.uplink.handler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
 import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
-import com.mqttsnet.thinglinks.broker.MqttBrokerOpenAnyUserFacade;
 import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
+import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceEncryptMethodEnum;
-import com.mqttsnet.thinglinks.entity.mqtt.source.MqttMessageEventSource;
+import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
 import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
-import com.mqttsnet.thinglinks.mqtt.handler.factory.AbstractMessageHandler;
+import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.protocol.vo.result.TopoSecretKeyResponseResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,9 +36,20 @@ public class SecretKeyHandler extends AbstractMessageHandler implements TopicHan
 
     public SecretKeyHandler(LinkCacheDataHelper linkCacheDataHelper,
                             DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
-                            MqttBrokerOpenAnyUserFacade mqttBrokerOpenAnyTenantApi,
                             ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, mqttBrokerOpenAnyTenantApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+    }
+
+    /**
+     * 本处理器完整匹配的 topic 正则。
+     *
+     * @return SECRET_KEY 主题正则
+     * @author mqttsnet
+     * @since 2026-06-03
+     */
+    @Override
+    public String topicPattern() {
+        return "^/([^/]+)/devices/([^/]+)/topo/secretKey$";
     }
 
     /**
@@ -48,7 +58,7 @@ public class SecretKeyHandler extends AbstractMessageHandler implements TopicHan
      * @param eventSource the MQTT message event source.
      */
     @Override
-    public void handle(MqttMessageEventSource eventSource) {
+    public void handle(UplinkMessageEventSource eventSource) {
         String topic = eventSource.getTopic();
         String qos = eventSource.getQos();
         byte[] payloadBytes = eventSource.getPayloadBytes();
@@ -60,10 +70,10 @@ public class SecretKeyHandler extends AbstractMessageHandler implements TopicHan
         }
         // Extract variables from the topic
         Map<String, String> stringStringMap = protocolMessageAdapter.extractVariables(topic);
-        String version = stringStringMap.get("version");
-        String deviceId = stringStringMap.get("deviceId");
+        String version = stringStringMap.get(CommonIotConstants.VERSION);
+        String deviceId = stringStringMap.get(CommonIotConstants.DEVICE_ID);
 
-        DeviceCacheVO deviceCacheVO = getDeviceCacheVO(deviceId);
+        DeviceCacheVO deviceCacheVO = resolveDeviceCache(eventSource, deviceId);
         if (deviceCacheVO == null) {
             log.warn("Device {} not found in cache", deviceId);
             return;
@@ -73,11 +83,11 @@ public class SecretKeyHandler extends AbstractMessageHandler implements TopicHan
             ProtocolDataMessageDTO protocolDataMessageDTO = protocolMessageAdapter.parseProtocolDataMessage(body);
             // 构造 EncryptionDetails 对象
             EncryptionDetailsDTO encryptionDetailsDTO = EncryptionDetailsDTO.builder()
-                    .signKey(deviceCacheVO.getSignKey())
-                    .encryptKey(deviceCacheVO.getEncryptKey())
-                    .encryptVector(deviceCacheVO.getEncryptVector())
-                    .cipherFlag(DeviceEncryptMethodEnum.PLAINTEST.getValue())
-                    .build();
+                .signKey(deviceCacheVO.getSignKey())
+                .encryptKey(deviceCacheVO.getEncryptKey())
+                .encryptVector(deviceCacheVO.getEncryptVector())
+                .cipherFlag(DeviceEncryptMethodEnum.PLAINTEST.getValue())
+                .build();
 
             TopoSecretKeyResponseResultVO responseResultVO = new TopoSecretKeyResponseResultVO();
             responseResultVO.setDeviceIdentification(deviceCacheVO.getDeviceIdentification());
@@ -87,7 +97,7 @@ public class SecretKeyHandler extends AbstractMessageHandler implements TopicHan
             responseResultVO.setSignKey(deviceCacheVO.getSignKey());
 
             // 处理返回结果
-            ProtocolDataMessageDTO handleResult = protocolMessageAdapter.buildResponse(protocolDataMessageDTO, JSONUtil.toJsonStr(responseResultVO), encryptionDetailsDTO);
+            ProtocolDataMessageDTO handleResult = protocolMessageAdapter.buildResponse(protocolDataMessageDTO, JSON.toJSONString(responseResultVO), encryptionDetailsDTO);
 
             // Determine response topic based on request topic
             String responseTopic = "/topo/secretKeyResponse";
@@ -98,7 +108,7 @@ public class SecretKeyHandler extends AbstractMessageHandler implements TopicHan
             String resultData = OBJECT_MAPPER.writeValueAsString(handleResult);
 
             // Push message to MQTT to notify device of successful/failed secret key retrieval
-            sendMessage(responseTopicStr, qos, resultData, String.valueOf(ContextUtil.getTenantId()));
+            sendMessage(responseTopicStr, qos, resultData, String.valueOf(ContextUtil.getTenantId()), deviceCacheVO);
         } catch (Exception e) {
             log.error("Failed to parse the message", e);
         }

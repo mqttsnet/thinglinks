@@ -1,9 +1,9 @@
-package com.mqttsnet.thinglinks.mqtt.handler;
+package com.mqttsnet.thinglinks.mqs.uplink.handler;
 
 import java.nio.charset.StandardCharsets;
 
 import cn.hutool.core.util.StrUtil;
-import com.mqttsnet.thinglinks.entity.mqtt.source.MqttMessageEventSource;
+import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class DefaultHandler implements TopicHandler {
      * @param eventSource the MQTT message event source.
      */
     @Override
-    public void handle(MqttMessageEventSource eventSource) {
+    public void handle(UplinkMessageEventSource eventSource) {
         String topic = eventSource.getTopic();
         String qos = eventSource.getQos();
         byte[] payloadBytes = eventSource.getPayloadBytes();

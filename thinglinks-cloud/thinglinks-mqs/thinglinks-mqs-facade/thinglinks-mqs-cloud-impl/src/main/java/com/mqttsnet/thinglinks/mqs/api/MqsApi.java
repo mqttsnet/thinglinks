@@ -6,6 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 
 /**
  * mqs 远程接口
+ *
  * @author xiaonannet
  */
 @FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-mqs-server}", fallback = MqsApiFallback.class, path = "/mqs")

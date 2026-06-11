@@ -1,19 +1,21 @@
-package com.mqttsnet.thinglinks.service.impl;
+package com.mqttsnet.thinglinks.mqs.service.impl;
 
 import java.util.Optional;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.mqttsnet.basic.base.R;
-import com.mqttsnet.basic.cache.utils.CacheUtil;
+import com.mqttsnet.basic.cache.utils.CachePlusUtil;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.cache.link.device.DeviceCacheKeyBuilder;
+import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.device.entity.DeviceAction;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceActionStatusEnum;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.device.vo.save.DeviceActionSaveVO;
+import com.mqttsnet.thinglinks.entity.device.CommonDeviceEvent;
 import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
-import com.mqttsnet.thinglinks.service.DeviceEventActionService;
+import com.mqttsnet.thinglinks.mqs.service.DeviceEventActionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,7 @@ public class DeviceEventActionServiceImpl implements DeviceEventActionService {
     private DeviceOpenAnyUserFacade deviceOpenAnyUserApi;
 
     @Autowired
-    private CacheUtil cacheUtil;
+    private CachePlusUtil cachePlusOpsUtil;
 
     /**
      * 保存设备事件动作
@@ -55,10 +57,10 @@ public class DeviceEventActionServiceImpl implements DeviceEventActionService {
      */
     @Override
     public void saveDeviceEventAction(String eventMessage, DeviceActionTypeEnum actionType, String describable) {
-        JSONObject map = JSONUtil.parseObj(eventMessage);
-        String clientId = String.valueOf(map.get("clientId"));
+        JSONObject map = JSON.parseObject(eventMessage);
+        String clientId = String.valueOf(map.get(CommonIotConstants.CLIENT_ID));
 
-        Optional<DeviceCacheVO> deviceCacheVOOptional = cacheUtil.getObjectFromCache(DeviceCacheKeyBuilder.build(clientId).getKey(), DeviceCacheVO.class);
+        Optional<DeviceCacheVO> deviceCacheVOOptional = cachePlusOpsUtil.getObjectFromCache(DeviceCacheKeyBuilder.build(clientId).getKey(), DeviceCacheVO.class);
         if (deviceCacheVOOptional.isEmpty()) {
             return;
         }
@@ -66,7 +68,7 @@ public class DeviceEventActionServiceImpl implements DeviceEventActionService {
         // save device action
         DeviceActionSaveVO deviceActionSaveVO = new DeviceActionSaveVO();
         deviceActionSaveVO.setDeviceIdentification(deviceCacheVOOptional.get().getDeviceIdentification());
-        deviceActionSaveVO.setActionType(actionType.getAction());
+        deviceActionSaveVO.setActionType(actionType.getValue());
         deviceActionSaveVO.setMessage(eventMessage);
         deviceActionSaveVO.setStatus(DeviceActionStatusEnum.SUCCESSFUL.getValue());
         deviceActionSaveVO.setRemark(describable);
@@ -75,6 +77,39 @@ public class DeviceEventActionServiceImpl implements DeviceEventActionService {
             log.info("Save device action success: deviceAction={}", deviceActionR.getData());
         } else {
             log.error("Save device action failed: deviceAction={}", deviceActionR.getData());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>直接取 event 字段建 {@link DeviceActionSaveVO} 走 facade;deviceId 缺失或 facade 失败仅告警不抛。
+     */
+    @Override
+    public void save(CommonDeviceEvent event) {
+        if (event == null || event.getActionType() == null) {
+            return;
+        }
+        String deviceId = event.getDeviceIdentification();
+        if (deviceId == null || deviceId.isEmpty()) {
+            log.warn("[DeviceEventAction] deviceIdentification missing, skip persist clientId={} action={}",
+                event.getClientId(), event.getActionType());
+            return;
+        }
+        try {
+            DeviceActionSaveVO vo = new DeviceActionSaveVO();
+            vo.setDeviceIdentification(deviceId);
+            vo.setActionType(event.getActionType().getValue());
+            vo.setMessage(event.getRawMessage());
+            vo.setStatus(DeviceActionStatusEnum.SUCCESSFUL.getValue());
+            vo.setRemark(event.getActionType().getDesc());
+            R<DeviceAction> r = deviceOpenAnyUserApi.saveDeviceAction(vo);
+            if (!Boolean.TRUE.equals(r.getIsSuccess())) {
+                log.warn("[DeviceEventAction] save failed (non-blocking) clientId={} action={} msg={}",
+                    event.getClientId(), event.getActionType(), r.getMsg());
+            }
+        } catch (Exception e) {
+            log.warn("[DeviceEventAction] save exception (non-blocking) clientId={} action={}",
+                event.getClientId(), event.getActionType(), e);
         }
     }
 

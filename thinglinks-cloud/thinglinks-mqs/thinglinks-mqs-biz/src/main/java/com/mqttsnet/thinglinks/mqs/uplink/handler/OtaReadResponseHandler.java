@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.mqtt.handler;
+package com.mqttsnet.thinglinks.mqs.uplink.handler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -9,14 +9,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
 import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
-import com.mqttsnet.thinglinks.broker.MqttBrokerOpenAnyUserFacade;
 import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.common.constant.CommonConstants;
-import com.mqttsnet.thinglinks.entity.mqtt.source.MqttMessageEventSource;
+import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
+import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
 import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
-import com.mqttsnet.thinglinks.mqtt.handler.factory.AbstractMessageHandler;
-import com.mqttsnet.thinglinks.mqtt.service.MqttEventOtaReadResponseService;
+import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
+import com.mqttsnet.thinglinks.mqs.uplink.service.EventOtaReadResponseService;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoOtaReadResponseParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +34,24 @@ public class OtaReadResponseHandler extends AbstractMessageHandler implements To
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     @Autowired
-    private MqttEventOtaReadResponseService mqttEventOtaReadResponseService;
+    private EventOtaReadResponseService mqttEventOtaReadResponseService;
 
     public OtaReadResponseHandler(LinkCacheDataHelper linkCacheDataHelper,
                                   DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
-                                  MqttBrokerOpenAnyUserFacade mqttBrokerOpenAnyTenantApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, mqttBrokerOpenAnyTenantApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+    }
+
+    /**
+     * 本处理器完整匹配的 topic 正则。
+     *
+     * @return OTA_READ_RESPONSE 主题正则
+     * @author mqttsnet
+     * @since 2026-06-03
+     */
+    @Override
+    public String topicPattern() {
+        return "^/([^/]+)/devices/([^/]+)/topo/otaReadResponse$";
     }
 
     /**
@@ -50,7 +60,7 @@ public class OtaReadResponseHandler extends AbstractMessageHandler implements To
      * @param eventSource the MQTT message event source.
      */
     @Override
-    public void handle(MqttMessageEventSource eventSource) {
+    public void handle(UplinkMessageEventSource eventSource) {
         String topic = eventSource.getTopic();
         String qos = eventSource.getQos();
         byte[] payloadBytes = eventSource.getPayloadBytes();
@@ -62,10 +72,10 @@ public class OtaReadResponseHandler extends AbstractMessageHandler implements To
         }
 
         Map<String, String> variables = protocolMessageAdapter.extractVariables(topic);
-        String version = variables.get(CommonConstants.VERSION);
-        String deviceId = variables.get(CommonConstants.DEVICE_ID);
+        String version = variables.get(CommonIotConstants.VERSION);
+        String deviceId = variables.get(CommonIotConstants.DEVICE_ID);
 
-        DeviceCacheVO deviceCacheVO = getDeviceCacheVO(deviceId);
+        DeviceCacheVO deviceCacheVO = resolveDeviceCache(eventSource, deviceId);
         if (deviceCacheVO == null) {
             log.warn("Device with ID {} not found.", deviceId);
             return;
@@ -75,11 +85,11 @@ public class OtaReadResponseHandler extends AbstractMessageHandler implements To
             ProtocolDataMessageDTO protocolDataMessageDTO = protocolMessageAdapter.parseProtocolDataMessage(body);
             // 构造 EncryptionDetails 对象
             EncryptionDetailsDTO encryptionDetailsDTO = EncryptionDetailsDTO.builder()
-                    .signKey(deviceCacheVO.getSignKey())
-                    .encryptKey(deviceCacheVO.getEncryptKey())
-                    .encryptVector(deviceCacheVO.getEncryptVector())
-                    .cipherFlag(deviceCacheVO.getEncryptMethod())
-                    .build();
+                .signKey(deviceCacheVO.getSignKey())
+                .encryptKey(deviceCacheVO.getEncryptKey())
+                .encryptVector(deviceCacheVO.getEncryptVector())
+                .cipherFlag(deviceCacheVO.getEncryptMethod())
+                .build();
             String decryptedBody = protocolMessageAdapter.decryptMessage(body, encryptionDetailsDTO);
 
 

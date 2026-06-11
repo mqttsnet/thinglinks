@@ -39,6 +39,12 @@ public class DistedEvent extends BaseEvent {
     @Schema(description = "原始负载数据（HEX字符串）")
     private String payload;
 
-    @Schema(description = "格式化后的业务数据（JSON）")
-    private String body;
+    @Schema(description = "原始负载十六进制(二进制无损)")
+    private String payloadHex;
+
+    @Schema(description = "负载编码")
+    private String encoding;
+
+    @Schema(description = "原始字节数")
+    private Integer originalSize;
 }

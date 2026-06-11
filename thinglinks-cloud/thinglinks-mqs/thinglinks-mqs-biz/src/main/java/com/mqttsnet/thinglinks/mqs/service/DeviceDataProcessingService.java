@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.service;
+package com.mqttsnet.thinglinks.mqs.service;
 
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoDeviceDataReportParam;
 

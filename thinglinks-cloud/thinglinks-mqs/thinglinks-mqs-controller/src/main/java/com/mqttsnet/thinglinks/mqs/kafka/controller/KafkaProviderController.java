@@ -1,7 +1,10 @@
 package com.mqttsnet.thinglinks.mqs.kafka.controller;
 
-import com.mqttsnet.thinglinks.consumer.kafka.KafkaProducerService;
-import com.mqttsnet.thinglinks.consumer.kafka.KafkaSendResultHandler;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import com.mqttsnet.basic.kafka.producer.KafkaProducerService;
+import com.mqttsnet.basic.kafka.producer.KafkaSendResultHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @program: thinglinks-cloud
@@ -45,7 +45,7 @@ public class KafkaProviderController {
     @PostMapping("/send")
     @Operation(summary = "发送消息到指定的主题", description = "发送消息到指定的主题")
     public void sendMessage(@RequestParam String topic, @RequestParam String message) {
-        kafkaProducerService.thingLinksProKafkaTemplateSendMsg(topic, message);
+        kafkaProducerService.thingLinksKafkaTemplateSendMsg(topic, message);
         log.info("消息发送成功：topic={}, message={}", topic, message);
     }
 

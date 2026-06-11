@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.mqtt.handler;
+package com.mqttsnet.thinglinks.mqs.uplink.handler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -19,13 +19,12 @@ import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
 import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
-import com.mqttsnet.thinglinks.broker.MqttBrokerOpenAnyUserFacade;
 import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.common.constant.CommonConstants;
-import com.mqttsnet.thinglinks.entity.mqtt.source.MqttMessageEventSource;
+import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
+import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
 import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
-import com.mqttsnet.thinglinks.mqtt.handler.factory.AbstractMessageHandler;
+import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.protocol.vo.param.OpenAiChatRequestParam;
 import com.mqttsnet.thinglinks.protocol.vo.result.OpenAiChatResponseResultVO;
 import com.unfbx.chatgpt.OpenAiClient;
@@ -57,9 +56,20 @@ public class ChatgptRequestHandler extends AbstractMessageHandler implements Top
 
     public ChatgptRequestHandler(LinkCacheDataHelper linkCacheDataHelper,
                                  DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
-                                 MqttBrokerOpenAnyUserFacade mqttBrokerOpenAnyTenantApi,
                                  ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, mqttBrokerOpenAnyTenantApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+    }
+
+    /**
+     * 本处理器完整匹配的 topic 正则。
+     *
+     * @return CHATGPT_REQUEST 主题正则
+     * @author mqttsnet
+     * @since 2026-06-03
+     */
+    @Override
+    public String topicPattern() {
+        return "^/([^/]+)/devices/([^/]+)/chatgpt/request$";
     }
 
 
@@ -70,7 +80,7 @@ public class ChatgptRequestHandler extends AbstractMessageHandler implements Top
      * @param eventSource 包含MQTT消息事件源数据的对象
      */
     @Override
-    public void handle(MqttMessageEventSource eventSource) {
+    public void handle(UplinkMessageEventSource eventSource) {
         String topic = eventSource.getTopic();
         String qos = eventSource.getQos();
         byte[] payloadBytes = eventSource.getPayloadBytes();
@@ -82,10 +92,10 @@ public class ChatgptRequestHandler extends AbstractMessageHandler implements Top
         }
 
         Map<String, String> variables = protocolMessageAdapter.extractVariables(topic);
-        String version = variables.get(CommonConstants.VERSION);
-        String deviceId = variables.get(CommonConstants.DEVICE_ID);
+        String version = variables.get(CommonIotConstants.VERSION);
+        String deviceId = variables.get(CommonIotConstants.DEVICE_ID);
 
-        DeviceCacheVO deviceCacheVO = getDeviceCacheVO(deviceId);
+        DeviceCacheVO deviceCacheVO = resolveDeviceCache(eventSource, deviceId);
         if (deviceCacheVO == null) {
             log.warn("Device with ID {} not found.", deviceId);
             return;
@@ -94,11 +104,11 @@ public class ChatgptRequestHandler extends AbstractMessageHandler implements Top
         try {
             ProtocolDataMessageDTO protocolDataMessageDTO = protocolMessageAdapter.parseProtocolDataMessage(body);
             EncryptionDetailsDTO encryptionDetailsDTO = EncryptionDetailsDTO.builder()
-                    .signKey(deviceCacheVO.getSignKey())
-                    .encryptKey(deviceCacheVO.getEncryptKey())
-                    .encryptVector(deviceCacheVO.getEncryptVector())
-                    .cipherFlag(deviceCacheVO.getEncryptMethod())
-                    .build();
+                .signKey(deviceCacheVO.getSignKey())
+                .encryptKey(deviceCacheVO.getEncryptKey())
+                .encryptVector(deviceCacheVO.getEncryptVector())
+                .cipherFlag(deviceCacheVO.getEncryptMethod())
+                .build();
             String dataBody = protocolMessageAdapter.decryptMessage(body, encryptionDetailsDTO);
 
             Optional<OpenAiChatRequestParam> paramOpt = parseOpenAiChatRequestParam(dataBody);
@@ -116,7 +126,7 @@ public class ChatgptRequestHandler extends AbstractMessageHandler implements Top
                 String resultData = OBJECT_MAPPER.writeValueAsString(handleResult);
 
                 // 推送消息到 MQTT 通知设备添加子设备成功&失败
-                sendMessage(responseTopicStr, qos, resultData, String.valueOf(ContextUtil.getTenantId()));
+                sendMessage(responseTopicStr, qos, resultData, ContextUtil.getTenantIdStr(), deviceCacheVO);
             }
         } catch (Exception e) {
             log.error("Failed to decrypt the message", e);
@@ -150,18 +160,18 @@ public class ChatgptRequestHandler extends AbstractMessageHandler implements Top
         OpenAiClient openAiClient = buildOpenAiClient(requestParam.getApiKey(), requestParam.getApiHost());
 
         Message message = Message.builder()
-                .role(Message.Role.USER)
-                .content(requestParam.getContent())
-                .build();
+            .role(Message.Role.USER)
+            .content(requestParam.getContent())
+            .build();
 
 
         List<Message> messages = get(requestParam.getId());
         messages.add(message);
 
         ChatCompletion chatCompletion = ChatCompletion.builder()
-                .messages(messages)
-                .model(OpenAiGptModelEnum.fromValue(requestParam.getModel()).get().getModelName())
-                .build();
+            .messages(messages)
+            .model(OpenAiGptModelEnum.fromValue(requestParam.getModel()).get().getModelName())
+            .build();
 
         ChatCompletionResponse chatCompletionResponse = openAiClient.chatCompletion(chatCompletion);
 
@@ -183,16 +193,16 @@ public class ChatgptRequestHandler extends AbstractMessageHandler implements Top
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(new OpenAILogger());
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
         OkHttpClient okHttpClient = new OkHttpClient
-                .Builder()
-                .addInterceptor(httpLoggingInterceptor)//自定义日志输出
-                .addInterceptor(new OpenAiResponseInterceptor())//自定义返回值拦截
-                .connectTimeout(10, TimeUnit.SECONDS)//自定义超时时间
-                .writeTimeout(30, TimeUnit.SECONDS)//自定义超时时间
-                .readTimeout(30, TimeUnit.SECONDS)//自定义超时时间
-                .build();
+            .Builder()
+            .addInterceptor(httpLoggingInterceptor)//自定义日志输出
+            .addInterceptor(new OpenAiResponseInterceptor())//自定义返回值拦截
+            .connectTimeout(10, TimeUnit.SECONDS)//自定义超时时间
+            .writeTimeout(30, TimeUnit.SECONDS)//自定义超时时间
+            .readTimeout(30, TimeUnit.SECONDS)//自定义超时时间
+            .build();
 
         OpenAiClient.Builder clientBuilder = OpenAiClient.builder()
-                .okHttpClient(okHttpClient);
+            .okHttpClient(okHttpClient);
 
         if (StrUtil.isNotBlank(apiKey)) {
             clientBuilder.apiKey(Collections.singletonList(apiKey));

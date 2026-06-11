@@ -25,14 +25,10 @@
             <artifactId>thinglinks-file-sdk</artifactId>
             <version>${revision}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.websocket</groupId>
-            <artifactId>jakarta.websocket-client-api</artifactId>
-        </dependency>
+        <!--
+            mqs 不再持有 ws session(已迁至 broker 协议接入层)。
+            ws 业务事件通过 Kafka 消费,纯 POJO 处理,不需要 jakarta.websocket / spring-boot-starter-websocket。
+        -->
         <dependency>
             <groupId>com.mqttsnet.basic</groupId>
             <artifactId>thinglinks-databases</artifactId>
@@ -56,10 +52,6 @@
         <dependency>
             <groupId>com.mqttsnet.basic</groupId>
             <artifactId>thinglinks-kafka-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.mqttsnet.basic</groupId>
-            <artifactId>thinglinks-rabbitmq-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.mqttsnet.basic</groupId>

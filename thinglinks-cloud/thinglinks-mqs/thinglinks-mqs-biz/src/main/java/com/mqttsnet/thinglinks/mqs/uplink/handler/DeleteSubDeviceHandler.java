@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.mqtt.handler;
+package com.mqttsnet.thinglinks.mqs.uplink.handler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -11,13 +11,12 @@ import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
 import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
-import com.mqttsnet.thinglinks.broker.MqttBrokerOpenAnyUserFacade;
 import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.common.constant.CommonConstants;
-import com.mqttsnet.thinglinks.entity.mqtt.source.MqttMessageEventSource;
+import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
+import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
 import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
-import com.mqttsnet.thinglinks.mqtt.handler.factory.AbstractMessageHandler;
+import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoDeleteSubDeviceParam;
 import com.mqttsnet.thinglinks.protocol.vo.result.TopoDeviceOperationResultVO;
 import lombok.extern.slf4j.Slf4j;
@@ -38,9 +37,20 @@ public class DeleteSubDeviceHandler extends AbstractMessageHandler implements To
 
     public DeleteSubDeviceHandler(LinkCacheDataHelper linkCacheDataHelper,
                                   DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
-                                  MqttBrokerOpenAnyUserFacade mqttBrokerOpenAnyTenantApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, mqttBrokerOpenAnyTenantApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+    }
+
+    /**
+     * 本处理器完整匹配的 topic 正则。
+     *
+     * @return DELETE_SUB_DEVICE 主题正则
+     * @author mqttsnet
+     * @since 2026-06-03
+     */
+    @Override
+    public String topicPattern() {
+        return "^/([^/]+)/devices/([^/]+)/topo/delete$";
     }
 
     /**
@@ -49,7 +59,7 @@ public class DeleteSubDeviceHandler extends AbstractMessageHandler implements To
      * @param eventSource the MQTT message event source.
      */
     @Override
-    public void handle(MqttMessageEventSource eventSource) {
+    public void handle(UplinkMessageEventSource eventSource) {
         String topic = eventSource.getTopic();
         String qos = eventSource.getQos();
         byte[] payloadBytes = eventSource.getPayloadBytes();
@@ -62,10 +72,10 @@ public class DeleteSubDeviceHandler extends AbstractMessageHandler implements To
 
         // Extract variables from the topic
         Map<String, String> stringStringMap = protocolMessageAdapter.extractVariables(topic);
-        String version = stringStringMap.get(CommonConstants.VERSION);
-        String deviceId = stringStringMap.get(CommonConstants.DEVICE_ID);
+        String version = stringStringMap.get(CommonIotConstants.VERSION);
+        String deviceId = stringStringMap.get(CommonIotConstants.DEVICE_ID);
 
-        DeviceCacheVO deviceCacheVO = getDeviceCacheVO(deviceId);
+        DeviceCacheVO deviceCacheVO = resolveDeviceCache(eventSource, deviceId);
         if (deviceCacheVO == null) {
             log.warn("Device {} not found in cache", deviceId);
             return;
@@ -75,11 +85,11 @@ public class DeleteSubDeviceHandler extends AbstractMessageHandler implements To
             ProtocolDataMessageDTO protocolDataMessageDTO = protocolMessageAdapter.parseProtocolDataMessage(body);
             // 构造 EncryptionDetails 对象
             EncryptionDetailsDTO encryptionDetailsDTO = EncryptionDetailsDTO.builder()
-                    .signKey(deviceCacheVO.getSignKey())
-                    .encryptKey(deviceCacheVO.getEncryptKey())
-                    .encryptVector(deviceCacheVO.getEncryptVector())
-                    .cipherFlag(deviceCacheVO.getEncryptMethod())
-                    .build();
+                .signKey(deviceCacheVO.getSignKey())
+                .encryptKey(deviceCacheVO.getEncryptKey())
+                .encryptVector(deviceCacheVO.getEncryptVector())
+                .cipherFlag(deviceCacheVO.getEncryptMethod())
+                .build();
             String dataBody = protocolMessageAdapter.decryptMessage(body, encryptionDetailsDTO);
 
             // Parse body
@@ -99,7 +109,7 @@ public class DeleteSubDeviceHandler extends AbstractMessageHandler implements To
             String resultData = OBJECT_MAPPER.writeValueAsString(handleResult);
 
             // Push message to MQTT to notify device of successful/failed sub-device deletion
-            sendMessage(responseTopicStr, qos, resultData, String.valueOf(ContextUtil.getTenantId()));
+            sendMessage(responseTopicStr, qos, resultData, ContextUtil.getTenantIdStr(), deviceCacheVO);
         } catch (Exception e) {
             log.error("Failed to decrypt the message", e);
         }

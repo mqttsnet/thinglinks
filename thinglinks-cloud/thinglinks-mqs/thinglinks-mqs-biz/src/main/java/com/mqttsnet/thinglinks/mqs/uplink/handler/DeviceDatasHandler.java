@@ -1,24 +1,21 @@
-package com.mqttsnet.thinglinks.mqtt.handler;
+package com.mqttsnet.thinglinks.mqs.uplink.handler;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
 import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.basic.utils.StrPool;
-import com.mqttsnet.thinglinks.broker.MqttBrokerOpenAnyUserFacade;
 import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.entity.mqtt.source.MqttMessageEventSource;
+import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
+import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
 import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
-import com.mqttsnet.thinglinks.mqtt.handler.factory.AbstractMessageHandler;
-import com.mqttsnet.thinglinks.product.enumeration.ProtocolTypeEnum;
+import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
+import com.mqttsnet.thinglinks.mqs.service.DeviceDataProcessingService;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoDeviceDataReportParam;
-import com.mqttsnet.thinglinks.service.DeviceDataProcessingService;
-import com.mqttsnet.thinglinks.service.ProtocolGroovyScriptService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +30,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class DeviceDatasHandler extends AbstractMessageHandler implements TopicHandler {
-    @Autowired
-    private ProtocolGroovyScriptService protocolGroovyScriptService;
 
     @Autowired
     private DeviceDataProcessingService deviceDataProcessingService;
@@ -42,9 +37,20 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
 
     public DeviceDatasHandler(LinkCacheDataHelper linkCacheDataHelper,
                               DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
-                              MqttBrokerOpenAnyUserFacade mqttBrokerOpenAnyTenantApi,
                               ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, mqttBrokerOpenAnyTenantApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+    }
+
+    /**
+     * 本处理器完整匹配的 topic 正则。
+     *
+     * @return DEVICE_DATA 主题正则
+     * @author mqttsnet
+     * @since 2026-06-03
+     */
+    @Override
+    public String topicPattern() {
+        return "^/([^/]+)/devices/([^/]+)/datas$";
     }
 
     /**
@@ -53,7 +59,7 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
      * @param eventSource 包含MQTT消息事件源的对象
      */
     @Override
-    public void handle(MqttMessageEventSource eventSource) {
+    public void handle(UplinkMessageEventSource eventSource) {
         String topic = eventSource.getTopic();
         String qos = eventSource.getQos();
         byte[] payloadBytes = eventSource.getPayloadBytes();
@@ -61,23 +67,17 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
         log.info("Received DEVICE_DATA message: topic: {}, qos: {}, payload(body): {}", topic, qos, body);
         // Extract variables from the topic
         Map<String, String> stringStringMap = protocolMessageAdapter.extractVariables(topic);
-        String deviceId = stringStringMap.get("deviceId");
+        String deviceId = stringStringMap.get(CommonIotConstants.DEVICE_ID);
 
-        DeviceCacheVO deviceCacheVO = getDeviceCacheVO(deviceId);
+        DeviceCacheVO deviceCacheVO = resolveDeviceCache(eventSource, deviceId);
         if (deviceCacheVO == null) {
             log.warn("Device with ID {} not found in cache, skipping processing.", deviceId);
             return;
         }
-        try {
-            // 获取转换后的body
-            body = protocolGroovyScriptService.datasTopicBodyTransformed(ProtocolTypeEnum.MQTT, deviceCacheVO.getDeviceIdentification(), deviceCacheVO.getProductIdentification(), body);
-        } catch (Exception e) {
-            log.error("转换报文失败，设备标识: {}, 错误: {}", deviceCacheVO.getDeviceIdentification(), e.getMessage(), e);
-            return;
-        }
-        log.info("处理最终协议(可能经过脚本转换处理)报文...设备标识: {}, 报文: {}", deviceCacheVO.getDeviceIdentification(), body);
+        // 厂商私有 topic/报文已在路由前由「设备上行前置转换」(InboundScriptTransformer)按需转为平台标准结构,此处不再内嵌脚本转换
+        log.info("处理协议报文...设备标识: {}, 报文: {}", deviceCacheVO.getDeviceIdentification(), body);
         // 验证协议格式
-        if (!JSONUtil.isTypeJSON(body) || !protocolMessageAdapter.validateProtocolData(body)) {
+        if (!JSON.isValid(body) || !protocolMessageAdapter.validateProtocolData(body)) {
             log.warn("协议格式不正确，设备标识: {}, 报文: {}", deviceCacheVO.getDeviceIdentification(), body);
             return;
         }
@@ -85,11 +85,11 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
         try {
             // 构造 EncryptionDetails 对象
             EncryptionDetailsDTO encryptionDetailsDTO = EncryptionDetailsDTO.builder()
-                    .signKey(deviceCacheVO.getSignKey())
-                    .encryptKey(deviceCacheVO.getEncryptKey())
-                    .encryptVector(deviceCacheVO.getEncryptVector())
-                    .cipherFlag(deviceCacheVO.getEncryptMethod())
-                    .build();
+                .signKey(deviceCacheVO.getSignKey())
+                .encryptKey(deviceCacheVO.getEncryptKey())
+                .encryptVector(deviceCacheVO.getEncryptVector())
+                .cipherFlag(deviceCacheVO.getEncryptMethod())
+                .build();
             String dataBody = protocolMessageAdapter.decryptMessage(body, encryptionDetailsDTO);
 
             if (StrUtil.isBlank(dataBody)) {
