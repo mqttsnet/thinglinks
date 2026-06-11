@@ -163,6 +163,19 @@ For complete documentation including quick start guides, development guides, API
 
 [![Docs](https://img.shields.io/badge/Documentation-mqttsnet.com-blue?style=for-the-badge)](https://mqttsnet.com)
 
+## 🤖 Agent Skills (AI-assisted development)
+
+Official **Agent Skills** document this project for AI agents (Claude Code · Codex · Cursor) — answers grounded in real code, loaded on demand. One skill per sub-project, from the **[ThingLinks Skills](https://github.com/mqttsnet/thinglinks-skills)** collection:
+
+```bash
+# global (-g); drop -g to install into the current project only
+npx skills add mqttsnet/thinglinks-skills@thinglinks-cloud -g    # backend microservices
+npx skills add mqttsnet/thinglinks-skills@thinglinks-web -g      # admin console (Vue3)
+npx skills add mqttsnet/thinglinks-skills@bifromq-plugin -g      # BifroMQ broker plugins
+```
+
+Auto-triggers when you work on rule scripts, the protocol envelope, uplink/downlink, thing-model, ACL, console pages, or BifroMQ auth/event plugins. Browse all skills (incl. `thinglinks-util`) at **[mqttsnet/thinglinks-skills](https://github.com/mqttsnet/thinglinks-skills)**.
+
 ## Screenshots
 
 <details>

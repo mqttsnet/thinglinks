@@ -163,6 +163,19 @@ thinglinks/
 
 [![Docs](https://img.shields.io/badge/Documentation-mqttsnet.com-blue?style=for-the-badge)](https://mqttsnet.com)
 
+## 🤖 Agent Skills(AI 支援開発)
+
+公式 **Agent Skills** は、本プロジェクトの実コードに基づく知見を AI エージェント(Claude Code · Codex · Cursor)がオンデマンドで読み込めるスキルとして提供します。サブプロジェクトごとに 1 スキル、**[ThingLinks Skills](https://github.com/mqttsnet/thinglinks-skills)** コレクションより:
+
+```bash
+# global (-g); drop -g to install into the current project only
+npx skills add mqttsnet/thinglinks-skills@thinglinks-cloud -g    # backend microservices
+npx skills add mqttsnet/thinglinks-skills@thinglinks-web -g      # admin console (Vue3)
+npx skills add mqttsnet/thinglinks-skills@bifromq-plugin -g      # BifroMQ broker plugins
+```
+
+ルールスクリプト、プロトコルエンベロープ、上り/下りリンク、モノモデル、ACL、コンソール画面、BifroMQ 認証/イベントプラグインの作業時に自動トリガーされます。全スキル(`thinglinks-util` 含む)は **[mqttsnet/thinglinks-skills](https://github.com/mqttsnet/thinglinks-skills)** へ。
+
 ## スクリーンショット
 
 <details>

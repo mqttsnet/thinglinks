@@ -163,6 +163,19 @@ thinglinks/
 
 [![Docs](https://img.shields.io/badge/Documentation-mqttsnet.com-blue?style=for-the-badge)](https://mqttsnet.com)
 
+## 🤖 Agent Skills(AI 辅助开发)
+
+官方 **Agent Skills** 把本项目的真实代码结论整理成 AI 代理(Claude Code · Codex · Cursor)按需加载的技能包,按子项目拆分,来自 **[ThingLinks Skills](https://github.com/mqttsnet/thinglinks-skills)** 集合:
+
+```bash
+# global (-g); drop -g to install into the current project only
+npx skills add mqttsnet/thinglinks-skills@thinglinks-cloud -g    # backend microservices
+npx skills add mqttsnet/thinglinks-skills@thinglinks-web -g      # admin console (Vue3)
+npx skills add mqttsnet/thinglinks-skills@bifromq-plugin -g      # BifroMQ broker plugins
+```
+
+当你编写规则脚本、协议报文、上行/下行链路、物模型、ACL、控制台页面或 BifroMQ 鉴权/事件插件时自动触发。全部技能(含 `thinglinks-util`)见 **[mqttsnet/thinglinks-skills](https://github.com/mqttsnet/thinglinks-skills)**。
+
 ## 产品截图
 
 <details>
