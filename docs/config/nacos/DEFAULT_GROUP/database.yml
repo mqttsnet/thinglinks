@@ -3,7 +3,7 @@ thinglinks:
   druid-mysql: &druid-mysql
     validation-query: SELECT 'x'
   druid-dameng: &druid-dameng
-    validation-query: SELECT 'x'    
+    validation-query: SELECT 'x'
   druid-taosdata: &druid-taosdata
     validation-query: SELECT 1
   mysql: &db-mysql
@@ -11,15 +11,16 @@ thinglinks:
     password: 'your-mysql-password'
     driverClassName: com.mysql.cj.jdbc.Driver
     # 主主复制集群的连接 URL，使用服务器IP和端口
-    #以下是样例中的默认端口号和数据库名称，请根据实际情况修改
-    url: jdbc:mysql://127.0.0.1:3306/thinglinks_ds_c_defaults?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=CONVERT_TO_NULL&allowMultiQueries=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
-#  dameng: &db-dameng
-#    username: 'SYSDBA'
-#    password: 'SYSDBA001'
-#    driverClassName: dm.jdbc.driver.DmDriver
-#    # 主主复制集群的连接 URL，使用服务器IP和端口
-#    #以下是样例中的默认端口号和数据库名称，请根据实际情况修改
-#    url: jdbc:dm://127.0.0.1:30236/thinglinks_ds_c_defaults
+    # 以下是样例中的默认端口号和数据库名称，请根据实际情况修改
+    # connectTimeout/socketTimeout 防止网络异常时连接长时间阻塞
+    url: jdbc:mysql://127.0.0.1:13306/thinglinks_ds_c_defaults?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&connectTimeout=3000&socketTimeout=60000&zeroDateTimeBehavior=CONVERT_TO_NULL&allowMultiQueries=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+  # dameng: &db-dameng
+  #   username: 'SYSDBA'
+  #   password: 'SYSDBA001'
+  #   driverClassName: dm.jdbc.driver.DmDriver
+  #   # 主主复制集群的连接 URL，使用服务器IP和端口
+  #   #以下是样例中的默认端口号和数据库名称，请根据实际情况修改
+  #   url: jdbc:dm://127.0.0.1:30236/thinglinks_ds_c_defaults
   taosdata: &db-taosdata
     #Tdengine官方JDBC驱动文档：https://docs.taosdata.com/reference/connector/java/#jdbc-%E9%A9%B1%E5%8A%A8
     username: 'root'
@@ -42,15 +43,16 @@ thinglinks:
     multiTenantType: DATASOURCE_COLUMN
     # 是否启用数据权限
     isDataScope: true
-    # 是否启用  sql性能规范插件
-    isBlockAttack: false
-    # 是否启用  sql性能规范插件
+    # 拦截无 WHERE 条件的全表 UPDATE / DELETE(仅作用于 MyBatis 映射 SQL,租户初始化脚本走原生 JDBC 不受影响)
+    isBlockAttack: true
+    # 是否启用 sql 性能规范插件
     isIllegalSql: false
     # 是否启用分布式事务
     isSeata: false
-    # 生产环境请设置p6spy = false
+    # 开发环境开启 p6spy 便于 SQL 排查;生产环境请设置 p6spy = false,避免全量 SQL 日志带来的 IO 与延迟开销
     p6spy: true
-    # 单页分页条数限制
+    # 单页分页条数上限,超出按上限静默截断;仅作用于带 IPage 参数的查询,list()/selectList() 全量查询不受影响。
+    # 新增更大单页需求时同步调整;如需完全不限制设为 -1
     maxLimit: -1
     # 溢出总页数后是否进行处理
     overflow: true
@@ -80,6 +82,8 @@ spring:
   datasource:
     dynamic:
       enabled: true
+      # 严格模式:目标数据源不存在时直接报错,禁止回落到 primary,保障多租户数据隔离
+      strict: true
       # 从这里开始(dynamic)，中间的这段配置用于 thinglinks.database.multiTenantType == DATASOURCE 时
       p6spy: ${thinglinks.database.p6spy:false}
       seata: ${thinglinks.database.isSeata:false}
@@ -91,25 +95,50 @@ spring:
         "1":
           <<: *db-taosdata
       druid:
-#        <<: *db-dameng
-        <<: *druid-mysql
-        <<: *druid-taosdata
+        # 连接有效性校验语句,MySQL 与 TDengine 通用
+        validation-query: SELECT 1
+        # 池初始化时建立的物理连接数
         initialSize: 10
+        # 池内保持的最小空闲连接数
         minIdle: 10
+        # 单池最大活跃连接数,全局连接预算 = 各服务各池 maxActive 之和,需控制在 MySQL max_connections 以内
         maxActive: 200
-        max-wait: 60000
-        pool-prepared-statements: true
-        max-pool-prepared-statement-per-connection-size: 20
+        # 获取连接的最大等待时间(毫秒),池满时快速失败,避免请求线程长时间阻塞堆积
+        max-wait: 5000
+        # 对 minIdle 内的空闲连接定期探活,防止被数据库 wait_timeout 关闭后业务拿到失效连接
+        keepAlive: true
+        # 仅在空闲检测时校验连接,借出/归还不校验,降低高并发下的校验开销
+        test-while-idle: true
         test-on-borrow: false
         test-on-return: false
-        test-while-idle: true
-        time-between-eviction-runs-millis: 60000  #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-        min-evictable-idle-time-millis: 300000    #配置一个连接在池中最小生存的时间，单位是毫秒
+        # 空闲连接检测周期(毫秒)
+        time-between-eviction-runs-millis: 60000
+        # 连接在池中的最小空闲存活时间(毫秒),低于该时长不回收
+        min-evictable-idle-time-millis: 300000
+        # 连接在池中的最大空闲存活时间(毫秒),超时强制物理回收,避免长期持有陈旧连接
+        max-evictable-idle-time-millis: 900000
+        # MySQL 场景关闭 PSCache(预编译语句缓存),无性能收益且占用 JVM 内存
+        pool-prepared-statements: false
+        max-pool-prepared-statement-per-connection-size: -1
+        # 连接借出超时强制回收机制:防止业务侧借出连接未归还导致连接泄漏
+        # 注意:超时时间须大于业务最长单次借用时长,跑批类服务请按需调大
+        removeAbandoned: true
+        removeAbandonedTimeoutMillis: 180000
+        # 回收时打印借出方堆栈,用于定位泄漏代码
+        logAbandoned: true
         filters: stat,wall
+        stat:
+          # 慢 SQL 记录,慢 SQL 长时间占用连接是连接池耗尽的主要诱因
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          # 参数化合并同构 SQL,避免统计页被相同模板的 SQL 刷爆
+          merge-sql: true
         wall:
           enabled: true
+          # 关闭严格语法检查,兼容 TDengine 方言
           strictSyntaxCheck: false
           comment-allow: true
+          # 允许多语句执行,租户初始化建库建表依赖此能力
           multiStatementAllow: true
           noneBaseStatementAllow: true
 
@@ -120,17 +149,19 @@ spring:
       web-stat-filter:  # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
         enabled: true
         url-pattern: /*
-        exclusions: "*.js , *.gif ,*.jpg ,*.png ,*.css ,*.ico , /druid/*"
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
         session-stat-max-count: 1000
+        # URI 级 SQL 关联统计:开发环境开启便于排查,生产环境建议关闭(高访问量下开销较大)
         profile-enable: true
         session-stat-enable: false
       stat-view-servlet:  #展示Druid的统计信息,StatViewServlet的用途包括：1.提供监控信息展示的html页面2.提供监控信息的JSON API
         enabled: true
         url-pattern: /druid/*   #根据配置中的url-pattern来访问内置监控页面，如果是上面的配置，内置监控页面的首页是/druid/index.html例如：http://127.0.0.1:9000/druid/index.html
-        reset-enable: true    #允许清空统计数据
+        # 禁止通过页面清空统计数据
+        reset-enable: false
+        # 监控页访问凭证与 IP 白名单:开发环境暂留空(空 = 无需登录、放行所有来源);生产环境必须设置强口令并收紧 allow 为内网段
         login-username: ''
         login-password: ''
-        # 允许访问IP
         allow: ''
 
 mybatis-plus:
@@ -179,7 +210,7 @@ seata:
     grouplist:
       default: ${thinglinks.seata.ip:}:${thinglinks.seata.port:}
     vgroup-mapping:
-      lamp_cloud_seata_tx_group: default
+      thinglinks_cloud_seata_tx_group: default
     disable-global-transaction: false
   client:
     rm:
