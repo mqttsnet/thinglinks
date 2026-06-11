@@ -1,5 +1,10 @@
 package com.mqttsnet.thinglinks;
 
+import static com.mqttsnet.thinglinks.common.constant.BizConstant.BUSINESS_PACKAGE;
+import static com.mqttsnet.thinglinks.common.constant.BizConstant.UTIL_PACKAGE;
+
+import com.mqttsnet.basic.kafka.EnableKafkaStarter;
+import com.mqttsnet.basic.rocketmq.EnableRocketmqStarter;
 import com.mqttsnet.basic.validator.annotation.EnableFormValidator;
 import com.mqttsnet.thinglinks.common.ServerApplication;
 import lombok.extern.slf4j.Slf4j;
@@ -23,13 +28,15 @@ import java.net.UnknownHostException;
 @SpringBootApplication
 @EnableDiscoveryClient
 @Configuration
-@EnableFeignClients(value = {"com.mqttsnet.thinglinks", "com.mqttsnet.basic"})
-@ComponentScan(basePackages = {"com.mqttsnet.thinglinks", "com.mqttsnet.basic"})
+@ComponentScan({UTIL_PACKAGE, BUSINESS_PACKAGE})
+@EnableFeignClients(value = {UTIL_PACKAGE, BUSINESS_PACKAGE})
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 @Slf4j
 @EnableFormValidator
 @EnableAsync
 @EnableDynamicTp
+@EnableKafkaStarter
+@EnableRocketmqStarter
 public class BrokerServerApplication extends ServerApplication {
     public static void main(String[] args) throws UnknownHostException {
         start(BrokerServerApplication.class, args);

@@ -44,4 +44,15 @@ public interface MqttBrokerOpenAnyUserFacade {
      * @return {@link R<MqttSessionDetailsResultVO>} containing the session details or an error message if not found.
      */
     R<MqttSessionDetailsResultVO> getSessionInfo(String tenantId, String userId, String clientId);
+
+    /**
+     * 查询设备 BifroMQ session 实时在线状态(三态语义).
+     *
+     * @param tenantId             租户 ID
+     * @param deviceIdentification 设备标识(作为 BifroMQ userId)
+     * @param clientId             MQTT clientId
+     * @return {@link R#success(Object)} {@code (true)} 在线;{@link R#success(Object)} {@code (false)} 离线(broker 404);
+     *         {@link R#fail()} 不确定(broker 临时异常 / 超时,调用方应保留现状)
+     */
+    R<Boolean> isOnline(String tenantId, String deviceIdentification, String clientId);
 }

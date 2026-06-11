@@ -1,27 +1,18 @@
-package com.mqttsnet.thinglinks.service;
+package com.mqttsnet.thinglinks.broker.mqtt.service;
 
+import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.thinglinks.vo.query.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.vo.result.MqttSessionDetailsResultVO;
 
 /**
- * -----------------------------------------------------------------------------
- * File Name: MqttBrokerService.java
- * -----------------------------------------------------------------------------
- * Description:
  * MqttBroker API
- * -----------------------------------------------------------------------------
+ *
+ * <p>broker 协议接入层 ── MQTT 协议出口。包路径 {@code broker.mqtt.service}
+ * 与 {@code broker.ws.service} / {@code broker.common.*} 同级,按协议拆分,便于扩展。
  *
  * @author ShiHuan Sun
- * @version 1.0
- * -----------------------------------------------------------------------------
- * Revision History:
- * Date         Author          Version     Description
- * --------      --------     -------   --------------------
- * <p>
- * -----------------------------------------------------------------------------
  * @email 13733918655@163.com
- * @date 2023-10-31 19:43
  */
 public interface MqttBrokerService {
 
@@ -46,6 +37,17 @@ public interface MqttBrokerService {
      * @throws Exception If an error occurs while retrieving session information.
      */
     MqttSessionDetailsResultVO getSessionInfo(String tenantId, String userId, String clientId) throws Exception;
+
+    /**
+     * 查询设备 BifroMQ session 实时在线状态(三态语义).
+     *
+     * @param tenantId             租户 ID
+     * @param deviceIdentification 设备标识(作为 BifroMQ userId)
+     * @param clientId             MQTT clientId
+     * @return {@link R#success(Object)} {@code (true)} 在线;{@link R#success(Object)} {@code (false)} 离线(broker 404);
+     *         {@link R#fail()} 不确定(broker 临时异常 / 超时,调用方应保留现状)
+     */
+    R<Boolean> isOnline(String tenantId, String deviceIdentification, String clientId);
 
     /**
      * Expires inactive persistent sessions for a specified tenant.

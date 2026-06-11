@@ -45,4 +45,9 @@ public class MqttBrokerOpenAnyUserApiFallback implements MqttBrokerOpenAnyUserAp
     public R<MqttSessionDetailsResultVO> getSessionInfo(String tenantId, String userId, String clientId) {
         return R.timeout();
     }
+
+    @Override
+    public R<Boolean> isOnline(String tenantId, String deviceIdentification, String clientId) {
+        return R.timeout();
+    }
 }

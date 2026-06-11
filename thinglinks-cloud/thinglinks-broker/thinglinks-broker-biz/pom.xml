@@ -44,7 +44,7 @@
 
         <dependency>
             <groupId>com.mqttsnet.basic</groupId>
-            <artifactId>thinglinks-rabbitmq-starter</artifactId>
+            <artifactId>thinglinks-rocketmq-starter</artifactId>
         </dependency>
 
         <dependency>
@@ -87,6 +87,44 @@
             <groupId>com.mqttsnet.thinglinks</groupId>
             <artifactId>thinglinks-broker-api</artifactId>
             <version>${revision}</version>
+        </dependency>
+
+        <!-- ============================================================== -->
+        <!-- broker 协议接入层依赖                                            -->
+        <!-- broker 是所有协议（ws / mqtt / coap / lwm2m / tcp ...）的统一入口 -->
+        <!-- 上行投 Kafka,下行 Encoder ← DeviceCommand                       -->
+        <!-- mqs 仅消费 Kafka 做无状态业务处理（不持有 ws session）           -->
+        <!-- ============================================================== -->
+
+        <!-- 共享协议 entity（DistedEvent / ClientConnectedEvent / WsEventEnum
+             / DeviceProtocolEvent / WsCommandProtocolEncoder 等） -->
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-mqs-entity</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- link-api ── ws @OnOpen 设备认证 Feign(DeviceOpenAnyTenantFacade) -->
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-link-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- broker 协议接入层投上行消息到 Kafka（thingLinksKafkaTemplate） -->
+        <dependency>
+            <groupId>com.mqttsnet.basic</groupId>
+            <artifactId>thinglinks-kafka-starter</artifactId>
+        </dependency>
+
+        <!-- WebSocket @ServerEndpoint 容器（spring-boot 3 + jakarta） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.websocket</groupId>
+            <artifactId>jakarta.websocket-client-api</artifactId>
         </dependency>
     </dependencies>
 </project>

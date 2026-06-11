@@ -1,9 +1,9 @@
 package com.mqttsnet.thinglinks.anyuser.controller;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.exception.BizException;
-import com.mqttsnet.thinglinks.service.WebSocketBrokerService;
+import com.mqttsnet.thinglinks.broker.ws.service.WebSocketBrokerService;
 import com.mqttsnet.thinglinks.vo.query.PublishWebSocketMessageRequestVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,7 +48,7 @@ public class WebSocketBrokerOpenAnyUserController {
         try {
             return R.success(webSocketBrokerService.publishMessage(publishMessageRequestVO));
         } catch (BizException e) {
-            log.error("Failed to send message. param: {}", JSONUtil.toJsonStr(publishMessageRequestVO), e);
+            log.error("Failed to send message. param: {}", JSON.toJSONString(publishMessageRequestVO), e);
             return R.fail(e.getMessage());
         }
     }

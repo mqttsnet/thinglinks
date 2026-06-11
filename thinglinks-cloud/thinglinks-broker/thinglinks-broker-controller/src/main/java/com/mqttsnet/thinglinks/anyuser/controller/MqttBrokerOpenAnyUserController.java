@@ -1,9 +1,9 @@
 package com.mqttsnet.thinglinks.anyuser.controller;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.exception.BizException;
-import com.mqttsnet.thinglinks.service.MqttBrokerService;
+import com.mqttsnet.thinglinks.broker.mqtt.service.MqttBrokerService;
 import com.mqttsnet.thinglinks.vo.query.AddSubscriptionRequestVO;
 import com.mqttsnet.thinglinks.vo.query.ExpireSessionRequestVO;
 import com.mqttsnet.thinglinks.vo.query.KillClientRequestVO;
@@ -57,7 +57,7 @@ public class MqttBrokerOpenAnyUserController {
         try {
             return R.success(mqttBrokerService.publishMessage(publishMessageRequestVO));
         } catch (BizException e) {
-            log.error("Failed to send message. param: {}", JSONUtil.toJsonStr(publishMessageRequestVO), e);
+            log.error("Failed to send message. param: {}", JSON.toJSONString(publishMessageRequestVO), e);
             return R.fail(e.getMessage());
         }
     }
@@ -98,6 +98,31 @@ public class MqttBrokerOpenAnyUserController {
             log.error("Unexpected error while retrieving session info for tenantId: {}, userId: {}, clientId: {}. Error: {}", tenantId, userId, clientId, e.getMessage());
             return R.fail("Error retrieving session info", e.getMessage());
         }
+    }
+
+    /**
+     * 查询设备 BifroMQ session 实时在线状态(三态语义).
+     *
+     * @param tenantId             租户 ID
+     * @param deviceIdentification 设备标识(作为 BifroMQ userId)
+     * @param clientId             MQTT clientId
+     * @return {@link R#success(Object)} (true) 在线;{@link R#success(Object)} (false) 离线(broker 404);
+     *         {@link R#fail()} 不确定(broker 临时异常 / 超时)
+     */
+    @Operation(
+            summary = "查询设备 session 在线状态",
+            description = "返回设备在 BifroMQ 的实时 session 是否存在(三态:在线/离线/不确定)"
+    )
+    @GetMapping(path = "/session/isOnline", produces = MediaType.APPLICATION_JSON_VALUE)
+    public R<Boolean> isOnline(
+            @Parameter(description = "租户 ID", required = true, example = "1")
+            @RequestParam(name = "tenantId") String tenantId,
+            @Parameter(description = "设备标识(作为 BifroMQ userId)", required = true, example = "deviceA")
+            @RequestParam(name = "deviceIdentification") String deviceIdentification,
+            @Parameter(description = "MQTT clientId", required = true, example = "deviceA@1")
+            @RequestParam(name = "clientId") String clientId
+    ) {
+        return mqttBrokerService.isOnline(tenantId, deviceIdentification, clientId);
     }
 
     /**

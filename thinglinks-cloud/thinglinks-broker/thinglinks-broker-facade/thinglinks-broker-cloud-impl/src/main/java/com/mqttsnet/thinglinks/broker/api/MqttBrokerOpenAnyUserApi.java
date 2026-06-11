@@ -61,4 +61,19 @@ public interface MqttBrokerOpenAnyUserApi {
     @Operation(summary = "查询会话信息", description = "根据租户ID、用户ID和客户端ID查询MQTT会话信息")
     @GetMapping(path = "/session", consumes = MediaType.APPLICATION_JSON_VALUE)
     R<MqttSessionDetailsResultVO> getSessionInfo(@RequestParam(name = "tenantId") String tenantId, @RequestParam(name = "userId") String userId, @RequestParam(name = "clientId") String clientId);
+
+    /**
+     * 查询设备 BifroMQ session 实时在线状态(三态语义).
+     *
+     * @param tenantId             租户 ID
+     * @param deviceIdentification 设备标识(作为 BifroMQ userId)
+     * @param clientId             MQTT clientId
+     * @return {@link R#success(Object)} {@code (true)} 在线;{@link R#success(Object)} {@code (false)} 离线(broker 404);
+     *         {@link R#fail()} 不确定(broker 临时异常 / 超时,调用方应保留现状)
+     */
+    @Operation(summary = "查询设备 session 在线状态", description = "返回设备在 BifroMQ 的实时 session 是否存在(三态)")
+    @GetMapping(path = "/session/isOnline")
+    R<Boolean> isOnline(@RequestParam(name = "tenantId") String tenantId,
+                        @RequestParam(name = "deviceIdentification") String deviceIdentification,
+                        @RequestParam(name = "clientId") String clientId);
 }

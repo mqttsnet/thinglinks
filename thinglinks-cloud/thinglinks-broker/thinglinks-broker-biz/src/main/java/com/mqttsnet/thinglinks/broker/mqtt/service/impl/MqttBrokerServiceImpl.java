@@ -1,16 +1,19 @@
-package com.mqttsnet.thinglinks.service.impl;
+package com.mqttsnet.thinglinks.broker.mqtt.service.impl;
 
 import java.util.Collections;
 import java.util.Objects;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
+import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.jackson.JsonUtil;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.broker.BifroMqFacade;
-import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
-import com.mqttsnet.thinglinks.service.MqttBrokerService;
+import com.mqttsnet.thinglinks.broker.common.counter.DownLinkDataReportCounter;
+import com.mqttsnet.thinglinks.broker.mqtt.exception.SessionNotFoundException;
+import com.mqttsnet.thinglinks.broker.mqtt.service.MqttBrokerService;
 import com.mqttsnet.thinglinks.vo.query.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.vo.result.MqttSessionDetailsResultVO;
 import feign.FeignException;
@@ -21,23 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 /**
- * -----------------------------------------------------------------------------
- * File Name: MqttBrokerServiceImpl.java
- * -----------------------------------------------------------------------------
- * Description:
  * MqttBroker API 实现类
- * -----------------------------------------------------------------------------
+ *
+ * <p>调用 BifroMQ HTTP API 完成 MQTT 协议层操作:发布消息、查询会话、过期会话、踢线、订阅/取消订阅。
  *
  * @author ShiHuan Sun
- * @version 1.0
- * -----------------------------------------------------------------------------
- * Revision History:
- * Date         Author          Version     Description
- * --------      --------     -------   --------------------
- * <p>
- * -----------------------------------------------------------------------------
  * @email 13733918655@163.com
- * @date 2023-10-31 19:44
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -45,7 +37,7 @@ import org.springframework.web.client.HttpClientErrorException;
 public class MqttBrokerServiceImpl implements MqttBrokerService {
     private final BifroMqFacade bifroMQApi;
 
-    private final LinkCacheDataHelper linkCacheDataHelper;
+    private final DownLinkDataReportCounter downLinkDataReportCounter;
 
 
     /**
@@ -61,7 +53,8 @@ public class MqttBrokerServiceImpl implements MqttBrokerService {
         ArgumentAssert.notBlank(publishMessageRequestVO.getTopic(), "Topic is required");
         ArgumentAssert.notBlank(publishMessageRequestVO.getTenantId(), "TenantId is required");
         ArgumentAssert.notNull(publishMessageRequestVO.getQos(), "Qos is required");
-        linkCacheDataHelper.incrementDownLinkCounter();
+        // 下行数据下发计数(命令 / 消息下发)── broker 自维护,旁路统计不影响主链路
+        downLinkDataReportCounter.incrementDownLink();
         try {
             ResponseEntity<String> response = callPublishBifromqApi(publishMessageRequestVO);
 
@@ -133,14 +126,46 @@ public class MqttBrokerServiceImpl implements MqttBrokerService {
             }
             log.warn("Failed to retrieve session info. Status: {}, tenantId: {}, userId: {}, clientId: {}",
                     response.getStatusCode(), tenantId, userId, clientId);
-            throw new BizException("Session not found or failed to retrieve session info.");
+            // 非 2xx 但又不是 404 ── 走通用业务异常,由 isOnline 等调用方按 BizException 兜底处理为 R.fail
+            throw new BizException("Failed to retrieve session info, status=" + response.getStatusCode());
         } catch (FeignException.NotFound e) {
+            // 404 ── BifroMQ 明确返回 session 不存在;抛专属语义异常,避免调用方靠 message 字符串识别
             log.info("Session not found for tenantId: {}, userId: {}, clientId: {}", tenantId, userId, clientId);
-            throw new BizException("Session not found.", e);
+            throw new SessionNotFoundException("Session not found.", e);
         } catch (FeignException e) {
             log.error("FeignException while retrieving session info for tenantId: {}, userId: {}, clientId: {}. Status: {}, Message: {}",
                     tenantId, userId, clientId, e.status(), e.getMessage());
             throw new Exception("Error occurred while retrieving session info.", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>三态由异常类型驱动:{@link SessionNotFoundException}(broker 404)→ 离线;
+     * {@link BizException} / 其它 {@link Exception} → 不确定(broker 临时不可达,调用方保留现状).
+     */
+    @Override
+    public R<Boolean> isOnline(String tenantId, String deviceIdentification, String clientId) {
+        if (StrUtil.hasBlank(tenantId, deviceIdentification, clientId)) {
+            return R.fail("invalid params: tenantId/deviceIdentification/clientId required");
+        }
+        try {
+            // userId 传 deviceIdentification (与 ACL/认证体系一致)
+            MqttSessionDetailsResultVO info = getSessionInfo(tenantId, deviceIdentification, clientId);
+            return R.success(info != null);
+        } catch (SessionNotFoundException e) {
+            // 真离线 ── broker 明确返回 not found
+            return R.success(false);
+        } catch (BizException e) {
+            // broker 业务异常(非 not-found):状态不确定,调用方应保留现状
+            log.warn("[Broker.isOnline] biz-error tenantId={} deviceId={} clientId={} cause={}",
+                    tenantId, deviceIdentification, clientId, e.getMessage());
+            return R.fail(e.getMessage());
+        } catch (Exception e) {
+            // 网络/反序列化/未知异常 ── 状态不确定
+            log.warn("[Broker.isOnline] unexpected tenantId={} deviceId={} clientId={}",
+                    tenantId, deviceIdentification, clientId, e);
+            return R.fail("broker unreachable");
         }
     }
 

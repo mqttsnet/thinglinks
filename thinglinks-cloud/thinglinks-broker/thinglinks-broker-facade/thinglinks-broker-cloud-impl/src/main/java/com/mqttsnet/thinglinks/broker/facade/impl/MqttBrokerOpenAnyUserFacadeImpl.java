@@ -36,4 +36,9 @@ public class MqttBrokerOpenAnyUserFacadeImpl implements MqttBrokerOpenAnyUserFac
     public R<MqttSessionDetailsResultVO> getSessionInfo(String tenantId, String userId, String clientId) {
         return mqttBrokerOpenAnyUserApi.getSessionInfo(tenantId, userId, clientId);
     }
+
+    @Override
+    public R<Boolean> isOnline(String tenantId, String deviceIdentification, String clientId) {
+        return mqttBrokerOpenAnyUserApi.isOnline(tenantId, deviceIdentification, clientId);
+    }
 }

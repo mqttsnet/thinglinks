@@ -1,9 +1,9 @@
 package com.mqttsnet.thinglinks.broker;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.exception.BizException;
-import com.mqttsnet.thinglinks.service.MqttBrokerService;
+import com.mqttsnet.thinglinks.broker.mqtt.service.MqttBrokerService;
 import com.mqttsnet.thinglinks.vo.query.KillClientRequestVO;
 import com.mqttsnet.thinglinks.vo.query.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.vo.result.MqttSessionDetailsResultVO;
@@ -25,23 +25,23 @@ public class MqttBrokerOpenAnyUserFacadeImpl implements MqttBrokerOpenAnyUserFac
 
     @Override
     public R<?> sendMessage(PublishMessageRequestVO publishMessageRequestVO) {
-        log.info("Received request to send message.param {}", JSONUtil.toJsonStr(publishMessageRequestVO));
+        log.info("Received request to send message.param {}", JSON.toJSONString(publishMessageRequestVO));
         try {
             return R.success(mqttBrokerService.publishMessage(publishMessageRequestVO));
         } catch (BizException e) {
-            log.error("Failed to send message. param: {}", JSONUtil.toJsonStr(publishMessageRequestVO), e);
+            log.error("Failed to send message. param: {}", JSON.toJSONString(publishMessageRequestVO), e);
             return R.fail(e.getMessage());
         }
     }
 
     @Override
     public R<?> closeConnection(KillClientRequestVO killClientRequestVO) {
-        log.info("Received request to close connection. param: {}", JSONUtil.toJsonStr(killClientRequestVO));
+        log.info("Received request to close connection. param: {}", JSON.toJSONString(killClientRequestVO));
         try {
             mqttBrokerService.killClientConnection(killClientRequestVO.getTenantId(), killClientRequestVO.getUserId(), killClientRequestVO.getClientId(), killClientRequestVO.getClientType());
             return R.success();
         } catch (BizException e) {
-            log.error("Failed to close connection. param: {}", JSONUtil.toJsonStr(killClientRequestVO), e);
+            log.error("Failed to close connection. param: {}", JSON.toJSONString(killClientRequestVO), e);
             return R.fail(e.getMessage());
         }
     }
@@ -61,5 +61,10 @@ public class MqttBrokerOpenAnyUserFacadeImpl implements MqttBrokerOpenAnyUserFac
             log.error("Unexpected error while retrieving session info for tenantId: {}, userId: {}, clientId: {}. Error: {}", tenantId, userId, clientId, e.getMessage());
             return R.fail("Error retrieving session info", e.getMessage());
         }
+    }
+
+    @Override
+    public R<Boolean> isOnline(String tenantId, String deviceIdentification, String clientId) {
+        return mqttBrokerService.isOnline(tenantId, deviceIdentification, clientId);
     }
 }
