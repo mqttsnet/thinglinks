@@ -132,7 +132,9 @@ public class ProjectController extends SuperController<ProjectService, Long, Pro
     @WebLog(value = "根据项目标识查询项目详情", request = false)
     public R<ProjectDetailsResultVO> getProjectDetails(@PathVariable("projectIdentification") String projectIdentification) {
         log.info("getProjectDetails identification: {}", projectIdentification);
-        return R.success(superService.getProjectDetailsByProjectIdentification(projectIdentification));
+        ProjectDetailsResultVO result = superService.getProjectDetailsByProjectIdentification(projectIdentification);
+        echoService.action(result);
+        return R.success(result);
     }
 }
 

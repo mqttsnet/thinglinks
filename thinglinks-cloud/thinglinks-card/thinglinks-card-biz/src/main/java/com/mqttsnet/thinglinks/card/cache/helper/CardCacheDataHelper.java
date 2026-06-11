@@ -41,11 +41,15 @@ public class CardCacheDataHelper {
     }
 
     /**
-     * 设置 移动渠道 TokenKey 缓存
+     * 设置 移动渠道 TokenKey 缓存.
      *
      * @param cacheVO     缓存模型
-     * @param channelName 渠道名称，必须不为 {@literal null}.
+     * @param channelName 渠道名称,必须不为 {@literal null}.
+     * @deprecated 物联卡 OneLink 接入未上线,本 helper 当前**无业务调用方**.
+     * 接入时需补全 read-through:cache miss 自动调 OneLink API 换取 token 并回写缓存
+     * (参考 {@link com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper#getDeviceCacheVO} 模式).
      */
+    @Deprecated(since = "2026-05-18", forRemoval = false)
     public void setChannelOneLinkTokenKeyCacheVO(CardChannelTokenKeyCacheVO cacheVO, String channelName) {
         CacheKey cacheKey = OneLinkTokenKeyCacheKeyBuilder.build(channelName);
         cachePlusOps.del(cacheKey);
@@ -53,11 +57,19 @@ public class CardCacheDataHelper {
     }
 
     /**
-     * 获取 移动 TokenKey 缓存
+     * 获取 移动 TokenKey 缓存.
      *
-     * @param channelName 渠道名称，必须不为 {@literal null}.
-     * @return 渠道 TokenKey 缓存模型
+     * @param channelName 渠道名称,必须不为 {@literal null}.
+     * @return 渠道 TokenKey 缓存模型;不存在返 {@code null}
+     * @deprecated 物联卡 OneLink 接入未上线,本方法当前**无业务调用方**(全工程 grep 0 结果).
+     * <p>⚠️ <b>已知设计缺陷</b>:当前是 cache-only,token 失效后无任何兜底链路,功能上线前必须改为 read-through:
+     * <pre>{@code
+     * return cacheUtil.getOrLoad(cacheKey,
+     *     (k) -> oneLinkApiClient.fetchToken(channelName),  // 失效自动换 token
+     *     CardChannelTokenKeyCacheVO.class, false).orElse(null);
+     * }</pre>
      */
+    @Deprecated(since = "2026-05-18", forRemoval = false)
     public CardChannelTokenKeyCacheVO getChannelOneLinkTokenKeyCacheVO(String channelName) {
         CacheKey cacheKey = OneLinkTokenKeyCacheKeyBuilder.build(channelName);
         CacheResult<Object> objectCacheResult = cachePlusOps.get(cacheKey);

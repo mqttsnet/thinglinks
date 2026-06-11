@@ -125,6 +125,7 @@ public class PackageUtils {
         putDictType(EchoDictType.File.class);
         putDictType(EchoDictType.Msg.class);
         putDictType(EchoDictType.Gateway.class);
+        putDictType(EchoDictType.Video.class);
     }
 
     private static void putDictType(Class<?> clazz) {

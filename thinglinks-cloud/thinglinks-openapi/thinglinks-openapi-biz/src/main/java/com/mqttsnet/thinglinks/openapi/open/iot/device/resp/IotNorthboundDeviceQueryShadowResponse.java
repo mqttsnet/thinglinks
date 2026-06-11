@@ -89,7 +89,7 @@ public class IotNorthboundDeviceQueryShadowResponse implements Serializable {
     /**
      * 产品版本
      */
-    private String productVersion;
+    private String activeVersionNo;
 
     /**
      * 图标

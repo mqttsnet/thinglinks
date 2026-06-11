@@ -1,8 +1,6 @@
 package com.mqttsnet.thinglinks.mobile.mobilespacedevice.vo.result;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +11,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @program: thinglinks-cloud
@@ -33,12 +29,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "MobileSpaceProductDetailsResultVO", description = "移动端-空间产品详情结果VO")
-public class MobileSpaceProductDetailsResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class MobileSpaceProductDetailsResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -107,7 +101,7 @@ public class MobileSpaceProductDetailsResultVO extends Entity<Long> implements S
      * 产品版本
      */
     @Schema(description = "产品版本")
-    private String productVersion;
+    private String activeVersionNo;
     /**
      * 图标
      */
@@ -118,11 +112,6 @@ public class MobileSpaceProductDetailsResultVO extends Entity<Long> implements S
      */
     @Schema(description = "产品描述")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
     @Schema(description = "空间设备详情信息集合")
     private List<MobileSpaceDeviceDetailsResultVO> spaceDeviceDetailsResultVOList;

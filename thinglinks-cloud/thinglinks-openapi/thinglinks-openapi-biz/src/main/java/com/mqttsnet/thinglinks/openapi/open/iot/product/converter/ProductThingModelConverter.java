@@ -49,7 +49,7 @@ public class ProductThingModelConverter {
                 .dataFormat(productParamVO.getDataFormat())
                 .deviceType(productParamVO.getDeviceType())
                 .protocolType(productParamVO.getProtocolType())
-                .productVersion(productParamVO.getProductVersion())
+                .activeVersionNo(productParamVO.getActiveVersionNo())
                 .remark(productParamVO.getRemark())
                 .services(convertServices(productParamVO.getServices()))
                 .build();
@@ -57,6 +57,9 @@ public class ProductThingModelConverter {
 
     /**
      * 转换服务列表
+     *
+     * @param services 服务参数 VO 列表
+     * @return 物模型服务列表;入参空返空列表
      */
     private static List<IotNorthboundProductGetThingModelResponse.ThingModelService> convertServices(List<ProductServiceParamVO> services) {
         if (CollUtil.isEmpty(services)) {
@@ -70,6 +73,9 @@ public class ProductThingModelConverter {
 
     /**
      * 转换单个服务
+     *
+     * @param service 服务参数 VO
+     * @return 物模型服务;入参 null 返 null
      */
     private static IotNorthboundProductGetThingModelResponse.ThingModelService convertService(ProductServiceParamVO service) {
         if (Objects.isNull(service)) {
@@ -91,6 +97,9 @@ public class ProductThingModelConverter {
 
     /**
      * 转换属性列表
+     *
+     * @param properties 属性参数 VO 列表
+     * @return 物模型属性列表;入参空返空列表
      */
     private static List<IotNorthboundProductGetThingModelResponse.ThingModelProperty> convertProperties(List<ProductPropertyParamVO> properties) {
         if (CollUtil.isEmpty(properties)) {
@@ -104,6 +113,9 @@ public class ProductThingModelConverter {
 
     /**
      * 转换单个属性
+     *
+     * @param property 属性参数 VO
+     * @return 物模型属性;入参 null 返 null
      */
     private static IotNorthboundProductGetThingModelResponse.ThingModelProperty convertProperty(ProductPropertyParamVO property) {
         if (Objects.isNull(property)) {
@@ -131,6 +143,9 @@ public class ProductThingModelConverter {
 
     /**
      * 转换命令列表
+     *
+     * @param commands 命令参数 VO 列表
+     * @return 物模型命令列表;入参空返空列表
      */
     private static List<IotNorthboundProductGetThingModelResponse.ThingModelCommand> convertCommands(List<ProductCommandParamVO> commands) {
         if (CollUtil.isEmpty(commands)) {
@@ -144,6 +159,9 @@ public class ProductThingModelConverter {
 
     /**
      * 转换单个命令
+     *
+     * @param command 命令参数 VO
+     * @return 物模型命令;入参 null 返 null
      */
     private static IotNorthboundProductGetThingModelResponse.ThingModelCommand convertCommand(ProductCommandParamVO command) {
         if (Objects.isNull(command)) {
@@ -163,6 +181,9 @@ public class ProductThingModelConverter {
 
     /**
      * 转换命令请求参数列表
+     *
+     * @param requests 命令请求参数 VO 列表
+     * @return 物模型命令请求参数列表;入参空返空列表
      */
     private static List<IotNorthboundProductGetThingModelResponse.ThingModelCommandRequest> convertCommandRequests(List<ProductCommandRequestParamVO> requests) {
         if (CollUtil.isEmpty(requests)) {
@@ -176,6 +197,9 @@ public class ProductThingModelConverter {
 
     /**
      * 转换单个命令请求参数
+     *
+     * @param request 命令请求参数 VO
+     * @return 物模型命令请求参数;入参 null 返 null
      */
     private static IotNorthboundProductGetThingModelResponse.ThingModelCommandRequest convertCommandRequest(ProductCommandRequestParamVO request) {
         if (Objects.isNull(request)) {
@@ -202,6 +226,9 @@ public class ProductThingModelConverter {
 
     /**
      * 转换命令响应参数列表
+     *
+     * @param responses 命令响应参数 VO 列表
+     * @return 物模型命令响应参数列表;入参空返空列表
      */
     private static List<IotNorthboundProductGetThingModelResponse.ThingModelCommandResponse> convertCommandResponses(List<ProductCommandResponseParamVO> responses) {
         if (CollUtil.isEmpty(responses)) {
@@ -215,6 +242,9 @@ public class ProductThingModelConverter {
 
     /**
      * 转换单个命令响应参数
+     *
+     * @param response 命令响应参数 VO
+     * @return 物模型命令响应参数;入参 null 返 null
      */
     private static IotNorthboundProductGetThingModelResponse.ThingModelCommandResponse convertCommandResponse(ProductCommandResponseParamVO response) {
         if (Objects.isNull(response)) {

@@ -60,7 +60,9 @@ public class ProjectAnyUserController extends SuperController<ProjectService, Lo
     public R<ProjectDetailsResultVO> getProjectDetails(@PathVariable("tenantId") Long tenantId, @PathVariable("projectIdentification") @NotBlank String projectIdentification) {
         log.info("getProjectDetails.... Tenant ID: {}, identification:{}", tenantId, projectIdentification);
         ContextUtil.setTenantId(tenantId);
-        return R.success(superService.getProjectDetailsByProjectIdentification(projectIdentification));
+        ProjectDetailsResultVO result = superService.getProjectDetailsByProjectIdentification(projectIdentification);
+        echoService.action(result);
+        return R.success(result);
     }
 }
 

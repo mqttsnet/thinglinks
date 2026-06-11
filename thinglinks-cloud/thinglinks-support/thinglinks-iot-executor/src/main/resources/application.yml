@@ -31,7 +31,9 @@ spring:
       - nacos:common.yml?group=${thinglinks.nacos.group}&refresh=true
       - nacos:redis.yml?group=${thinglinks.nacos.group}&refresh=true
       - nacos:database.yml?group=${thinglinks.nacos.group}&refresh=true
+      - nacos:kafka.yml?group=${thinglinks.nacos.group}&refresh=true
       - nacos:rabbitmq.yml?group=${thinglinks.nacos.group}&refresh=true
+      - nacos:rocketmq.yml?group=${thinglinks.nacos.group}&refresh=true
       - nacos:dynamictp.yml?group=${thinglinks.nacos.group}&refresh=true
       - nacos:thinglinks-base-server.yml?refresh=true
       - nacos:thinglinks-rule-server.yml?refresh=true

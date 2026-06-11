@@ -123,7 +123,7 @@ public class IotNorthboundProductManagerTest extends TestCase {
                 System.out.println("厂商名称: " + response.getManufacturerName());
                 System.out.println("产品型号: " + response.getModel());
                 System.out.println("协议类型: " + response.getProtocolType());
-                System.out.println("产品版本: " + response.getProductVersion());
+                System.out.println("产品版本: " + response.getActiveVersionNo());
 
                 // 打印服务信息
                 if (response.getServices() != null && !response.getServices().isEmpty()) {

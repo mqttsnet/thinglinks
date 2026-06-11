@@ -38,7 +38,7 @@ public class IotNorthboundDeviceIssueCommandRequest {
     public static class CommandItem {
 
         /**
-         * 设备标识（ALL表示所有设备）
+         * 设备标识（"all" 表示所有设备,对齐 BizConstant.ALL 全平台通配字面值）
          * @mock SN-2025-ABCD-5678
          */
         @NotEmpty(message = "Device ID cannot be empty")

@@ -93,7 +93,9 @@ public class DefGenTableController
     @PostMapping("/findTableList")
     @WebLog(value = "批量查询")
     public R<List<DefGenTableResultVO>> findTableList(@RequestBody List<Long> idList) {
-        return R.success(superService.findTableList(idList));
+        List<DefGenTableResultVO> result = superService.findTableList(idList);
+        echoService.action(result);
+        return R.success(result);
     }
 
     @Operation(summary = "预览", description = "预览")

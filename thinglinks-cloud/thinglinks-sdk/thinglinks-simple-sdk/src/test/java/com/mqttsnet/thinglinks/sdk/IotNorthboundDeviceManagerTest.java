@@ -523,7 +523,7 @@ public class IotNorthboundDeviceManagerTest extends TestCase {
                 System.out.println("数据格式: " + response.getDataFormat());
                 System.out.println("设备类型: " + response.getDeviceType());
                 System.out.println("协议类型: " + response.getProtocolType());
-                System.out.println("产品版本: " + response.getProductVersion());
+                System.out.println("产品版本: " + response.getActiveVersionNo());
                 System.out.println("图标: " + response.getIcon());
                 System.out.println("产品描述: " + response.getRemark());
                 System.out.println("创建人组织: " + response.getCreatedOrgId());

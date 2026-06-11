@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.card.strategy;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.mqttsnet.basic.utils.sm.Sm3Utils;
 import com.mqttsnet.thinglinks.card.abstrac.AbstractCard;
@@ -71,7 +71,8 @@ public class ChinaTelecomCardStrategy extends AbstractCard {
         Map<String, String> result = Optional.of(Sm3Utils.makeToken(iotKeyParameter.getAppid(), iotKeyParameter.getPassword()))
                 .orElseThrow(() -> new IOException("Failed to generate token"));
 
-        ApiResponse.Unicom unicom = Optional.ofNullable(JSONObject.parseObject(JSONUtil.toJsonStr(result), ApiResponse.Unicom.class))
+        // 直接走 fastjson2 Map→Bean 一步到位,无需"对象→JSON 字符串→反序列化"的二次转换
+        ApiResponse.Unicom unicom = Optional.ofNullable(JSON.parseObject(JSON.toJSONString(result), ApiResponse.Unicom.class))
                 .orElseThrow(() -> new IOException("Invalid response from token generation"));
 
         Optional.ofNullable(unicom.getToken()).ifPresent(iotToken::setToken);
