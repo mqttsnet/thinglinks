@@ -20,6 +20,7 @@ import java.time.Duration;
  * @date 2025/4/18 16:45 下午
  */
 public class DeviceChannelCacheKeyBuilder implements CacheKeyBuilder {
+    private Long tenantId;
 
     /**
      * @param deviceIdentification 设备唯一标识
@@ -30,10 +31,20 @@ public class DeviceChannelCacheKeyBuilder implements CacheKeyBuilder {
     }
 
     @Override
+    public DeviceChannelCacheKeyBuilder setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+        return this;
+    }
+
+    @Override
+    public String getTenant() {
+        return String.valueOf(this.tenantId);
+    }
+
+    @Override
     public String getTable() {
         return CacheKeyTable.Video.DEVICE_CHANNEL;
     }
-
 
     @Override
     public String getModular() {
@@ -47,7 +58,7 @@ public class DeviceChannelCacheKeyBuilder implements CacheKeyBuilder {
 
     @Override
     public ValueType getValueType() {
-        return CacheKeyBuilder.super.getValueType();
+        return ValueType.obj;
     }
 
     @Override

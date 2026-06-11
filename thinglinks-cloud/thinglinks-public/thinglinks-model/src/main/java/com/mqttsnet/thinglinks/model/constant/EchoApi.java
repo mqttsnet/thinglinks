@@ -25,10 +25,19 @@ public interface EchoApi {
      * 岗位 回显实现类
      */
     String POSITION_ID_CLASS = "positionFacadeImpl";
-    /** 用户 回显实现类 */
+    /**
+     * 用户 回显实现类
+     */
     String DEF_USER_ID_CLASS = "defUserFacadeImpl";
 
+    /**
+     * 租户 回显实现类
+     */
     String DEF_TENANT_SERVICE_IMPL_CLASS = "defTenantManagerImpl";
+
+    /**
+     * 应用 回显实现类
+     */
     String DEF_APPLICATION_SERVICE_IMPL_CLASS = "defApplicationManagerImpl";
 
 }

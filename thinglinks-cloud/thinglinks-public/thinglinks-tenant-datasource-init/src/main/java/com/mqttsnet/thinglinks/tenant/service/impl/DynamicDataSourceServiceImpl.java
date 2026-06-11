@@ -20,7 +20,6 @@ import com.mqttsnet.basic.database.properties.DatabaseProperties;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.DbPlusUtil;
-import com.mqttsnet.basic.utils.StringUtils;
 import com.mqttsnet.thinglinks.model.enumeration.system.DefTenantStatusEnum;
 import com.mqttsnet.thinglinks.model.enumeration.system.TenantConnectTypeEnum;
 import com.mqttsnet.thinglinks.tenant.dynamic.processor.DsThreadProcessor;
@@ -330,7 +329,7 @@ public class DynamicDataSourceServiceImpl implements DataSourceService {
             DynamicRoutingDataSource ds = (DynamicRoutingDataSource) this.dataSource;
             DataSource newDataSource = defaultDataSourceCreator.createDataSource(dsp);
             ds.addDataSource(dsp.getPoolName(), newDataSource);
-            setTenantDataBaseName(dsp.getPoolName(), newDataSource);
+            setTenantDataBaseName(dsp.getPoolName(), dsp.getUrl());
             return ds.getDataSources().keySet();
         } catch (ErrorCreateDataSourceException e) {
             log.error("数据源初始化期间出现异常", e);
@@ -339,24 +338,18 @@ public class DynamicDataSourceServiceImpl implements DataSourceService {
     }
 
     /**
-     * 存放对应租户的数据库名称
+     * 解析数据源 JDBC URL 中的数据库名称并登记到上下文,供多租户路由与 TDS 操作取用。
+     * <p>直接解析配置 URL 取库名,不向连接池借取连接。
      *
-     * @param poolName
-     * @param dataSource
+     * @param poolName 连接池名称
+     * @param jdbcUrl  数据源 JDBC URL
      */
-    private void setTenantDataBaseName(String poolName, DataSource dataSource) {
+    private void setTenantDataBaseName(String poolName, String jdbcUrl) {
         try {
-            // 获取数据库名称
-            String dbName = "";
-            dbName = dataSource.getConnection().getClientInfo("dbname");
-            if (StringUtils.isEmpty(dbName)) {
-                dbName = DbPlusUtil.getDataBaseNameByUrl(dataSource.getConnection().getMetaData().getURL());
-            }
-            ContextUtil.setDataBase(poolName, dbName);
-        } catch (SQLException e) {
-            log.error("获取数据库信息异常：{}", e.getMessage());
+            ContextUtil.setDataBase(poolName, DbPlusUtil.getDataBaseNameByUrl(jdbcUrl));
+        } catch (Exception e) {
+            log.error("解析数据库名称异常, poolName: {}, 原因: {}", poolName, e.getMessage());
         }
-
     }
 
 }

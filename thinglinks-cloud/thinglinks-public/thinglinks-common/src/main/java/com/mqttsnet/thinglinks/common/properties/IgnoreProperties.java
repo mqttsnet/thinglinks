@@ -176,14 +176,21 @@ public class IgnoreProperties {
         return isIgnore(method, path, all);
     }
 
+    /**
+     * 命中任一 method 桶({@code ALL} 或精确方法)下的路径模式即视为忽略。
+     * 须遍历全部桶,不能判完首个桶就 return(否则 method 维度配置失效)。
+     *
+     * @param method 请求方法
+     * @param path   请求路径
+     * @param all    method → 路径模式集合
+     * @return 命中返 {@code true}
+     */
     private boolean isIgnore(String method, String path, Map<String, Set<String>> all) {
         for (Map.Entry<String, Set<String>> entry : all.entrySet()) {
             String m = entry.getKey();
-            Set<String> paths = entry.getValue();
-            if (HttpMethod.ALL.name().equalsIgnoreCase(m)) {
-                return paths.stream().anyMatch(url -> match(url, path));
-            } else {
-                return m.equalsIgnoreCase(method) && paths.stream().anyMatch(url -> match(url, path));
+            boolean methodMatch = HttpMethod.ALL.name().equalsIgnoreCase(m) || m.equalsIgnoreCase(method);
+            if (methodMatch && entry.getValue().stream().anyMatch(url -> match(url, path))) {
+                return true;
             }
         }
         return false;

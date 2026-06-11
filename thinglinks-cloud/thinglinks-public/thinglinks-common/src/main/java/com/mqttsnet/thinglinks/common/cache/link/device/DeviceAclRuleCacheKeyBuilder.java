@@ -1,5 +1,7 @@
 package com.mqttsnet.thinglinks.common.cache.link.device;
 
+import java.time.Duration;
+
 import com.mqttsnet.basic.base.entity.SuperEntity;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.model.cache.CacheHashKey;
@@ -8,65 +10,38 @@ import com.mqttsnet.basic.model.cache.CacheKeyBuilder;
 import com.mqttsnet.thinglinks.common.cache.CacheKeyModular;
 import com.mqttsnet.thinglinks.common.cache.CacheKeyTable;
 
-import java.io.Serializable;
-import java.time.Duration;
-
 /**
- * <p>
- * 设备ACL规则 KEY
- * <p>
- * [服务模块名:]业务类型[:业务字段][:value类型][:ID] -> obj
- * link:def_device_acl_rule:productIdentification:deviceIdentification:obj:1 -> {}
+ * 设备 ACL 规则 cache key ── Hash 模式:hash key 按产品标识,field 按设备标识。
+ * evict 时产品级规则改 DEL 整个 hash(清产品下所有设备),设备级规则改 HDEL 单 field。
  *
- * @author mqttsnet
- * @date 2023/5/30 6:45 下午
+ * <p>静态工厂方法必须用 build* 前缀,避开 {@link CacheKeyBuilder} default 实例方法
+ * (key / hashKey / hashFieldKey)的同名冲突,否则 overload resolution 选中静态自身导致无限递归 StackOverflowError。
  */
 public class DeviceAclRuleCacheKeyBuilder implements CacheKeyBuilder {
 
-    private Long tenantId;
-
     /**
-     * build key
+     * 整个 hash 的 key,用于 DEL(清产品下所有设备 field)。
      *
      * @param productIdentification 产品标识
-     * @param deviceIdentification  设备标识
-     * @return {@link  CacheKey} key
+     * @return 产品级 hash 缓存 key
      */
-    public static CacheKey builder(String productIdentification, String deviceIdentification) {
-        return new DeviceAclRuleCacheKeyBuilder().setTenantId(ContextUtil.getTenantId()).key(productIdentification, deviceIdentification);
+    public static CacheKey buildHashKey(String productIdentification) {
+        return new DeviceAclRuleCacheKeyBuilder()
+            .setTenantId(ContextUtil.getTenantId())
+            .key(productIdentification);
     }
 
     /**
-     * build  key
-     *
-     * @param key productIdentification
-     * @return {@link CacheKey}  key
-     */
-    public static CacheKey builder(Serializable key) {
-        return new DeviceAclRuleCacheKeyBuilder().setTenantId(ContextUtil.getTenantId()).key(key);
-    }
-
-    /**
-     * build hash field key
+     * hash field key,用于 HGET / HSET / HDEL(只动该设备字段)。
      *
      * @param productIdentification 产品标识
-     * @param deviceIdentification  设备标识
-     * @param field                 优先级
-     * @return {@link CacheHashKey} hash key
+     * @param deviceIdentification 设备标识
+     * @return 设备级 hash field 缓存 key
      */
-    public static CacheHashKey builder(String productIdentification, String deviceIdentification, String field) {
-        return new DeviceAclRuleCacheKeyBuilder().setTenantId(ContextUtil.getTenantId()).hashFieldKey(field, productIdentification, deviceIdentification);
-    }
-
-    @Override
-    public String getTenant() {
-        return String.valueOf(this.tenantId);
-    }
-
-    @Override
-    public DeviceAclRuleCacheKeyBuilder setTenantId(Long tenantId) {
-        this.tenantId = tenantId;
-        return this;
+    public static CacheHashKey buildHashFieldKey(String productIdentification, String deviceIdentification) {
+        return new DeviceAclRuleCacheKeyBuilder()
+            .setTenantId(ContextUtil.getTenantId())
+            .hashFieldKey(deviceIdentification, productIdentification);
     }
 
     @Override
@@ -91,6 +66,6 @@ public class DeviceAclRuleCacheKeyBuilder implements CacheKeyBuilder {
 
     @Override
     public Duration getExpire() {
-        return Duration.ofHours(1);
+        return Duration.ofDays(7);
     }
 }

@@ -35,7 +35,6 @@ import com.mqttsnet.thinglinks.common.cache.CacheKeyTable;
  */
 public class DownLinkDataCounterCacheKeyBuilder implements CacheKeyBuilder {
 
-    private Long tenantId;
 
     public static CacheHashKey build(Serializable key) {
         return new DownLinkDataCounterCacheKeyBuilder().setTenantId(ContextUtil.getTenantId()).hashKey(key);
@@ -48,17 +47,6 @@ public class DownLinkDataCounterCacheKeyBuilder implements CacheKeyBuilder {
      */
     public static CacheHashKey build(String key, String field) {
         return new DownLinkDataCounterCacheKeyBuilder().setTenantId(ContextUtil.getTenantId()).hashFieldKey(field, key);
-    }
-
-    @Override
-    public String getTenant() {
-        return String.valueOf(this.tenantId);
-    }
-
-    @Override
-    public DownLinkDataCounterCacheKeyBuilder setTenantId(Long tenantId) {
-        this.tenantId = tenantId;
-        return this;
     }
 
     @Override

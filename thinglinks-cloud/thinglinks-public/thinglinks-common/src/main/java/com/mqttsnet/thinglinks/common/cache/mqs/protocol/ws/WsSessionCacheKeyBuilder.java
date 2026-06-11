@@ -32,25 +32,12 @@ import java.time.Duration;
  */
 public class WsSessionCacheKeyBuilder implements CacheKeyBuilder {
 
-    private Long tenantId;
-
     public static CacheKey build() {
         return new WsSessionCacheKeyBuilder().setTenantId(ContextUtil.getTenantId()).key();
     }
 
     public static CacheKey build(String clientId) {
         return new WsSessionCacheKeyBuilder().setTenantId(ContextUtil.getTenantId()).key(clientId);
-    }
-
-    @Override
-    public String getTenant() {
-        return String.valueOf(this.tenantId);
-    }
-
-    @Override
-    public WsSessionCacheKeyBuilder setTenantId(Long tenantId) {
-        this.tenantId = tenantId;
-        return this;
     }
 
     @Override

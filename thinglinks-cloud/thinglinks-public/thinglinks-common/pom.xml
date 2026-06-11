@@ -28,6 +28,19 @@
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
+
+        <!--
+          jakarta.websocket-api (服务端 + 客户端 API,无实现) ── provided 作用域
+          理由:thinglinks-common 是通用工具模块,不能拖 tomcat-embed-websocket 等运行时实现;
+          server 端 / 各业务模块本来就引了 spring-boot-starter-websocket(含实现),
+          common 只在编译期需要 @ServerEndpoint / EndpointConfig 等类型符号即可。
+          运行时由宿主模块的 starter-websocket 提供同名 class。
+        -->
+        <dependency>
+            <groupId>jakarta.websocket</groupId>
+            <artifactId>jakarta.websocket-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.mqttsnet.thinglinks</groupId>
             <artifactId>thinglinks-model</artifactId>

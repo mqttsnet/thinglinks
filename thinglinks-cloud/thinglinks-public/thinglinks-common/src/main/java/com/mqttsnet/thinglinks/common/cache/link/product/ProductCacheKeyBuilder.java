@@ -1,13 +1,13 @@
 package com.mqttsnet.thinglinks.common.cache.link.product;
 
+import java.time.Duration;
+
 import com.mqttsnet.basic.base.entity.SuperEntity;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.model.cache.CacheKey;
 import com.mqttsnet.basic.model.cache.CacheKeyBuilder;
 import com.mqttsnet.thinglinks.common.cache.CacheKeyModular;
 import com.mqttsnet.thinglinks.common.cache.CacheKeyTable;
-
-import java.time.Duration;
 
 /**
  * 产品信息 KEY

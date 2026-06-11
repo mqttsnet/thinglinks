@@ -88,6 +88,23 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
                 .key(String.valueOf(userId));
     }
 
+    /**
+     * 按产品标识构建"刷新草稿快照"锁 Key。
+     *
+     * <p>用于产品树 CRUD 后 ProductVersionService.upsertDraft 的并发互斥:
+     * 同一产品的草稿刷新串行化,杜绝并发 findDraft 都返回空 → 各自 insert → 建出多个 DRAFT 行。
+     * 锁粒度是单产品,不同产品互不阻塞。</p>
+     *
+     * @param productIdentification 产品标识
+     * @return CacheKey
+     */
+    public static CacheKey forUpsertDraftByProduct(String productIdentification) {
+        return product()
+                .expire(Duration.ofSeconds(15))
+                .field("upsertDraft")
+                .key(productIdentification);
+    }
+
     // ==================== 产品服务相关锁 ====================
 
     /**
@@ -153,6 +170,8 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 创建设备锁构建器
+     *
+     * @return 设备锁构建器
      */
     public static LinkLockKeyBuilder device() {
         LinkLockKeyBuilder builder = new LinkLockKeyBuilder();
@@ -163,6 +182,8 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 创建产品锁构建器
+     *
+     * @return 产品锁构建器
      */
     public static LinkLockKeyBuilder product() {
         LinkLockKeyBuilder builder = new LinkLockKeyBuilder();
@@ -173,6 +194,8 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 创建OTA锁构建器
+     *
+     * @return OTA 锁构建器
      */
     public static LinkLockKeyBuilder ota() {
         LinkLockKeyBuilder builder = new LinkLockKeyBuilder();
@@ -183,6 +206,8 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 创建产品服务锁构建器
+     *
+     * @return 产品服务锁构建器
      */
     public static LinkLockKeyBuilder productService() {
         LinkLockKeyBuilder builder = new LinkLockKeyBuilder();
@@ -193,6 +218,8 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 创建产品属性锁构建器
+     *
+     * @return 产品属性锁构建器
      */
     public static LinkLockKeyBuilder productProperty() {
         LinkLockKeyBuilder builder = new LinkLockKeyBuilder();
@@ -203,6 +230,8 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 设置字段为 id
+     *
+     * @return 当前构建器
      */
     public LinkLockKeyBuilder id() {
         this.field = "id";
@@ -211,6 +240,8 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 设置字段为 deviceIdentification
+     *
+     * @return 当前构建器
      */
     public LinkLockKeyBuilder deviceIdentification() {
         this.field = "deviceIdentification";
@@ -219,6 +250,8 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 设置字段为 productIdentification
+     *
+     * @return 当前构建器
      */
     public LinkLockKeyBuilder productIdentification() {
         this.field = "productIdentification";
@@ -227,6 +260,9 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 设置自定义字段
+     *
+     * @param field 字段名
+     * @return 当前构建器
      */
     public LinkLockKeyBuilder field(String field) {
         this.field = field;
@@ -235,6 +271,9 @@ public class LinkLockKeyBuilder implements CacheKeyBuilder {
 
     /**
      * 设置锁过期时间
+     *
+     * @param expire 锁过期时间
+     * @return 当前构建器
      */
     public LinkLockKeyBuilder expire(Duration expire) {
         this.expire = expire;

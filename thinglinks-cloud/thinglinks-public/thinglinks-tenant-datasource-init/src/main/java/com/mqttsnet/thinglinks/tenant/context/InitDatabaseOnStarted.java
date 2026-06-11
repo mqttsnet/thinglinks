@@ -2,30 +2,26 @@ package com.mqttsnet.thinglinks.tenant.context;
 
 import com.mqttsnet.thinglinks.tenant.service.DatasourceInitDataSourceService;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.ApplicationListener;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 
 /**
- * 初始化数据源
- * context已经refresh且application and command-line runners（StartedUpRunner） 调用之前发送这个事件
- *
- * <p>
- * 一定要在容器初始化完成后，在初始化租户数据源
- * <p>
- * 使用 @PostConstruct 注解不行
+ * 启动时初始化租户数据源 ── 在所有单例 bean 就绪后、SmartLifecycle.start 之前触发。
+ * <p>早于 MQ Container({@code DefaultRocketMQListenerContainer} / {@code ConcurrentMessageListenerContainer} 等)
+ * 启动消费,确保 consumer 切库时租户 pool 已注册,无需 Guard / 阻塞兜底。
  *
  * @author mqttsnet
- * @date 2020年03月15日13:12:59
  */
+@Slf4j
 @AllArgsConstructor
-public class InitDatabaseOnStarted implements ApplicationListener<ApplicationStartedEvent> {
+public class InitDatabaseOnStarted implements SmartInitializingSingleton {
 
     private final DatasourceInitDataSourceService datasourceInitDataSourceService;
 
     @Override
-    public void onApplicationEvent(ApplicationStartedEvent event) {
+    public void afterSingletonsInstantiated() {
+        log.info("[InitDatabase] start initializing tenant datasources (before SmartLifecycle.start)");
         datasourceInitDataSourceService.initDataSource();
+        log.info("[InitDatabase] tenant datasources initialized");
     }
-
-
 }
