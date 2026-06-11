@@ -12,7 +12,7 @@ export interface ProductPageQuery {
   deviceType?: string; // 设备类型:支持英文大小写、数字、下划线和中划线
   protocolType?: string; // 设备接入平台的协议类型，默认为MQTT无需修改。
   productStatus?: number; // 状态(字典值：0启用  1停用)
-  productVersion?: string; // 产品版本
+  activeVersionNo?: string; // 产品版本
   remark?: string; // 产品描述
   createdOrgId?: string; // 创建人组织
 }
@@ -30,7 +30,7 @@ export interface ProductSaveVO {
   deviceType?: string; // 设备类型:支持英文大小写、数字、下划线和中划线
   protocolType?: string; // 设备接入平台的协议类型，默认为MQTT无需修改。
   productStatus?: number; // 状态(字典值：0启用  1停用)
-  productVersion?: string; // 产品版本
+  activeVersionNo?: string; // 产品版本
   icon?: string; // 图标
   remark?: string; // 产品描述
   createdOrgId?: string; // 创建人组织
@@ -50,7 +50,7 @@ export interface ProductUpdateVO {
   deviceType?: string; // 设备类型:支持英文大小写、数字、下划线和中划线
   protocolType?: string; // 设备接入平台的协议类型，默认为MQTT无需修改。
   productStatus?: number; // 状态(字典值：0启用  1停用)
-  productVersion?: string; // 产品版本
+  activeVersionNo?: string; // 产品版本
   icon?: string; // 图标
   remark?: string; // 产品描述
   createdOrgId?: string; // 创建人组织
@@ -75,7 +75,8 @@ export interface ProductResultVO {
   deviceType?: string; // 设备类型:支持英文大小写、数字、下划线和中划线
   protocolType?: string; // 设备接入平台的协议类型，默认为MQTT无需修改。
   productStatus?: number; // 状态(字典值：0启用  1停用)
-  productVersion?: string; // 产品版本
+  activeVersionNo?: string; // 产品版本(已正式发布的版本号,DRAFT 不写入此字段)
+  previousFullVersionNo?: string; // 灰度发布时,被切换前的全量版本号(供灰度路由 + 回滚使用)
   icon?: string; // 图标
   remark?: string; // 产品描述
   createdOrgId?: string; // 创建人组织
@@ -94,7 +95,7 @@ export interface ProductQuickSaveVO {
   deviceType?: string; // 设备类型:支持英文大小写、数字、下划线和中划线
   protocolType?: string; // 设备接入平台的协议类型，默认为MQTT无需修改。
   productStatus?: string; // 状态(字典值：0启用  1停用)
-  productVersion?: string; // 产品版本
+  activeVersionNo?: string; // 产品版本
   remark?: string; // 产品描述
   createdOrgId?: string; // 创建人组织
   services?: any[]; // 服务

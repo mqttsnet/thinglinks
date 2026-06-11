@@ -269,9 +269,12 @@ function transformationRules(data: FieldValidatorDesc[]): Partial<FormSchema>[] 
   data.forEach(({ field, fieldType, constraints }) => {
     const rules: Rule[] = [];
     if (fieldType === 'Float') {
+      // 后端 Float/BigDecimal 常序列化为字符串,用 validator 兼容字符串/数字回显,避免回显值被 type:'number' 误拦
       rules.push({
-        type: 'number',
-        message: `${field}必须是数字`,
+        validator: (_r: any, v: any) =>
+          v === null || v === undefined || v === '' || !Number.isNaN(parseFloat(v))
+            ? Promise.resolve()
+            : Promise.reject(`${field}必须是数字`),
       });
     } else if (fieldType === 'Array') {
       rules.push({

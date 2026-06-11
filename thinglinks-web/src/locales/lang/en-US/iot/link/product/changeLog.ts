@@ -1,0 +1,30 @@
+export default {
+  hint: 'Every thing-model change before publishing is logged here; on publish it is frozen into the version snapshot.',
+  empty: 'No change records yet',
+  noMore: 'No more · {n} total',
+  noDraft: 'This product has no draft version, so there are no pending changes.',
+  selectVersion: 'Version',
+  versionPlaceholder: 'Select a version to view',
+  noVersion: 'This product has no version yet',
+  detail: 'Detail',
+  collapse: 'Collapse',
+  changeCount: 'change(s)',
+  copyVersion: 'Copy version',
+  copiedVersion: 'Copied',
+  changeType: {
+    0: 'Created',
+    1: 'Updated',
+    2: 'Deleted',
+  },
+  targetType: {
+    0: 'Product info',
+    1: 'Service',
+    2: 'Property',
+    3: 'Command',
+  },
+  field: {
+    name: 'Field',
+    before: 'Before',
+    after: 'After',
+  },
+};

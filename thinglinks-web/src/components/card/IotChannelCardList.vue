@@ -61,19 +61,19 @@
                   class=".img"
                   v-if="record?.operatorType === 1"
                   @click="handleView(record, $event)"
-                  src="../../../../../../assets/images/card/yidong.png"
+                  src="/@/assets/images/card/yidong.png"
                 />
                 <img
                   v-else-if="record?.operatorType === 2"
                   class=".img"
                   @click="handleView(record, $event)"
-                  src="../../../../../../assets/images/card/dianxin.png"
+                  src="/@/assets/images/card/dianxin.png"
                 />
                 <img
                   class=".img"
                   v-else-if="record?.operatorType === 3"
                   @click="handleView(record, $event)"
-                  src="../../../../../../assets/images/card/liantong.png"
+                  src="/@/assets/images/card/liantong.png"
                 />
                 <!-- 信息 -->
                 <div class="info">

@@ -1,0 +1,36 @@
+# Auto detect text files and normalize line endings
+* text=auto
+
+# Frontend source
+*.js text
+*.ts text
+*.tsx text
+*.jsx text
+*.vue text
+*.css text
+*.scss text
+*.less text
+*.html text
+*.json text
+
+# Shell scripts (always LF)
+*.sh text eol=lf
+
+# Documentation
+*.md text
+*.txt text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.zip binary
+*.tar.gz binary
+*.tgz binary

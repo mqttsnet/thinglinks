@@ -7,6 +7,7 @@
     @ok="handleSubmit"
     :keyboard="true"
     :getContainer="getContainer"
+    wrapClassName="md-edit-wrap"
   >
     <BasicForm @register="registerForm" />
   </BasicModal>
@@ -41,15 +42,15 @@
       const [registerForm, { setFieldsValue, resetFields, updateSchema, validate, resetSchema }] =
         useForm({
           name: 'ProductPropertyEdit',
-          labelWidth: 120,
+          labelWidth: 100,
           schemas: editFormSchema(type),
           showActionButtonGroup: false,
           disabled: (_) => {
             return unref(type) === ActionEnum.VIEW;
           },
-          baseColProps: { span: 11 },
+          baseColProps: { span: 12 },
           actionColOptions: {
-            span: 22,
+            span: 24,
           },
         });
 

@@ -1,0 +1,127 @@
+/**
+ * Flexy 风格统一 Modal 外壳 ── 给 BasicModal 套 wrapClassName="md-edit-wrap" 即可启用。
+ *
+ * 适用场景:服务 / 属性 / 命令 / 命令请求参数 / 命令响应参数 等"物模型定义"系列 Edit 弹窗,
+ * 视觉与发布弹窗(PublishModal)、产品详情顶部 metric 风格保持一致。
+ *
+ * 配色:主蓝 #5d87ff、灰底 #f5f7fa、卡片白 + 柔阴影、按钮主蓝渐变。
+ *
+ * 此 less 不带 scoped/wrap 局部限定,挂在 wrapClassName 下做命名空间隔离。
+ */
+.md-edit-wrap {
+  .ant-modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 48px rgba(15, 23, 42, 0.18);
+  }
+
+  .ant-modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #eef0f4;
+    background: #fff;
+
+    .ant-modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #2a3547;
+    }
+  }
+
+  .ant-modal-close-x {
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    color: #a0aec0;
+    transition: color 0.18s;
+
+    &:hover {
+      color: #5d87ff;
+    }
+  }
+
+  /* Modal body 浅灰底,内部 BasicForm 自动呈现为白色卡片 */
+  .ant-modal-body {
+    background: #f5f7fa;
+    padding: 20px;
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+  }
+
+  /* BasicForm 容器外卡片化:浅白底 + 圆角 + 柔阴影 */
+  .scroll-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04), 0 2px 12px rgba(15, 23, 42, 0.03);
+  }
+
+  /* 表单 label 加深 + 加粗,提高可读性 */
+  .ant-form-item-label > label {
+    color: #2a3547;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  /* 必填星号变得更明显 */
+  .ant-form-item-required::before {
+    color: #fa896b !important;
+  }
+
+  /* 输入控件圆角统一 10px + hover/focus 蓝色边框 */
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-input-number,
+  .ant-select .ant-select-selector,
+  .ant-picker {
+    border-radius: 10px !important;
+    border-color: #e6ecf5;
+    transition: all 0.18s ease;
+
+    &:hover {
+      border-color: #5d87ff;
+    }
+
+    &:focus,
+    &-focused {
+      border-color: #5d87ff;
+      box-shadow: 0 0 0 3px rgba(93, 135, 255, 0.12);
+    }
+  }
+
+  /* 问号 tooltip 图标颜色统一(BasicForm 的 helpMessage 图标) */
+  .ant-form-item-tooltip {
+    color: #5d87ff;
+  }
+
+  /* 操作按钮组(底部 cancel + ok)Flexy 化 */
+  .ant-modal-footer {
+    padding: 14px 24px;
+    border-top: 1px solid #eef0f4;
+    background: #fff;
+
+    .ant-btn {
+      height: 36px;
+      padding: 0 20px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+
+    .ant-btn-primary {
+      background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
+      border: none;
+      box-shadow: 0 6px 14px rgba(93, 135, 255, 0.35);
+
+      &:hover:not([disabled]) {
+        box-shadow: 0 8px 18px rgba(93, 135, 255, 0.45);
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  /* Radio Button Group(method / required 等)更现代 */
+  .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
+    border-color: #5d87ff;
+    box-shadow: 0 4px 10px rgba(93, 135, 255, 0.3);
+  }
+}

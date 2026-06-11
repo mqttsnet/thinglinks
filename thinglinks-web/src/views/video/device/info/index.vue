@@ -2,17 +2,41 @@
   <PageWrapper dense contentFullHeight>
     <BasicTable
       @register="registerTable"
-      :isVideoDeviceInfo="true"
       :switchFlag="switchFlag"
       @switch-change="getSwitchChange"
     >
+      <template #cardView="{ searchData, title }">
+        <BusinessCardList
+          ref="cardListRef"
+          :pageApi="page"
+          :title="title"
+          :searchData="searchData"
+          nameField="deviceName"
+          :nameFallback="t('common.undefinedText')"
+          :fields="cardFields"
+          statusField="onlineStatus"
+          :statusOnlineLabel="t('video.device.info.online')"
+          :statusOfflineLabel="t('video.device.info.offline')"
+          badgeField="transport"
+          badgeDictType="VIDEO_DEVICE_TRANSPORT"
+          :permissions="cardPermissions"
+          :detailRouteName="detailRouteName"
+          :editModal="EditModal"
+          @input="getSwitchChange"
+          @delete="handleCardDelete"
+        >
+          <template #cardImage>
+            <VideoDeviceSvg />
+          </template>
+        </BusinessCardList>
+      </template>
       <template #toolbar>
         <a-button
           type="primary"
           color="error"
           preIcon="ant-design:delete-outlined"
           @click="handleBatchDelete"
-          v-hasAnyPermission="['video:device:videoDeviceInfo:delete']"
+          v-hasAnyPermission="['video:device:info:delete']"
         >
           {{ t('common.title.delete') }}
         </a-button>
@@ -20,9 +44,16 @@
           type="primary"
           preIcon="ant-design:plus-outlined"
           @click="handleAdd"
-          v-hasAnyPermission="['video:device:videoDeviceInfo:add']"
+          v-hasAnyPermission="['video:device:info:add']"
         >
           {{ t('common.title.add') }}
+        </a-button>
+        <a-button
+          preIcon="ant-design:radar-chart-outlined"
+          @click="handleOnvifDiscover"
+          v-hasAnyPermission="['video:device:info:add']"
+        >
+          {{ t('video.onvif.scan') }}
         </a-button>
         <a-button preIcon="ant-design:swap-outlined" @click="switchView">
           {{ t('common.switchView') }}
@@ -33,9 +64,6 @@
       </template>
       <template #streamMode="{ record }">
         {{ getDictLabel('VIDEO_DEVICE_STREAM_MODE', record?.streamMode, '') }}
-      </template>
-      <template #charset="{ record }">
-        {{ getDictLabel('VIDEO_DEVICE_CHARSET', record?.charset, '') }}
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'action'">
@@ -50,19 +78,19 @@
                 tooltip: t('common.title.edit'),
                 icon: 'ant-design:edit-outlined',
                 onClick: handleEdit.bind(null, record),
-                auth: 'video:device:videoDeviceInfo:edit',
+                auth: 'video:device:info:edit',
               },
               {
                 tooltip: t('common.title.copy'),
                 icon: 'ant-design:copy-outlined',
                 onClick: handleCopy.bind(null, record),
-                auth: 'video:device:videoDeviceInfo:copy',
+                auth: 'video:device:info:copy',
               },
               {
                 tooltip: t('common.title.delete'),
                 icon: 'ant-design:delete-outlined',
                 color: 'error',
-                auth: 'video:device:videoDeviceInfo:delete',
+                auth: 'video:device:info:delete',
                 popConfirm: {
                   title: t('common.tips.confirmDelete'),
                   confirm: handleDelete.bind(null, record),
@@ -75,6 +103,7 @@
       </template>
     </BasicTable>
     <EditModal @register="registerModal" @success="handleSuccess" />
+    <OnvifDiscoverModal @register="registerOnvifModal" @success="handleSuccess" />
   </PageWrapper>
 </template>
 <script lang="ts">
@@ -82,36 +111,74 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useRouter } from 'vue-router';
+  import { useDetailRoute } from '/@/hooks/web/usePage';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
+  import { BusinessCardList } from '/@/components/BusinessCardList';
+  import { VideoDeviceSvg } from '/@/components/video';
+  import type { CardField, CardPermissions } from '/@/components/BusinessCardList';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
-  import { ActionEnum } from '/@/enums/commonEnum';
-  import { page, remove } from '/@/api/video/device/videoDeviceInfo';
-  import { columns, searchFormSchema } from './videoDeviceInfo.data';
+  import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
+  import { page, remove } from '/@/api/video/device/info';
+  import { columns, searchFormSchema } from './info.data';
   import EditModal from './Edit.vue';
+  import OnvifDiscoverModal from './OnvifDiscoverModal.vue';
   import { useDict } from '/@/components/Dict';
   const { getDictLabel } = useDict();
 
   export default defineComponent({
-    // 若需要开启页面缓存，请将此参数跟菜单名保持一致
-    name: '设备列表',
+    name: 'VideoDeviceInfo',
     components: {
       BasicTable,
       PageWrapper,
       TableAction,
       EditModal,
+      OnvifDiscoverModal,
+      BusinessCardList,
+      VideoDeviceSvg,
     },
     setup() {
       const { t } = useI18n();
       const { push } = useRouter();
-      const { createMessage, createConfirm } = useMessage();
+      const { createConfirm, createMessage } = useMessage();
+      const { detailRouteName, goDetail } = useDetailRoute();
+
+      // 包装 API，避免后端未实现时白屏
+      async function safePage(params: any) {
+        try {
+          return await page(params);
+        } catch (e: any) {
+          console.warn('videoDeviceInfo page error:', e);
+          createMessage.error(e?.message || t('video.device.info.loadFailed'));
+          return { records: [], total: 0 };
+        }
+      }
       const [registerModal, { openModal }] = useModal();
+      const [registerOnvifModal, { openModal: openOnvifModal }] = useModal();
+      function handleOnvifDiscover() {
+        openOnvifModal(true, {});
+      }
       const switchFlag = ref<boolean>(true);
+      const cardListRef = ref<any>(null);
+
+      const cardFields: CardField[] = [
+        { label: t('video.device.info.manufacturer'), field: 'manufacturer', span: 12 },
+        { label: t('video.device.info.host'), field: 'host', span: 12 },
+        { label: t('video.device.info.createdTime'), field: 'createdTime' },
+        { label: t('video.device.info.deviceIdentification'), field: 'deviceIdentification' },
+      ];
+
+      const cardPermissions: CardPermissions = {
+        add: 'video:device:info:add',
+        edit: 'video:device:info:edit',
+        delete: 'video:device:info:delete',
+        view: 'video:device:info:view',
+      };
       // 表格
       const [registerTable, { reload, getSelectRowKeys }] = useTable({
-        title: t('video.device.videoDeviceInfo.table.title'),
-        api: page,
+        title: t('video.device.info.table.title'),
+        api: safePage,
         columns: columns(),
         formConfig: {
           name: 'VideoDeviceInfoSearch',
@@ -161,12 +228,7 @@
       // 弹出查看页面
       function handleView(record: Recordable, e: Event) {
         e?.stopPropagation();
-        push({
-          name: '国标设备详情',
-          params: {
-            id: record.id,
-          },
-        });
+        goDetail(record.id);
       }
 
       // 弹出编辑页面
@@ -181,6 +243,7 @@
       // 新增或编辑成功回调
       function handleSuccess() {
         reload();
+        cardListRef.value?.reload();
       }
 
       async function batchDelete(ids: string[]) {
@@ -214,6 +277,18 @@
           },
         });
       }
+      // 卡片模式删除（因为 device API 没有 deleteSingle，需要用 remove([id])）
+      function handleCardDelete(record: Recordable) {
+        createConfirm({
+          iconType: 'warning',
+          content: t('common.tips.confirmDelete'),
+          onOk: async () => {
+            await remove([record.id]);
+            createMessage.success(t('common.tips.deleteSuccess'));
+          },
+        });
+      }
+
       function switchView() {
         switchFlag.value = !switchFlag.value;
       }
@@ -226,13 +301,23 @@
 
       return {
         t,
+        page,
+        EditModal,
+        detailRouteName,
+        goDetail,
+        cardListRef,
         registerTable,
         registerModal,
+        registerOnvifModal,
+        handleOnvifDiscover,
+        cardFields,
+        cardPermissions,
         handleView,
         handleAdd,
         handleCopy,
         handleEdit,
         handleDelete,
+        handleCardDelete,
         handleBatchDelete,
         handleSuccess,
         switchFlag,

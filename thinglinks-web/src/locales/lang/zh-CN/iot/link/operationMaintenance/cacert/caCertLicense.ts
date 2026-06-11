@@ -31,4 +31,99 @@ export default {
   detailTitle: 'CA许可证证书详情',
   importTitle: '导入证书',
   caCertPem: 'CA证书PEM格式内容',
+  thumbprint: '指纹(SHA-256)',
+  validityRemaining: '剩余 {days} 天',
+  expired: '已过期',
+  boundDeviceCount: '关联设备数',
+  onlineDeviceCount: '其中在线',
+  switchView: '切换视图',
+  contentTip: '以下为该 CA 证书 PEM 格式内容,可复制后用于客户端验证',
+
+  card: {
+    nameFallback: '未命名证书',
+  },
+
+  status: {
+    pending: '待颁发',
+    issued: '已颁发',
+    revoked: '已吊销',
+    other: '不可用',
+  },
+
+  placeholder: {
+    certName: '请输入证书名称,如:阿里云 IoT CA',
+    caCertPem: '粘贴 CA 证书 PEM 内容,包含 -----BEGIN CERTIFICATE----- 行',
+    remark: '可填写证书用途、关联应用等说明信息',
+  },
+
+  action: {
+    issue: '颁发',
+    revoke: '吊销',
+    downloadPack: '下载客户端包',
+    testSsl: 'SSL 测试',
+    viewImpact: '查看影响面',
+  },
+
+  import: {
+    tip: '粘贴标准 PEM 格式 CA 根证书,系统会自动解析证书名称、序列号、有效期、签名算法等信息',
+    confirm: '导入',
+    success: '证书导入成功',
+    failed: '证书导入失败',
+  },
+
+  edit: {
+    title: '编辑证书信息',
+    tip: '证书序列号、通用名、签名算法等 PEM 解析字段不可改;仅可调整证书显示名与备注',
+    success: '保存成功',
+    failed: '保存失败',
+  },
+
+  detail: {
+    refresh: '刷新',
+    loadFailed: '加载证书详情失败',
+  },
+
+  impact: {
+    title: '吊销影响面',
+    warning: '此操作将立即影响 {count} 个设备(其中 {online} 在线),关联设备将无法通过 SSL 认证',
+    confirm: '我已知悉,确认吊销',
+    boundDevices: '关联设备列表(前 50 条)',
+    deviceIdentification: '设备标识',
+    deviceName: '设备名称',
+    online: '连接状态',
+    connectStatusOnline: '在线',
+    connectStatusOffline: '离线',
+    revokeReason: '吊销原因',
+    revokeReasonPh: '建议填写,便于审计追溯',
+    revokeSuccess: '已成功吊销证书',
+    revokeFailed: '吊销失败',
+    loadFailed: '加载影响面失败',
+    top50Tip: '关联设备共 {count} 个,以下仅展示前 50 个',
+  },
+
+  downloadPack: {
+    tip: '将以此 CA 为根证书签发一份客户端证书,打包成 ZIP 自动下载到本地',
+    caInfo: '基于以下 CA 签发',
+    notAfter: '客户端证书过期时间',
+    notAfterPh: '请选择过期时间,建议 1 年内',
+    confirm: '签发并下载',
+    success: '客户端包已开始下载',
+    failed: '签发或下载失败',
+  },
+
+  audit: {
+    tabTitle: '操作时间线',
+    type: '动作',
+    detail: '详情',
+    operator: '操作人',
+    time: '时间',
+    empty: '暂无审计记录',
+  },
+
+  tabs: {
+    basic: '基本信息',
+    content: '证书内容',
+    devices: '关联设备',
+    audit: '操作时间线',
+  },
 };

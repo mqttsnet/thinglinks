@@ -17,12 +17,12 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { ActionEnum, VALIDATE_API } from '/@/enums/commonEnum';
-  import { Api, save, update } from '/@/api/video/media/videoStreamProxy';
+  import { Api, save, update } from '/@/api/video/media/proxy';
   import { getValidateRules } from '/@/api/thinglinks/common/formValidateService';
-  import { customFormSchemaRules, editFormSchema } from './videoStreamProxy.data';
+  import { customFormSchemaRules, editFormSchema } from './proxy.data';
 
   export default defineComponent({
-    name: '编辑拉流代理',
+    name: 'VideoMediaProxyEdit',
     components: { BasicModal, BasicForm },
     emits: ['success', 'register'],
     setup(_, { emit }) {
@@ -58,12 +58,12 @@
             await setFieldsValue(record);
           }
 
-          // if (unref(type) !== ActionEnum.VIEW) {
-          //   let validateApi = Api[VALIDATE_API[unref(type)]];
-          //   await getValidateRules(validateApi, customFormSchemaRules(type)).then(async (rules) => {
-          //     rules && rules.length > 0 && (await updateSchema(rules));
-          //   });
-          // }
+          if (unref(type) !== ActionEnum.VIEW) {
+            let validateApi = Api[VALIDATE_API[unref(type)]];
+            await getValidateRules(validateApi, customFormSchemaRules(type)).then(async (rules) => {
+              rules && rules.length > 0 && (await updateSchema(rules));
+            });
+          }
         },
       );
 

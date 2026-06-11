@@ -201,26 +201,6 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="8">
-            <a-form-item
-              :name="`productVersion`"
-              :label="t('iot.link.product.product.productVersion')"
-              :rules="[
-                {
-                  required: true,
-                  message:
-                    t('common.inputText') + `${t('iot.link.product.product.productVersion')}`,
-                },
-              ]"
-            >
-              <a-input
-                v-model:value="formState.productVersion"
-                :placeholder="
-                  t('common.inputText') + `${t('iot.link.product.product.productVersion')}`
-                "
-              />
-            </a-form-item>
-          </a-col>
         </a-row>
         <a-row>
           <a-col :span="24">
@@ -1550,7 +1530,6 @@
         model: '',
         // productIdentification: "",
         productName: '',
-        productVersion: '',
         protocolType: '',
         remark: '',
         productStatus: '0',

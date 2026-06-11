@@ -12,7 +12,7 @@
           color="error"
           preIcon="ant-design:delete-outlined"
           @click="handleBatchDelete"
-          v-hasAnyPermission="['video:device:videoDeviceChannel:delete']"
+          v-hasAnyPermission="['video:device:channel:delete']"
         >
           {{ t('common.title.delete') }}
         </a-button>
@@ -20,7 +20,7 @@
           type="primary"
           preIcon="ant-design:plus-outlined"
           @click="handleAdd"
-          v-hasAnyPermission="['video:device:videoDeviceChannel:add']"
+          v-hasAnyPermission="['video:device:channel:add']"
         >
           {{ t('common.title.add') }}
         </a-button>
@@ -41,19 +41,19 @@
                 tooltip: t('common.title.edit'),
                 icon: 'ant-design:edit-outlined',
                 onClick: handleEdit.bind(null, record),
-                auth: 'video:device:videoDeviceChannel:edit',
+                auth: 'video:device:channel:edit',
               },
               {
                 tooltip: t('common.title.copy'),
                 icon: 'ant-design:copy-outlined',
                 onClick: handleCopy.bind(null, record),
-                auth: 'video:device:videoDeviceChannel:copy',
+                auth: 'video:device:channel:copy',
               },
               {
                 tooltip: t('common.title.delete'),
                 icon: 'ant-design:delete-outlined',
                 color: 'error',
-                auth: 'video:device:videoDeviceChannel:delete',
+                auth: 'video:device:channel:delete',
                 popConfirm: {
                   title: t('common.tips.confirmDelete'),
                   confirm: handleDelete.bind(null, record),
@@ -77,13 +77,13 @@
   import { useModal } from '/@/components/Modal';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
   import { ActionEnum } from '/@/enums/commonEnum';
-  import { page, remove } from '/@/api/video/device/videoDeviceChannel';
-  import { columns, searchFormSchema } from './videoDeviceChannel.data';
+  import { page, remove } from '/@/api/video/device/channel';
+  import { columns, searchFormSchema } from './channel.data';
   import EditModal from './Edit.vue';
 
   export default defineComponent({
     // 若需要开启页面缓存，请将此参数跟菜单名保持一致
-    name: '设备通道',
+    name: 'VideoDeviceChannel',
     components: {
       BasicTable,
       PageWrapper,
@@ -92,12 +92,12 @@
     },
     setup() {
       const { t } = useI18n();
-      const { createMessage, createConfirm } = useMessage();
+      const { createConfirm, createMessage } = useMessage();
       const [registerModal, { openModal }] = useModal();
       const switchFlag = ref<boolean>(true);
       // 表格
       const [registerTable, { reload, getSelectRowKeys }] = useTable({
-        title: t('video.device.videoDeviceChannel.table.title'),
+        title: t('video.device.channel.table.title'),
         api: page,
         columns: columns(),
         formConfig: {

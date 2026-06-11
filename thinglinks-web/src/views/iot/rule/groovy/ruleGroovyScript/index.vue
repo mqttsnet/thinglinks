@@ -2,10 +2,35 @@
   <PageWrapper dense contentFullHeight>
     <BasicTable
       @register="registerTable"
-      @switch-change="getSwitchChange"
       :switchFlag="switchFlag"
-      :isRuleGroovyScript="true"
+      @switch-change="getSwitchChange"
     >
+      <template #cardView="{ searchData, title }">
+        <BusinessCardList
+          ref="cardListRef"
+          :pageApi="page"
+          :deleteApi="deleteSingle"
+          :title="title"
+          :searchData="searchData"
+          nameField="name"
+          :nameFallback="t('iot.rule.groovy.ruleGroovyScript.card.nameFallback')"
+          :fields="cardFields"
+          statusField="enable"
+          :statusOnlineValue="true"
+          :statusOnlineLabel="t('iot.rule.groovy.ruleGroovyScript.enabled')"
+          :statusOfflineLabel="t('iot.rule.groovy.ruleGroovyScript.disabled')"
+          :permissions="cardPermissions"
+          :detailRouteName="detailRouteName"
+          :editModal="EditModal"
+          :extraActions="cardExtraActions"
+          @input="handleSuccess"
+          @extraAction="handleCardExtraAction"
+        >
+          <template #cardImage>
+            <GroovyScriptSvg />
+          </template>
+        </BusinessCardList>
+      </template>
       <template #toolbar>
         <a-button
           type="primary"
@@ -24,24 +49,9 @@
         >
           {{ t('common.title.add') }}
         </a-button>
-        <a-button preIcon="ant-design:swap-outlined" @click="switchView"
-          >{{ t('iot.link.device.device.switchView') }}
+        <a-button preIcon="ant-design:swap-outlined" @click="switchView">
+          {{ t('iot.rule.groovy.ruleGroovyScript.switchView') }}
         </a-button>
-      </template>
-      <template #namespace="{ record }">
-        {{ getDictLabel('RULE_GROOVY_SCRIPT_NAMESPACE_TYPE', record?.namespace, '') }}
-      </template>
-      <template #platformCode="{ record }">
-        {{ getDictLabel('RULE_GROOVY_SCRIPT_PLATFORM_CODE', record?.platformCode, '') }}
-      </template>
-      <template #productCode="{ record }">
-        {{ getDictLabel('RULE_GROOVY_SCRIPT_PRODUCT_CODE', record?.productCode, '') }}
-      </template>
-      <template #channelCode="{ record }">
-        {{ getDictLabel('RULE_GROOVY_SCRIPT_CHANNEL_CODE', record?.channelCode, '') }}
-      </template>
-      <template #businessCode="{ record }">
-        {{ getDictLabel('RULE_GROOVY_SCRIPT_BUSINESS_CODE', record?.businessCode, '') }}
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'action'">
@@ -58,6 +68,12 @@
                 icon: 'ant-design:edit-outlined',
                 onClick: handleEdit.bind(null, record),
                 auth: 'rule:groovy:ruleGroovyScript:edit',
+              },
+              {
+                tooltip: t('common.title.copy'),
+                icon: 'ant-design:copy-outlined',
+                onClick: handleCopy.bind(null, record),
+                auth: 'rule:groovy:ruleGroovyScript:copy',
               },
               {
                 tooltip: t('common.title.delete'),
@@ -79,38 +95,73 @@
   </PageWrapper>
 </template>
 <script lang="ts">
-  import { defineComponent, watch, ref } from 'vue';
-  import { useRouter } from 'vue-router';
+  import { defineComponent, ref, watch } from 'vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
+  import { BusinessCardList } from '/@/components/BusinessCardList';
+  import { GroovyScriptSvg } from '/@/components/iot/groovy';
+  import type { CardAction, CardPermissions } from '/@/components/BusinessCardList';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
   import { ActionEnum } from '/@/enums/commonEnum';
-  import { page, remove } from '/@/api/iot/rule/groovy/ruleGroovyScript';
-  import { columns, searchFormSchema } from './ruleGroovyScript.data';
+  import { page, remove, deleteSingle } from '/@/api/iot/rule/groovy/ruleGroovyScript';
+  import { columns, searchFormSchema, cardFields as buildCardFields } from './ruleGroovyScript.data';
   import EditModal from './Edit.vue';
-  import { useDict } from '/@/components/Dict';
-  const { getDictLabel } = useDict();
+  import { useDetailRoute } from '/@/hooks/web/usePage';
+
   export default defineComponent({
-    // 若需要开启页面缓存，请将此参数跟菜单名保持一致
+    // 与菜单名一致以启用页面缓存
     name: '规则脚本',
     components: {
       BasicTable,
       PageWrapper,
       TableAction,
       EditModal,
+      BusinessCardList,
+      GroovyScriptSvg,
     },
     setup() {
       const { t } = useI18n();
       const { createMessage, createConfirm } = useMessage();
       const [registerModal, { openModal }] = useModal();
-      const { push } = useRouter();
-      // 表格
+      const { detailRouteName, goDetail } = useDetailRoute();
+
+      const switchFlag = ref<boolean>(true);
+      const cardListRef = ref<any>(null);
+
+      const cardFields = buildCardFields();
+
+      const cardPermissions: CardPermissions = {
+        add: 'rule:groovy:ruleGroovyScript:add',
+        edit: 'rule:groovy:ruleGroovyScript:edit',
+        delete: 'rule:groovy:ruleGroovyScript:delete',
+        view: 'rule:groovy:ruleGroovyScript:view',
+      };
+
+      /**
+       * 卡片视图额外操作：复制脚本（编辑/删除/详情已内置在 BusinessCardList 操作区）。
+       */
+      const cardExtraActions: CardAction[] = [
+        {
+          tooltip: t('common.title.copy'),
+          icon: 'ant-design:copy-outlined',
+          permission: 'rule:groovy:ruleGroovyScript:copy',
+          event: 'copy',
+        },
+      ];
+
+      function handleCardExtraAction(payload: { event: string; record: Recordable }) {
+        if (payload.event === 'copy') {
+          handleCopy(payload.record);
+        }
+      }
+
       const [registerTable, { reload, getSelectRowKeys }] = useTable({
         title: t('iot.rule.groovy.ruleGroovyScript.table.title'),
         api: page,
+        immediate: false,
         columns: columns(),
         formConfig: {
           name: 'RuleGroovyScriptSearch',
@@ -140,44 +191,32 @@
         },
       });
 
-      // 弹出复制页面
-      function handleCopy(record: Recordable, e: Event) {
-        e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.COPY,
-        });
-      }
-      // 弹出新增页面
       function handleAdd() {
-        openModal(true, {
-          type: ActionEnum.ADD,
-        });
+        openModal(true, { type: ActionEnum.ADD });
       }
 
-      // 弹出查看页面
       function handleView(record: Recordable, e: Event) {
         e?.stopPropagation();
-        push({
-          name: '规则脚本详情',
-          params: {
-            id: record.id,
-          },
-        });
+        goDetail(record.id);
       }
 
-      // 弹出编辑页面
       function handleEdit(record: Recordable, e: Event) {
         e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.EDIT,
-        });
+        openModal(true, { record, type: ActionEnum.EDIT });
       }
 
-      // 新增或编辑成功回调
+      /**
+       * 复制脚本：以 COPY 模式打开新增弹窗，字段回显但 ID 置空，
+       * 用户调整归属字段（scriptType / channelCode 等）后保存为新脚本。
+       */
+      function handleCopy(record: Recordable, e?: Event) {
+        e?.stopPropagation();
+        openModal(true, { record, type: ActionEnum.COPY });
+      }
+
       function handleSuccess() {
         reload();
+        cardListRef.value?.reload();
       }
 
       async function batchDelete(ids: string[]) {
@@ -186,7 +225,6 @@
         handleSuccess();
       }
 
-      // 点击单行删除
       function handleDelete(record: Recordable, e: Event) {
         e?.stopPropagation();
         if (record?.id) {
@@ -194,7 +232,6 @@
         }
       }
 
-      // 点击批量删除
       function handleBatchDelete() {
         const ids = getSelectRowKeys();
         if (!ids || ids.length <= 0) {
@@ -211,15 +248,15 @@
           },
         });
       }
-      // 切换视图 卡片&&列表
-      const switchFlag = ref<boolean>(true);
+
       function switchView() {
         switchFlag.value = !switchFlag.value;
       }
 
-      function getSwitchChange(e) {
+      function getSwitchChange(e: boolean) {
         switchFlag.value = e;
       }
+
       watch(switchFlag, (newValue) => {
         if (newValue === false) {
           reload();
@@ -228,19 +265,27 @@
 
       return {
         t,
+        page,
+        deleteSingle,
+        EditModal,
+        cardListRef,
+        detailRouteName,
         registerTable,
         registerModal,
-        handleView,
+        cardFields,
+        cardPermissions,
+        cardExtraActions,
         switchFlag,
         switchView,
         getSwitchChange,
-        getDictLabel,
         handleAdd,
-        handleCopy,
+        handleView,
         handleEdit,
+        handleCopy,
         handleDelete,
         handleBatchDelete,
         handleSuccess,
+        handleCardExtraAction,
       };
     },
   });

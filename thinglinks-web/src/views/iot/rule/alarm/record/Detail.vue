@@ -247,7 +247,7 @@
                 :label="t('iot.link.engine.channel.createdBy')"
               >
                 <div style="min-width: 200px">
-                  {{ item?.createdBy }}
+                  {{ echoMapText(item, 'createdBy') }}
                 </div>
               </a-descriptions-item>
               <a-descriptions-item
@@ -262,7 +262,7 @@
                 :contentStyle="contentStyle"
                 :label="t('iot.link.engine.channel.updatedBy')"
               >
-                {{ item?.updatedBy }}
+                {{ echoMapText(item, 'updatedBy') }}
               </a-descriptions-item>
               <a-descriptions-item
                 :labelStyle="labelStyle"
@@ -302,6 +302,7 @@
   import SvgIcon from '/@/components/Icon/src/SvgIcon.vue';
   import type { AlarmRecordResultVO } from '../../../../../api/iot/rule/alarm/model/recordModel';
   import { handleCopyTextV2 } from '/@/utils/thinglinks/common.tsx';
+  import { echoMapText } from '/@/utils/echo';
   export default defineComponent({
     name: '告警记录详情',
     components: {
@@ -329,7 +330,7 @@
       const isShow = ref(false);
       const textToCopy = ref(null);
       const { t } = useI18n();
-      const { createMessage, createConfirm, notification } = useMessage();
+      const { createMessage, createConfirm } = useMessage();
       const { currentRoute } = useRouter();
       let alarmRecordDetail = reactive<AlarmRecordResultVO>({});
       const [registerModal, { openModal }] = useModal();
@@ -350,15 +351,9 @@
         let result = copyTextToClipboard(text);
         console.log(result, 'result');
         if (result) {
-          notification.success({
-            message: t('common.tips.tips'),
-            description: t('common.tips.copySuccess'),
-          });
+          createMessage.success(t('common.tips.copySuccess'));
         } else {
-          notification.warning({
-            message: t('common.tips.tips'),
-            description: t('common.tips.copyFail'),
-          });
+          createMessage.warning(t('common.tips.copyFail'));
         }
       }
 
@@ -395,6 +390,7 @@
 
       return {
         t,
+        echoMapText,
         copyFn,
         alarmRecordDetail,
         currentKey,

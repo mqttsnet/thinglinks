@@ -82,7 +82,7 @@
     },
     setup() {
       const { t } = useI18n();
-      const { createMessage, createConfirm, notification } = useMessage();
+      const { createMessage, createConfirm } = useMessage();
       const [registerModal, { openModal }] = useModal();
 
       // 表格
@@ -160,19 +160,13 @@
       // 删除单条数据
       const handleDeleteSingle = async (id: string) => {
         await deleteSingle(id);
-        notification.success({
-          message: t('common.tips.tips'),
-          description: t('common.tips.deleteSuccess'),
-        });
+        createMessage.success(t('common.tips.deleteSuccess'));
         handleSuccess();
       };
 
       async function batchDelete(ids: string[]) {
         await remove(ids);
-        notification.success({
-          message: t('common.tips.tips'),
-          description: t('common.tips.deleteSuccess'),
-        });
+        createMessage.success(t('common.tips.deleteSuccess'));
         handleSuccess();
       }
 
@@ -188,10 +182,7 @@
       function handleBatchDelete() {
         const ids = getSelectRowKeys();
         if (!ids || ids.length <= 0) {
-          notification.warning({
-            message: t('common.tips.tips'),
-            description: t('common.tips.pleaseSelectTheData'),
-          });
+          createMessage.warning(t('common.tips.pleaseSelectTheData'));
           return;
         }
         createConfirm({

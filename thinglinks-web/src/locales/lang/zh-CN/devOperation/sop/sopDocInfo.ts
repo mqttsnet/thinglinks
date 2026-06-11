@@ -36,4 +36,7 @@ export default {
   syncTips: '确定要同步远程接口吗？',
   deleteTips: '确定删除 {value} 么？',
   addDocApp: '新增应用',
+  pleaseCreateAppFirst: '请先点击右上角「新增」创建一个文档应用',
+  noAppEmpty: '暂无文档应用，点击「添加」创建第一个应用，并完成 Torna Token 配置后即可同步文档。',
+  loadAppFailed: '加载文档应用列表失败',
 };

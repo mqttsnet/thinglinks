@@ -8,6 +8,21 @@
     :keyboard="true"
   >
     <BasicForm @register="registerForm" />
+
+    <!-- VIEW 模式追加 channel_config / extend_params 自动展开（后端加字段前端无需改） -->
+    <template v-if="type === ActionEnum.VIEW">
+      <a-divider>{{ t('video.device.channel.channelConfig') }}</a-divider>
+      <JsonAutoDescriptions
+        :data="currentRecord?.channelConfig"
+        i18n-prefix="video.device.channel.channelConfigFields"
+      />
+
+      <a-divider>{{ t('video.device.channel.extendParams') }}</a-divider>
+      <JsonAutoDescriptions
+        :data="currentRecord?.extendParams"
+        i18n-prefix="video.device.channel.extendParamsFields"
+      />
+    </template>
   </BasicModal>
 </template>
 <script lang="ts">
@@ -17,17 +32,20 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { ActionEnum, VALIDATE_API } from '/@/enums/commonEnum';
-  import { Api, save, update } from '/@/api/video/device/videoDeviceChannel';
+  import { Api, save, update } from '/@/api/video/device/channel';
   import { getValidateRules } from '/@/api/thinglinks/common/formValidateService';
-  import { customFormSchemaRules, editFormSchema } from './videoDeviceChannel.data';
+  import { customFormSchemaRules, editFormSchema } from './channel.data';
+  import JsonAutoDescriptions from '/@/components/JsonAutoDescriptions';
 
   export default defineComponent({
-    name: '编辑设备通道',
-    components: { BasicModal, BasicForm },
+    name: 'VideoDeviceChannelEdit',
+    components: { BasicModal, BasicForm, JsonAutoDescriptions },
     emits: ['success', 'register'],
     setup(_, { emit }) {
       const { t } = useI18n();
       const type = ref<ActionEnum>(ActionEnum.ADD);
+      /** VIEW 模式下保存当前记录，供 JsonAutoDescriptions 读取 channel_config / extend_params */
+      const currentRecord = ref<Record<string, any> | null>(null);
       const { createMessage } = useMessage();
 
       const [registerForm, { setFieldsValue, resetFields, updateSchema, validate, resetSchema }] =
@@ -55,7 +73,10 @@
           if (unref(type) !== ActionEnum.ADD) {
             // 赋值
             const record = { ...data?.record };
+            currentRecord.value = record;
             await setFieldsValue(record);
+          } else {
+            currentRecord.value = null;
           }
 
           if (unref(type) !== ActionEnum.VIEW) {
@@ -88,7 +109,7 @@
         }
       }
 
-      return { type, t, registerModel, registerForm, handleSubmit };
+      return { type, t, registerModel, registerForm, handleSubmit, ActionEnum, currentRecord };
     },
   });
 </script>

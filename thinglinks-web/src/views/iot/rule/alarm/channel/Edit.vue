@@ -22,7 +22,7 @@ export default defineComponent({
   setup(_, { emit }) {
     const { t } = useI18n();
     const type = ref<ActionEnum>(ActionEnum.ADD);
-    const { createMessage, notification } = useMessage();
+    const { createMessage } = useMessage();
 
     const [registerForm, { setFieldsValue, resetFields, updateSchema, validate, resetSchema }] =
       useForm({
@@ -88,10 +88,7 @@ export default defineComponent({
             params.id = null;
             await save(params);
           }
-          notification.success({
-            message: '提示',
-            description: t(`common.tips.${type.value}Success`),
-          });
+          createMessage.success(t(`common.tips.${type.value}Success`));
         }
         close();
         emit('success');

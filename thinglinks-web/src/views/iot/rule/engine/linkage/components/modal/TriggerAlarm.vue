@@ -86,7 +86,7 @@
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import AlarmListCardList from '../../../../../../../components/Table/src/types/components/iot/rule/alarm/AlarmListCardList.vue';
+  import AlarmListCardList from '../../../../../../../components/iot/rule/alarm/AlarmListCardList.vue';
   import { Icon } from '/@/components/Icon/index';
   import { TinymceCustom } from '/@/components/Tinymce/index';
   import { ActionEnum } from '/@/enums/commonEnum';
@@ -103,7 +103,7 @@
   const ModalOpen = ref<boolean[]>([false, false]);
 
   const { t } = useI18n();
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   const [registerModal, { closeModal }] = useModalInner(async (data) => {
     actionIndex.value = data.actionIndex;
     Object.assign(actionItem, data.actionItem);
@@ -131,10 +131,7 @@
   ];
   const next = () => {
     if (currentSelectedAlarmIdentification.value == '') {
-      notification.error({
-        message: t('common.tips.tips'),
-        description: '请选择告警规则',
-      });
+      createMessage.error('请选择告警规则');
       return;
     }
     current.value++;
@@ -159,24 +156,15 @@
 
   const handleSubmit = async () => {
     if (currentSelectedAlarmIdentification.value == '') {
-      notification.error({
-        message: t('common.tips.tips'),
-        description: t('common.chooseText') + t('iot.link.engine.alarmRecord.alarmRule'),
-      });
+      createMessage.error(t('common.chooseText') + t('iot.link.engine.alarmRecord.alarmRule'));
       return;
     }
     if (resPhone.value.length === 0) {
-      notification.error({
-        message: t('common.tips.tips'),
-        description: t('common.inputText') + t('iot.link.engine.alarmRecord.alarmRecipient'),
-      });
+      createMessage.error(t('common.inputText') + t('iot.link.engine.alarmRecord.alarmRecipient'));
       return;
     }
     if (editorContent.value === '') {
-      notification.error({
-        message: t('common.tips.tips'),
-        description: t('common.inputText') + t('iot.link.engine.alarmRecord.alarmContent'),
-      });
+      createMessage.error(t('common.inputText') + t('iot.link.engine.alarmRecord.alarmContent'));
       return;
     }
     emit('saveTriggerAlarm', {
@@ -201,10 +189,7 @@
     // 定义正则表达式
     const phoneNumberPattern = /^1[3-9]\d{9}$/;
     if (!phoneNumberPattern.test(inputPhone.value)) {
-      notification.error({
-        message: t('common.tips.tips'),
-        description: '请输入合法手机号码',
-      });
+      createMessage.error('请输入合法手机号码');
       return;
     }
     if (resPhone.value.includes(inputPhone.value)) {

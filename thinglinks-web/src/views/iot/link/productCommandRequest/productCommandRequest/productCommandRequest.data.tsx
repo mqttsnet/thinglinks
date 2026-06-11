@@ -5,6 +5,9 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
+import { echoMapText } from '/@/utils/echo';
+// 与属性 Edit 共用同一份 datatype 校验工具,设备调试参数填写也复用
+import { buildHelpMessage, TD_NCHAR_MAX, thingModelCodeRules } from '/@/utils/iot/dataTypeValidator';
 
 const { t } = useI18n();
 // 列表页字段
@@ -69,6 +72,7 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.link.productCommandRequest.productCommandRequest.createdOrgId'),
       dataIndex: 'createdOrgId',
+      customRender: ({ record }) => echoMapText(record, 'createdOrgId'),
     },
     {
       title: t('common.createdTime'),
@@ -204,6 +208,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       label: t('iot.link.productCommandRequest.productCommandRequest.parameterCode'),
       field: 'parameterCode',
       component: 'Input',
+      rules: thingModelCodeRules(),
     },
     {
       label: t('iot.link.productCommandRequest.productCommandRequest.parameterName'),
@@ -219,40 +224,58 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       label: t('iot.link.productCommandRequest.productCommandRequest.datatype'),
       field: 'datatype',
       component: 'ApiSelect',
+      // 动态 tooltip:根据当前选中的 datatype 给出范围/格式提示
+      helpMessage: ({ values }) => buildHelpMessage(values?.datatype),
       componentProps: {
         ...dictComponentProps(DictEnum.LINK_PRODUCT_SERVICE_COMMAND_DATA_TYPE),
       },
       rules: [{ required: true }],
     },
+    // 枚举值(仅 string)
     {
       label: t('iot.link.productCommandRequest.productCommandRequest.enumlist'),
       field: 'enumlist',
       component: 'Input',
+      ifShow: ({ values }) => values.datatype === 'string',
+      helpMessage: t('iot.link.productProperty.productProperty.enumlistHelp'),
+      componentProps: { placeholder: 'RED,GREEN,BLUE' },
+    },
+    // 数值约束(仅 int / decimal)── InputNumber + int 精度联动
+    {
+      label: t('iot.link.productCommandRequest.productCommandRequest.min'),
+      field: 'min',
+      component: 'InputNumber',
+      ifShow: ({ values }) => ['int', 'decimal'].includes(values.datatype),
+      helpMessage: ({ values }) => buildHelpMessage(values?.datatype),
+      componentProps: ({ formModel }) => ({
+        style: { width: '100%' },
+        precision: formModel.datatype === 'int' ? 0 : undefined,
+      }),
     },
     {
       label: t('iot.link.productCommandRequest.productCommandRequest.max'),
       field: 'max',
-      component: 'Input',
-      show: ({ values }) => {
-        return ['int', 'decimal'].indexOf(values.datatype) !== -1;
-      },
+      component: 'InputNumber',
+      ifShow: ({ values }) => ['int', 'decimal'].includes(values.datatype),
+      helpMessage: t('iot.link.productProperty.productProperty.maxGreaterThanMin'),
+      componentProps: ({ formModel }) => ({
+        style: { width: '100%' },
+        precision: formModel.datatype === 'int' ? 0 : undefined,
+      }),
     },
+    // 字符串长度(仅 string / DateTime / jsonObject)── 上限收紧到 TD_NCHAR_MAX,变长类型必填
     {
       label: t('iot.link.productCommandRequest.productCommandRequest.maxlength'),
       field: 'maxlength',
-      component: 'Input',
-      rules: [{ required: true }],
-      // show: ({ values }) => {
-      //   return ['string'].indexOf(values.datatype) !== -1;
-      // },
-    },
-    {
-      label: t('iot.link.productCommandRequest.productCommandRequest.min'),
-      field: 'min',
-      component: 'Input',
-      show: ({ values }) => {
-        return ['int', 'decimal'].indexOf(values.datatype) !== -1;
+      component: 'InputNumber',
+      ifShow: ({ values }) =>
+        ['string', 'DateTime', 'jsonObject'].includes(values.datatype),
+      helpMessage: t('iot.link.productProperty.productProperty.help.string', { max: TD_NCHAR_MAX }),
+      dynamicRules: ({ values }) => {
+        if (!['string', 'DateTime', 'jsonObject'].includes(values?.datatype)) return [];
+        return [{ required: true, message: t('common.inputText') as string }];
       },
+      componentProps: { style: { width: '100%' }, min: 1, max: TD_NCHAR_MAX, precision: 0 },
     },
     {
       label: t('iot.link.productCommandResponse.productCommandResponse.required'),
@@ -265,15 +288,24 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
         isSolid: true,
       },
     },
+    // 步长 + 单位(仅 int / decimal)
     {
       label: t('iot.link.productCommandRequest.productCommandRequest.step'),
       field: 'step',
-      component: 'Input',
+      component: 'InputNumber',
+      ifShow: ({ values }) => ['int', 'decimal'].includes(values.datatype),
+      helpMessage: t('iot.link.productProperty.productProperty.help.step'),
+      componentProps: ({ formModel }) => ({
+        style: { width: '100%' },
+        precision: formModel.datatype === 'int' ? 0 : undefined,
+        min: 0,
+      }),
     },
     {
       label: t('iot.link.productCommandRequest.productCommandRequest.unit'),
       field: 'unit',
       component: 'Input',
+      ifShow: ({ values }) => ['int', 'decimal'].includes(values.datatype),
     },
     {
       label: t('iot.link.productCommandRequest.productCommandRequest.remark'),

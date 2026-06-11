@@ -1,5 +1,6 @@
 <template>
-  <div class="bg-white m-4 mr-2 overflow-hidden">
+  <!-- 改为 overflow-x:auto, 避免深层级菜单被左侧窄面板裁掉,允许横向滚动 -->
+  <div class="def-resource-tree bg-white m-4 mr-2">
     <div class="m-4">
       <Select
         v-model:value="applicationRef"
@@ -29,6 +30,9 @@
       </a-button>
       <a-button class="mr-2" preIcon="ant-design:reload-outlined" @click="fetch()">
         {{ t('common.redo') }}
+      </a-button>
+      <a-button class="mr-2" preIcon="ant-design:clear-outlined" @click="handleClearCache()">
+        刷新缓存
       </a-button>
     </div>
     <BasicTree
@@ -60,6 +64,16 @@
     <MoveModal @register="registerModal" @success="handleSuccess" />
   </div>
 </template>
+
+<style lang="less" scoped>
+  // 深层级树 + 长名称场景:横向滚动兜底,操作按钮不再遮挡名称
+  .def-resource-tree {
+    overflow-x: auto;
+    overflow-y: hidden;
+    // 高度让外层 PageWrapper 撑满
+    height: 100%;
+  }
+</style>
 <script lang="ts">
   import { defineComponent, h, onMounted, reactive, ref, unref } from 'vue';
   import { Select, Tag } from 'ant-design-vue';
@@ -83,7 +97,7 @@
   import { eachTree, findNodeByKey } from '/@/utils/helper/treeHelper';
   import { getResourceTagColor } from '/@/utils/color';
   import { query } from '/@/api/devOperation/application/defApplication';
-  import { remove, tree } from '/@/api/devOperation/application/defResource';
+  import { remove, tree, clearCache } from '/@/api/devOperation/application/defResource';
   import { ResourceTypeEnum } from '/@/enums/biz/tenant';
   import { useModal } from '/@/components/Modal';
   import MoveModal from './Move.vue';
@@ -350,6 +364,21 @@
         await fetch();
       }
 
+      async function handleClearCache() {
+        const applicationId = applicationRef.value;
+        if (!applicationId) {
+          createMessage.warn('请先选择应用');
+          return;
+        }
+        try {
+          await clearCache(applicationId);
+          createMessage.success('缓存刷新成功');
+          await fetch(applicationId);
+        } catch (e) {
+          createMessage.error('缓存刷新失败');
+        }
+      }
+
       return {
         t,
         RoleEnum,
@@ -369,6 +398,7 @@
         treeLoading,
         registerModal,
         handleSuccess,
+        handleClearCache,
       };
     },
   });

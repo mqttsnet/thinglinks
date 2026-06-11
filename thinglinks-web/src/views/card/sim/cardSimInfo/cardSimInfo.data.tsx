@@ -6,8 +6,9 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
-// import type { VideoMediaServerPageQuery } from '/@/api/video/media/model/videoMediaServerModel';
+// import type { VideoMediaServerPageQuery } from '/@/api/video/media/model/serverModel';
 import { useDict } from '/@/components/Dict';
+import { echoMapText } from '/@/utils/echo';
 const { getDictLabel } = useDict();
 
 const { t } = useI18n();
@@ -171,6 +172,7 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('card.sim.cardSimInfo.createdOrgId'),
       dataIndex: 'createdOrgId',
+      customRender: ({ record }) => echoMapText(record, 'createdOrgId'),
     },
     {
       title: t('thinglinks.common.createdTime'),

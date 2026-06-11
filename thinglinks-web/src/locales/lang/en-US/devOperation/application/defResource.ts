@@ -96,7 +96,7 @@ export default {
   customClass: 'customClass',
   customClassHelpMsg: [
     '1. Create a class yourself and implement the DataScopeProvider interface',
-    '2. Mark annotation on the implementation class: @Component("DATA_SCOPE_XXXX")',
+    "2. Mark annotation on the implementation class: ＠Component(\"DATA_SCOPE_XXXX\")",
     '3. Configure on this parameter: DATA_SCOPE_XXXX',
   ],
   customClassPlaceHolder: 'Custom implementation class prefixed with "DATA_SCOPE_"',
@@ -117,7 +117,7 @@ export default {
   cannotMoveToDescendant: '(Cannot move to its descendant node)',
   pleaseSelectNode: 'Please select the node to move',
   confirmMoveToRoot: 'Are you sure you want to move 【{name}】 to 【Root Node】',
-  confirmMoveToNode: 'Are you sure you want to move 【{name}】 to 【{targetName}】',
+  confirmMoveToNode: 'Are you sure you want to move 【{name}】 to 【[targetName]】',
   rootNode: 'Root Node',
   moveSuccess: 'Move successful',
   keyHelpMsg: 'Add key option, also need to add field in RouterMeta entity class in backend',

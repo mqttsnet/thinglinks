@@ -13,9 +13,11 @@ export default {
   updatedTime: 'UpdatedTime',
   updatedBy: 'UpdatedBy',
   createdOrgId: 'CreatedOrgId',
-  serviceList: 'ServiceList',
-  attributeList: 'Attribute list',
-  commandList: 'Command list',
+  serviceList: 'Services',
+  attributeList: 'Properties',
+  commandList: 'Commands',
+  emptyService: 'No services yet, click + to add',
+  pickServiceHint: 'Pick a service from the left panel',
   helpMessage: {
     serviceCode:
       'Supports lowercase English letters, numbers and underscores. All names should be in lowercase. Uppercase English letters are prohibited. Multiple words should be separated by underscores. Length [2,50]',

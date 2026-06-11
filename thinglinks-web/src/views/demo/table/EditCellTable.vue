@@ -237,18 +237,10 @@
         return new Promise((resolve) => {
           setTimeout(() => {
             if (value === '') {
-              createMessage.error({
-                content: '保存失败：不能为空',
-                key: '_save_fake_data',
-                duration: 2,
-              });
+              createMessage.error('保存失败：不能为空');
               resolve(false);
             } else {
-              createMessage.success({
-                content: `记录${id}的${key}已保存`,
-                key: '_save_fake_data',
-                duration: 2,
-              });
+              createMessage.success(`记录${id}的${key}已保存`);
               resolve(true);
             }
           }, 2000);

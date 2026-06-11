@@ -53,7 +53,7 @@
                 <div class="btn">
                   <a-tooltip placement="top" :title="t('common.title.delete')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/delete-y.png"
+                      src="/@/assets/images/iot/link/delete-y.png"
                       alt=""
                       @click="handleDelete(record)"
                     />
@@ -61,14 +61,14 @@
                 </div>
                 <div class="btn">
                   <img
-                    src="../../../../../../../../assets/images/iot/link/device/copy-n.png"
+                    src="/@/assets/images/iot/link/device/copy-n.png"
                     alt=""
                   />
                 </div>
                 <div class="btn" @click="handleEdit(record)">
                   <a-tooltip placement="top" :title="t('common.title.edit')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/device/edit-y.png"
+                      src="/@/assets/images/iot/link/device/edit-y.png"
                       alt=""
                     />
                   </a-tooltip>
@@ -79,23 +79,23 @@
               <img
                 v-if="record?.channelType === 2"
                 @click="handleEdit(record, $event)"
-                src="../../../../../../../../assets/images/iot/rule/alarm/feishu.png"
+                src="/@/assets/images/iot/rule/alarm/feishu.png"
               />
               <img
                 v-else-if="record?.channelType === 1"
                 @click="handleEdit(record, $event)"
                 :style="{ marginTop: '10px' }"
-                src="../../../../../../../../assets/images/iot/rule/alarm/qiyeweixin.png"
+                src="/@/assets/images/iot/rule/alarm/qiyeweixin.png"
               />
               <img
                 v-else-if="record?.channelType === 0"
                 @click="handleEdit(record, $event)"
-                src="../../../../../../../../assets/images/iot/rule/alarm/dingding.png"
+                src="/@/assets/images/iot/rule/alarm/dingding.png"
               />
               <img
                 v-else-if="record?.channelType === 3"
                 @click="handleEdit(record, $event)"
-                src="../../../../../../../../assets/images/iot/rule/alarm/channel4.png"
+                src="/@/assets/images/iot/rule/alarm/channel4.png"
               />
             </div>
           </div>
@@ -127,7 +127,7 @@
   import { useModal } from '/@/components/Modal';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
   // api
-  import { page, deleteSingle } from '../../../../../../../../api/iot/rule/alarm/channel';
+  import { page, deleteSingle } from '../../../../api/iot/rule/alarm/channel';
   // components
   import {
     Card,
@@ -189,7 +189,7 @@
       const current = ref(1);
       const size = ref(20);
       const total = ref(0);
-      const { notification, createConfirm } = useMessage();
+      const { createMessage, createConfirm } = useMessage();
       let model = reactive({});
       // 设备列表
       let deviceList = ref<Array<deviceItem>>([]);
@@ -273,10 +273,7 @@
           onOk: async () => {
             try {
               await deleteSingle(record.id);
-              notification.success({
-                message: t('common.tips.tips'),
-                description: t('common.tips.deleteSuccess'),
-              });
+              createMessage.success(t('common.tips.deleteSuccess'));
               getDecviceList();
             } catch (e) {}
           },
@@ -338,5 +335,5 @@
   });
 </script>
 <style scoped>
-  @import '../../../cardCommon.less';
+  @import '../../../Table/src/types/components/cardCommon.less';
 </style>

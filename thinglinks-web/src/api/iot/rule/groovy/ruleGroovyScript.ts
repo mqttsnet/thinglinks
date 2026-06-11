@@ -52,7 +52,20 @@ export const Api = {
     url: `${ServicePrefix}/${MODULAR}/runDirectCompile`,
     method: RequestEnum.POST,
   } as AxiosRequestConfig,
+  ExecStat: function (id: string) {
+    return {
+      url: `${ServicePrefix}/${MODULAR}/execStat/${id}`,
+      method: RequestEnum.GET,
+    } as AxiosRequestConfig;
+  },
 };
+
+/** 脚本执行统计(累计:总次数 / 成功 / 失败) */
+export interface RuleScriptExecStatVO {
+  total: number;
+  success: number;
+  fail: number;
+}
 
 export const copy = (id: string) =>
   defHttp.request<RuleGroovyScriptResultVO>({ ...Api.Copy, params: { id } });
@@ -75,3 +88,5 @@ export const deleteSingle = (id: string) => defHttp.request<boolean>({ ...Api.De
 export const remove = (params: string[]) => defHttp.request<boolean>({ ...Api.Delete, params });
 export const runCompile = (params: RuleGroovyScriptPageQuery) =>
   defHttp.request<RuleGroovyScriptResultVO[]>({ ...Api.RunCompile, params });
+export const execStat = (id: string) =>
+  defHttp.request<RuleScriptExecStatVO>({ ...Api.ExecStat(id) });

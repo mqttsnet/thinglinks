@@ -82,9 +82,21 @@
         );
       });
 
+      /**
+       * ScrollContainer 高度计算 ──
+       *
+       * <p>历史实现只扣 logo 高度(48px),没考虑 antd Sider 底部 trigger(默认 36px)
+       * 占位,导致二级菜单展开后下方菜单项被 trigger 遮挡,且 ScrollContainer 也无法滚到。</p>
+       *
+       * <p>新方案:容器走 flex column → logo 自然撑高 + ScrollContainer flex:1 吃剩余高度,
+       * antd Sider trigger 是 Sider 兄弟节点不在 children 内,无需手动扣;若日后 trigger
+       * 改放 children 区,只需把 trigger 也放进 flex column 即可,不再依赖魔法数字。</p>
+       */
       const getWrapperStyle = computed((): CSSProperties => {
         return {
-          height: `calc(100% - ${unref(getIsShowLogo) ? '48px' : '0px'})`,
+          flex: 1,
+          minHeight: 0,
+          height: 'auto',
         };
       });
 
@@ -164,15 +176,16 @@
       }
 
       return () => {
+        // flex column 包裹,保证 ScrollContainer flex:1 能正确吃满 logo / trigger 之间的剩余高度
         return (
-          <>
+          <div class={`${prefixCls}-wrap`}>
             {renderHeader()}
             {unref(getUseScroll) ? (
               <ScrollContainer style={unref(getWrapperStyle)}>{() => renderMenu()}</ScrollContainer>
             ) : (
               renderMenu()
             )}
-          </>
+          </div>
         );
       };
     },
@@ -183,9 +196,20 @@
   @logo-prefix-cls: ~'@{namespace}-app-logo';
 
   .@{prefix-cls} {
+    /* flex column 容器:让 logo / ScrollContainer / 可能的额外区块按文档流分配高度,
+       彻底替代历史 calc(100% - 48px) 硬算,避免漏算 antd Sider 底部 trigger 高度
+       导致的"二级菜单展开后下方被截断 + 不可滚动"问题。 */
+    &-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
     &-logo {
       height: @header-height;
       padding: 10px 4px 10px 10px;
+      flex-shrink: 0;
 
       img {
         width: @logo-width;

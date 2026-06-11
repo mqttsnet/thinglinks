@@ -76,6 +76,7 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   import { copyTextToClipboard } from '/@/hooks/web/useCopyToClipboard';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import { BizConstant } from '/@/enums/biz/common';
   import { page } from '../../../../../../../api/iot/rule/alarm/alarm';
   import type { AlarmPageQuery } from '../../../../../../../api/iot/rule/alarm/model/alarmModel';
   import { TinymceCustom } from '/@/components/Tinymce/index';
@@ -110,7 +111,7 @@
     },
     emits: ['editModel'],
     setup(props, { emit }) {
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
       const { t } = useI18n();
       const currentActionItem = reactive<any>({});
       const currentAlarmRule = reactive<AlarmPageQuery>({});
@@ -140,13 +141,9 @@
         console.log(result, 'result');
         console.log(text, 'text');
         if (result) {
-          notification.success({
-            message: t('common.tips.copySuccess'),
-          });
+          createMessage.success(t('common.tips.copySuccess'));
         } else {
-          notification.warn({
-            message: t('common.tips.copyFail'),
-          });
+          createMessage.warning(t('common.tips.copyFail'));
         }
       };
       const getCmdRequestName = (idx) => {
@@ -182,8 +179,8 @@
         return obj;
       };
       const getName = (value, valueKey, obj, nameKey) => {
-        if (value === 'all') {
-          return '全部设备';
+        if (value === BizConstant.ALL) {
+          return t('iot.link.engine.linkage.allDevices');
         } else {
           if (obj) {
             // console.log(value,valueKey,obj,nameKey)

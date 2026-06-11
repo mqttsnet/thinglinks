@@ -8,6 +8,7 @@ import { Tag } from 'ant-design-vue';
 import { query } from '../../../../../api/iot/rule/alarm/channel';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
 import { DictEnum } from '/@/enums/commonEnum';
+import { echoMapText } from '/@/utils/echo';
 
 const { t } = useI18n();
 // 列表页字段
@@ -52,6 +53,7 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.link.engine.alarm.createBy'),
       dataIndex: 'createdBy',
+      customRender: ({ record }) => echoMapText(record, 'createdBy'),
     },
     {
       title: t('iot.link.engine.alarm.createTime'),
@@ -60,6 +62,7 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.link.engine.alarm.updateBy'),
       dataIndex: 'updatedBy',
+      customRender: ({ record }) => echoMapText(record, 'updatedBy'),
     },
     {
       title: t('iot.link.engine.alarm.updateTime'),

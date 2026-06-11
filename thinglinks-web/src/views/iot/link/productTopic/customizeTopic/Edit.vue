@@ -53,10 +53,9 @@
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { ActionEnum, VALIDATE_API } from '/@/enums/commonEnum';
-  import { Api, save, update } from '/@/api/iot/link/productTopic/productTopic';
-  import { getValidateRules } from '/@/api/thinglinks/common/formValidateService';
-  import { customFormSchemaRules, editFormSchema } from './customizeTopic.data';
+  import { ActionEnum } from '/@/enums/commonEnum';
+  import { save, update } from '/@/api/iot/link/productTopic/productTopic';
+  import { editFormSchema } from './customizeTopic.data';
 
   export default defineComponent({
     name: '编辑产品Topic',
@@ -68,7 +67,7 @@
       const productIdentification = ref('');
       const { createMessage } = useMessage();
 
-      const [registerForm, { setFieldsValue, resetFields, updateSchema, validate, resetSchema }] =
+      const [registerForm, { setFieldsValue, resetFields, validate, resetSchema }] =
         useForm({
           name: 'ProductTopicEdit',
           labelWidth: 120,

@@ -5,14 +5,21 @@
         <BellOutlined />
       </Badge>
       <template #content>
-        <Tabs>
+        <!-- 空态:ws 未连接 / 未收到推送 / 真无消息,显式 a-empty 比之前的空白卡片更友好 -->
+        <a-empty
+          v-if="!listData.length"
+          :image="emptyImage"
+          :description="t('layout.header.tooltipNotify') || '暂无新通知'"
+          class="notify-empty"
+        />
+        <Tabs v-else>
           <template v-for="item in listData" :key="item.key">
             <TabPane>
               <template #tab>
                 {{ item.name }}
                 <span style="color: #fb441b">({{ item.data.total }}) </span></template
               >
-              <!-- 绑定title-click事件的通知列表中标题是“可点击”的-->
+              <!-- 绑定title-click事件的通知列表中标题是"可点击"的-->
               <NoticeList :remindMode="item.key" :value="item.data" @title-click="onNoticeClick" />
               <MsgWrapper @register="registerModal" />
             </TabPane>
@@ -24,9 +31,8 @@
 </template>
 <script lang="ts">
   import { computed, defineComponent, onMounted, reactive, ref } from 'vue';
-  import { Badge, Popover, Tabs } from 'ant-design-vue';
+  import { Badge, Empty, Popover, Tabs } from 'ant-design-vue';
   import { BellOutlined } from '@ant-design/icons-vue';
-  import { useRouter } from 'vue-router';
   import { useWebSocket } from '@vueuse/core';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useUserStore } from '/@/store/modules/user';
@@ -46,10 +52,10 @@
       Popover,
       BellOutlined,
       Tabs,
-      TabPane:
-      Tabs.TabPane,
+      TabPane: Tabs.TabPane,
       Badge,
-      NoticeList
+      AEmpty: Empty,
+      NoticeList,
     },
     setup() {
       const { prefixCls } = useDesign('header-notify');
@@ -66,7 +72,7 @@
       const state = reactive({
         server: `${
           protocol.includes('https') ? 'wss' : 'ws'
-        }://${host}/api/wsMsg/myMsg/${tenantId}/${employeeId}?Token=${token}&TenantId=${tenantId}`,
+        }://${host}/api/wsMsg/anyone/myMsg/${tenantId}/${employeeId}?Token=${token}&TenantId=${tenantId}`,
         sendValue: '',
         recordList: [] as { id: number; time: number; res: string }[],
       });
@@ -76,26 +82,34 @@
         if (!jsonStr) {
           return;
         }
-        const jsonResult = JSON.parse(jsonStr);
+        // try-catch 防御:后端如返回非 JSON(心跳 ack / 错误字符串)JSON.parse 会抛,
+        // 异常未捕获时虽然 vueuse 内部 catch 但前端会丢这次推送数据,排查困难
+        let jsonResult: any;
+        try {
+          jsonResult = JSON.parse(jsonStr);
+        } catch (e) {
+          console.warn('[notify-ws] 收到非 JSON 消息,忽略', jsonStr);
+          return;
+        }
 
         if (jsonResult?.type === '2') {
-          listData.value = [];
-
-          listData.value.push({
-            key: NoticeRemindModeEnum.TO_DO,
-            name: t('basic.msg.eMsg.todos'),
-            data: jsonResult.data?.todoList,
-          });
-          listData.value.push({
-            key: NoticeRemindModeEnum.NOTICE,
-            name: t('basic.msg.eMsg.warning'),
-            data: jsonResult.data?.noticeList,
-          });
-          listData.value.push({
-            key: NoticeRemindModeEnum.EARLY_WARNING,
-            name: t('basic.msg.eMsg.reminder'),
-            data: jsonResult.data?.earlyWarningList,
-          });
+          listData.value = [
+            {
+              key: NoticeRemindModeEnum.TO_DO,
+              name: t('basic.msg.eMsg.todos'),
+              data: jsonResult.data?.todoList,
+            },
+            {
+              key: NoticeRemindModeEnum.NOTICE,
+              name: t('basic.msg.eMsg.warning'),
+              data: jsonResult.data?.noticeList,
+            },
+            {
+              key: NoticeRemindModeEnum.EARLY_WARNING,
+              name: t('basic.msg.eMsg.reminder'),
+              data: jsonResult.data?.earlyWarningList,
+            },
+          ];
         } else {
           send('pull');
         }
@@ -118,9 +132,13 @@
 
       let send = ws.send;
 
+      // ws 首次 ready 后主动拉一次;ws 失败时也兜底走 send 缓存(vueuse useBuffer 默认 true)
       onMounted(() => {
         send('pull');
       });
+
+      /** Popover 默认空态图(antd 自带轻量版) ── 比纯空白卡片体验好 */
+      const emptyImage = Empty.PRESENTED_IMAGE_SIMPLE;
 
       const count = computed(() => {
         let num = 0;
@@ -148,6 +166,8 @@
         listData,
         count,
         onNoticeClick,
+        emptyImage,
+        t,
         numberStyle: {},
       };
     },
@@ -161,6 +181,16 @@
 
     &__overlay {
       max-width: 360px;
+
+      .notify-empty {
+        margin: 24px 16px;
+        width: 280px;
+
+        .ant-empty-description {
+          color: #97a1b0;
+          font-size: 13px;
+        }
+      }
     }
 
     .ant-tabs-nav .ant-tabs-tab {

@@ -2,17 +2,38 @@
   <PageWrapper dense contentFullHeight>
     <BasicTable
       @register="registerTable"
-      :isVideoStreamPush="true"
       :switchFlag="switchFlag"
       @switch-change="getSwitchChange"
     >
+      <template #cardView="{ searchData, title }">
+        <BusinessCardList
+          ref="cardListRef"
+          :pageApi="page"
+          :title="title"
+          :searchData="searchData"
+          nameField="streamIdentification"
+          :nameFallback="t('common.undefinedText')"
+          :fields="cardFields"
+          statusField="status"
+          :statusOnlineLabel="t('video.media.push.statusOnline')"
+          :statusOfflineLabel="t('video.media.push.statusOffline')"
+          :permissions="cardPermissions"
+          :detailRouteName="detailRouteName"
+          :editModal="EditModal"
+          @input="getSwitchChange"
+        >
+          <template #cardImage>
+            <VideoStreamPushSvg />
+          </template>
+        </BusinessCardList>
+      </template>
       <template #toolbar>
         <a-button
           type="primary"
           color="error"
           preIcon="ant-design:delete-outlined"
           @click="handleBatchDelete"
-          v-hasAnyPermission="['video:media:videoStreamPush:delete']"
+          v-hasAnyPermission="['video:media:push:delete']"
         >
           {{ t('common.title.delete') }}
         </a-button>
@@ -20,7 +41,7 @@
           type="primary"
           preIcon="ant-design:plus-outlined"
           @click="handleAdd"
-          v-hasAnyPermission="['video:media:videoStreamPush:add']"
+          v-hasAnyPermission="['video:media:push:add']"
         >
           {{ t('common.title.add') }}
         </a-button>
@@ -41,13 +62,13 @@
                 tooltip: t('common.title.edit'),
                 icon: 'ant-design:edit-outlined',
                 onClick: handleEdit.bind(null, record),
-                auth: 'video:media:videoStreamPush:edit',
+                auth: 'video:media:push:edit',
               },
               {
                 tooltip: t('common.title.delete'),
                 icon: 'ant-design:delete-outlined',
                 color: 'error',
-                auth: 'video:media:videoStreamPush:delete',
+                auth: 'video:media:push:delete',
                 popConfirm: {
                   title: t('common.tips.confirmDelete'),
                   confirm: handleDelete.bind(null, record),
@@ -64,34 +85,58 @@
 </template>
 <script lang="ts">
   import { defineComponent, ref, watch } from 'vue';
+  import { useRouter } from 'vue-router';
+  import { useDetailRoute } from '/@/hooks/web/usePage';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
+  import { BusinessCardList } from '/@/components/BusinessCardList';
+  import { VideoStreamPushSvg } from '/@/components/video';
+  import type { CardField, CardPermissions } from '/@/components/BusinessCardList';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
-  import { ActionEnum } from '/@/enums/commonEnum';
-  import { page, remove } from '/@/api/video/media/videoStreamPush';
-  import { columns, searchFormSchema } from './videoStreamPush.data';
+  import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
+  import { page, remove } from '/@/api/video/media/push';
+  import { columns, searchFormSchema } from './push.data';
   import EditModal from './Edit.vue';
 
   export default defineComponent({
-    // 若需要开启页面缓存，请将此参数跟菜单名保持一致
-    name: '推流管理',
+    name: 'VideoMediaPush',
     components: {
       BasicTable,
       PageWrapper,
       TableAction,
       EditModal,
+      BusinessCardList,
+      VideoStreamPushSvg,
     },
     setup() {
       const { t } = useI18n();
-      const { createMessage, createConfirm } = useMessage();
+      const { push } = useRouter();
+      const { detailRouteName, goDetail } = useDetailRoute();
+      const { createConfirm } = useMessage();
+      const { createMessage } = useMessage();
       const [registerModal, { openModal }] = useModal();
       const switchFlag = ref<boolean>(true);
+      const cardListRef = ref<any>(null);
+
+      const cardFields: CardField[] = [
+        { label: t('video.media.push.appId'), field: 'appId', dictType: DictEnum.VIDEO_APPLICATION_SCENARIO, span: 12 },
+        { label: t('video.media.push.originType'), field: 'originType', dictType: DictEnum.VIDEO_MEDIA_ORIGIN_TYPE, span: 12 },
+        { label: t('video.media.push.createdTime'), field: 'createdTime' },
+        { label: t('video.media.push.mediaIdentification'), field: 'mediaIdentification' },
+      ];
+
+      const cardPermissions: CardPermissions = {
+        add: 'video:media:push:add',
+        edit: 'video:media:push:edit',
+        delete: 'video:media:push:delete',
+        view: 'video:media:push:view',
+      };
       // 表格
       const [registerTable, { reload, getSelectRowKeys }] = useTable({
-        title: t('video.media.videoStreamPush.table.title'),
+        title: t('video.media.push.table.title'),
         api: page,
         columns: columns(),
         formConfig: {
@@ -131,13 +176,10 @@
         });
       }
 
-      // 弹出查看页面
+      // 跳转详情页
       function handleView(record: Recordable, e: Event) {
         e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.VIEW,
-        });
+        goDetail(record.id);
       }
 
       // 弹出编辑页面
@@ -152,6 +194,7 @@
       // 新增或编辑成功回调
       function handleSuccess() {
         reload();
+        cardListRef.value?.reload();
       }
 
       async function batchDelete(ids: string[]) {
@@ -181,7 +224,9 @@
           onOk: async () => {
             try {
               await batchDelete(ids);
-            } catch (e) {}
+            } catch (e) {
+              createMessage.error(t('common.tips.deleteFail'));
+            }
           },
         });
       }
@@ -198,8 +243,15 @@
 
       return {
         t,
+        page,
+        EditModal,
+        cardListRef,
+        detailRouteName,
+        goDetail,
         registerTable,
         registerModal,
+        cardFields,
+        cardPermissions,
         handleView,
         handleAdd,
         handleEdit,

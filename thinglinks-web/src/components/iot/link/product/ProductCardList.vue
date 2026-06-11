@@ -86,7 +86,7 @@
                 <div class="btn" v-hasPermission="['link:product:product:delete']">
                   <a-tooltip placement="top" :title="t('common.title.delete')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/device/delete-y.png"
+                      src="../../../../assets/images/iot/link/device/delete-y.png"
                       alt=""
                       @click="handleDelete(record)"
                     />
@@ -95,7 +95,7 @@
                 <div class="btn" v-hasPermission="['link:product:product:copy']">
                   <a-tooltip placement="top" :title="t('common.title.copy')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/device/copy-y.png"
+                      src="../../../../assets/images/iot/link/device/copy-y.png"
                       alt=""
                       @click="handleCopy(record)"
                     />
@@ -109,7 +109,7 @@
                 <div class="btn" v-hasPermission="['link:product:product:edit']">
                   <a-tooltip placement="top" :title="t('common.title.edit')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/device/edit-y.png"
+                      src="../../../../assets/images/iot/link/device/edit-y.png"
                       alt=""
                       @click="handleEdit(record)"
                     />
@@ -117,17 +117,14 @@
                 </div>
               </div>
             </div>
-            <div class="product-img">
-              <img
-                @click="handleView(record, $event)"
-                :src="
-                  record?.productType === 2
-                    ? gatwatproduct
-                    : record?.productType === 1
-                    ? commonproduct
-                    : deviceManagement
-                "
+            <div class="product-img" @click="handleView(record, $event)">
+              <!-- 优先用产品自定义 icon,无则按 productType 回退到内联 SVG(与产品列表一致) -->
+              <ThumbUrl
+                v-if="record?.icon"
+                :fileId="record.icon"
+                :imageStyle="{ 'max-width': '90px', 'max-height': '90px' }"
               />
+              <component v-else :is="getProductTypeSvg(record?.productType)" />
             </div>
           </div>
         </a-col>
@@ -173,11 +170,10 @@
   import { useDict } from '/@/components/Dict';
   import Icon4 from '/@/assets/images/iot/link/device/Icon4.png';
   import Icon5 from '/@/assets/images/iot/link/device/Icon5.png';
-  import gatwatproduct from '/@/assets/images/iot/link/deviceAndProduct/gatwatproduct.png';
-  import commonproduct from '/@/assets/images/iot/link/deviceAndProduct/commonproduct.png';
-  import deviceManagement from '/@/assets/images/iot/link/device/deviceManagement.gif';
+  import { getProductTypeSvg } from '/@/components/iot/svg';
+  import ThumbUrl from '/@/components/Upload/src/ThumbUrl.vue';
   import { BasicForm, useForm } from '/@/components/Form';
-  import { productSearchSchema } from '../../../PublicSearchSchema';
+  import { productSearchSchema } from '/@/components/Table/src/types/components/PublicSearchSchema';
   import { cleanInput } from '/@/utils';
 
   const { getDictLabel } = useDict();
@@ -203,6 +199,7 @@
       APagination: Pagination,
       BasicForm,
       ExportOutlined,
+      ThumbUrl,
     },
     props: {
       title: {
@@ -231,7 +228,7 @@
       const current = ref(1);
       const size = ref(20);
       const total = ref(0);
-      const { createConfirm, notification } = useMessage();
+      const { createMessage, createConfirm } = useMessage();
       const [register, { getFieldsValue }] = useForm({
         labelWidth: 120,
         schemas: productSearchSchema(),
@@ -317,10 +314,7 @@
           selectProductCard(record);
         } else {
           if (!hasPermission('link:product:product:view')) {
-            notification.warning({
-              message: t('common.tips.tips'),
-              description: t('sys.api.operationFailed')
-            });
+            createMessage.warning(t('sys.api.operationFailed'));
             return;
           }
           push({
@@ -347,7 +341,7 @@
           onOk: async () => {
             try {
               await deleteSingle(record.id);
-              notification.success({ message: t('common.tips.deleteSuccess') });
+              createMessage.success(t('common.tips.deleteSuccess'));
               getDecviceList();
             } catch (e) {}
           },
@@ -382,10 +376,10 @@
         try {
           const response = await exportJson(record.productIdentification);
           downloadFile(response);
-          notification.success({ message: t('common.tips.exportSuccess') });
+          createMessage.success(t('common.tips.exportSuccess'));
         } catch (error) {
           console.error('导出失败:', error);
-          notification.error({ message: t('common.tips.exportFail') });
+          createMessage.error(t('common.tips.exportFail'));
         }
       }
 
@@ -417,9 +411,7 @@
         selectItem,
         Icon4,
         Icon5,
-        gatwatproduct,
-        commonproduct,
-        deviceManagement,
+        getProductTypeSvg,
         current,
         total,
         size,
@@ -442,5 +434,17 @@
   });
 </script>
 <style scoped>
-  @import '../../../cardCommon.less';
+  @import '../../../Table/src/types/components/cardCommon.less';
+
+  /* 产品图标:容器给定 90×90;内联 SVG 是子组件根节点,需 :deep 穿透 scope 才能命中并撑满 */
+  .product-img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .product-img :deep(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
 </style>

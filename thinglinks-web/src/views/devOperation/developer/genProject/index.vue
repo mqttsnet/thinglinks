@@ -53,7 +53,7 @@
         t('devOperation.developer.genProject.locallyGenerated')
       }}</a-button>
       <a-button type="primary" @click="handleDownload">{{
-        t('devOperation.developer.genProject.precautions')
+        t('devOperation.developer.genProject.downloadNow')
       }}</a-button>
     </template>
   </PageWrapper>

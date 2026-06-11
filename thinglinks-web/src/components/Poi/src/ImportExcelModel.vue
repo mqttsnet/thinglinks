@@ -106,7 +106,7 @@
     emits: ['success', 'register'],
     setup(props, { emit }) {
       const fileList = ref<any[]>([]);
-      const { createMessage, notification } = useMessage();
+      const { createMessage } = useMessage();
       const beforeUpload = (file: any) => {
         fileList.value = [...fileList.value, file];
         return false;
@@ -163,7 +163,7 @@
           setModalProps({ confirmLoading: true });
           const res = await api(params);
           if (!res?.data?.isSuccess) {
-            notification.warn({ message: '提示', description: res.data.msg, duration: 10 });
+            createMessage.warning(res.data.msg);
           }
           emit('success', { res });
           fileList.value = [];

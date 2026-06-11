@@ -24,6 +24,12 @@ export default {
     reload: '并重新加载其リソース吗？',
     allActivat: '您真棒，所有アプリケーション均已開通',
     contactOpen: '会社の管理人に連絡してくれませんか~',
+    statsOwned: '開通済みアプリ',
+    statsAvailable: '申請可能',
+    statsExpiringSoon: '7日以内に期限切れ',
+    licenseGrantedAt: '開通日',
+    licenseExpireAt: '有効期限',
+    licensePermanent: '無期限',
   },
   indicator: {
     applicationIndicators: 'アプリケーション指标',

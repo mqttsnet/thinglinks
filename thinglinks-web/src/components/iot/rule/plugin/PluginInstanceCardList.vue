@@ -86,7 +86,7 @@
                   <a-tooltip placement="top" :title="t('common.title.delete')">
                     <img
                       alt=""
-                      src="../../../../../../../../assets/images/iot/link/device/delete-y.png"
+                      src="/@/assets/images/iot/link/device/delete-y.png"
                       @click="handleDelete(record)"
                     />
                   </a-tooltip>
@@ -95,7 +95,7 @@
                   <a-tooltip placement="top" :title="t('common.title.edit')">
                     <img
                       alt=""
-                      src="../../../../../../../../assets/images/iot/link/device/edit-y.png"
+                      src="/@/assets/images/iot/link/device/edit-y.png"
                       @click="handleEdit(record)"
                     />
                   </a-tooltip>
@@ -104,7 +104,7 @@
             </div>
             <div class="product-img">
               <img
-                src="../../../../../../../../assets/images/iot/rule/plugin/instance.png"
+                src="/@/assets/images/iot/rule/plugin/instance.png"
                 alt=""
                 @click="handleView(record)"
             /></div>
@@ -148,7 +148,7 @@
   const { t } = useI18n();
   const { push } = useRouter();
   const { getDictLabel } = useDict();
-  const { notification, createConfirm } = useMessage();
+  const { createMessage, createConfirm } = useMessage();
   const [registerModal, { openModal }] = useModal();
   const pageSizeOptions = ref(['10', '20', '30', '40', '50']);
 
@@ -190,10 +190,7 @@
       onOk: async (e) => {
         try {
           await remove([record.id]);
-          notification.success({
-            message: t('common.tips.tips'),
-            description: t('common.tips.deleteSuccess'),
-          });
+          createMessage.success(t('common.tips.deleteSuccess'));
           getList(current.value, pageSize.value);
         } catch (e) {
           throw new Error(e);
@@ -239,5 +236,5 @@
   };
 </script>
 <style lang="less" scoped>
-  @import '../../../cardCommon.less';
+  @import '../../../Table/src/types/components/cardCommon.less';
 </style>

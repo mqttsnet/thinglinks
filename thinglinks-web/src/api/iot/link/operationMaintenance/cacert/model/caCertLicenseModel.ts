@@ -104,3 +104,23 @@ export interface CaCertLicenseResultVO {
   remark?: string; // 备注
   createdOrgId?: string; // 创建人组织
 }
+
+/** CA 证书影响面 ── 用于吊销前评估 */
+export interface CaCertLicenseImpactResultVO {
+  caId: number | string;
+  caSerialNumber?: string;
+  caName?: string;
+  /** 绑定此 CA 的设备总数 */
+  boundDeviceCount: number;
+  /** 其中在线设备数 */
+  onlineDeviceCount: number;
+  /** 前 N 条设备简要 */
+  topDevices?: Array<{
+    id: number | string;
+    deviceIdentification: string;
+    deviceName?: string;
+    productIdentification?: string;
+    connectStatus?: number;
+    lastHeartbeatTime?: string;
+  }>;
+}

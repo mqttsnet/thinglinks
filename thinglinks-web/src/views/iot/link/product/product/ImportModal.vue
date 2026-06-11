@@ -67,7 +67,7 @@
 
   const { getDictList } = useDict();
   const emit = defineEmits(['reload']);
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   const { t } = useI18n();
   const [register, { closeModal, changeLoading, setModalProps }] = useModalInner(() => {
     // 模态框打开时初始化确认按钮状态
@@ -149,26 +149,17 @@
     try {
       await unref(formRef)?.validateFields(['appId']);
     } catch (e) {
-      notification.warning({
-        message: t('common.tips.tips'),
-        description: t('common.chooseText') + t('iot.link.product.product.appId'),
-      });
+      createMessage.warning(t('common.chooseText') + t('iot.link.product.product.appId'));
       return;
     }
     // 确保应用场景已选择
     if (!formData.appId) {
-      notification.warning({
-        message: t('common.tips.tips'),
-        description: t('common.chooseText') + t('iot.link.product.product.appId'),
-      });
+      createMessage.warning(t('common.chooseText') + t('iot.link.product.product.appId'));
       return;
     }
     // 确保文件已选择
     if (fileList.value.length === 0) {
-      notification.warning({
-        message: t('common.tips.tips'),
-        description: '请选择文件',
-      });
+      createMessage.warning('请选择文件');
       return;
     }
     // 执行上传
@@ -179,10 +170,7 @@
     changeLoading(true);
     const file = fileList.value[0];
     if (!file || !formData.appId) {
-      notification.warning({
-        message: t('common.tips.tips'),
-        description: t('common.chooseText') + t('iot.link.product.product.appId'),
-      });
+      createMessage.warning(t('common.chooseText') + t('iot.link.product.product.appId'));
       changeLoading(false);
       return;
     }

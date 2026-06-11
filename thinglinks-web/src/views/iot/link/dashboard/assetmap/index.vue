@@ -425,8 +425,9 @@ function updatePopupPixel() {
 }
 
 const goDeviceDetail = () => {
-  if (device.value?.id) {
-    push({ name: '设备详情', params: { id: device.value.id } })
+  // 路由 :id 段语义为 deviceIdentification（业务唯一标识，非主键 id）
+  if (device.value?.deviceIdentification) {
+    push({ name: '设备详情', params: { id: device.value.deviceIdentification } })
   }
 }
 

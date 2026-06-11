@@ -3,6 +3,8 @@ import { BasicColumn, FormSchema } from '/@/components/Table';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
+import { echoMapText } from '/@/utils/echo';
+import { thingModelCodeRules } from '/@/utils/iot/dataTypeValidator';
 
 const { t } = useI18n();
 // 列表页字段
@@ -39,6 +41,7 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.link.productService.productService.createdOrgId'),
       dataIndex: 'createdOrgId',
+      customRender: ({ record }) => echoMapText(record, 'createdOrgId'),
     },
     {
       title: t('thinglinks.common.createdTime'),
@@ -120,6 +123,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       label: t('iot.link.productService.productService.serviceCode'),
       field: 'serviceCode',
       component: 'Input',
+      rules: thingModelCodeRules(),
     },
     {
       label: t('iot.link.productService.productService.serviceName'),

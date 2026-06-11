@@ -50,7 +50,7 @@
         createInfoModal,
         createErrorModal,
         createWarningModal,
-        notification,
+        
       } = useMessage();
       const { info, success, warning, error } = createMessage;
 
@@ -77,10 +77,7 @@
         createInfoModal({ title: 'Tip', content: 'content message...' });
       }
       function handleNotify() {
-        notification.success({
-          message: 'Tip',
-          description: 'content message...',
-        });
+        createMessage.success('content message...');
       }
       return {
         infoMsg: info,

@@ -34,18 +34,8 @@
           </div>
         </div>
         <div class="product-img">
-          <img
-            v-if="selectedProduct?.productType === 2"
-            src="../../../../../../../assets/images/iot/link/deviceAndProduct/gatwatproduct.png"
-          />
-          <img
-            v-else-if="selectedProduct?.productType === 1"
-            src="../../../../../../../assets/images/iot/link/deviceAndProduct/commonproduct.png"
-          />
-          <img
-            v-else-if="selectedProduct?.productType === 0"
-            src="../../../../../../../assets/images/iot/link/device/deviceManagement.gif"
-          />
+          <!-- flexy 风格内联 SVG,按 productType 自动选择普通/网关图标 -->
+          <component :is="getProductTypeSvg(selectedProduct?.productType)" />
         </div>
       </div>
     </div>
@@ -59,6 +49,7 @@
   import { defineComponent, reactive, toRefs, watch } from 'vue';
   import { ApartmentOutlined } from '@ant-design/icons-vue';
   import { useDict } from '/@/components/Dict';
+  import { getProductTypeSvg } from '/@/components/iot/svg';
   const { getDictLabel } = useDict();
 
   export default defineComponent({
@@ -94,6 +85,7 @@
         t,
         getDictLabel,
         deleteProduct,
+        getProductTypeSvg,
         ...toRefs(state),
       };
     },

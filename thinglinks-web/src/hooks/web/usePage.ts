@@ -1,7 +1,7 @@
 import type { RouteLocationRaw, Router } from 'vue-router';
 
 import { PageEnum } from '/@/enums/pageEnum';
-import { unref } from 'vue';
+import { unref, computed } from 'vue';
 
 import { useRouter } from 'vue-router';
 import { REDIRECT_NAME } from '/@/router/constant';
@@ -25,6 +25,43 @@ export function useGo(_router?: Router) {
     isReplace ? replace(opt).catch(handleError) : push(opt).catch(handleError);
   }
   return go;
+}
+
+/**
+ * 动态查找当前页面对应的详情路由（:id 子路由）
+ * 通过 router.getRoutes() 匹配 "当前路径/:id" 的路由，
+ * 资源表改名后自动生效，无需硬编码路由名称。
+ *
+ * @example
+ * const { detailRouteName, goDetail } = useDetailRoute();
+ * // 在 handleView 中直接使用
+ * goDetail(record.id);
+ * // 或在 BusinessCardList 中传递
+ * :detailRouteName="detailRouteName"
+ */
+export function useDetailRoute(_router?: Router) {
+  const router = _router || useRouter();
+  const { currentRoute, push } = router;
+
+  const detailRouteName = computed(() => {
+    const currentPath = unref(currentRoute)?.path;
+    if (!currentPath) return undefined;
+    const detailPath = currentPath.replace(/\/$/, '') + '/:id';
+    const allRoutes = router.getRoutes();
+    const detailRoute = allRoutes.find(
+      (r) => r.path === detailPath || r.path === detailPath.replace(/\/+/g, '/'),
+    );
+    return (detailRoute?.name as string) || undefined;
+  });
+
+  function goDetail(id: string | number) {
+    const name = unref(detailRouteName);
+    if (name) {
+      push({ name, params: { id } });
+    }
+  }
+
+  return { detailRouteName, goDetail };
 }
 
 /**

@@ -20,14 +20,17 @@
           :placeholder="t('sys.login.accountPlaceholder')"
           class="fix-auto-fill"
           size="large"
+          name="username"
+          autocomplete="username"
         />
       </FormItem>
       <FormItem class="enter-x" name="password" :rules="formRules.password">
         <InputPassword
           v-model:value="formData.password"
           :placeholder="t('sys.login.passwordPlaceholder')"
-          autocomplete="off"
           size="large"
+          name="password"
+          autocomplete="current-password"
           visibilityToggle
         />
       </FormItem>
@@ -184,7 +187,7 @@
   const FormItem = Form.Item;
   const InputPassword = Input.Password;
   const { t } = useI18n();
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   const { prefixCls } = useDesign('login');
   const userStore = useUserStore();
 
@@ -194,9 +197,41 @@
 
   const formRef = ref();
   const dragVerifyRef = ref<DragVerifyActionType | null>(null);
-  const rememberMe = ref(false);
+  const REMEMBER_KEY = 'THINGLINKS_LOGIN_REMEMBER';
+  const rememberMe = ref(loadRememberFlag());
   const devFlag = ref<string>('');
   const dragVerifyWidth = ref<number | string>(220);
+
+  function loadRememberFlag(): boolean {
+    try {
+      const raw = localStorage.getItem(REMEMBER_KEY);
+      if (!raw) return false;
+      return JSON.parse(raw)?.remember === true;
+    } catch {
+      return false;
+    }
+  }
+  function loadRememberedUsername(): string {
+    try {
+      const raw = localStorage.getItem(REMEMBER_KEY);
+      if (!raw) return '';
+      const data = JSON.parse(raw);
+      return data?.remember ? (data.username || '') : '';
+    } catch {
+      return '';
+    }
+  }
+  function saveRemember(remember: boolean, username: string) {
+    try {
+      if (remember) {
+        localStorage.setItem(REMEMBER_KEY, JSON.stringify({ remember: true, username }));
+      } else {
+        localStorage.removeItem(REMEMBER_KEY);
+      }
+    } catch {
+      /* ignore quota */
+    }
+  }
 
   if (isDevMode()) {
     devFlag.value = '(dev)';
@@ -230,7 +265,7 @@
   });
 
   const formData = reactive({
-    username: '',
+    username: loadRememberedUsername(),
     password: '',
     code: '',
     grantType: globSetting.showCaptcha === 'true' ? 'CAPTCHA' : 'PASSWORD',
@@ -308,11 +343,8 @@
       formState.loading = true;
       const userInfo = await userStore.login(toRaw(data));
       if (userInfo) {
-        notification.success({
-          message: t('sys.login.loginSuccessTitle'),
-          description: `${t('sys.login.loginSuccessDesc')}`,
-          duration: 3,
-        });
+        saveRemember(rememberMe.value, formData.username);
+        createMessage.success(t('sys.login.loginSuccessDesc'));
       } else {
         await buildCaptcha();
         // 登录失败时重置滑块验证

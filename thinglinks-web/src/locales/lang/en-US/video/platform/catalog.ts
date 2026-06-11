@@ -1,0 +1,16 @@
+export default {
+  table: { title: 'Platform Catalog' },
+  name: 'Catalog Name',
+  gbId: 'GB ID',
+  parentId: 'Parent Catalog',
+  catalogType: 'Catalog Type',
+  civilCode: 'Civil Code',
+  sortOrder: 'Sort Order',
+  rootCatalog: 'Root',
+  addCatalog: 'Add Catalog',
+  editCatalog: 'Edit Catalog',
+  deleteCatalog: 'Delete Catalog',
+  confirmDelete: 'Are you sure to delete this catalog? Sub-catalogs and channel bindings will be removed.',
+  deleteSuccess: 'Catalog deleted',
+  saveCatalogSuccess: 'Catalog saved',
+};

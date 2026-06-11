@@ -6,8 +6,7 @@ import projectSetting from '/@/settings/projectSetting';
 import { SessionTimeoutProcessingEnum } from '/@/enums/appEnum';
 import { ResultEnum } from '/@/enums/httpEnum';
 
-const { createMessage, createErrorModal, notification } = useMessage();
-const error = createMessage.error!;
+const { createMessage, createErrorModal } = useMessage();
 const stp = projectSetting.sessionTimeoutProcessing;
 // 用户、员工、企业被禁用，都提示重登
 // const ALERT_LOGIN_CODE = [100_000_001, 100_000_002, 100_000_003];
@@ -88,12 +87,9 @@ export function checkStatus(err: any, errorMessageMode: ErrorMessageMode = 'mess
     if (errorMessageMode === 'modal') {
       createErrorModal({ title: t('sys.api.errorTip'), content: errMessage });
     } else if (errorMessageMode === 'message') {
-      error({ content: errMessage, key: `global_error_message_status_${status}` });
+      createMessage.error(errMessage);
     } else if (errorMessageMode === 'notification') {
-      notification.error({
-        message: t('common.tips.tips'),
-        description: msg,
-      });
+      createMessage.error(errMessage);
     }
   }
 }

@@ -37,6 +37,17 @@ const getToTarget = (tabItem: RouteLocationNormalized) => {
 
 const cacheTab = projectSetting.multiTabsSetting.cache;
 
+/**
+ * 计算路由的 keep-alive cache key。
+ * 取值优先级：meta.code（菜单资源编码） → 顶层 code → route.name。
+ */
+function resolveCacheKey(route: RouteLocationNormalized): string {
+  const metaCode = (route.meta as any)?.code as string | undefined;
+  const topCode = (route as any).code as string | undefined;
+  const name = route.name;
+  return (metaCode || topCode || (typeof name === 'string' ? name : name?.toString() || '')) as string;
+}
+
 export const useMultipleTabStore = defineStore({
   id: 'app-multiple-tab',
   state: (): MultipleTabState => ({
@@ -72,8 +83,18 @@ export const useMultipleTabStore = defineStore({
         if (!needCache) {
           continue;
         }
-        const name = item.name as string;
-        cacheMap.add(name);
+        // keep-alive cache key 取菜单资源编码（meta.code），缺失时回退到 name 兼容老数据
+        const cacheKey = resolveCacheKey(item);
+        if (cacheKey) {
+          cacheMap.add(cacheKey);
+        } else if (process.env.NODE_ENV !== 'production') {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `[多 tab 缓存] 路由缺少 meta.code 与 name，无法生成 cache key，该 tab 不会被 keep-alive 缓存：path=${
+              item.path
+            }, fullPath=${item.fullPath}`,
+          );
+        }
       }
       this.cacheTabList = cacheMap;
     },
@@ -84,11 +105,16 @@ export const useMultipleTabStore = defineStore({
     async refreshPage(router: Router) {
       const { currentRoute } = router;
       const route = unref(currentRoute);
-      const name = route.name;
+      const cacheKey = resolveCacheKey(route);
 
-      const findTab = this.getCachedTabList.find((item) => item === name);
+      const findTab = this.getCachedTabList.find((item) => item === cacheKey);
       if (findTab) {
         this.cacheTabList.delete(findTab);
+      } else if (process.env.NODE_ENV !== 'production' && cacheKey) {
+        // eslint-disable-next-line no-console
+        console.debug(
+          `[多 tab 缓存] refreshPage 未在缓存表中找到 cacheKey="${cacheKey}"，可能因 ignoreKeepAlive=true 或路由刚切换尚未注册`,
+        );
       }
       const redo = useRedo(router);
       await redo();

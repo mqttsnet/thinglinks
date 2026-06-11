@@ -1,0 +1,30 @@
+export default {
+  hint: '公開前の物理モデル変更はすべて記録され、公開時にバージョンスナップショットへ固定されます。',
+  empty: '変更記録がありません',
+  noMore: 'これ以上ありません · 全 {n} 件',
+  noDraft: 'この製品には草稿バージョンがなく、公開待ちの変更はありません。',
+  selectVersion: 'バージョン',
+  versionPlaceholder: '閲覧するバージョンを選択',
+  noVersion: 'この製品にはバージョンがまだありません',
+  detail: '詳細',
+  collapse: '折りたたむ',
+  changeCount: '件の変更',
+  copyVersion: 'バージョンをコピー',
+  copiedVersion: 'コピー完了',
+  changeType: {
+    0: '追加',
+    1: '編集',
+    2: '削除',
+  },
+  targetType: {
+    0: '製品情報',
+    1: 'サービス',
+    2: 'プロパティ',
+    3: 'コマンド',
+  },
+  field: {
+    name: 'フィールド',
+    before: '変更前',
+    after: '変更後',
+  },
+};

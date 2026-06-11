@@ -38,7 +38,7 @@ export default defineComponent({
   },
   setup(props) {
     const { proxy } = getCurrentInstance();
-    const { notification } = useMessage();
+    const { createMessage } = useMessage();
     const { t } = useI18n();
 
     const state = reactive({
@@ -85,24 +85,15 @@ export default defineComponent({
       };
 
       if (!commandWrapper.serial.length && !commandWrapper.parallel.length) {
-        notification.error({
-          message: t('common.tips.tips'),
-          description: t('iot.link.productCommand.productCommand.description3'),
-        });
+        createMessage.error(t('iot.link.productCommand.productCommand.description3'));
         return;
       }
 
       const res = await issueCommands(commandWrapper);
       if (res) {
-        notification.success({
-          message: t('common.tips.tips'),
-          description: t('iot.link.productCommand.productCommand.commmandIssuedSuccess'),
-        });
+        createMessage.success(t('iot.link.productCommand.productCommand.commmandIssuedSuccess'));
       } else {
-        notification.error({
-          message: t('common.tips.tips'),
-          description: t('iot.link.productCommand.productCommand.commmandIssuedError'),
-        });
+        createMessage.error(t('iot.link.productCommand.productCommand.commmandIssuedError'));
       }
     };
 
@@ -116,7 +107,10 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+/* 父级 panel-card 已固定高度,这里 100% 撑满 + 自身滚动(命令调试可能很长) */
 .device-debug {
   width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 </style>

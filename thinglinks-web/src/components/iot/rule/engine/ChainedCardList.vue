@@ -52,12 +52,20 @@
                     getDictLabel('RULE_INSTANCE_TYPE', record.type + '', '')
                   }}</div>
                 </div>
+                <div class="prop" v-if="record.flowId">
+                  <div class="label">{{ t('iot.link.engine.chained.flowId') }}</div>
+                  <a-tooltip placement="top" :title="record.flowId">
+                    <div class="value flow-id" @click.stop="handleCopyFlowId(record.flowId)">
+                      {{ record.flowId }}
+                    </div>
+                  </a-tooltip>
+                </div>
               </div>
               <div class="btns">
                 <div class="btn btn_chain">
                   <a-tooltip placement="top" :title="t('common.title.delete')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/delete-y.png"
+                      src="/@/assets/images/iot/link/delete-y.png"
                       alt=""
                       @click="handleDelete(record)"
                     />
@@ -66,7 +74,7 @@
                 <div class="btn btn_chain">
                   <a-tooltip placement="top" :title="t('common.title.view')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/go-details-2.png"
+                      src="/@/assets/images/iot/link/go-details-2.png"
                       alt=""
                       @click="handleView(record, $event)"
                     />
@@ -75,7 +83,7 @@
                 <div class="btn btn_chain">
                   <a-tooltip placement="top" :title="t('common.title.edit')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/device/edit-y.png"
+                      src="/@/assets/images/iot/link/device/edit-y.png"
                       alt=""
                       @click="handleEdit(record)"
                     />
@@ -87,17 +95,17 @@
               <img
                 v-if="record?.type === 2"
                 @click="handleView(record, $event)"
-                src="../../../../../../../../assets/images/iot/link/product1.png"
+                src="/@/assets/images/iot/link/product1.png"
               />
               <img
                 v-else-if="record?.type === 1"
                 @click="handleView(record, $event)"
-                src="../../../../../../../../assets/images/iot/link/product2.png"
+                src="/@/assets/images/iot/link/product2.png"
               />
               <img
                 v-else-if="record?.type === 0"
                 @click="handleView(record, $event)"
-                src="../../../../../../../../assets/images/iot/link/product3.png"
+                src="/@/assets/images/iot/link/product3.png"
               />
             </div>
           </div>
@@ -129,7 +137,7 @@
   import { useModal } from '/@/components/Modal';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
   // api
-  import { page, deleteSingle } from '../../../../../../../../api/iot/rule/engine/chained/chained';
+  import { page, deleteSingle } from '../../../../api/iot/rule/engine/chained/chained';
   // components
   import {
     Card,
@@ -191,7 +199,7 @@
       const current = ref(1);
       const size = ref(20);
       const total = ref(0);
-      const { createConfirm, notification } = useMessage();
+      const { createMessage, createConfirm } = useMessage();
       let model = reactive({});
       // 设备列表
       let deviceList = ref<Array<deviceItem>>([]);
@@ -281,10 +289,7 @@
           onOk: async () => {
             try {
               await deleteSingle(record.id);
-              notification.success({
-                message: t('common.tips.tips'),
-                description: t('common.tips.deleteSuccess'),
-              });
+              createMessage.success(t('common.tips.deleteSuccess'));
               getDecviceList();
             } catch (e) {}
           },
@@ -314,6 +319,17 @@
         });
       }
 
+      // 卡片上点击流程ID复制（流程ID常用于排查 nodered 流，单独支持点击复制）
+      async function handleCopyFlowId(flowId: string) {
+        if (!flowId) return;
+        try {
+          await navigator.clipboard.writeText(flowId);
+          createMessage.success(t('common.tips.copySuccess'));
+        } catch {
+          createMessage.warning(t('common.tips.copyFail'));
+        }
+      }
+
       const pageSizeOptions = ref<string[]>(['10', '20', '30', '40', '50']);
 
       return {
@@ -341,10 +357,26 @@
         handleStatus,
         getDictLabel,
         handleCopy,
+        handleCopyFlowId,
       };
     },
   });
 </script>
 <style lang="less" scoped>
-  @import '../../../cardCommon.less';
+  @import '../../../Table/src/types/components/cardCommon.less';
+
+  /* 流程 ID 在卡片上常常很长（雪花算法生成 16+ 位），用等宽字体 + 单行省略；点击复制 */
+  .prop .value.flow-id {
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    user-select: all;
+
+    &:hover {
+      color: #5d87ff;
+      text-decoration: underline dotted;
+    }
+  }
 </style>

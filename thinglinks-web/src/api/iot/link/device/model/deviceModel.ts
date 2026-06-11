@@ -111,6 +111,7 @@ export interface DeviceResultVO {
   deviceTags?: string; // 设备标签
   productId?: string; // 产品id
   productIdentification?: string; // 产品标识
+  boundProductVersionNo?: string; // 绑定的产品版本序号(系统在注册/发布灰度时写入,数据上报按此快照解析物模型)
   swVersion?: string; // 软件版本
   fwVersion?: string; // 固件版本
   deviceSdkVersion?: string; // sdk版本

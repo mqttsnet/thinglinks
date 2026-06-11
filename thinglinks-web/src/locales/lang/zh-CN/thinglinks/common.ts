@@ -11,4 +11,5 @@ export default {
   disable: '禁用',
   read: '已读',
   unread: '未读',
+  noData: '暂无数据',
 };

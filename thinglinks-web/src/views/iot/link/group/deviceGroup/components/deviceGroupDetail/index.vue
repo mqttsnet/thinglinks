@@ -35,11 +35,19 @@
               {
                 auth: RoleEnum.LINK_DEVICE_DEVICE_VIEW,
                 label: t('common.title.view'),
+                disabled: isOrphanDeviceRow(record),
+                tooltip: isOrphanDeviceRow(record)
+                  ? t('iot.link.device.device.deletedOrphanTip')
+                  : undefined,
                 onClick: handleView.bind(null, record),
               },
               {
                 auth: RoleEnum.LINK_GROUP_DEVICEGROUPREL_EDIT,
                 label: t('common.title.edit'),
+                disabled: isOrphanDeviceRow(record),
+                tooltip: isOrphanDeviceRow(record)
+                  ? t('iot.link.device.device.deletedOrphanTip')
+                  : undefined,
                 onClick: handleEdit.bind(null, record),
               },
               {
@@ -83,13 +91,17 @@
   import { BasicTable, TableAction, useTable } from '/@/components/Table';
   import { Description } from '/@/components/Description/index';
   // data
-  import { getGroupBaseInfoField, getGroupDeviceBaseTableColumn } from './deviceGroupDetail.data';
+  import {
+    getGroupBaseInfoField,
+    getGroupDeviceBaseTableColumn,
+    isOrphanDeviceRow,
+  } from './deviceGroupDetail.data';
   // api
   import { detail } from '/@/api/iot/link/group/deviceGroup';
   import { page, remove, update } from '/@/api/iot/link/group/deviceGroupRel';
 
   const { t } = useI18n();
-  const { createMessage, createConfirm, notification } = useMessage();
+  const { createMessage, createConfirm } = useMessage();
   const { push } = useRouter();
   // 分组信息
   const currentGroup = ref({});
@@ -146,9 +158,15 @@
   }
 
   const handleView = (record) => {
+    // 防御：deviceIdentification 缺失（设备已删除的孤儿关联行）→ 提示并阻止跳转，避免 vue-router 抛 "Missing required param 'id'"
+    // 路由 :id 段的语义是 deviceIdentification（业务唯一标识），不再使用主键 deviceId
+    if (!record?.deviceIdentification || isOrphanDeviceRow(record)) {
+      createMessage.warning(t('iot.link.device.device.deletedOrphanTip'));
+      return;
+    }
     push({
       name: '设备详情',
-      params: { id: record.deviceId },
+      params: { id: record.deviceIdentification },
     });
   };
 
@@ -167,7 +185,7 @@
         groupId: currentGroup.value.id,
         remark: record.editValueRefs.remark,
       });
-      notification.success({ message: t('common.tips.updateSuccess') });
+      createMessage.success(t('common.tips.updateSuccess'));
       // 第二个参数 true 表示提交编辑数据到表格
       record.onEdit?.(false, true);
       return true;
@@ -187,7 +205,7 @@
       onOk: async () => {
         try {
           await remove([record.id]);
-          notification.success({ message: t('common.tips.deleteSuccess') });
+          createMessage.success(t('common.tips.deleteSuccess'));
           reload();
         } catch (e) {}
       },

@@ -1,0 +1,16 @@
+export default {
+  table: { title: 'プラットフォームチャンネル' },
+  deviceIdentification: 'デバイスID',
+  channelIdentification: 'チャンネルID',
+  customName: 'カスタム名',
+  customGbId: 'カスタムGB ID',
+  catalogId: 'カタログ',
+  deviceChannelId: 'デバイスチャンネルID',
+  bindChannel: 'チャンネルバインド',
+  unbindChannel: 'チャンネルアンバインド',
+  confirmUnbind: '選択したチャンネルのバインドを解除しますか？',
+  bindSuccess: 'チャンネルをバインドしました',
+  unbindSuccess: 'チャンネルのバインドを解除しました',
+  selectChannels: 'バインドするチャンネルを選択',
+  noChannelsSelected: '少なくとも1つのチャンネルを選択してください',
+};

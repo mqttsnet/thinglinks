@@ -16,6 +16,8 @@ export default {
   serviceList: '服务列表',
   attributeList: '属性列表',
   commandList: '命令列表',
+  emptyService: '暂无服务,点击右上角 + 新增',
+  pickServiceHint: '请从左侧选择一个服务',
   helpMessage: {
     serviceCode:
       '支持英文小写、数字及下划线，全部小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]',

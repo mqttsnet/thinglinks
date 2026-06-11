@@ -23,7 +23,7 @@ export default {
   helpMessage: {
     outputDir: ['请确保thinglinks-generatorサービス在本地開始', '项目生成到指定的绝对路径'],
     description: 'サービス的中文名称',
-    projectPrefix: '如：thinglinks-cloud中的thinglinks',
+    projectPrefix: '如：thinglinks-cloud-pro中的thinglinks',
     serviceName: ['如： thinglinks-base-server 中的link', '如： thinglinks-system-server system'],
     parent: [
       'thinglinks-cloud 项目的基础包',
@@ -34,9 +34,9 @@ export default {
       '如： com.mqttsnet.thinglinks.base.dao.common 包中的 base',
       'com.mqttsnet.thinglinks.file.dao.xxx 包中的 file',
     ],
-    groupId: 'thinglinks-cloud项目 pomファイル的groupId',
+    groupId: 'thinglinks-cloud-pro项目 pomファイル的groupId',
     version: 'thinglinks-cloud pomファイル中的バージョン号',
-    serverPort: 'thinglinks-cloud项目 新建サービス的端口号',
+    serverPort: 'thinglinks-cloud-pro项目 新建サービス的端口号',
     seata: '开启后，必须開始seata-server',
     utilParent: [
       'thinglinks-util项目的基础包',
@@ -45,10 +45,10 @@ export default {
     utilGroupId: 'thinglinks-util项目 pomファイル的groupId',
   },
   measures: [
-    '1. {基础包}.{模块名}需要和【代码生成】-【修改代码設定】中{父包名}.{模块名}一致，いいえ则生成的サービスswagger文档可能无法显示（需要手动调整）',
+    '1. [基础包].[模块名]需要和【代码生成】-【修改代码設定】中[父包名].[模块名]一致，いいえ则生成的サービスswagger文档可能无法显示（需要手动调整）',
     '2. 若需要修改 groupId，需要和项目代码中的groupId中保持一致',
-    '3. {基础包} 需要与開始类所在的基础包一致，いいえ则需要修改项目中@ComponentScan和@MapperScan中的設定',
-    '4. {本地生成}适用于開発者本机開始项目后，直接将"代码"生成在開発者所在电脑，デプロイ在テスト環境上的システム，无法将代码生成在開発者电脑。',
-    '5. {立即ダウンロード} 适用于テスト環境開始项目后，開発者将生成的代码ダウンロード到開発者的电脑。',
+    "3. [基础包] 需要与開始类所在的基础包一致，いいえ则需要修改项目中＠ComponentScan和＠MapperScan中的設定",
+    '4. [本地生成]适用于開発者本机開始项目后，直接将"代码"生成在開発者所在电脑，デプロイ在テスト環境上的システム，无法将代码生成在開発者电脑。',
+    '5. [立即ダウンロード] 适用于テスト環境開始项目后，開発者将生成的代码ダウンロード到開発者的电脑。',
   ],
 };

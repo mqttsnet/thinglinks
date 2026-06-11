@@ -123,8 +123,8 @@
   } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { ActionEnum } from '/@/enums/commonEnum';
-  import ProductCardList from '/@/components/Table/src/types/components/iot/link/product/ProductCardList.vue';
-  import BasicDeviceSelector from '/@/components/Thinglinks/Iot/BasicSelect/BasicDevice/BasicDeviceSelector.vue';
+  import ProductCardList from '/@/components/iot/link/product/ProductCardList.vue';
+  import BasicDeviceSelector from '/@/components/iot/BasicSelect/BasicDevice/BasicDeviceSelector.vue';
   import TriggerType from './TriggerType.vue';
   import SelectedProduct from './SelectedProduct.vue';
   import actionsList from '../action/actionsList.vue';
@@ -259,10 +259,7 @@
       };
       const selectProductCard = (column) => {
         if (state.selectedProduct.productIdentification == column.productIdentification) {
-          notification.warn({
-            message: t('common.tips.tips'),
-            description: t('iot.link.productCommand.productCommand.description4'),
-          });
+          createMessage.warn(t('iot.link.productCommand.productCommand.description4'));
           return false;
         }
         state.selectedProduct = column;
@@ -273,25 +270,19 @@
       const selectTypeCard = (column) => {
         state.selectedType = column;
       };
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
 
       const next = () => {
         if (state.activeStep == 0) {
           if (!state.selectedProduct.productIdentification) {
-            notification.warn({
-              message: t('common.tips.tips'),
-              description: t('iot.link.productCommand.productCommand.description5'),
-            });
+            createMessage.warn(t('iot.link.productCommand.productCommand.description5'));
             return false;
           }
           state.activeStep = 1;
         } else if (state.activeStep == 1) {
           // 检查是否选择了设备
           if (state.selectedDeviceIds.length === 0 && !state.selectedDevice.deviceIdentification) {
-            notification.warn({
-              message: t('common.tips.tips'),
-              description: t('iot.link.productCommand.productCommand.description1'),
-            });
+            createMessage.warn(t('iot.link.productCommand.productCommand.description1'));
             return false;
           }
           // 同步 selectedDevice 数据
@@ -299,10 +290,7 @@
             state.selectedDevice.deviceIdentification = state.selectedDeviceIds[0];
           }
           if (state.triggerType == 1) {
-            notification.success({
-              message: t('common.tips.tips'),
-              description: t('common.tips.saveSuccess'),
-            });
+            createMessage.success(t('common.tips.saveSuccess'));
             emit('saveTriggerRule', { ...state });
             handleSubmit();
           } else {
@@ -315,10 +303,7 @@
             !command.commands.commandCode ||
             !paramsRule(command.params)
           ) {
-            notification.warn({
-              message: t('common.tips.tips'),
-              description: t('iot.link.productCommand.productCommand.description6'),
-            });
+            createMessage.warn(t('iot.link.productCommand.productCommand.description6'));
             return false;
           }
           // TODO 类型校验失败数据提示信息处理
@@ -331,16 +316,10 @@
           //   return false;
           // }
           if (!paramsTypeRule(command.params)) {
-            notification.warn({
-              message: t('common.tips.tips'),
-              description: t('iot.link.productCommand.productCommand.description7'),
-            });
+            createMessage.warn(t('iot.link.productCommand.productCommand.description7'));
             return false;
           }
-          notification.success({
-            message: t('common.tips.tips'),
-            description: t('common.tips.saveSuccess'),
-          });
+          createMessage.success(t('common.tips.saveSuccess'));
           emit('saveTriggerAction', { ...state, ...command });
           state.actionChildrenIndex = null;
           handleSubmit();

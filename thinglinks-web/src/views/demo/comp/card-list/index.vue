@@ -14,7 +14,7 @@
   import { PageWrapper } from '/@/components/Page';
   import { demoListApi } from '/@/api/demo/table';
   import { useMessage } from '/@/hooks/web/useMessage';
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   // 请求api时附带参数
   const params = {};
 
@@ -26,7 +26,7 @@
   //删除按钮事件
   function handleDel(id) {
     console.log(id);
-    notification.success({ message: `成功删除${id}` });
+    createMessage.success(`成功删除${id}`);
     reload();
   }
 </script>

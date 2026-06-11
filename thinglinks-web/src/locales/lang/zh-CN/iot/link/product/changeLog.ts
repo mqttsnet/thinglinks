@@ -1,0 +1,30 @@
+export default {
+  hint: '产品未发布前的每一次物模型变更都会留痕,发布后随版本快照固化。',
+  empty: '暂无变更记录',
+  noMore: '没有更多了 · 共 {n} 条',
+  noDraft: '当前产品没有草稿版本,暂无待发布的变更。',
+  selectVersion: '选择版本',
+  versionPlaceholder: '请选择要查看的版本',
+  noVersion: '该产品还没有任何版本',
+  detail: '明细',
+  collapse: '收起',
+  changeCount: '处变更',
+  copyVersion: '复制版本号',
+  copiedVersion: '已复制',
+  changeType: {
+    0: '新增',
+    1: '编辑',
+    2: '删除',
+  },
+  targetType: {
+    0: '产品信息',
+    1: '服务',
+    2: '属性',
+    3: '命令',
+  },
+  field: {
+    name: '字段',
+    before: '变更前',
+    after: '变更后',
+  },
+};

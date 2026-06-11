@@ -30,7 +30,7 @@
     setup(_, { emit }) {
       const { t } = useI18n();
       const type = ref<ActionEnum>(ActionEnum.ADD);
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
       const userStore = useUserStore();
 
       const weekOptions = [
@@ -129,10 +129,7 @@
           await save(submitParams);
         }
 
-        notification.success({
-          message: '提示',
-          description: t(`common.tips.${type.value}Success`),
-        });
+        createMessage.success(t(`common.tips.${type.value}Success`));
         close();
         emit('success');
       }

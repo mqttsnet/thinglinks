@@ -17,12 +17,12 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { ActionEnum, VALIDATE_API } from '/@/enums/commonEnum';
-  import { Api, save, update } from '/@/api/video/device/videoDeviceInfo';
+  import { Api, save, update } from '/@/api/video/device/info';
   import { getValidateRules } from '/@/api/thinglinks/common/formValidateService';
-  import { customFormSchemaRules, editFormSchema } from './videoDeviceInfo.data';
+  import { customFormSchemaRules, editFormSchema } from './info.data';
 
   export default defineComponent({
-    name: '编辑设备列表',
+    name: 'VideoDeviceInfoEdit',
     components: { BasicModal, BasicForm },
     emits: ['success', 'register'],
     setup(_, { emit }) {
@@ -53,8 +53,13 @@
           await resetFields();
 
           if (unref(type) !== ActionEnum.ADD) {
-            // 赋值
-            const record = { ...data?.record };
+            // 赋值：把嵌套的 protocolConfig.streamSource 拍平成 streamSourceXxx 字段供表单使用
+            const record = { ...(data?.record || {}) };
+            const src = record?.protocolConfig?.streamSource || {};
+            record.streamSourceUrl = src.url;
+            record.streamSourceUsername = src.username;
+            record.streamSourcePath = src.streamPath;
+            record.streamSourceRtpType = src.rtpType ?? '0';
             await setFieldsValue(record);
           }
 
@@ -67,9 +72,30 @@
         },
       );
 
+      // 把扁平 streamSourceXxx 字段聚合回 protocolConfig.streamSource，
+      // 后端类型安全 DTO 期望嵌套结构，前端展示用扁平更省事。
+      function packStreamSource(params: Recordable): Recordable {
+        const protocols = ['RTSP', 'ONVIF'];
+        const isActive = protocols.includes(String(params.accessProtocol || '').toUpperCase());
+        const out = { ...params };
+        if (isActive) {
+          const streamSource: Recordable = {};
+          if (params.streamSourceUrl) streamSource.url = params.streamSourceUrl;
+          if (params.streamSourceUsername) streamSource.username = params.streamSourceUsername;
+          if (params.streamSourcePath) streamSource.streamPath = params.streamSourcePath;
+          if (params.streamSourceRtpType) streamSource.rtpType = params.streamSourceRtpType;
+          out.protocolConfig = { ...(params.protocolConfig || {}), streamSource };
+        }
+        delete out.streamSourceUrl;
+        delete out.streamSourceUsername;
+        delete out.streamSourcePath;
+        delete out.streamSourceRtpType;
+        return out;
+      }
+
       async function handleSubmit() {
         try {
-          const params = await validate();
+          const params = packStreamSource(await validate());
           setProps({ confirmLoading: true });
 
           if (unref(type) !== ActionEnum.VIEW) {

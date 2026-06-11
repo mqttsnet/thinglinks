@@ -57,7 +57,7 @@ export default {
     licenseType: '许可证类型（如GPL, MIT, 商业等',
   },
   selectRunPlugin: '选择运行插件',
-  portLabel: '端口 {ind}',
+  portLabel: '端口 [ind]',
   portPlaceholder: '请输入端口号',
   portValidation: '请输入有效的端口号（1-65535）',
   portDuplicateError: '端口号不能重复',

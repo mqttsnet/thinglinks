@@ -5,6 +5,8 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
+import { echoMapText } from '/@/utils/echo';
+import { thingModelCodeRules } from '/@/utils/iot/dataTypeValidator';
 
 const { t } = useI18n();
 // 列表页字段
@@ -41,6 +43,7 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.link.productService.productService.createdOrgId'),
       dataIndex: 'createdOrgId',
+      customRender: ({ record }) => echoMapText(record, 'createdOrgId'),
     },
     {
       title: t('iot.link.productService.productService.createdTime'),
@@ -124,7 +127,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       field: 'serviceCode',
       component: 'Input',
       helpMessage: t('iot.link.productService.productService.helpMessage.serviceCode'),
-      required: true,
+      rules: thingModelCodeRules(),
     },
     {
       label: t('iot.link.productService.productService.serviceName'),

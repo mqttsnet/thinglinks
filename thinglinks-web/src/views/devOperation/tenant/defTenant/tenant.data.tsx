@@ -13,6 +13,7 @@ import { useMessage } from '/@/hooks/web/useMessage';
 import { updateState } from '/@/api/devOperation/tenant/tenant';
 import { stateFilters } from '/@/utils/thinglinks/common';
 import cities from '/@/utils/thinglinks/cities.json';
+import { echoMapText } from '/@/utils/echo';
 
 import { useDict } from '/@/components/Dict';
 import { DictEnum } from '/@/enums/commonEnum';
@@ -336,6 +337,7 @@ export const viewFormSchema = (): DescItem[] => {
     {
       field: 'area',
       label: '地区',
+      render: (_curVal, data) => echoMapText(data, 'area'),
     },
     {
       field: 'address',

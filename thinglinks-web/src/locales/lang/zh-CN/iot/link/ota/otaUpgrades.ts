@@ -1,0 +1,42 @@
+export default {
+  table: { title: 'OTA升级包列表' },
+  id: '主键',
+  appId: '应用场景',
+  packageName: '包名称',
+  packageType: '升级包类型',
+  productIdentification: '产品标识',
+  version: '升级包版本号',
+  upgradePackage: '升级包',
+  fileLocation: '升级包的位置',
+  signMethod: '签名方式',
+  status: '状态',
+  description: '升级包功能描述',
+  customInfo: '自定义信息',
+  remark: '描述',
+  createdBy: '创建人',
+  createdTime: '创建时间',
+  updatedBy: '更新人',
+  updatedTime: '更新时间',
+  createdOrgId: '创建人组织',
+  helpMessage: {
+    version:
+      '请输入版本号（格式：x.y.z[-预发布标签][+构建元数据]），例如：1.0.0、1.0.0-alpha、1.0.0+20200101',
+    customInfo: '自定义信息不限制格式及内容，会在基于该升级包创建升级任务后的升级通知中发送至设备',
+  },
+  versionRule: '版本号格式错误',
+  placeholder: {
+    customInfoPlaceholder: '请输入推送给设备的自定义信息',
+    descriptionPlaceholder: '请输入升级包描述',
+  },
+  codeEditorDefine: {
+    title: '辅助编写',
+    helpMessage: '辅助编写自定义参数',
+    placeholder: '请输入自定义参数json格式',
+    description: '请输入正确的json格式',
+  },
+  triggerRule: {
+    title: '选择产品',
+    description1: '已选择该产品，无需重新选择',
+    description2: '请先选择产品',
+  },
+};

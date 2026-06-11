@@ -52,7 +52,7 @@
 <script lang="ts" setup>
   import { h, ref, defineProps } from 'vue';
   import { PlusOutlined } from '@ant-design/icons-vue';
-  import BasicDeviceSelector from '/@/components/Thinglinks/Iot/BasicSelect/BasicDevice/BasicDeviceSelector.vue';
+  import BasicDeviceSelector from '/@/components/iot/BasicSelect/BasicDevice/BasicDeviceSelector.vue';
   import { BasicModal, useModal } from '/@/components/Modal';
   import { useI18n } from '/@/hooks/web/useI18n';
 
@@ -148,3 +148,4 @@
     width: 100%;
   }
 </style>
+../../../../../api/iot/link/ota/otaUpgradeTasks

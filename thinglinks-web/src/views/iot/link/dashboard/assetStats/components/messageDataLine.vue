@@ -1,67 +1,59 @@
 <template>
-  <div class="md">
-    <Card size="small" :title="t('iot.link.dashboard.assetStats.deviceMessage')">
-      <template #extra>
-        <a-radio-group v-model:value="quickValue" button-style="solid" @change="quickClickChange">
-          <a-radio-button :value="item.value" v-for="item in quickClickOptions" :key="item.value">{{
-            item.label
-          }}</a-radio-button>
+  <!--
+    设备消息趋势(Flexy 风格)。
+    上/下行消息面积图,支持快捷时间(1h / 24h / 1周)+ 自定义时间范围;
+    后端按时间窗自适应粒度(1m / 1h / 1d / 1M)聚合,见 getMessageData。
+  -->
+  <div class="msg-panel">
+    <div class="panel-head">
+      <div class="panel-title">
+        <span class="title-bar" />
+        {{ t('iot.link.dashboard.assetStats.deviceMessage') }}
+      </div>
+      <div class="panel-tools">
+        <a-radio-group v-model:value="quickValue" button-style="solid" size="small" @change="quickClickChange">
+          <a-radio-button v-for="item in quickClickOptions" :key="item.value" :value="item.value">
+            {{ item.label }}
+          </a-radio-button>
         </a-radio-group>
         <a-range-picker
           v-model:value="rangeTime"
-          @change="onChange"
+          size="small"
           format="YYYY-MM-DD HH:mm:ss"
           valueFormat="YYYY-MM-DD HH:mm:ss"
-          style="margin-left: 12px; width: 320px"
           :show-time="{ format: 'HH:mm:ss' }"
-        >
-          <template #suffixIcon>
-            <SmileOutlined />
-          </template>
-        </a-range-picker>
-      </template>
-      <div class="card-content">
-        <dataLineChart :options="uplinkDetails" height="460px" />
+          class="range-picker"
+          @change="onChange"
+        />
       </div>
-    </Card>
+    </div>
+    <div class="panel-body">
+      <dataLineChart :options="uplinkDetails" height="420px" />
+    </div>
   </div>
 </template>
+
 <script lang="ts">
-  import { defineComponent, ref, reactive, onMounted, watch, toRefs } from 'vue';
-  import { CountTo } from '/@/components/CountTo/index';
+  import { defineComponent, onMounted, reactive, toRefs } from 'vue';
+  import { RadioGroup, RadioButton, RangePicker } from 'ant-design-vue';
   import dataLineChart from './dataLineChart.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { Icon } from '/@/components/Icon';
-  import { Tag, Card } from 'ant-design-vue';
   import { assetStatsDetails } from '/@/api/iot/link/dashboard/dashboard';
   import dayjs from 'dayjs';
 
   export default defineComponent({
-    name: 'GrowCard',
+    name: 'MessageDataLine',
     components: {
-      CountTo,
-      Card,
+      [RadioGroup.name]: RadioGroup,
+      [RadioButton.name]: RadioButton,
+      [RangePicker.name]: RangePicker,
       dataLineChart,
     },
-    props: {
-      loading: {
-        loading: Boolean,
-        default: true,
-      },
-      details: {
-        type: Object,
-        default: {},
-      },
-    },
-    setup(props) {
-      // 是否显示密码明文
+    setup() {
       const { t } = useI18n();
 
-      const state = reactive({
-        loading: props.loading,
-        cardDetails: null,
+      const state = reactive<any>({
         uplinkDetails: null,
-        deviceRadar: null,
         quickClickOptions: [
           { label: t('iot.link.dashboard.assetStats.hour'), value: 'hour' },
           { label: t('iot.link.dashboard.assetStats.day'), value: 'day' },
@@ -70,198 +62,162 @@
         quickValue: 'day',
         rangeTime: [],
       });
-      onMounted(() => {
-        quickClickChange();
-      });
 
-      const setUplinkDetails = (
-        x: Array<any>,
-        y1: Array<number>,
-        y2: Array<number>,
-        color: string,
-      ): void => {
+      const setUplinkDetails = (x: any[], y1: number[], y2: number[]): void => {
+        const area = (top: string) => ({
+          color: {
+            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [{ offset: 0, color: top }, { offset: 1, color: '#ffffff' }],
+            global: false,
+          },
+        });
         state.uplinkDetails = {
-          tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-              type: 'shadow',
-            },
+          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+          legend: {
+            data: [t('basic.system.baseChart.upLinkMessage'), t('basic.system.baseChart.downLinkMessage')],
+            top: 0,
+            right: 0,
+            icon: 'roundRect',
+            itemWidth: 10,
+            itemHeight: 10,
+            textStyle: { color: '#8c97a5' },
           },
-          xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: x,
-          },
-          yAxis: {
-            type: 'value',
-          },
-          grid: {
-            left: '4%',
-            right: '3%',
-            top: '2%',
-            bottom: '5%',
-          },
+          xAxis: { type: 'category', boundaryGap: false, data: x, axisLine: { lineStyle: { color: '#eef1f7' } }, axisLabel: { color: '#97a1b0' } },
+          yAxis: { type: 'value', splitLine: { lineStyle: { color: '#f4f6fb' } }, axisLabel: { color: '#97a1b0' } },
+          grid: { left: '3%', right: '2%', top: '12%', bottom: '5%', containLabel: true },
           series: [
-            {
-              name: t('basic.system.baseChart.upLinkMessage'),
-              data: y1,
-              type: 'line',
-              smooth: true, // 是否平滑曲线
-              symbolSize: 0, // 拐点大小
-              color: '#F29B55',
-              areaStyle: {
-                color: {
-                  type: 'linear',
-                  x: 0,
-                  y: 0,
-                  x2: 0,
-                  y2: 1,
-                  colorStops: [
-                    {
-                      offset: 0,
-                      color: '#FBBB87', // 100% 处的颜色
-                    },
-                    {
-                      offset: 1,
-                      color: '#FFFFFF', //   0% 处的颜色
-                    },
-                  ],
-                  global: false, // 缺省为 false
-                },
-              },
-            },
-            {
-              name: t('basic.system.baseChart.downLinkMessage'),
-              data: y2,
-              type: 'line',
-              smooth: true, // 是否平滑曲线
-              symbolSize: 0, // 拐点大小
-              color: '#ADC6FF',
-              areaStyle: {
-                color: {
-                  type: 'linear',
-                  x: 0,
-                  y: 0,
-                  x2: 0,
-                  y2: 1,
-                  colorStops: [
-                    {
-                      offset: 0,
-                      color: '#ADC6FF', // 100% 处的颜色
-                    },
-                    {
-                      offset: 1,
-                      color: '#FFFFFF', //   0% 处的颜色
-                    },
-                  ],
-                  global: false, // 缺省为 false
-                },
-              },
-            },
+            { name: t('basic.system.baseChart.upLinkMessage'), data: y1, type: 'line', smooth: true, symbol: 'none', color: '#ffae1f', areaStyle: area('#ffd591') },
+            { name: t('basic.system.baseChart.downLinkMessage'), data: y2, type: 'line', smooth: true, symbol: 'none', color: '#539bff', areaStyle: area('#adc6ff') },
           ],
         };
       };
 
-      const quickClickChange = (e: string): void => {
-        let value = state.quickValue;
-        if (e) {
-          value = e.target.value;
-          state.quickValue = value;
-        }
-        console.log(value);
-        let endTime = dayjs(new Date()).valueOf();
-        let startTime = getTimeByType(value);
-
-        console.log(dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'));
-        console.log(dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'));
-
-        state.rangeTime = [
-          dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
-          dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
-        ];
-        getMessageData({
-          endTime,
-          startTime,
-        });
-      };
-      const onChange = (e) => {
-        console.log(e);
-        if (e && e.length) {
-          state.quickValue = null;
-          let startTime = dayjs(e[0]).valueOf();
-          let endTime = dayjs(e[1]).valueOf();
-          getMessageData({
-            endTime,
-            startTime,
-          });
+      const getTimeByType = (type: string) => {
+        switch (type) {
+          case 'hour': return dayjs().subtract(1, 'hours').valueOf();
+          case 'week': return dayjs().subtract(7, 'days').valueOf();
+          case 'month': return dayjs().subtract(29, 'days').valueOf();
+          case 'year': return dayjs().subtract(365, 'days').valueOf();
+          case 'day': return dayjs().subtract(24, 'hours').valueOf();
+          default: return dayjs().startOf('day').valueOf();
         }
       };
 
-      //   MINUTE("1m", "yyyyMMddHHmm", ChronoUnit.MINUTES),
-      // HOUR("1h", "yyyyMMddHH", ChronoUnit.HOURS),
-      // DAY("1d", "yyyyMMdd", ChronoUnit.DAYS),
-      // MONTH("1M", "yyyyMM", ChronoUnit.MONTHS);
-
-      const getMessageData = async (data) => {
-        let _time = '1m';
+      /** 按时间跨度自适应聚合粒度,与后端 1m/1h/1d/1M 枚举对齐 */
+      const getMessageData = async (data: { startTime: number; endTime: number }) => {
+        let time = '1m';
         let limit = 60;
-        const distance = data.endTime - data.startTime; // 毫秒间隔
-        const hour = 60 * 60 * 1000; // 小时
-        const days = hour * 24; // 天
-        const months = days * 30; // 月
-        const year = 365 * days; // 年
+        const distance = data.endTime - data.startTime;
+        const hour = 60 * 60 * 1000;
+        const days = hour * 24;
+        const months = days * 30;
+        const year = 365 * days;
 
         if (distance <= hour + 10) {
           limit = 60;
         } else if (distance > hour && distance <= days) {
-          _time = '1h';
+          time = '1h';
           limit = 24;
         } else if (distance > days && distance < year) {
           limit = Math.abs(Math.ceil(distance / days)) + 1;
-          _time = '1d';
+          time = '1d';
         } else if (distance >= year) {
           limit = Math.abs(Math.floor(distance / months));
-          _time = '1M';
+          time = '1M';
         }
-        const details2 = await assetStatsDetails({
-          endTime: dayjs(data.endTime).format('YYYYMMDDHHmm'),
-          limit: limit,
-          startTime: dayjs(data.startTime).format('YYYYMMDDHHmm'),
-          time: _time,
-        });
-        state.cardDetails = details2;
-        const uplinkDetails = details2.uplinkDetails || [];
-        const downlinkDetails = details2.downlinkDetails || [];
-        setUplinkDetails(
-          uplinkDetails.map((item) => item.timeString),
-          uplinkDetails.map((item) => item.value),
-          downlinkDetails.map((item) => item.value),
-        );
-      };
-      const getTimeByType = (type: string) => {
-        switch (type) {
-          case 'hour':
-            return dayjs().subtract(1, 'hours').valueOf();
-          case 'week':
-            return dayjs().subtract(7, 'days').valueOf();
-          case 'month':
-            return dayjs().subtract(29, 'days').valueOf();
-          case 'year':
-            return dayjs().subtract(365, 'days').valueOf();
-          case 'day':
-            return dayjs().subtract(24, 'hours').valueOf();
-          default:
-            return dayjs().startOf('day').valueOf();
+
+        try {
+          const res: any = await assetStatsDetails({
+            endTime: dayjs(data.endTime).format('YYYYMMDDHHmm'),
+            startTime: dayjs(data.startTime).format('YYYYMMDDHHmm'),
+            limit,
+            time,
+          });
+          const up = res?.uplinkDetails || [];
+          const down = res?.downlinkDetails || [];
+          setUplinkDetails(up.map((i: any) => i.timeString), up.map((i: any) => i.value), down.map((i: any) => i.value));
+        } catch (e) {
+          console.warn('[assetStats] 设备消息趋势加载失败', e);
         }
       };
 
-      return {
-        t,
-        ...toRefs(state),
-        quickClickChange,
-        onChange,
+      const quickClickChange = (e?: any): void => {
+        let value = state.quickValue;
+        if (e?.target?.value) {
+          value = e.target.value;
+          state.quickValue = value;
+        }
+        const endTime = dayjs().valueOf();
+        const startTime = getTimeByType(value);
+        state.rangeTime = [
+          dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'),
+          dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'),
+        ];
+        getMessageData({ endTime, startTime });
       };
+
+      const onChange = (e: any) => {
+        if (e && e.length) {
+          state.quickValue = null;
+          getMessageData({ startTime: dayjs(e[0]).valueOf(), endTime: dayjs(e[1]).valueOf() });
+        }
+      };
+
+      onMounted(() => quickClickChange());
+
+      return { t, ...toRefs(state), quickClickChange, onChange };
     },
   });
 </script>
-../../../../../../api/iot/link/dashboard/dashboard
+
+<style lang="less" scoped>
+  .msg-panel {
+    background: #fff;
+    border: 1px solid #eef1f7;
+    border-radius: 12px;
+    padding: 16px 18px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2a3547;
+
+    .title-bar {
+      width: 3px;
+      height: 14px;
+      border-radius: 2px;
+      background: #ffae1f;
+    }
+  }
+
+  .panel-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    .range-picker {
+      width: 300px;
+    }
+  }
+
+  .panel-body {
+    flex: 1;
+  }
+</style>

@@ -58,7 +58,7 @@
                 <div class="btn">
                   <a-tooltip placement="top" :title="t('common.title.delete')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/delete-y.png"
+                      src="../../../../assets/images/iot/link/delete-y.png"
                       alt=""
                       @click="handleDelete(record)"
                     />
@@ -66,7 +66,7 @@
                 </div>
                 <div class="btn">
                   <img
-                    src="../../../../../../../../assets/images/iot/link/device/copy-n.png"
+                    src="../../../../assets/images/iot/link/device/copy-n.png"
                     alt=""
                     @click="handleCopy(record)"
                   />
@@ -74,7 +74,7 @@
                 <div class="btn">
                   <a-tooltip placement="top" :title="t('common.title.edit')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/device/edit-y.png"
+                      src="../../../../assets/images/iot/link/device/edit-y.png"
                       alt=""
                       @click="handleEdit(record)"
                     />
@@ -85,7 +85,7 @@
             <div class="product-img">
               <img
                 @click="handleView(record, $event)"
-                src="../../../../../../../../assets/images/iot/rule/alarm/alarm.png"
+                src="../../../../assets/images/iot/rule/alarm/alarm.png"
               />
             </div>
           </div>
@@ -117,7 +117,7 @@
   import { useModal } from '/@/components/Modal';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
   // api
-  import { page, remove } from '../../../../../../../../api/iot/rule/alarm/alarm';
+  import { page, remove } from '/@/api/iot/rule/alarm/alarm';
   // components
   import {
     Card,
@@ -352,7 +352,7 @@
   });
 </script>
 <style scoped lang="less">
-  @import '../../../cardCommon.less';
+  @import '../../../Table/src/types/components/cardCommon.less';
 
   .has_selected {
     border: 1px solid #1a66ff;

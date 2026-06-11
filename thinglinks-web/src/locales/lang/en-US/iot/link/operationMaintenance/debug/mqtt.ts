@@ -1,6 +1,35 @@
 export default {
+  // QoS options + validation (existing, keep)
   qos0: '0 At most once',
   qos1: '1 At least once',
   qos2: '2 Exactly once',
   positiveNumberValidation: 'Please enter a positive number, cannot be 0 or negative',
+
+  // Page
+  title: 'MQTT Command',
+  subtitle: 'Publish an MQTT downlink command to a topic (for MQTT-protocol devices)',
+  params: 'Command Params',
+  modeManual: 'Manual',
+  modeDevice: 'By Device',
+  device: 'Pick Device',
+  devicePh: 'Search device name…',
+  deviceHint:
+    'Pick a product first, then a device under it; auto-builds its command topic (still editable)',
+  tenantId: 'Tenant ID',
+  topic: 'Topic',
+  topicPh: 'e.g. /v1/devices/[deviceId]/command',
+  qos: 'QoS',
+  expirySeconds: 'Expiry (s)',
+  payload: 'Payload',
+  payloadPh: 'Hex starting with 0x for binary; or raw string',
+  payloadHint: 'payload is the downlink body, per the device decode contract',
+  send: 'Send',
+  reset: 'Reset',
+  record: 'Sent Records',
+  empty: 'No records',
+  clear: 'Clear',
+  ok: 'OK',
+  fail: 'Failed',
+  copy: 'Copy',
+  sendSuccess: 'Command sent',
 };

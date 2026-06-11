@@ -173,9 +173,9 @@
           if (pass) {
             currentEditKeyRef.value = '';
           }
-          createMessage.success({ content: '数据已保存', key: 'saving' });
+          createMessage.success('数据已保存');
         } else {
-          createMessage.error({ content: '请填写正确的数据', key: 'saving' });
+          createMessage.error('请填写正确的数据');
         }
       }
 

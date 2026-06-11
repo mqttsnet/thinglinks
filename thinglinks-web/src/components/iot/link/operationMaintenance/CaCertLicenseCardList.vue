@@ -64,7 +64,7 @@
                   <a-tooltip placement="top" :title="t('common.title.delete')">
                     <img
                       alt=""
-                      src="../../../../../../../../assets/images/iot/link/device/delete-y.png"
+                      src="/@/assets/images/iot/link/device/delete-y.png"
                       @click="handleDelete(record)"
                     />
                   </a-tooltip>
@@ -73,7 +73,7 @@
                   <a-tooltip placement="top" :title="t('common.title.edit')">
                     <img
                       alt=""
-                      src="../../../../../../../../assets/images/iot/link/device/edit-y.png"
+                      src="/@/assets/images/iot/link/device/edit-y.png"
                       @click="handleEdit(record)"
                     />
                   </a-tooltip>
@@ -303,5 +303,5 @@
   });
 </script>
 <style scoped>
-  @import '../../../cardCommon.less';
+  @import '../../../Table/src/types/components/cardCommon.less';
 </style>

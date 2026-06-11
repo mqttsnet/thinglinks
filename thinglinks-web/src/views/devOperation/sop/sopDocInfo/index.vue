@@ -18,7 +18,15 @@
         </a-button>
       </template>
     </Tabs>
-    <BasicTable @register="registerTable" @fetch-success="onFetchSuccess">
+    <!-- tabsData 为空时给一个明确的空状态，否则用户只看到一个空白条，会以为是页面坏了 -->
+    <div v-if="!tabsData.length" class="sop-app-empty bg-card">
+      <Empty :description="t('devOperation.sop.sopDocInfo.noAppEmpty')">
+        <a-button type="primary" v-hasAnyPermission="[permCode.addApp]" @click="handleAddApp">
+          {{ t('devOperation.sop.sopDocInfo.add') }}
+        </a-button>
+      </Empty>
+    </div>
+    <BasicTable v-else @register="registerTable" @fetch-success="onFetchSuccess">
       <template #toolbar>
         <a-button type="primary" v-hasAnyPermission="[permCode.sync]" @click="handleSyncAppDoc">
           {{ t('devOperation.sop.sopDocInfo.syncAll') }}
@@ -105,7 +113,7 @@
   </PageWrapper>
 </template>
 <script lang="ts">
-  import { TabPane, Tabs } from 'ant-design-vue';
+  import { Empty, TabPane, Tabs } from 'ant-design-vue';
   import { DeleteOutlined } from '@ant-design/icons-vue';
   import { defineComponent, onMounted, ref } from 'vue';
   import { useTabs } from '/@/hooks/web/useTabs';
@@ -130,6 +138,7 @@
       PageWrapper,
       TableAction,
       EditModal,
+      Empty,
       TabPane,
       Tabs,
       DeleteOutlined,
@@ -146,10 +155,22 @@
       const tabsData = ref<any[]>([]);
       const permCode = PermCode.devOperation.sop.sopDocInfo;
 
+      // 表格 api 包一层：未选择应用（activeKey 为空，比如租户还没建任何文档应用）时短路返回空数组，
+      // 不要把 docAppId='' 发到后端 —— 后端 @RequestParam Long docAppId 解析空串会抛
+      // "缺少必须的[Long]类型的参数[docAppId]"，前端就会弹红条吓到用户。
+      // 注意：useTable 的 beforeFetch 不支持取消请求（见 useDataSource.ts，返回 falsy 会回退到原 params），
+      // 所以必须在 api 这一层拦掉。
+      const treeApi = (params: any) => {
+        if (!activeKey.value) {
+          return Promise.resolve([] as SopDocInfoResultVO[]);
+        }
+        return tree(params);
+      };
+
       // 表格
       const [registerTable, { getForm, reload, expandAll }] = useTable({
         title: t('devOperation.sop.sopDocInfo.table.title'),
-        api: tree,
+        api: treeApi,
         columns: columns(),
         formConfig: {
           name: 'SopDocInfoSearch',
@@ -246,7 +267,22 @@
       };
 
       const loadApp = async (appId: string) => {
-        const list = await query({});
+        // 加 try/catch + 类型保护：query 失败时不要静默吞掉让用户看到一片空白还以为页面坏了；
+        // 接口偶尔被网关拦截 / 后端字段命名变化，类型保护能让前端不至于把 undefined 当数组用直接抛 TypeError。
+        let list: SopDocAppResultVO[] = [];
+        try {
+          const resp = await query({});
+          if (Array.isArray(resp)) {
+            list = resp;
+          } else if (resp && Array.isArray((resp as any).records)) {
+            // 兼容后端某些场景下返回分页对象 { records, total } 的情况
+            list = (resp as any).records;
+          }
+        } catch (e: any) {
+          createMessage.error(
+            t('devOperation.sop.sopDocInfo.loadAppFailed') + (e?.message ? `: ${e.message}` : ''),
+          );
+        }
         tabsData.value = list;
 
         const length = tabsData.value.length;
@@ -263,6 +299,9 @@
           }
           activeKey.value = targetId;
           activeTab(targetId);
+        } else {
+          // 空数据时显式重置，避免上一次切的应用 ID 残留导致表格 reload 命中错的 docAppId
+          activeKey.value = '';
         }
       };
 
@@ -321,6 +360,11 @@
 
       // 打开新增表单
       const handleSyncAppDoc = () => {
+        if (!activeKey.value) {
+          // 还没有任何应用就点"同步所有"，后端会因为 id 为空抛同样的"缺少必须参数"错误。提前给个友好提示。
+          createMessage.warning(t('devOperation.sop.sopDocInfo.pleaseCreateAppFirst'));
+          return;
+        }
         createConfirm({
           iconType: 'warning',
           title: t('common.tips.tips'),
@@ -400,5 +444,15 @@
     .ant-tabs-nav {
       margin: 0;
     }
+  }
+
+  .sop-app-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    margin-top: 1rem;
+    border-radius: 4px;
+    padding: 32px;
   }
 </style>

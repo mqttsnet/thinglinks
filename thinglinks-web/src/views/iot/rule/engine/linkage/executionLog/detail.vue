@@ -222,19 +222,13 @@
       loading.value = false;
     }
   };
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   const copyText = (text) => {
     let result = copyTextToClipboard(text);
     if (result) {
-      notification.success({
-        message: t('common.tips.tips'),
-        description: t('common.tips.copySuccess'),
-      });
+      createMessage.success(t('common.tips.copySuccess'));
     } else {
-      notification.warning({
-        message: t('common.tips.tips'),
-        description: t('common.tips.copyFail'),
-      });
+      createMessage.warning(t('common.tips.copyFail'));
     }
   };
 </script>

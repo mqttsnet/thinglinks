@@ -26,6 +26,11 @@
             :text="t('layout.header.registeredEnterprise')"
             icon="ant-design:bank-filled"
           />
+          <MenuItem
+            key="switchCompany"
+            :text="t('layout.header.switchingCompanies')"
+            icon="ant-design:swap-outlined"
+          />
           <MenuDivider v-if="getShowDoc" />
           <MenuItem
             v-if="getShowDoc"
@@ -55,6 +60,8 @@
       </template>
     </Dropdown>
     <LockAction @register="register" />
+    <SwitchTenant v-if="isMultiTenant" @register="registerSwitchModal" />
+    <SwitchCompany v-else @register="registerSwitchModal" />
   </div>
 </template>
 <script lang="ts">
@@ -68,19 +75,30 @@
   import { DOC_URL, VBEN_DOC_URL } from '/@/settings/siteSetting';
 
   import { useUserStore } from '/@/store/modules/user';
+  import { useDictStoreWithOut } from '/@/store/modules/dict';
+  import { clearDictCache } from '/@/api/thinglinks/common/general';
   import { useHeaderSetting } from '/@/hooks/setting/useHeaderSetting';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useModal } from '/@/components/Modal';
   import { AvatarPreview } from '/@/components/AvatarPreview';
+  import { useGlobSetting } from '/@/hooks/setting';
+  import { MultiTenantTypeEnum } from '/@/enums/biz/tenant';
 
   import { propTypes } from '/@/utils/propTypes';
   import { openWindow } from '/@/utils';
 
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
 
-  type MenuEvent = 'logout' | 'doc' | 'lock' | 'profile' | 'vbenDoc' | 'registerTenant';
+  type MenuEvent =
+    | 'logout'
+    | 'doc'
+    | 'lock'
+    | 'profile'
+    | 'vbenDoc'
+    | 'registerTenant'
+    | 'switchCompany';
 
   export default defineComponent({
     name: 'UserDropdown',
@@ -91,6 +109,8 @@
       MenuItem: createAsyncComponent(() => import('./DropMenuItem.vue')),
       MenuDivider: Menu.Divider,
       LockAction: createAsyncComponent(() => import('../lock/LockModal.vue')),
+      SwitchTenant: createAsyncComponent(() => import('../tenant/SwitchTenant.vue')),
+      SwitchCompany: createAsyncComponent(() => import('../company/SwitchCompany.vue')),
     },
     props: {
       theme: propTypes.oneOf(['dark', 'light']),
@@ -102,11 +122,17 @@
       const userStore = useUserStore();
       const { replace } = useRouter();
       const avatarUrl = ref<string>('');
+      const globSetting = useGlobSetting();
+
+      const isMultiTenant = computed(
+        () => globSetting.multiTenantType !== MultiTenantTypeEnum.NONE,
+      );
 
       const getUserInfo = computed(() => {
         return userStore.getUserInfo;
       });
       const [register, { openModal }] = useModal();
+      const [registerSwitchModal, { openModal: openSwitchModal }] = useModal();
 
       function handleLock() {
         openModal(true);
@@ -122,6 +148,10 @@
           content: () => h('span', t('sys.app.logoutMessage')),
           onOk: async () => {
             await userStore.logout(true);
+            // 登出不走 location.reload(其他大刷新路径都走);手动清字典内存缓存,
+            // 防止下个登录用户(不同租户/应用)继承上一用户的字典残留
+            clearDictCache();
+            useDictStoreWithOut().clearAllDicts();
           },
         });
       }
@@ -146,6 +176,10 @@
         });
       }
 
+      function handleSwitchCompany() {
+        openSwitchModal(true, {});
+      }
+
       function handleMenuClick(e: MenuInfo) {
         switch (e.key as MenuEvent) {
           case 'profile':
@@ -153,6 +187,9 @@
             break;
           case 'registerTenant':
             registerTenant();
+            break;
+          case 'switchCompany':
+            handleSwitchCompany();
             break;
           case 'logout':
             handleLoginOut();
@@ -177,6 +214,8 @@
         getShowDoc,
         avatarUrl,
         register,
+        registerSwitchModal,
+        isMultiTenant,
         getUseLockPage,
       };
     },

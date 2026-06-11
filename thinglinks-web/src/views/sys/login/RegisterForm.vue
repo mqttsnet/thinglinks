@@ -73,7 +73,7 @@
   const FormItem = Form.Item;
   const InputPassword = Input.Password;
   const { t } = useI18n();
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   const { handleBackLogin, getLoginState } = useLoginState();
 
   const formRef = ref();
@@ -110,18 +110,10 @@
     try {
       data.key = MsgTemplateCodeEnum.REGISTER_SMS;
       const username = await registerByMobile(data);
-      notification.success({
-        message: '注册成功',
-        description: `注册成功,请使用${username}登录系统`,
-        duration: 3,
-      });
+      createMessage.success(`注册成功,请使用${username}登录系统`);
       handleBackLogin();
     } catch (error) {
-      notification.error({
-        message: '注册失败',
-        description: `注册失败`,
-        duration: 3,
-      });
+      createMessage.error('注册失败');
     }
   }
 </script>

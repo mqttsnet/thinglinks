@@ -1,0 +1,45 @@
+export default {
+  pageTitle: 'SIP 接続設定',
+  configName: '設定名',
+  sipId: 'SIP サーバ ID',
+  sipDomain: 'SIP ドメイン',
+  sipServerAddress: 'SIP サーバアドレス',
+  bindIp: 'バインド IP',
+  isDefault: 'デフォルト',
+  status: '状態',
+  createdTime: '作成時間',
+  sipPassword: '認証パスワード',
+  registerInterval: '登録有効期間(秒)',
+  isDefaultLabel: 'デフォルトに設定',
+  remark: '備考',
+
+  enabled: '有効',
+  disabled: '無効',
+  yes: 'はい',
+  no: 'いいえ',
+  defaultTag: '★ デフォルト',
+
+  sipIdHelp:
+    '本プラットフォームが GB28181 デバイス向けに公開する「SIP サーバ ID」、20 桁。先頭 10 桁はドメインコード（下の SIP ドメインと一致）。各デバイスの「SIP サーバ ID」設定にこの値を入力してください。⚠️ この値は接続するすべてのデバイスの「デバイス編号」と異なる必要があります。同じ値にすると INVITE 200 OK 直後に BYE が返り、再生が無限ループします。多くのカメラは出荷時に「SIP サーバ ID」と「デバイス編号」が同じ値に設定されているため、デバイスの「デバイス編号」を別の 20 桁の国標編号に変更してください。',
+  sipDomainHelp: 'SIP サーバ ID の先頭 10 桁（行政区画コード）',
+  sipPasswordHelp: 'デバイス登録のデフォルトパスワード、AES 暗号化。デバイス側「SIP 認証パスワード」と一致させること',
+  sipServerAddressHelp: 'デバイス側「SIP サーバ IP / アドレス」に入力する値。ドメイン名または IP。クラスタ時は Nginx VIP / ドメインを推奨',
+  bindIpHelp: 'マルチ NIC 環境でリッスンする NIC IP、カンマ区切り。空欄 = 制限なし',
+  registerIntervalHelp: '空欄 = グローバルデフォルト値を使用',
+  isDefaultHelp: 'デフォルト設定はデバイスへの INVITE / BYE など、アウトバウンド SIP の From header に使用されます',
+
+  setDefault: 'デフォルトに設定',
+  setDefaultConfirm: 'デフォルト設定にしますか？',
+  refreshCache: 'キャッシュを更新',
+  setDefaultSuccess: 'デフォルトに設定しました',
+  cacheRefreshed: 'キャッシュを更新しました',
+
+  rule: {
+    configName: '設定名を入力してください',
+    sipId: 'SIP サーバ ID を入力してください',
+    sipIdLen: 'SIP サーバ ID は 20 桁である必要があります',
+    sipIdPattern: 'SIP サーバ ID は 20 桁の数字である必要があります',
+    sipDomain: 'SIP ドメインを入力してください',
+    sipPassword: '認証パスワードを入力してください',
+  },
+};

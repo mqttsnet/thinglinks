@@ -71,9 +71,10 @@ export default defineComponent({
     });
 
     function handleView(record: Recordable) {
+      // 路由 :id 段语义是 deviceIdentification（业务唯一标识，非主键 id）
       router.push({
         name: '设备详情',
-        params: { id: record.id },
+        params: { id: record.deviceIdentification },
       });
     }
 

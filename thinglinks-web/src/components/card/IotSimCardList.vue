@@ -77,7 +77,7 @@
                 </a-col>
               </a-row>
               <div class="item last_item">
-                <!-- <div class="label">{{ t('video.media.videoStreamProxy.mediaIdentification') }}</div>
+                <!-- <div class="label">{{ t('video.media.proxy.mediaIdentification') }}</div>
                 <div class="content" :title="record.mediaIdentification">{{
                   record.mediaIdentification ?? null
                 }}</div> -->
@@ -91,7 +91,7 @@
                   >
                     <img
                       alt=""
-                      src="../../../../../../assets/images/iot/link/device/delete-y.png"
+                      src="/@/assets/images/iot/link/device/delete-y.png"
                       @click="handleDelete(record)"
                     />
                   </a-tooltip>
@@ -104,7 +104,7 @@
                   >
                     <img
                       alt=""
-                      src="../../../../../../assets/images/iot/link/device/copy-y.png"
+                      src="/@/assets/images/iot/link/device/copy-y.png"
                       @click="handleCopy(record)"
                     />
                   </a-tooltip>
@@ -117,7 +117,7 @@
                   >
                     <img
                       alt=""
-                      src="../../../../../../assets/images/iot/link/device/edit-y.png"
+                      src="/@/assets/images/iot/link/device/edit-y.png"
                       @click="handleEdit(record)"
                     />
                   </a-tooltip>
@@ -128,7 +128,7 @@
               v-if="record.onlineFlag == 1"
               class="right_img"
               :style="{ width: '140px', height: '140px', margin: '0px 18px 0 0' }"
-              src="../../../../../../assets/images/card/sim.png"
+              src="/@/assets/images/card/sim.png"
               alt=""
               @click="handleView(record, e)"
             />
@@ -136,7 +136,7 @@
               v-else
               class="right_img"
               :style="{ width: '140px', height: '140px', margin: '0px 18px 0 0' }"
-              src="../../../../../../assets/images/card/no-sim.png"
+              src="/@/assets/images/card/no-sim.png"
               alt=""
               @click="handleView(record, e)"
             />
@@ -177,7 +177,7 @@
   import { page, deleteSingle } from '/@/api/card/sim/cardSimInfo';
   import EditModal from '/@/views/card/sim/cardSimInfo/Edit.vue';
   import type { CardSimInfoPageQuery } from '/@/api/card/sim/model/cardSimInfoModel';
-  import Player from '/@/views/video/media/videoStreamProxy/Player.vue';
+  import Player from '/@/views/video/media/proxy/Player.vue';
 
   const props = defineProps({ title: String, searchData: { type: Object, default: () => {} } });
   const emit = defineEmits(['input']);
@@ -318,7 +318,7 @@
       align-items: center;
       justify-content: space-between;
       position: relative;
-      background-image: url('../../../../../../../assets/images/link/blue-bg.png');
+      background-image: url('/@/assets/images/iot/link/blue-bg.png');
       height: 200px;
       border: 1px solid #e8e8e8;
       padding: 8px 12px 8px;

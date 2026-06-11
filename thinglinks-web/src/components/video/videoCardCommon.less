@@ -1,0 +1,190 @@
+.node-card-list {
+  background-color: #fff;
+  padding: 22px;
+  border-radius: 7px;
+
+  .loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    .title {
+      font-weight: 600;
+      font-size: 16px;
+      color: #2a3547;
+    }
+
+    .btn_group {
+      :deep(.ant-btn) {
+        margin-left: 8px;
+        border-radius: 7px;
+      }
+    }
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+
+    .card_wrap {
+      display: flex;
+      align-items: stretch;
+      position: relative;
+      background-image: url('../../../../../../../assets/images/iot/link/blue-bg.png');
+      border: 1px solid #e5eaef;
+      padding: 16px;
+      border-radius: 7px;
+      background-color: #fff;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 104% 104%;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 200px;
+      overflow: hidden;
+
+      &:hover {
+        border-color: #5d87ff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(93, 135, 255, 0.12);
+      }
+
+      .left_info {
+        flex: 1;
+        min-width: 0;
+        max-width: calc(100% - 160px);
+        display: flex;
+        flex-direction: column;
+
+        .item {
+          margin-bottom: 6px;
+
+          .label {
+            font-size: 12px;
+            color: #8c9ab5;
+            line-height: 1.4;
+            margin-bottom: 1px;
+          }
+
+          .name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #2a3547;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+          }
+
+          .content {
+            font-size: 13px;
+            color: #5a6a85;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+          }
+        }
+
+        .last_item {
+          margin-bottom: 40px;
+        }
+
+        .btns {
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          position: absolute;
+          left: 16px;
+          bottom: 12px;
+          min-width: 100px;
+          max-width: 160px;
+          height: 32px;
+          border-radius: 45px;
+          padding: 0 12px;
+          border: 2px solid #5d87ff;
+          background: rgba(93, 135, 255, 0.04);
+          gap: 6px;
+
+          .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.2s;
+
+            &:hover {
+              opacity: 0.7;
+            }
+
+            img {
+              width: 16px;
+              height: 16px;
+            }
+          }
+        }
+      }
+
+      .right_img {
+        width: 140px;
+        height: 140px;
+        cursor: pointer;
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 7px;
+        object-fit: cover;
+      }
+
+      .type {
+        position: absolute;
+        top: 0;
+        right: 0;
+        border-radius: 0 7px 0 7px;
+        background-color: rgba(93, 135, 255, 0.1);
+        color: #5d87ff;
+        padding: 3px 10px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .status {
+        position: absolute;
+        bottom: 14px;
+        right: 14px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
+
+        &.online {
+          background-color: #13deb9;
+        }
+
+        &.offline {
+          background-color: #fa896b;
+        }
+      }
+    }
+
+    .card_pagination {
+      align-self: flex-end;
+      margin-top: 16px;
+    }
+  }
+
+  .ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}

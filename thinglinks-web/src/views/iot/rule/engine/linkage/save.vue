@@ -122,6 +122,7 @@
   import { defineComponent, reactive, onMounted, toRefs, getCurrentInstance } from 'vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { BizConstant } from '/@/enums/biz/common';
   import { copyTextToClipboard } from '/@/hooks/web/useCopyToClipboard';
   import { PageWrapper } from '/@/components/Page';
   import conditionSelect from './components/condition/conditionSelect.vue';
@@ -170,7 +171,7 @@
     setup() {
       // 是否显示密码明文
       const { t } = useI18n();
-      const { notification, createConfirm } = useMessage();
+      const { createMessage, createConfirm } = useMessage();
       const { currentRoute, go } = useRouter();
       const [registerModal, { openModal }] = useModal();
       const [executionLogDetailRegister, { openDrawer: openDetail }] = useDrawer();
@@ -271,7 +272,7 @@
           let deviceIdentifications = flattenItem.filter((item) => {
             return (
               item.leftParam?.deviceIdentification ||
-              (item.deviceIdentification && item.deviceIdentification != 'all')
+              (item.deviceIdentification && item.deviceIdentification != BizConstant.ALL)
             );
           });
 
@@ -327,9 +328,9 @@
         let result = copyTextToClipboard(text);
         console.log(result, 'result');
         if (result) {
-          notification.success({ message: '提示', description: t('common.tips.copySuccess') });
+          createMessage.success(t('common.tips.copySuccess'));
         } else {
-          notification.warning({ message: '提示', description: t('common.tips.copyFail') });
+          createMessage.warning(t('common.tips.copyFail'));
         }
       }
       const selectConditionType = () => {
@@ -394,10 +395,7 @@
             const errorAttribute = validate(conditions);
             if (errorAttribute.length) {
               const { parentIndex, childIndex } = errorAttribute[0];
-              notification.warning({
-                message: '提示',
-                description: `第${parentIndex + 1}条件组中第${childIndex + 1}项条件填写不完全`,
-              });
+              createMessage.warning(`第${parentIndex + 1}条件组中第${childIndex + 1}项条件填写不完全`);
               return false;
             }
             return true;
@@ -406,10 +404,7 @@
             const errorStatus = validate(conditions);
             if (errorStatus.length) {
               const { parentIndex, childIndex } = errorStatus[0];
-              notification.warning({
-                message: '提示',
-                description: `第${parentIndex + 1}条件组中第${childIndex + 1}项条件填写不完全`,
-              });
+              createMessage.warning(`第${parentIndex + 1}条件组中第${childIndex + 1}项条件填写不完全`);
               return false;
             }
             return true;
@@ -556,10 +551,7 @@
             try {
               const res = await handleSaveRuleConditionAction();
               if (res !== 'error') {
-                notification.success({
-                  message: t('common.tips.tips'),
-                  description: t('common.tips.saveSuccess'),
-                });
+                createMessage.success(t('common.tips.saveSuccess'));
               }
             } catch (error) {
               throw new Error('保存失败');
@@ -572,9 +564,9 @@
         let result = copyTextToClipboard(text);
         console.log(result, 'result');
         if (result) {
-          notification.success({ message: '提示', description: t('common.tips.copySuccess') });
+          createMessage.success(t('common.tips.copySuccess'));
         } else {
-          notification.warning({ message: '提示', description: t('common.tips.copyFail') });
+          createMessage.warning(t('common.tips.copyFail'));
         }
       };
       // 查看执行日志

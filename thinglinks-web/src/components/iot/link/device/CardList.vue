@@ -54,22 +54,22 @@
                 <img
                   v-if="record?.nodeType === 2"
                   @click="handleView(record, $event)"
-                  src="../../../../../../../../assets/images/iot/link/deviceAndProduct/childrenDevice.png"
+                  src="../../../../assets/images/iot/link/deviceAndProduct/childrenDevice.png"
                 />
                 <img
                   v-else-if="record?.nodeType === 0"
                   @click="handleView(record, $event)"
-                  src="../../../../../../../../assets/images/iot/link/deviceAndProduct/gatwayDevice.png"
+                  src="../../../../assets/images/iot/link/deviceAndProduct/gatwayDevice.png"
                 />
                 <img
                   v-else-if="record?.nodeType === 1"
                   @click="handleView(record, $event)"
-                  src="../../../../../../../../assets/images/iot/link/deviceAndProduct/commonDevice.png"
+                  src="../../../../assets/images/iot/link/deviceAndProduct/commonDevice.png"
                 />
                 <img
                   v-else
                   @click="handleView(record, $event)"
-                  src="../../../../../../../../assets/images/iot/link/device/deviceManagement.gif"
+                  src="../../../../assets/images/iot/link/device/deviceManagement.gif"
                 />
                 <div class="info">
                   <a-tooltip placement="topLeft" :title="record?.deviceName">
@@ -142,7 +142,7 @@
           </div>
           <!-- <a-card hoverable :bordered="false">
             <div class="device-item">
-              <img src="../../../../../assets/images/device/deviceManagement.gif" />
+              <img src="../../../../assets/images/iot/link/device/deviceManagement.gif" />
               <div class="device-info">
                 <span class="device-name">{{ record?.deviceName }}</span>
                 <div>
@@ -336,9 +336,10 @@
         if (props.isSelect) {
           selectDeviceCard(record);
         } else {
+          // 路由 :id 段语义是 deviceIdentification（业务唯一标识，非主键 id）
           push({
             name: '设备详情',
-            params: { id: record.id },
+            params: { id: record.deviceIdentification },
           });
         }
       }

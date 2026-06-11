@@ -2,7 +2,7 @@
   <div class="type-list">
     <!-- <div class="type-item" :class="{ active: typeId == item.id }" v-for="item in  typeList " :key="item.id"
       @click="handleselect(item, $event)">
-      <img src="../../../../../assets/images/index/Slice1@3x.png" alt="">
+      <img src="/@/assets/images/index/Slice1@3x.png" alt="">
       <div class="title">{{ item.name }}</div>
     </div> -->
     <a-button  class="type-item" :class="{ active: typeId == item.id }"  v-for="item in  typeList " :key="item.id"

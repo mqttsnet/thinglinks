@@ -10,7 +10,6 @@ export default {
   dsType: 'dsType',
   createdOrgId: 'createdOrgId',
   category: 'category',
-  bindEmployee: 'BindEmployee',
   scope: 'Scope',
   dept: 'Department of Employment',
   batchBinding: 'Batch binding',

@@ -293,6 +293,7 @@
     Select,
   } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import { BizConstant } from '/@/enums/biz/common';
   import { ActionEnum } from '/@/enums/commonEnum';
   import { getFullProductInfo } from '/@/api/iot/link/product/product';
   import { detailBydeviceIdentification } from '/@/api/iot/link/device/device';
@@ -351,7 +352,7 @@
       const { t } = useI18n();
       const type = ref<ActionEnum>(ActionEnum.ADD);
       const [registerModal, { openModal }] = useModal();
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
 
       const state = reactive({
         loading: false,
@@ -694,7 +695,7 @@
       }
       // 获取设备
       async function getDeviceInfoList(deviceIdentification, index, childrenIndex) {
-        if (!deviceIdentification || deviceIdentification === 'all') {
+        if (!deviceIdentification || deviceIdentification === BizConstant.ALL) {
           return false;
         }
         const res = await detailBydeviceIdentification(deviceIdentification);
@@ -739,9 +740,9 @@
         let result = copyTextToClipboard(uuid);
         console.log(result, 'result');
         if (result) {
-          notification.success({ message: '提示', description: t('common.tips.copySuccess') });
+          createMessage.success(t('common.tips.copySuccess'));
         } else {
-          notification.warning({ message: '提示', description: t('common.tips.copyFail') });
+          createMessage.warning(t('common.tips.copyFail'));
         }
       };
 

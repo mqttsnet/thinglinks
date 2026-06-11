@@ -17,12 +17,12 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { ActionEnum, VALIDATE_API } from '/@/enums/commonEnum';
-  import { Api, save, update } from '/@/api/video/media/videoStreamPush';
+  import { Api, save, update } from '/@/api/video/media/push';
   import { getValidateRules } from '/@/api/thinglinks/common/formValidateService';
-  import { customFormSchemaRules, editFormSchema } from './videoStreamPush.data';
+  import { customFormSchemaRules, editFormSchema } from './push.data';
 
   export default defineComponent({
-    name: '编辑推流管理',
+    name: 'VideoMediaPushEdit',
     components: { BasicModal, BasicForm },
     emits: ['success', 'register'],
     setup(_, { emit }) {
@@ -54,7 +54,7 @@
 
           if (unref(type) !== ActionEnum.ADD) {
             // 赋值
-            const record = { ...data?.record };
+            const record = { ...data?.record, status: String(data?.record.status) };
             await setFieldsValue(record);
           }
 
@@ -71,12 +71,13 @@
         try {
           const params = await validate();
           setProps({ confirmLoading: true });
+          params.status = Boolean(params.status);
 
           if (unref(type) !== ActionEnum.VIEW) {
             if (unref(type) === ActionEnum.EDIT) {
               await update(params);
             } else {
-              params.id = null;
+              delete params.id;
               await save(params);
             }
             createMessage.success(t(`common.tips.${type.value}Success`));

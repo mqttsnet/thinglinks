@@ -33,7 +33,7 @@
     setup(_, { emit }) {
       const { t } = useI18n();
       const type = ref<ActionEnum>(ActionEnum.ADD);
-      const { createMessage, notification } = useMessage();
+      const { createMessage } = useMessage();
       const [registerForm, { setFieldsValue, resetFields, updateSchema, validate, resetSchema }] =
         useForm({
           name: 'solveForm',
@@ -85,7 +85,7 @@
           // 假设你有一个solve函数来处理表单数据
           // 注意：这里移除了return false，以便继续执行后续代码
           await solve(params);
-          notification.success({ message: t(`common.tips.${type.value}Success`) });
+          createMessage.success(t(`common.tips.${type.value}Success`));
           close();
           emit('success');
         } finally {

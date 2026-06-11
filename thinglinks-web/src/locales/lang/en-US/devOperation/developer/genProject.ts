@@ -49,10 +49,10 @@ export default {
     utilGroupId: 'The groupId of the pom file of the thinglinks-util project',
   },
   measures: [
-    '1. The {base package}.{module name} needs to be consistent with the {parent package name}.{module name} in [Code Generation] - [Modify Code Configuration]; otherwise, the generated service swagger documentation may not be displayed (manual adjustment is required).',
+    '1. The [base package].[module name] needs to be consistent with the [parent package name].[module name] in [Code Generation] - [Modify Code Configuration]; otherwise, the generated service swagger documentation may not be displayed (manual adjustment is required).',
     '2. If groupId needs to be modified, it must be consistent with the groupId in the project code',
-    '3. The {base package} must be consistent with the base package where the startup class is located; otherwise, the configuration in @ComponentScan and @MapperScan in the project needs to be modified',
-    "4. {Local generation} is applicable to the situation where the 'code' is directly generated on the developer's computer after the developer starts the project on their local machine. Systems deployed in the test environment cannot generate code on the developer's computer.",
-    '5. {Download Now} is applicable to the situation where developers download the generated code to their computers after starting the project in the test environment.',
+    "3. The [base package] must be consistent with the base package where the startup class is located; otherwise, the configuration in ＠ComponentScan and ＠MapperScan in the project needs to be modified",
+    "4. [Local generation] is applicable to the situation where the 'code' is directly generated on the developer's computer after the developer starts the project on their local machine. Systems deployed in the test environment cannot generate code on the developer's computer.",
+    '5. [Download Now] is applicable to the situation where developers download the generated code to their computers after starting the project in the test environment.',
   ],
 };

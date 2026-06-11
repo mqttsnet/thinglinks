@@ -1,0 +1,143 @@
+export interface VideoDeviceInfoPageQuery {
+  deviceIdentification?: string; // 设备唯一标识
+  accessProtocol?: string; // 接入协议
+  deviceName?: string; // 设备名称
+  customName?: string; // 自定义别名
+  manufacturer?: string; // 厂商
+  model?: string; // 型号
+  firmware?: string; // 固件版本
+  host?: string; // 设备地址(IP/域名)
+  port?: number; // 端口
+  wanHost?: string; // 公网地址(IP/域名)
+  lanHost?: string; // 局域网地址(IP/域名)
+  accessEndpoint?: string; // 完整访问端点(host:port)
+  sdpHost?: string; // 收流地址(IP/域名)
+  localHost?: string; // 本地SIP交互地址(IP/域名)
+  transport?: string; // 传输协议
+  streamMode?: string; // 数据流传输模式
+  onlineStatus?: boolean; // 在线状态
+  registerTime?: string; // 注册时间
+  lastKeepaliveTime?: string; // 最近心跳时间
+  expires?: number; // 注册有效期
+  keepaliveInterval?: number; // 心跳间隔
+  keepaliveTimeoutCount?: number; // 心跳超时次数
+  authType?: string; // 认证方式
+  mediaIdentification?: string; // 关联流媒体标识
+  channelCount?: number; // 通道数
+  ability?: string; // 能力集
+  extendParams?: string; // 扩展参数
+  remark?: string; // 备注
+  createdOrgId?: string; // 创建人组织
+  createdTime?: string; // 创建时间
+  id?: string; // 数据ID
+}
+
+export interface VideoDeviceInfoSaveVO {
+  deviceIdentification?: string; // 设备唯一标识
+  accessProtocol?: string; // 接入协议
+  deviceName?: string; // 设备名称
+  customName?: string; // 自定义别名
+  manufacturer?: string; // 厂商
+  model?: string; // 型号
+  firmware?: string; // 固件版本
+  host?: string; // 设备地址(IP/域名)
+  port?: number; // 端口
+  wanHost?: string; // 公网地址(IP/域名)
+  lanHost?: string; // 局域网地址(IP/域名)
+  accessEndpoint?: string; // 完整访问端点(host:port)
+  sdpHost?: string; // 收流地址(IP/域名)
+  localHost?: string; // 本地SIP交互地址(IP/域名)
+  transport?: string; // 传输协议
+  streamMode?: string; // 数据流传输模式
+  onlineStatus?: boolean; // 在线状态
+  registerTime?: string; // 注册时间
+  lastKeepaliveTime?: string; // 最近心跳时间
+  expires?: number; // 注册有效期
+  keepaliveInterval?: number; // 心跳间隔
+  keepaliveTimeoutCount?: number; // 心跳超时次数
+  authType?: string; // 认证方式
+  authSecret?: string; // 认证凭据
+  mediaIdentification?: string; // 关联流媒体标识
+  channelCount?: number; // 通道数
+  ability?: string; // 能力集
+  protocolConfig?: any; // 协议专属配置(JSON)
+  extendParams?: string; // 扩展参数
+  remark?: string; // 备注
+  createdOrgId?: string; // 创建人组织
+}
+
+export interface VideoDeviceInfoUpdateVO {
+  id: string;
+  deviceIdentification?: string; // 设备唯一标识
+  accessProtocol?: string; // 接入协议
+  deviceName?: string; // 设备名称
+  customName?: string; // 自定义别名
+  manufacturer?: string; // 厂商
+  model?: string; // 型号
+  firmware?: string; // 固件版本
+  host?: string; // 设备地址(IP/域名)
+  port?: number; // 端口
+  wanHost?: string; // 公网地址(IP/域名)
+  lanHost?: string; // 局域网地址(IP/域名)
+  accessEndpoint?: string; // 完整访问端点(host:port)
+  sdpHost?: string; // 收流地址(IP/域名)
+  localHost?: string; // 本地SIP交互地址(IP/域名)
+  transport?: string; // 传输协议
+  streamMode?: string; // 数据流传输模式
+  onlineStatus?: boolean; // 在线状态
+  registerTime?: string; // 注册时间
+  lastKeepaliveTime?: string; // 最近心跳时间
+  expires?: number; // 注册有效期
+  keepaliveInterval?: number; // 心跳间隔
+  keepaliveTimeoutCount?: number; // 心跳超时次数
+  authType?: string; // 认证方式
+  authSecret?: string; // 认证凭据
+  mediaIdentification?: string; // 关联流媒体标识
+  channelCount?: number; // 通道数
+  ability?: string; // 能力集
+  protocolConfig?: any; // 协议专属配置(JSON)
+  extendParams?: string; // 扩展参数
+  remark?: string; // 备注
+  createdOrgId?: string; // 创建人组织
+}
+
+export interface VideoDeviceInfoResultVO {
+  echoMap?: any;
+  id?: string; // 唯一标识符
+  createdTime?: string; // 创建时间
+  createdBy?: string; // 创建人
+  updatedTime?: string; // 最后修改时间
+  updatedBy?: string; // 最后修改人
+  deviceIdentification?: string; // 设备唯一标识
+  accessProtocol?: string; // 接入协议
+  deviceName?: string; // 设备名称
+  customName?: string; // 自定义别名
+  manufacturer?: string; // 厂商
+  model?: string; // 型号
+  firmware?: string; // 固件版本
+  host?: string; // 设备地址(IP/域名)
+  port?: number; // 端口
+  wanHost?: string; // 公网地址(IP/域名)
+  lanHost?: string; // 局域网地址(IP/域名)
+  accessEndpoint?: string; // 完整访问端点(host:port)
+  sdpHost?: string; // 收流地址(IP/域名)
+  localHost?: string; // 本地SIP交互地址(IP/域名)
+  transport?: string; // 传输协议
+  streamMode?: string; // 数据流传输模式
+  onlineStatus?: boolean; // 在线状态
+  registerTime?: string; // 注册时间
+  lastKeepaliveTime?: string; // 最近心跳时间
+  expires?: number; // 注册有效期
+  keepaliveInterval?: number; // 心跳间隔
+  keepaliveTimeoutCount?: number; // 心跳超时次数
+  authType?: string; // 认证方式
+  authSecret?: string; // 认证凭据
+  mediaIdentification?: string; // 关联流媒体标识
+  channelCount?: number; // 通道数
+  ability?: string; // 能力集
+  protocolConfig?: any; // 协议专属配置(JSON)
+  extendParams?: string; // 扩展参数
+  remark?: string; // 备注
+  createdOrgId?: string; // 创建人组织
+  deleted?: number; // 逻辑删除
+}

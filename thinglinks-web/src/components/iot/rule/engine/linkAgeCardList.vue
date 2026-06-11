@@ -61,7 +61,7 @@
                 <div class="btn">
                   <a-tooltip placement="top" :title="t('common.title.delete')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/device/delete-y.png"
+                      src="/@/assets/images/iot/link/device/delete-y.png"
                       alt=""
                       @click="handleDelete(record)"
                     />
@@ -69,14 +69,14 @@
                 </div>
                 <div class="btn">
                   <img
-                    src="../../../../../../../../assets/images/iot/link/device/copy-n.png"
+                    src="/@/assets/images/iot/link/device/copy-n.png"
                     alt=""
                   />
                 </div>
                 <div class="btn" v-hasAnyPermission="['rule:engine:linkage:executionLogDetail']">
                   <a-tooltip placement="top" :title="t('iot.link.engine.linkage.log')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/detail-icon2.png"
+                      src="/@/assets/images/iot/link/detail-icon2.png"
                       alt=""
                       @click="openDetailDrawer(record)"
                     />
@@ -85,7 +85,7 @@
                 <div class="btn">
                   <a-tooltip placement="top" :title="t('common.title.edit')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/device/edit-y.png"
+                      src="/@/assets/images/iot/link/device/edit-y.png"
                       alt=""
                       @click="handleEdit(record)"
                     />
@@ -96,7 +96,7 @@
             <div class="product-img">
               <img
                 @click="handleView(record, $event)"
-                src="../../../../../../../../assets/images/iot/link/ld-img.png"
+                src="/@/assets/images/iot/link/ld-img.png"
               />
             </div>
           </div>
@@ -193,7 +193,7 @@
       const current = ref(1);
       const size = ref(20);
       const total = ref(0);
-      const { notification, createConfirm } = useMessage();
+      const { createMessage, createConfirm } = useMessage();
       // 设备列表
       let deviceList = ref<Array<deviceItem>>([]);
       let model = reactive({});
@@ -291,10 +291,7 @@
           onOk: async () => {
             try {
               await deleteSingle(record.id);
-              notification.success({
-                message: t('common.tips.tips'),
-                description: t('common.tips.editSuccess'),
-              });
+              createMessage.success(t('common.tips.editSuccess'));
               getDecviceList();
             } catch (e) {}
           },
@@ -365,6 +362,6 @@
   });
 </script>
 <style scoped>
-  @import '../../../cardCommon.less';
+  @import '../../../Table/src/types/components/cardCommon.less';
 </style>
 ../../../../../api/iot/link/linkage/linkage

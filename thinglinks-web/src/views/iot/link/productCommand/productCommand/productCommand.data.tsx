@@ -6,6 +6,7 @@ import { ActionEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
 import { Tag, Tooltip, message } from 'ant-design-vue';
 import CopyableText from '/@/components/CopyableText';
+import { thingModelCodeRules } from '/@/utils/iot/dataTypeValidator';
 
 const { t } = useI18n();
 
@@ -149,6 +150,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       label: t('iot.link.productCommand.productCommand.commandCode'),
       field: 'commandCode',
       component: 'Input',
+      rules: thingModelCodeRules(),
       componentProps: {
         placeholder: t('common.inputText'),
       },
@@ -200,6 +202,7 @@ export const addFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       label: t('iot.link.productCommand.productCommand.commandCode'),
       field: 'commandCode',
       component: 'Input',
+      rules: thingModelCodeRules(),
       componentProps: {
         placeholder: t('common.inputText'),
       },

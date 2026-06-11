@@ -2,17 +2,40 @@
   <PageWrapper dense contentFullHeight>
     <BasicTable
       @register="registerTable"
-      :isVideoNode="true"
       :switchFlag="switchFlag"
       @switch-change="getSwitchChange"
     >
+      <!-- 使用通用卡片视图插槽 -->
+      <template #cardView="{ searchData, title }">
+        <BusinessCardList
+          ref="cardListRef"
+          :pageApi="page"
+          :deleteApi="deleteSingle"
+          :title="title"
+          :searchData="searchData"
+          nameField="name"
+          :fields="cardFields"
+          statusField="onlineStatus"
+          :statusOnlineLabel="t('video.media.server.online')"
+          :statusOfflineLabel="t('video.media.server.offline')"
+          badgeField="type"
+          :permissions="cardPermissions"
+          :detailRouteName="detailRouteName"
+          :editModal="EditModal"
+          @input="getSwitchChange"
+        >
+          <template #cardImage>
+            <VideoServerSvg />
+          </template>
+        </BusinessCardList>
+      </template>
       <template #toolbar>
         <a-button
           type="primary"
           color="error"
           preIcon="ant-design:delete-outlined"
           @click="handleBatchDelete"
-          v-hasAnyPermission="['video:media:videoMediaServer:delete']"
+          v-hasAnyPermission="['video:media:server:delete']"
         >
           {{ t('common.title.delete') }}
         </a-button>
@@ -20,7 +43,7 @@
           type="primary"
           preIcon="ant-design:plus-outlined"
           @click="handleAdd"
-          v-hasAnyPermission="['video:media:videoMediaServer:add']"
+          v-hasAnyPermission="['video:media:server:add']"
         >
           {{ t('common.title.add') }}
         </a-button>
@@ -41,19 +64,19 @@
                 tooltip: t('common.title.edit'),
                 icon: 'ant-design:edit-outlined',
                 onClick: handleEdit.bind(null, record),
-                auth: 'video:media:videoMediaServer:edit',
+                auth: 'video:media:server:edit',
               },
               {
                 tooltip: t('common.title.copy'),
                 icon: 'ant-design:copy-outlined',
                 onClick: handleCopy.bind(null, record),
-                auth: 'video:media:videoMediaServer:copy',
+                auth: 'video:media:server:copy',
               },
               {
                 tooltip: t('common.title.delete'),
                 icon: 'ant-design:delete-outlined',
                 color: 'error',
-                auth: 'video:media:videoMediaServer:delete',
+                auth: 'video:media:server:delete',
                 popConfirm: {
                   title: t('common.tips.confirmDelete'),
                   confirm: handleDelete.bind(null, record),
@@ -75,33 +98,56 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
-  import { handleFetchParams } from '../../../../utils/thinglinks/common';
-  import { ActionEnum } from '/@/enums/commonEnum';
-  import { page, remove, deleteSingle } from '/@/api/video/media/videoMediaServer';
-  import { columns, searchFormSchema } from './videoMediaServer.data';
+  import { BusinessCardList } from '/@/components/BusinessCardList';
+  import { VideoServerSvg } from '/@/components/video';
+  import type { CardField, CardPermissions } from '/@/components/BusinessCardList';
+  import { handleFetchParams } from '/@/utils/thinglinks/common';
+  import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
+  import { page, remove, deleteSingle } from '/@/api/video/media/server';
+  import { columns, searchFormSchema } from './server.data';
   import EditModal from './Edit.vue';
   import { useRouter } from 'vue-router';
+  import { useDetailRoute } from '/@/hooks/web/usePage';
 
   export default defineComponent({
-    // 若需要开启页面缓存，请将此参数跟菜单名保持一致
-    name: '节点管理',
+    name: 'VideoMediaServer',
     components: {
       BasicTable,
       PageWrapper,
       TableAction,
       EditModal,
+      BusinessCardList,
+      VideoServerSvg,
     },
     setup() {
       const { t } = useI18n();
-      const { createMessage, createConfirm } = useMessage();
+      const { createConfirm } = useMessage();
+      const { createMessage } = useMessage();
       const [registerModal, { openModal }] = useModal();
       const { push } = useRouter();
+      const { detailRouteName, goDetail } = useDetailRoute();
 
       const switchFlag = ref<boolean>(true);
+      const cardListRef = ref<any>(null);
+
+      // 卡片视图字段配置
+      const cardFields: CardField[] = [
+        { label: t('video.media.server.appId'), field: 'appId', dictType: DictEnum.VIDEO_APPLICATION_SCENARIO, span: 12 },
+        { label: t('video.media.server.host'), field: 'host', span: 12 },
+        { label: t('video.media.server.createdTime'), field: 'createdTime' },
+        { label: t('video.media.server.mediaIdentification'), field: 'mediaIdentification' },
+      ];
+
+      const cardPermissions: CardPermissions = {
+        add: 'video:media:server:add',
+        edit: 'video:media:server:edit',
+        delete: 'video:media:server:delete',
+        view: 'video:media:server:view',
+      };
 
       // 表格
       const [registerTable, { reload, getSelectRowKeys }] = useTable({
-        title: t('video.media.videoMediaServer.table.title'),
+        title: t('video.media.server.table.title'),
         api: page,
         immediate: false,
         columns: columns(),
@@ -137,47 +183,30 @@
         switchFlag.value = e;
       };
 
-      // 弹出复制页面
       function handleCopy(record: Recordable, e: Event) {
         e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.COPY,
-        });
-      }
-      // 弹出新增页面
-      function handleAdd() {
-        openModal(true, {
-          type: ActionEnum.ADD,
-        });
+        openModal(true, { record, type: ActionEnum.COPY });
       }
 
-      // 弹出查看页面
+      function handleAdd() {
+        openModal(true, { type: ActionEnum.ADD });
+      }
+
       function handleView(record: Recordable, e: Event) {
         e?.stopPropagation();
-        push({
-          name: '节点详情',
-          params: {
-            id: record.id,
-          },
-        });
+        goDetail(record.id);
       }
 
-      // 弹出编辑页面
       function handleEdit(record: Recordable, e: Event) {
         e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.EDIT,
-        });
+        openModal(true, { record, type: ActionEnum.EDIT });
       }
 
-      // 新增或编辑成功回调
       function handleSuccess() {
         reload();
+        cardListRef.value?.reload();
       }
 
-      // 单行删除
       async function handleDeleteSingle(id: string) {
         await deleteSingle(id);
         createMessage.success(t('common.tips.deleteSuccess'));
@@ -190,7 +219,6 @@
         handleSuccess();
       }
 
-      // 点击单行删除
       function handleDelete(record: Recordable, e: Event) {
         e?.stopPropagation();
         if (record?.id) {
@@ -198,7 +226,6 @@
         }
       }
 
-      // 点击批量删除
       function handleBatchDelete() {
         const ids = getSelectRowKeys();
         if (!ids || ids.length <= 0) {
@@ -228,8 +255,16 @@
 
       return {
         t,
+        page,
+        deleteSingle,
+        EditModal,
+        cardListRef,
+        detailRouteName,
+        goDetail,
         registerTable,
         registerModal,
+        cardFields,
+        cardPermissions,
         handleView,
         handleAdd,
         handleCopy,

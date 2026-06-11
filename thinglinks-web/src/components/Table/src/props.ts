@@ -51,6 +51,18 @@ export const basicProps = {
     type: Boolean as PropType<boolean>,
     default: false,
   },
+  isOtaUpgrades: {
+    type: Boolean as PropType<boolean>,
+    default: false,
+  },
+  isOtaUpgradeTasks: {
+    type: Boolean as PropType<boolean>,
+    default: false,
+  },
+  isOtaUpgradeRecords: {
+    type: Boolean as PropType<boolean>,
+    default: false,
+  },
   isPluginInstance: {
     type: Boolean as PropType<boolean>,
     default: false,

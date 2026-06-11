@@ -1,0 +1,45 @@
+export default {
+  pageTitle: 'SIP Access Config',
+  configName: 'Config Name',
+  sipId: 'SIP Server ID',
+  sipDomain: 'SIP Domain',
+  sipServerAddress: 'SIP Server Address',
+  bindIp: 'Bind IP',
+  isDefault: 'Default',
+  status: 'Status',
+  createdTime: 'Created',
+  sipPassword: 'Auth Password',
+  registerInterval: 'Register Interval (s)',
+  isDefaultLabel: 'Set Default',
+  remark: 'Remark',
+
+  enabled: 'Enabled',
+  disabled: 'Disabled',
+  yes: 'Yes',
+  no: 'No',
+  defaultTag: '★ Default',
+
+  sipIdHelp:
+    'The platform\'s "SIP Server ID" exposed to GB28181 devices. 20 digits, first 10 are the domain code (must match SIP Domain below). Each device\'s "SIP Server ID" config must be set to this value. ⚠️ This value MUST differ from every device\'s own GB28181 ID — otherwise the device will send BYE immediately after 200 OK and playback will spin forever. Many cameras ship with "SIP Server ID" and "Device ID" defaulted to the same value; you must change the device\'s "Device ID" to a different 20-digit GB28181 number.',
+  sipDomainHelp: 'First 10 digits of the SIP Server ID (administrative division code)',
+  sipPasswordHelp: 'Default registration password, AES-encrypted; must match each device\'s "SIP Auth Password"',
+  sipServerAddressHelp: 'Value devices fill into their "SIP Server IP/Address" field. Domain or IP. Use Nginx VIP/domain for clustered deployments.',
+  bindIpHelp: 'Listening NIC IPs for multi-NIC isolation; comma-separated. Empty = no restriction',
+  registerIntervalHelp: 'Empty = use global default',
+  isDefaultHelp: 'Default config is used as the From header in outbound SIP messages (INVITE/BYE to devices)',
+
+  setDefault: 'Set Default',
+  setDefaultConfirm: 'Set as default config?',
+  refreshCache: 'Refresh Cache',
+  setDefaultSuccess: 'Set as default',
+  cacheRefreshed: 'Cache refreshed',
+
+  rule: {
+    configName: 'Please input config name',
+    sipId: 'Please input SIP Server ID',
+    sipIdLen: 'SIP Server ID must be 20 characters',
+    sipIdPattern: 'SIP Server ID must be 20 digits',
+    sipDomain: 'Please input SIP Domain',
+    sipPassword: 'Please input auth password',
+  },
+};

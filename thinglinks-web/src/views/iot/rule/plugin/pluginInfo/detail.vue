@@ -336,7 +336,7 @@
       const { t } = useI18n();
       const textToCopy = ref(null);
       const getLoading = ref(false);
-      const { createMessage, createConfirm, notification } = useMessage();
+      const { createMessage, createConfirm } = useMessage();
       const { currentRoute } = useRouter();
       const [registerModal, { openModal }] = useModal();
       let pluginInfoDetail = reactive({});
@@ -393,10 +393,7 @@
           okButtonProps: { type: 'default' },
           cancelButtonProps: { type: 'primary' },
           onOk: async () => {
-            notification.warning({
-              message: t('common.tips.tips'),
-              description: t('iot.rule.plugin.pluginInfo.tipsMsg'),
-            });
+            createMessage.warning(t('iot.rule.plugin.pluginInfo.tipsMsg'));
             try {
               await preload(id.value);
               getLoading.value = false;
@@ -416,10 +413,7 @@
       // 安装或卸载
       async function handleInstall(val) {
         // getLoading.value = true;
-        notification.warning({
-          message: t('common.tips.tips'),
-          description: t('iot.rule.plugin.pluginInfo.tipsMsg'),
-        });
+        createMessage.warning(t('iot.rule.plugin.pluginInfo.tipsMsg'));
         try {
           const { instanceId, status } = val;
           await install({
@@ -584,7 +578,7 @@
           display: flex;
           flex-direction: column;
           position: relative;
-          background-image: url('../../../../../../assets/images/link/blue-bg.png');
+          background-image: url('/@/assets/images/iot/link/blue-bg.png');
           border: 1px solid #e8e8e8;
           border-radius: 5px;
           background-color: #fff;

@@ -63,6 +63,24 @@
       :searchData="searchData"
       v-if="switchFlag && isAlarmRecord"
     />
+    <OtaUpgradesCardList
+      @input="setSwitchFlag"
+      :title="title"
+      :searchData="searchData"
+      v-if="switchFlag && isOtaUpgrades"
+    />
+    <OtaUpgradeTasksCardList
+      @input="setSwitchFlag"
+      :title="title"
+      :searchData="searchData"
+      v-if="switchFlag && isOtaUpgradeTasks"
+    />
+    <OtaUpgradeRecordsCardList
+      @input="setSwitchFlag"
+      :title="title"
+      :searchData="searchData"
+      v-if="switchFlag && isOtaUpgradeRecords"
+    />
     <PluginInstanceCardList
       @input="setSwitchFlag"
       :title="title"
@@ -130,6 +148,14 @@
       :searchData="searchData"
       v-if="switchFlag && isVideoDeviceChannel"
     />
+    <!-- 通用卡片视图插槽：使用 BusinessCardList 时通过此 slot 传入，无需新增 boolean prop -->
+    <slot
+      v-if="switchFlag && $slots.cardView"
+      name="cardView"
+      :searchData="searchData"
+      :title="title"
+      :switchView="setSwitchFlag"
+    />
     <Table
       ref="tableElRef"
       v-bind="getBindValues"
@@ -192,27 +218,30 @@
   import { isFunction } from '/@/utils/is';
   import { warn } from '/@/utils/log';
   // components
-  import CardList from './types/components/iot/link/device/CardList.vue';
-  import ProductCardList from './types/components/iot/link/product/ProductCardList.vue';
-  import linkAgeCardList from './types/components/iot/rule/engine/linkAgeCardList.vue';
-  import ChainedCardList from './types/components/iot/rule/engine/ChainedCardList.vue';
-  import ChannelCardList from './types/components/iot/rule/alarm/ChannelCardList.vue';
-  import RuleGroovyScriptCardList from './types/components/iot/rule/groovy/RuleGroovyScriptCardList.vue';
-  import AlarmListCardList from './types/components/iot/rule/alarm/AlarmListCardList.vue';
-  import AlarmRecordCardList from './types/components/iot/rule/alarm/AlarmRecordCardList.vue';
-  import PluginInstanceCardList from './types/components/iot/rule/plugin/PluginInstanceCardList.vue';
-  import PluginInfoCardList from './types/components/iot/rule/plugin/PluginInfoCardList.vue';
-  import DeviceAclRuleCardList from './types/components/iot/link/operationMaintenance/DeviceAclRuleCardList.vue';
-  import CaCertLicenseCardList from './types/components/iot/link/operationMaintenance/CaCertLicenseCardList.vue';
+  import CardList from '/@/components/iot/link/device/CardList.vue';
+  import ProductCardList from '/@/components/iot/link/product/ProductCardList.vue';
+  import linkAgeCardList from '/@/components/iot/rule/engine/linkAgeCardList.vue';
+  import ChainedCardList from '/@/components/iot/rule/engine/ChainedCardList.vue';
+  import ChannelCardList from '/@/components/iot/rule/alarm/ChannelCardList.vue';
+  import RuleGroovyScriptCardList from '/@/components/iot/rule/groovy/RuleGroovyScriptCardList.vue';
+  import AlarmListCardList from '/@/components/iot/rule/alarm/AlarmListCardList.vue';
+  import AlarmRecordCardList from '/@/components/iot/rule/alarm/AlarmRecordCardList.vue';
+  import OtaUpgradesCardList from '/@/components/iot/link/ota/OtaUpgradesCardList.vue';
+  import OtaUpgradeTasksCardList from '/@/components/iot/link/ota/OtaUpgradeTasksCardList.vue';
+  import OtaUpgradeRecordsCardList from '/@/components/iot/link/ota/OtaUpgradeRecordsCardList.vue';
+  import PluginInstanceCardList from '/@/components/iot/rule/plugin/PluginInstanceCardList.vue';
+  import PluginInfoCardList from '/@/components/iot/rule/plugin/PluginInfoCardList.vue';
+  import DeviceAclRuleCardList from '/@/components/iot/link/operationMaintenance/DeviceAclRuleCardList.vue';
+  import CaCertLicenseCardList from '/@/components/iot/link/operationMaintenance/CaCertLicenseCardList.vue';
   // 新增物联网卡渠道卡片列表
-  import IotChannelCardList from './types/components/card/IotChannelCardList.vue';
-  import IotSimCardList from './types/components/card/IotSimCardList.vue';
+  import IotChannelCardList from '/@/components/card/IotChannelCardList.vue';
+  import IotSimCardList from '/@/components/card/IotSimCardList.vue';
   // 流媒体相关
-  import VideoNodeCardList from './types/components/video/media/videoMediaServer/VideoNodeCardList.vue';
-  import VideoStreamPullCardList from './types/components/video/media/videoStreamProxy/VideoStreamPullCardList.vue';
-  import VideoStreamPushCardList from './types/components/video/media/videoStreamPush/VideoStreamPushCardList.vue';
-  import VideoDeviceInfoCardList from './types/components/video/device/videoDeviceInfo/VideoDeviceInfoCardList.vue';
-  import VideoDeviceChannelCardList from './types/components/video/device/videoDeviceChannel/VideoDeviceChannelCardList.vue';
+  import VideoNodeCardList from '/@/components/video/media/server/VideoNodeCardList.vue';
+  import VideoStreamPullCardList from '/@/components/video/media/proxy/VideoStreamPullCardList.vue';
+  import VideoStreamPushCardList from '/@/components/video/media/push/VideoStreamPushCardList.vue';
+  import VideoDeviceInfoCardList from '/@/components/video/device/info/VideoDeviceInfoCardList.vue';
+  import VideoDeviceChannelCardList from '/@/components/video/device/channel/VideoDeviceChannelCardList.vue';
   // 通用弹窗组件信息
   import CopyModal from '/@/components/CopyModal/index.vue';
   export default defineComponent({
@@ -229,6 +258,9 @@
       RuleGroovyScriptCardList,
       AlarmListCardList,
       AlarmRecordCardList,
+      OtaUpgradesCardList,
+      OtaUpgradeTasksCardList,
+      OtaUpgradeRecordsCardList,
       PluginInstanceCardList,
       PluginInfoCardList,
       DeviceAclRuleCardList,

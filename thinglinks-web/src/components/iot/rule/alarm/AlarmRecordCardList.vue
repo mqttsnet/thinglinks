@@ -55,7 +55,7 @@
                 <div class="btn">
                   <a-tooltip placement="top" :title="t('common.title.delete')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/delete-y.png"
+                      src="/@/assets/images/iot/link/delete-y.png"
                       alt=""
                       @click="handleDelete(record)"
                     />
@@ -67,17 +67,17 @@
               <img
                 v-if="record?.handledStatus === 2"
                 @click="handleView(record, $event)"
-                src="../../../../../../../../assets/images/iot/rule/alarm/record1.png"
+                src="/@/assets/images/iot/rule/alarm/record1.png"
               />
               <img
                 v-else-if="record?.handledStatus === 1"
                 @click="handleView(record, $event)"
-                src="../../../../../../../../assets/images/iot/rule/alarm/record2.png"
+                src="/@/assets/images/iot/rule/alarm/record2.png"
               />
               <img
                 v-else-if="record?.handledStatus === 0"
                 @click="handleView(record, $event)"
-                src="../../../../../../../../assets/images/iot/rule/alarm/record3.png"
+                src="/@/assets/images/iot/rule/alarm/record3.png"
               />
             </div>
           </div>
@@ -109,7 +109,7 @@
   import { useModal } from '/@/components/Modal';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
   // api
-  import { page, remove } from '../../../../../../../../api/iot/rule/alarm/record';
+  import { page, remove } from '../../../../api/iot/rule/alarm/record';
   // components
   import {
     Card,
@@ -320,5 +320,5 @@
   });
 </script>
 <style scoped>
-  @import '../../../cardCommon.less';
+  @import '../../../Table/src/types/components/cardCommon.less';
 </style>

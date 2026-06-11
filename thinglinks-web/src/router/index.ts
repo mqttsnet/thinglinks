@@ -3,6 +3,7 @@ import type { App } from 'vue';
 
 import { createRouter, createWebHashHistory } from 'vue-router';
 import { basicRoutes } from './routes';
+import { installRouterDiagnostics } from './helper/routeDiagnostics';
 
 // 白名单应该包含基本静态路由
 const WHITE_NAME_LIST: string[] = [];
@@ -24,6 +25,9 @@ export const router = createRouter({
   strict: true,
   scrollBehavior: () => ({ left: 0, top: 0 }),
 });
+
+// 拦截 push / replace / onError，导航失败时打印目标 + 模糊匹配候选 + 调用栈
+installRouterDiagnostics(router);
 
 // reset router
 export function resetRouter() {

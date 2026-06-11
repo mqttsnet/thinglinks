@@ -24,6 +24,12 @@
                 onClick: handleEdit.bind(null, record),
               },
               {
+                tooltip: t('component.aclTopicMatcherTester.title'),
+                icon: 'ant-design:experiment-outlined',
+                onClick: handleTest.bind(null, record),
+                ifShow: !!record.topic,
+              },
+              {
                 tooltip: t('common.title.delete'),
                 icon: 'ant-design:delete-outlined',
                 color: 'error',
@@ -39,6 +45,8 @@
       </template>
     </BasicTable>
     <EditModal @register="registerModal" @success="handleSuccess" />
+    <!-- Topic 匹配测试器(IoT 通用组件) -->
+    <AclTopicMatcherTesterModal @register="registerTesterModal" />
   </PageWrapper>
 </template>
 <script lang="ts">
@@ -53,6 +61,10 @@
   import { page, remove } from '/@/api/iot/link/productTopic/productTopic';
   import { columns, searchFormSchema } from './customizeTopic.data';
   import EditModal from './Edit.vue';
+  import {
+    AclTopicMatcherTesterModal,
+    type TestableAclRule,
+  } from '/@/components/iot/AclTopicMatcherTester';
 
   export default defineComponent({
     // 若需要开启页面缓存，请将此参数跟菜单名保持一致
@@ -62,6 +74,7 @@
       PageWrapper,
       TableAction,
       EditModal,
+      AclTopicMatcherTesterModal,
     },
     props: {
       topicType: {
@@ -77,6 +90,7 @@
       const { t } = useI18n();
       const { createMessage, createConfirm } = useMessage();
       const [registerModal, { openModal }] = useModal();
+      const [registerTesterModal, { openModal: openTesterModal }] = useModal();
 
       // 表格
       const [registerTable, { reload, getSelectRowKeys }] = useTable({
@@ -133,6 +147,25 @@
         });
       }
 
+      /**
+       * 弹出"topic 测试器" ── 把当前行的 topic 模式作为规则传入,
+       * 用户可在 modal 内选真实设备替换占位符,验证具体设备 topic 是否能命中。
+       * 此 topic 没有 ACL decision 概念,仅做模式匹配测试,所以不传 decision 字段。
+       */
+      function handleTest(record: Recordable, e: Event) {
+        e?.stopPropagation();
+        if (!record?.topic) return;
+        const rule: TestableAclRule = {
+          ruleName: record.topic,
+          topicPattern: record.topic,
+          enabled: true,
+        };
+        openTesterModal(true, {
+          rule,
+          presetProductIdentification: props.productIdentification,
+        });
+      }
+
       // 新增或编辑成功回调
       function handleSuccess() {
         reload();
@@ -174,8 +207,10 @@
         t,
         registerTable,
         registerModal,
+        registerTesterModal,
         handleAdd,
         handleEdit,
+        handleTest,
         handleDelete,
         handleBatchDelete,
         handleSuccess,

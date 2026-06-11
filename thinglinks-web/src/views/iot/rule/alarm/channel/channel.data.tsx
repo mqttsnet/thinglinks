@@ -6,6 +6,7 @@ import { dictComponentProps } from '/@/utils/thinglinks/common';
 import { ActionEnum } from '/@/enums/commonEnum';
 import { DictEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
+import { echoMapText } from '/@/utils/echo';
 
 const { t } = useI18n();
 // 列表页字段
@@ -36,6 +37,7 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.link.engine.channel.createdBy'),
       dataIndex: 'createdBy',
+      customRender: ({ record }) => echoMapText(record, 'createdBy'),
     },
     {
       title: t('iot.link.engine.channel.createdTime'),
@@ -46,6 +48,7 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.link.engine.channel.updatedBy'),
       dataIndex: 'updatedBy',
+      customRender: ({ record }) => echoMapText(record, 'updatedBy'),
     },
     {
       title: t('iot.link.engine.channel.updatedTime'),

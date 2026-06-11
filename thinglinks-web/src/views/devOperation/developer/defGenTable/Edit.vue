@@ -68,7 +68,7 @@
     },
     setup(_) {
       const { t } = useI18n();
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
       const { currentRoute } = useRouter();
       const formRef = ref<any>(null);
       const columnRef = ref<any>(null);
@@ -143,7 +143,7 @@
             try {
               await getFormRef().validate();
             } catch (e) {
-              notification.warn({ message: '提示', description: '请完善表单信息', duration: 5 });
+              createMessage.warning('请完善表单信息');
               pageState.current = 0;
               pageState.status = 'error';
               return;

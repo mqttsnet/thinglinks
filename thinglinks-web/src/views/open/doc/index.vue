@@ -16,14 +16,49 @@
   const docAppIdRef = ref<string>('');
   const treeLoading = ref<boolean>(false);
   const docTreeDataRef = ref<SopDocInfoResultVO[]>([]);
+  const selectedKeysRef = ref<string[]>([]);
+
+  /**
+   * 在树里深度优先找到第一个非分类（叶子）节点。
+   * 加载完成后自动 select，让右侧不再是一片空白让用户摸不着头脑。
+   */
+  const findFirstLeaf = (
+    nodes: SopDocInfoResultVO[] | undefined,
+  ): SopDocInfoResultVO | undefined => {
+    if (!nodes || !nodes.length) {
+      return undefined;
+    }
+    for (const node of nodes) {
+      if (node.isFolder !== 1) {
+        return node;
+      }
+      const inChildren = findFirstLeaf(node.children);
+      if (inChildren) {
+        return inChildren;
+      }
+    }
+    return undefined;
+  };
 
   const loadDocTree = async (appId: string) => {
     try {
       treeLoading.value = true;
+      // 切换应用先把右侧重置成空状态，避免上一个应用的接口详情残留
+      contentRef.value?.reset();
+      selectedKeysRef.value = [];
+
       const treeList = await findDocTree(appId);
-      docTreeDataRef.value = treeList;
+      docTreeDataRef.value = treeList || [];
       await nextTick();
       await treeRef.value?.expandAll(true);
+
+      // 自动选中第一个叶子节点：左侧树通常都是分类（isFolder=1）+ API 叶子（isFolder=0）的混合结构，
+      // 直接显示空白页面用户会以为页面坏了。找到第一个 API 节点高亮 + 触发右侧加载。
+      const firstLeaf = findFirstLeaf(docTreeDataRef.value);
+      if (firstLeaf?.id) {
+        selectedKeysRef.value = [firstLeaf.id];
+        contentRef.value?.loadContent(firstLeaf.id);
+      }
     } finally {
       treeLoading.value = false;
     }
@@ -41,9 +76,12 @@
 
   const handleSelect = (_, { node }: { node: any }) => {
     if (node.isFolder === 1) {
+      // 分类节点不加载内容，但顺手把展开/折叠切一下，让用户点分类有反馈
+      treeRef.value?.toggleExpand?.(node.id);
       return;
     }
 
+    selectedKeysRef.value = [node.id];
     contentRef.value?.loadContent(node.id);
   };
 </script>
@@ -65,9 +103,10 @@
       <BasicTree
         ref="treeRef"
         :field-names="{ key: 'id', title: 'docTitle' }"
-        :click-row-to-expand="false"
+        :click-row-to-expand="true"
         :loading="treeLoading"
         :tree-data="docTreeDataRef"
+        :selected-keys="selectedKeysRef"
         default-expand-all
         check-strictly
         highlight

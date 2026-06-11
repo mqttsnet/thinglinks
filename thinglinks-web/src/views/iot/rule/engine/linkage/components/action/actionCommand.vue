@@ -138,6 +138,7 @@
   } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { ActionEnum } from '/@/enums/commonEnum';
+  import { BizConstant } from '/@/enums/biz/common';
   import { operate, connect } from '/@/api/iot/link/operator/operator';
 
   import {
@@ -190,7 +191,7 @@
     emits: ['editModel', 'delActionsChildren'],
     setup(props, { emit }) {
       const { proxy } = getCurrentInstance();
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
       const { t } = useI18n();
 
       const state = reactive({
@@ -234,13 +235,9 @@
         console.log(result, 'result');
         console.log(text, 'text');
         if (result) {
-          notification.success({
-            message: t('common.tips.copySuccess'),
-          });
+          createMessage.success(t('common.tips.copySuccess'));
         } else {
-          notification.warn({
-            message: t('common.tips.copyFail'),
-          });
+          createMessage.warn(t('common.tips.copyFail'));
         }
       };
       const getCmdRequestName = (idx) => {
@@ -276,8 +273,8 @@
         return obj;
       };
       const getName = (value, valueKey, obj, nameKey) => {
-        if (value === 'all') {
-          return '全部设备';
+        if (value === BizConstant.ALL) {
+          return t('iot.link.engine.linkage.allDevices');
         } else {
           if (obj) {
             // console.log(value,valueKey,obj,nameKey)

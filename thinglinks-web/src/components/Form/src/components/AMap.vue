@@ -42,7 +42,7 @@
     },
     emits: ['change', 'addressClick', 'update:value', 'updateMap'],
     setup(props, { emit }) {
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
       const loading = ref(false);
       const mapReady = ref(false); // 地图是否加载完成
       const attrs = useAttrs();
@@ -155,7 +155,7 @@
               }
             } else {
               console.error('Search failed: ', result);
-              notification.error({ message: t('component.map.searchFailed'), description: result });
+              createMessage.error(result);
             }
           });
         }

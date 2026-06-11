@@ -93,7 +93,7 @@
     }template/iot/link/device/Device_Records_Import_Template_v1.0.xlsx`,
   );
   const emit = defineEmits(['reload']);
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   const { t } = useI18n();
   const [register, { closeModal, changeLoading, setModalProps }] = useModalInner(() => {
     // 模态框打开时初始化确认按钮状态
@@ -154,10 +154,7 @@
   const handleOk = async () => {
     // 确保文件已选择
     if (fileList.value.length === 0) {
-      notification.warning({
-        message: t('common.tips.tips'),
-        description: '请选择文件',
-      });
+      createMessage.warning('请选择文件');
       return;
     }
     // 执行上传
@@ -181,26 +178,17 @@
         contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       ) {
         // 导入失败：不关闭弹窗，不清空文件列表
-        notification.error({
-          message: t('common.tips.tips'),
-          description: t('common.tips.importFail'),
-        });
+        createMessage.error(t('common.tips.importFail'));
         downloadByData(res, 'Device_Records_Import_Template_v1.0.xlsx');
       } else {
         // 导入成功：关闭弹窗，清空文件列表
-        notification.success({
-          message: t('common.tips.tips'),
-          description: t('common.tips.importSuccess'),
-        });
+        createMessage.success(t('common.tips.importSuccess'));
         emit('reload');
         resetModal();
       }
     } catch (error) {
       // 导入失败：不关闭弹窗，不清空文件列表
-      notification.error({
-        message: t('common.tips.tips'),
-        description: t('common.tips.importFail'),
-      });
+      createMessage.error(t('common.tips.importFail'));
     } finally {
       changeLoading(false);
     }

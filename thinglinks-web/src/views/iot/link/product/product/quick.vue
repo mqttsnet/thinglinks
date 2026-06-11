@@ -238,7 +238,6 @@
     deviceType: string;
     protocolType: string;
     productStatus: string;
-    productVersion: string;
     remark: string;
     // 服务列表
     services: any[];
@@ -253,7 +252,6 @@
     deviceType: '',
     protocolType: '',
     productStatus: '0',
-    productVersion: '',
     remark: '',
     services: [createDefaultService(createdOrgId)],
   });
@@ -524,7 +522,6 @@
       deviceType,
       protocolType,
       productStatus,
-      productVersion,
       remark,
       services,
     } = formData;
@@ -566,7 +563,6 @@
       deviceType,
       protocolType,
       productStatus,
-      productVersion,
       remark,
       services: services.map((service, si) => {
         const serviceForm = formInstances.service.get(si);

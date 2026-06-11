@@ -6,6 +6,7 @@
     :maskClosable="false"
     @ok="handleSubmit"
     :keyboard="true"
+    wrapClassName="md-edit-wrap"
   >
     <BasicForm @register="registerForm" />
   </BasicModal>
@@ -44,9 +45,9 @@
           disabled: (_) => {
             return unref(type) === ActionEnum.VIEW;
           },
-          baseColProps: { span: 11 },
+          baseColProps: { span: 12 },
           actionColOptions: {
-            span: 22,
+            span: 24,
           },
         });
 

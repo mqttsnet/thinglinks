@@ -15,9 +15,11 @@ export default {
   updatedTime: '最后更新時間',
   updatedBy: '最后更新者',
   createdOrgId: '作成者組織',
-  serviceList: 'サービスリスト',
-  attributeList: 'プロパティリスト',
-  commandList: 'コマンドリスト',
+  serviceList: 'サービス一覧',
+  attributeList: 'プロパティ一覧',
+  commandList: 'コマンド一覧',
+  emptyService: 'サービスがありません、+ で追加してください',
+  pickServiceHint: '左側からサービスを選択してください',
   helpMessage: {
     serviceCode:
       '支持英文小写、数字及下划线，すべて小写命名，禁止出现英文大写，多个单词用下划线，分隔长度[2,50]',

@@ -43,11 +43,10 @@
           </p>
         </div>
       </div>
-      <TenantCompanyList
-        v-if="globSetting.multiTenantType !== MultiTenantTypeEnum.NONE"
-        :class="`${prefixCls}-action__item ${prefixCls}-action__tenant-item`"
+      <AppSwitchDropdown
+        :class="`${prefixCls}-action__item ${prefixCls}-action__app-switch`"
+        :theme="getHeaderTheme"
       />
-      <CompanyList v-else :class="`${prefixCls}-action__item ${prefixCls}-action__tenant-item`" />
 
       <AppSearch v-if="getShowSearch" :class="`${prefixCls}-action__item `" />
 
@@ -90,15 +89,13 @@
 
   import { MenuModeEnum, MenuSplitTyeEnum } from '/@/enums/menuEnum';
   import { SettingButtonPositionEnum } from '/@/enums/appEnum';
-  import { MultiTenantTypeEnum } from '/@/enums/biz/tenant';
 
   import {
-    CompanyList,
+    AppSwitchDropdown,
     ErrorAction,
     FullScreen,
     LayoutBreadcrumb,
     Notify,
-    TenantCompanyList,
     UserDropDown,
   } from './components';
   import { useAppInject } from '/@/hooks/web/useAppInject';
@@ -121,8 +118,7 @@
       Notify,
       AppSearch,
       ErrorAction,
-      TenantCompanyList,
-      CompanyList,
+      AppSwitchDropdown,
       SettingDrawer: createAsyncComponent(() => import('/@/layouts/default/setting/index.vue'), {
         loading: true,
       }),
@@ -239,7 +235,6 @@
         getShowSetting,
         globSetting,
         getShowSearch,
-        MultiTenantTypeEnum,
         getHeaderStyle,
       };
     },

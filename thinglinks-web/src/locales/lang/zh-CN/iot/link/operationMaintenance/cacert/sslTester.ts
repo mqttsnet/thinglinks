@@ -1,0 +1,31 @@
+export default {
+  title: 'SSL 证书认证测试',
+  subtitle: '端到端模拟设备 SSL 双向认证流程,分步定位 PKI 链路问题',
+  inputTitle: '测试输入',
+  clientId: '客户端标识',
+  clientIdPh: '可选,用于反查设备绑定 CA + 审计',
+  targetCa: '目标 CA',
+  targetCaPh: '选择已颁发的 CA;不选则按 clientId 反查',
+  targetCaHint: '留空时需提供 clientId,系统会按设备绑定 CA 自动反查',
+  clientCert: '客户端证书',
+  clientCertPh: '粘贴 PEM 内容(含 BEGIN/END CERTIFICATE)或 Base64 字符串',
+  uploadFile: '上传文件',
+  uploadHint: '支持 .pem / .crt / .cer / .txt',
+  startTest: '开始测试',
+  reset: '重新测试',
+  needClientCert: '请先提供客户端证书',
+  testException: '测试调用异常,请稍后重试',
+
+  resultTitle: '验证步骤',
+  emptyHint: '填写左侧输入并点击「开始测试」',
+  testing: '测试中...',
+  testPass: '测试通过',
+  testFail: '测试失败',
+  totalCost: '总耗时 {ms} ms',
+
+  step: {
+    pass: '通过',
+    fail: '失败',
+    skip: '跳过',
+  },
+};

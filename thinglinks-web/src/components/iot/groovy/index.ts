@@ -1,0 +1,1 @@
+export { GroovyScriptSvg } from './svg';

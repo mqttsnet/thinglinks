@@ -112,8 +112,8 @@ export default {
       comment: '体现在代码注释中',
       swaggerComment: '体现在swagger文档',
       BasicTitle: [
-        '生成的后端ファイル位于： [{输出路径}/]{全局設定.项目前缀}-{サービス名}-{全局設定.サービス后缀}/src/main/java/{父包名}/{模块名}[/{全局設定.PackageInfoConfig}]/{子包名}/',
-        '[]: 表示可选项; {}: 表示占位符 ; 全局設定: 表示在后台yml或常量中設定',
+        '生成的后端ファイル位于： [[输出路径]/][全局設定.项目前缀]-[サービス名]-[全局設定.サービス后缀]/src/main/java/[父包名]/[模块名][/[全局設定.PackageInfoConfig]]/[子包名]/',
+        '[]: 表示可选项; <>: 表示占位符 ; 全局設定: 表示在后台yml或常量中設定',
         '全局設定.项目前缀: 后端yml設定： generator.projectPrefix',
         '全局設定.サービス后缀: 后端代码常量： GenCodeConstant.XXX_SERVICE_SUFFIX',
         '全局設定.PackageInfoConfig: 后端yml設定: generator.packageInfoConfig.xxx',
@@ -129,7 +129,7 @@ export default {
         '如："com.mqttsnet.thinglinks.base.dao.common" 中的 "com.mqttsnet.thinglinks" ',
       ],
       moduleName: [
-        '建议跟{サービス名一致}保持一致',
+        '建议跟[サービス名一致]保持一致',
         '如："com.mqttsnet.thinglinks.base.dao.common" 中的 "base" ',
         '如："com.mqttsnet.thinglinks.file.dao" 中的 "file" ',
       ],
@@ -139,16 +139,16 @@ export default {
       ],
       entitySuperClass: ['生成テンプレート已级联更改', '实体类需要继承谁？'],
       isDs: [
-        'ServiceImpl类はいいいえ标记@DS注解，加上该注解后，sql操作会自动切换データソース',
+        'ServiceImpl类はいいいえ标记＠DS注解，加上该注解后，sql操作会自动切换データソース',
         'datasource模式才会使用该パラメータ，column、none模式请忽略',
       ],
-      dsValue: ['ServiceImpl类标记的@DS注解具体值'],
+      dsValue: ['ServiceImpl类标记的＠DS注解具体值'],
       isTenantLine: [
-        'Mapper类はいいいえ标记@TenantLine注解，加上该注解sql操作不会自动拼接テナントID',
+        'Mapper类はいいいえ标记＠TenantLine注解，加上该注解sql操作不会自动拼接テナントID',
         'column模式才会使用该パラメータ，datasource、none模式请忽略',
       ],
       isLombok: ['实体类はいいいえ使用Lombok注解'],
-      isChain: ['实体类はいいいえ使用@Accessors(chain = true)注解'],
+      isChain: ['实体类はいいいえ使用＠Accessors(chain = true)注解'],
       isColumnConstant: ['实体类中はいいいえ生成字段常量'],
       genType: [
         '生成代码的方式',
@@ -158,13 +158,13 @@ export default {
       plusApplicationName: [
         '1. src/views/ 目录下的 basic 或 devOperation 或 其他 ',
         '2. src/api/ 目录下的 basic 或 devOperation 或 其他 ',
-        '3. src/locales/lang/{语言}/ 目录下的 basic 或 devOperation 或 其他 ',
+        '3. src/locales/lang/[语言]/ 目录下的 basic 或 devOperation 或 其他 ',
         '4. 其他 表示其他アプリケーション',
       ],
       plusModuleName: [
-        '1. src/api/{前端アプリケーション名} 目录下的ファイル夹名',
-        '2. src/views/{前端アプリケーション名} 目录下的ファイル夹名',
-        '3. src/locales/lang/{语言}/{前端アプリケーション名} 目录下的ファイル夹名',
+        '1. src/api/[前端アプリケーション名] 目录下的ファイル夹名',
+        '2. src/views/[前端アプリケーション名] 目录下的ファイル夹名',
+        '3. src/locales/lang/[语言]/[前端アプリケーション名] 目录下的ファイル夹名',
         '如：src/views/devOperation/ 下的 application、developer 等目录',
         '如：src/api/devOperation/ 下的 application、developer 等目录',
       ],
@@ -172,7 +172,7 @@ export default {
       tplType: ['实体父类已级联更改', '前端代码生成何种操作风格的页面'],
       auth: [
         '文本框为空时，方可点击"生成"按钮，按システム建议的ルール生成権限コード',
-        'システムルール：{前端アプリケーション名}:{前端模块名}:{实体名称}',
+        'システムルール：[前端アプリケーション名]:[前端模块名]:[实体名称]',
       ],
       menuApplicationId: '当前功能生成后，メニュー属于哪个アプリケーション？',
       menuParentId: '当前功能生成后，显示在左侧メニュー的位置',

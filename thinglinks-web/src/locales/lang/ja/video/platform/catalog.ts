@@ -1,0 +1,16 @@
+export default {
+  table: { title: 'プラットフォームカタログ' },
+  name: 'カタログ名',
+  gbId: 'GB ID',
+  parentId: '上位カタログ',
+  catalogType: 'カタログタイプ',
+  civilCode: '行政区画コード',
+  sortOrder: '並び順',
+  rootCatalog: 'ルート',
+  addCatalog: 'カタログ追加',
+  editCatalog: 'カタログ編集',
+  deleteCatalog: 'カタログ削除',
+  confirmDelete: 'このカタログを削除しますか？サブカタログとチャンネルバインドが解除されます。',
+  deleteSuccess: 'カタログを削除しました',
+  saveCatalogSuccess: 'カタログを保存しました',
+};

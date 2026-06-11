@@ -9,9 +9,11 @@
     Card,
     Descriptions,
     DescriptionsItem,
+    Empty,
     List,
     ListItem,
     ListItemMeta,
+    Spin,
     Table,
     TableColumn,
   } from 'ant-design-vue';
@@ -28,10 +30,24 @@
     docInfoView: {},
     docInfoConfig: {},
   });
+  const loading = ref<boolean>(false);
+  const loaded = ref<boolean>(false);
 
   async function loadContent(docId: string) {
-    const result = await getDocDetail(docId);
-    docDetail.value = result;
+    try {
+      loading.value = true;
+      const result = await getDocDetail(docId);
+      // 后端偶尔会返回 null（文档已下线 / 数据缺失），保持初始结构避免 v-show 链路里 ?.length 抛错
+      docDetail.value = result || { docInfoView: {}, docInfoConfig: {} };
+      loaded.value = true;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  function reset() {
+    docDetail.value = { docInfoView: {}, docInfoConfig: {} };
+    loaded.value = false;
   }
 
   const dataNodeType = ref('Object');
@@ -66,12 +82,32 @@
   const size = ref<CardSize>('small');
   const tableSize = ref<SizeType>('small');
 
-  defineExpose({ loadContent });
+  defineExpose({ loadContent, reset });
 </script>
 <template>
-  <div v-show="showDoc">
-    <div v-show="isMarkdown">Markdown</div>
-    <div v-show="!isDoc">
+  <Spin :spinning="loading" wrapperClassName="open-doc-content-wrapper">
+    <!-- 1) 空状态：还没选过任何 API（loaded=false），引导用户去左边树点选 -->
+    <div v-if="!loaded" class="open-doc-empty">
+      <Empty description="请从左侧选择一个具体的 API 接口查看详情">
+        <template #image>
+          <img
+            src="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+            alt="empty"
+            class="empty-img"
+          />
+        </template>
+      </Empty>
+    </div>
+    <!-- 2) 选了节点但后端返回空（!showDoc 即 docInfoView.url 为空）：可能是后端没数据或文档已下线 -->
+    <div v-else-if="!showDoc" class="open-doc-empty">
+      <Empty description="该文档暂无可展示的内容（文档可能未发布或已被同步覆盖）" />
+    </div>
+    <!-- 3) Markdown 类型 -->
+    <div v-else-if="isMarkdown" class="open-doc-empty">
+      <Empty description="Markdown 类型文档预览暂未实现，请前往「帮助文档」查看" />
+    </div>
+    <!-- 4) 标准 API 文档 -->
+    <div v-else v-show="!isDoc">
       <Card :size="size">
         <BasicTitle span :normal="false" h1>
           {{ `${docDetail.docInfoView.url}(${docDetail.docInfoView.docTitle})` }}
@@ -222,7 +258,7 @@
         </List>
       </Card>
     </div>
-  </div>
+  </Spin>
 </template>
 <style lang="scss" scoped>
   a {
@@ -231,5 +267,22 @@
 
   .danger {
     color: #f56c6c;
+  }
+
+  .open-doc-content-wrapper {
+    width: 100%;
+    min-height: 480px;
+  }
+
+  .open-doc-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 480px;
+    padding: 32px;
+
+    .empty-img {
+      height: 80px;
+    }
   }
 </style>

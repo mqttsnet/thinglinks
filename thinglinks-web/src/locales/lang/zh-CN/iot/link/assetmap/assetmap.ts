@@ -5,7 +5,7 @@ export default {
   fieldDeviceName: '设备名称',
   fieldDeviceIdentification: '设备标识',
   fieldProductIdentification: '产品标识',
-  searchPlaceholder: '输入{field}搜索设备',
+  searchPlaceholder: '输入[field]搜索设备',
   searching: '搜索中...',
   noMatchDevice: '暂无匹配设备',
   inputKeyword: '输入关键词搜索设备',

@@ -1,0 +1,16 @@
+export default {
+  table: { title: 'Platform Channels' },
+  deviceIdentification: 'Device ID',
+  channelIdentification: 'Channel ID',
+  customName: 'Custom Name',
+  customGbId: 'Custom GB ID',
+  catalogId: 'Catalog',
+  deviceChannelId: 'Device Channel ID',
+  bindChannel: 'Bind Channel',
+  unbindChannel: 'Unbind Channel',
+  confirmUnbind: 'Are you sure to unbind the selected channels?',
+  bindSuccess: 'Channels bound successfully',
+  unbindSuccess: 'Channels unbound successfully',
+  selectChannels: 'Select channels to bind',
+  noChannelsSelected: 'Please select at least one channel',
+};

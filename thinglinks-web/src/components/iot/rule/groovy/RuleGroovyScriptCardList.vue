@@ -45,9 +45,9 @@
                   <div class="value">{{ record.appId }}</div>
                 </div>
                 <div class="prop">
-                  <div class="label">{{ t('iot.rule.groovy.ruleGroovyScript.namespace') }}</div>
+                  <div class="label">{{ t('iot.rule.groovy.ruleGroovyScript.channelCode') }}</div>
                   <div class="value">{{
-                    getDictLabel('RULE_GROOVY_SCRIPT_NAMESPACE_TYPE', record.namespace + '', '')
+                    getDictLabel('RULE_GROOVY_SCRIPT_CHANNEL_CODE', record.channelCode + '', '')
                   }}</div>
                 </div>
               </div>
@@ -58,7 +58,7 @@
                 >
                   <a-tooltip placement="top" :title="t('common.title.delete')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/delete-y.png"
+                      src="/@/assets/images/iot/link/delete-y.png"
                       alt=""
                       @click="handleDelete(record)"
                     />
@@ -70,7 +70,7 @@
                 >
                   <a-tooltip placement="top" :title="t('common.title.view')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/go-details-2.png"
+                      src="/@/assets/images/iot/link/go-details-2.png"
                       alt=""
                       @click="handleView(record, $event)"
                     />
@@ -82,7 +82,7 @@
                 >
                   <a-tooltip placement="top" :title="t('common.title.edit')">
                     <img
-                      src="../../../../../../../../assets/images/iot/link/device/edit-y.png"
+                      src="/@/assets/images/iot/link/device/edit-y.png"
                       alt=""
                       @click="handleEdit(record)"
                     />
@@ -93,7 +93,7 @@
             <div class="product-img">
               <img
                 @click="handleView(record, $event)"
-                src="../../../../../../../../assets/images/iot/rule/groovy/scriptCard.png"
+                src="/@/assets/images/iot/rule/groovy/scriptCard.png"
               />
             </div>
           </div>
@@ -188,7 +188,7 @@
       const current = ref(1);
       const size = ref(20);
       const total = ref(0);
-      const { createConfirm, notification } = useMessage();
+      const { createMessage, createConfirm } = useMessage();
       let model = reactive({});
       // 设备列表
       let deviceList = ref<Array<deviceItem>>([]);
@@ -273,10 +273,7 @@
           onOk: async () => {
             try {
               await deleteSingle(record.id);
-              notification.success({
-                message: '提示',
-                description: t('common.tips.deleteSuccess'),
-              });
+              createMessage.success(t('common.tips.deleteSuccess'));
               getRuleGroovyScriptList();
             } catch (e) {}
           },
@@ -338,5 +335,5 @@
   });
 </script>
 <style lang="less" scoped>
-  @import '../../../cardCommon.less';
+  @import '../../../Table/src/types/components/cardCommon.less';
 </style>
