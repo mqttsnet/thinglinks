@@ -6,6 +6,7 @@ import com.mqttsnet.thinglinks.system.controller.system.domain.server.Jvm;
 import com.mqttsnet.thinglinks.system.controller.system.domain.server.Mem;
 import com.mqttsnet.thinglinks.system.controller.system.domain.server.Sys;
 import com.mqttsnet.thinglinks.system.controller.system.domain.server.SysFile;
+import lombok.extern.slf4j.Slf4j;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.CentralProcessor.TickType;
@@ -27,6 +28,7 @@ import java.util.Properties;
  *
  * @author mqttsnet
  */
+@Slf4j
 public class Server {
 
     private static final int OSHI_WAIT_SECOND = 1000;
@@ -65,6 +67,7 @@ public class Server {
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
+            log.warn("[server-info] getHostAddress failed, fallback to 127.0.0.1: {}", e.getMessage());
         }
         return "127.0.0.1";
     }
@@ -78,6 +81,7 @@ public class Server {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
+            log.warn("[server-info] getHostName failed, fallback to '未知': {}", e.getMessage());
         }
         return "未知";
     }

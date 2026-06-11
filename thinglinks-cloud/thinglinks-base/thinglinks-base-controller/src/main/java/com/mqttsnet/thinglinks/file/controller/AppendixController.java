@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.file.controller;
 
 import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
+import com.mqttsnet.basic.interfaces.echo.EchoService;
 import com.mqttsnet.thinglinks.file.service.AppendixService;
 import com.mqttsnet.thinglinks.file.service.FileService;
 import com.mqttsnet.thinglinks.file.vo.result.FileResultVO;
@@ -38,6 +39,7 @@ public class AppendixController {
 
     private final AppendixService appendixService;
     private final FileService fileService;
+    private final EchoService echoService;
 
     /**
      * 根据业务id 和 业务类型附件信息
@@ -49,14 +51,18 @@ public class AppendixController {
     @PostMapping(value = "/appendix/listByBizId")
     @WebLog("根据业务id 和 业务类型查询附件信息")
     public R<List<AppendixResultVO>> listByBizId(@RequestParam Long bizId, @RequestParam(required = false) String bizType) {
-        return R.success(appendixService.listByBizIdAndBizType(bizId, bizType));
+        List<AppendixResultVO> result = appendixService.listByBizIdAndBizType(bizId, bizType);
+        echoService.action(result);
+        return R.success(result);
     }
 
     @Operation(summary = "根据业务id 和 业务类型查询文件信息", description = "根据业务id 和 业务类型查询文件信息")
     @PostMapping(value = "/appendix/listFileByBizId")
     @WebLog("根据业务id 和 业务类型查询附件信息")
     public R<List<FileResultVO>> listFileByBizId(@RequestParam Long bizId, @RequestParam(required = false) String bizType) {
-        return R.success(fileService.listByBizIdAndBizType(bizId, bizType));
+        List<FileResultVO> result = fileService.listByBizIdAndBizType(bizId, bizType);
+        echoService.action(result);
+        return R.success(result);
     }
 
 }

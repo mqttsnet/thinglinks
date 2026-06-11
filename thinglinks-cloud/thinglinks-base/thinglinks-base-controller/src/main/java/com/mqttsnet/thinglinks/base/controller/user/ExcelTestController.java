@@ -1,7 +1,6 @@
 package com.mqttsnet.thinglinks.base.controller.user;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import cn.idev.excel.FastExcel;
 import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelProperty;
@@ -69,7 +68,7 @@ public class ExcelTestController {
             response.setContentType(StrPool.CONTENT_TYPE);
             response.setCharacterEncoding(StrPool.UTF_8);
             R error = R.fail("下载文件失败" + e.getMessage());
-            response.getWriter().println(JSONUtil.toJsonStr(error));
+            response.getWriter().println(com.alibaba.fastjson2.JSON.toJSONString(error));
         }
     }
 

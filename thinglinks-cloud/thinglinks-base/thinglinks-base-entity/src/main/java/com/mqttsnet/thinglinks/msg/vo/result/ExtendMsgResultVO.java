@@ -1,11 +1,9 @@
 package com.mqttsnet.thinglinks.msg.vo.result;
 
-import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.annotation.echo.Echo;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
 import com.mqttsnet.thinglinks.model.constant.EchoApi;
 import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import com.mqttsnet.thinglinks.msg.enumeration.SourceType;
 import com.mqttsnet.thinglinks.msg.enumeration.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,10 +15,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -39,12 +35,9 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "ExtendMsgResultVO", description = "消息")
-public class ExtendMsgResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class ExtendMsgResultVO extends AuditableResultVO {
 
     private static final long serialVersionUID = 1L;
-
-    @Builder.Default
-    private final Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "短信记录ID")
     private Long id;

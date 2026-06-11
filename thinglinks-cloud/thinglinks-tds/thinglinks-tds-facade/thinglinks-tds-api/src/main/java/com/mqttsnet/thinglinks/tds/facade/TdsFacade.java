@@ -1,6 +1,5 @@
 package com.mqttsnet.thinglinks.tds.facade;
 
-import cn.hutool.json.JSONObject;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.tds.model.SuperTableDTO;
 import com.mqttsnet.basic.tds.model.TableDTO;
@@ -41,12 +40,12 @@ public interface TdsFacade {
     R createSuperTableAndColumn(SuperTableDTO superTableDTO);
 
     /**
-     * 创建超级表及字段-方式二
+     * 批量创建超级表及字段(单次请求可建多张)。入参用 {@link Map} 而非具体 JSON 类型,使 Feign 契约层保持中性、不绑定任何第三方 JSON 框架。
      *
-     * @param object 超级表json信息
+     * @param schema 超级表批量定义,key=超级表名,value=超级表字段/tags 定义
      * @return 执行结果
      */
-    R createSuperTableAndColumnTwo(JSONObject object);
+    R batchCreateSuperTable(Map<String, Object> schema);
 
     /**
      * 创建子表
@@ -57,12 +56,12 @@ public interface TdsFacade {
     R createSubTable(TableDTO tableDTO);
 
     /**
-     * 创建子表-方式二
+     * 批量创建子表(单次请求可建多张)。入参 schema 结构同 batchCreateSuperTable,key=子表名。
      *
-     * @param object 子表json信息
+     * @param schema 子表批量定义
      * @return 执行结果
      */
-    R createSubTableTwo(JSONObject object);
+    R batchCreateSubTable(Map<String, Object> schema);
 
     /**
      * 删除超级表

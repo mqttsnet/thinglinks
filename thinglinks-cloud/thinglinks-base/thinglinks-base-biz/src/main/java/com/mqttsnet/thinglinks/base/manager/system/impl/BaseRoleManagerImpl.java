@@ -36,6 +36,11 @@ import java.util.function.Function;
  * @date 2021-10-18
  * @create [2021-10-18] [mqttsnet]
  */
+/**
+ * <b>Manager 编排同域兄弟 Manager(by design)</b>:角色 Manager 联动员工-组织关系表 Manager
+ * (查角色下员工的组织归属),都在 base 域 ── 改 Service 编排反而绕路.
+ * 详见 system 域 {@code DefTenantApplicationRelManagerImpl} 的设计说明.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

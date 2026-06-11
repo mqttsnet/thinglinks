@@ -1,8 +1,7 @@
 package com.mqttsnet.thinglinks.system.vo.result.system;
 
 
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +12,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p>
@@ -34,12 +30,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @Schema(title = "DefDictItemResultVO", description = "字典项")
-public class DefDictItemResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class DefDictItemResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    @Builder.Default
-    private Map<String, Object> echoMap = new HashMap<>();
 
     @Schema(description = "主键")
     private Long id;

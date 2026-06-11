@@ -38,6 +38,10 @@ import java.util.function.Function;
  * @date 2021/9/29 1:26 下午
  * @create [2021/9/29 1:26 下午 ] [mqttsnet] [初始创建]
  */
+/**
+ * <b>Manager 编排同域兄弟 Manager(by design)</b>:资源 Manager 操作时联动租户-资源关系表,
+ * 都在 system 域 ── 改 Service 编排反而绕路.详见 {@link DefTenantApplicationRelManagerImpl} 的设计说明.
+ */
 @RequiredArgsConstructor
 @Service
 public class DefResourceManagerImpl extends SuperCacheManagerImpl<DefResourceMapper, DefResource> implements DefResourceManager {

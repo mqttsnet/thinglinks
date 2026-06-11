@@ -19,6 +19,7 @@ import com.mqttsnet.thinglinks.msg.entity.ExtendMsgRecipient;
 import com.mqttsnet.thinglinks.msg.strategy.MsgStrategy;
 import com.mqttsnet.thinglinks.msg.strategy.domain.MsgParam;
 import com.mqttsnet.thinglinks.msg.strategy.domain.MsgResult;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,7 +81,8 @@ public class WxSmsMsgStrategyImpl implements MsgStrategy {
             weChatProperties.getAtMobiles().removeAll(weChatProperties.getAtMobiles());
             weChatProperties.getAtMobiles().add(StrPool.All);
         }
-        INoticeProcessor noticeProcessor = SpringUtils.getBean("weChatNoticeProcessor", INoticeProcessor.class);
+        // 注:历史代码先 SpringUtils.getBean("weChatNoticeProcessor") 但未使用 ── 实际用本地 new 的 processor.
+        // 已删除死代码 getBean,如未来需要走 Spring 管理的 NoticeProcessor,直接 @Resource(name=...) 注入即可.
         WeChatNoticeProcessor processor = new WeChatNoticeProcessor(restTemplate);
         WeChatInfo weChatInfo = new WeChatInfo(weChatProperties.getMsgType(), content, weChatProperties.getAtMobiles());
         Object o = processor.sendNotice(WeChatInfoReq.builder().weChatProperties(weChatProperties).weChatInfo(weChatInfo).build());

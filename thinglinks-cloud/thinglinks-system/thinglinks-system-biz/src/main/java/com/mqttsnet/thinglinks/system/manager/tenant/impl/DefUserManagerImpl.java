@@ -33,6 +33,7 @@ import com.mqttsnet.thinglinks.system.manager.tenant.DefUserManager;
 import com.mqttsnet.thinglinks.system.mapper.tenant.DefUserMapper;
 import com.mqttsnet.thinglinks.system.vo.query.tenant.DefUserPageQuery;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2021/9/29 1:26 下午
  * @create [2021/9/29 1:26 下午 ] [mqttsnet] [初始创建]
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class DefUserManagerImpl extends SuperCacheManagerImpl<DefUserMapper, DefUser> implements DefUserManager {
@@ -52,11 +54,25 @@ public class DefUserManagerImpl extends SuperCacheManagerImpl<DefUserMapper, Def
         return new DefUserCacheKeyBuilder();
     }
 
+    /**
+     * Echo 字典回显批量接口,由 basic-echo-starter 框架 @EchoLoader 反射调用,
+     * 框架契约要求 Manager 层直接暴露,不能下沉 Service(Echo 框架找不到 Service)。
+     */
     @Transactional(readOnly = true)
     @Override
     public Map<Serializable, Object> findByIds(Set<Serializable> ids) {
-        List<DefUser> list = findByIds(ids, null).stream().filter(Objects::nonNull).toList();
-        return CollHelper.uniqueIndex(list, DefUser::getId, DefUser::getNickName);
+        // ① null + 空集合兜底:Echo 框架可能传 null,父类 findByIds 对 null/空集合行为不确定
+        if (CollUtil.isEmpty(ids)) {
+            return Collections.emptyMap();
+        }
+        try {
+            List<DefUser> list = findByIds(ids, null).stream().filter(Objects::nonNull).toList();
+            return CollHelper.uniqueIndex(list, DefUser::getId, DefUser::getNickName);
+        } catch (Exception e) {
+            // ② 异常降级:Echo 失败不能拖垮调用方接口,前端 echoMapText 会自动回退到原 ID
+            log.warn("[Echo] DefUser findByIds failed, ids={}, cause={}", ids, e.getMessage());
+            return Collections.emptyMap();
+        }
     }
 
     @Override

@@ -51,6 +51,18 @@ public class BaseDictManagerImpl extends SuperManagerImpl<BaseDictMapper, BaseDi
     private final CachePlusOps cachePlusOps;
     private final EchoProperties ips;
 
+    /**
+     * Echo 字典回显批量接口 ── 由 {@code basic-echo-starter} 框架的 {@code @EchoLoader} 反射调用,
+     * Manager 层必须直接暴露(by design,框架契约,不能下沉 Service).
+     *
+     * <p><b>事务策略</b>:
+     * <ul>
+     *   <li>{@code @DS(BASE_TENANT)} ── 字典数据走租户库</li>
+     *   <li>{@code REQUIRES_NEW} ── 字典回显必须**独立事务**:防止业务外层事务回滚把回显查询也回滚,
+     *       或外层事务超时影响回显;Echo 框架标准模式</li>
+     *   <li>{@code readOnly = true} ── 纯读优化提示(JDBC setReadOnly)</li>
+     * </ul></p>
+     */
     @Override
     @DS(DsConstant.BASE_TENANT)
     @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
@@ -87,7 +99,11 @@ public class BaseDictManagerImpl extends SuperManagerImpl<BaseDictMapper, BaseDi
         if (CollUtil.isEmpty(dictKeys)) {
             return Collections.emptyMap();
         }
-        LbQueryWrap<BaseDict> query = Wraps.<BaseDict>lbQ().in(BaseDict::getParentKey, dictKeys).orderByAsc(BaseDict::getSortValue);
+        // 仅返回启用项 ── 业务下拉框消费方,禁用项不应再可选;字典管理后台走分页 API 不受影响
+        LbQueryWrap<BaseDict> query = Wraps.<BaseDict>lbQ()
+                .in(BaseDict::getParentKey, dictKeys)
+                .eq(BaseDict::getState, Boolean.TRUE)
+                .orderByAsc(BaseDict::getSortValue);
         List<BaseDict> list = super.list(query);
         List<DefDictItemResultVO> voList = BeanUtil.copyToList(list, DefDictItemResultVO.class);
 

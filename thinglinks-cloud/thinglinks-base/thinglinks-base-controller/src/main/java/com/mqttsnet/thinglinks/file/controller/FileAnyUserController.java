@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
+import com.mqttsnet.basic.interfaces.echo.EchoService;
 import com.mqttsnet.thinglinks.file.service.FileService;
 import com.mqttsnet.thinglinks.file.vo.result.FileResultVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "开放接口—文件相关")
 public class FileAnyUserController {
     private final FileService fileService;
+    private final EchoService echoService;
 
 
     /**
@@ -59,7 +61,9 @@ public class FileAnyUserController {
     @PostMapping(value = "/findInfoById")
     @WebLog("根据文件id列表，获取文件详细信息")
     public R<Map<Long, FileResultVO>> findInfoById(@RequestBody List<Long> ids) {
-        return R.success(fileService.findByIds(ids));
+        Map<Long, FileResultVO> result = fileService.findByIds(ids);
+        echoService.action(result.values());
+        return R.success(result);
     }
 
 

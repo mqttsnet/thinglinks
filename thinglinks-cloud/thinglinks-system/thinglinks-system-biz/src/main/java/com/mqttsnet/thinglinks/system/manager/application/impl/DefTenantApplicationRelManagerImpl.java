@@ -35,6 +35,12 @@ import java.util.List;
  * @date 2021/9/29 1:26 下午
  * @create [2021/9/29 1:26 下午 ] [mqttsnet] [初始创建]
  */
+/**
+ * <b>关系表 Manager 编排注 ── by design</b>:
+ * <p>本类是租户-应用关联表的 Manager,职责本身就是编排同 domain(system)多表关系
+ * (Application / Resource / TenantResourceRel / UserTenantRel).这种"关系表 Manager 跨表
+ * 编排同域兄弟 Manager"是合理实现 ── 改成 Service 编排反而绕路且容易引发循环依赖.</p>
+ */
 @RequiredArgsConstructor
 @Service
 public class DefTenantApplicationRelManagerImpl extends SuperManagerImpl<DefTenantApplicationRelMapper, DefTenantApplicationRel> implements DefTenantApplicationRelManager {

@@ -387,6 +387,7 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
         if (StrUtil.isAllEmpty(params.getEmail(), params.getUsername(), params.getIdCard(), params.getMobile())) {
             throw BizException.wrap("请至少传递一个参数");
         }
+        encryptSearchParams(params);
         wrap.eq(DefUser::getEmail, params.getEmail())
                 .eq(DefUser::getUsername, params.getUsername())
                 .eq(DefUser::getIdCard, params.getIdCard())

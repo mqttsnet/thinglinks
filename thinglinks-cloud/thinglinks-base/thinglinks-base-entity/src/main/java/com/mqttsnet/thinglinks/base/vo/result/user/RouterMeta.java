@@ -47,6 +47,16 @@ public class RouterMeta extends LinkedHashMap<String, Object> implements Seriali
         return this;
     }
 
+    @Schema(description = "菜单资源编码")
+    public String getCode() {
+        return Convert.toStr(this.get(routerMetaConfig.getCodeKey()));
+    }
+
+    public RouterMeta setCode(String code) {
+        this.put(routerMetaConfig.getCodeKey(), code);
+        return this;
+    }
+
     @Schema(description = "图标")
     public String getIcon() {
         return Convert.toStr(this.get(routerMetaConfig.getIconKey()));

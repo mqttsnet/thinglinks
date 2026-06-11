@@ -13,12 +13,12 @@ import com.mqttsnet.basic.dinger.properties.FeiShuProperties;
 import com.mqttsnet.basic.jackson.JsonUtil;
 import com.mqttsnet.basic.model.Kv;
 import com.mqttsnet.basic.utils.ArgumentAssert;
-import com.mqttsnet.basic.utils.SpringUtils;
 import com.mqttsnet.thinglinks.msg.entity.ExtendMsg;
 import com.mqttsnet.thinglinks.msg.entity.ExtendMsgRecipient;
 import com.mqttsnet.thinglinks.msg.strategy.MsgStrategy;
 import com.mqttsnet.thinglinks.msg.strategy.domain.MsgParam;
 import com.mqttsnet.thinglinks.msg.strategy.domain.MsgResult;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +33,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service("feiShuSmsMsgStrategyImpl")
 public class FeiShuSmsMsgStrategyImpl implements MsgStrategy {
+
+    /**
+     * 飞书通知处理器 ── 启动期按 bean name 注入,替代历史的 {@code SpringUtils.getBean(name, type)} 运行时查询.
+     */
+    @Resource(name = "feiShuNoticeProcessor")
+    private INoticeProcessor noticeProcessor;
 
     /**
      * 执行发送
@@ -71,7 +77,6 @@ public class FeiShuSmsMsgStrategyImpl implements MsgStrategy {
         if (CollectionUtil.isNotEmpty(phoneNumbers)) {
             feiShuProperties.setAtMobiles(phoneNumbers);
         }
-        INoticeProcessor noticeProcessor = SpringUtils.getBean("feiShuNoticeProcessor", INoticeProcessor.class);
         FeiShuInfo param = FeiShuInfo.builder().msgType(feiShuProperties.getMsgType().getMsgType()).build();
         if (MsgTypeEnum.TEXT.equals(feiShuProperties.getMsgType())) {
             param.setContent(FeiShuInfo.ContentDTO.builder().text(content).build());

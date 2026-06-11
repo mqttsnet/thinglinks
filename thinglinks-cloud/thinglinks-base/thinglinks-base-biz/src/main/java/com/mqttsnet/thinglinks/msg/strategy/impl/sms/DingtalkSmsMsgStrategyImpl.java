@@ -11,13 +11,13 @@ import com.mqttsnet.basic.dinger.properties.DingTalkProperties;
 import com.mqttsnet.basic.jackson.JsonUtil;
 import com.mqttsnet.basic.model.Kv;
 import com.mqttsnet.basic.utils.ArgumentAssert;
-import com.mqttsnet.basic.utils.SpringUtils;
 import com.mqttsnet.thinglinks.msg.entity.ExtendMsg;
 import com.mqttsnet.thinglinks.msg.entity.ExtendMsgRecipient;
 import com.mqttsnet.thinglinks.msg.service.DefInterfacePropertyService;
 import com.mqttsnet.thinglinks.msg.strategy.MsgStrategy;
 import com.mqttsnet.thinglinks.msg.strategy.domain.MsgParam;
 import com.mqttsnet.thinglinks.msg.strategy.domain.MsgResult;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +36,12 @@ public class DingtalkSmsMsgStrategyImpl implements MsgStrategy {
 
     @Autowired
     private DefInterfacePropertyService defInterfacePropertyService;
+
+    /**
+     * 钉钉通知处理器 ── 启动期按 bean name 注入,替代历史的 {@code SpringUtils.getBean(name, type)} 运行时查询.
+     */
+    @Resource(name = "dingTalkNoticeProcessor")
+    private INoticeProcessor noticeProcessor;
 
     /**
      * 执行发送
@@ -73,7 +79,6 @@ public class DingtalkSmsMsgStrategyImpl implements MsgStrategy {
         if (CollectionUtil.isNotEmpty(phoneList)) {
             dingTalkProperties.setAtMobiles(phoneList);
         }
-        INoticeProcessor noticeProcessor = SpringUtils.getBean("dingTalkNoticeProcessor", INoticeProcessor.class);
         Object rsp = noticeProcessor.sendNotice(DingtalktInfoReq.builder().dingTalkProperties(dingTalkProperties).title(extendMsg.getTitle()).content(content).build());
         return MsgResult.builder().result(rsp).build();
     }

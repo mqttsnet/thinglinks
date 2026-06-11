@@ -14,6 +14,14 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
+ * 前端 WebSocket 联调入口 ── 被以下两处调用,<b>不要随意删除</b>:
+ * <ul>
+ *   <li>前端 demo 模块:{@code views/demo/feat/ws/index.vue}(框架自带 ws 测试 demo)</li>
+ *   <li>前端 IoT 业务:{@code views/iot/link/operationMaintenance/debug/webSocket/index.vue}
+ *       (运维 → 调试 → WebSocket 调试入口)</li>
+ * </ul>
+ * 完整调用 URL:{@code ws://{gateway-host}/api/wsMsg/anno/test}
+ *
  * @author mqttsnet
  * @date 2021/8/4 23:47
  */
@@ -30,11 +38,8 @@ public class TestEndpoint {
     @OnOpen
     public void onOpen(Session session) {
         log.info("连接成功");
-        WebSocketObserver observer = new WebSocketObserver(session);
-        // get subject
         WebSocketSubject subject = WebSocketSubject.Holder.getSubject(session.getId());
-        // register observer into subject
-        subject.addObserver(observer);
+        subject.registerSession(session);
     }
 
     /**
@@ -45,13 +50,8 @@ public class TestEndpoint {
     @OnClose
     public void onClose(Session session) {
         log.info("连接关闭");
-        // get subject
         WebSocketSubject subject = WebSocketSubject.Holder.getSubject(session.getId());
-
-        // get observer
-        WebSocketObserver observer = new WebSocketObserver(session);
-        // delete observer from subject
-        subject.deleteObserver(observer);
+        subject.unregisterSession(session);
 
         // close session and close Web Socket connection
         try {
