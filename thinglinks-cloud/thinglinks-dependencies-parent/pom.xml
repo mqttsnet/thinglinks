@@ -31,7 +31,7 @@
 
     <properties>
         <!-- 本项目的版本 -->
-        <revision>1.3.0</revision>
+        <revision>1.4.0</revision>
         <!-- util基础库的版本 -->
         <thinglinks-util.version>1.0.8.3</thinglinks-util.version>
         <docker.image.prefix>mqttsnet</docker.image.prefix>
