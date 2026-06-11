@@ -1,10 +1,9 @@
 package com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.response.cmd;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import com.mqttsnet.thinglinks.video.dto.platform.VideoPlatformInfo;
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.CmdTypeEnum;
-import com.mqttsnet.thinglinks.video.gb28181.transmit.callback.DeferredResultHolder;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.CmdTypeEnum;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.SIPRequestProcessorParent;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.IMessageHandler;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.response.ResponseMessageHandler;
@@ -31,9 +30,6 @@ public class ConfigDownloadResponseMessageHandler extends SIPRequestProcessorPar
     @Autowired
     private ResponseMessageHandler responseMessageHandler;
 
-    @Autowired
-    private DeferredResultHolder deferredResultHolder;
-
 //    @Autowired
 //    private IDeviceService deviceService;
 
@@ -44,7 +40,7 @@ public class ConfigDownloadResponseMessageHandler extends SIPRequestProcessorPar
 
 
     @Override
-    public void handForDevice(RequestEvent evt, VideoDeviceInfoResultDTO deviceInfoResultDTO, Element element) {
+    public void handForDevice(RequestEvent evt, VideoDeviceResultVO deviceInfoResultDTO, Element element) {
         try {
             // 回复200 OK
             responseAck((SIPRequest) evt.getRequest(), Response.OK);

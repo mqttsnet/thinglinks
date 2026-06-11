@@ -122,4 +122,36 @@ public interface ZlmMediaServerOpenAnyTenantService {
      * @return streamKey
      */
     String addStreamProxy(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification, String url, Boolean enableAudio, Boolean enableMp4, String rtpType);
+
+    /**
+     * 开始录制
+     *
+     * @param videoMediaServerResultDTO 流媒体服务信息
+     * @param appId                     应用ID
+     * @param streamIdentification      流唯一标识
+     * @param fileFormat                录制格式
+     * @param maxSecond                 录制最大时长（秒）
+     * @return 是否成功
+     */
+    Boolean startRecord(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification, String fileFormat, int maxSecond);
+
+    /**
+     * 停止录制
+     *
+     * @param videoMediaServerResultDTO 流媒体服务信息
+     * @param appId                     应用ID
+     * @param streamIdentification      流唯一标识
+     * @return 是否成功
+     */
+    Boolean stopRecord(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification);
+
+    /**
+     * 查询是否正在录制
+     *
+     * @param videoMediaServerResultDTO 流媒体服务信息
+     * @param appId                     应用ID
+     * @param streamIdentification      流唯一标识
+     * @return true=正在录制
+     */
+    Boolean isRecording(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification);
 }

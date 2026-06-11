@@ -1,10 +1,9 @@
 package com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.response;
 
 
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.ErrorCodeEnum;
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.SipMessageTypeEnum;
-import com.mqttsnet.thinglinks.video.gb28181.event.sip.MessageEvent;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.ErrorCodeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.SipMessageTypeEnum;
 import com.mqttsnet.thinglinks.video.gb28181.event.subscribe.MessageSubscribe;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.MessageHandlerAbstract;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.MessageRequestProcessor;
@@ -38,7 +37,7 @@ public class ResponseMessageHandler extends MessageHandlerAbstract implements In
     }
 
     @Override
-    public void handForDevice(RequestEvent evt, VideoDeviceInfoResultDTO deviceInfo, Element element) {
+    public void handForDevice(RequestEvent evt, VideoDeviceResultVO deviceInfo, Element element) {
         super.handForDevice(evt, deviceInfo, element);
         handMessageEvent(element, null);
     }
@@ -46,15 +45,14 @@ public class ResponseMessageHandler extends MessageHandlerAbstract implements In
     public void handMessageEvent(Element element, Object data) {
         String cmd = getText(element, "CmdType");
         String sn = getText(element, "SN");
-        MessageEvent<Object> subscribe = (MessageEvent<Object>) messageSubscribe.getSubscribe(cmd + sn);
-        if (subscribe != null && subscribe.getCallback() != null) {
+        String key = cmd + sn;
+        if (messageSubscribe.hasSubscribe(key)) {
             String result = getText(element, "Result");
             if (result == null || "OK".equalsIgnoreCase(result) || data != null) {
-                subscribe.getCallback().run(ErrorCodeEnum.SUCCESS.getCode(), ErrorCodeEnum.SUCCESS.getMsg(), data);
+                messageSubscribe.complete(key, ErrorCodeEnum.SUCCESS.getCode(), ErrorCodeEnum.SUCCESS.getMsg(), data);
             } else {
-                subscribe.getCallback().run(ErrorCodeEnum.ERROR100.getCode(), ErrorCodeEnum.ERROR100.getMsg(), result);
+                messageSubscribe.complete(key, ErrorCodeEnum.ERROR100.getCode(), ErrorCodeEnum.ERROR100.getMsg(), result);
             }
-            messageSubscribe.removeSubscribe(cmd + sn);
         }
     }
 }

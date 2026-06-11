@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.video.empowerment.hook;
+package com.mqttsnet.thinglinks.video.enumeration.hook;
 
 /**
  * hook类型

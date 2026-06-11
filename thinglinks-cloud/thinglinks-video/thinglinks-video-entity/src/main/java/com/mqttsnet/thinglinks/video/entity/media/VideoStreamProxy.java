@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.video.entity.media;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.mqttsnet.basic.base.entity.Entity;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 
 import static com.baomidou.mybatisplus.annotation.SqlCondition.EQUAL;
 import static com.mqttsnet.thinglinks.model.constant.Condition.LIKE;
@@ -139,10 +141,40 @@ public class VideoStreamProxy extends Entity<Long> {
     @TableField(value = "remark", condition = LIKE)
     private String remark;
     /**
+     * 拉流重试次数
+     */
+    @TableField(value = "pull_retry_count", condition = EQUAL)
+    private Integer pullRetryCount;
+
+    /**
+     * 最大重试次数
+     */
+    @TableField(value = "max_retry_count", condition = EQUAL)
+    private Integer maxRetryCount;
+
+    /**
+     * 最近拉流时间
+     */
+    @TableField(value = "last_pull_time", condition = EQUAL)
+    private LocalDateTime lastPullTime;
+
+    /**
+     * 最近错误信息
+     */
+    @TableField(value = "last_error", condition = LIKE)
+    private String lastError;
+
+    /**
      * 创建人组织
      */
     @TableField(value = "created_org_id", condition = EQUAL)
     private Long createdOrgId;
 
+    /**
+     * 逻辑删除标识:0-未删除 1-已删除
+     */
+    @TableLogic
+    @TableField(value = "deleted", condition = EQUAL)
+    private Integer deleted;
 
 }

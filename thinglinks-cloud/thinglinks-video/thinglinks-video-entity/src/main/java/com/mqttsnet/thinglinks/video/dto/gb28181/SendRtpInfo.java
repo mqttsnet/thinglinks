@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.video.dto.gb28181;
 
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
 import com.mqttsnet.thinglinks.video.dto.media.stream.RequestPushStreamMsg;
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.InviteStreamTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.InviteStreamTypeEnum;
 import lombok.Data;
 
 @Data
@@ -11,7 +11,7 @@ public class SendRtpInfo {
     /**
      * 推流ip
      */
-    private String ip;
+    private String host;
 
     /**
      * 推流端口
@@ -46,7 +46,7 @@ public class SendRtpInfo {
     /**
      * 通道id
      */
-    private Integer channelId;
+    private String channelIdentification;
 
     /**
      * 推流状态
@@ -85,7 +85,7 @@ public class SendRtpInfo {
     /**
      * 使用的流媒体
      */
-    private String mediaServerId;
+    private String mediaIdentification;
 
     /**
      * 使用的服务的ID
@@ -145,10 +145,10 @@ public class SendRtpInfo {
 
     public static SendRtpInfo getInstance(RequestPushStreamMsg requestPushStreamMsg) {
         SendRtpInfo sendRtpItem = new SendRtpInfo();
-        sendRtpItem.setMediaServerId(requestPushStreamMsg.getMediaServerId());
+        sendRtpItem.setMediaIdentification(requestPushStreamMsg.getMediaIdentification());
         sendRtpItem.setApp(requestPushStreamMsg.getApp());
         sendRtpItem.setStream(requestPushStreamMsg.getStream());
-        sendRtpItem.setIp(requestPushStreamMsg.getIp());
+        sendRtpItem.setHost(requestPushStreamMsg.getHost());
         sendRtpItem.setPort(requestPushStreamMsg.getPort());
         sendRtpItem.setSsrc(requestPushStreamMsg.getSsrc());
         sendRtpItem.setTcp(requestPushStreamMsg.isTcp());
@@ -167,7 +167,7 @@ public class SendRtpInfo {
         sendRtpItem.setSsrc(ssrc);
         sendRtpItem.setTcp(tcp);
         sendRtpItem.setLocalPort(sendLocalPort);
-        sendRtpItem.setIp(dstIp);
+        sendRtpItem.setHost(dstIp);
         sendRtpItem.setPort(dstPort);
         if (pt != null) {
             sendRtpItem.setPt(pt);
@@ -177,51 +177,51 @@ public class SendRtpInfo {
     }
 
     public static SendRtpInfo getInstance(Integer localPort, VideoMediaServerResultDTO mediaServer, String ip, Integer port, String ssrc,
-                                          String deviceId, String platformId, Integer channelId, Boolean isTcp, Boolean rtcp,
+                                          String deviceIdentification, String platformId, String channelIdentification, Boolean isTcp, Boolean rtcp,
                                           String serverId) {
         if (localPort == 0) {
             return null;
         }
         SendRtpInfo sendRtpItem = new SendRtpInfo();
-        sendRtpItem.setIp(ip);
+        sendRtpItem.setHost(ip);
         if (port != null) {
             sendRtpItem.setPort(port);
         }
 
         sendRtpItem.setSsrc(ssrc);
-        if (deviceId != null) {
-            sendRtpItem.setTargetId(deviceId);
+        if (deviceIdentification != null) {
+            sendRtpItem.setTargetId(deviceIdentification);
             sendRtpItem.setSendToPlatform(false);
         } else {
             sendRtpItem.setTargetId(platformId);
             sendRtpItem.setSendToPlatform(true);
         }
-        sendRtpItem.setChannelId(channelId);
+        sendRtpItem.setChannelIdentification(channelIdentification);
         sendRtpItem.setTcp(isTcp);
         sendRtpItem.setRtcp(rtcp);
         sendRtpItem.setApp("rtp");
         sendRtpItem.setLocalPort(localPort);
         sendRtpItem.setServerId(serverId);
-        sendRtpItem.setMediaServerId(mediaServer.getMediaIdentification());
+        sendRtpItem.setMediaIdentification(mediaServer.getMediaIdentification());
         return sendRtpItem;
     }
 
     @Override
     public String toString() {
         return "SendRtpItem{" +
-               "ip='" + ip + '\'' +
+               "host='" + host + '\'' +
                ", port=" + port +
                ", ssrc='" + ssrc + '\'' +
                ", targetId='" + targetId + '\'' +
                ", app='" + app + '\'' +
-               ", channelId='" + channelId + '\'' +
+               ", channelIdentification='" + channelIdentification + '\'' +
                ", status=" + status +
                ", stream='" + stream + '\'' +
                ", tcp=" + tcp +
                ", tcpActive=" + tcpActive +
                ", localIp='" + localIp + '\'' +
                ", localPort=" + localPort +
-               ", mediaServerId='" + mediaServerId + '\'' +
+               ", mediaIdentification='" + mediaIdentification + '\'' +
                ", serverId='" + serverId + '\'' +
                ", CallId='" + callId + '\'' +
                ", fromTag='" + fromTag + '\'' +

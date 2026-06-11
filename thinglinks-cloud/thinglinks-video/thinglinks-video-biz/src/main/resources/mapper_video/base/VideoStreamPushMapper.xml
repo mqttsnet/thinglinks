@@ -30,14 +30,15 @@
         <result column="updated_time" property="updatedTime"/>
         <result column="updated_by" property="updatedBy"/>
         <result column="created_org_id" property="createdOrgId"/>
+        <result column="deleted" property="deleted"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, app_id, stream_identification, total_reader_count, origin_type, origin_url, 
-        vhost, bytes_speed, alive_second, media_identification, server_id, push_time, 
-        status, push_ing, self, extend_params, remark, created_time, 
-        created_by, updated_time, updated_by, created_org_id
+        id, app_id, stream_identification, total_reader_count, origin_type, origin_url,
+        vhost, bytes_speed, alive_second, media_identification, server_id, push_time,
+        status, push_ing, self, extend_params, remark,
+        deleted, created_time, created_by, updated_time, updated_by, created_org_id
     </sql>
 
 </mapper>

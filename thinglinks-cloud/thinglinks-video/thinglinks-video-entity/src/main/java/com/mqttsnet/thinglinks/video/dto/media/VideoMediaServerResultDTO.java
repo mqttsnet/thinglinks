@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -57,25 +58,25 @@ public class VideoMediaServerResultDTO extends Entity<Long> implements Serializa
     private String mediaIdentification;
 
     /**
-     * 服务器IP地址
+     * 服务器地址(IP/域名)
      */
-    @Schema(description = "服务器IP地址")
-    private String ip;
+    @Schema(description = "服务器地址(IP/域名)")
+    private String host;
     /**
-     * hook使用的IP（zlm访问客户端使用的IP）
+     * Hook回调地址(IP/域名)
      */
-    @Schema(description = "hook使用的IP（zlm访问客户端使用的IP）")
-    private String hookIp;
+    @Schema(description = "Hook回调地址(IP/域名)")
+    private String hookHost;
     /**
-     * SDP IP地址
+     * SDP地址(IP/域名)
      */
-    @Schema(description = "SDP IP地址")
-    private String sdpIp;
+    @Schema(description = "SDP地址(IP/域名)")
+    private String sdpHost;
     /**
-     * 流IP地址
+     * 流播放地址(IP/域名)
      */
-    @Schema(description = "流IP地址")
-    private String streamIp;
+    @Schema(description = "流播放地址(IP/域名)")
+    private String streamHost;
     /**
      * HTTP端口
      */
@@ -222,5 +223,45 @@ public class VideoMediaServerResultDTO extends Entity<Long> implements Serializa
      */
     @Schema(description = "多媒体名称")
     private String name;
+    /**
+     * 服务器版本号
+     */
+    @Schema(description = "服务器版本号")
+    private String version;
+    /**
+     * 服务器能力集(JSON，标记支持哪些API)
+     */
+    @Schema(description = "服务器能力集(JSON，标记支持哪些API)")
+    private String capabilities;
+    /**
+     * 最大承载流数量(用于负载均衡)
+     */
+    @Schema(description = "最大承载流数量(用于负载均衡)")
+    private Integer maxStreams;
+    /**
+     * 当前流数量
+     */
+    @Schema(description = "当前流数量")
+    private Integer currentStreams;
+    /**
+     * CPU使用率(心跳上报)
+     */
+    @Schema(description = "CPU使用率(心跳上报)")
+    private BigDecimal cpuUsage;
+    /**
+     * 内存使用率(心跳上报)
+     */
+    @Schema(description = "内存使用率(心跳上报)")
+    private BigDecimal memoryUsage;
+    /**
+     * 入网速率bytes/s(心跳上报)
+     */
+    @Schema(description = "入网速率bytes/s(心跳上报)")
+    private Long networkInSpeed;
+    /**
+     * 出网速率bytes/s(心跳上报)
+     */
+    @Schema(description = "出网速率bytes/s(心跳上报)")
+    private Long networkOutSpeed;
 
 }

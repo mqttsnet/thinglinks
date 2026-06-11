@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.query.cmd;
 
 
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import com.mqttsnet.thinglinks.video.dto.platform.VideoPlatformInfo;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.SIPRequestProcessorParent;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.IMessageHandler;
@@ -45,7 +45,7 @@ public class DeviceInfoQueryMessageHandler extends SIPRequestProcessorParent imp
     }
 
     @Override
-    public void handForDevice(RequestEvent evt, VideoDeviceInfoResultDTO deviceInfoResultDTO, Element rootElement) {
+    public void handForDevice(RequestEvent evt, VideoDeviceResultVO deviceInfoResultDTO, Element rootElement) {
 
     }
 
@@ -61,7 +61,7 @@ public class DeviceInfoQueryMessageHandler extends SIPRequestProcessorParent imp
         大部分NVR/IPC设备对他的通道信息实现都是返回默认的值没有什么参考价值。NVR/IPC通道我们统一使用设备表的设备信息来作为返回。
         我们这里使用查询数据库的方式来实现这个设备信息查询的功能，在其他地方对设备信息更新达到正确的目的。*/
 
-        String channelId = getText(rootElement, "DeviceID");
+        String channelIdentification = getText(rootElement, "DeviceID");
         // 查询这是通道id还是设备id
        /* if (platform.getDeviceGBId().equals(channelId)) {
             // id指向平台的国标编号，那么就是查询平台的信息

@@ -15,9 +15,17 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class DeviceInfoBaseEventAbstract<T> extends ApplicationEvent {
     private final T source;
+    /** 租户ID（通用字段，监听方可直接恢复上下文） */
+    private Long tenantId;
 
     public DeviceInfoBaseEventAbstract(T source) {
         super(source);
         this.source = source;
+    }
+
+    public DeviceInfoBaseEventAbstract(T source, Long tenantId) {
+        super(source);
+        this.source = source;
+        this.tenantId = tenantId;
     }
 }

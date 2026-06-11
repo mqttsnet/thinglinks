@@ -34,15 +34,21 @@
         <result column="updated_time" property="updatedTime"/>
         <result column="updated_by" property="updatedBy"/>
         <result column="created_org_id" property="createdOrgId"/>
+        <result column="pull_retry_count" property="pullRetryCount"/>
+        <result column="max_retry_count" property="maxRetryCount"/>
+        <result column="last_pull_time" property="lastPullTime"/>
+        <result column="last_error" property="lastError"/>
+        <result column="deleted" property="deleted"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, app_id, proxy_type, proxy_name, stream_identification, url, 
-        src_url, dst_url, timeout_ms, ffmpeg_cmd_key, rtp_type, gb_identification, 
-        media_identification, enable_audio, enable_mp4, status, enable_remove_none_reader, stream_key, 
-        enable_disable_none_reader, extend_params, remark, created_time, created_by, updated_time, 
-        updated_by, created_org_id
+        id, app_id, proxy_type, proxy_name, stream_identification, url,
+        src_url, dst_url, timeout_ms, ffmpeg_cmd_key, rtp_type, gb_identification,
+        media_identification, enable_audio, enable_mp4, status, enable_remove_none_reader, stream_key,
+        enable_disable_none_reader, extend_params, remark,
+        pull_retry_count, max_retry_count, last_pull_time, last_error,
+        deleted, created_time, created_by, updated_time, updated_by, created_org_id
     </sql>
 
 </mapper>

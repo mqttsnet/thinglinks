@@ -4,24 +4,28 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import com.mqttsnet.thinglinks.video.constants.ZlmMediaConstants;
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
 import com.mqttsnet.thinglinks.video.dto.media.zlm.ZlmMediaInfo;
 import com.mqttsnet.thinglinks.video.dto.media.zlm.ZlmMediaListInfo;
 import com.mqttsnet.thinglinks.video.dto.media.zlm.ZlmMediaServerConfig;
 import com.mqttsnet.thinglinks.video.dto.media.zlm.ZlmMediaServerStreamInfo;
-import com.mqttsnet.thinglinks.video.dto.media.zlm.ZlmRestfulResult;
-import com.mqttsnet.thinglinks.video.empowerment.media.VideoMediaServerTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.media.VideoMediaServerTypeEnum;
+import com.mqttsnet.thinglinks.video.entity.media.VideoMediaServer;
+import com.mqttsnet.thinglinks.video.media.common.MediaApiResult;
+import com.mqttsnet.thinglinks.video.media.zlm.ZlmRestClient;
 import com.mqttsnet.thinglinks.video.service.media.MediaNodeServerService;
-import com.mqttsnet.thinglinks.video.utils.zlm.ZlmRestfulUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -47,25 +51,27 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@DS(DsConstant.BASE_TENANT)
 public class MediaNodeServerServiceImpl implements MediaNodeServerService {
 
-    private final ZlmRestfulUtils zlmRestfulUtils;
+    private final ZlmRestClient zlmRestClient;
 
     @Override
     public VideoMediaServerResultDTO checkMediaServerConfig(String ip, Integer port, String secret) {
         VideoMediaServerResultDTO videoMediaServerResultDTO = new VideoMediaServerResultDTO();
-        videoMediaServerResultDTO.setIp(ip);
+        videoMediaServerResultDTO.setHost(ip);
         videoMediaServerResultDTO.setHttpPort(port);
         videoMediaServerResultDTO.setFlvPort(port);
         videoMediaServerResultDTO.setWsFlvPort(port);
         videoMediaServerResultDTO.setSecret(secret);
 
-        ZlmRestfulResult<JSONArray> result = zlmRestfulUtils.getMediaServerConfig(videoMediaServerResultDTO);
+        MediaApiResult result = zlmRestClient.get(toEntity(videoMediaServerResultDTO), "getServerConfig", null);
         if (result == null || !result.isSuccess()) {
             throw BizException.wrap("流媒体服务器连接失败: {}", Objects.nonNull(result) ? result.getMsg() : "未知错误");
         }
 
         JSONArray data = Optional.ofNullable(result.getData())
+                .map(d -> d.getJSONArray("data"))
                 .filter(d -> !d.isEmpty())
                 .orElseThrow(() -> BizException.wrap("流媒体服务器读取配置失败"));
 
@@ -106,9 +112,9 @@ public class MediaNodeServerServiceImpl implements MediaNodeServerService {
                 .map(this::safeParseInt)
                 .ifPresent(videoMediaServerResultDTO::setRtpProxyPort);
 
-        videoMediaServerResultDTO.setStreamIp(ip);
-        videoMediaServerResultDTO.setHookIp("127.0.0.1");
-        videoMediaServerResultDTO.setSdpIp(ip);
+        videoMediaServerResultDTO.setStreamHost(ip);
+        videoMediaServerResultDTO.setHookHost("127.0.0.1");
+        videoMediaServerResultDTO.setSdpHost(ip);
         videoMediaServerResultDTO.setType(VideoMediaServerTypeEnum.ZLM.getValue());
 
         return videoMediaServerResultDTO;
@@ -116,13 +122,18 @@ public class MediaNodeServerServiceImpl implements MediaNodeServerService {
 
     @Override
     public List<ZlmMediaServerStreamInfo> getMediaList(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification, String callId) {
-        ZlmRestfulResult<JSONArray> result = zlmRestfulUtils.getMediaList(videoMediaServerResultDTO, appId, streamIdentification);
+        var params = new HashMap<String, Object>();
+        params.put("app", appId);
+        params.put("stream", streamIdentification);
+        params.put("vhost", "__defaultVhost__");
+        MediaApiResult result = zlmRestClient.postForm(toEntity(videoMediaServerResultDTO), "getMediaList", params);
 
         if (result == null || !result.isSuccess()) {
             throw BizException.wrap("流媒体服务器连接失败: {}", Objects.nonNull(result) ? result.getMsg() : "未知错误");
         }
 
         JSONArray data = Optional.ofNullable(result.getData())
+                .map(d -> d.getJSONArray("data"))
                 .orElseThrow(() -> BizException.wrap("流媒体服务器读取配置失败"));
 
         if (data.isEmpty()) {
@@ -132,19 +143,15 @@ public class MediaNodeServerServiceImpl implements MediaNodeServerService {
         List<ZlmMediaListInfo> zlmMediaListInfoList = Optional.ofNullable(JSON.parseArray(JSON.toJSONString(data), ZlmMediaListInfo.class))
                 .orElseThrow(() -> BizException.wrap("流媒体服务器读取配置失败"));
 
-        List<ZlmMediaServerStreamInfo> zlmMediaServerStreamInfoList = new ArrayList<>();
-
-        for (ZlmMediaListInfo zlmMediaListInfo : zlmMediaListInfoList) {
-            ZlmMediaServerStreamInfo streamInfo = buildZlmMediaServerStreamInfo(videoMediaServerResultDTO, zlmMediaListInfo, callId);
-            zlmMediaServerStreamInfoList.add(streamInfo);
-        }
-
-        return zlmMediaServerStreamInfoList;
+        return zlmMediaListInfoList.stream()
+                .map(zlmMediaListInfo -> buildZlmMediaServerStreamInfo(videoMediaServerResultDTO, zlmMediaListInfo, callId))
+                .toList();
     }
 
     @Override
     public ZlmMediaServerStreamInfo getMediaInfo(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification) {
-        ZlmRestfulResult<JSONObject> result = zlmRestfulUtils.getMediaInfo(videoMediaServerResultDTO, appId, ZlmMediaConstants.RTSP, streamIdentification);
+        var params = Map.<String, Object>of("app", appId, "schema", ZlmMediaConstants.RTSP, "stream", streamIdentification, "vhost", "__defaultVhost__");
+        MediaApiResult result = zlmRestClient.postForm(toEntity(videoMediaServerResultDTO), "getMediaInfo", params);
 
         if (result == null || !result.isSuccess()) {
             throw BizException.wrap("流媒体服务器连接失败: {}", Objects.nonNull(result) ? result.getMsg() : "未知错误");
@@ -159,14 +166,22 @@ public class MediaNodeServerServiceImpl implements MediaNodeServerService {
     @Override
     public Boolean closeStreams(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification) {
         log.info("Attempting to close stream: appId={}, streamIdentification={}, serverId={}", appId, streamIdentification, videoMediaServerResultDTO.getMediaIdentification());
-        ZlmRestfulResult<JSONObject> zlmRestfulResult = zlmRestfulUtils.closeStreams(videoMediaServerResultDTO, appId, ZlmMediaConstants.RTSP, streamIdentification);
-        if (zlmRestfulResult == null) {
+
+        var params = new HashMap<String, Object>();
+        params.put("vhost", "__defaultVhost__");
+        params.put("app", appId);
+        params.put("stream", streamIdentification);
+        params.put("force", 1);
+        params.put("schema", ZlmMediaConstants.RTSP);
+        MediaApiResult result = zlmRestClient.postForm(toEntity(videoMediaServerResultDTO), "close_streams", params);
+
+        if (result == null) {
             log.error("Failed to close stream: appId={}, streamIdentification={}, serverId={}, reason=Connection to server failed", appId, streamIdentification, videoMediaServerResultDTO.getMediaIdentification());
             throw BizException.wrap("连接失败");
         }
 
-        if (!zlmRestfulResult.isSuccess()) {
-            log.error("Failed to close stream: appId={}, streamIdentification={}, serverId={}, reason={}", appId, streamIdentification, videoMediaServerResultDTO.getMediaIdentification(), JSON.toJSONString(zlmRestfulResult));
+        if (!result.isSuccess()) {
+            log.error("Failed to close stream: appId={}, streamIdentification={}, serverId={}, reason={}", appId, streamIdentification, videoMediaServerResultDTO.getMediaIdentification(), JSON.toJSONString(result));
             return false;
         }
 
@@ -177,12 +192,13 @@ public class MediaNodeServerServiceImpl implements MediaNodeServerService {
 
     @Override
     public String getFfmpegCmd(VideoMediaServerResultDTO videoMediaServerResultDTO) {
-        ZlmRestfulResult<JSONArray> result = zlmRestfulUtils.getMediaServerConfig(videoMediaServerResultDTO);
+        MediaApiResult result = zlmRestClient.get(toEntity(videoMediaServerResultDTO), "getServerConfig", null);
         if (result == null || !result.isSuccess()) {
             throw BizException.wrap("流媒体服务器连接失败: {}", Objects.nonNull(result) ? result.getMsg() : "未知错误");
         }
 
         JSONArray data = Optional.ofNullable(result.getData())
+                .map(d -> d.getJSONArray("data"))
                 .filter(d -> !d.isEmpty())
                 .orElseThrow(() -> BizException.wrap("流媒体服务器读取配置失败"));
 
@@ -196,19 +212,27 @@ public class MediaNodeServerServiceImpl implements MediaNodeServerService {
 
     @Override
     public Boolean delFFmpegSource(VideoMediaServerResultDTO videoMediaServerResultDTO, String streamKey) {
-        ZlmRestfulResult zlmRestfulResult = zlmRestfulUtils.delFFmpegSource(videoMediaServerResultDTO, streamKey);
-        return zlmRestfulResult.isSuccess();
+        var params = Map.<String, Object>of("key", streamKey);
+        MediaApiResult result = zlmRestClient.postForm(toEntity(videoMediaServerResultDTO), "delFFmpegSource", params);
+        return result.isSuccess();
     }
 
     @Override
     public Boolean delStreamProxy(VideoMediaServerResultDTO videoMediaServerResultDTO, String streamKey) {
-        ZlmRestfulResult zlmRestfulResult = zlmRestfulUtils.delStreamProxy(videoMediaServerResultDTO, streamKey);
-        return zlmRestfulResult.isSuccess();
+        var params = Map.<String, Object>of("key", streamKey);
+        MediaApiResult result = zlmRestClient.postForm(toEntity(videoMediaServerResultDTO), "delStreamProxy", params);
+        return result.isSuccess();
     }
 
     @Override
-    public String addFFmpegSource(VideoMediaServerResultDTO videoMediaServerResultDTO, String trim, String dstUrl, Integer timeoutMs, Boolean enableAudio, Boolean enableMp4, String ffmpegCmdKey) {
-        ZlmRestfulResult<JSONObject> result = zlmRestfulUtils.addFFmpegSource(videoMediaServerResultDTO, trim, dstUrl, timeoutMs, enableAudio, enableMp4, ffmpegCmdKey);
+    public String addFFmpegSource(VideoMediaServerResultDTO videoMediaServerResultDTO, String srcUrl, String dstUrl, Integer timeoutMs, Boolean enableAudio, Boolean enableMp4, String ffmpegCmdKey) {
+        var params = new HashMap<String, Object>();
+        params.put("src_url", srcUrl);
+        params.put("dst_url", dstUrl);
+        params.put("timeout_ms", timeoutMs);
+        params.put("enable_mp4", enableMp4);
+        params.put("ffmpeg_cmd_key", ffmpegCmdKey);
+        MediaApiResult result = zlmRestClient.postForm(toEntity(videoMediaServerResultDTO), "addFFmpegSource", params);
         if (result == null || !result.isSuccess()) {
             throw BizException.wrap("流媒体服务器连接失败: {}", Objects.nonNull(result) ? result.getMsg() : "未知错误");
         }
@@ -224,7 +248,15 @@ public class MediaNodeServerServiceImpl implements MediaNodeServerService {
 
     @Override
     public String addStreamProxy(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification, String url, Boolean enableAudio, Boolean enableMp4, String rtpType) {
-        ZlmRestfulResult<JSONObject> result = zlmRestfulUtils.addStreamProxy(videoMediaServerResultDTO, appId, streamIdentification, url, enableAudio, enableMp4, rtpType);
+        var params = new HashMap<String, Object>();
+        params.put("vhost", "__defaultVhost__");
+        params.put("app", appId);
+        params.put("stream", streamIdentification);
+        params.put("url", url);
+        params.put("enable_mp4", enableMp4 ? 1 : 0);
+        params.put("enable_audio", enableAudio ? 1 : 0);
+        params.put("rtp_type", rtpType);
+        MediaApiResult result = zlmRestClient.postForm(toEntity(videoMediaServerResultDTO), "addStreamProxy", params);
         if (result == null || !result.isSuccess()) {
             throw BizException.wrap("流媒体服务器连接失败: {}", Objects.nonNull(result) ? result.getMsg() : "未知错误");
         }
@@ -236,11 +268,25 @@ public class MediaNodeServerServiceImpl implements MediaNodeServerService {
                 .orElseThrow(() -> BizException.wrap("代理结果中缺少key"));
     }
 
+    /**
+     * 将 DTO 转换为实体对象（ZlmRestClient 接收 VideoMediaServer 实体）
+     */
+    /**
+     * 将 DTO 转换为 VideoMediaServer（仅设置 REST 客户端所需字段）
+     */
+    private VideoMediaServer toEntity(VideoMediaServerResultDTO dto) {
+        VideoMediaServer entity = new VideoMediaServer();
+        entity.setHost(dto.getHost());
+        entity.setHttpPort(dto.getHttpPort());
+        entity.setSecret(dto.getSecret());
+        return entity;
+    }
+
     private ZlmMediaServerStreamInfo buildZlmMediaServerStreamInfo(VideoMediaServerResultDTO videoMediaServerResultDTO, ZlmMediaListInfo zlmMediaListInfo, String callId) {
         ZlmMediaServerStreamInfo streamInfo = new ZlmMediaServerStreamInfo();
         streamInfo.setAppId(zlmMediaListInfo.getApp());
         streamInfo.setStreamIdentification(zlmMediaListInfo.getStream());
-        streamInfo.setStreamIp(videoMediaServerResultDTO.getStreamIp());
+        streamInfo.setStreamIp(videoMediaServerResultDTO.getStreamHost());
         streamInfo.setMediaIdentification(videoMediaServerResultDTO.getMediaIdentification());
         streamInfo.setMediaServer(videoMediaServerResultDTO);
         streamInfo.setCallId(callId);
@@ -300,7 +346,7 @@ public class MediaNodeServerServiceImpl implements MediaNodeServerService {
     }
 
     private void setStreamUrls(ZlmMediaServerStreamInfo streamInfo, ZlmMediaInfo zlmMediaInfo, VideoMediaServerResultDTO videoMediaServerResultDTO, String callId) {
-        String addr = videoMediaServerResultDTO.getStreamIp();
+        String addr = videoMediaServerResultDTO.getStreamHost();
         String callIdParam = StrUtil.isBlank(callId) ? "" : "?callId=" + callId;
         String app = zlmMediaInfo.getApp();
         String stream = zlmMediaInfo.getStream();
@@ -317,6 +363,59 @@ public class MediaNodeServerServiceImpl implements MediaNodeServerService {
         streamInfo.setRtc(addr, videoMediaServerResultDTO.getHttpPort(), videoMediaServerResultDTO.getHttpSslPort(), app, stream, callIdParam, true);
     }
 
+
+    @Override
+    public Boolean startRecord(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification, String fileFormat, int maxSecond) {
+        log.info("开始录制: appId={}, stream={}, format={}, maxSecond={}", appId, streamIdentification, fileFormat, maxSecond);
+        var params = new HashMap<String, Object>();
+        params.put("vhost", "__defaultVhost__");
+        params.put("app", appId);
+        params.put("stream", streamIdentification);
+        params.put("type", 1); // 1=mp4录制
+        params.put("max_second", maxSecond);
+        if (StrUtil.isNotBlank(fileFormat)) {
+            params.put("customized_path", "");
+        }
+        MediaApiResult result = zlmRestClient.postForm(toEntity(videoMediaServerResultDTO), "startRecord", params);
+        if (result == null || !result.isSuccess()) {
+            log.error("开始录制失败: appId={}, stream={}, msg={}", appId, streamIdentification,
+                    result != null ? result.getMsg() : "连接失败");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean stopRecord(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification) {
+        log.info("停止录制: appId={}, stream={}", appId, streamIdentification);
+        var params = new HashMap<String, Object>();
+        params.put("vhost", "__defaultVhost__");
+        params.put("app", appId);
+        params.put("stream", streamIdentification);
+        params.put("type", 1);
+        MediaApiResult result = zlmRestClient.postForm(toEntity(videoMediaServerResultDTO), "stopRecord", params);
+        if (result == null || !result.isSuccess()) {
+            log.error("停止录制失败: appId={}, stream={}, msg={}", appId, streamIdentification,
+                    result != null ? result.getMsg() : "连接失败");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean isRecording(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification) {
+        var params = new HashMap<String, Object>();
+        params.put("vhost", "__defaultVhost__");
+        params.put("app", appId);
+        params.put("stream", streamIdentification);
+        params.put("type", 1);
+        MediaApiResult result = zlmRestClient.postForm(toEntity(videoMediaServerResultDTO), "isRecording", params);
+        if (result == null || !result.isSuccess()) {
+            return false;
+        }
+        JSONObject data = result.getData();
+        return data != null && data.getBooleanValue("status", false);
+    }
 
     private Integer safeParseInt(String value) {
         try {

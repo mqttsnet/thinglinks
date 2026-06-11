@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.video.dto.media.zlm.hook;
 
-import com.mqttsnet.thinglinks.video.empowerment.hook.HookTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.hook.HookTypeEnum;
 import lombok.Data;
 
 /**

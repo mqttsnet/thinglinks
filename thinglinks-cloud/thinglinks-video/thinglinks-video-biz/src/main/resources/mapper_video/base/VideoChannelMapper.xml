@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.video.mapper.device.VideoChannelMapper">
+    <!--
+        代码生成器 by 2026-04-02
+        自定义sql建议在base文件夹同级新建ext文件夹，并新建同名且同namespace的xml进行编写。方便修改字段时，重新生成此文件。
+    -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.video.entity.device.VideoChannel">
+        <id column="id" property="id"/>
+        <result column="device_identification" property="deviceIdentification"/>
+        <result column="channel_identification" property="channelIdentification"/>
+        <result column="channel_no" property="channelNo"/>
+        <result column="channel_type" property="channelType"/>
+        <result column="channel_name" property="channelName"/>
+        <result column="stream_identification" property="streamIdentification"/>
+        <result column="stream_type" property="streamType"/>
+        <result column="manufacturer" property="manufacturer"/>
+        <result column="model" property="model"/>
+        <result column="online_status" property="onlineStatus"/>
+        <result column="host" property="host"/>
+        <result column="port" property="port"/>
+        <result column="password" property="password"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="full_address" property="fullAddress"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="region_code" property="regionCode"/>
+        <result column="has_audio" property="hasAudio"/>
+        <result column="ptz_type" property="ptzType"/>
+        <result column="ptz_capability" property="ptzCapability"/>
+        <result column="talk_capability" property="talkCapability"/>
+        <result column="secrecy" property="secrecy"/>
+        <result column="channel_config" property="channelConfig" typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler"/>
+        <result column="extend_params" property="extendParams"/>
+        <result column="remark" property="remark"/>
+        <result column="created_org_id" property="createdOrgId"/>
+        <result column="deleted" property="deleted"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_by" property="updatedBy"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, device_identification, channel_identification, channel_no, channel_type, channel_name,
+        stream_identification, stream_type, manufacturer, model, online_status,
+        host, port, password, longitude, latitude, full_address,
+        province_code, city_code, region_code, has_audio, ptz_type,
+        ptz_capability, talk_capability, secrecy, channel_config, extend_params, remark,
+        created_org_id, deleted, created_by, created_time, updated_by, updated_time
+    </sql>
+
+</mapper>

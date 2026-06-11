@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.video.empowerment.device;
+package com.mqttsnet.thinglinks.video.enumeration.device;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

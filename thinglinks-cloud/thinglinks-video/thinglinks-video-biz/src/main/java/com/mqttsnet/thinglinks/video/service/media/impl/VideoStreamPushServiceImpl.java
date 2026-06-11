@@ -11,13 +11,18 @@ import com.mqttsnet.thinglinks.video.entity.media.VideoStreamPush;
 import com.mqttsnet.thinglinks.video.manager.media.VideoStreamPushManager;
 import com.mqttsnet.thinglinks.video.service.anytenant.ZlmMediaServerOpenAnyTenantService;
 import com.mqttsnet.thinglinks.video.service.media.VideoMediaServerService;
+import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
 import com.mqttsnet.thinglinks.video.service.media.VideoStreamPushService;
 import com.mqttsnet.thinglinks.video.vo.result.media.VideoStreamPushResultVO;
+import com.mqttsnet.thinglinks.video.vo.result.media.zlm.ZlmMediaServerStreamInfoResultVO;
 import com.mqttsnet.thinglinks.video.vo.save.media.VideoStreamPushSaveVO;
 import com.mqttsnet.thinglinks.video.vo.update.media.VideoStreamPushUpdateVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * <p>
@@ -88,13 +93,70 @@ public class VideoStreamPushServiceImpl extends SuperServiceImpl<VideoStreamPush
             throw BizException.wrap("Stream Push not exist");
         }
 
-        // 将VideoStreamPush转换为VideoStreamPushResultVO
-        VideoStreamPushResultVO videoStreamPushResultVO =
+        VideoStreamPushResultVO resultVO =
                 BeanPlusUtil.toBeanIgnoreError(videoStreamPush, VideoStreamPushResultVO.class);
 
-        // Add more details to videoStreamPushResultVO if needed
+        // 拼装推流入口地址，前端用它指引用户配置 OBS / FFmpeg
+        fillPushEntryUrls(resultVO);
+        return resultVO;
+    }
+
+    @Override
+    public VideoStreamPushResultVO getPlayUrl(Long id) {
+        // getStreamPushDetails 已经拼好 pushUrl/pushUrlRtsp，这里只补播放 URL 列表
+        VideoStreamPushResultVO videoStreamPushResultVO = getStreamPushDetails(id);
+
+        VideoMediaServerResultDTO videoMediaServerResultDTO = videoMediaServerService.getVideoMediaServerResultDTO(videoStreamPushResultVO.getMediaIdentification());
+        if (videoMediaServerResultDTO == null) {
+            log.warn("[getPlayUrl] 未找到流媒体服务器, mediaIdentification={}", videoStreamPushResultVO.getMediaIdentification());
+            videoStreamPushResultVO.setZlmMediaServerStreamInfoList(Collections.emptyList());
+            return videoStreamPushResultVO;
+        }
+
+        try {
+            List<ZlmMediaServerStreamInfoResultVO> mediaServerStreamInfoList = zlmMediaServerOpenAnyTenantService.getMediaServerStreamInfoList(videoMediaServerResultDTO, videoStreamPushResultVO.getAppId(), videoStreamPushResultVO.getStreamIdentification());
+            videoStreamPushResultVO.setZlmMediaServerStreamInfoList(mediaServerStreamInfoList);
+        } catch (Exception e) {
+            log.warn("[getPlayUrl] 获取播放地址失败, mediaIdentification={}, error={}", videoStreamPushResultVO.getMediaIdentification(), e.getMessage());
+            videoStreamPushResultVO.setZlmMediaServerStreamInfoList(Collections.emptyList());
+        }
 
         return videoStreamPushResultVO;
+    }
+
+    /**
+     * 拼装推流入口地址。前端拿到后展示给用户："请用此 URL 推流到平台"。
+     * <p>RTMP: {@code rtmp://<streamHost>:<rtmpPort>/<appId>/<streamIdentification>}
+     * <p>RTSP: {@code rtsp://<streamHost>:<rtspPort>/<appId>/<streamIdentification>}
+     * <p>容错：未找到媒体服务器或端口缺省时跳过，留 URL 为 null，前端显示"流媒体服务器未就绪"。
+     */
+    private void fillPushEntryUrls(VideoStreamPushResultVO resultVO) {
+        if (resultVO == null) {
+            return;
+        }
+        String mediaIdentification = resultVO.getMediaIdentification();
+        if (mediaIdentification == null || mediaIdentification.isBlank()) {
+            return;
+        }
+        VideoMediaServerResultDTO mediaServer = videoMediaServerService.getVideoMediaServerResultDTO(mediaIdentification);
+        if (mediaServer == null) {
+            log.warn("[推流入口] 未找到流媒体服务器, mediaIdentification={}", mediaIdentification);
+            return;
+        }
+        String streamHost = mediaServer.getStreamHost();
+        if (streamHost == null || streamHost.isBlank()) {
+            streamHost = mediaServer.getHost();
+        }
+        if (streamHost == null || streamHost.isBlank()) {
+            return;
+        }
+        String stream = resultVO.getAppId() + "/" + resultVO.getStreamIdentification();
+        if (mediaServer.getRtmpPort() != null && mediaServer.getRtmpPort() > 0) {
+            resultVO.setPushUrl("rtmp://" + streamHost + ":" + mediaServer.getRtmpPort() + "/" + stream);
+        }
+        if (mediaServer.getRtspPort() != null && mediaServer.getRtspPort() > 0) {
+            resultVO.setPushUrlRtsp("rtsp://" + streamHost + ":" + mediaServer.getRtspPort() + "/" + stream);
+        }
     }
 
     private void checkSaveVO(VideoStreamPushSaveVO saveVO) {

@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.dromara.dynamictp.spring.annotation.EnableDynamicTp;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -35,6 +36,7 @@ import static com.mqttsnet.thinglinks.common.constant.BizConstant.UTIL_PACKAGE;
 @EnableAsync
 @EnableScheduling
 @EnableCaching
+@EnableDynamicTp
 public class VideoServerApplication extends ServerApplication {
     public static void main(String[] args) throws UnknownHostException {
         start(VideoServerApplication.class, args);

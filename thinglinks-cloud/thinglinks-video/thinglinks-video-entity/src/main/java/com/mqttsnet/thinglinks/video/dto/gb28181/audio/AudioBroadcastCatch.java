@@ -3,7 +3,7 @@ package com.mqttsnet.thinglinks.video.dto.gb28181.audio;
 
 import com.mqttsnet.thinglinks.video.dto.gb28181.SipTransactionInfo;
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.AudioBroadcastCatchStatusEnum;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.AudioBroadcastCatchStatusEnum;
 import gov.nist.javax.sip.message.SIPResponse;
 import lombok.Data;
 
@@ -18,11 +18,11 @@ public class AudioBroadcastCatch {
     /**
      * 设备编号
      */
-    private String deviceId;
+    private String deviceIdentification;
     /**
      * 通道编号
      */
-    private Integer channelId;
+    private String channelIdentification;
     /**
      * 流媒体信息
      */
@@ -53,8 +53,8 @@ public class AudioBroadcastCatch {
     private AudioBroadcastEvent event;
 
     public AudioBroadcastCatch(
-            String deviceId,
-            Integer channelId,
+            String deviceIdentification,
+            String channelIdentification,
             VideoMediaServerResultDTO mediaServerItem,
             String app,
             String stream,
@@ -62,8 +62,8 @@ public class AudioBroadcastCatch {
             AudioBroadcastCatchStatusEnum status,
             boolean isFromPlatform
     ) {
-        this.deviceId = deviceId;
-        this.channelId = channelId;
+        this.deviceIdentification = deviceIdentification;
+        this.channelIdentification = channelIdentification;
         this.status = status;
         this.event = event;
         this.isFromPlatform = isFromPlatform;

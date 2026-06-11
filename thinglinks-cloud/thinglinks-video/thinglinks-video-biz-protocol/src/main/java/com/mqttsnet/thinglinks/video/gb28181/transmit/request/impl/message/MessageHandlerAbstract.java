@@ -1,10 +1,10 @@
 package com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message;
 
 
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
 import com.mqttsnet.thinglinks.video.dto.platform.VideoPlatformInfo;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.SIPRequestProcessorParent;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.query.cmd.CatalogQueryMessageHandler;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import gov.nist.javax.sip.message.SIPRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Element;
@@ -24,15 +24,12 @@ public abstract class MessageHandlerAbstract extends SIPRequestProcessorParent i
 
     public Map<String, IMessageHandler> messageHandlerMap = new ConcurrentHashMap<>();
 
-//    @Autowired
-//    private IPlatformService platformService;
-
     public void addHandler(String cmdType, IMessageHandler messageHandler) {
         messageHandlerMap.put(cmdType, messageHandler);
     }
 
     @Override
-    public void handForDevice(RequestEvent evt, VideoDeviceInfoResultDTO deviceInfo, Element element) {
+    public void handForDevice(RequestEvent evt, VideoDeviceResultVO deviceInfo, Element element) {
         String cmd = getText(element, "CmdType");
         if (cmd == null) {
             try {
@@ -48,9 +45,6 @@ public abstract class MessageHandlerAbstract extends SIPRequestProcessorParent i
             //两个国标平台互相级联时由于上一步判断导致本该在平台处理的消息 放到了设备的处理逻辑
             //所以对目录查询单独做了校验
             if (messageHandler instanceof CatalogQueryMessageHandler) {
-                // TODO 查询上级国标平台
-//                VideoPlatformInfo parentPlatform = platformService.queryPlatformByServerGBId(device.getDeviceId());
-//                messageHandler.handForPlatform(evt, parentPlatform, element);
                 return;
             }
             messageHandler.handForDevice(evt, deviceInfo, element);

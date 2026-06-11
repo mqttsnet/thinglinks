@@ -7,24 +7,26 @@ import com.mqttsnet.basic.context.ContextConstants;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.basic.utils.StrPool;
+import com.mqttsnet.thinglinks.video.cache.TenantSipConfig;
+import com.mqttsnet.thinglinks.video.cache.TenantSipConfigHolder;
 import com.mqttsnet.thinglinks.video.config.UserSetting;
-import com.mqttsnet.thinglinks.video.config.gb28181.SipConfig;
 import com.mqttsnet.thinglinks.video.dto.common.RemoteAddressInfo;
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
+import com.mqttsnet.thinglinks.video.dto.device.config.VideoDeviceProtocolConfig;
 import com.mqttsnet.thinglinks.video.dto.gb28181.SipTransactionInfo;
 import com.mqttsnet.thinglinks.video.dto.gb28181.sip.GbSipDate;
-import com.mqttsnet.thinglinks.video.empowerment.device.TransportProtocolEnum;
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.SipCommandTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.device.TransportProtocolEnum;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.SipCommandTypeEnum;
 import com.mqttsnet.thinglinks.video.gb28181.auth.DigestServerAuthenticationHelper;
 import com.mqttsnet.thinglinks.video.gb28181.event.publisher.SipEventPublisher;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.SIPSender;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.observer.SIPProcessorObserver;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.ISIPRequestProcessor;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.SIPRequestProcessorParent;
-import com.mqttsnet.thinglinks.video.service.device.VideoDeviceInfoService;
+import com.mqttsnet.thinglinks.video.service.device.VideoDeviceService;
 import com.mqttsnet.thinglinks.video.utils.gb28181.SipUtils;
-import com.mqttsnet.thinglinks.video.vo.save.device.VideoDeviceInfoSaveVO;
-import com.mqttsnet.thinglinks.video.vo.update.device.VideoDeviceInfoUpdateVO;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
+import com.mqttsnet.thinglinks.video.vo.save.device.VideoDeviceSaveVO;
+import com.mqttsnet.thinglinks.video.vo.update.device.VideoDeviceUpdateVO;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.SIPDateHeader;
@@ -43,6 +45,7 @@ import javax.sip.header.AuthorizationHeader;
 import javax.sip.header.ContactHeader;
 import javax.sip.header.FromHeader;
 import javax.sip.header.ViaHeader;
+import javax.sip.header.Header;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 import java.security.NoSuchAlgorithmException;
@@ -64,13 +67,10 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
     public final String method = SipCommandTypeEnum.REGISTER.getValue();
 
     @Autowired
-    private SipConfig sipConfig;
-
-    @Autowired
     private SIPProcessorObserver sipProcessorObserver;
 
     @Autowired
-    private VideoDeviceInfoService deviceInfoService;
+    private VideoDeviceService videoDeviceService;
 
     @Autowired
     private SIPSender sipSender;
@@ -141,12 +141,12 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
      * 记录处理开始日志
      *
      * @param registerFlag 注册标志
-     * @param deviceId     设备ID
+     * @param deviceIdentification     设备ID
      * @param addressInfo  地址信息
      */
-    private void logProcessingStart(boolean registerFlag, String deviceId, RemoteAddressInfo addressInfo) {
+    private void logProcessingStart(boolean registerFlag, String deviceIdentification, RemoteAddressInfo addressInfo) {
         String action = registerFlag ? "注册" : "注销";
-        log.info("[设备{}请求] 设备: {}, 地址: {}:{}", action, deviceId, addressInfo.getIp(), addressInfo.getPort());
+        log.info("[设备{}请求] 设备: {}, 地址: {}:{}", action, deviceIdentification, addressInfo.getHost(), addressInfo.getPort());
     }
 
     /**
@@ -161,7 +161,7 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
     private void processDeviceRegistration(SIPRequest request, Response response, boolean registerFlag,
                                            String deviceIdentification, RemoteAddressInfo addressInfo) throws ParseException, NoSuchAlgorithmException, SipException {
 
-        VideoDeviceInfoResultDTO device = deviceInfoService.getVideoDeviceInfoResultDTO(deviceIdentification);
+        VideoDeviceResultVO device = videoDeviceService.getByDeviceIdentification(deviceIdentification);
         if (Objects.nonNull(device)) {
             // 设备已存在场景的处理
             handleExistingDevice(request, response, registerFlag, device, addressInfo);
@@ -175,7 +175,7 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
      * 处理新设备自动注册逻辑
      *
      * @param request              SIP请求对象
-     * @param request              SIP响应对象
+     * @param response             SIP响应对象
      * @param registerFlag         注册标志(true表示注册，false表示注销)
      * @param deviceIdentification 设备唯一标识
      * @param addressInfo          网络地址信息
@@ -185,7 +185,7 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
                                              boolean registerFlag,
                                              String deviceIdentification,
                                              RemoteAddressInfo addressInfo) throws ParseException, SipException, NoSuchAlgorithmException {
-        VideoDeviceInfoResultDTO newDevice = buildNewDevice(request, deviceIdentification, addressInfo);
+        VideoDeviceResultVO newDevice = buildNewDevice(request, deviceIdentification, addressInfo);
 
         // 注销逻辑
         if (!registerFlag) {
@@ -195,34 +195,79 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
             // 进行密码验证
             verifyDevicePassword(request, response, newDevice);
             // 保存设备信息
-            VideoDeviceInfoSaveVO saveVO = BeanPlusUtil.toBeanIgnoreError(newDevice, VideoDeviceInfoSaveVO.class);
-            deviceInfoService.saveDeviceInfo(saveVO);
+            VideoDeviceSaveVO saveVO = BeanPlusUtil.toBeanIgnoreError(newDevice, VideoDeviceSaveVO.class);
+            videoDeviceService.saveDeviceInfo(saveVO);
+
+            // 写入 SIP 层注册特征（User-Agent / Contact）到 protocol_config，便于后续厂商识别 & 排障
+            patchSipProtocolConfig(deviceIdentification, request);
 
             // 构建成功响应体，并回复给设备
             response = buildSuccessResponse(request);
             sipSender.transmitRequest(request.getLocalAddress().getHostAddress(), response);
             SipTransactionInfo sipTransactionInfo = new SipTransactionInfo((SIPResponse) response);
             sipEventPublisher.deviceInfoOnlineEventPublish(newDevice, sipTransactionInfo);
+            // 新注册设备也发一次心跳事件，初始化 lastKeepaliveTime
+            sipEventPublisher.deviceKeepaliveEventPublish(deviceIdentification, "REGISTER");
         }
+    }
+
+    /**
+     * 从 REGISTER 请求头提取 User-Agent / Contact，按需 merge 到设备 {@code protocol_config}。
+     * <p>
+     * 字段语义：
+     * <ul>
+     *   <li>{@code sipUserAgent} - 设备厂商/固件特征串，可用于 DeviceAdapterFactory 指纹识别</li>
+     *   <li>{@code sipContact} - 设备回调地址原文（含传输参数）</li>
+     * </ul>
+     * 本方法吞异常，失败不影响注册主流程。
+     */
+    private void patchSipProtocolConfig(String deviceIdentification, SIPRequest request) {
+        try {
+            String userAgent = extractHeaderValue(request, "User-Agent");
+            String contact = extractHeaderValue(request, ContactHeader.NAME);
+            if (StrUtil.isAllBlank(userAgent, contact)) {
+                return;
+            }
+            VideoDeviceProtocolConfig patch = VideoDeviceProtocolConfig.builder()
+                    .sipUserAgent(userAgent)
+                    .sipContact(contact)
+                    .build();
+            videoDeviceService.patchProtocolConfig(deviceIdentification, patch);
+        } catch (Exception e) {
+            log.warn("[REGISTER] 写入 protocol_config 失败 deviceIdentification={} error={}",
+                    deviceIdentification, e.getMessage());
+        }
+    }
+
+    /** 读取 SIP 头 value 部分（去掉 "HeaderName:" 前缀），头缺失或 value 为空返回 null。 */
+    private static String extractHeaderValue(SIPRequest request, String headerName) {
+        Header header = request.getHeader(headerName);
+        // JAIN-SIP 部分 Header 的 equals(null) 实现会 NPE，Hutool ObjectUtil.isNull 会触发 equals，故此处用 == null
+        if (header == null) {
+            return null;
+        }
+        // SIP 头 toString 形如 "User-Agent: SIP UAS V3.x"，用 StrUtil.subAfter 切掉第一个冒号前的部分
+        String value = StrUtil.trimToNull(StrUtil.subAfter(header.toString(), ':', false));
+        return value != null ? value : StrUtil.trimToNull(header.toString());
     }
 
     /**
      * 构建新设备实体
      */
-    private VideoDeviceInfoResultDTO buildNewDevice(SIPRequest request,
+    private VideoDeviceResultVO buildNewDevice(SIPRequest request,
                                                     String deviceIdentification,
                                                     RemoteAddressInfo addressInfo) {
-        return VideoDeviceInfoResultDTO.builder()
-                .deviceName("TCP-PASSIVE")
-                .charset("GB2312")
-                .geoCoordSys("WGS84")
+        return VideoDeviceResultVO.builder()
+                .accessProtocol("GB28181")
+                .onlineStatus(true)
+                .deviceName(deviceIdentification)
+                .authSecret(TenantSipConfigHolder.get().getPassword())
                 .mediaIdentification("auto")
-                .password(sipConfig.getPassword())
                 .deviceIdentification(deviceIdentification)
-                .ip(addressInfo.getIp())
+                .host(addressInfo.getHost())
                 .port(addressInfo.getPort())
-                .hostAddress(addressInfo.getIp() + StrPool.COLON + addressInfo.getPort())
-                .localIp(request.getLocalAddress().getHostAddress())
+                .accessEndpoint(addressInfo.getHost() + StrPool.COLON + addressInfo.getPort())
+                .localHost(request.getLocalAddress().getHostAddress())
                 .transport(extractTransportProtocol(request).getValue())
                 .expires(request.getExpires().getExpires())
                 .registerTime(DateUtil.now())
@@ -234,13 +279,15 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
      *
      * @param device 设备信息对象
      */
-    private void handleExistingDeviceLogout(VideoDeviceInfoResultDTO device) {
+    private void handleExistingDeviceLogout(VideoDeviceResultVO device) {
         try {
+            // 注销只翻转 onlineStatus + registerTime，其他字段保留 DB 原值，避免覆盖用户 UI 维护配置；按 id 更新。
+            VideoDeviceUpdateVO updateVO = new VideoDeviceUpdateVO();
+            updateVO.setId(device.getId());
+            updateVO.setOnlineStatus(false);
+            updateVO.setRegisterTime(DateUtil.now());
+            videoDeviceService.updateDeviceInfo(updateVO);
             device.setOnlineStatus(false);
-            device.setRegisterTime(DateUtil.now());
-            // 更新设备信息
-            VideoDeviceInfoUpdateVO updateVO = BeanPlusUtil.toBeanIgnoreError(device, VideoDeviceInfoUpdateVO.class);
-            deviceInfoService.updateDeviceInfo(updateVO);
             sipEventPublisher.deviceInfoOfflineEventPublish(device);
             log.info("设备注销完成: {}", device.getDeviceIdentification());
         } catch (Exception e) {
@@ -252,13 +299,13 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
     /**
      * 处理新设备立即注销情况（注册请求中Expires=0）
      */
-    private void handleNewDeviceLogout(VideoDeviceInfoResultDTO device) {
+    private void handleNewDeviceLogout(VideoDeviceResultVO device) {
         log.warn("收到新设备的立即注销请求: {}", device.getDeviceIdentification());
         device.setOnlineStatus(false);
         device.setRegisterTime(DateUtil.now());
         // 保存设备信息
-        VideoDeviceInfoSaveVO saveVO = BeanPlusUtil.toBeanIgnoreError(device, VideoDeviceInfoSaveVO.class);
-        deviceInfoService.saveDeviceInfo(saveVO);
+        VideoDeviceSaveVO saveVO = BeanPlusUtil.toBeanIgnoreError(device, VideoDeviceSaveVO.class);
+        videoDeviceService.saveDeviceInfo(saveVO);
         sipEventPublisher.deviceInfoOfflineEventPublish(device);
     }
 
@@ -275,7 +322,7 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
      * @throws SipException   Sip异常
      */
     private void handleExistingDevice(SIPRequest request, Response response, boolean registerFlag,
-                                      @NonNull VideoDeviceInfoResultDTO device, RemoteAddressInfo addressInfo) throws ParseException, SipException, NoSuchAlgorithmException {
+                                      @NonNull VideoDeviceResultVO device, RemoteAddressInfo addressInfo) throws ParseException, SipException, NoSuchAlgorithmException {
 
         // 注册
         if (registerFlag) {
@@ -290,7 +337,8 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
     }
 
 
-    private void handleExistingDeviceLogin(SIPRequest request, Response response, VideoDeviceInfoResultDTO device) throws ParseException, SipException {
+    private void handleExistingDeviceLogin(SIPRequest request, Response response, VideoDeviceResultVO device) throws ParseException, SipException {
+        final boolean wasOffline = !Boolean.TRUE.equals(device.getOnlineStatus());
         device.setOnlineStatus(true);
         device.setRegisterTime(DateUtil.now());
         // 构建成功响应体，并回复给设备
@@ -298,20 +346,71 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
         sipSender.transmitRequest(request.getLocalAddress().getHostAddress(), response);
         SipTransactionInfo sipTransactionInfo = new SipTransactionInfo((SIPResponse) response);
         log.info("设备：{}, 注册成功", device.getDeviceIdentification());
-        // 更新设备信息
-        VideoDeviceInfoUpdateVO updateVO = BeanPlusUtil.toBeanIgnoreError(device, VideoDeviceInfoUpdateVO.class);
-        deviceInfoService.updateDeviceInfo(updateVO);
-        sipEventPublisher.deviceInfoOnlineEventPublish(device, sipTransactionInfo);
+
+        // 触发完整上线流程（updateDeviceInfo + 上线事件 → DeviceInfo / Catalog 自动查询）的条件：
+        //   1. wasOffline：常规的离线→在线翻转
+        //   2. needFirstTimeSync：之前从未成功同步过 catalog / deviceinfo（例如 video-server 重启后
+        //      老设备 REGISTER 上来时 wasOffline=false，但 protocol_config 里 CatalogSyncTime 为 null，
+        //      通道表也是空的 —— 必须补一次，否则永远拿不到通道数据）
+        final boolean needFirstTimeSync = needFirstTimeSync(device);
+        if (wasOffline || needFirstTimeSync) {
+            // 仅写 REGISTER 真正带过来 / 服务端自身决定的字段，其他用户 UI 维护字段保留 DB 原值；按 id 更新。
+            VideoDeviceUpdateVO updateVO = new VideoDeviceUpdateVO();
+            updateVO.setId(device.getId());
+            updateVO.setOnlineStatus(true);
+            updateVO.setRegisterTime(device.getRegisterTime());
+            updateVO.setHost(device.getHost());
+            updateVO.setPort(device.getPort());
+            updateVO.setAccessEndpoint(device.getAccessEndpoint());
+            updateVO.setLocalHost(device.getLocalHost());
+            updateVO.setTransport(device.getTransport());
+            updateVO.setExpires(device.getExpires());
+            videoDeviceService.updateDeviceInfo(updateVO);
+            sipEventPublisher.deviceInfoOnlineEventPublish(device, sipTransactionInfo);
+            if (!wasOffline) {
+                log.info("[首次同步补偿] 设备: {} 之前在线但未同步过 catalog/deviceInfo，触发一次上线事件",
+                        device.getDeviceIdentification());
+            }
+        }
+
+        // protocol_config 每次 REGISTER 都 patch（不受 wasOffline 限制）：
+        //   - 服务重启后老设备首次 REGISTER 时，DB onlineStatus 往往是上次的 true，
+        //     wasOffline 为 false，早先的"仅翻转时 patch"会丢掉这一次写入机会
+        //   - patchProtocolConfig 内部是 merge，字段无变化时 update 一次的代价可以接受
+        //   - User-Agent / Contact 设备重启或固件升级后可能换值，每次 REGISTER 都对齐最新
+        patchSipProtocolConfig(device.getDeviceIdentification(), request);
+
+        // 每次 REGISTER 都发心跳事件（不论之前在线/离线），刷新 lastKeepaliveTime
+        sipEventPublisher.deviceKeepaliveEventPublish(device.getDeviceIdentification(), "REGISTER");
+    }
+
+    /**
+     * 判断设备是否需要一次首次同步（DeviceInfo + Catalog）。
+     * <p>只要 {@code protocol_config.catalogSyncTime} 为 null 或通道计数为 0，就认为没成功同步过，
+     * 需要补触发一次上线事件让 {@code DeviceInfoOnlineEventListener} 调用 autoQuery。
+     */
+    private boolean needFirstTimeSync(VideoDeviceResultVO device) {
+        if (device == null) {
+            return false;
+        }
+        var cfg = device.getProtocolConfig();
+        if (cfg == null || cfg.getCatalogSyncTime() == null) {
+            return true;
+        }
+        // channelCount 为 null 或 0 视为从未成功拉过 catalog（新设备注册但 catalog 响应丢失等场景）
+        Integer count = device.getChannelCount();
+        return count == null || count == 0;
     }
 
 
-    private void verifyDevicePassword(SIPRequest request, Response response, VideoDeviceInfoResultDTO deviceInfoResultDTO) throws NoSuchAlgorithmException, ParseException, SipException {
+    private void verifyDevicePassword(SIPRequest request, Response response, VideoDeviceResultVO deviceResultVO) throws NoSuchAlgorithmException, ParseException, SipException {
         AuthorizationHeader authHead = (AuthorizationHeader) request.getHeader(AuthorizationHeader.NAME);
-        String password = (deviceInfoResultDTO != null && StrUtil.isNotBlank(deviceInfoResultDTO.getPassword())) ? deviceInfoResultDTO.getPassword() : sipConfig.getPassword();
+        TenantSipConfig tenantConfig = TenantSipConfigHolder.get();
+        String password = (deviceResultVO != null && StrUtil.isNotBlank(deviceResultVO.getAuthSecret())) ? deviceResultVO.getAuthSecret() : tenantConfig.getPassword();
         if (authHead == null && StrUtil.isNotBlank(password)) {
             // 回复401
             response = getMessageFactory().createResponse(Response.UNAUTHORIZED, request);
-            new DigestServerAuthenticationHelper().generateChallenge(getHeaderFactory(), response, sipConfig.getDomain());
+            new DigestServerAuthenticationHelper().generateChallenge(getHeaderFactory(), response, tenantConfig.getDomain());
             sipSender.transmitRequest(request.getLocalAddress().getHostAddress(), response);
             throw BizException.wrap("Invalid password, 401 unauthorized");
         }
@@ -330,18 +429,16 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
     /**
      * 补充更新设备信息
      */
-    private void fullUpdateDeviceInfo(VideoDeviceInfoResultDTO device, SIPRequest request,
+    private void fullUpdateDeviceInfo(VideoDeviceResultVO device, SIPRequest request,
                                       RemoteAddressInfo addressInfo) {
 
-        device.toBuilder()
-                .expires(request.getExpires().getExpires())
-                .ip(addressInfo.getIp())
-                .port(addressInfo.getPort())
-                .hostAddress(addressInfo.getIp() + StrPool.COLON + addressInfo.getPort())
-                .localIp(request.getLocalAddress().getHostAddress())
-                .transport(extractTransportProtocol(request).getValue())
-                .registerTime(DateUtil.now())
-                .build();
+        device.setExpires(request.getExpires().getExpires())
+                .setHost(addressInfo.getHost())
+                .setPort(addressInfo.getPort())
+                .setAccessEndpoint(addressInfo.getHost() + StrPool.COLON + addressInfo.getPort())
+                .setLocalHost(request.getLocalAddress().getHostAddress())
+                .setTransport(extractTransportProtocol(request).getValue())
+                .setRegisterTime(DateUtil.now());
     }
 
 

@@ -9,6 +9,7 @@ import com.mqttsnet.thinglinks.video.dto.media.zlm.hook.OnRecordMp4HookParam;
  */
 public class MediaRecordMp4Event extends MediaEvent {
     private RecordInfo recordInfo;
+    private Long planId;
 
     public MediaRecordMp4Event(Object source) {
         super(source);
@@ -32,4 +33,11 @@ public class MediaRecordMp4Event extends MediaEvent {
         this.recordInfo = recordInfo;
     }
 
+    public Long getPlanId() {
+        return planId;
+    }
+
+    public void setPlanId(Long planId) {
+        this.planId = planId;
+    }
 }

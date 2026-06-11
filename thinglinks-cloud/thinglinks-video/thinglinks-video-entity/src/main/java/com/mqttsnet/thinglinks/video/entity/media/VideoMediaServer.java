@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.video.entity.media;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.mqttsnet.basic.base.entity.Entity;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static com.baomidou.mybatisplus.annotation.SqlCondition.EQUAL;
@@ -51,25 +53,25 @@ public class VideoMediaServer extends Entity<Long> {
     @TableField(value = "media_identification", condition = EQUAL)
     private String mediaIdentification;
     /**
-     * 服务器IP地址
+     * 服务器地址(IP/域名)
      */
-    @TableField(value = "ip", condition = LIKE)
-    private String ip;
+    @TableField(value = "host", condition = LIKE)
+    private String host;
     /**
-     * hook使用的IP（zlm访问客户端使用的IP）
+     * Hook回调地址(IP/域名)
      */
-    @TableField(value = "hook_ip", condition = LIKE)
-    private String hookIp;
+    @TableField(value = "hook_host", condition = LIKE)
+    private String hookHost;
     /**
-     * SDP IP地址
+     * SDP地址(IP/域名)
      */
-    @TableField(value = "sdp_ip", condition = LIKE)
-    private String sdpIp;
+    @TableField(value = "sdp_host", condition = LIKE)
+    private String sdpHost;
     /**
-     * 流IP地址
+     * 流播放地址(IP/域名)
      */
-    @TableField(value = "stream_ip", condition = LIKE)
-    private String streamIp;
+    @TableField(value = "stream_host", condition = LIKE)
+    private String streamHost;
     /**
      * HTTP端口
      */
@@ -202,6 +204,13 @@ public class VideoMediaServer extends Entity<Long> {
     private Long createdOrgId;
 
     /**
+     * 逻辑删除标识:0-未删除 1-已删除
+     */
+    @TableLogic
+    @TableField(value = "deleted", condition = EQUAL)
+    private Integer deleted;
+
+    /**
      * 在线状态
      */
     @TableField(value = "online_status", condition = EQUAL)
@@ -218,5 +227,52 @@ public class VideoMediaServer extends Entity<Long> {
     @TableField(value = "name", condition = LIKE)
     private String name;
 
+    /**
+     * 服务器版本号
+     */
+    @TableField(value = "version", condition = LIKE)
+    private String version;
+
+    /**
+     * 服务器能力集(JSON，标记支持哪些API)
+     */
+    @TableField(value = "capabilities", condition = LIKE)
+    private String capabilities;
+
+    /**
+     * 最大承载流数量(用于负载均衡)
+     */
+    @TableField(value = "max_streams", condition = EQUAL)
+    private Integer maxStreams;
+
+    /**
+     * 当前流数量
+     */
+    @TableField(value = "current_streams", condition = EQUAL)
+    private Integer currentStreams;
+
+    /**
+     * CPU使用率(心跳上报)
+     */
+    @TableField(value = "cpu_usage", condition = EQUAL)
+    private BigDecimal cpuUsage;
+
+    /**
+     * 内存使用率(心跳上报)
+     */
+    @TableField(value = "memory_usage", condition = EQUAL)
+    private BigDecimal memoryUsage;
+
+    /**
+     * 入网速率bytes/s(心跳上报)
+     */
+    @TableField(value = "network_in_speed", condition = EQUAL)
+    private Long networkInSpeed;
+
+    /**
+     * 出网速率bytes/s(心跳上报)
+     */
+    @TableField(value = "network_out_speed", condition = EQUAL)
+    private Long networkOutSpeed;
 
 }

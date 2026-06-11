@@ -1,10 +1,25 @@
 package com.mqttsnet.thinglinks.video.dto.media.zlm.hook;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+/**
+ * ZLM Hook 回复对象。
+ * <p>
+ * 标准字段 {@code code}/{@code msg}。
+ * 可选字段 {@code close}（仅 on_stream_none_reader 需要）：
+ * true 表示让 ZLM 立即关闭该流，false 保留。默认不序列化 null 值，避免对
+ * 其他不支持该字段的 hook 产生干扰。
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class HookResult {
 
     private int code;
     private String msg;
 
+    /**
+     * on_stream_none_reader 专用：是否让 ZLM 关闭流。
+     */
+    private Boolean close;
 
     public HookResult() {
     }
@@ -36,5 +51,13 @@ public class HookResult {
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public Boolean getClose() {
+        return close;
+    }
+
+    public void setClose(Boolean close) {
+        this.close = close;
     }
 }

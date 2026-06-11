@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.video.mapper.device.VideoSipConfigMapper">
+
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.video.entity.device.VideoSipConfig">
+        <id column="id" property="id"/>
+        <result column="config_name" property="configName"/>
+        <result column="sip_id" property="sipId"/>
+        <result column="sip_domain" property="sipDomain"/>
+        <result column="sip_password" property="sipPassword"/>
+        <result column="sip_server_address" property="sipServerAddress"/>
+        <result column="bind_ip" property="bindIp"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="register_interval" property="registerInterval"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="created_org_id" property="createdOrgId"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, config_name, sip_id, sip_domain, sip_password, sip_server_address, bind_ip,
+        is_default, register_interval, status, remark,
+        deleted, created_time, created_by, updated_time, updated_by, created_org_id
+    </sql>
+
+</mapper>

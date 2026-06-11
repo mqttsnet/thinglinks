@@ -1,8 +1,10 @@
 package com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.query.cmd;
 
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
+import cn.hutool.core.util.NumberUtil;
+import com.mqttsnet.thinglinks.common.constant.BizConstant;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import com.mqttsnet.thinglinks.video.dto.platform.VideoPlatformInfo;
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.CmdTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.CmdTypeEnum;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.SIPRequestProcessorParent;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.IMessageHandler;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.query.QueryMessageHandler;
@@ -49,7 +51,7 @@ public class RecordInfoQueryMessageHandler extends SIPRequestProcessorParent imp
     }
 
     @Override
-    public void handForDevice(RequestEvent evt, VideoDeviceInfoResultDTO deviceInfoResultDTO, Element element) {
+    public void handForDevice(RequestEvent evt, VideoDeviceResultVO deviceInfoResultDTO, Element element) {
 
     }
 
@@ -58,9 +60,9 @@ public class RecordInfoQueryMessageHandler extends SIPRequestProcessorParent imp
 
         SIPRequest request = (SIPRequest) evt.getRequest();
         Element snElement = rootElement.element("SN");
-        int sn = Integer.parseInt(snElement.getText());
+        int sn = NumberUtil.parseInt(snElement != null ? snElement.getText() : null, 0);
         Element deviceIDElement = rootElement.element("DeviceID");
-        String channelId = deviceIDElement.getText();
+        String channelIdentification = deviceIDElement.getText();
         Element startTimeElement = rootElement.element("StartTime");
         String startTime = null;
         if (startTimeElement != null) {
@@ -72,11 +74,8 @@ public class RecordInfoQueryMessageHandler extends SIPRequestProcessorParent imp
             endTime = endTimeElement.getText();
         }
         Element secrecyElement = rootElement.element("Secrecy");
-        int secrecy = 0;
-        if (secrecyElement != null) {
-            secrecy = Integer.parseInt(secrecyElement.getText().trim());
-        }
-        String type = "all";
+        int secrecy = secrecyElement != null ? NumberUtil.parseInt(secrecyElement.getText(), 0) : 0;
+        String type = BizConstant.ALL;
         Element typeElement = rootElement.element("Type");
         if (typeElement != null) {
             type = typeElement.getText();
@@ -115,7 +114,7 @@ public class RecordInfoQueryMessageHandler extends SIPRequestProcessorParent imp
         // 获取通道的原始信息
         DeviceChannel deviceChannel = deviceChannelService.getOneForSourceById(channel.getGbId());
         // 接收录像数据
-        recordInfoEventListener.addEndEventHandler(device.getDeviceId(), deviceChannel.getDeviceId(), (recordInfo) -> {
+        recordInfoEventListener.addEndEventHandler(device.getDeviceIdentification(), deviceChannel.getDeviceIdentification(), (recordInfo) -> {
             try {
                 log.info("[国标级联] 录像查询收到数据， 通道： {}，准备转发===", channelId);
                 cmderFroPlatform.recordInfo(channel, platform, request.getFromTag(), recordInfo);
@@ -124,7 +123,7 @@ public class RecordInfoQueryMessageHandler extends SIPRequestProcessorParent imp
             }
         });
         try {
-            commander.recordInfoQuery(device, deviceChannel.getDeviceId(), DateUtil.ISO8601Toyyyy_MM_dd_HH_mm_ss(startTime),
+            commander.recordInfoQuery(device, deviceChannel.getDeviceIdentification(), DateUtil.ISO8601Toyyyy_MM_dd_HH_mm_ss(startTime),
                     DateUtil.ISO8601Toyyyy_MM_dd_HH_mm_ss(endTime), sn, secrecy, type, (eventResult -> {
                         // 回复200 OK
                         try {

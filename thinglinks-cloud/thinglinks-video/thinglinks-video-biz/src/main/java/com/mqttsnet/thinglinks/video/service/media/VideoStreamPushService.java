@@ -50,6 +50,14 @@ public interface VideoStreamPushService extends SuperService<Long, VideoStreamPu
      * @return {@link VideoStreamPushResultVO} 详情结果实体
      */
     VideoStreamPushResultVO getStreamPushDetails(Long id);
+
+    /**
+     * 获取视频推流播放地址
+     *
+     * @param id 推流ID
+     * @return {@link VideoStreamPushResultVO} 包含播放地址信息
+     */
+    VideoStreamPushResultVO getPlayUrl(Long id);
 }
 
 

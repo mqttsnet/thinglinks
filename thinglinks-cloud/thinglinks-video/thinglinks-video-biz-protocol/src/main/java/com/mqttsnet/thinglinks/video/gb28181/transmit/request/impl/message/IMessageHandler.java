@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message;
 
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
 import com.mqttsnet.thinglinks.video.dto.platform.VideoPlatformInfo;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import org.dom4j.Element;
 
 import javax.sip.RequestEvent;
@@ -16,7 +16,7 @@ public interface IMessageHandler {
      * @param evt        事件信息
      * @param deviceInfo 设备信息
      */
-    void handForDevice(RequestEvent evt, VideoDeviceInfoResultDTO deviceInfo, Element element);
+    void handForDevice(RequestEvent evt, VideoDeviceResultVO deviceInfo, Element element);
 
     /**
      * 处理来自平台的信息

@@ -1,5 +1,7 @@
 package com.mqttsnet.thinglinks.video.service.media.impl;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,11 +20,13 @@ import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.basic.utils.TenantUtil;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
-import com.mqttsnet.thinglinks.video.empowerment.media.VideoMediaServerTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.media.VideoMediaServerTypeEnum;
 import com.mqttsnet.thinglinks.video.entity.media.VideoMediaServer;
 import com.mqttsnet.thinglinks.video.manager.media.VideoMediaServerManager;
+import com.mqttsnet.thinglinks.video.media.common.MediaNodeServiceFactory;
 import com.mqttsnet.thinglinks.video.service.anytenant.ZlmMediaServerOpenAnyTenantService;
 import com.mqttsnet.thinglinks.video.service.media.VideoMediaServerService;
+import com.mqttsnet.thinglinks.video.vo.result.media.VideoMediaServerMetricsResultVO;
 import com.mqttsnet.thinglinks.video.vo.query.media.VideoMediaServerPageQuery;
 import com.mqttsnet.thinglinks.video.vo.result.media.VideoMediaServerResultVO;
 import com.mqttsnet.thinglinks.video.vo.save.media.VideoMediaServerSaveVO;
@@ -49,6 +53,7 @@ public class VideoMediaServerServiceImpl extends SuperServiceImpl<VideoMediaServ
 
 
     private final ZlmMediaServerOpenAnyTenantService zlmMediaServerOpenAnyTenantService;
+    private final MediaNodeServiceFactory mediaNodeServiceFactory;
 
     /**
      * 保存流媒体服务器信息
@@ -64,7 +69,7 @@ public class VideoMediaServerServiceImpl extends SuperServiceImpl<VideoMediaServ
         checkSaveVO(saveVO);
 
         // 校验连接是否有效并更新 saveVO
-        VideoMediaServerResultDTO checkMediaServerConfig = validateAndUpdateMediaServerConfig(saveVO.getIp(), saveVO.getHttpPort(), saveVO.getSecret());
+        VideoMediaServerResultDTO checkMediaServerConfig = validateAndUpdateMediaServerConfig(saveVO.getHost(), saveVO.getHttpPort(), saveVO.getSecret());
         // 合并 saveVO 和 checkMediaServerConfig
         saveVO = mergeSaveVOAndConfig(saveVO, checkMediaServerConfig);
 
@@ -91,7 +96,7 @@ public class VideoMediaServerServiceImpl extends SuperServiceImpl<VideoMediaServ
         checkUpdateVO(updateVO);
 
         // 校验连接是否有效并更新 updateVO
-        VideoMediaServerResultDTO checkMediaServerConfig = validateAndUpdateMediaServerConfig(updateVO.getIp(), updateVO.getHttpPort(), updateVO.getSecret());
+        VideoMediaServerResultDTO checkMediaServerConfig = validateAndUpdateMediaServerConfig(updateVO.getHost(), updateVO.getHttpPort(), updateVO.getSecret());
         // 合并 updateVO 和 checkMediaServerConfig
         updateVO = mergeUpdateVOAndConfig(updateVO, checkMediaServerConfig);
 
@@ -200,6 +205,54 @@ public class VideoMediaServerServiceImpl extends SuperServiceImpl<VideoMediaServ
     }
 
 
+    @Override
+    public void updateServerMetrics(String mediaIdentification,
+                                    BigDecimal cpuUsage,
+                                    BigDecimal memoryUsage,
+                                    Integer currentStreams,
+                                    Long networkInSpeed,
+                                    Long networkOutSpeed) {
+        VideoMediaServer existServer = superManager.getOneByMediaIdentification(mediaIdentification);
+        if (existServer == null) {
+            log.warn("[更新指标] 媒体服务器不存在: {}", mediaIdentification);
+            return;
+        }
+
+        UpdateWrapper<VideoMediaServer> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.lambda()
+                .eq(VideoMediaServer::getMediaIdentification, mediaIdentification)
+                .set(VideoMediaServer::getCpuUsage, cpuUsage)
+                .set(VideoMediaServer::getMemoryUsage, memoryUsage)
+                .set(VideoMediaServer::getCurrentStreams, currentStreams)
+                .set(VideoMediaServer::getNetworkInSpeed, networkInSpeed)
+                .set(VideoMediaServer::getNetworkOutSpeed, networkOutSpeed)
+                .set(VideoMediaServer::getLastAliveTime, LocalDateTime.now());
+        superManager.update(updateWrapper);
+        log.debug("[更新指标] mediaId={}, cpu={}%, mem={}%, streams={}, in={}, out={}",
+                mediaIdentification, cpuUsage, memoryUsage, currentStreams, networkInSpeed, networkOutSpeed);
+    }
+
+    @Override
+    public VideoMediaServerMetricsResultVO getRealTimeMetrics(Long id) {
+        VideoMediaServer server = superManager.getById(id);
+        if (server == null) {
+            return VideoMediaServerMetricsResultVO.builder()
+                    .currentStreams(0).networkInSpeed(0L).networkOutSpeed(0L).build();
+        }
+        return mediaNodeServiceFactory.getService(server).getServerMetrics(server);
+    }
+
+    @Override
+    public boolean testConnection(String host, Integer httpPort, String secret) {
+        try {
+            zlmMediaServerOpenAnyTenantService.checkMediaServerConfig(host, httpPort, secret);
+            return true;
+        } catch (Exception e) {
+            log.warn("[测试连接] 连接失败: host={}, httpPort={}, error={}", host, httpPort, e.getMessage());
+            return false;
+        }
+    }
+
     /**
      * 构建更新参数
      *
@@ -222,8 +275,8 @@ public class VideoMediaServerServiceImpl extends SuperServiceImpl<VideoMediaServ
         VideoMediaServerSaveVO mergedVO = BeanPlusUtil.toBeanIgnoreError(checkMediaServerConfig, VideoMediaServerSaveVO.class);
 
         Optional.ofNullable(saveVO.getAppId()).ifPresent(mergedVO::setAppId);
-        Optional.ofNullable(saveVO.getIp()).ifPresent(mergedVO::setIp);
-        Optional.ofNullable(saveVO.getHookIp()).ifPresent(mergedVO::setHookIp);
+        Optional.ofNullable(saveVO.getHost()).ifPresent(mergedVO::setHost);
+        Optional.ofNullable(saveVO.getHookHost()).ifPresent(mergedVO::setHookHost);
         Optional.ofNullable(saveVO.getHttpPort()).ifPresent(mergedVO::setHttpPort);
         Optional.ofNullable(saveVO.getSecret()).ifPresent(mergedVO::setSecret);
         Optional.ofNullable(saveVO.getType()).ifPresent(mergedVO::setType);
@@ -247,8 +300,8 @@ public class VideoMediaServerServiceImpl extends SuperServiceImpl<VideoMediaServ
 
         mergedUpdateVO.setId(updateVO.getId());
         Optional.ofNullable(updateVO.getAppId()).ifPresent(mergedUpdateVO::setAppId);
-        Optional.ofNullable(updateVO.getIp()).ifPresent(mergedUpdateVO::setIp);
-        Optional.ofNullable(updateVO.getHookIp()).ifPresent(mergedUpdateVO::setHookIp);
+        Optional.ofNullable(updateVO.getHost()).ifPresent(mergedUpdateVO::setHost);
+        Optional.ofNullable(updateVO.getHookHost()).ifPresent(mergedUpdateVO::setHookHost);
         Optional.ofNullable(updateVO.getHttpPort()).ifPresent(mergedUpdateVO::setHttpPort);
         Optional.ofNullable(updateVO.getSecret()).ifPresent(mergedUpdateVO::setSecret);
         Optional.ofNullable(updateVO.getType()).ifPresent(mergedUpdateVO::setType);
@@ -268,13 +321,13 @@ public class VideoMediaServerServiceImpl extends SuperServiceImpl<VideoMediaServ
         ArgumentAssert.notBlank(saveVO.getAppId(), "应用ID不能为空");
         ArgumentAssert.notBlank(saveVO.getName(), "名称不能为空");
         ArgumentAssert.notBlank(saveVO.getType(), "类型不能为空");
-        ArgumentAssert.notBlank(saveVO.getIp(), "服务器IP地址不能为空");
+        ArgumentAssert.notBlank(saveVO.getHost(), "服务器地址不能为空");
         ArgumentAssert.notNull(saveVO.getHttpPort(), "HTTP端口不能为空");
         ArgumentAssert.notNull(saveVO.getSecret(), "鉴权参数不能为空");
 
 
         // 校验相同链接是否存在
-        validateUniqueConnection(saveVO.getIp(), saveVO.getHttpPort(), null);
+        validateUniqueConnection(saveVO.getHost(), saveVO.getHttpPort(), null);
 
 
         Optional<VideoMediaServerTypeEnum> videoMediaServerTypeEnum = VideoMediaServerTypeEnum.fromValue(saveVO.getType());
@@ -295,7 +348,7 @@ public class VideoMediaServerServiceImpl extends SuperServiceImpl<VideoMediaServ
         ArgumentAssert.notBlank(updateVO.getAppId(), "应用ID不能为空");
         ArgumentAssert.notBlank(updateVO.getName(), "名称不能为空");
         ArgumentAssert.notBlank(updateVO.getType(), "类型不能为空");
-        ArgumentAssert.notBlank(updateVO.getIp(), "服务器IP地址不能为空");
+        ArgumentAssert.notBlank(updateVO.getHost(), "服务器地址不能为空");
         ArgumentAssert.notNull(updateVO.getHttpPort(), "HTTP端口不能为空");
         ArgumentAssert.notNull(updateVO.getSecret(), "鉴权参数不能为空");
 
@@ -306,7 +359,7 @@ public class VideoMediaServerServiceImpl extends SuperServiceImpl<VideoMediaServ
             throw BizException.wrap("videoMediaServer is not exist");
         }
         // 校验相同链接是否存在，排除当前记录
-        validateUniqueConnection(updateVO.getIp(), updateVO.getHttpPort(), updateVO.getId());
+        validateUniqueConnection(updateVO.getHost(), updateVO.getHttpPort(), updateVO.getId());
     }
 
     /**
@@ -330,7 +383,7 @@ public class VideoMediaServerServiceImpl extends SuperServiceImpl<VideoMediaServ
 
     private void validateUniqueConnection(String ip, Integer httpPort, Long excludeId) {
         LbQueryWrap<VideoMediaServer> wrap = Wraps.lbQ();
-        wrap.eq(VideoMediaServer::getIp, ip)
+        wrap.eq(VideoMediaServer::getHost, ip)
                 .eq(VideoMediaServer::getHttpPort, httpPort);
         if (excludeId != null) {
             wrap.ne(VideoMediaServer::getId, excludeId);

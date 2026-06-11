@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.video.mapper.record.VideoRecordPlanMapper">
+    <!--
+        代码生成器 by 2026-03-31
+        自定义sql建议在base文件夹同级新建ext文件夹，并新建同名且同namespace的xml进行编写。方便修改字段时，重新生成此文件。
+    -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.video.entity.record.VideoRecordPlan">
+        <id column="id" property="id"/>
+        <result column="plan_name" property="planName"/>
+        <result column="plan_type" property="planType"/>
+        <result column="media_identification" property="mediaIdentification"/>
+        <result column="record_format" property="recordFormat"/>
+        <result column="segment_duration" property="segmentDuration"/>
+        <result column="retention_days" property="retentionDays"/>
+        <result column="storage_path" property="storagePath"/>
+        <result column="plan_status" property="planStatus"/>
+        <result column="schedule_rule" property="scheduleRule"/>
+        <result column="extend_params" property="extendParams"/>
+        <result column="remark" property="remark"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="created_org_id" property="createdOrgId"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, plan_name, plan_type, media_identification, record_format, segment_duration,
+        retention_days, storage_path, plan_status, schedule_rule, extend_params, remark,
+        deleted, created_time, created_by, updated_time, updated_by, created_org_id
+    </sql>
+
+</mapper>

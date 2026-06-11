@@ -1,9 +1,9 @@
 package com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.response.cmd;
 
 
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import com.mqttsnet.thinglinks.video.dto.platform.VideoPlatformInfo;
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.CmdTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.CmdTypeEnum;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.SIPRequestProcessorParent;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.IMessageHandler;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.response.ResponseMessageHandler;
@@ -41,19 +41,19 @@ public class BroadcastResponseMessageHandler extends SIPRequestProcessorParent i
     }
 
     @Override
-    public void handForDevice(RequestEvent evt, VideoDeviceInfoResultDTO deviceInfoResultDTO, Element rootElement) {
+    public void handForDevice(RequestEvent evt, VideoDeviceResultVO deviceInfoResultDTO, Element rootElement) {
 
         SIPRequest request = (SIPRequest) evt.getRequest();
         /*try {
             String channelId = getText(rootElement, "DeviceID");
             DeviceChannel channel = null;
-            if (!channelId.equals(device.getDeviceId())) {
+            if (!channelId.equals(device.getDeviceIdentification())) {
                 channel = deviceChannelService.getOneBySourceId(device.getId(), channelId);
             }else {
                 channel = deviceChannelService.getBroadcastChannel(device.getId());
             }
             if (channel == null) {
-                log.info("[语音广播]回复： 未找到通道{}/{}", device.getDeviceId(), channelId );
+                log.info("[语音广播]回复： 未找到通道{}/{}", device.getDeviceIdentification(), channelId );
                 // 回复410
                 responseAck((SIPRequest) evt.getRequest(), Response.NOT_FOUND);
                 return;
@@ -69,7 +69,7 @@ public class BroadcastResponseMessageHandler extends SIPRequestProcessorParent i
             if (infoElement != null) {
                 reason = getText(infoElement, "Reason");
             }
-            log.info("[语音广播]回复：{}, {}/{}", reason == null? result : result + ": " + reason, device.getDeviceId(), channelId );
+            log.info("[语音广播]回复：{}, {}/{}", reason == null? result : result + ": " + reason, device.getDeviceIdentification(), channelId );
 
             // 回复200 OK
             responseAck(request, Response.OK);

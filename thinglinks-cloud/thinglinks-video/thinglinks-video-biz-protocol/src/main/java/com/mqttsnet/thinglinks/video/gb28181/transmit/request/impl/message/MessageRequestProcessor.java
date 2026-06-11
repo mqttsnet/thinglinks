@@ -3,26 +3,26 @@ package com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message;
 import cn.hutool.core.util.IdUtil;
 import com.mqttsnet.basic.context.ContextConstants;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
-import com.mqttsnet.thinglinks.video.cache.RedisCacheStorage;
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
+import com.mqttsnet.thinglinks.video.cache.VideoCacheDataHelper;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import com.mqttsnet.thinglinks.video.dto.gb28181.event.DeviceNotFoundEvent;
 import com.mqttsnet.thinglinks.video.dto.gb28181.sip.SsrcTransaction;
 import com.mqttsnet.thinglinks.video.dto.platform.VideoPlatformInfo;
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.SipCommandTypeEnum;
-import com.mqttsnet.thinglinks.video.gb28181.event.sip.SipEvent;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.SipCommandTypeEnum;
+
 import com.mqttsnet.thinglinks.video.gb28181.event.subscribe.SipSubscribe;
-import com.mqttsnet.thinglinks.video.gb28181.session.SipInviteSessionManager;
+import com.mqttsnet.thinglinks.video.manager.stream.SipInviteSessionManager;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.observer.SIPProcessorObserver;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.ISIPRequestProcessor;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.SIPRequestProcessorParent;
 import com.mqttsnet.thinglinks.video.utils.gb28181.SipUtils;
 import gov.nist.javax.sip.message.SIPRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.sip.InvalidArgumentException;
@@ -46,23 +46,18 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class MessageRequestProcessor extends SIPRequestProcessorParent implements InitializingBean, ISIPRequestProcessor {
 
     private static final Map<String, IMessageHandler> MESSAGE_HANDLER_MAP = new ConcurrentHashMap<>();
     public final String method = SipCommandTypeEnum.MESSAGE.getValue();
-    @Autowired
-    private SIPProcessorObserver sipProcessorObserver;
+    private final SIPProcessorObserver sipProcessorObserver;
 
+    private final SipSubscribe sipSubscribe;
 
-    @Autowired
-    private SipSubscribe sipSubscribe;
+    private final SipInviteSessionManager sessionManager;
 
-    @Autowired
-    private SipInviteSessionManager sessionManager;
-
-
-    @Autowired
-    private RedisCacheStorage redisCacheStorage;
+    private final VideoCacheDataHelper videoCacheDataHelper;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -88,35 +83,23 @@ public class MessageRequestProcessor extends SIPRequestProcessorParent implement
         SsrcTransaction ssrcTransaction = sessionManager.getSsrcTransactionByCallId(deviceIdentification, callIdHeader.getCallId());
         // 兼容海康 媒体通知 消息from字段不是设备ID的问题
         if (ssrcTransaction != null) {
-            deviceIdentification = ssrcTransaction.getDeviceId();
+            deviceIdentification = ssrcTransaction.getDeviceIdentification();
         }
         SIPRequest request = (SIPRequest) evt.getRequest();
         // 查询设备是否存在
-        VideoDeviceInfoResultDTO deviceInfo = BeanPlusUtil.toBeanIgnoreError(redisCacheStorage.getDeviceInfo(deviceIdentification), VideoDeviceInfoResultDTO.class);
+        VideoDeviceResultVO deviceInfo = BeanPlusUtil.toBeanIgnoreError(videoCacheDataHelper.getDeviceInfo(deviceIdentification), VideoDeviceResultVO.class);
 
-        // 查询上级平台是否存在 TODO 需要查询上级平台信息
-//        VideoPlatformInfo parentVideoPlatformInfo = platformService.queryPlatformByServerGBId(deviceIdentification);
         VideoPlatformInfo parentVideoPlatformInfo = null;
         try {
-            /*if (Objects.nonNull(deviceInfo) && Objects.nonNull(parentVideoPlatformInfo)) {
-                String hostAddress = request.getRemoteAddress().getHostAddress();
-                int remotePort = request.getRemotePort();
-                if (deviceInfo.getHostAddress().equals(hostAddress + ":" + remotePort)) {
-                    parentVideoPlatformInfo = null;
-                } else {
-                    deviceInfo = null;
-                }
-            }*/
-
             if (Objects.isNull(deviceInfo)) {
                 // 不存在则回复404
                 responseAck(request, Response.NOT_FOUND, "device:" + deviceIdentification + " not found");
                 log.warn("[设备未找到]deviceIdentification: {}, callId: {}", deviceIdentification, callIdHeader.getCallId());
-                SipEvent sipEvent = sipSubscribe.getSubscribe(callIdHeader.getCallId() + cSeqHeader.getSeqNumber());
-                if (sipEvent != null && sipEvent.getErrorEvent() != null) {
+                String subscribeKey = callIdHeader.getCallId() + cSeqHeader.getSeqNumber();
+                if (sipSubscribe.hasSubscribe(subscribeKey)) {
                     DeviceNotFoundEvent deviceNotFoundEvent = new DeviceNotFoundEvent(callIdHeader.getCallId());
                     SipSubscribe.EventResult eventResult = new SipSubscribe.EventResult(deviceNotFoundEvent);
-                    sipEvent.getErrorEvent().response(eventResult);
+                    sipSubscribe.complete(subscribeKey, eventResult);
                 }
             } else {
                 Element rootElement;

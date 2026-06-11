@@ -59,7 +59,7 @@ public class StackLoggerImpl implements StackLogger {
 
     @Override
     public void logStackTrace(int traceLevel) {
-        System.out.println("traceLevel: " + traceLevel);
+        log(LocationAwareLogger.TRACE_INT, "traceLevel: " + traceLevel);
     }
 
     @Override
@@ -74,27 +74,27 @@ public class StackLoggerImpl implements StackLogger {
 
     @Override
     public void logDebug(String message) {
-        log(LocationAwareLogger.INFO_INT, message);
+        log(LocationAwareLogger.DEBUG_INT, message);
     }
 
     @Override
     public void logDebug(String message, Exception ex) {
-        log(LocationAwareLogger.INFO_INT, message, ex);
+        log(LocationAwareLogger.DEBUG_INT, message, ex);
     }
 
     @Override
     public void logTrace(String message) {
-        log(LocationAwareLogger.INFO_INT, message);
+        log(LocationAwareLogger.TRACE_INT, message);
     }
 
     @Override
     public void logFatalError(String message) {
-        log(LocationAwareLogger.INFO_INT, message);
+        log(LocationAwareLogger.ERROR_INT, message);
     }
 
     @Override
     public void logError(String message) {
-        log(LocationAwareLogger.INFO_INT, message);
+        log(LocationAwareLogger.ERROR_INT, message);
     }
 
     @Override
@@ -109,12 +109,12 @@ public class StackLoggerImpl implements StackLogger {
 
     @Override
     public void logError(String message, Exception ex) {
-        log(LocationAwareLogger.INFO_INT, message, ex);
+        log(LocationAwareLogger.ERROR_INT, message, ex);
     }
 
     @Override
     public void logWarning(String message) {
-        log(LocationAwareLogger.INFO_INT, message);
+        log(LocationAwareLogger.WARN_INT, message);
     }
 
     @Override

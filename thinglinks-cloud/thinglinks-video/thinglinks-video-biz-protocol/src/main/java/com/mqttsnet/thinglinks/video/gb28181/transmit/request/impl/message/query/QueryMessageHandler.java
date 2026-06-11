@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.query;
 
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.SipMessageTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.SipMessageTypeEnum;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.MessageHandlerAbstract;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.MessageRequestProcessor;
 import org.springframework.beans.factory.InitializingBean;

@@ -1,20 +1,16 @@
 package com.mqttsnet.thinglinks.video.manager.media;
 
 import com.mqttsnet.basic.base.manager.SuperManager;
+import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
 import com.mqttsnet.thinglinks.video.entity.media.VideoMediaServer;
 import com.mqttsnet.thinglinks.video.vo.query.media.VideoMediaServerPageQuery;
 
 import java.util.List;
 
 /**
- * <p>
- * 通用业务接口
- * 流媒体服务器信息表
- * </p>
+ * 流媒体服务器 Manager（DB + 在线 Hook 缓存原始操作）。
  *
  * @author mqttsnet
- * @date 2024-07-03 17:56:38
- * @create [2024-07-03 17:56:38] [mqttsnet]
  */
 public interface VideoMediaServerManager extends SuperManager<VideoMediaServer> {
 
@@ -33,6 +29,16 @@ public interface VideoMediaServerManager extends SuperManager<VideoMediaServer> 
      * @return {@link List<VideoMediaServer>} 流媒体服务器列表
      */
     List<VideoMediaServer> getVideoMediaServerList(VideoMediaServerPageQuery query);
+
+    /**
+     * 心跳 / Hook 在线缓存写入（按 mediaServerType + mediaIdentification 存储）。
+     */
+    void putOnlineHookCache(String mediaServerType, String mediaIdentification, VideoMediaServerResultDTO server);
+
+    /**
+     * 节点离线时清理 Hook 在线缓存。
+     */
+    void removeOnlineHookCache(String mediaServerType, String mediaIdentification);
 }
 
 

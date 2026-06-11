@@ -1,9 +1,9 @@
 package com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.query.cmd;
 
 
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import com.mqttsnet.thinglinks.video.dto.platform.VideoPlatformInfo;
-import com.mqttsnet.thinglinks.video.empowerment.gb28181.CmdTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.gb28181.CmdTypeEnum;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.SIPRequestProcessorParent;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.IMessageHandler;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.request.impl.message.query.QueryMessageHandler;
@@ -47,7 +47,7 @@ public class DeviceStatusQueryMessageHandler extends SIPRequestProcessorParent i
     }
 
     @Override
-    public void handForDevice(RequestEvent evt, VideoDeviceInfoResultDTO deviceInfoResultDTO, Element element) {
+    public void handForDevice(RequestEvent evt, VideoDeviceResultVO deviceInfoResultDTO, Element element) {
 
     }
 
@@ -63,7 +63,7 @@ public class DeviceStatusQueryMessageHandler extends SIPRequestProcessorParent i
             log.error("[命令发送失败] 国标级联 DeviceStatus查询回复200OK: {}", e.getMessage());
         }
         String sn = rootElement.element("SN").getText();
-        String channelId = getText(rootElement, "DeviceID");
+        String channelIdentification = getText(rootElement, "DeviceID");
        /* CommonGBChannel channel = channelService.queryOneWithPlatform(parentPlatform.getId(), channelId);
         if (channel == null) {
             log.error("[平台没有该通道的使用权限]:platformId" + parentPlatform.getServerGBId() + "  deviceID:" + channelId);

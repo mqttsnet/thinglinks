@@ -3,10 +3,14 @@ package com.mqttsnet.thinglinks.video.controller.media;
 import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.base.controller.SuperController;
+import com.mqttsnet.basic.base.request.PageParams;
+import com.mqttsnet.basic.database.mybatis.conditions.query.QueryWrap;
 import com.mqttsnet.basic.interfaces.echo.EchoService;
+import com.mqttsnet.thinglinks.datascope.DataScopeHelper;
 import com.mqttsnet.thinglinks.video.entity.media.VideoMediaServer;
 import com.mqttsnet.thinglinks.video.service.media.VideoMediaServerService;
 import com.mqttsnet.thinglinks.video.vo.query.media.VideoMediaServerPageQuery;
+import com.mqttsnet.thinglinks.video.vo.result.media.VideoMediaServerMetricsResultVO;
 import com.mqttsnet.thinglinks.video.vo.result.media.VideoMediaServerResultVO;
 import com.mqttsnet.thinglinks.video.vo.save.media.VideoMediaServerSaveVO;
 import com.mqttsnet.thinglinks.video.vo.update.media.VideoMediaServerUpdateVO;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -53,6 +58,12 @@ public class VideoMediaServerController extends SuperController<VideoMediaServer
         return echoService;
     }
 
+    @Override
+    public QueryWrap<VideoMediaServer> handlerWrapper(VideoMediaServer model, PageParams<VideoMediaServerPageQuery> params) {
+        QueryWrap<VideoMediaServer> queryWrap = super.handlerWrapper(model, params);
+        DataScopeHelper.startDataScope("video_media_server");
+        return queryWrap;
+    }
 
     /**
      * 新增 流媒体服务器信息
@@ -122,7 +133,43 @@ public class VideoMediaServerController extends SuperController<VideoMediaServer
     @Parameters({@Parameter(name = "id", description = "媒体服务器ID", required = true),})
     public R<VideoMediaServerResultVO> getMediaServerDetails(@PathVariable("id") Long id) {
         log.info("getMediaServerDetails id:{}", id);
-        return R.success(superService.getMediaServerDetails(id));
+        VideoMediaServerResultVO result = superService.getMediaServerDetails(id);
+        echoService.action(result);
+        return R.success(result);
+    }
+
+    /**
+     * 实时查询流媒体服务器性能指标（直接调用流媒体 HTTP API）
+     *
+     * @param id 媒体服务器ID
+     * @return 实时性能指标
+     */
+    @Operation(summary = "实时查询流媒体服务器性能指标", description = "直接调用流媒体 HTTP API 采集 CPU、内存、流数量、网络吞吐等指标")
+    @GetMapping("/realTimeMetrics/{id}")
+    @Parameters({@Parameter(name = "id", description = "媒体服务器ID", required = true),})
+    public R<VideoMediaServerMetricsResultVO> realTimeMetrics(@PathVariable("id") Long id) {
+        return R.success(superService.getRealTimeMetrics(id));
+    }
+
+    /**
+     * 测试流媒体服务器连接
+     *
+     * @param host     服务器地址
+     * @param httpPort HTTP端口
+     * @param secret   鉴权密钥
+     * @return 连接是否成功
+     */
+    @Operation(summary = "测试流媒体服务器连接", description = "根据地址、端口、密钥测试流媒体服务器是否可达")
+    @GetMapping("/testConnection")
+    @Parameters({
+            @Parameter(name = "host", description = "服务器地址", required = true),
+            @Parameter(name = "httpPort", description = "HTTP端口", required = true),
+            @Parameter(name = "secret", description = "鉴权密钥", required = true),
+    })
+    public R<Boolean> testConnection(@RequestParam String host,
+                                     @RequestParam Integer httpPort,
+                                     @RequestParam String secret) {
+        return R.success(superService.testConnection(host, httpPort, secret));
     }
 }
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.video.mapper.gateway.VideoGatewayMappingMapper">
+    <!--
+        代码生成器 by 2026-04-02
+        自定义sql建议在base文件夹同级新建ext文件夹，并新建同名且同namespace的xml进行编写。方便修改字段时，重新生成此文件。
+    -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.video.entity.gateway.VideoGatewayMapping">
+        <id column="id" property="id"/>
+        <result column="src_protocol" property="srcProtocol"/>
+        <result column="src_device_identification" property="srcDeviceIdentification"/>
+        <result column="src_channel_identification" property="srcChannelIdentification"/>
+        <result column="gb_device_id" property="gbDeviceId"/>
+        <result column="gb_channel_id" property="gbChannelId"/>
+        <result column="gb_platform_id" property="gbPlatformId"/>
+        <result column="enable" property="enable"/>
+        <result column="auto_push" property="autoPush"/>
+        <result column="mapping_config" property="mappingConfig" typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler"/>
+        <result column="register_status" property="registerStatus"/>
+        <result column="last_register_time" property="lastRegisterTime"/>
+        <result column="remark" property="remark"/>
+        <result column="created_org_id" property="createdOrgId"/>
+        <result column="deleted" property="deleted"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_by" property="updatedBy"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, src_protocol, src_device_identification, src_channel_identification,
+        gb_device_id, gb_channel_id, gb_platform_id,
+        enable, auto_push, mapping_config, register_status, last_register_time,
+        remark, created_org_id,
+        deleted, created_by, created_time, updated_by, updated_time
+    </sql>
+
+</mapper>

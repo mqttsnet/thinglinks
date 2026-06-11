@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.video.empowerment.gb28181;
+package com.mqttsnet.thinglinks.video.enumeration.gb28181;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -23,6 +23,7 @@ public enum SipMessageTypeEnum {
 
     QUERY("Query", "查询"),
     RESPONSE("Response", "响应"),
+    NOTIFY("Notify", "通知"),
     ;
 
 

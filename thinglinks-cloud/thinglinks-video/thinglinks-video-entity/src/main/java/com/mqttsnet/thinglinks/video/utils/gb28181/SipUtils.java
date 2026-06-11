@@ -67,8 +67,6 @@ public class SipUtils {
 
     public static String getNewFromTag() {
         return UUID.randomUUID().toString().replace("-", "");
-
-//        return getNewTag();
     }
 
     public static String getNewTag() {
@@ -137,11 +135,11 @@ public class SipUtils {
     /**
      * 判断是否是前端外围设备
      *
-     * @param deviceId
+     * @param deviceIdentification
      * @return
      */
-    public static boolean isFrontEnd(String deviceId) {
-        int typeCodeFromGbCode = getTypeCodeFromGbCode(deviceId);
+    public static boolean isFrontEnd(String deviceIdentification) {
+        int typeCodeFromGbCode = getTypeCodeFromGbCode(deviceIdentification);
         return typeCodeFromGbCode > 130 && typeCodeFromGbCode < 199;
     }
 

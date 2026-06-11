@@ -1,11 +1,11 @@
 package com.mqttsnet.thinglinks.video.gb28181.event.listener;
 
 import com.mqttsnet.basic.utils.BeanPlusUtil;
-import com.mqttsnet.thinglinks.video.cache.RedisCacheStorage;
-import com.mqttsnet.thinglinks.video.cache.VideoDeviceInfoCacheVO;
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
+import com.mqttsnet.thinglinks.video.cache.VideoCacheDataHelper;
+import com.mqttsnet.thinglinks.video.cache.VideoDeviceCacheVO;
 import com.mqttsnet.thinglinks.video.dto.device.event.DeviceInfoOfflineEvent;
-import com.mqttsnet.thinglinks.video.service.device.VideoDeviceInfoService;
+import com.mqttsnet.thinglinks.video.service.device.VideoDeviceService;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -26,11 +26,11 @@ import java.util.Objects;
 public class DeviceInfoOfflineEventListener {
 
     @Autowired
-    private RedisCacheStorage redisCacheStorage;
+    private VideoCacheDataHelper videoCacheDataHelper;
 
 
     @Autowired
-    private VideoDeviceInfoService videoDeviceInfoService;
+    private VideoDeviceService videoDeviceService;
 
 
     @EventListener
@@ -38,12 +38,12 @@ public class DeviceInfoOfflineEventListener {
         if (Objects.isNull(event.getSource())) {
             return;
         }
-        VideoDeviceInfoResultDTO deviceInfoResultDTO = event.getSource();
-        log.info("[设备离线事件监听] 设备ID：" + deviceInfoResultDTO.getDeviceIdentification());
+        VideoDeviceResultVO deviceResultVO = event.getSource();
+        log.info("[设备离线事件监听] 设备ID：" + deviceResultVO.getDeviceIdentification());
 
         //获取最新的DB数据
-        VideoDeviceInfoResultDTO videoDeviceInfoResultDTO = videoDeviceInfoService.getVideoDeviceInfoResultDTO(deviceInfoResultDTO.getDeviceIdentification());
+        VideoDeviceResultVO latestDevice = videoDeviceService.getByDeviceIdentification(deviceResultVO.getDeviceIdentification());
         // 将设备信息存入Redis缓存
-        redisCacheStorage.setDeviceInfo(BeanPlusUtil.toBeanIgnoreError(videoDeviceInfoResultDTO, VideoDeviceInfoCacheVO.class));
+        videoCacheDataHelper.setDeviceInfo(BeanPlusUtil.toBeanIgnoreError(latestDevice, VideoDeviceCacheVO.class));
     }
 }

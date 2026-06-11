@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.video.empowerment.gb28181;
+package com.mqttsnet.thinglinks.video.enumeration.gb28181;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,7 +25,10 @@ public enum CmdTypeEnum {
     RECORD_INFO("RecordInfo", "记录信息"),
     BROADCAST("Broadcast", "广播"),
     CONFIG_DOWNLOAD("ConfigDownload", "下载配置"),
-    MOBILE_POSITION("MobilePosition", "移动设备位置订阅");
+    MOBILE_POSITION("MobilePosition", "移动设备位置订阅"),
+    DEVICE_INFO("DeviceInfo", "设备信息查询"),
+    PRESET_QUERY("PresetQuery", "预置位查询"),
+    KEEPALIVE("Keepalive", "设备保活");
 
 
     private String value;

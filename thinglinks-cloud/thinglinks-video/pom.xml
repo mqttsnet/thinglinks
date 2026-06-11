@@ -21,6 +21,7 @@
         <module>thinglinks-video-server</module>
         <module>thinglinks-video-entity</module>
         <module>thinglinks-video-biz</module>
+        <module>thinglinks-video-biz-protocol</module>
         <module>thinglinks-video-controller</module>
     </modules>
 </project>

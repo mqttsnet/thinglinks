@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.video.gb28181.transmit.response.impl;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.observer.SIPProcessorObserver;
 import com.mqttsnet.thinglinks.video.gb28181.transmit.response.SIPResponseProcessorAbstract;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -46,7 +46,7 @@ public class RegisterResponseProcessor extends SIPResponseProcessorAbstract {
      */
     @Override
     public void process(ResponseEvent evt) {
-        log.info("[国标级联]收到Register响应,ResponseEvent：{}", JSONUtil.toJsonStr(evt));
+        log.info("[国标级联]收到Register响应,ResponseEvent：{}", JSON.toJSONString(evt));
         SIPResponse response = (SIPResponse) evt.getResponse();
         String callId = response.getCallIdHeader().getCallId();
 		/*PlatformRegisterInfo platformRegisterInfo = redisCatchStorage.queryPlatformRegisterInfo(callId);

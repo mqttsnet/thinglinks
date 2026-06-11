@@ -13,7 +13,7 @@ public class RequestPushStreamMsg {
     /**
      * 下级服务ID
      */
-    private String mediaServerId;
+    private String mediaIdentification;
 
     /**
      * 流ID
@@ -28,7 +28,7 @@ public class RequestPushStreamMsg {
     /**
      * 目标IP
      */
-    private String ip;
+    private String host;
 
     /**
      * 目标端口
@@ -66,13 +66,13 @@ public class RequestPushStreamMsg {
     private boolean onlyAudio;
 
 
-    public static RequestPushStreamMsg getInstance(String mediaServerId, String app, String stream, String ip, int port, String ssrc,
+    public static RequestPushStreamMsg getInstance(String mediaIdentification, String app, String stream, String ip, int port, String ssrc,
                                                    boolean tcp, int srcPort, int pt, boolean ps, boolean onlyAudio) {
         RequestPushStreamMsg requestPushStreamMsg = new RequestPushStreamMsg();
-        requestPushStreamMsg.setMediaServerId(mediaServerId);
+        requestPushStreamMsg.setMediaIdentification(mediaIdentification);
         requestPushStreamMsg.setApp(app);
         requestPushStreamMsg.setStream(stream);
-        requestPushStreamMsg.setIp(ip);
+        requestPushStreamMsg.setHost(ip);
         requestPushStreamMsg.setPort(port);
         requestPushStreamMsg.setSsrc(ssrc);
         requestPushStreamMsg.setTcp(tcp);
@@ -85,10 +85,10 @@ public class RequestPushStreamMsg {
 
     public static RequestPushStreamMsg getInstance(SendRtpInfo sendRtpItem) {
         RequestPushStreamMsg requestPushStreamMsg = new RequestPushStreamMsg();
-        requestPushStreamMsg.setMediaServerId(sendRtpItem.getMediaServerId());
+        requestPushStreamMsg.setMediaIdentification(sendRtpItem.getMediaIdentification());
         requestPushStreamMsg.setApp(sendRtpItem.getApp());
         requestPushStreamMsg.setStream(sendRtpItem.getStream());
-        requestPushStreamMsg.setIp(sendRtpItem.getIp());
+        requestPushStreamMsg.setHost(sendRtpItem.getHost());
         requestPushStreamMsg.setPort(sendRtpItem.getPort());
         requestPushStreamMsg.setSsrc(sendRtpItem.getSsrc());
         requestPushStreamMsg.setTcp(sendRtpItem.isTcp());
@@ -99,12 +99,12 @@ public class RequestPushStreamMsg {
         return requestPushStreamMsg;
     }
 
-    public String getMediaServerId() {
-        return mediaServerId;
+    public String getMediaIdentification() {
+        return mediaIdentification;
     }
 
-    public void setMediaServerId(String mediaServerId) {
-        this.mediaServerId = mediaServerId;
+    public void setMediaIdentification(String mediaIdentification) {
+        this.mediaIdentification = mediaIdentification;
     }
 
     public String getApp() {
@@ -123,12 +123,12 @@ public class RequestPushStreamMsg {
         this.stream = stream;
     }
 
-    public String getIp() {
-        return ip;
+    public String getHost() {
+        return host;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public int getPort() {

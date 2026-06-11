@@ -15,8 +15,8 @@ public class StreamContent {
     @Schema(description = "流ID")
     private String stream;
 
-    @Schema(description = "IP")
-    private String ip;
+    @Schema(description = "地址(IP/域名)")
+    private String host;
 
     @Schema(description = "HTTP-FLV流地址")
     private String flv;
@@ -85,7 +85,7 @@ public class StreamContent {
     private String rtcs;
 
     @Schema(description = "流媒体ID")
-    private String mediaServerId;
+    private String mediaIdentification;
 
     @Schema(description = "流编码信息")
     private MediaInfo mediaInfo;
@@ -174,7 +174,7 @@ public class StreamContent {
             this.rtcs = streamInfo.getRtcs().getUrl();
         }
         if (streamInfo.getMediaServer() != null) {
-            this.mediaServerId = streamInfo.getMediaServer().getMediaIdentification();
+            this.mediaIdentification = streamInfo.getMediaServer().getMediaIdentification();
         }
 
         this.mediaInfo = streamInfo.getMediaInfo();
@@ -214,12 +214,12 @@ public class StreamContent {
         this.stream = stream;
     }
 
-    public String getIp() {
-        return ip;
+    public String getHost() {
+        return host;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public String getFlv() {
@@ -398,12 +398,12 @@ public class StreamContent {
         this.rtcs = rtcs;
     }
 
-    public String getMediaServerId() {
-        return mediaServerId;
+    public String getMediaIdentification() {
+        return mediaIdentification;
     }
 
-    public void setMediaServerId(String mediaServerId) {
-        this.mediaServerId = mediaServerId;
+    public void setMediaIdentification(String mediaIdentification) {
+        this.mediaIdentification = mediaIdentification;
     }
 
     public MediaInfo getMediaInfo() {

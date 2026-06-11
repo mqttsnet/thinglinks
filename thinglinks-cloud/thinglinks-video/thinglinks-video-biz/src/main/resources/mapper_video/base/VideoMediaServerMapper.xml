@@ -10,10 +10,10 @@
     <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.video.entity.media.VideoMediaServer">
         <id column="id" property="id"/>
         <result column="app_id" property="appId"/>
-        <result column="ip" property="ip"/>
-        <result column="hook_ip" property="hookIp"/>
-        <result column="sdp_ip" property="sdpIp"/>
-        <result column="stream_ip" property="streamIp"/>
+        <result column="host" property="host"/>
+        <result column="hook_host" property="hookHost"/>
+        <result column="sdp_host" property="sdpHost"/>
+        <result column="stream_host" property="streamHost"/>
         <result column="http_port" property="httpPort"/>
         <result column="http_ssl_port" property="httpSslPort"/>
         <result column="rtmp_port" property="rtmpPort"/>
@@ -45,17 +45,31 @@
         <result column="created_org_id" property="createdOrgId"/>
         <result column="extend_params" property="extendParams"/>
         <result column="name" property="name"/>
+        <result column="version" property="version"/>
+        <result column="capabilities" property="capabilities"/>
+        <result column="max_streams" property="maxStreams"/>
+        <result column="current_streams" property="currentStreams"/>
+        <result column="cpu_usage" property="cpuUsage"/>
+        <result column="memory_usage" property="memoryUsage"/>
+        <result column="network_in_speed" property="networkInSpeed"/>
+        <result column="network_out_speed" property="networkOutSpeed"/>
+        <result column="media_identification" property="mediaIdentification"/>
+        <result column="online_status" property="onlineStatus"/>
+        <result column="last_alive_time" property="lastAliveTime"/>
+        <result column="deleted" property="deleted"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, app_id, ip, hook_ip, sdp_ip, stream_ip, 
-        http_port, http_ssl_port, rtmp_port, rtmp_ssl_port, rtp_proxy_port, rtsp_port, 
-        rtsp_ssl_port, flv_port, flv_ssl_port, ws_flv_port, ws_flv_ssl_port, auto_config, 
-        secret, type, rtp_enable, rtp_port_range, send_rtp_port_range, record_assist_port, 
-        default_server, hook_alive_interval, record_path, record_day, transcode_suffix, remark, 
-        created_time, created_by, updated_time, updated_by, created_org_id, extend_params, 
-        name
+        id, app_id, name, media_identification, host, hook_host, sdp_host, stream_host,
+        http_port, http_ssl_port, rtmp_port, rtmp_ssl_port, rtp_proxy_port, rtsp_port,
+        rtsp_ssl_port, flv_port, flv_ssl_port, ws_flv_port, ws_flv_ssl_port, auto_config,
+        secret, type, rtp_enable, rtp_port_range, send_rtp_port_range, record_assist_port,
+        default_server, last_alive_time, hook_alive_interval, record_path, record_day, transcode_suffix,
+        online_status, extend_params, remark,
+        version, capabilities, max_streams, current_streams, cpu_usage,
+        memory_usage, network_in_speed, network_out_speed,
+        deleted, created_time, created_by, updated_time, updated_by, created_org_id
     </sql>
 
 </mapper>

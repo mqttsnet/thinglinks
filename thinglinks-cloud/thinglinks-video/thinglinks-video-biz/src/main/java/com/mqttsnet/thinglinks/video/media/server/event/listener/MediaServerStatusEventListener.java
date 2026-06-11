@@ -3,8 +3,8 @@ package com.mqttsnet.thinglinks.video.media.server.event.listener;
 import com.mqttsnet.thinglinks.video.dto.media.event.MediaServerOfflineEvent;
 import com.mqttsnet.thinglinks.video.dto.media.event.MediaServerOnlineEvent;
 import com.mqttsnet.thinglinks.video.service.media.VideoMediaServerService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +17,10 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class MediaServerStatusEventListener {
 
-    @Autowired
-    private VideoMediaServerService videoMediaServerService;
+    private final VideoMediaServerService videoMediaServerService;
 
     @EventListener
     public void onApplicationEvent(MediaServerOnlineEvent event) {

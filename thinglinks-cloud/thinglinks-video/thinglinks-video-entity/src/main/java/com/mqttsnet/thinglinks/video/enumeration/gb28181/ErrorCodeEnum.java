@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.video.empowerment.gb28181;
+package com.mqttsnet.thinglinks.video.enumeration.gb28181;
 
 /**
  * 全局错误码

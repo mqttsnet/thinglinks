@@ -12,8 +12,15 @@ public class DefaultProperties {
         Properties properties = new Properties();
         properties.setProperty("javax.sip.STACK_NAME", name);
 //        properties.setProperty("javax.sip.IP_ADDRESS", ip);
-        // 关闭自动会话
-        properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
+        // === 必须启用自动 Dialog 支持 ===
+        // GB28181 的 INVITE/BYE/INFO/SUBSCRIBE 等有状态会话强依赖 Dialog：
+        //   1. ClientTransaction.sendRequest() 之后 JAIN-SIP 自动在 Dialog 上挂载响应
+        //   2. 收到 INVITE 2xx 响应后需要 dialog.createAck() 发 ACK（RFC 3261 §13.2.2.4）
+        //   3. BYE 需要在 Dialog 内用递增的 CSeq 发出
+        // 之前设为 "off" 导致 responseEvent.getDialog() 恒为 null，INVITE 发出后
+        // 收到摄像头 200 OK 没法回 ACK，摄像头不停重发 200 OK，平台侧也看不到响应
+        // （JAIN-SIP 不把无事务响应派发给 SipListener.processResponse）。
+        properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "on");
 
         /**
          * 完整配置参考 gov.nist.javax.sip.SipStackImpl，需要下载源码
@@ -23,7 +30,8 @@ public class DefaultProperties {
 
         // 接收所有notify请求，即使没有订阅
         properties.setProperty("gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY", "true");
-        properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING", "false");
+        // 启用 Dialog 后由 JAIN-SIP 自动处理 dialog 生命周期错误（默认即 true，显式写出避免误改）
+        properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING", "true");
         properties.setProperty("gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED", "true");
         // 为_NULL _对话框传递_终止的_事件
         properties.setProperty("gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_NULL_DIALOG", "true");
