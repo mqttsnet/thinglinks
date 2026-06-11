@@ -22,7 +22,7 @@ import { setupI18n } from '/@/locales/setupI18n';
 import { registerThirdComp } from '/@/settings/registerThirdComp';
 import vuetify from './plugins/vuetify';
 
-import Antd from 'ant-design-vue';
+import Antd, { Card, Typography } from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 
 // if (import.meta.env.DEV) {
@@ -42,6 +42,11 @@ async function bootstrap() {
   const app = createApp(App);
   // 全局引入antd
   app.use(Antd);
+  // 显式注册 Card / Typography:这些组件只在模板里用 <a-card> / <a-typography-*>,且未在入口按名 import,
+  // 生产构建会把它们 tree-shaking 掉(app.use(Antd) 的全量 install 也保不住),运行时 resolveComponent 失败 →
+  // 退化成原生元素(a-card 头部 title/#extra 丢失等)。显式 use 防止被摇树。dev 用 esbuild 预打包不受影响。
+  app.use(Card);
+  app.use(Typography);
   // Configure store
   // 配置 store
   setupStore(app);

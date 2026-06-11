@@ -99,6 +99,13 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           modifyVars: generateModifyVars(),
           javascriptEnabled: true,
         },
+        // vxe-table 4.3.5 的 scss 用了新版 Dart Sass 已弃用的 lighten()/darken()/@import,
+        // 静音第三方依赖(node_modules)的弃用告警,避免每次编译刷屏 225+ 条;
+        // 仅作用于依赖,本项目自有 scss 的告警照常提示。
+        scss: {
+          quietDeps: true,
+          silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'legacy-js-api'],
+        },
       },
     },
 
