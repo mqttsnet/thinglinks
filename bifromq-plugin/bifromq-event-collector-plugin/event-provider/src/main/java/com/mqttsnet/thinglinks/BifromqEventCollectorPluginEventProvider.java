@@ -15,6 +15,7 @@ package com.mqttsnet.thinglinks;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import com.baidu.bifromq.plugin.eventcollector.Event;
@@ -31,103 +32,149 @@ import org.pf4j.Extension;
 
 
 /**
- * -----------------------------------------------------------------------------
- * File Name: BifromqEventCollectorPluginEventProvider
- * -----------------------------------------------------------------------------
- * Description:
- * <a href="https://bifromq.apache.org/docs/plugin/event_collector/">...</a>
- * 事件收集器
- * <p>
- * 1. 实现IEventCollector接口
- * 2. 通过@Extension注解标记为插件
- * 3. 实现report方法，将事件发送到Kafka
- * 4. 实现close方法，关闭资源
- * -----------------------------------------------------------------------------
+ * BifroMQ 事件收集插件入口 ── 把 broker 内核事件按 type 路由到 Kafka topic 透传给下游(mqs / 审计).
+ *
+ * <h3>实现要点</h3>
+ * <ul>
+ *   <li>{@link IEventCollector#report} 入口同步抓 {@code hlc / utc} ── HLC 严格单调,异步 worker 取值会破坏因果顺序</li>
+ *   <li>{@link TaskQueue} 64 worker 池 ── 解析 + send 异步化,主链路 0 阻塞</li>
+ *   <li>{@link #TOPIC_MAP} + {@link EventProcessorFactory} 双层注册 ── 任一缺失即 warn 丢弃,启动期可通过日志审计覆盖率</li>
+ * </ul>
+ *
+ * <h3>4.0 升级备注</h3>
+ * <ul>
+ *   <li>升级时 import 包名 {@code com.baidu.bifromq} → {@code org.apache.bifromq} 全局替换</li>
+ *   <li>{@link #TOPIC_MAP} 加 {@code EventType.SERVER_REDIRECTED} → {@code mqtt.server.disconnect.topic}</li>
+ *   <li>{@link EventProcessorFactory} 注册 {@code ServerRedirectedEventProcessor}(新建)</li>
+ * </ul>
  *
  * @author xiaonannet
  * @version 1.1
- * -----------------------------------------------------------------------------
- * Revision History:
- * Date         Author          Version     Description
- * --------      --------     -------   --------------------
- * 2024/2/23       xiaonannet        1.0        Initial creation
- * 2025/3/6        xiaonannet        1.1        Add event enumeration
- * -----------------------------------------------------------------------------
- * @email
- * @date 2024/2/23 15:36
+ * @since 2024/2/23
  */
 @Slf4j
 @Extension
 public final class BifromqEventCollectorPluginEventProvider implements IEventCollector {
 
-    private final KafkaMessageSender sender;
-    private final EventProcessorFactory processorFactory;
-    private final TaskQueue taskQueue = new TaskQueue(8, 100, 60L, TimeUnit.SECONDS);
-
+    /**
+     * Kafka topic 路由表 ── EventType → topic.
+     *
+     * <h4>分组策略</h4>
+     * <ul>
+     *   <li>{@code BY_CLIENT}(客户端主动断)→ {@code mqtt.client.disconnect.topic}</li>
+     *   <li>{@code KICKED}(同 clientId 抢占)→ {@code mqtt.device.kicked.topic}</li>
+     *   <li>其余 18 个被动 disconnect(含 {@code IDLE} KeepAlive 超时)→ 统一进 {@code mqtt.server.disconnect.topic},
+     *       下游 mqs 按 actionType=CLOSE 统一写 OFFLINE,reasonCode/特异字段从 message body 取</li>
+     * </ul>
+     */
     private static final Map<EventType, String> TOPIC_MAP = new EnumMap<>(EventType.class);
 
     static {
+        // ── client connected ──
         TOPIC_MAP.put(EventType.CLIENT_CONNECTED, "mqtt.client.connected.topic");
+
+        // ── disconnect:语义分流到 3 个 topic ──
+        TOPIC_MAP.put(EventType.BY_CLIENT, "mqtt.client.disconnect.topic");
+        TOPIC_MAP.put(EventType.KICKED, "mqtt.device.kicked.topic");
+        // 18 个被动断都归一到 server.disconnect topic ── 下游 mqs 写 OFFLINE 不需要区分子类型
+        TOPIC_MAP.put(EventType.BY_SERVER, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.IDLE, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.BAD_PACKET, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.CLIENT_CHANNEL_ERROR, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.EXCEED_PUB_RATE, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.EXCEED_RECEIVING_LIMIT, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.INBOX_TRANSIENT_ERROR, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.INVALID_TOPIC, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.INVALID_TOPIC_FILTER, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.MALFORMED_TOPIC, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.MALFORMED_TOPIC_FILTER, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.NO_PUB_PERMISSION, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.PROTOCOL_VIOLATION, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.RE_AUTH_FAILED, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.RESOURCE_THROTTLED, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.SERVER_BUSY, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.TOO_LARGE_SUBSCRIPTION, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.TOO_LARGE_UNSUBSCRIPTION, "mqtt.server.disconnect.topic");
+        // TODO 4.0 升级时补:TOPIC_MAP.put(EventType.SERVER_REDIRECTED, "mqtt.server.disconnect.topic");
+
+        // ── pub/sub handling ──
         TOPIC_MAP.put(EventType.SUB_ACKED, "mqtt.subscription.acked.topic");
         TOPIC_MAP.put(EventType.UNSUB_ACKED, "mqtt.unsubscription.acked.topic");
+        // DISTED 承载设备 PUBLISH 上行的完整报文(topic/qos/payload/publisher) ──
+        // BifroMQ Standalone 无 mqtt-to-kafka connector,这是设备上行唯一可用来源;
+        // mqs MqttDeviceDataEdgeAdapter 把本 topic 路由到 DEVICE_DATA group → DevicePayloadDecodeStage → DeviceDatasHandler 走主流程(物模型 + TDS 入库).
+        // 上下行都触发:下行命令(backend publisher)在 mqs DeviceCacheEnricher cache miss 后自然 skip,无需额外过滤.
         TOPIC_MAP.put(EventType.DISTED, "mqtt.distribution.completed.topic");
+        // DIST_ERROR 是 broker dispatch 失败,businessSystemEventType="DISPATCH_ERROR" 协议层真相命名;
+        // mqs MqttDistributionEdgeAdapter → DISTRIBUTION_ACK group → DistributionResultStage 记失败 stats.
         TOPIC_MAP.put(EventType.DIST_ERROR, "mqtt.distribution.error.topic");
-        TOPIC_MAP.put(EventType.BY_CLIENT, "mqtt.client.disconnect.topic");
-        TOPIC_MAP.put(EventType.BY_SERVER, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.KICKED, "mqtt.device.kicked.topic");
         TOPIC_MAP.put(EventType.PING_REQ, "mqtt.ping.req.topic");
+
+        // ── audit 类(mqs `bus/inbound/kafka/audit/` 下 3 个独立 consumer 已就绪,仅 log 消费,不入业务流程)──
         TOPIC_MAP.put(EventType.NOT_AUTHORIZED_CLIENT, "mqtt.client.unauthorized");
         TOPIC_MAP.put(EventType.MQTT_SESSION_START, "mqtt.session.start");
         TOPIC_MAP.put(EventType.MQTT_SESSION_STOP, "mqtt.session.stop");
     }
 
+    private final KafkaMessageSender sender;
+    private final EventProcessorFactory processorFactory;
+
+    /**
+     * TaskQueue 64 worker ── 上游高频事件(CONNECT/SUB/PUB-delivered/PING)单线程处理不够,
+     * 提到 64 worker 应对 50000+ events/s.每 worker 任务极短(JSON 序列化 + producer.send 异步入队).
+     */
+    private final TaskQueue taskQueue = new TaskQueue(64, 64, 60L, TimeUnit.SECONDS);
+
     public BifromqEventCollectorPluginEventProvider(BifromqEventCollectorContext context) {
-        // 通过 context 获取配置
         PluginConfig pluginConfig = context.getPluginConfig();
         EventCollectorConfig eventCollectorConfig = pluginConfig.getEventCollectorConfig();
         log.info("EventProvider initialized with Kafka server: {}", eventCollectorConfig.getKafkaBootstrapServer());
 
-        // 初始化Kafka消息发送器
         this.sender = new KafkaMessageSender(eventCollectorConfig);
-        // 初始化事件处理器工厂
         this.processorFactory = new EventProcessorFactory();
     }
-
 
     @Override
     public void report(Event<?> eventObj) {
         Event<?> event = (Event<?>) eventObj.clone();
-        log.info("Received event: {}", event);
+        // ⭐ 入口同步抓 HLC + UTC ── 上游调 report() 的当下抓取,
+        // 不让 64 worker 池异步取值破坏因果顺序;HLC 严格单调,这里保存即真相;
+        // 若在 worker 内才取,CONNECT/DISCONNECT 同毫秒发生时 worker 调度抖动会让取值反序.
+        final long eventHlc = event.hlc();
+        final long eventUtc = event.utc();
+        log.info("Received event type={} hlc={} utc={}", event.type(), eventHlc, eventUtc);
 
-        taskQueue.addTask(() -> {
-            if (!TOPIC_MAP.containsKey(event.type())) {
-                log.warn("Discarding events of type {} as no mapping exists in TOPIC_MAP.", event.type());
-                return;
-            }
-
-            String topic = TOPIC_MAP.get(event.type());
-            EventProcessor processor = processorFactory.getProcessor(event.type());
-
-            if (processor != null) {
-                long startTime = System.currentTimeMillis();
-                log.info("Starting execution of event: '{}'. Time: {}", event.type(), startTime);
-
-                processor.process(event, topic, sender);
-
-                long endTime = System.currentTimeMillis();
-                log.info("Completed execution of event: '{}'. Duration: {} ms", event.type(), endTime - startTime);
-            } else {
-                log.warn("No processor found for event type: {}", event.type());
-            }
-        });
+        taskQueue.addTask(() -> dispatch(event, eventHlc, eventUtc));
     }
 
+    /**
+     * 异步分发单条事件:TOPIC_MAP 找 topic,Factory 找 processor,任一缺失 warn 丢弃.
+     *
+     * @param event    已 clone 的事件
+     * @param eventHlc 入口抓取的 HLC
+     * @param eventUtc 入口抓取的 UTC ms
+     */
+    private void dispatch(Event<?> event, long eventHlc, long eventUtc) {
+        Optional<String> topicOpt = Optional.ofNullable(TOPIC_MAP.get(event.type()));
+        if (topicOpt.isEmpty()) {
+            log.warn("Discarding events of type {} as no mapping exists in TOPIC_MAP.", event.type());
+            return;
+        }
+        Optional<EventProcessor> processorOpt = processorFactory.getProcessor(event.type());
+        if (processorOpt.isEmpty()) {
+            log.warn("No processor registered for event type: {}", event.type());
+            return;
+        }
+        long startTime = System.currentTimeMillis();
+        log.info("Starting execution event type={} hlc={}", event.type(), eventHlc);
+        processorOpt.get().process(event, topicOpt.get(), sender, eventHlc, eventUtc);
+        log.info("Completed event type={} hlc={} duration={}ms",
+            event.type(), eventHlc, System.currentTimeMillis() - startTime);
+    }
 
     @Override
     public void close() {
         taskQueue.shutdown();
         sender.close();
     }
-
-
 }

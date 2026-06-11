@@ -13,15 +13,16 @@
 
 package com.mqttsnet.thinglinks;
 
-import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.util.StrUtil;
@@ -41,8 +42,9 @@ import com.baidu.bifromq.plugin.authprovider.type.Ok;
 import com.baidu.bifromq.plugin.authprovider.type.Reject;
 import com.baidu.bifromq.plugin.authprovider.type.Success;
 import com.baidu.bifromq.type.ClientInfo;
-import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.mqttsnet.basic.model.cache.CacheKey;
+import com.mqttsnet.basic.utils.topic.MqttTopicMatcher;
 import com.mqttsnet.thinglinks.config.acl.AclCacheConfig;
 import com.mqttsnet.thinglinks.config.threadpool.ThreadPoolConfig;
 import com.mqttsnet.thinglinks.constant.CommonConstants;
@@ -52,7 +54,6 @@ import com.mqttsnet.thinglinks.entity.config.PluginConfig;
 import com.mqttsnet.thinglinks.entity.device.DeviceInfo;
 import com.mqttsnet.thinglinks.entity.enumeration.ClientAclActionTypeEnum;
 import com.mqttsnet.thinglinks.entity.enumeration.DeviceAclRuleActionTypeEnum;
-import com.mqttsnet.thinglinks.util.AclMatcherUtil;
 import com.mqttsnet.thinglinks.util.AclTopicPatternPlaceholderReplacer;
 import com.mqttsnet.thinglinks.util.OkHttpUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -94,13 +95,18 @@ import org.springframework.http.HttpStatus;
 @Extension
 public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvider, AutoCloseable {
 
+    /**
+     * topic 归一化用的多斜杠合并 Pattern,预编译避免 replaceAll 每次重新编译正则.
+     */
+    private static final Pattern MULTI_SLASH_PATTERN = java.util.regex.Pattern.compile("/+");
     private final AtomicBoolean stopped = new AtomicBoolean();
     private final ThreadPoolExecutor executor;
-
     private final AuthProviderConfig.AuthConfig authConfig;
     private final AuthProviderConfig.AclConfig aclConfig;
-
-    private final Cache<CacheKey, Boolean> aclCache;
+    /**
+     * ACL 异步缓存,内置并发 miss dedup,防缓存击穿.
+     */
+    private final AsyncCache<CacheKey, Boolean> aclCache;
 
     /**
      * 构造函数，通过 {@link BifromqAuthProviderContext} 初始化配置。
@@ -120,21 +126,50 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
         log.info("AuthProvider Config: clientConnectionUrl={}, aclCheckUrl={}", authConfig.getClientAuthUrl(), aclConfig.getAclCheckUrl());
 
         // 初始化线程池
+        // ★ async 化后 executor 只做 CPU 工作(JSON 解析/Ok 构建/ACL 匹配),HTTP 全在 OkHttp dispatcher.
+        // 倍数 50/200(高水位配置):16 核 = core=800/max=3200,32 核 = core=1600/max=6400,queue=10000.
+        // ThreadPoolConfig.newFixedExecutor 默认 allowCoreThreadTimeOut=false,core 线程常驻,
+        // bursty 流量来时无 spawn 开销直接接;突发超 core 时弹性扩容到 max,超出部分 60s 自动回收.
         this.executor = ThreadPoolConfig.newFixedExecutor(
-                "auth-worker",
-                Runtime.getRuntime().availableProcessors() * 10,
-                Runtime.getRuntime().availableProcessors() * 20,
-                1000
+            "auth-worker",
+            Runtime.getRuntime().availableProcessors() * 50,
+            Runtime.getRuntime().availableProcessors() * 200,
+            10000
         );
 
         // 初始化ACL 缓存
         this.aclCache = AclCacheConfig.buildCache(aclConfig.getCache(), executor);
-
     }
 
+    /**
+     * 按 ACL 规则列表检查 topic 是否允许 ── 直接调用 util-pro {@link MqttTopicMatcher} 做 MQTT 通配符匹配,
+     * 本方法只承担 ACL 业务语义:
+     * <ol>
+     *   <li>按 priority 升序排序(数字越小优先级越高)</li>
+     *   <li>过滤 enabled 规则</li>
+     *   <li>找第一个 topic 命中的规则,返回其 decision</li>
+     *   <li>未命中任何规则 → 默认拒绝(false)</li>
+     * </ol>
+     * 占位符已在调用方提前用 {@link AclTopicPatternPlaceholderReplacer} 完成替换。
+     */
+    private static boolean isTopicAllowedByRules(String topic, List<DeviceAclRule> rules) {
+        if (StrUtil.isBlank(topic) || rules == null || rules.isEmpty()) {
+            return false;
+        }
+        return rules.stream()
+            .filter(Objects::nonNull)
+            .filter(r -> Boolean.TRUE.equals(r.getEnabled()))
+            .sorted(Comparator.comparingInt(DeviceAclRule::getPriority))
+            .filter(r -> MqttTopicMatcher.match(r.getTopicPattern(), topic))
+            .findFirst()
+            .map(DeviceAclRule::getDecision)
+            .orElse(false);
+    }
 
     /**
      * MQTT3协议的认证方法，验证客户端连接请求。
+     * <p>★ 异步版本: 使用 OkHttp.enqueue 不阻塞 executor 线程,
+     * 响应解析在 executor 上完成(避免占 OkHttp dispatcher IO 线程).
      *
      * @param authData {@link MQTT3AuthData} 包含MQTT3认证数据
      * @return {@link CompletableFuture} 包含MQTT3认证结果 {@link MQTT3AuthResult}
@@ -149,13 +184,13 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
         String channelId = authData.getChannelId();
         log.info("MQTT3 - Authenticating client - clientId: {}, username: {}, cert: {}", clientId, username, cert);
 
-        return CompletableFuture.supplyAsync(() -> clientConnectionAuthentication(clientId, password, username, cert, remoteAddr, channelId), executor)
-                .thenApply(this::handleMQTT3AuthenticationResponse);
+        return clientConnectionAuthenticationAsync(clientId, password, username, cert, remoteAddr, channelId)
+            .thenApplyAsync(this::handleMQTT3AuthenticationResponse, executor);
     }
 
     /**
-     * l
      * MQTT5协议的认证方法，验证客户端连接请求。
+     * <p>★ 异步版本: 与 MQTT3 同套路.
      *
      * @param authData {@link MQTT5AuthData} 包含MQTT5认证数据
      * @return {@link CompletableFuture} 包含MQTT5认证结果 {@link MQTT5AuthResult}
@@ -170,12 +205,14 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
         String channelId = authData.getChannelId();
         log.info("MQTT5 - Authenticating client - clientId: {}, username: {}, cert: {}", clientId, username, cert);
 
-        return CompletableFuture.supplyAsync(() -> clientConnectionAuthentication(clientId, password, username, cert, remoteAddr, channelId), executor)
-                .thenApply(this::handleMQTT5AuthenticationResponse);
+        return clientConnectionAuthenticationAsync(clientId, password, username, cert, remoteAddr, channelId)
+            .thenApplyAsync(this::handleMQTT5AuthenticationResponse, executor);
     }
 
     /**
-     * 通过向远程认证服务器发送POST请求执行客户端认证。
+     * 异步向远程认证服务器发送POST请求.
+     * <p>★ 核心改造: 用 {@link OkHttpUtil#sendPostRequestAsync} 替代 supplyAsync 包同步 .execute().
+     * <p>请求构建本身极快(JSONObject 几个 put),直接在调用线程做,不需要 supplyAsync.
      *
      * @param clientId   客户端ID
      * @param password   客户端密码
@@ -183,38 +220,30 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
      * @param cert       SSL证书信息
      * @param remoteAddr 客户端远程地址
      * @param channelId  通道ID
-     * @return {@link JSONObject} 认证服务器的响应
+     * @return {@link CompletableFuture} 包装的认证服务器响应,失败/超时返回 null
      */
-    private JSONObject clientConnectionAuthentication(String clientId, String password, String username, String cert, String remoteAddr, String channelId) {
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put(CommonConstants.CLIENT_IDENTIFIER, clientId);
-            jsonObject.put(CommonConstants.PASSWORD, password);
-            jsonObject.put(CommonConstants.USERNAME, username);
-            jsonObject.put(CommonConstants.PROTOCOL_TYPE, CommonConstants.MQTT_PROTOCOL_TYPE);
-            jsonObject.put("remoteAddr", remoteAddr);
-            jsonObject.put("channelId", channelId);
+    private CompletableFuture<JSONObject> clientConnectionAuthenticationAsync(String clientId, String password, String username, String cert, String remoteAddr, String channelId) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(CommonConstants.CLIENT_IDENTIFIER, clientId);
+        jsonObject.put(CommonConstants.PASSWORD, password);
+        jsonObject.put(CommonConstants.USERNAME, username);
+        jsonObject.put(CommonConstants.PROTOCOL_TYPE, CommonConstants.MQTT_PROTOCOL_TYPE);
+        jsonObject.put("remoteAddr", remoteAddr);
+        jsonObject.put("channelId", channelId);
 
-            if (StringUtils.isNotBlank(cert)) {
-                jsonObject.put(CommonConstants.AUTH_MODE, 1);
-                jsonObject.put(CommonConstants.CLIENT_CERTIFICATE, cert);
-            } else {
-                jsonObject.put(CommonConstants.AUTH_MODE, 0);
-            }
-
-            // 使用新工具类发送请求
-            Optional<JSONObject> response = OkHttpUtil.sendPostRequest(
-                    authConfig.getClientAuthUrl(),
-                    jsonObject.toJSONString(),
-                    null,
-                    JSON::parseObject
-            );
-
-            return response.orElse(null);
-        } catch (IOException e) {
-            log.error("HTTP request failed for client authentication: {}", clientId, e);
-            throw new CompletionException("HTTP request failed", e);
+        if (StringUtils.isNotBlank(cert)) {
+            jsonObject.put(CommonConstants.AUTH_MODE, 1);
+            jsonObject.put(CommonConstants.CLIENT_CERTIFICATE, cert);
+        } else {
+            jsonObject.put(CommonConstants.AUTH_MODE, 0);
         }
+
+        return OkHttpUtil.sendPostRequestAsync(
+            authConfig.getClientAuthUrl(),
+            jsonObject.toJSONString(),
+            null,
+            JSON::parseObject
+        ).thenApply(opt -> opt.orElse(null));
     }
 
     /**
@@ -291,13 +320,13 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
             Ok.Builder okBuilder = buildOkResponse(responseBody);
             // 创建 Success 构建器并填充属性
             Success.Builder successBuilder = Success.newBuilder()
-                    .setTenantId(okBuilder.getTenantId())
-                    .setUserId(okBuilder.getUserId())
-                    .putAllAttrs(okBuilder.getAttrsMap());
+                .setTenantId(okBuilder.getTenantId())
+                .setUserId(okBuilder.getUserId())
+                .putAllAttrs(okBuilder.getAttrsMap());
 
             return MQTT5AuthResult.newBuilder()
-                    .setSuccess(successBuilder.build())
-                    .build();
+                .setSuccess(successBuilder.build())
+                .build();
         } else {
             return createMQTT5RejectResponse("Certification result failed");
         }
@@ -321,17 +350,17 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
 
         //认证接口返回ACL 控制参数（ ACL 直接嵌入在令牌中。此信息将在发布/订阅期间用于访问控制。在当前工作流中，每个会话的 ClientInfo（在成功连接后填充）仅包含有限的保留元数据。）
         Optional.ofNullable(responseJson.getJSONArray(CommonConstants.ACL_RULE_LIST_RESULT))
-                .filter(array -> !array.isEmpty())
-                .map(array -> array.toJavaList(DeviceAclRule.class))
-                .filter(list -> !list.isEmpty())
-                .ifPresent(rules -> attrsMap.put(CommonConstants.ACL_RULE, JSON.toJSONString(rules)));
+            .filter(array -> !array.isEmpty())
+            .map(array -> array.toJavaList(DeviceAclRule.class))
+            .filter(list -> !list.isEmpty())
+            .ifPresent(rules -> attrsMap.put(CommonConstants.ACL_RULE, JSON.toJSONString(rules)));
 
         log.info("Authentication successful - clientId: {}, tenantId: {}, attrsMap: {}", clientId, tenantId, attrsMap);
 
         return Ok.newBuilder()
-                .setTenantId(tenantId)
-                .setUserId(deviceIdentification)
-                .putAllAttrs(attrsMap);
+            .setTenantId(tenantId)
+            .setUserId(deviceIdentification)
+            .putAllAttrs(attrsMap);
     }
 
     /**
@@ -343,11 +372,11 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
     private MQTT3AuthResult createMQTT3RejectResponse(String reason) {
         log.info("MQTT3 Authentication rejected - reason: {}", reason);
         return MQTT3AuthResult.newBuilder()
-                .setReject(Reject.newBuilder()
-                        .setCode(Reject.Code.NotAuthorized)
-                        .setReason(reason)
-                        .build())
-                .build();
+            .setReject(Reject.newBuilder()
+                .setCode(Reject.Code.NotAuthorized)
+                .setReason(reason)
+                .build())
+            .build();
     }
 
     /**
@@ -359,13 +388,12 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
     private MQTT5AuthResult createMQTT5RejectResponse(String reason) {
         log.info("MQTT5 Authentication rejected - reason: {}", reason);
         return MQTT5AuthResult.newBuilder()
-                .setFailed(Failed.newBuilder()
-                        .setCode(Failed.Code.NotAuthorized)
-                        .setReason(reason)
-                        .build())
-                .build();
+            .setFailed(Failed.newBuilder()
+                .setCode(Failed.Code.NotAuthorized)
+                .setReason(reason)
+                .build())
+            .build();
     }
-
 
     /**
      * 执行 MQTT5 扩展认证。根据输入的认证数据决定是成功、继续或失败。
@@ -409,18 +437,17 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
         if (isValidInitialData(initialData)) {
             // 构建继续认证的响应
             return MQTT5ExtendedAuthResult.newBuilder()
-                    .setSuccess(Success.newBuilder()
-                            .setTenantId("thinglinks")
-                            .setUserId("User456")
-                            .putAttrs("role", "user")
-                            .build())
-                    .build();
+                .setSuccess(Success.newBuilder()
+                    .setTenantId("thinglinks")
+                    .setUserId("User456")
+                    .putAttrs("role", "user")
+                    .build())
+                .build();
         } else {
             // 认证失败，返回拒绝响应
             return createMQTT5ExtendedRejectResponse("Initial authentication failed");
         }
     }
-
 
     private boolean isValidInitialData(MQTT5ExtendedAuthData.Initial initialData) {
         // 验证初始认证数据的逻辑
@@ -432,19 +459,18 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
         return true;
     }
 
-
     private MQTT5ExtendedAuthResult processContinueAuth(MQTT5ExtendedAuthData.Auth authData) {
         log.info("Processing continue auth with data: {}", authData);
 
         // 根据继续认证数据进行实际的认证操作
         if (isValidAuthData(authData)) {
             return MQTT5ExtendedAuthResult.newBuilder()
-                    .setSuccess(Success.newBuilder()
-                            .setTenantId("thinglinks")
-                            .setUserId("User456")
-                            .putAttrs("role", "user")
-                            .build())
-                    .build();
+                .setSuccess(Success.newBuilder()
+                    .setTenantId("thinglinks")
+                    .setUserId("User456")
+                    .putAttrs("role", "user")
+                    .build())
+                .build();
         } else {
             return createMQTT5ExtendedRejectResponse("Continue authentication failed");
         }
@@ -453,16 +479,21 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
     private MQTT5ExtendedAuthResult createMQTT5ExtendedRejectResponse(String reason) {
         log.info("MQTT5 Extended Auth rejected - reason: {}", reason);
         return MQTT5ExtendedAuthResult.newBuilder()
-                .setFailed(Failed.newBuilder()
-                        .setCode(Failed.Code.NotAuthorized)
-                        .setReason(reason)
-                        .build())
-                .build();
+            .setFailed(Failed.newBuilder()
+                .setCode(Failed.Code.NotAuthorized)
+                .setReason(reason)
+                .build())
+            .build();
     }
-
 
     /**
      * 执行客户端ACL权限检查
+     * <p>★ 用 {@link AsyncCache#get(Object, java.util.function.BiFunction)} 替代 getIfPresent+put 两步:
+     * <ul>
+     *   <li>并发同 key miss 时 Caffeine 内部 dedup,只跑一次 performAclCheck</li>
+     *   <li>loader 异常完成时自动不缓存,后续请求重试</li>
+     *   <li>无 race condition,无需手动 whenComplete put</li>
+     * </ul>
      *
      * @param client 客户端信息，包含认证元数据
      * @param action 客户端操作（PUB/SUB/UNSUB）
@@ -480,52 +511,41 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
         }
 
         CacheKey cacheKey = buildAclCacheKey(client, action);
-        Boolean cachedResult = aclCache.getIfPresent(cacheKey);
-        if (cachedResult != null) {
-            log.info("ACL缓存命中 [key:{}] result:{}", cacheKey.getKey(), cachedResult);
-            return CompletableFuture.completedFuture(cachedResult);
-        }
-
-        return performAclCheck(client, action)
-                .thenApply(allowed -> allowed)
-                .whenComplete((allowed, ex) -> {
-                    if (ex == null) {
-                        try {
-                            // 仅在没有异常时更新缓存
-                            aclCache.put(cacheKey, allowed);
-                        } catch (Exception e) {
-                            log.error("Cache update failed for key: {}", cacheKey.getKey(), e);
-                        }
-                    }
-                })
-                .exceptionally(e -> {
-                    log.warn("ACL check failed for tenantId:{}", client.getTenantId(), e);
-                    return false;
-                });
+        // AsyncCache.get(): 命中返回 in-memory CompletableFuture(μs);
+        // 未命中调 loader,期间并发请求共享同一 future(防击穿).
+        return aclCache.get(cacheKey, (k, exec) -> performAclCheck(client, action))
+            .exceptionally(e -> {
+                log.warn("ACL check failed for tenantId:{}", client.getTenantId(), e);
+                return false;
+            });
     }
-
 
     /**
      * 执行ACL权限检查的核心方法
      * 处理两种ACL检查场景：
-     * 1. 优先检查客户端元数据中的ACL规则（快速路径）
-     * 2. 如果元数据中没有有效规则，则通过API接口检查（回退路径）
+     * 1. 优先检查客户端元数据中的ACL规则（快速路径,CPU 在 executor 上做避免阻塞 BifroMQ event loop）
+     * 2. 如果元数据中没有有效规则,异步调用 API 接口检查（回退路径）
      *
      * @param client 客户端信息，包含认证元数据
      * @param action 客户端操作（PUB/SUB/UNSUB）
      * @return {@link CompletableFuture<Boolean>} 异步返回鉴权结果
      */
     private CompletableFuture<Boolean> performAclCheck(ClientInfo client, MQTTAction action) {
+        // 步骤1-2: 构建请求 + 元数据匹配(CPU 工作放 executor)
         return CompletableFuture.supplyAsync(() -> {
-            // 步骤1：构建基础ACL检查请求参数
             JSONObject aclRequest = buildAclRequest(client, action);
-
-            // 步骤2：优先检查客户端元数据中的ACL规则
             Optional<Boolean> metadataCheckResult = checkAclFromClientMetadata(client, aclRequest);
-
-            // 步骤3：如果元数据检查有明确结果则直接返回，否则回退到API检查
-            return metadataCheckResult.orElseGet(() -> checkAclViaHttpApi(aclRequest));
-        }, executor);
+            // 用 2-tuple 透传给下一阶段;数组比新增类轻量
+            return new Object[]{aclRequest, metadataCheckResult};
+        }, executor).thenCompose(arr -> {
+            @SuppressWarnings("unchecked")
+            Optional<Boolean> cached = (Optional<Boolean>) arr[1];
+            if (cached.isPresent()) {
+                return CompletableFuture.completedFuture(cached.get());
+            }
+            // 步骤3: 元数据未命中,异步走 HTTP API
+            return checkAclViaHttpApiAsync((JSONObject) arr[0]);
+        });
     }
 
     /**
@@ -541,49 +561,49 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
         try {
             // 步骤1：从元数据中提取ACL规则字符串
             return Optional.ofNullable(client.getMetadataMap().get(CommonConstants.ACL_RULE))
-                    // 过滤空值
-                    .filter(StrUtil::isNotBlank)
-                    // 转换为ACL规则对象列表
-                    .map(acl -> JSONArray.parseArray(acl, DeviceAclRule.class))
-                    // 过滤空规则列表
-                    .filter(rules -> !rules.isEmpty())
-                    // 执行规则匹配
-                    .flatMap(rules -> {
-                        // 步骤2：解析动作类型
-                        Optional<ClientAclActionTypeEnum> actionType = Optional.ofNullable(aclRequest.getInteger(CommonConstants.ACTION_TYPE))
-                                .flatMap(ClientAclActionTypeEnum::fromValue);
+                // 过滤空值
+                .filter(StrUtil::isNotBlank)
+                // 转换为ACL规则对象列表
+                .map(acl -> JSONArray.parseArray(acl, DeviceAclRule.class))
+                // 过滤空规则列表
+                .filter(rules -> !rules.isEmpty())
+                // 执行规则匹配
+                .flatMap(rules -> {
+                    // 步骤2：解析动作类型
+                    Optional<ClientAclActionTypeEnum> actionType = Optional.ofNullable(aclRequest.getInteger(CommonConstants.ACTION_TYPE))
+                        .flatMap(ClientAclActionTypeEnum::fromValue);
 
-                        // 步骤3：转换为规则动作类型
-                        Optional<DeviceAclRuleActionTypeEnum> ruleActionType = actionType
-                                .flatMap(DeviceAclRuleActionTypeEnum::fromClientType);
+                    // 步骤3：转换为规则动作类型
+                    Optional<DeviceAclRuleActionTypeEnum> ruleActionType = actionType
+                        .flatMap(DeviceAclRuleActionTypeEnum::fromClientType);
 
-                        // 无效动作类型直接返回空
-                        if (ruleActionType.isEmpty()) {
-                            return Optional.empty();
-                        }
+                    // 无效动作类型直接返回空
+                    if (ruleActionType.isEmpty()) {
+                        return Optional.empty();
+                    }
 
-                        // 步骤4：过滤出适用的规则
-                        List<DeviceAclRule> filteredRules = rules.stream()
-                                .filter(DeviceAclRule::getEnabled)
-                                .filter(rule ->
-                                        rule.getActionType().equals(ruleActionType.get().getValue()) ||
-                                                rule.getActionType().equals(DeviceAclRuleActionTypeEnum.ALL.getValue())
-                                )
-                                .collect(Collectors.toList());
+                    // 步骤4：过滤出适用的规则
+                    List<DeviceAclRule> filteredRules = rules.stream()
+                        .filter(DeviceAclRule::getEnabled)
+                        .filter(rule ->
+                            rule.getActionType().equals(ruleActionType.get().getValue()) ||
+                                rule.getActionType().equals(DeviceAclRuleActionTypeEnum.ALL.getValue())
+                        )
+                        .collect(Collectors.toList());
 
-                        // 步骤5：如果没有适用的规则，返回empty回退到API检查
-                        if (filteredRules.isEmpty()) {
-                            return Optional.empty();
-                        }
+                    // 步骤5：如果没有适用的规则，返回empty回退到API检查
+                    if (filteredRules.isEmpty()) {
+                        return Optional.empty();
+                    }
 
-                        // 步骤6：执行主题匹配
-                        Optional<DeviceInfo> deviceInfoOptional = Optional.ofNullable(client.getMetadataMap().get(CommonConstants.DEVICE_INFO))
-                                .filter(StrUtil::isNotBlank)
-                                .map(deviceInfo -> JSON.parseObject(deviceInfo, DeviceInfo.class));
-                        AclTopicPatternPlaceholderReplacer.replacePlaceholders(filteredRules, deviceInfoOptional);
-                        return Optional.of(AclMatcherUtil.isTopicAllowed(
-                                aclRequest.getString(CommonConstants.TOPIC), filteredRules));
-                    });
+                    // 步骤6：执行主题匹配
+                    Optional<DeviceInfo> deviceInfoOptional = Optional.ofNullable(client.getMetadataMap().get(CommonConstants.DEVICE_INFO))
+                        .filter(StrUtil::isNotBlank)
+                        .map(deviceInfo -> JSON.parseObject(deviceInfo, DeviceInfo.class));
+                    AclTopicPatternPlaceholderReplacer.replacePlaceholders(filteredRules, deviceInfoOptional);
+                    return Optional.of(isTopicAllowedByRules(
+                        aclRequest.getString(CommonConstants.TOPIC), filteredRules));
+                });
         } catch (Exception e) {
             log.error("从客户端元数据中检查ACL权限失败（回退至API检查） - 错误信息: {}", e.getMessage());
             return Optional.empty();
@@ -592,7 +612,30 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
     }
 
     /**
-     * 通过HTTP API检查ACL权限（回退路径）
+     * 异步通过HTTP API检查ACL权限（回退路径,生产推荐）
+     * <p>★ 使用 {@link OkHttpUtil#sendPostRequestForStatusAsync},不阻塞调用线程.
+     *
+     * @param aclRequest 完整的ACL检查请求参数
+     * @return {@link CompletableFuture<Boolean>}
+     * - true: 允许访问(HTTP 200)
+     * - false: 拒绝访问或检查失败(任意非 200 / 网络异常)
+     */
+    private CompletableFuture<Boolean> checkAclViaHttpApiAsync(JSONObject aclRequest) {
+        return OkHttpUtil.sendPostRequestForStatusAsync(
+            aclConfig.getAclCheckUrl(),
+            aclRequest.toJSONString(),
+            null
+        ).thenApply(statusCode -> {
+            if (log.isDebugEnabled()) {
+                log.debug("ACL API 异步检查完成 - 状态码: {}, 请求参数: {}", statusCode, aclRequest);
+            }
+            return statusCode == HttpStatus.OK.value();
+        });
+    }
+
+    /**
+     * 同步通过HTTP API检查ACL权限(保留,不再被 performAclCheck 调用,
+     * 仅供需要同步语义的场景使用,新代码推荐 {@link #checkAclViaHttpApiAsync}).
      *
      * @param aclRequest 完整的ACL检查请求参数
      * @return boolean
@@ -601,24 +644,18 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
      */
     private boolean checkAclViaHttpApi(JSONObject aclRequest) {
         try {
-            // 发送HTTP POST请求到ACL检查接口
             int statusCode = OkHttpUtil.sendPostRequestForStatus(
-                    aclConfig.getAclCheckUrl(),
-                    aclRequest.toJSONString(),
-                    null
+                aclConfig.getAclCheckUrl(),
+                aclRequest.toJSONString(),
+                null
             );
-
             log.debug("ACL API检查完成 - 状态码: {}, 请求参数: {}", statusCode, aclRequest);
-
-            // HTTP 200表示允许访问
             return statusCode == HttpStatus.OK.value();
         } catch (Exception e) {
             log.error("ACL API检查失败 - 请求参数: {}, 错误信息: {}", aclRequest, e.getMessage());
-            // 接口调用失败时默认拒绝访问
             return false;
         }
     }
-
 
     /**
      * 构建ACL检查请求参数
@@ -636,13 +673,13 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
 
         // 安全处理 metadataMap
         Optional.of(client.getMetadataMap())
-                .ifPresent(metadataMap -> {
-                    aclRequest.put(CommonConstants.CLIENT_IDENTIFIER, metadataMap.getOrDefault(CommonConstants.CLIENT_ID, ""));
-                    aclRequest.put(CommonConstants.USER_ID, metadataMap.getOrDefault(CommonConstants.USER_ID, ""));
-                    aclRequest.put("channelId", metadataMap.getOrDefault("channelId", ""));
-                    aclRequest.put("broker", metadataMap.getOrDefault("broker", ""));
-                    aclRequest.put("remoteAddr", metadataMap.getOrDefault("address", ""));
-                });
+            .ifPresent(metadataMap -> {
+                aclRequest.put(CommonConstants.CLIENT_IDENTIFIER, metadataMap.getOrDefault(CommonConstants.CLIENT_ID, ""));
+                aclRequest.put(CommonConstants.USER_ID, metadataMap.getOrDefault(CommonConstants.USER_ID, ""));
+                aclRequest.put("channelId", metadataMap.getOrDefault("channelId", ""));
+                aclRequest.put("broker", metadataMap.getOrDefault("broker", ""));
+                aclRequest.put("remoteAddr", metadataMap.getOrDefault("address", ""));
+            });
 
         // 添加操作相关参数
         aclRequest.put(CommonConstants.ACTION_TYPE, resolveActionType(action));
@@ -659,13 +696,19 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
      */
     private Integer resolveActionType(MQTTAction action) {
         return Optional.of(action)
-                .map(a -> {
-                    if (a.hasPub()) return ClientAclActionTypeEnum.PUBLISH.getValue();
-                    if (a.hasSub()) return ClientAclActionTypeEnum.SUBSCRIBE.getValue();
-                    if (a.hasUnsub()) return ClientAclActionTypeEnum.UNSUBSCRIBE.getValue();
-                    return ClientAclActionTypeEnum.UNKNOWN.getValue();
-                })
-                .orElse(null);
+            .map(a -> {
+                if (a.hasPub()) {
+                    return ClientAclActionTypeEnum.PUBLISH.getValue();
+                }
+                if (a.hasSub()) {
+                    return ClientAclActionTypeEnum.SUBSCRIBE.getValue();
+                }
+                if (a.hasUnsub()) {
+                    return ClientAclActionTypeEnum.UNSUBSCRIBE.getValue();
+                }
+                return ClientAclActionTypeEnum.UNKNOWN.getValue();
+            })
+            .orElse(null);
     }
 
     /**
@@ -676,20 +719,26 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
      */
     private String resolveActionTopic(MQTTAction action) {
         return Optional.of(action)
-                .map(a -> {
-                    if (a.hasPub()) return a.getPub().getTopic();
-                    if (a.hasSub()) return a.getSub().getTopicFilter();
-                    if (a.hasUnsub()) return a.getUnsub().getTopicFilter();
-                    return "";
-                })
-                .orElse("");
+            .map(a -> {
+                if (a.hasPub()) {
+                    return a.getPub().getTopic();
+                }
+                if (a.hasSub()) {
+                    return a.getSub().getTopicFilter();
+                }
+                if (a.hasUnsub()) {
+                    return a.getUnsub().getTopicFilter();
+                }
+                return "";
+            })
+            .orElse("");
     }
-
 
     private CacheKey buildAclCacheKey(ClientInfo client, MQTTAction action) {
         String clientId = client.getMetadataMap().get("clientId");
         String topic = resolveActionTopic(action);
-        String normalizedTopic = topic.replaceAll("/+", "/");
+        // ★ 用预编译 Pattern.matcher().replaceAll(),避免 String.replaceAll 每次重新编译正则
+        String normalizedTopic = MULTI_SLASH_PATTERN.matcher(topic).replaceAll("/");
 
         // 使用组合键：clientId + actionType + normalizedTopic
         String cacheKeyStr = String.format("%s|%s|%s", clientId, action.getTypeCase().name(), normalizedTopic);
@@ -697,16 +746,22 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
     }
 
     /**
-     * 失效指定channel的缓存
+     * 失效指定 clientId 的所有 ACL 缓存条目.
+     * <p>当前是 O(n) 全表扫描;若 clientId 失效频率高且 cache 容量大(1M+),
+     * 后续可考虑维护 clientId → CacheKey 集合的二级索引(此处暂保留 scan 简单实现).
+     * <p>{@code aclCache.synchronous()} 返回 {@link com.github.benmanes.caffeine.cache.Cache} 视图,
+     * 因为 AsyncCache.asMap() 返回 ConcurrentMap<K, CompletableFuture<V>>,直接迭代 future 没意义.
      */
     public void invalidateAclCache(String clientId) {
-        if (aclCache != null) {
-            long count = aclCache.asMap().keySet().stream()
-                    .filter(key -> key.getKey().startsWith(clientId + "|"))
-                    .peek(aclCache::invalidate)
-                    .count();
-            log.debug("已失效clientId:[{}]...{}条Acl缓存", clientId, count);
+        if (aclCache == null) {
+            return;
         }
+        String prefix = clientId + "|";
+        long count = aclCache.synchronous().asMap().keySet().stream()
+            .filter(key -> key.getKey().startsWith(prefix))
+            .peek(aclCache.synchronous()::invalidate)
+            .count();
+        log.debug("已失效clientId:[{}]...{}条Acl缓存", clientId, count);
     }
 
 

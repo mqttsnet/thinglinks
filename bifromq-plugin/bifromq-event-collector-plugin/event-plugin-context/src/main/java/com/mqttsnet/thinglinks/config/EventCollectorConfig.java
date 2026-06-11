@@ -11,6 +11,40 @@ public class EventCollectorConfig {
     private KafkaConfig kafka;
 
     /**
+     * 获取完整的bootstrap servers地址
+     *
+     * @return Kafka服务器地址
+     */
+    public String getKafkaBootstrapServer() {
+        return kafka != null ? kafka.getBootstrapServers() : null;
+    }
+
+    /**
+     * 验证配置是否有效
+     *
+     * @return 配置是否有效
+     */
+    public boolean isValid() {
+        if (kafka == null || kafka.getBootstrapServers() == null) {
+            return false;
+        }
+        // 检查必要的生产者配置
+        if (kafka.getProducer() != null) {
+            ProducerConfig producer = kafka.getProducer();
+            // 如果配置了SASL，必须提供完整的认证信息
+            if (producer.getSecurityProtocol() != null &&
+                producer.getSecurityProtocol().startsWith("SASL")) {
+                if (producer.getSasl() == null ||
+                    producer.getSasl().getJaas() == null ||
+                    producer.getSasl().getJaas().getConfig() == null) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Kafka配置内部类
      */
     @Data
@@ -206,39 +240,5 @@ public class EventCollectorConfig {
          * 注意：必须以分号结尾
          */
         private String config;
-    }
-
-    /**
-     * 获取完整的bootstrap servers地址
-     *
-     * @return Kafka服务器地址
-     */
-    public String getKafkaBootstrapServer() {
-        return kafka != null ? kafka.getBootstrapServers() : null;
-    }
-
-    /**
-     * 验证配置是否有效
-     *
-     * @return 配置是否有效
-     */
-    public boolean isValid() {
-        if (kafka == null || kafka.getBootstrapServers() == null) {
-            return false;
-        }
-        // 检查必要的生产者配置
-        if (kafka.getProducer() != null) {
-            ProducerConfig producer = kafka.getProducer();
-            // 如果配置了SASL，必须提供完整的认证信息
-            if (producer.getSecurityProtocol() != null &&
-                    producer.getSecurityProtocol().startsWith("SASL")) {
-                if (producer.getSasl() == null ||
-                        producer.getSasl().getJaas() == null ||
-                        producer.getSasl().getJaas().getConfig() == null) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }

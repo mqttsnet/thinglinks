@@ -20,12 +20,12 @@ public final class ThreadPoolConfig {
                                                       int maxSize,
                                                       int queueCapacity) {
         return new ThreadPoolExecutor(
-                coreSize,
-                maxSize,
-                60L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(queueCapacity),
-                new NamedThreadFactory(namePrefix),
-                new ThreadPoolExecutor.CallerRunsPolicy()
+            coreSize,
+            maxSize,
+            60L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(queueCapacity),
+            new NamedThreadFactory(namePrefix),
+            new ThreadPoolExecutor.CallerRunsPolicy()
         );
     }
 

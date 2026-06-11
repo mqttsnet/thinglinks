@@ -17,8 +17,7 @@ import com.baidu.bifromq.plugin.eventcollector.Event;
 import com.mqttsnet.thinglinks.sender.KafkaMessageSender;
 
 /**
- * 事件处理器接口
- * 定义处理不同类型事件的标准方法
+ * 事件处理器接口 ── 把 event 对象转换为 Kafka 消息并投递.
  *
  * @author mqttsnet
  * @since 1.0.0
@@ -26,12 +25,17 @@ import com.mqttsnet.thinglinks.sender.KafkaMessageSender;
 public interface EventProcessor {
 
     /**
-     * 处理事件并发送到Kafka
+     * 处理事件并发送到 Kafka.
+     * <p>
+     * eventHlc / eventUtc 由事件采集器在 report 入口同步从 {@code Event.hlc()} / {@code Event.utc()}
+     * 抓取并传入,避免 64 worker 异步池内取值导致的因果时钟乱序;下游 mqs 使用 hlc 做状态机单调写.
      *
-     * @param event  事件对象
-     * @param topic  Kafka主题
-     * @param sender Kafka消息发送器
+     * @param event    event 对象
+     * @param topic    目标 Kafka topic
+     * @param sender   Kafka 消息发送器
+     * @param eventHlc 因果时钟 HLC(64-bit,下游单调写权威键)
+     * @param eventUtc 物理 UTC ms(时间锚点,业务展示用)
      */
-    void process(Event<?> event, String topic, KafkaMessageSender sender);
+    void process(Event<?> event, String topic, KafkaMessageSender sender, long eventHlc, long eventUtc);
 
 }

@@ -16,7 +16,7 @@
     </modules>
 
     <properties>
-        <revision>1.3.0</revision>
+        <revision>1.4.0</revision>
         <bifromq.version>3.3.5</bifromq.version>
         <pf4j.version>3.10.0</pf4j.version>
         <slf4j.version>1.7.30</slf4j.version>
