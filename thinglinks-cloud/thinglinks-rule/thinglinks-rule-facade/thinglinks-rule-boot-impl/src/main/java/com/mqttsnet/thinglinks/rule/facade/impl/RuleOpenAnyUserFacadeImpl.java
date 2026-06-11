@@ -4,6 +4,7 @@ import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.thinglinks.rule.facade.RuleOpenAnyUserFacade;
 import com.mqttsnet.thinglinks.service.script.RuleGroovyScriptService;
+import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptDirectCompileParam;
 import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptExecuteScriptParam;
 import com.mqttsnet.thinglinks.vo.result.script.GroovyScriptEngineExecutorResultVO;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,19 @@ public class RuleOpenAnyUserFacadeImpl implements RuleOpenAnyUserFacade {
         } catch (Exception e) {
             log.error("Unexpected error while executing script: ", e);
             return R.fail("Unexpected error executing script: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public R<GroovyScriptEngineExecutorResultVO> executeScriptContent(RuleGroovyScriptDirectCompileParam param) {
+        try {
+            return R.success(ruleGroovyScriptService.runDirectCompile(param));
+        } catch (BizException bizException) {
+            log.warn("Business exception while executing script content: ", bizException);
+            return R.fail(bizException);
+        } catch (Exception e) {
+            log.error("Unexpected error while executing script content: ", e);
+            return R.fail("Unexpected error executing script content: " + e.getMessage());
         }
     }
 }

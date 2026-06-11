@@ -156,7 +156,9 @@ public class RuleController extends SuperController<RuleService, Long, Rule, Rul
     @GetMapping("/getRuleDetails/{id}")
     public R<RuleDetailsResultVO> getRuleDetails(@PathVariable("id") Long id) {
         log.info("getRuleDetails id: {}", id);
-        return R.success(superService.getRuleDetails(id));
+        RuleDetailsResultVO result = superService.getRuleDetails(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
     /**
@@ -174,7 +176,9 @@ public class RuleController extends SuperController<RuleService, Long, Rule, Rul
     @GetMapping("/getRuleDetailsByIdentification/{ruleIdentification}")
     public R<RuleDetailsResultVO> getRuleDetailsByIdentification(@PathVariable("ruleIdentification") String ruleIdentification) {
         log.info("getRuleDetailsByIdentification: {}", ruleIdentification);
-        return R.success(superService.getRuleDetailsByIdentification(ruleIdentification));
+        RuleDetailsResultVO result = superService.getRuleDetailsByIdentification(ruleIdentification);
+        echoService.action(result);
+        return R.success(result);
     }
 
 

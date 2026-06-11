@@ -59,7 +59,9 @@ public class RuleExecutionLogController extends SuperController<RuleExecutionLog
     @GetMapping("/getRuleExecutionLogDetails/{id}")
     public R<RuleExecutionLogDetailsResultVO> getRuleExecutionLogDetails(@PathVariable("id") Long id) {
         log.info("getRuleExecutionLogDetails id: {}", id);
-        return R.success(superService.getRuleExecutionLogDetails(id));
+        RuleExecutionLogDetailsResultVO result = superService.getRuleExecutionLogDetails(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
 

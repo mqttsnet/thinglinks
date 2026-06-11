@@ -32,13 +32,13 @@ import java.util.stream.IntStream;
 public class RuleGroovyScriptQuery {
     private static final Splitter KEY_SPLITTER = Splitter.on(StrPool.COLON).trimResults();
     /**
-     * 5个基础字段 + 业务标识
+     * 脚本类型 + 渠道编码 + 产品标识 + 主题模式
      */
-    private static final int REQUIRED_PARTS = 6;
+    private static final int REQUIRED_PARTS = 4;
 
     /**
      * 脚本唯一标识
-     * 唯一键定义(命名空间:平台编码:产品编码:渠道编码:业务编码:业务标识)
+     * 唯一键定义(脚本类型:渠道编码:产品标识:主题模式)
      * 中间通过:分割 StrPool.COLON
      */
     @Schema(description = "脚本唯一标识")
@@ -46,22 +46,10 @@ public class RuleGroovyScriptQuery {
 
 
     /**
-     * 命名空间
+     * 脚本类型
      */
-    @Schema(description = "命名空间")
-    private String namespace;
-
-    /**
-     * 平台编码
-     */
-    @Schema(description = "平台编码")
-    private String platformCode;
-
-    /**
-     * 产品编码
-     */
-    @Schema(description = "产品编码")
-    private String productCode;
+    @Schema(description = "脚本类型")
+    private String scriptType;
 
     /**
      * 渠道编码
@@ -70,27 +58,25 @@ public class RuleGroovyScriptQuery {
     private String channelCode;
 
     /**
-     * 业务编码
+     * 产品标识
      */
-    @Schema(description = "业务编码")
-    private String businessCode;
+    @Schema(description = "产品标识")
+    private String productIdentification;
 
     /**
-     * 业务标识
+     * 主题模式
      */
-    @Schema(description = "业务标识")
-    private String businessIdentification;
+    @Schema(description = "主题模式")
+    private String topicPattern;
 
 
     public RuleGroovyScriptQuery(String uniqueKey) {
         validateUniqueKey(uniqueKey);
         List<String> parts = KEY_SPLITTER.splitToList(uniqueKey);
-        this.namespace = parts.get(0);
-        this.platformCode = parts.get(1);
-        this.productCode = parts.get(2);
-        this.channelCode = parts.get(3);
-        this.businessCode = parts.get(4);
-        this.businessIdentification = parts.get(5);
+        this.scriptType = parts.get(0);
+        this.channelCode = parts.get(1);
+        this.productIdentification = parts.get(2);
+        this.topicPattern = parts.get(3);
         this.uniqueKey = uniqueKey;
     }
 
@@ -102,12 +88,12 @@ public class RuleGroovyScriptQuery {
         List<String> parts = KEY_SPLITTER.splitToList(uniqueKey);
 
         // 字段数量验证
-        Preconditions.checkArgument(parts.size() == REQUIRED_PARTS, "脚本唯一键格式错误，应有6个冒号分隔字段，实际收到%d个字段。输入值: %s", parts.size(), uniqueKey);
+        Preconditions.checkArgument(parts.size() == REQUIRED_PARTS, "脚本唯一键格式错误，应有4个冒号分隔字段，实际收到%d个字段。输入值: %s", parts.size(), uniqueKey);
 
         // 逐个字段非空验证
         IntStream.range(0, REQUIRED_PARTS).forEach(i -> {
             String part = parts.get(i);
-            Preconditions.checkArgument(StringUtils.isNotBlank(part), "第%d个字段不能为空或空白。字段位置说明：0=命名空间 1=平台编码 2=产品编码 3=渠道编码 4=业务编码 5=业务标识。问题字段索引: %d", i + 1, i);
+            Preconditions.checkArgument(StringUtils.isNotBlank(part), "第%d个字段不能为空或空白。字段位置说明：0=脚本类型 1=渠道编码 2=产品标识 3=主题模式。问题字段索引: %d", i + 1, i);
         });
     }
 

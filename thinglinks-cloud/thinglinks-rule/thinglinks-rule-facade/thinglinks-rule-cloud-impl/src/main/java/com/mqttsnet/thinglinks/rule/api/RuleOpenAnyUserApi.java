@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.rule.api;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.constant.Constants;
 import com.mqttsnet.thinglinks.rule.api.hystrix.RuleOpenAnyUserApiFallback;
+import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptDirectCompileParam;
 import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptExecuteScriptParam;
 import com.mqttsnet.thinglinks.vo.result.script.GroovyScriptEngineExecutorResultVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,5 +41,15 @@ public interface RuleOpenAnyUserApi {
     @Operation(summary = "直接编译脚本", description = "实时编译脚本内容并执行，适用于动态脚本编译场景")
     @PostMapping("/executeScript")
     R<GroovyScriptEngineExecutorResultVO> executeScript(@RequestBody RuleGroovyScriptExecuteScriptParam param);
+
+    /**
+     * 按脚本内容直接编译执行 ── 供设备上行前置转换:命中 topic 模式后拿脚本内容直接执行,产出平台标准报文。
+     *
+     * @param param 含 scriptContent(脚本内容)+ executeParams(执行参数 JSON)
+     * @return {@link R<GroovyScriptEngineExecutorResultVO>} 标准化执行结果包装
+     */
+    @Operation(summary = "按内容执行脚本", description = "传入脚本内容直接编译执行,供设备上行前置转换调用")
+    @PostMapping("/executeScriptContent")
+    R<GroovyScriptEngineExecutorResultVO> executeScriptContent(@RequestBody RuleGroovyScriptDirectCompileParam param);
 
 }

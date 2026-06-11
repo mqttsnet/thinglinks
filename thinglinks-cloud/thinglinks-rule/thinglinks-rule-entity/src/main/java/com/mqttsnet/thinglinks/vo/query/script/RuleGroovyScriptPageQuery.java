@@ -50,35 +50,25 @@ public class RuleGroovyScriptPageQuery implements Serializable {
     @Schema(description = "应用ID")
     private String appId;
     /**
-     * 命名空间
+     * 脚本类型
      */
-    @Schema(description = "命名空间")
-    private String namespace;
-    /**
-     * 平台编码
-     */
-    @Schema(description = "平台编码")
-    private String platformCode;
-    /**
-     * 产品编码
-     */
-    @Schema(description = "产品编码")
-    private String productCode;
+    @Schema(description = "脚本类型")
+    private String scriptType;
     /**
      * 渠道编码
      */
     @Schema(description = "渠道编码")
     private String channelCode;
     /**
-     * 业务编码
+     * 产品标识
      */
-    @Schema(description = "业务编码")
-    private String businessCode;
+    @Schema(description = "产品标识")
+    private String productIdentification;
     /**
-     * 业务标识
+     * 主题模式
      */
-    @Schema(description = "业务标识")
-    private String businessIdentification;
+    @Schema(description = "主题模式")
+    private String topicPattern;
     /**
      * 是否启用
      */

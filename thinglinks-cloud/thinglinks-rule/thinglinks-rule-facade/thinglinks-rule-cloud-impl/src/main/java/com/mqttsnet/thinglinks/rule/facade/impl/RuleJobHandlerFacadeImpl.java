@@ -37,4 +37,14 @@ public class RuleJobHandlerFacadeImpl implements RuleJobHandlerFacade {
     public R<GroovyScriptEngineExecutorResultVO> executeScript(RuleGroovyScriptExecuteScriptParam param) {
         return ruleJobHandlerApi.executeScript(param);
     }
+
+    @Override
+    public R<Boolean> runBridgeHealthCheck() {
+        return ruleJobHandlerApi.runBridgeHealthCheck();
+    }
+
+    @Override
+    public R<Boolean> runBridgeTraceCleanup(Integer retentionDays) {
+        return ruleJobHandlerApi.runBridgeTraceCleanup(retentionDays);
+    }
 }

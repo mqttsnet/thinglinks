@@ -27,26 +27,12 @@ import lombok.experimental.Accessors;
 public class RuleGroovyScriptParam {
 
     /**
-     * 命名空间
+     * 脚本类型
      */
-    @Schema(description = "命名空间")
-    @NotEmpty(message = "请填写命名空间")
-    @Size(max = 128, message = "命名空间长度不能超过{max}")
-    private String namespace;
-    /**
-     * 平台编码
-     */
-    @Schema(description = "平台编码")
-    @NotEmpty(message = "请填写平台编码")
-    @Size(max = 128, message = "平台编码长度不能超过{max}")
-    private String platformCode;
-    /**
-     * 产品编码
-     */
-    @Schema(description = "产品编码")
-    @NotEmpty(message = "请填写产品编码")
-    @Size(max = 128, message = "产品编码长度不能超过{max}")
-    private String productCode;
+    @Schema(description = "脚本类型")
+    @NotEmpty(message = "请填写脚本类型")
+    @Size(max = 128, message = "脚本类型长度不能超过{max}")
+    private String scriptType;
     /**
      * 渠道编码
      */
@@ -55,19 +41,19 @@ public class RuleGroovyScriptParam {
     @Size(max = 128, message = "渠道编码长度不能超过{max}")
     private String channelCode;
     /**
-     * 业务编码
+     * 产品标识
      */
-    @Schema(description = "业务编码")
-    @NotEmpty(message = "请填写业务编码")
-    @Size(max = 128, message = "业务编码长度不能超过{max}")
-    private String businessCode;
+    @Schema(description = "产品标识")
+    @NotEmpty(message = "请填写产品标识")
+    @Size(max = 128, message = "产品标识长度不能超过{max}")
+    private String productIdentification;
     /**
-     * 业务标识
+     * 主题模式
      */
-    @Schema(description = "业务标识")
-    @NotEmpty(message = "请填写业务标识")
-    @Size(max = 100, message = "业务标识长度不能超过{max}")
-    private String businessIdentification;
+    @Schema(description = "主题模式")
+    @NotEmpty(message = "请填写主题模式")
+    @Size(max = 100, message = "主题模式长度不能超过{max}")
+    private String topicPattern;
 
 
     /**

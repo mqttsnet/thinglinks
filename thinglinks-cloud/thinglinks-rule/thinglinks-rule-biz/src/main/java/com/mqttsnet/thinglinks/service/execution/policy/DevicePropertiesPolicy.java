@@ -76,7 +76,7 @@ public class DevicePropertiesPolicy implements RulePolicyStrategyService {
     @Override
     public void applyPolicy(PolicyContext context, RuleConditionPolicyDTO conditionPolicyDTO) {
         log.info("Applying policy - Tenant ID: {}, Rule Identification: {}，Rule ExecutionId: {}", context.getTenantId(), context.getRuleIdentification(), context.getRuleExecutionId());
-        ContextUtil.setTenantId(context.getTenantId());
+        // tenantId 上下文由调用方 RuleExecutionService.executePolicy 统一设置,本 Policy 信任不重设
 
         // 记录开始时间
         LocalDateTime startTime = LocalDateTime.now();

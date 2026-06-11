@@ -21,6 +21,7 @@
         <module>thinglinks-rule-server</module>
         <module>thinglinks-rule-entity</module>
         <module>thinglinks-rule-biz</module>
+        <module>thinglinks-rule-biz-bridge</module>
         <module>thinglinks-rule-controller</module>
     </modules>
 </project>

@@ -7,6 +7,7 @@ import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptExecuteScriptPara
 import com.mqttsnet.thinglinks.vo.query.script.RuleGroovyScriptPageQuery;
 import com.mqttsnet.thinglinks.vo.result.script.GroovyScriptEngineExecutorResultVO;
 import com.mqttsnet.thinglinks.vo.result.script.RuleGroovyScriptResultVO;
+import com.mqttsnet.thinglinks.vo.result.script.RuleScriptExecStatVO;
 import com.mqttsnet.thinglinks.vo.save.script.RuleGroovyScriptSaveVO;
 import com.mqttsnet.thinglinks.vo.update.script.RuleGroovyScriptUpdateVO;
 
@@ -33,6 +34,15 @@ public interface RuleGroovyScriptService extends SuperService<Long, RuleGroovySc
      * @return {@link List<RuleGroovyScriptResultVO>} 规则脚本VO列表
      */
     List<RuleGroovyScriptResultVO> getRuleGroovyScriptResultVOList(RuleGroovyScriptPageQuery query);
+
+
+    /**
+     * 查脚本累计执行统计(按主键 id 取实体 → 拼脚本唯一键 → 读 Redis 计数)。
+     *
+     * @param id 脚本主键
+     * @return {@link RuleScriptExecStatVO} total / success / fail(读不到全 0)
+     */
+    RuleScriptExecStatVO getExecStat(Long id);
 
 
     /**
@@ -83,6 +93,17 @@ public interface RuleGroovyScriptService extends SuperService<Long, RuleGroovySc
      * @return {@link GroovyScriptEngineExecutorResultVO} 执行结果
      */
     GroovyScriptEngineExecutorResultVO runDirectCompile(RuleGroovyScriptDirectCompileParam param) throws Exception;
+
+    /**
+     * 列出某「产品 + 产品发布版本 + 渠道」下启用中的设备上行前置转换脚本(scriptType=topicInboundTransform)。
+     * <p>供缓存桶刷新:把命中脚本按 {@code 主题模式(topic 模式) → 脚本内容} 聚成 HASH 桶。
+     *
+     * @param channelCode           渠道编码(mqtt / webSocket)
+     * @param productIdentification 产品标识(产品标识维度)
+     * @param productVersionNo      产品发布版本号(objectVersion 维度)
+     * @return 启用中的前置转换脚本列表
+     */
+    List<RuleGroovyScript> listEnabledTransformScripts(String channelCode, String productIdentification, String productVersionNo);
 }
 
 

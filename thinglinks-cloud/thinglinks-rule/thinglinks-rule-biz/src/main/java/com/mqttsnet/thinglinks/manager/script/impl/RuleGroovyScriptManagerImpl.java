@@ -36,12 +36,10 @@ public class RuleGroovyScriptManagerImpl extends SuperManagerImpl<RuleGroovyScri
         QueryWrap<RuleGroovyScript> queryWrap = new QueryWrap<>();
         queryWrap.lambda().eq(query.getId() != null, RuleGroovyScript::getId, query.getId());
         queryWrap.lambda().eq(StrUtil.isNotBlank(query.getAppId()), RuleGroovyScript::getAppId, query.getAppId());
-        queryWrap.lambda().eq(StrUtil.isNotBlank(query.getNamespace()), RuleGroovyScript::getNamespace, query.getNamespace());
-        queryWrap.lambda().eq(StrUtil.isNotBlank(query.getPlatformCode()), RuleGroovyScript::getPlatformCode, query.getPlatformCode());
-        queryWrap.lambda().eq(StrUtil.isNotBlank(query.getProductCode()), RuleGroovyScript::getProductCode, query.getProductCode());
+        queryWrap.lambda().eq(StrUtil.isNotBlank(query.getScriptType()), RuleGroovyScript::getScriptType, query.getScriptType());
         queryWrap.lambda().eq(StrUtil.isNotBlank(query.getChannelCode()), RuleGroovyScript::getChannelCode, query.getChannelCode());
-        queryWrap.lambda().eq(StrUtil.isNotBlank(query.getBusinessCode()), RuleGroovyScript::getBusinessCode, query.getBusinessCode());
-        queryWrap.lambda().eq(StrUtil.isNotBlank(query.getBusinessIdentification()), RuleGroovyScript::getBusinessIdentification, query.getBusinessIdentification());
+        queryWrap.lambda().eq(StrUtil.isNotBlank(query.getProductIdentification()), RuleGroovyScript::getProductIdentification, query.getProductIdentification());
+        queryWrap.lambda().eq(StrUtil.isNotBlank(query.getTopicPattern()), RuleGroovyScript::getTopicPattern, query.getTopicPattern());
         queryWrap.lambda().eq(query.getEnable() != null, RuleGroovyScript::getEnable, query.getEnable());
         queryWrap.lambda().like(StrUtil.isNotBlank(query.getScriptContent()), RuleGroovyScript::getScriptContent, query.getScriptContent());
         queryWrap.lambda().like(StrUtil.isNotBlank(query.getExtendParams()), RuleGroovyScript::getExtendParams, query.getExtendParams());

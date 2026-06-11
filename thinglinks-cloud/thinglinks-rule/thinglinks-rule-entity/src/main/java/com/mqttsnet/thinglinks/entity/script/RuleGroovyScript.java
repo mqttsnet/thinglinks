@@ -50,35 +50,25 @@ public class RuleGroovyScript extends Entity<Long> {
     @TableField(value = "app_id", condition = LIKE)
     private String appId;
     /**
-     * 命名空间
+     * 脚本类型
      */
-    @TableField(value = "namespace", condition = LIKE)
-    private String namespace;
-    /**
-     * 平台编码
-     */
-    @TableField(value = "platform_code", condition = LIKE)
-    private String platformCode;
-    /**
-     * 产品编码
-     */
-    @TableField(value = "product_code", condition = LIKE)
-    private String productCode;
+    @TableField(value = "script_type", condition = LIKE)
+    private String scriptType;
     /**
      * 渠道编码
      */
     @TableField(value = "channel_code", condition = LIKE)
     private String channelCode;
     /**
-     * 业务编码
+     * 产品标识
      */
-    @TableField(value = "business_code", condition = LIKE)
-    private String businessCode;
+    @TableField(value = "product_identification", condition = LIKE)
+    private String productIdentification;
     /**
-     * 业务标识
+     * 主题模式
      */
-    @TableField(value = "business_identification", condition = LIKE)
-    private String businessIdentification;
+    @TableField(value = "topic_pattern", condition = LIKE)
+    private String topicPattern;
     /**
      * 是否启用 [0-禁用 1-启用]
      */

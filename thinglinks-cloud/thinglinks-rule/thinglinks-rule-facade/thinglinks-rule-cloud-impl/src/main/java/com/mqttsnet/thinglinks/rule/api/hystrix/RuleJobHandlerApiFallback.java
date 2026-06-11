@@ -32,4 +32,14 @@ public class RuleJobHandlerApiFallback implements RuleJobHandlerApi {
     public R<GroovyScriptEngineExecutorResultVO> executeScript(RuleGroovyScriptExecuteScriptParam param) {
         return R.timeout();
     }
+
+    @Override
+    public R<Boolean> runBridgeHealthCheck() {
+        return R.timeout();
+    }
+
+    @Override
+    public R<Boolean> runBridgeTraceCleanup(Integer retentionDays) {
+        return R.timeout();
+    }
 }

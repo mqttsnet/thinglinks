@@ -122,7 +122,9 @@ public class RuleAlarmRecordController extends SuperController<RuleAlarmRecordSe
     })
     @GetMapping("/getAlarmRecordDetails/{id}")
     public R<RuleAlarmRecordDetailsResultVO> getAlarmRecordDetails(@PathVariable("id") Long id) {
-        return R.success(superService.getAlarmRecordDetails(id));
+        RuleAlarmRecordDetailsResultVO result = superService.getAlarmRecordDetails(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
     @Operation(summary = "处理或解决告警记录", description = "处理或解决告警记录")

@@ -119,7 +119,9 @@ public class RuleAlarmController extends SuperController<RuleAlarmService, Long,
     @GetMapping("/getRuleAlarmDetails/{id}")
     public R<RuleAlarmDetailsResultVO> getRuleAlarmDetails(@PathVariable("id") Long id) {
         log.info("getAlarmRuleDetails id:{}", id);
-        return R.success(superService.getRuleAlarmDetails(id));
+        RuleAlarmDetailsResultVO result = superService.getRuleAlarmDetails(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
 

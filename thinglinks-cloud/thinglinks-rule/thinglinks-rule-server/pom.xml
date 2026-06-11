@@ -22,6 +22,11 @@
         </dependency>
         <dependency>
             <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-rule-biz-bridge</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
             <artifactId>thinglinks-oauth-api</artifactId>
             <version>${revision}</version>
         </dependency>

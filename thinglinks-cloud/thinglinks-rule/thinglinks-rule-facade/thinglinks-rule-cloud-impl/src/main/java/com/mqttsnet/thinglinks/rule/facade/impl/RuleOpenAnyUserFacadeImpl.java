@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.rule.facade.impl;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.thinglinks.rule.api.RuleOpenAnyUserApi;
 import com.mqttsnet.thinglinks.rule.facade.RuleOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptDirectCompileParam;
 import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptExecuteScriptParam;
 import com.mqttsnet.thinglinks.vo.result.script.GroovyScriptEngineExecutorResultVO;
 import lombok.extern.slf4j.Slf4j;
@@ -25,5 +26,10 @@ public class RuleOpenAnyUserFacadeImpl implements RuleOpenAnyUserFacade {
     @Override
     public R<GroovyScriptEngineExecutorResultVO> executeScript(RuleGroovyScriptExecuteScriptParam param) {
         return ruleOpenAnyUserApi.executeScript(param);
+    }
+
+    @Override
+    public R<GroovyScriptEngineExecutorResultVO> executeScriptContent(RuleGroovyScriptDirectCompileParam param) {
+        return ruleOpenAnyUserApi.executeScriptContent(param);
     }
 }

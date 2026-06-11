@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.service.dashboard;
 
+import com.mqttsnet.thinglinks.vo.result.dashboard.RuleBridgeSummaryResultVO;
 import com.mqttsnet.thinglinks.vo.result.dashboard.RuleDashboardSummaryResultVO;
 
 /**
@@ -29,4 +30,11 @@ public interface RuleDashboardStatsService {
      * @return {@link RuleDashboardSummaryResultVO} 仪表盘统计信息
      */
     RuleDashboardSummaryResultVO getDashboardAssetSummary();
+
+    /**
+     * 获取北向集成 / 数据桥接统计信息。
+     *
+     * @return {@link RuleBridgeSummaryResultVO} 数据源 / 桥接规则 / 订阅源总量与启用数 + 今日执行成功/失败分布
+     */
+    RuleBridgeSummaryResultVO getBridgeSummary();
 }

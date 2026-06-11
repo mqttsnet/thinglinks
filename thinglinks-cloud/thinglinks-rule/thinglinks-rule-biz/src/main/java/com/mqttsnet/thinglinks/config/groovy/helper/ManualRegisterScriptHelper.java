@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * 手动注册脚本助手
@@ -49,9 +48,8 @@ public class ManualRegisterScriptHelper implements RegisterScriptHelper {
             throw BizException.wrap("uniqueKey and content can not be null.");
         }
         // 查找脚本是否存在
-        Object oldScript = ruleCacheDataHelper.getScriptContent(cacheKey);
-        // 当脚本存在且不允许覆盖时终止操作，其他情况允许创建/覆盖，则写入数据源然后注册到registry
-        if (Objects.nonNull(oldScript) && !allowCover) {
+        // 脚本存在且不允许覆盖时终止操作，其他情况允许创建/覆盖，则写入数据源然后注册到registry
+        if (ruleCacheDataHelper.getScriptContent(cacheKey).isPresent() && !allowCover) {
             log.warn("script already exists, uniqueKey is : [{}], script content is : {}", cacheKey, content);
             return false;
         }
@@ -68,9 +66,8 @@ public class ManualRegisterScriptHelper implements RegisterScriptHelper {
             throw BizException.wrap("uniqueKey and content can not be null.");
         }
         // 查找脚本是否存在
-        Object oldScript = ruleCacheDataHelper.getScriptContent(cacheKey);
-        // 当脚本存在且不允许覆盖时终止操作，其他情况允许创建/覆盖，则写入数据源然后注册到registry
-        if (Objects.nonNull(oldScript) && !allowCover) {
+        // 脚本存在且不允许覆盖时终止操作，其他情况允许创建/覆盖，则写入数据源然后注册到registry
+        if (ruleCacheDataHelper.getScriptContent(cacheKey).isPresent() && !allowCover) {
             log.warn("script already exists, uniqueKey is : [{}], script content is : {}", cacheKey, content);
             return false;
         }

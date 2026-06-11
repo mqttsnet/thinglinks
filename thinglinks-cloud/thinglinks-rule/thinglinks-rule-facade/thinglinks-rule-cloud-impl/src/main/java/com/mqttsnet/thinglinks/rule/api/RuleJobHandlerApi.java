@@ -72,4 +72,25 @@ public interface RuleJobHandlerApi {
     R<GroovyScriptEngineExecutorResultVO> executeScript(@RequestBody RuleGroovyScriptExecuteScriptParam param);
 
 
+    /**
+     * 桥接数据源健康检查。
+     *
+     * @return {@code R<Boolean>} 执行成功返回 true
+     */
+    @Operation(summary = "运行桥接数据源健康检查",
+            description = "扫描所有启用数据源调 testConnection 更新 health_status")
+    @PostMapping("/anyUser/ruleOpen/runBridgeHealthCheck")
+    R<Boolean> runBridgeHealthCheck();
+
+    /**
+     * 桥接 trace 清理。
+     *
+     * @param retentionDays 保留天数（可选，默认 90 天）
+     * @return {@code R<Boolean>} 执行成功返回 true
+     */
+    @Operation(summary = "运行桥接 trace 历史清理",
+            description = "删除超过保留期的 bridge_execution_trace + step")
+    @PostMapping("/anyUser/ruleOpen/runBridgeTraceCleanup")
+    R<Boolean> runBridgeTraceCleanup(@RequestParam(value = "retentionDays", required = false) Integer retentionDays);
+
 }

@@ -1,8 +1,6 @@
 package com.mqttsnet.thinglinks.vo.result.linkage;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,10 +11,8 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -35,12 +31,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "RuleExecutionLogDetailsResultVO", description = "规则执行日志")
-public class RuleExecutionLogDetailsResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class RuleExecutionLogDetailsResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "主键")
     private Long id;
@@ -80,12 +74,6 @@ public class RuleExecutionLogDetailsResultVO extends Entity<Long> implements Ser
      */
     @Schema(description = "扩展参数（文本格式）")
     private String extendParams;
-
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
     @Schema(description = "规则条件执行日志列表")
     private List<RuleConditionExecutionLogDetailsResultVO> conditionExecutionLogDetailsResultVOList;

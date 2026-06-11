@@ -6,21 +6,32 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import com.mqttsnet.thinglinks.entity.alarm.RuleAlarmRecord;
+import com.mqttsnet.thinglinks.entity.bridge.BridgeExecutionTrace;
+import com.mqttsnet.thinglinks.entity.bridge.DataBridge;
+import com.mqttsnet.thinglinks.entity.bridge.DataSource;
+import com.mqttsnet.thinglinks.entity.bridge.SubscriptionSource;
 import com.mqttsnet.thinglinks.enumeration.alarm.AlarmRecordHandledStatusEnum;
+import com.mqttsnet.thinglinks.enumeration.bridge.BridgeDirectionEnum;
 import com.mqttsnet.thinglinks.service.alarm.RuleAlarmRecordService;
 import com.mqttsnet.thinglinks.service.alarm.RuleAlarmService;
+import com.mqttsnet.thinglinks.service.bridge.BridgeExecutionTraceService;
+import com.mqttsnet.thinglinks.service.bridge.DataBridgeService;
+import com.mqttsnet.thinglinks.service.bridge.DataSourceService;
+import com.mqttsnet.thinglinks.service.bridge.SubscriptionSourceService;
 import com.mqttsnet.thinglinks.service.dashboard.RuleDashboardStatsService;
 import com.mqttsnet.thinglinks.service.linkage.RuleInstanceService;
 import com.mqttsnet.thinglinks.service.linkage.RuleService;
 import com.mqttsnet.thinglinks.service.plugin.PluginInfoService;
 import com.mqttsnet.thinglinks.service.script.RuleGroovyScriptService;
 import com.mqttsnet.thinglinks.vo.result.alarm.RuleAlarmRecordResultVO;
+import com.mqttsnet.thinglinks.vo.result.dashboard.RuleBridgeSummaryResultVO;
 import com.mqttsnet.thinglinks.vo.result.dashboard.RuleDashboardSummaryResultVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +76,14 @@ public class RuleDashboardStatsServiceImpl implements RuleDashboardStatsService 
 
     private final RuleGroovyScriptService ruleGroovyScriptService;
 
+    private final DataSourceService dataSourceService;
+
+    private final DataBridgeService dataBridgeService;
+
+    private final SubscriptionSourceService subscriptionSourceService;
+
+    private final BridgeExecutionTraceService bridgeExecutionTraceService;
+
 
     /**
      * 获取仪表盘概要统计信息
@@ -106,6 +125,68 @@ public class RuleDashboardStatsServiceImpl implements RuleDashboardStatsService 
         return dashboardSummary;
     }
 
+
+    /**
+     * 北向集成 / 数据桥接统计。全部走 selectCount,逐项 try-catch 兜底 0,单项失败不影响整体看板。
+     *
+     * @return 数据桥接统计概要
+     */
+    @Override
+    public RuleBridgeSummaryResultVO getBridgeSummary() {
+        LocalDateTime todayStart = LocalDateTime.now().toLocalDate().atStartOfDay();
+        return RuleBridgeSummaryResultVO.builder()
+                // 数据源
+                .dataSourceTotal(safeCount(() -> dataSourceService.selectCount(new QueryWrapper<>())))
+                .dataSourceEnabled(safeCount(() -> dataSourceService.selectCount(
+                        new LambdaQueryWrapper<DataSource>().eq(DataSource::getEnable, true))))
+                .dataSourceHealthy(safeCount(() -> dataSourceService.selectCount(
+                        new LambdaQueryWrapper<DataSource>().eq(DataSource::getHealthStatus, "HEALTHY"))))
+                .dataSourceAbnormal(safeCount(() -> dataSourceService.selectCount(
+                        new LambdaQueryWrapper<DataSource>().in(DataSource::getHealthStatus, "DEGRADED", "DOWN"))))
+                // 桥接规则
+                .bridgeRuleTotal(safeCount(() -> dataBridgeService.selectCount(new QueryWrapper<>())))
+                .bridgeRuleEnabled(safeCount(() -> dataBridgeService.selectCount(
+                        new LambdaQueryWrapper<DataBridge>().eq(DataBridge::getEnable, true))))
+                .bridgeRuleOutbound(safeCount(() -> dataBridgeService.selectCount(
+                        new LambdaQueryWrapper<DataBridge>().eq(DataBridge::getDirection, BridgeDirectionEnum.OUTBOUND.getValue()))))
+                .bridgeRuleInbound(safeCount(() -> dataBridgeService.selectCount(
+                        new LambdaQueryWrapper<DataBridge>().eq(DataBridge::getDirection, BridgeDirectionEnum.INBOUND.getValue()))))
+                // 订阅源
+                .subscriptionTotal(safeCount(() -> subscriptionSourceService.selectCount(new QueryWrapper<>())))
+                .subscriptionEnabled(safeCount(() -> subscriptionSourceService.selectCount(
+                        new LambdaQueryWrapper<SubscriptionSource>().eq(SubscriptionSource::getEnable, true))))
+                // 今日执行(按 status 00/01/02/03)
+                .todayExecTotal(safeCount(() -> bridgeExecutionTraceService.selectCount(
+                        new LambdaQueryWrapper<BridgeExecutionTrace>().ge(BridgeExecutionTrace::getStartTime, todayStart))))
+                .todaySuccess(safeCount(() -> bridgeExecutionTraceService.selectCount(
+                        new LambdaQueryWrapper<BridgeExecutionTrace>().ge(BridgeExecutionTrace::getStartTime, todayStart)
+                                .eq(BridgeExecutionTrace::getStatus, "00"))))
+                .todayFailed(safeCount(() -> bridgeExecutionTraceService.selectCount(
+                        new LambdaQueryWrapper<BridgeExecutionTrace>().ge(BridgeExecutionTrace::getStartTime, todayStart)
+                                .eq(BridgeExecutionTrace::getStatus, "01"))))
+                .todayPartial(safeCount(() -> bridgeExecutionTraceService.selectCount(
+                        new LambdaQueryWrapper<BridgeExecutionTrace>().ge(BridgeExecutionTrace::getStartTime, todayStart)
+                                .eq(BridgeExecutionTrace::getStatus, "02"))))
+                .todayDeadLetter(safeCount(() -> bridgeExecutionTraceService.selectCount(
+                        new LambdaQueryWrapper<BridgeExecutionTrace>().ge(BridgeExecutionTrace::getStartTime, todayStart)
+                                .eq(BridgeExecutionTrace::getStatus, "03"))))
+                .build();
+    }
+
+    /**
+     * 统一 count 兜底:任一统计项失败仅 log + 返 0,不影响整体看板。
+     *
+     * @param supplier 统计取数逻辑
+     * @return 统计值;异常时返 0
+     */
+    private long safeCount(java.util.function.LongSupplier supplier) {
+        try {
+            return supplier.getAsLong();
+        } catch (Exception e) {
+            log.error("[bridgeSummary] count failed: {}", e.getMessage());
+            return 0L;
+        }
+    }
 
     private long getTotalRulesCount() {
         try {
