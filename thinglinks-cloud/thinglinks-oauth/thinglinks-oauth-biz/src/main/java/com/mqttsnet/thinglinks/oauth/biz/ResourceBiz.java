@@ -29,6 +29,8 @@ import org.springframework.util.AntPathMatcher;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 资源大业务
@@ -134,6 +136,7 @@ public class ResourceBiz {
             } else {
                 forEachTree(tree, 1);
             }
+            populateRouteCode(tree, list);
 
             VueRouter applicationRouter = new VueRouter();
             applicationRouter.setName(defApplication.getName());
@@ -215,7 +218,41 @@ public class ResourceBiz {
         } else {
             forEachTree(tree, 1);
         }
+        populateRouteCode(tree, list);
         return tree;
+    }
+
+    /**
+     * 把菜单资源编码写入 {@link VueRouter#getCode()} 顶层字段及 {@code meta.code}，
+     * {@link VueRouter#getName()} 保留菜单显示标题。
+     *
+     * @param tree    已构建并处理好 meta 的路由树
+     * @param sources 原始 DefResource 列表，提供 id → code 映射
+     */
+    private void populateRouteCode(List<VueRouter> tree, List<DefResource> sources) {
+        if (CollUtil.isEmpty(tree) || CollUtil.isEmpty(sources)) {
+            return;
+        }
+        Map<Long, String> idToCode = sources.stream()
+                .filter(s -> StrUtil.isNotBlank(s.getCode()))
+                .collect(Collectors.toMap(DefResource::getId, DefResource::getCode, (a, b) -> a));
+        walkAndFillCode(tree, idToCode);
+    }
+
+    private void walkAndFillCode(List<VueRouter> tree, Map<Long, String> idToCode) {
+        if (CollUtil.isEmpty(tree)) {
+            return;
+        }
+        for (VueRouter item : tree) {
+            String code = idToCode.get(item.getId());
+            if (StrUtil.isNotBlank(code)) {
+                item.setCode(code);
+                if (item.getMeta() != null) {
+                    item.getMeta().setCode(code);
+                }
+            }
+            walkAndFillCode(item.getChildren(), idToCode);
+        }
     }
 
 

@@ -19,7 +19,7 @@ import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.extra.servlet.JakartaServletUtil;
-import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.boot.utils.WebUtils;
 import com.mqttsnet.basic.context.ContextUtil;
@@ -423,12 +423,12 @@ public abstract class AbstractTokenGranter implements TokenGranter {
         resultVO.setTenantId(employee.getTenantId());
 
         JSONObject obj = new JSONObject();
-        obj.set(JWT_KEY_USER_ID, defUser.getId());
-        obj.set(JWT_KEY_TOP_COMPANY_ID, tokenSession.get(JWT_KEY_TOP_COMPANY_ID));
-        obj.set(JWT_KEY_COMPANY_ID, tokenSession.get(JWT_KEY_COMPANY_ID));
-        obj.set(JWT_KEY_DEPT_ID, tokenSession.get(JWT_KEY_DEPT_ID));
-        obj.set(JWT_KEY_EMPLOYEE_ID, tokenSession.get(JWT_KEY_EMPLOYEE_ID));
-        obj.set(TENANT_ID_KEY, employee.getTenantId());
+        obj.put(JWT_KEY_USER_ID, defUser.getId());
+        obj.put(JWT_KEY_TOP_COMPANY_ID, tokenSession.get(JWT_KEY_TOP_COMPANY_ID));
+        obj.put(JWT_KEY_COMPANY_ID, tokenSession.get(JWT_KEY_COMPANY_ID));
+        obj.put(JWT_KEY_DEPT_ID, tokenSession.get(JWT_KEY_DEPT_ID));
+        obj.put(JWT_KEY_EMPLOYEE_ID, tokenSession.get(JWT_KEY_EMPLOYEE_ID));
+        obj.put(TENANT_ID_KEY, employee.getTenantId());
 
         resultVO.setRefreshToken(SaTempUtil.createToken(obj.toString(), 2 * saTokenConfig.getTimeout()));
 

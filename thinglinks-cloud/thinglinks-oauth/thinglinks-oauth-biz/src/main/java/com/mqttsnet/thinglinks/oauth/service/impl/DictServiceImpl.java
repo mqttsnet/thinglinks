@@ -4,8 +4,8 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.database.mybatis.conditions.Wraps;
 import com.mqttsnet.basic.database.mybatis.handlers.MybatisEnumTypeHandler;
@@ -212,45 +212,52 @@ public class DictServiceImpl implements DictService {
 
     @Override
     public Map<Serializable, Object> findByIds(Set<Serializable> dictKeys) {
+        // ① null + 空集合兜底:Echo 框架可能传 null
         if (CollUtil.isEmpty(dictKeys)) {
             return Collections.emptyMap();
         }
 
-        String locale = ContextUtil.getLocale();
+        try {
+            String locale = ContextUtil.getLocale();
 
-        if (ContextUtil.isEmptyTenantId()) {
-            Map<Serializable, DefDict> defMap = defDictManager.findByIds(dictKeys);
-            HashMap<Serializable, Object> map = MapUtil.newHashMap();
-            execI18n(defMap, locale, map);
-            return map;
-        }
+            if (ContextUtil.isEmptyTenantId()) {
+                Map<Serializable, DefDict> defMap = defDictManager.findByIds(dictKeys);
+                HashMap<Serializable, Object> map = MapUtil.newHashMap();
+                execI18n(defMap, locale, map);
+                return map;
+            }
 
-        Map<Serializable, BaseDict> baseMap = baseDictManager.findByIds(dictKeys);
+            Map<Serializable, BaseDict> baseMap = baseDictManager.findByIds(dictKeys);
 
 
-        Set<String> baseKeys = baseMap.keySet().stream().map(item -> {
-            List<String> arrays = StrUtil.split(String.valueOf(item), echoProperties.getDictSeparator());
-            return CollUtil.isNotEmpty(arrays) ? arrays.get(0) : String.valueOf(item);
-        }).collect(Collectors.toSet());
+            Set<String> baseKeys = baseMap.keySet().stream().map(item -> {
+                List<String> arrays = StrUtil.split(String.valueOf(item), echoProperties.getDictSeparator());
+                return CollUtil.isNotEmpty(arrays) ? arrays.get(0) : String.valueOf(item);
+            }).collect(Collectors.toSet());
 //        dictKeys 数量和 baseMap.key 数量相同，说明所有的字典在base库都自定义了
-        if (baseKeys.size() == dictKeys.size()) {
+            if (baseKeys.size() == dictKeys.size()) {
+                HashMap<Serializable, Object> map = MapUtil.newHashMap();
+                execI18nBase(baseMap, locale, map);
+                return map;
+            }
+
+            // 查询不在base的字典
+            Set<Serializable> nonExistKeys = dictKeys.stream().filter(dictKey -> !baseKeys.contains(dictKey)).collect(Collectors.toSet());
+            Map<Serializable, DefDict> defMap = defDictManager.findByIds(nonExistKeys);
+
+
             HashMap<Serializable, Object> map = MapUtil.newHashMap();
+
+            // 顺序不能乱，一定是base的覆盖def的
+            execI18n(defMap, locale, map);
             execI18nBase(baseMap, locale, map);
+
             return map;
+        } catch (Exception e) {
+            // ② 异常降级:Echo 失败不能拖垮调用方接口,前端 echoMapText 会自动回退到原 ID
+            log.warn("[Echo] Dict findByIds failed, dictKeys={}, cause={}", dictKeys, e.getMessage());
+            return Collections.emptyMap();
         }
-
-        // 查询不在base的字典
-        Set<Serializable> nonExistKeys = dictKeys.stream().filter(dictKey -> !baseKeys.contains(dictKey)).collect(Collectors.toSet());
-        Map<Serializable, DefDict> defMap = defDictManager.findByIds(nonExistKeys);
-
-
-        HashMap<Serializable, Object> map = MapUtil.newHashMap();
-
-        // 顺序不能乱，一定是base的覆盖def的
-        execI18n(defMap, locale, map);
-        execI18nBase(baseMap, locale, map);
-
-        return map;
     }
 
     private static void execI18n(Map<Serializable, DefDict> defMap, String locale, HashMap<Serializable, Object> map) {
@@ -259,8 +266,8 @@ public class DictServiceImpl implements DictService {
             if (StrUtil.isNotEmpty(locale)) {
                 String i18nJson = value.getI18nJson();
                 try {
-                    JSONObject i18n = JSONUtil.parseObj(i18nJson);
-                    String i18nValue = i18n.getStr(locale);
+                    JSONObject i18n = JSON.parseObject(i18nJson);
+                    String i18nValue = i18n.getString(locale);
                     if (StrUtil.isNotEmpty(i18nValue)) {
                         name = i18nValue;
                     }
@@ -278,8 +285,8 @@ public class DictServiceImpl implements DictService {
             if (StrUtil.isNotEmpty(locale)) {
                 String i18nJson = value.getI18nJson();
                 try {
-                    JSONObject i18n = JSONUtil.parseObj(i18nJson);
-                    String i18nValue = i18n.getStr(locale);
+                    JSONObject i18n = JSON.parseObject(i18nJson);
+                    String i18nValue = i18n.getString(locale);
                     if (StrUtil.isNotEmpty(i18nValue)) {
                         name = i18nValue;
                     }

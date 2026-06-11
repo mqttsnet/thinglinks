@@ -61,7 +61,7 @@ public class RequestUtil {
                     InetAddress inet = InetAddress.getLocalHost();
                     ipAddress = inet.getHostAddress();
                 } catch (UnknownHostException e) {
-                    // ignore
+                    log.debug("[request-util] getLocalHost failed, keep ipAddress={} err={}", ipAddress, e.getMessage());
                 }
             }
 

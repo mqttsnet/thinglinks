@@ -146,7 +146,8 @@ public class LoginStatusDTO implements Serializable {
             InetAddress inetAddress = InetAddress.getByName(ipAddress);
             return inetAddress.isLoopbackAddress();
         } catch (UnknownHostException e) {
-            // 处理异常情况，如果无法解析IP地址，则不视为本地地址
+            // 处理异常情况:如果无法解析IP地址,则不视为本地地址(可能是非法格式 / DNS 不可达)
+            log.warn("[login-status] isLocalHostIp parse failed ipAddress={} err={}", ipAddress, e.getMessage());
             return false;
         }
     }

@@ -16,8 +16,8 @@ import com.mqttsnet.thinglinks.system.entity.application.DefApplication;
 import com.mqttsnet.thinglinks.system.entity.tenant.DefTenant;
 import com.mqttsnet.thinglinks.system.entity.tenant.DefUser;
 import com.mqttsnet.thinglinks.system.entity.tenant.DefUserTenantRel;
-import com.mqttsnet.thinglinks.system.manager.tenant.DefTenantManager;
 import com.mqttsnet.thinglinks.system.service.application.DefApplicationService;
+import com.mqttsnet.thinglinks.system.service.tenant.DefTenantService;
 import com.mqttsnet.thinglinks.system.service.tenant.DefUserService;
 import com.mqttsnet.thinglinks.system.service.tenant.DefUserTenantRelService;
 import com.mqttsnet.thinglinks.system.vo.result.application.DefApplicationResultVO;
@@ -42,7 +42,7 @@ public class OauthUserBiz {
     private final DefUserService defUserService;
     private final DefApplicationService defApplicationService;
     private final AppendixService appendixService;
-    private final DefTenantManager defTenantManager;
+    private final DefTenantService defTenantService;
 
     public DefUserInfoResultVO getUserById(Long id) {
         // 查默认库
@@ -62,7 +62,7 @@ public class OauthUserBiz {
             resultVO.setAvatarId(appendix.getId());
         }
 
-        DefTenant tenant = defTenantManager.getById(ContextUtil.getTenantId());
+        DefTenant tenant = defTenantService.getById(ContextUtil.getTenantId());
         if (tenant != null && DefValConstants.DEF_TENANT_ID.equals(tenant.getId())) {
             // 演示环境专用标识，用于WriteInterceptor拦截器判断演示环境需要禁止用户执行sql，若您无需搭建演示环境，可以删除下面一行代码
             ContextUtil.setStop();

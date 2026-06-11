@@ -1,13 +1,11 @@
 package com.mqttsnet.thinglinks.oauth.vo.result;
 
 
-import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.annotation.echo.Echo;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
 import com.mqttsnet.thinglinks.base.vo.result.user.BaseEmployeeResultVO;
 import com.mqttsnet.thinglinks.model.constant.EchoApi;
 import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import com.mqttsnet.thinglinks.system.vo.result.application.DefApplicationResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -19,8 +17,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Map;
 
 
 /**
@@ -40,11 +36,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @Schema(title = "DefUserInfoResultVO", description = "用户")
-public class DefUserInfoResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class DefUserInfoResultVO extends AuditableResultVO {
 
+    @Serial
     private static final long serialVersionUID = 1L;
-    @Builder.Default
-    private final Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "主键")
     private Long id;

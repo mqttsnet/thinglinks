@@ -15,7 +15,7 @@ import cn.hutool.core.util.StrUtil;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.thinglinks.common.properties.IgnoreProperties;
 import com.mqttsnet.thinglinks.model.vo.result.ResourceApiVO;
-import com.mqttsnet.thinglinks.system.facade.DefResourceFacade;
+import com.mqttsnet.thinglinks.gateway.cache.ResourceApiLocalCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -43,7 +43,7 @@ import java.util.Set;
 @Slf4j
 @RequiredArgsConstructor
 public class AuthenticationSaInterceptor implements WebFilter, Ordered {
-    private final DefResourceFacade defResourceFacade;
+    private final ResourceApiLocalCache resourceApiLocalCache;
     private final IgnoreProperties ignoreProperties;
 
     @Override
@@ -108,37 +108,22 @@ public class AuthenticationSaInterceptor implements WebFilter, Ordered {
                 });
             }
 
-            // 接口权限
+            // 接口权限:本地缓存取表(零 Redis),anyone 判定提到循环外算一次
+            // 等价原每 api 内联判断;命中(如 login)整段跳过,免去 N 次空匹配
             Map<String, Set<String>> anyone = ignoreProperties.buildAnyone();
-            Map<String, Set<String>> allApi = defResourceFacade.listAllApi();
+            Map<String, Set<String>> allApi = resourceApiLocalCache.getAllApi();
+            String reqPath = SaHolder.getRequest().getRequestPath();
+            String reqMethod = SaHolder.getRequest().getMethod();
 
-            allApi.forEach((api, auth) -> {
-                List<String> list = StrUtil.split(api, "###");
-                String uri = list.get(0);
-                String requestMethod = list.get(1);
-                SaRouter.match(uri).matchMethod(requestMethod)
-                        .notMatch(r -> {
-                            String path = SaHolder.getRequest().getRequestPath();
-                            String method = SaHolder.getRequest().getMethod();
-                            for (Map.Entry<String, Set<String>> map : anyone.entrySet()) {
-                                String key = map.getKey();
-                                Set<String> value = map.getValue();
-                                if (StrUtil.equalsAny(key, method, SaHttpMethod.ALL.name())) {
-                                    for (String ignore : value) {
-                                        if (StrUtil.equals(ignore, path)) {
-                                            return true;
-                                        }
-
-                                        if (SaPathPatternParserUtil.match(ignore, path)) {
-                                            return true;
-                                        }
-                                    }
-                                }
-                            }
-                            return false;
-                        })
-                        .check(r -> StpUtil.checkPermissionOr(auth.toArray(String[]::new)));
-            });
+            if (!isAnyonePermitted(anyone, reqMethod, reqPath)) {
+                allApi.forEach((api, auth) -> {
+                    List<String> list = StrUtil.split(api, "###");
+                    String uri = list.get(0);
+                    String requestMethod = list.get(1);
+                    SaRouter.match(uri).matchMethod(requestMethod)
+                            .check(r -> StpUtil.checkPermissionOr(auth.toArray(String[]::new)));
+                });
+            }
 
 
             if (!ignoreProperties.getNotConfigUriAllow()) {
@@ -211,5 +196,27 @@ public class AuthenticationSaInterceptor implements WebFilter, Ordered {
             // 清除上下文
             SaReactorSyncHolder.clearContext();
         });
+    }
+
+    /**
+     * 路径是否命中 anyone 免鉴权名单 ── 遍历全量(区别于只判首项的 {@code isIgnoreAnyone}),
+     * 等价原 Loop1 内联判断,提到循环外算一次。
+     *
+     * @param anyone 免鉴权映射(method → paths)
+     * @param method 请求方法
+     * @param path   请求路径
+     * @return 命中返 {@code true}(跳过权限校验)
+     */
+    private boolean isAnyonePermitted(Map<String, Set<String>> anyone, String method, String path) {
+        for (Map.Entry<String, Set<String>> entry : anyone.entrySet()) {
+            if (StrUtil.equalsAny(entry.getKey(), method, SaHttpMethod.ALL.name())) {
+                for (String ignore : entry.getValue()) {
+                    if (StrUtil.equals(ignore, path) || SaPathPatternParserUtil.match(ignore, path)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
