@@ -311,6 +311,27 @@ CREATE TABLE `ca_cert_license` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CA许可证证书表';
 
 -- ----------------------------
+-- Table structure for ca_cert_audit_log
+-- ----------------------------
+DROP TABLE IF EXISTS `ca_cert_audit_log`;
+CREATE TABLE `ca_cert_audit_log` (
+  `id` bigint NOT NULL COMMENT 'id',
+  `ca_id` bigint DEFAULT NULL COMMENT '关联 CA 证书 ID',
+  `ca_serial_number` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'CA 证书序列号',
+  `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '动作类型: IMPORT/ISSUE/REVOKE/DOWNLOAD_PACK/SSL_TEST',
+  `detail` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '详情(JSON 或自由文本)',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `created_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+  `updated_time` datetime DEFAULT NULL COMMENT '最后修改时间',
+  `deleted` int DEFAULT '0' COMMENT '是否删除(0-未删除/1-已删除)',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_ca_id` (`ca_id`) USING BTREE COMMENT 'CA ID 索引',
+  KEY `idx_type_created` (`type`,`created_time`) USING BTREE COMMENT '类型+时间复合索引'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='CA 证书审计日志';
+
+-- ----------------------------
 -- Table structure for card_channel_info
 -- ----------------------------
 DROP TABLE IF EXISTS `card_channel_info`;
@@ -494,9 +515,11 @@ CREATE TABLE `device` (
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '设备描述',
   `device_status` tinyint NOT NULL DEFAULT '0' COMMENT '设备状态',
   `connect_status` tinyint NOT NULL DEFAULT '0' COMMENT '连接状态',
+  `last_status_event_hlc` bigint NOT NULL DEFAULT '0' COMMENT '最新状态事件因果时钟(HLC,64-bit)',
   `last_heartbeat_time` datetime DEFAULT NULL COMMENT '最新心跳时间',
   `device_tags` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '设备标签',
   `product_identification` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '产品标识',
+  `bound_product_version_no` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '设备绑定的产品版本序号(快照标识,数据上报路径的物模型解析依据,灰度发布时可与产品当前版本不同)',
   `sw_version` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '软件版本',
   `fw_version` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '固件版本',
   `device_sdk_version` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'v1' COMMENT 'sdk版本',
@@ -660,32 +683,6 @@ CREATE TABLE `device_location` (
   `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='设备位置表';
-
--- ----------------------------
--- Table structure for empowerment_record
--- ----------------------------
-DROP TABLE IF EXISTS `empowerment_record`;
-CREATE TABLE `empowerment_record` (
-  `id` bigint NOT NULL COMMENT 'id',
-  `app_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '应用ID',
-  `empowerment_identification` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '赋能标识',
-  `empowerment_type` tinyint NOT NULL DEFAULT '0' COMMENT '赋能类型',
-  `startTime` datetime DEFAULT NULL COMMENT '开始时间',
-  `endTime` datetime DEFAULT NULL COMMENT '结束时间',
-  `outcome` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '赋能结果',
-  `feedback` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '赋能反馈',
-  `status` tinyint NOT NULL DEFAULT '0' COMMENT '状态',
-  `version` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '版本',
-  `dependencies` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '依赖关系',
-  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '描述',
-  `deleted` tinyint NOT NULL DEFAULT '0' COMMENT '逻辑删除标识(0-未删除、1-已删除)',
-  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人',
-  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
-  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='赋能记录表';
 
 -- ----------------------------
 -- Table structure for extend_interface_log
@@ -1173,7 +1170,8 @@ CREATE TABLE `product` (
   `device_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '设备类型',
   `protocol_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '接入协议',
   `product_status` tinyint NOT NULL DEFAULT '0' COMMENT '状态',
-  `product_version` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '产品版本',
+  `active_version_no` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '产品当前激活的版本序号(系统发布时生成的快照标识,16位短雪花字符串,非用户语义化版本号)',
+  `previous_full_version_no` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '灰度切换前的全量版本序号(仅灰度态有值,灰度晋升/回滚后清空,供回滚定位与灰度路由用)',
   `icon` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '图标',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '产品描述',
   `deleted` tinyint NOT NULL DEFAULT '0' COMMENT '逻辑删除标识(0-未删除、1-已删除)',
@@ -1349,6 +1347,82 @@ CREATE TABLE `product_topic` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_product_identification` (`product_identification`) USING BTREE COMMENT '产品标识索引'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='产品Topic信息表';
+
+-- ----------------------------
+-- Table structure for product_version
+-- ----------------------------
+DROP TABLE IF EXISTS `product_version`;
+CREATE TABLE `product_version` (
+  `id` bigint NOT NULL COMMENT 'id',
+  `product_identification` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '产品标识',
+  `version_no` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '版本序号(系统发布时生成的不可变快照标识,16位短雪花字符串)',
+  `version_status` tinyint NOT NULL DEFAULT '0' COMMENT '版本状态[0-草稿 1-已发布 2-灰度中 3-影子 4-已回滚 5-已归档]',
+  `product_snapshot_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '产品快照JSON(冻结整棵产品树)',
+  `publish_strategy` tinyint DEFAULT NULL COMMENT '发布策略[0-全量 1-灰度 2-影子]',
+  `canary_config_json` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '灰度配置JSON',
+  `publish_time` datetime DEFAULT NULL COMMENT '发布时间',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '备注',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
+  `deleted` tinyint NOT NULL DEFAULT '0' COMMENT '逻辑删除标识(0-未删除、1-已删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_product_identification` (`product_identification`) USING BTREE COMMENT '产品标识',
+  KEY `idx_version_no` (`version_no`) USING BTREE COMMENT '版本序号',
+  KEY `idx_version_status` (`version_status`) USING BTREE COMMENT '版本状态'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='产品物模型版本快照';
+
+-- ----------------------------
+-- Table structure for product_publish_record
+-- ----------------------------
+DROP TABLE IF EXISTS `product_publish_record`;
+CREATE TABLE `product_publish_record` (
+  `id` bigint NOT NULL COMMENT 'id',
+  `product_identification` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '产品标识',
+  `source_version` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '源版本号',
+  `target_version` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '目标版本号',
+  `intent` tinyint NOT NULL DEFAULT '0' COMMENT '操作意图[0-发布 1-回滚 2-历史清理]',
+  `status` tinyint NOT NULL DEFAULT '0' COMMENT '执行状态[0-执行中 1-成功 2-失败]',
+  `ddl_summary` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT 'DDL列表JSON数组(已执行的DDL明细 + 重试元数据)',
+  `failed_reason` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '失败原因(成功时为空)',
+  `started_time` datetime DEFAULT NULL COMMENT '开始时间',
+  `finished_time` datetime DEFAULT NULL COMMENT '结束时间',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '备注',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
+  `deleted` tinyint NOT NULL DEFAULT '0' COMMENT '逻辑删除标识(0-未删除、1-已删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_product_identification` (`product_identification`) USING BTREE COMMENT '产品标识',
+  KEY `idx_target_version` (`target_version`) USING BTREE COMMENT '目标版本号'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='产品发布记录';
+
+-- ----------------------------
+-- Table structure for product_version_change_log
+-- ----------------------------
+DROP TABLE IF EXISTS `product_version_change_log`;
+CREATE TABLE `product_version_change_log` (
+  `id` bigint NOT NULL COMMENT 'id',
+  `product_identification` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '产品标识',
+  `version_no` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '版本序号:本批变更归属版本(草稿期累积,发布后固化,对应 product_version.version_no)',
+  `change_type` tinyint NOT NULL DEFAULT '1' COMMENT '变更类型[0-新增 1-编辑 2-删除]',
+  `target_type` tinyint DEFAULT NULL COMMENT '变更维度[0-产品信息 1-服务 2-属性 3-命令]',
+  `change_summary` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '变更摘要',
+  `change_detail_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '字段级变更明细JSON(覆盖产品所有字段)',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
+  `deleted` tinyint NOT NULL DEFAULT '0' COMMENT '逻辑删除标识(0-未删除、1-已删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_product_identification` (`product_identification`) USING BTREE COMMENT '产品标识',
+  KEY `idx_change_type` (`change_type`) USING BTREE COMMENT '变更类型'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='产品物模型版本变更日志';
 
 -- ----------------------------
 -- Table structure for rule
@@ -1556,24 +1630,23 @@ CREATE TABLE `rule_groovy_script` (
   `id` bigint NOT NULL COMMENT '主键',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '名称',
   `app_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '应用ID',
-  `namespace` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '命名空间',
-  `platform_code` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '平台编码',
-  `product_code` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '产品编码',
+  `script_type` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '脚本类型',
   `channel_code` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '渠道编码',
-  `business_code` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '业务编码',
-  `business_identification` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '业务标识',
+  `product_identification` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '产品标识',
+  `topic_pattern` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '主题模式',
+  `object_version` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '版本号',
   `enable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否启用',
   `script_content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '脚本内容',
   `extend_params` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '扩展信息',
-  `object_version` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'v1.0.0' COMMENT '版本号',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '备注',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
   `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `created_by` bigint DEFAULT NULL COMMENT '创建人',
   `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
   `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
   `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `idx_only_key` (`namespace`,`platform_code`,`product_code`,`channel_code`,`business_code`,`business_identification`) USING BTREE COMMENT '唯一索引'
+  UNIQUE KEY `idx_only_key` (`script_type`,`channel_code`,`product_identification`,`topic_pattern`,`object_version`) USING BTREE COMMENT '唯一索引(脚本类型+渠道+产品标识+主题模式+产品版本)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='规则脚本表';
 
 -- ----------------------------
@@ -1617,110 +1690,309 @@ CREATE TABLE `undo_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='AT transaction mode undo table';
 
 -- ----------------------------
--- Table structure for video_device_channel
+-- Table structure for video_device
 -- ----------------------------
-DROP TABLE IF EXISTS `video_device_channel`;
-CREATE TABLE `video_device_channel` (
-  `id` bigint NOT NULL COMMENT '唯一标识符',
-  `device_identification` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '设备标识',
-  `channel_identification` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '通道标识',
-  `stream_identification` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '码流标识',
-  `channel_type` tinyint NOT NULL DEFAULT '0' COMMENT '通道类型',
-  `stream_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '码流类型',
-  `channel_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '通道名称',
-  `manufacturer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '厂商',
-  `model` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '型号',
-  `block` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '警区',
-  `province_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '省,直辖市编码',
-  `city_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '市编码',
-  `region_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '行政区划编码',
-  `full_address` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '位置',
-  `latitude` decimal(10,7) DEFAULT NULL COMMENT '纬度',
-  `longitude` decimal(10,7) DEFAULT NULL COMMENT '经度',
-  `safety_way` tinyint DEFAULT NULL COMMENT '信令安全模式',
-  `register_way` tinyint DEFAULT NULL COMMENT '注册方式',
-  `cert_num` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '证书序列号',
-  `cert_status` tinyint DEFAULT NULL COMMENT '证书有效标识(0=有效,1=无效,2=过期,3=吊销)',
-  `cert_invalid_reason_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '证书无效原因码',
-  `cert_expiry_time` datetime DEFAULT NULL COMMENT '证书有效期截止时间',
-  `secrecy` tinyint DEFAULT '0' COMMENT '保密属性(0-不涉密,1-涉密)',
-  `ip_address` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '设备/系统IPv4/IPv6地址',
-  `port` int DEFAULT NULL COMMENT '设备/系统端口',
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '设备口令',
-  `online_status` tinyint(1) DEFAULT '0' COMMENT '是否在线',
-  `has_audio` tinyint(1) DEFAULT '0' COMMENT '是否含有音频',
-  `ptz_type` tinyint DEFAULT NULL COMMENT '摄像机结构类型',
-  `position_type` tinyint DEFAULT NULL COMMENT '摄像机位置类型扩展',
-  `room_type` tinyint DEFAULT NULL COMMENT '摄像机安装位置类型',
-  `use_type` tinyint DEFAULT NULL COMMENT '用途属性类型',
-  `supply_light_type` tinyint DEFAULT NULL COMMENT '摄像机补光属性类型',
-  `direction_type` tinyint DEFAULT NULL COMMENT '摄像机监视方位(光轴方向)属性类型',
-  `resolution` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '分辨率',
-  `download_speed` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '下载倍速',
-  `svc_space_support_mod` tinyint DEFAULT NULL COMMENT '空域编码能力',
-  `svc_time_support_mode` tinyint DEFAULT NULL COMMENT '时域编码能力',
-  `extend_params` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '扩展参数',
-  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '备注',
-  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `created_by` bigint DEFAULT NULL COMMENT '创建人',
-  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+DROP TABLE IF EXISTS `video_device`;
+CREATE TABLE `video_device` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `device_identification` varchar(64) NOT NULL COMMENT '设备标识',
+  `access_protocol` varchar(32) NOT NULL COMMENT '设备接入协议(GB28181/ONVIF/ISUP/JT1078/SIP/PELCO_D/PELCO_P)',
+  `device_name` varchar(128) DEFAULT NULL COMMENT '设备名称',
+  `custom_name` varchar(128) DEFAULT NULL COMMENT '自定义名称',
+  `manufacturer` varchar(128) DEFAULT NULL COMMENT '厂商',
+  `model` varchar(128) DEFAULT NULL COMMENT '型号',
+  `firmware` varchar(128) DEFAULT NULL COMMENT '固件版本',
+  `host` varchar(256) DEFAULT NULL COMMENT '设备地址(IP/域名)',
+  `port` int DEFAULT NULL COMMENT '端口',
+  `wan_host` varchar(256) DEFAULT NULL COMMENT '公网地址(IP/域名)',
+  `lan_host` varchar(256) DEFAULT NULL COMMENT '局域网地址(IP/域名)',
+  `access_endpoint` varchar(512) DEFAULT NULL COMMENT '完整访问端点(host:port)',
+  `sdp_host` varchar(256) DEFAULT NULL COMMENT '收流地址(IP/域名)',
+  `local_host` varchar(256) DEFAULT NULL COMMENT '本地SIP交互地址(IP/域名)',
+  `transport` varchar(16) DEFAULT NULL COMMENT '传输协议(UDP/TCP)',
+  `stream_mode` varchar(16) DEFAULT NULL COMMENT '数据流传输模式',
+  `online_status` tinyint(1) DEFAULT '0' COMMENT '是否在线(0=离线/1=在线)',
+  `register_time` varchar(32) DEFAULT NULL COMMENT '注册时间',
+  `last_keepalive_time` varchar(32) DEFAULT NULL COMMENT '最后心跳时间',
+  `expires` int DEFAULT NULL COMMENT '注册有效期(秒)',
+  `keepalive_interval` int DEFAULT NULL COMMENT '心跳间隔(秒)',
+  `keepalive_timeout_count` int DEFAULT NULL COMMENT '心跳超时次数',
+  `auth_type` varchar(32) DEFAULT NULL COMMENT '认证方式(PASSWORD/VALIDATE_CODE/AUTH_TOKEN/CERTIFICATE/DIGEST/NONE)',
+  `auth_secret` varchar(512) DEFAULT NULL COMMENT '认证密钥(加密存储)',
+  `media_identification` varchar(64) DEFAULT NULL COMMENT '媒体服务唯一标识',
+  `channel_count` int DEFAULT '0' COMMENT '通道数量',
+  `ability` varchar(512) DEFAULT NULL COMMENT '设备能力集描述',
+  `protocol_config` json DEFAULT NULL COMMENT '协议专属配置(JSON)',
+  `extend_params` varchar(1024) DEFAULT NULL COMMENT '扩展参数',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
   `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `idx_device_identification` (`device_identification`) USING BTREE COMMENT '设备标识',
-  KEY `idx_channel_identification` (`channel_identification`) USING BTREE COMMENT '通道标识'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='流媒体设备通道表';
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `created_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '修改人',
+  `updated_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_device_identification` (`device_identification`),
+  KEY `idx_access_protocol` (`access_protocol`),
+  KEY `idx_online_status` (`online_status`),
+  KEY `idx_media_identification` (`media_identification`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='统一设备表';
 
 -- ----------------------------
--- Table structure for video_device_info
+-- Table structure for video_channel
 -- ----------------------------
-DROP TABLE IF EXISTS `video_device_info`;
-CREATE TABLE `video_device_info` (
-  `id` bigint NOT NULL COMMENT '唯一标识符',
-  `device_identification` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '设备标识',
-  `device_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '设备名称',
-  `custom_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '自定义名称',
-  `media_identification` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '媒体唯一标识',
-  `manufacturer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '厂商',
-  `model` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '型号',
-  `firmware` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '固件版本',
-  `transport` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '传输协议（UDP/TCP）',
-  `stream_mode` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '数据流传输模式',
-  `online_status` tinyint(1) DEFAULT '0' COMMENT '是否在线',
-  `register_time` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '注册时间',
-  `keepalive_time` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '心跳时间',
-  `ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'IP',
+DROP TABLE IF EXISTS `video_channel`;
+CREATE TABLE `video_channel` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `device_identification` varchar(64) NOT NULL COMMENT '所属设备标识',
+  `channel_identification` varchar(64) NOT NULL COMMENT '通道标识',
+  `channel_no` int DEFAULT NULL COMMENT '逻辑通道号',
+  `channel_type` smallint DEFAULT NULL COMMENT '通道类型(GB28181行业编码131~143)',
+  `channel_name` varchar(128) DEFAULT NULL COMMENT '通道名称',
+  `stream_identification` varchar(64) DEFAULT NULL COMMENT '流标识',
+  `stream_type` varchar(32) DEFAULT NULL COMMENT '流类型',
+  `manufacturer` varchar(128) DEFAULT NULL COMMENT '厂商',
+  `model` varchar(128) DEFAULT NULL COMMENT '型号',
+  `online_status` tinyint(1) DEFAULT '0' COMMENT '在线状态(0=离线/1=在线)',
+  `host` varchar(256) DEFAULT NULL COMMENT '通道地址(IP/域名)',
   `port` int DEFAULT NULL COMMENT '端口',
-  `wan_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '公网IP',
-  `lan_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '局域网IP ',
-  `host_address` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '访问地址',
-  `expires` int DEFAULT NULL COMMENT '注册有效期',
-  `subscribe_cycle_for_catalog` tinyint(1) DEFAULT '0' COMMENT '目录订阅',
-  `subscribe_cycle_for_mobile_position` tinyint(1) DEFAULT '0' COMMENT '移动设备位置订阅',
-  `subscribe_cycle_for_alarm` tinyint(1) DEFAULT '0' COMMENT '报警订阅',
-  `mobile_position_submission_interval` int DEFAULT '5' COMMENT '移动设备位置信息上报时间间隔,单位:秒,默认值5',
-  `charset` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '字符集',
-  `ssrc_check` tinyint(1) DEFAULT '0' COMMENT 'ssrc校验',
-  `geo_coord_sys` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '地理坐标系',
-  `sdp_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '收流IP',
-  `local_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'SIP交互IP（设备访问平台的IP）',
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '设备密码',
-  `as_message_channel` tinyint(1) DEFAULT '0' COMMENT '是否作为消息通道',
-  `keepalive_interval_time` int DEFAULT NULL COMMENT '心跳间隔',
-  `keepalive_timeout_count` int DEFAULT NULL COMMENT '心跳超时次数',
-  `position_capability` int DEFAULT '0' COMMENT '定位功能支持情况(0-不支持;1-支持GPS定位;2-支持北斗定位)',
-  `broadcast_push_after_ack` tinyint(1) DEFAULT '0' COMMENT '控制语音对讲流程，释放收到ACK后发流',
-  `ability` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '能力',
-  `extend_params` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '扩展参数',
-  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '备注',
+  `password` varchar(128) DEFAULT NULL COMMENT '设备口令',
+  `longitude` decimal(12,8) DEFAULT NULL COMMENT '经度',
+  `latitude` decimal(12,8) DEFAULT NULL COMMENT '纬度',
+  `full_address` varchar(512) DEFAULT NULL COMMENT '安装地址',
+  `province_code` varchar(16) DEFAULT NULL COMMENT '省级编码',
+  `city_code` varchar(16) DEFAULT NULL COMMENT '市级编码',
+  `region_code` varchar(16) DEFAULT NULL COMMENT '行政区划编码',
+  `has_audio` tinyint(1) DEFAULT '0' COMMENT '支持音频(0=否/1=是)',
+  `ptz_type` tinyint DEFAULT NULL COMMENT '云台类型(0=未知/1=球机/2=半球/3=固定枪机/4=遥控枪机)',
+  `ptz_capability` tinyint(1) DEFAULT '0' COMMENT '支持云台控制(0=否/1=是)',
+  `talk_capability` tinyint(1) DEFAULT '0' COMMENT '支持对讲(0=否/1=是)',
+  `secrecy` tinyint DEFAULT '0' COMMENT '保密属性(0=不涉密/1=涉密)',
+  `channel_config` json DEFAULT NULL COMMENT '通道专属配置(JSON)',
+  `extend_params` varchar(1024) DEFAULT NULL COMMENT '扩展参数',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `created_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '修改人',
+  `updated_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_channel_identification` (`channel_identification`),
+  KEY `idx_device_identification` (`device_identification`),
+  KEY `idx_online_status` (`online_status`),
+  KEY `idx_stream_identification` (`stream_identification`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='统一通道表';
+
+-- ----------------------------
+-- Table structure for video_device_alarm
+-- ----------------------------
+DROP TABLE IF EXISTS `video_device_alarm`;
+CREATE TABLE `video_device_alarm` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `device_identification` varchar(50) NOT NULL COMMENT '设备国标编号',
+  `channel_identification` varchar(50) DEFAULT NULL COMMENT '通道国标编号',
+  `alarm_priority` tinyint DEFAULT NULL COMMENT '告警级别(1=一级警情/2=二级警情/3=三级警情/4=四级警情)',
+  `alarm_method` tinyint DEFAULT NULL COMMENT '告警方式',
+  `alarm_time` datetime DEFAULT NULL COMMENT '告警时间（设备上报时间）',
+  `alarm_description` varchar(500) DEFAULT NULL COMMENT '告警描述',
+  `alarm_type` tinyint DEFAULT NULL COMMENT '告警类型',
+  `alarm_type_param` varchar(500) DEFAULT NULL COMMENT '告警类型参数(JSON)',
+  `longitude` double DEFAULT NULL COMMENT '经度',
+  `latitude` double DEFAULT NULL COMMENT '纬度',
+  `handle_status` tinyint NOT NULL DEFAULT '0' COMMENT '处理状态(0=待处理/1=处理中/2=已处理/3=已忽略)',
+  `handle_user_id` bigint DEFAULT NULL COMMENT '处理人ID',
+  `handle_time` datetime DEFAULT NULL COMMENT '处理时间',
+  `handle_result` text COMMENT '处理结果描述',
+  `created_org_id` bigint DEFAULT NULL COMMENT '所属组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
   `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `created_by` bigint DEFAULT NULL COMMENT '创建人',
-  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
-  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`),
+  KEY `idx_device_identification` (`device_identification`),
+  KEY `idx_alarm_time` (`alarm_time`),
+  KEY `idx_handle_status` (`handle_status`),
+  KEY `idx_alarm_priority` (`alarm_priority`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频设备告警表';
+
+-- ----------------------------
+-- Table structure for video_sip_config
+-- ----------------------------
+DROP TABLE IF EXISTS `video_sip_config`;
+CREATE TABLE `video_sip_config` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `config_name` varchar(100) NOT NULL COMMENT '配置名称',
+  `sip_id` varchar(50) NOT NULL COMMENT 'SIP服务器编号(设备端GB28181配置中的"SIP服务器编号"，20位数字，不能填设备自己的国标编号)',
+  `sip_domain` varchar(50) NOT NULL COMMENT 'SIP域(SIP服务器编号前10位，行政区划码)',
+  `sip_password` varchar(100) DEFAULT NULL COMMENT 'SIP认证密码(AES加密，与设备端"SIP认证密码"一致)',
+  `sip_server_address` varchar(200) DEFAULT NULL COMMENT 'SIP服务器地址(设备端"SIP服务器IP/地址"，域名或IP，集群可填Nginx VIP)',
+  `bind_ip` varchar(500) DEFAULT NULL COMMENT '绑定IP(多网卡隔离场景下监听的网卡IP，逗号分隔，留空=不限制)',
+  `is_default` tinyint NOT NULL DEFAULT '0' COMMENT '是否默认(1=是)',
+  `register_interval` int DEFAULT NULL COMMENT '注册有效期(秒)',
+  `status` tinyint NOT NULL DEFAULT '1' COMMENT '状态(0=禁用/1=启用)',
+  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除',
+  PRIMARY KEY (`id`),
+  KEY `idx_sip_id` (`sip_id`),
+  KEY `idx_status` (`status`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='租户SIP服务配置';
+
+-- ----------------------------
+-- Table structure for video_notify_subscription
+-- ----------------------------
+DROP TABLE IF EXISTS `video_notify_subscription`;
+CREATE TABLE `video_notify_subscription` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `subscription_name` varchar(200) NOT NULL COMMENT '订阅名称',
+  `channel_type` varchar(30) NOT NULL COMMENT '渠道类型(字典 NOTIFY_CHANNEL_TYPE)',
+  `channel_config` text COMMENT '渠道凭证(JSON)',
+  `template_code` varchar(100) NOT NULL COMMENT '消息模板编码(ExtendMsgTemplate.code)',
+  `event_types` varchar(500) NOT NULL COMMENT '订阅事件类型(逗号分隔)',
+  `priority_filter` varchar(100) DEFAULT NULL COMMENT '告警级别过滤(逗号分隔,空=全部)',
+  `recipient_scope` varchar(20) NOT NULL DEFAULT 'SELF' COMMENT '接收范围: SELF/ORG/CUSTOM',
+  `recipient_ids` varchar(2000) DEFAULT NULL COMMENT '接收人用户ID(逗号分隔)',
+  `at_all` tinyint NOT NULL DEFAULT '0' COMMENT '@所有人(0=否/1=是)',
+  `jump_url_template` varchar(500) DEFAULT NULL COMMENT '跳转链接模板',
+  `msg_template` text COMMENT '消息内容模板(支持${变量})',
+  `status` tinyint NOT NULL DEFAULT '1' COMMENT '状态(0=禁用/1=启用)',
+  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  PRIMARY KEY (`id`),
+  KEY `idx_event_types` (`event_types`(100)),
+  KEY `idx_channel_type` (`channel_type`),
+  KEY `idx_status` (`status`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频事件通知订阅配置';
+
+-- ----------------------------
+-- Table structure for video_device_mobile_position
+-- ----------------------------
+DROP TABLE IF EXISTS `video_device_mobile_position`;
+CREATE TABLE `video_device_mobile_position` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `device_identification` varchar(50) NOT NULL COMMENT '设备国标编号',
+  `channel_identification` varchar(50) DEFAULT NULL COMMENT '通道国标编号',
+  `longitude` double DEFAULT NULL COMMENT '经度',
+  `latitude` double DEFAULT NULL COMMENT '纬度',
+  `altitude` double DEFAULT NULL COMMENT '海拔高度(米)',
+  `speed` double DEFAULT NULL COMMENT '速度(km/h)',
+  `direction` double DEFAULT NULL COMMENT '方向角(度，正北为0，顺时针)',
+  `report_time` datetime DEFAULT NULL COMMENT '位置上报时间',
+  `geo_coord_sys` varchar(20) DEFAULT 'WGS84' COMMENT '坐标系(WGS84/GCJ02/BD09)',
+  `created_org_id` bigint DEFAULT NULL COMMENT '所属组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`),
+  KEY `idx_device_identification` (`device_identification`),
+  KEY `idx_report_time` (`report_time`),
+  KEY `idx_device_time` (`device_identification`,`report_time`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频设备移动位置表';
+
+-- ----------------------------
+-- Table structure for video_device_group
+-- ----------------------------
+DROP TABLE IF EXISTS `video_device_group`;
+CREATE TABLE `video_device_group` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `group_name` varchar(100) NOT NULL COMMENT '分组名称',
+  `parent_id` bigint DEFAULT NULL COMMENT '上级分组ID(顶层为空)',
+  `group_type` tinyint NOT NULL DEFAULT '0' COMMENT '分组类型(0=自定义分组/1=行政区划/2=业务分组)',
+  `sort_order` int NOT NULL DEFAULT '0' COMMENT '排序序号',
+  `group_path` varchar(500) DEFAULT NULL COMMENT '层级路径(如: /1/2/3，便于快速查子孙)',
+  `group_level` int NOT NULL DEFAULT '1' COMMENT '层级深度(从1开始)',
+  `icon` varchar(100) DEFAULT NULL COMMENT '图标标识',
+  `enable` tinyint(1) NOT NULL DEFAULT '1' COMMENT '启用状态(0=禁用/1=启用)',
+  `extend_params` text COMMENT '扩展参数(JSON)',
+  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  `created_org_id` bigint DEFAULT NULL COMMENT '所属组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`),
+  KEY `idx_parent_id` (`parent_id`),
+  KEY `idx_group_path` (`group_path`(191)),
+  KEY `idx_sort_order` (`sort_order`),
+  KEY `idx_enable` (`enable`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频设备分组表';
+
+-- ----------------------------
+-- Table structure for video_device_group_relation
+-- ----------------------------
+DROP TABLE IF EXISTS `video_device_group_relation`;
+CREATE TABLE `video_device_group_relation` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `group_id` bigint NOT NULL COMMENT '分组ID',
+  `device_identification` varchar(50) NOT NULL COMMENT '设备国标编号',
+  `channel_identification` varchar(50) DEFAULT NULL COMMENT '通道国标编号(空表示设备级别关联)',
+  `sort_order` int NOT NULL DEFAULT '0' COMMENT '分组内排序序号',
+  `extend_params` text COMMENT '扩展参数(JSON)',
+  `created_org_id` bigint DEFAULT NULL COMMENT '所属组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_group_device_channel` (`group_id`,`device_identification`,`channel_identification`),
+  KEY `idx_group_id` (`group_id`),
+  KEY `idx_device_identification` (`device_identification`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频设备分组关联表';
+
+-- ----------------------------
+-- Table structure for video_gateway_mapping
+-- ----------------------------
+DROP TABLE IF EXISTS `video_gateway_mapping`;
+CREATE TABLE `video_gateway_mapping` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `src_protocol` varchar(32) NOT NULL COMMENT '源协议(JT1078/ISUP等)',
+  `src_device_identification` varchar(64) NOT NULL COMMENT '源设备标识',
+  `src_channel_identification` varchar(64) DEFAULT NULL COMMENT '源通道标识',
+  `gb_device_id` varchar(64) NOT NULL COMMENT '映射GB28181设备编号',
+  `gb_channel_id` varchar(64) DEFAULT NULL COMMENT '映射GB28181通道编号',
+  `gb_platform_id` bigint DEFAULT NULL COMMENT '目标上级平台ID',
+  `enable` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否启用(0=禁用/1=启用)',
+  `auto_push` tinyint(1) NOT NULL DEFAULT '0' COMMENT '自动推流(0=否/1=是)',
+  `mapping_config` json DEFAULT NULL COMMENT '映射配置(JSON)',
+  `register_status` tinyint(1) DEFAULT '0' COMMENT '注册状态(0=未注册/1=已注册)',
+  `last_register_time` varchar(32) DEFAULT NULL COMMENT '最后注册时间',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
   `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `uk_device_identification` (`device_identification`) USING BTREE COMMENT '设备标识'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='流媒体设备信息表';
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `created_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '修改人',
+  `updated_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_src_device_channel` (`src_protocol`,`src_device_identification`,`src_channel_identification`),
+  KEY `idx_gb_device_id` (`gb_device_id`),
+  KEY `idx_gb_channel_id` (`gb_channel_id`),
+  KEY `idx_gb_platform_id` (`gb_platform_id`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='网关协议映射表';
 
 -- ----------------------------
 -- Table structure for video_media_server
@@ -1731,10 +2003,10 @@ CREATE TABLE `video_media_server` (
   `app_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '应用ID',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '名称',
   `media_identification` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '媒体唯一标识',
-  `ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '服务器IP地址',
-  `hook_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'hook使用的IP（zlm访问客户端使用的IP）',
-  `sdp_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'SDP IP地址',
-  `stream_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '流IP地址',
+  `host` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '服务器地址(IP/域名)',
+  `hook_host` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'Hook回调地址(IP/域名)',
+  `sdp_host` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'SDP地址(IP/域名)',
+  `stream_host` varchar(256) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '流播放地址(IP/域名)',
   `http_port` int DEFAULT NULL COMMENT 'HTTP端口',
   `http_ssl_port` int DEFAULT NULL COMMENT 'HTTPS端口',
   `rtmp_port` int DEFAULT NULL COMMENT 'RTMP端口',
@@ -1762,15 +2034,210 @@ CREATE TABLE `video_media_server` (
   `online_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '在线状态(0:离线、1:在线)',
   `extend_params` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '扩展参数',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '备注',
+  `version` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '服务器版本号',
+  `capabilities` text COLLATE utf8mb4_general_ci COMMENT '服务器能力集(JSON，标记支持哪些API)',
+  `max_streams` int DEFAULT NULL COMMENT '最大承载流数量(用于负载均衡)',
+  `current_streams` int DEFAULT '0' COMMENT '当前流数量',
+  `cpu_usage` decimal(5,2) DEFAULT NULL COMMENT 'CPU使用率(心跳上报)',
+  `memory_usage` decimal(5,2) DEFAULT NULL COMMENT '内存使用率(心跳上报)',
+  `network_in_speed` bigint DEFAULT NULL COMMENT '入网速率bytes/s(心跳上报)',
+  `network_out_speed` bigint DEFAULT NULL COMMENT '出网速率bytes/s(心跳上报)',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
   `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `created_by` bigint DEFAULT NULL COMMENT '创建人',
   `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
   `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
   `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE KEY `uk_media_server_unique_ip_http_port` (`ip`,`http_port`) USING BTREE COMMENT '唯一IP和HTTP端口组合',
+  UNIQUE KEY `uk_media_server_unique_ip_http_port` (`host`,`http_port`) USING BTREE COMMENT '唯一IP和HTTP端口组合',
   KEY `idx_type` (`type`) USING BTREE COMMENT '类型索引'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='流媒体服务器信息表';
+
+-- ----------------------------
+-- Table structure for video_platform
+-- ----------------------------
+DROP TABLE IF EXISTS `video_platform`;
+CREATE TABLE `video_platform` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `name` varchar(100) DEFAULT NULL COMMENT '平台名称',
+  `enable` tinyint(1) DEFAULT '1' COMMENT '启用状态(0=禁用/1=启用)',
+  `server_gb_id` varchar(50) DEFAULT NULL COMMENT '平台国标编号',
+  `server_gb_domain` varchar(50) DEFAULT NULL COMMENT '平台国标域',
+  `server_ip` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '上级SIP服务IP/域名',
+  `server_port` int DEFAULT NULL COMMENT '平台SIP端口',
+  `device_gb_id` varchar(50) DEFAULT NULL COMMENT '本平台在上级的设备编号',
+  `device_ip` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '本机设备IP/域名',
+  `device_port` int DEFAULT NULL COMMENT '本平台SIP端口',
+  `username` varchar(100) DEFAULT NULL COMMENT '认证用户名',
+  `password` varchar(200) DEFAULT NULL COMMENT '认证密码',
+  `expires` int DEFAULT '3600' COMMENT '注册有效期(秒)',
+  `keep_timeout` int DEFAULT '60' COMMENT '心跳超时(秒)',
+  `transport` varchar(10) DEFAULT 'UDP' COMMENT '传输协议(UDP/TCP)',
+  `character_set` varchar(20) DEFAULT 'GB2312' COMMENT '字符集(GB2312/UTF-8)',
+  `ptz` tinyint(1) DEFAULT '0' COMMENT '是否支持PTZ',
+  `rtcp` tinyint(1) DEFAULT '0' COMMENT '是否支持RTCP',
+  `status` tinyint(1) DEFAULT '0' COMMENT '注册状态(0=未注册/1=已注册)',
+  `catalog_subscribe` tinyint(1) DEFAULT '0' COMMENT '订阅目录变化',
+  `alarm_subscribe` tinyint(1) DEFAULT '0' COMMENT '订阅告警',
+  `mobile_position_subscribe` tinyint(1) DEFAULT '0' COMMENT '订阅位置',
+  `catalog_group` int DEFAULT '1' COMMENT '目录分组大小',
+  `as_message_channel` tinyint(1) DEFAULT '0' COMMENT '作为消息通道',
+  `send_stream_ip` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '推流IP/域名',
+  `auto_push_channel` tinyint(1) DEFAULT '0' COMMENT '自动推送通道',
+  `catalog_with_platform` int DEFAULT '0' COMMENT '目录包含平台',
+  `catalog_with_group` int DEFAULT '0' COMMENT '目录包含分组',
+  `catalog_with_region` int DEFAULT '0' COMMENT '目录包含区域',
+  `civil_code` varchar(50) DEFAULT NULL COMMENT '行政区划编码',
+  `manufacturer` varchar(100) DEFAULT NULL COMMENT '厂商',
+  `model` varchar(100) DEFAULT NULL COMMENT '型号',
+  `address` varchar(200) DEFAULT NULL COMMENT '地址',
+  `register_way` tinyint DEFAULT '1' COMMENT '注册方式(1=符合标准)',
+  `secrecy` tinyint DEFAULT '0' COMMENT '保密属性(0=不涉密/1=涉密)',
+  `server_id` varchar(50) DEFAULT NULL COMMENT '服务器ID',
+  `cascade_type` tinyint DEFAULT '0' COMMENT '级联类型(0=作为下级/1=作为上级)',
+  `gb_version` varchar(20) DEFAULT NULL COMMENT 'GB28181协议版本',
+  `online_status` tinyint(1) DEFAULT '0' COMMENT '在线状态(0=离线/1=在线)',
+  `register_expires` int DEFAULT '3600' COMMENT '注册有效期(秒)',
+  `keepalive_interval` int DEFAULT '60' COMMENT '心跳间隔(秒)',
+  `keepalive_timeout_count` int DEFAULT '3' COMMENT '心跳超时次数',
+  `last_register_time` varchar(50) DEFAULT NULL COMMENT '最近注册时间',
+  `last_keepalive_time` varchar(50) DEFAULT NULL COMMENT '最近心跳时间',
+  `start_offline_push` tinyint(1) DEFAULT '0' COMMENT '推送离线通道',
+  `sip_ip` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT 'SIP服务IP/域名',
+  `sip_port` int DEFAULT NULL COMMENT 'SIP监听端口',
+  `hook_url_prefix` varchar(200) DEFAULT NULL COMMENT 'Hook URL前缀',
+  `service_instance_id` varchar(100) DEFAULT NULL COMMENT '服务实例ID',
+  `cascade_sdp_ip` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '级联SDP IP/域名',
+  `created_org_id` bigint DEFAULT NULL COMMENT '所属组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`),
+  KEY `idx_server_gb_id` (`server_gb_id`),
+  KEY `idx_online_status` (`online_status`),
+  KEY `idx_enable` (`enable`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频级联平台表';
+
+-- ----------------------------
+-- Table structure for video_platform_catalog
+-- ----------------------------
+DROP TABLE IF EXISTS `video_platform_catalog`;
+CREATE TABLE `video_platform_catalog` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `platform_id` bigint NOT NULL COMMENT '级联平台ID',
+  `name` varchar(100) DEFAULT NULL COMMENT '目录名称',
+  `gb_id` varchar(50) DEFAULT NULL COMMENT '目录国标编号',
+  `parent_id` bigint DEFAULT NULL COMMENT '上级目录ID(顶层为空)',
+  `catalog_type` tinyint DEFAULT '0' COMMENT '目录类型(0=行政区划/1=业务分组/2=虚拟组织)',
+  `civil_code` varchar(50) DEFAULT NULL COMMENT '行政区划编码',
+  `sort_order` int DEFAULT '0' COMMENT '排序序号',
+  `created_org_id` bigint DEFAULT NULL COMMENT '所属组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`),
+  KEY `idx_platform_id` (`platform_id`),
+  KEY `idx_parent_id` (`parent_id`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频级联目录表';
+
+-- ----------------------------
+-- Table structure for video_platform_channel
+-- ----------------------------
+DROP TABLE IF EXISTS `video_platform_channel`;
+CREATE TABLE `video_platform_channel` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `platform_id` bigint NOT NULL COMMENT '级联平台ID',
+  `device_channel_id` bigint DEFAULT NULL COMMENT '设备通道表ID',
+  `catalog_id` bigint DEFAULT NULL COMMENT '所属目录ID',
+  `device_identification` varchar(50) DEFAULT NULL COMMENT '设备国标编号',
+  `channel_identification` varchar(50) DEFAULT NULL COMMENT '通道国标编号',
+  `custom_name` varchar(100) DEFAULT NULL COMMENT '自定义名称',
+  `custom_gb_id` varchar(50) DEFAULT NULL COMMENT '自定义国标编号',
+  `created_org_id` bigint DEFAULT NULL COMMENT '所属组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`),
+  KEY `idx_platform_id` (`platform_id`),
+  KEY `idx_device_identification` (`device_identification`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频级联平台通道关联表';
+
+-- ----------------------------
+-- Table structure for video_record_plan
+-- ----------------------------
+DROP TABLE IF EXISTS `video_record_plan`;
+CREATE TABLE `video_record_plan` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `plan_name` varchar(100) NOT NULL COMMENT '计划名称',
+  `plan_type` tinyint NOT NULL DEFAULT '0' COMMENT '计划类型(0=设备录像/1=云端录像)',
+  `media_identification` varchar(50) DEFAULT NULL COMMENT '指定流媒体服务器标识(空则自动分配)',
+  `record_format` varchar(20) NOT NULL DEFAULT 'mp4' COMMENT '录像格式(mp4/flv/ts)',
+  `segment_duration` int NOT NULL DEFAULT '3600' COMMENT '分段时长(秒，默认1小时)',
+  `retention_days` int NOT NULL DEFAULT '30' COMMENT '保留天数(超期自动清理)',
+  `storage_path` varchar(500) DEFAULT NULL COMMENT '存储路径(空则用默认路径)',
+  `plan_status` tinyint NOT NULL DEFAULT '0' COMMENT '计划状态(0=停用/1=启用)',
+  `schedule_rule` text COMMENT '调度规则(JSON，支持周期/CRON/一次性)',
+  `extend_params` text COMMENT '扩展参数(JSON)',
+  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  `created_org_id` bigint DEFAULT NULL COMMENT '所属组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`),
+  KEY `idx_plan_status` (`plan_status`),
+  KEY `idx_plan_type` (`plan_type`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频录像计划表';
+
+-- ----------------------------
+-- Table structure for video_record_file
+-- ----------------------------
+DROP TABLE IF EXISTS `video_record_file`;
+CREATE TABLE `video_record_file` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `plan_id` bigint DEFAULT NULL COMMENT '关联录像计划ID(手动录制时为空)',
+  `device_identification` varchar(50) DEFAULT NULL COMMENT '设备国标编号',
+  `channel_identification` varchar(50) DEFAULT NULL COMMENT '通道国标编号',
+  `stream_identification` varchar(100) DEFAULT NULL COMMENT '流标识',
+  `app` varchar(50) DEFAULT NULL COMMENT '应用名',
+  `media_identification` varchar(50) DEFAULT NULL COMMENT '流媒体服务器标识',
+  `file_name` varchar(200) DEFAULT NULL COMMENT '文件名',
+  `file_id` bigint DEFAULT NULL COMMENT '文件ID(关联base服务File表)',
+  `file_size` bigint NOT NULL DEFAULT '0' COMMENT '文件大小(字节)',
+  `file_format` varchar(20) NOT NULL DEFAULT 'mp4' COMMENT '文件格式(mp4/flv/ts)',
+  `duration` int NOT NULL DEFAULT '0' COMMENT '时长(秒)',
+  `start_time` datetime DEFAULT NULL COMMENT '录像开始时间',
+  `end_time` datetime DEFAULT NULL COMMENT '录像结束时间',
+  `thumbnail_file_id` bigint DEFAULT NULL COMMENT '缩略图文件ID(关联base服务File表)',
+  `file_status` tinyint NOT NULL DEFAULT '0' COMMENT '文件状态(0=录制中/1=已完成/2=已过期/3=已删除)',
+  `extend_params` text COMMENT '扩展参数(JSON)',
+  `created_org_id` bigint DEFAULT NULL COMMENT '所属组织ID',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`),
+  KEY `idx_plan_id` (`plan_id`),
+  KEY `idx_device_channel` (`device_identification`,`channel_identification`),
+  KEY `idx_start_time` (`start_time`),
+  KEY `idx_end_time` (`end_time`),
+  KEY `idx_file_id` (`file_id`),
+  KEY `idx_file_status` (`file_status`),
+  KEY `idx_media_identification` (`media_identification`),
+  KEY `idx_created_org_id` (`created_org_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='视频录像文件表';
 
 -- ----------------------------
 -- Table structure for video_stream_proxy
@@ -1798,6 +2265,11 @@ CREATE TABLE `video_stream_proxy` (
   `enable_disable_none_reader` tinyint(1) DEFAULT '0' COMMENT '无人观看时是否自动停用',
   `extend_params` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '扩展参数',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '备注',
+  `pull_retry_count` int DEFAULT '0' COMMENT '拉流重试次数',
+  `max_retry_count` int DEFAULT '3' COMMENT '最大重试次数',
+  `last_pull_time` datetime DEFAULT NULL COMMENT '最近拉流时间',
+  `last_error` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '最近错误信息',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
   `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `created_by` bigint DEFAULT NULL COMMENT '创建人',
   `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
@@ -1829,6 +2301,7 @@ CREATE TABLE `video_stream_push` (
   `self` tinyint(1) DEFAULT '0' COMMENT '是否自己平台的推流',
   `extend_params` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '扩展参数',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '备注',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
   `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `created_by` bigint DEFAULT NULL COMMENT '创建人',
   `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
@@ -1877,5 +2350,180 @@ CREATE TABLE `view_project_template` (
   `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='可视化项目模板表';
+
+-- ============================================================================
+-- 北向集成 / 数据桥接 模块（5 张表，对应 thinglinks-databridge-starter）
+-- ============================================================================
+
+-- ----------------------------
+-- Table structure for rule_data_source
+-- ----------------------------
+DROP TABLE IF EXISTS `rule_data_source`;
+CREATE TABLE `rule_data_source` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `app_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '应用ID',
+  `data_source_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '数据源名称（用户起的友好标识，列表页显示）',
+  `data_source_code` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '业务唯一编码（snowflake，外部系统引用）',
+  `direction` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '10' COMMENT '方向：10-出站sink / 20-入站source / 30-双向',
+  `source_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '协议类型：KAFKA/REDIS/ROCKETMQ/MYSQL/HTTP/WEBHOOK/MQTT；与 ConnectorType 1:1 对齐',
+  `connection_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '连接参数JSON（host/port/topic/database/mode 等；EncryptTypeHandler 整体加密落盘）',
+  `credential_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '凭证JSON（密码/密钥/token；EncryptTypeHandler 整体加密落盘）',
+  `serialization` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'JSON' COMMENT '序列化策略：JSON/AVRO/STRING/BINARY（与 Serializer.name() 匹配）',
+  `default_qos` int NOT NULL DEFAULT '1' COMMENT '默认可靠性级别：0-fire-forget / 1-at-least-once / 2-exactly-once',
+  `default_rate_limit_qps` int NOT NULL DEFAULT '0' COMMENT '默认 QPS 限流（0=不限）',
+  `default_retry_max_times` int NOT NULL DEFAULT '3' COMMENT '默认最大重试次数（不含首次发送）',
+  `default_retry_backoff_ms` int NOT NULL DEFAULT '1000' COMMENT '默认初始退避时长 ms（指数倍增 1s/2s/4s/...）',
+  `default_timeout_ms` int NOT NULL DEFAULT '5000' COMMENT '默认单次发送超时 ms',
+  `default_dead_letter_data_source_id` bigint DEFAULT NULL COMMENT '默认死信投递的数据源 FK（一般指向告警 Kafka）',
+  `enable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否启用：0-禁用 / 1-启用（必须测试连接成功后手动启用）',
+  `health_status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'UNKNOWN' COMMENT '健康状态：HEALTHY/DEGRADED/DOWN/UNKNOWN（HealthCheckScheduler 5min 探活更新）',
+  `last_health_check_time` datetime DEFAULT NULL COMMENT '上次健康检查时间',
+  `extend_params` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '扩展参数（协议特异调参 JSON：acks/compression/timeout/poolSize 等）',
+  `remark` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `uk_data_source_code` (`data_source_code`) USING BTREE COMMENT '业务编码全局唯一',
+  KEY `idx_app_id_direction` (`app_id`,`direction`) USING BTREE COMMENT '按应用+方向查询',
+  KEY `idx_enable` (`enable`) USING BTREE COMMENT '按状态过滤启用项'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='数据桥接-数据源（出/入站共用）';
+
+-- ----------------------------
+-- Table structure for rule_data_bridge
+-- ----------------------------
+DROP TABLE IF EXISTS `rule_data_bridge`;
+CREATE TABLE `rule_data_bridge` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `app_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '应用ID',
+  `rule_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '规则名称（列表页展示）',
+  `rule_code` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '规则业务唯一编码（snowflake）',
+  `direction` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '10' COMMENT '桥接方向：10-出站(平台→第三方) / 20-入站(第三方→平台)',
+  `data_source_id` bigint NOT NULL COMMENT '关联数据源 FK→rule_data_source.id',
+  `match_config_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '匹配条件JSON。出站含productIdentifications/actionTypes/topicFilter/deviceFilter/payloadFilter/timeWindow；入站含subscriptionSourceIds/messageFilter',
+  `action_config_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '动作配置JSON（含 sink 特异参数；EncryptTypeHandler 整体加密落盘，防内联 Bearer token 等泄漏）。出站含payloadTemplate/transformScript/sourceType特异参数；入站含targetHandler/fieldMapping',
+  `qos` int DEFAULT NULL COMMENT '规则级可靠性级别覆盖（NULL=用数据源默认）',
+  `rate_limit_qps` int DEFAULT NULL COMMENT '规则级 QPS 限流覆盖',
+  `retry_max_times` int DEFAULT NULL COMMENT '规则级最大重试次数覆盖',
+  `retry_backoff_ms` int DEFAULT NULL COMMENT '规则级初始退避时长覆盖（毫秒）',
+  `timeout_ms` int DEFAULT NULL COMMENT '规则级单次发送超时覆盖（毫秒）',
+  `dead_letter_data_source_id` bigint DEFAULT NULL COMMENT '规则级死信数据源覆盖',
+  `enable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否启用：0-禁用 / 1-启用（必须测试发送成功后手动启用）',
+  `priority` int NOT NULL DEFAULT '100' COMMENT '优先级（数字越小越先匹配；同事件命中多条时按此排序）',
+  `extend_params` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '扩展参数（兜底，未来加加密/流量分级/A-B 灰度等 0 改表）',
+  `remark` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `uk_rule_code` (`rule_code`) USING BTREE COMMENT '规则编码全局唯一',
+  KEY `idx_app_direction_enable` (`app_id`,`direction`,`enable`) USING BTREE COMMENT '按应用+方向+状态聚合（matcher 主索引）',
+  KEY `idx_data_source_id` (`data_source_id`) USING BTREE COMMENT '按数据源反查关联规则'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='数据桥接-规则';
+
+-- ----------------------------
+-- Table structure for rule_subscription_source
+-- ----------------------------
+DROP TABLE IF EXISTS `rule_subscription_source`;
+CREATE TABLE `rule_subscription_source` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `app_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '应用ID',
+  `source_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '订阅源名称（用户可读）',
+  `source_code` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '业务唯一编码（snowflake；HTTP 入站 endpoint URL 用此值）',
+  `data_source_id` bigint NOT NULL COMMENT '复用数据源 FK→rule_data_source.id（direction 须为 20-入站 或 30-双向）',
+  `target_handler` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'MQTT_FORWARD' COMMENT '入站后处理方式：MQTT_FORWARD-伪装设备 publish / RAW_INSERT-直接写 DeviceAction / RULE_TRIGGER-触发场景联动',
+  `mapping_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '字段映射 JSON（如 [{"sourceField":"device_id","targetField":"deviceIdentification"}]）',
+  `target_product_identification` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'target_handler=MQTT_FORWARD 时的目标产品标识',
+  `target_topic_template` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '目标 topic 模板（含 ${} 占位符，如 $thing/up/property/${productId}/${deviceId}）',
+  `enable` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否启用：0-禁用 / 1-启用（必须测试连接成功后手动启用）',
+  `last_consume_offset` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '上次消费位点（Kafka offset / MQTT messageId / HTTP 时间戳；重启后接续消费）',
+  `extend_params` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '扩展参数',
+  `remark` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `uk_source_code` (`source_code`) USING BTREE COMMENT '编码全局唯一',
+  KEY `idx_app_id_enable` (`app_id`,`enable`) USING BTREE COMMENT '按应用+状态查启用订阅源（启动时扫描用）'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='数据桥接-订阅源';
+
+-- ----------------------------
+-- Table structure for rule_bridge_execution_trace
+-- ----------------------------
+DROP TABLE IF EXISTS `rule_bridge_execution_trace`;
+CREATE TABLE `rule_bridge_execution_trace` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `trace_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '全链路追踪ID（贯穿 mqs → RocketMQ → rule，可与设备 publish 日志串联）',
+  `bridge_rule_id` bigint DEFAULT NULL COMMENT '关联桥接规则 ID（出站必填；入站为订阅源拉取时为空）',
+  `direction` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '10' COMMENT '桥接方向：10-出站 / 20-入站',
+  `trigger_source` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '触发来源：DEVICE_DATA-设备数据 / SUBSCRIPTION-订阅源 / TEST_SINK-测试发送 / REPLAY-死信回放',
+  `tenant_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '租户ID',
+  `product_identification` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '产品标识（出站时来自设备事件）',
+  `device_identification` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '设备标识（出站时来自设备事件）',
+  `action_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '事件类型（PUBLISH/CONNECT/CLOSE/...，复用 LINK_DEVICE_ACTION_TYPE 字典）',
+  `topic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '设备事件 topic',
+  `data_source_id` bigint DEFAULT NULL COMMENT '关联数据源 ID（出站=目标 sink；入站=来源 source）',
+  `subscription_source_id` bigint DEFAULT NULL COMMENT '关联订阅源 ID（仅入站）',
+  `status` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '00' COMMENT '整体状态：00-成功 / 01-失败 / 02-部分成功 / 03-死信',
+  `step_count` int NOT NULL DEFAULT '0' COMMENT '执行的步骤总数（关联 rule_bridge_execution_step 计数）',
+  `total_latency_ms` int DEFAULT NULL COMMENT '总耗时毫秒（开始到结束）',
+  `start_time` datetime(3) NOT NULL COMMENT '执行开始时间（毫秒精度）',
+  `end_time` datetime(3) DEFAULT NULL COMMENT '执行结束时间（毫秒精度）',
+  `source_payload_summary` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '源消息摘要（完整 envelope 报文；便于排查 + 死信回放）',
+  `result_summary` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '结果摘要（成功的 sink / 失败原因等一句话；对齐 RESULT_SUMMARY_MAX_LENGTH=2000）',
+  `error_msg` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '失败时的错误信息（透传 RocketMQ/Kafka/HTTP 等下游 raw 错误，含堆栈描述；对齐 ERROR_MSG_MAX_LENGTH=4000）',
+  `extend_params` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '扩展参数',
+  `remark` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `uk_trace_rule` (`trace_id`,`bridge_rule_id`) USING BTREE COMMENT '同一 envelope 命中多规则时按 (traceId, ruleId) 唯一;RocketMQ 重投同 envelope 同规则被拦截',
+  KEY `idx_rule_status_time` (`bridge_rule_id`,`status`,`start_time`) USING BTREE COMMENT '按规则+状态+时间查日志',
+  KEY `idx_device_time` (`device_identification`,`start_time`) USING BTREE COMMENT '按设备排查链路',
+  KEY `idx_tenant_time` (`tenant_id`,`start_time`) USING BTREE COMMENT '按租户统计 / 计费'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='桥接执行trace主表（链路回放用）';
+
+-- ----------------------------
+-- Table structure for rule_bridge_execution_step
+-- ----------------------------
+DROP TABLE IF EXISTS `rule_bridge_execution_step`;
+CREATE TABLE `rule_bridge_execution_step` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `trace_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '关联 trace（FK→rule_bridge_execution_trace.trace_id）',
+  `bridge_rule_id` bigint DEFAULT NULL COMMENT '关联桥接规则 ID（同 traceId 命中多条规则时区分 step 归属）',
+  `step_no` int NOT NULL DEFAULT '0' COMMENT '步骤顺序号（从1起，前端按此排序）',
+  `step_type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '类型枚举：INGEST-数据接入 / RULE_MATCH-规则匹配 / RATE_LIMIT-限流 / TRANSFORM-脚本转换 / SINK_SEND-投递 / DEAD_LETTER-死信 / INBOUND_FORWARD-入站还原',
+  `step_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '步骤可读名称（中文，前端卡片标题用）',
+  `status` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '00' COMMENT '00-成功 / 01-失败 / 02-跳过',
+  `latency_ms` int DEFAULT NULL COMMENT '本步骤耗时（毫秒）',
+  `input_summary` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '输入摘要 JSON（envelope payload 前 1KB / 命中条件 / 模板变量等）',
+  `output_summary` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '输出摘要 JSON（转换后 payload / sink 返回值 / 发送 messageId 等）',
+  `error_msg` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '失败错误（status=01 时填；透传下游 raw 错误，对齐 ERROR_MSG_MAX_LENGTH=4000）',
+  `started_at` datetime(3) NOT NULL COMMENT '步骤开始时间（毫秒精度）',
+  `extend_params` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '扩展参数（步骤特异协议数据 JSON：SINK_SEND 含 sinkType/partition/messageId；RULE_MATCH 含命中条件细节；RATE_LIMIT 含阈值/当前 QPS；TRANSFORM 含 scriptId/scriptVersion 等）',
+  `remark` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '逻辑删除(0=正常/1=删除)',
+  `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_by` bigint DEFAULT NULL COMMENT '创建人',
+  `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+  `updated_by` bigint DEFAULT NULL COMMENT '最后修改人',
+  `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_trace_rule_step` (`trace_id`,`bridge_rule_id`,`step_no`) USING BTREE COMMENT '按 (traceId+ruleId) 查 step,详情抽屉用',
+  KEY `idx_status_time` (`status`,`started_at`) USING BTREE COMMENT '按状态查异常步骤（监控告警用）'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='桥接执行步骤明细（链路回放展示用）';
 
 SET FOREIGN_KEY_CHECKS = 1;
