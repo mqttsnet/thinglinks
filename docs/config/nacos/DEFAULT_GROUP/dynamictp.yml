@@ -10,8 +10,8 @@ dynamictp:
   platforms:                                  # 通知报警平台配置
     - platform: ding
       platformId: 1                            # 平台id，自定义
-      urlKey: eade5254e8aeddef7d8bb02bb0fb3473e21c3b33364773df3220fdba7d071f1f     # webhook 中的 access_token
-      secret: SECb230b3bba25527f00fb50e8d3cab012d1b2599ee80cd0c4ade6e147df004470d           # 安全设置在验签模式下才的秘钥，非验签模式没有此值
+      urlKey: your-dingtalk-webhook-token     # webhook 中的 access_token
+      secret: your-dingtalk-secret           # 安全设置在验签模式下才的秘钥，非验签模式没有此值
       receivers: 13733918655                   # 钉钉账号手机号
   
   # 全局配置    

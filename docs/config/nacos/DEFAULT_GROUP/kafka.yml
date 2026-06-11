@@ -12,7 +12,7 @@ spring:
       # SASL机制：PLAIN/SCRAM-SHA-256/SCRAM-SHA-512
       #sasl.mechanism: PLAIN
       #【重要】不同mechanism 使用的 org.apache.kafka.common.security 不同，请根据实际情况配置，JAAS配置必须以分号结尾
-      #sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="123456";
+      #sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="your-kafka-user" password="your-kafka-password";
     
     # ==================== 生产者配置 ====================
     producer:

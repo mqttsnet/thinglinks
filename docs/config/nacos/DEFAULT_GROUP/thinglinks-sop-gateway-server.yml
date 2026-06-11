@@ -3,7 +3,7 @@ mysql:
   host: 127.0.0.1:3306
   db: thinglinks_ds_c_defaults
   username: root
-  password: u67u121ES6
+  password: your-mysql-password
   
 # 默认激活环境
 spring:
@@ -15,7 +15,7 @@ spring:
   data:  
     redis:
       host: 127.0.0.1
-      password: BCfd8nMCdH6z8m1dG3
+      password: your-redis-password
       port: 6379
       database: 1
       timeout: 5000ms  # 操作超时时间

@@ -26,7 +26,7 @@ thinglinks:
     username: 'root'
     password: 'taosdata'
     #Tdengine Cloud 模式 需要此Token （非Cloud环境可直接忽略）
-    #token: '3c4b8632d824467855c45868f7ee0ecd27389b5'
+    #token: 'your-tdengine-cloud-token'
     #url: jdbc:TAOS-RS://gw.cloud.taosdata.com/xiaonan?useSSL=true&token=${thinglinks.taosdata.token}
     #Tdengine JDBC REST 模式
     driverClassName: com.taosdata.jdbc.rs.RestfulDriver

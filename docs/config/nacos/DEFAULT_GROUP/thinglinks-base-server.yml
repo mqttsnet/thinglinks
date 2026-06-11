@@ -21,12 +21,12 @@ thinglinks:
       urlPrefix: "https://thinglinks.oss-cn-beijing.aliyuncs.com"
       bucket: "thinglinks"
       endpoint: "https://oss-cn-beijing.aliyuncs.com"
-      accessKeyId: "LTAI5tSQJ98hsjcYBKuvgfG5"
-      accessKeySecret: "2ljGTbQDQjoq84vLpmbcJeyZbaV"
+      accessKeyId: "your-aliyun-access-key-id"
+      accessKeySecret: "your-aliyun-access-key-secret"
     minIo:
       endpoint: "https://minio.mqttsnet.com"
-      accessKey: "pDCxXF0KjoSV34tNPBR8"
-      secretKey: "CWj4xyfekTHCa8MUQ7OpKLykePBUFXRjqmzef3"
+      accessKey: "your-minio-access-key"
+      secretKey: "your-minio-secret-key"
       bucket: "thinglinks"
     huawei:
       urlPrefix: "https://huawei.mqttsnet.com/"
