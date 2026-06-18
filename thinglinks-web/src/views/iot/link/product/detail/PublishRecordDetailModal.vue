@@ -46,6 +46,14 @@
             </div>
             <div class="meta-value">{{ echoMapText(record, 'createdBy') }}</div>
           </div>
+          <div class="meta-item">
+            <div class="meta-label">
+              {{ t('iot.link.product.publishRecord.detail.fieldRetry') }}
+            </div>
+            <div class="meta-value"
+              >{{ record.retryCount ?? 0 }} / {{ record.maxRetryCount ?? 3 }}</div
+            >
+          </div>
         </div>
       </div>
 
@@ -78,24 +86,30 @@
             </div>
             <div class="strategy-cell wide">
               <div class="strategy-label">
-                {{ canaryDetail.mode === 'percent'
-                    ? t('iot.link.product.publishRecord.detail.canaryPercentValue', { n: 0 }).split(' ')[0]
-                    : t('iot.link.product.publishRecord.detail.canaryWhitelistDevices') }}
+                {{
+                  canaryDetail.mode === 'percent'
+                    ? t('iot.link.product.publishRecord.detail.canaryPercentValue', { n: 0 }).split(
+                        ' ',
+                      )[0]
+                    : t('iot.link.product.publishRecord.detail.canaryWhitelistDevices')
+                }}
               </div>
               <div v-if="canaryDetail.mode === 'percent'" class="canary-percent-bar">
                 <div class="canary-percent-track">
                   <div
                     class="canary-percent-fill"
-                    :style="{ width: ((canaryDetail.canaryPercent ?? 0) + '%') }"
+                    :style="{ width: (canaryDetail.canaryPercent ?? 0) + '%' }"
                   ></div>
                 </div>
                 <span class="canary-percent-num">{{ canaryDetail.canaryPercent ?? 0 }}%</span>
               </div>
               <div v-else-if="canaryDetail.mode === 'whitelist'" class="canary-whitelist">
                 <span class="canary-count">
-                  {{ t('iot.link.product.publishRecord.detail.canaryWhitelistCount', {
-                    n: canaryDetail.deviceIdentifications?.length ?? 0,
-                  }) }}
+                  {{
+                    t('iot.link.product.publishRecord.detail.canaryWhitelistCount', {
+                      n: canaryDetail.deviceIdentifications?.length ?? 0,
+                    })
+                  }}
                 </span>
                 <div
                   v-if="(canaryDetail.deviceIdentifications?.length ?? 0) > 0"
@@ -105,7 +119,8 @@
                     v-for="(d, i) in canaryDetail.deviceIdentifications"
                     :key="i"
                     class="canary-dev-chip"
-                  >{{ d }}</code>
+                    >{{ d }}</code
+                  >
                 </div>
                 <div v-else class="empty-hint inline">
                   {{ t('iot.link.product.publishRecord.detail.canaryWhitelistEmpty') }}
@@ -215,7 +230,11 @@
               <!-- 重试次数 badge:>1 时才显示(首次执行无需突出),提示用户这条经过 Job 补偿 -->
               <a-tooltip
                 v-if="(item.attemptCount ?? 0) > 1"
-                :title="t('iot.link.product.publishRecord.detail.attemptTooltip', { n: item.attemptCount })"
+                :title="
+                  t('iot.link.product.publishRecord.detail.attemptTooltip', {
+                    n: item.attemptCount,
+                  })
+                "
               >
                 <span :class="['ddl-attempt', item.success ? 'recovered' : 'retrying']">
                   <RedoOutlined class="attempt-icon" />
@@ -240,12 +259,7 @@
               </span>
               <!-- 展开/折叠:成功 + 有 schema → 看表结构;失败 + 有 errorMsg → 看错误明细 -->
               <span v-if="canExpandItem(item)" class="meta-actions">
-                <a-button
-                  type="link"
-                  size="small"
-                  class="meta-btn"
-                  @click="toggleDdlExpand(i)"
-                >
+                <a-button type="link" size="small" class="meta-btn" @click="toggleDdlExpand(i)">
                   <component :is="isDdlExpanded(i) ? UpOutlined : DownOutlined" />
                   {{
                     isDdlExpanded(i)
@@ -269,22 +283,21 @@
               </span>
             </div>
             <!-- 失败错误明细 ── 默认展开(用户最关注),可折叠 -->
-            <div
-              v-if="!item.success && item.errorMsg && isDdlExpanded(i)"
-              class="ddl-item-error"
-            >
+            <div v-if="!item.success && item.errorMsg && isDdlExpanded(i)" class="ddl-item-error">
               {{ item.errorMsg }}
             </div>
             <!-- 成功 + 有表结构 → 展开 TDengine describe 反查的真实 schema -->
-            <div
-              v-if="item.success && hasSchema(item) && isDdlExpanded(i)"
-              class="ddl-item-schema"
-            >
+            <div v-if="item.success && hasSchema(item) && isDdlExpanded(i)" class="ddl-item-schema">
               <!-- 行级字节 chip:展示该表行级总和 / 65531 上限 / 占比 -->
               <div v-if="item.rowBytes != null" class="schema-summary">
                 <span :class="['bytes-chip', rowBytesLevel(item.rowBytes)]">
                   <DatabaseOutlined class="chip-icon" />
-                  {{ t('iot.link.product.publishRecord.detail.rowBytes', { used: item.rowBytes, total: TD_ROW_MAX_BYTES }) }}
+                  {{
+                    t('iot.link.product.publishRecord.detail.rowBytes', {
+                      used: item.rowBytes,
+                      total: TD_ROW_MAX_BYTES,
+                    })
+                  }}
                   <span class="bytes-pct">{{ rowBytesPct(item.rowBytes) }}%</span>
                 </span>
               </div>
@@ -299,18 +312,24 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(f, j) in (item.schemaFields ?? [])" :key="'s' + j">
-                    <td><code>{{ f.field }}</code></td>
-                    <td><span class="td-type">{{ f.type }}</span></td>
+                  <tr v-for="(f, j) in item.schemaFields ?? []" :key="'s' + j">
+                    <td
+                      ><code>{{ f.field }}</code></td
+                    >
+                    <td
+                      ><span class="td-type">{{ f.type }}</span></td
+                    >
                     <td>{{ f.length ?? '—' }}</td>
                     <td class="td-bytes">{{ f.bytes ?? 0 }}</td>
                   </tr>
-                  <tr v-for="(f, j) in (item.tagsFields ?? [])" :key="'t' + j" class="tag-row">
+                  <tr v-for="(f, j) in item.tagsFields ?? []" :key="'t' + j" class="tag-row">
                     <td>
                       <code>{{ f.field }}</code>
                       <a-tag color="purple" class="tag-badge">TAG</a-tag>
                     </td>
-                    <td><span class="td-type">{{ f.type }}</span></td>
+                    <td
+                      ><span class="td-type">{{ f.type }}</span></td
+                    >
                     <td>{{ f.length ?? '—' }}</td>
                     <td class="td-bytes">{{ f.bytes ?? 0 }}</td>
                   </tr>
@@ -447,8 +466,9 @@
 
   /** 该 item 是否可以展开(成功看表结构 / 失败看错误)── 决定展开按钮是否显示。 */
   function canExpandItem(item: PublishDdlItem): boolean {
-    return (item.success === true && hasSchema(item))
-      || (item.success === false && !!item.errorMsg);
+    return (
+      (item.success === true && hasSchema(item)) || (item.success === false && !!item.errorMsg)
+    );
   }
 
   /** 行级字节占比 0~100 ── 给 chip 文案 + 配色用。 */
@@ -1273,7 +1293,8 @@
       border-collapse: collapse;
       font-size: 12px;
 
-      th, td {
+      th,
+      td {
         padding: 6px 10px;
         text-align: left;
         border-bottom: 1px dashed #e8ecf2;

@@ -117,6 +117,8 @@ export interface ProductVersionPublishVO {
   publishStrategy: number;
   canaryConfigJson?: string;
   publishRemark?: string;
+  /** 最大兜底重试次数(默认 3,范围 1~10)。 */
+  maxRetryCount?: number;
 }
 
 /** 回滚请求 VO。 */

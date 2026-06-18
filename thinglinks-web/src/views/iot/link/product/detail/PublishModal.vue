@@ -92,7 +92,8 @@
             <div v-if="canarySource === 'group'" class="canary-content">
               <div class="field-label">{{ t('iot.link.product.publish.canarySourceGroup') }}</div>
               <a-select
-                v-model:value="selectedGroupId"
+                v-model:value="selectedGroupIds"
+                mode="multiple"
                 :placeholder="t('iot.link.product.publish.groupSelectPlaceholder')"
                 :loading="groupLoading"
                 :options="groupOptions"
@@ -100,9 +101,10 @@
                 :filter-option="filterGroupOption"
                 allow-clear
                 size="large"
+                :max-tag-count="4"
                 style="width: 100%"
                 :getPopupContainer="(triggerNode: any) => triggerNode.parentNode"
-                @change="onGroupChange"
+                @change="onGroupsChange"
               />
               <div class="field-extra">
                 {{ t('iot.link.product.publish.canarySourceGroupTip') }}
@@ -112,28 +114,26 @@
                 <LoadingOutlined /> {{ t('common.loading') }}
               </div>
               <div
-                v-else-if="selectedGroupId && groupDeviceList.length === 0"
+                v-else-if="selectedGroupIds.length && groupDeviceList.length === 0"
                 class="group-preview tone-warning"
               >
                 <InboxOutlined />
                 {{ t('iot.link.product.publish.groupEmpty') }}
               </div>
               <div
-                v-else-if="selectedGroupId && groupDeviceList.length > 0"
+                v-else-if="selectedGroupIds.length && groupDeviceList.length > 0"
                 class="group-preview tone-success"
               >
                 <CheckCircleOutlined class="ok-icon" />
                 <span class="preview-text">{{
-                  t('iot.link.product.publish.groupDevicePreview', {
+                  t('iot.link.product.publish.groupMultiPreview', {
+                    groups: groupSnapshots.length,
                     count: groupDeviceList.length,
                   })
                 }}</span>
                 <div class="device-chips">
-                  <a-tag v-for="d in groupDeviceList.slice(0, 8)" :key="d" color="blue">
-                    {{ d }}
-                  </a-tag>
-                  <a-tag v-if="groupDeviceList.length > 8">
-                    +{{ groupDeviceList.length - 8 }}
+                  <a-tag v-for="g in groupSnapshots" :key="g.groupId" color="green">
+                    {{ g.groupName }} · {{ g.deviceCount }}
                   </a-tag>
                 </div>
               </div>
@@ -150,78 +150,55 @@
               <div class="field-extra">
                 {{ t('iot.link.product.publish.canarySourceManualTip') }}
               </div>
-            </div>
-
-            <!-- 按比例 -->
-            <div v-else class="canary-content">
-              <div class="field-label-row">
-                <span class="field-label">{{
-                  t('iot.link.product.publish.canarySourcePercent')
+              <div v-if="manualParsed.list.length" class="manual-parsed">
+                <CheckCircleOutlined class="ok-icon" />
+                {{
+                  t('iot.link.product.publish.manualParsed', { count: manualParsed.list.length })
+                }}
+                <span v-if="manualParsed.dup > 0">{{
+                  t('iot.link.product.publish.manualDedupedSuffix', { dup: manualParsed.dup })
                 }}</span>
-                <div class="percent-display">
-                  <span class="percent-value">{{ canaryPercent }}</span>
-                  <span class="percent-unit">%</span>
-                </div>
-              </div>
-              <div class="percent-block">
-                <a-slider
-                  v-model:value="canaryPercent"
-                  :min="1"
-                  :max="99"
-                  :step="1"
-                  :marks="percentMarks"
-                  class="percent-slider"
-                />
-              </div>
-              <div class="percent-quick">
-                <span class="quick-label">{{
-                  t('iot.link.product.publish.canaryPercentQuick')
-                }}</span>
-                <button
-                  v-for="p in [5, 10, 25, 50, 75]"
-                  :key="p"
-                  class="quick-btn"
-                  :class="{ active: canaryPercent === p }"
-                  @click="canaryPercent = p"
-                >
-                  {{ p }}%
-                </button>
-              </div>
-              <div class="field-extra">
-                {{ t('iot.link.product.publish.canarySourcePercentTip') }}
               </div>
             </div>
 
             <!-- 汇总 -->
             <div class="canary-summary">
-              <template v-if="canarySource === 'percent'">
-                <span v-if="canaryPercent > 0" class="summary-ok">
-                  <CheckCircleFilled />
-                  {{
-                    t('iot.link.product.publish.canaryPercentSummary', {
-                      percent: canaryPercent,
+              <span v-if="canaryDeviceCount > 0" class="summary-ok">
+                <CheckCircleFilled />
+                {{ t('iot.link.product.publish.canarySummary', { count: canaryDeviceCount }) }}
+              </span>
+              <span v-else class="summary-empty">
+                <ExclamationCircleFilled />
+                {{ t('iot.link.product.publish.canaryEmpty') }}
+              </span>
+            </div>
+
+            <!-- 灰度影响范围:命中→新版本 / 其余 + 灰度期新设备→稳定版,发布前明确 blast radius。
+                 首发即灰度时无历史稳定版(currentVersion 为空),只显示命中行,避免误导。 -->
+            <div v-if="canaryHasTarget" class="canary-impact">
+              <div class="impact-title">{{ t('iot.link.product.publish.canaryImpactTitle') }}</div>
+              <div class="impact-row tone-upgrade">
+                <ArrowUpOutlined class="impact-icon" />
+                <span>{{ canaryImpactHitText }}</span>
+              </div>
+              <template v-if="currentVersion">
+                <div class="impact-row tone-hold">
+                  <PauseCircleOutlined class="impact-icon" />
+                  <span>{{
+                    t('iot.link.product.publish.canaryImpactRest', {
+                      version: formatSnapshotId(currentVersion),
                     })
-                  }}
-                </span>
-                <span v-else class="summary-empty">
-                  <ExclamationCircleFilled />
-                  {{ t('iot.link.product.publish.canaryEmpty') }}
-                </span>
-              </template>
-              <template v-else>
-                <span v-if="canaryDeviceCount > 0" class="summary-ok">
-                  <CheckCircleFilled />
-                  {{ t('iot.link.product.publish.canarySummary', { count: canaryDeviceCount }) }}
-                </span>
-                <span v-else class="summary-empty">
-                  <ExclamationCircleFilled />
-                  {{ t('iot.link.product.publish.canaryEmpty') }}
-                </span>
+                  }}</span>
+                </div>
+                <div class="impact-row tone-new">
+                  <PlusCircleOutlined class="impact-icon" />
+                  <span>{{ t('iot.link.product.publish.canaryImpactNewDevice') }}</span>
+                </div>
               </template>
             </div>
           </div>
 
-          <!-- 影子发布 提示卡 -->
+          <!-- 影子发布 提示卡 + 验证流程指引(预建表 → 切流验证 → 正式发布) -->
           <div v-else-if="form.publishStrategy === 2" class="tip-card tone-purple">
             <div class="tip-icon-wrap">
               <EyeOutlined class="tip-icon" />
@@ -229,6 +206,21 @@
             <div class="tip-content">
               <div class="tip-title">{{ t('iot.link.product.publish.shadowTipTitle') }}</div>
               <div class="tip-desc">{{ t('iot.link.product.publish.shadowTipDesc') }}</div>
+              <div class="shadow-flow">
+                <div class="flow-title">{{ t('iot.link.product.publish.shadowFlowTitle') }}</div>
+                <div class="flow-step">
+                  <span class="flow-no">1</span>
+                  <span class="flow-text">{{ t('iot.link.product.publish.shadowFlowStep1') }}</span>
+                </div>
+                <div class="flow-step">
+                  <span class="flow-no">2</span>
+                  <span class="flow-text">{{ t('iot.link.product.publish.shadowFlowStep2') }}</span>
+                </div>
+                <div class="flow-step">
+                  <span class="flow-no">3</span>
+                  <span class="flow-text">{{ t('iot.link.product.publish.shadowFlowStep3') }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -239,6 +231,17 @@
             <span class="step-no">3</span>
             <span class="step-title-text">{{ t('iot.link.product.publish.stepRemark') }}</span>
             <span class="step-optional">{{ t('common.optional') }}</span>
+          </div>
+          <div class="retry-field">
+            <span class="retry-label">{{ t('iot.link.product.publish.maxRetryLabel') }}</span>
+            <a-input-number
+              v-model:value="form.maxRetryCount"
+              :min="1"
+              :max="10"
+              :precision="0"
+              style="width: 96px"
+            />
+            <span class="retry-hint">{{ t('iot.link.product.publish.maxRetryHint') }}</span>
           </div>
           <a-textarea
             v-model:value="form.publishRemark"
@@ -265,13 +268,15 @@
     EyeOutlined,
     ApartmentOutlined,
     EditOutlined,
-    PercentageOutlined,
     CheckCircleOutlined,
     CheckCircleFilled,
     ExclamationCircleFilled,
     LoadingOutlined,
     InboxOutlined,
     CheckOutlined,
+    ArrowUpOutlined,
+    PauseCircleOutlined,
+    PlusCircleOutlined,
   } from '@ant-design/icons-vue';
   import { publishVersion } from '/@/api/iot/link/productVersion/productVersion';
   import type { ProductVersionPublishVO } from '/@/api/iot/link/productVersion/model/productVersionModel';
@@ -296,29 +301,21 @@
     publishStrategy: 0,
     canaryConfigJson: undefined,
     publishRemark: undefined,
+    maxRetryCount: 3,
   });
 
-  // 灰度来源:分组 / 手填 / 比例 三选一互斥
-  type CanarySource = 'group' | 'manual' | 'percent';
+  // 灰度来源:分组 / 指定设备 二选一互斥
+  type CanarySource = 'group' | 'manual';
   const canarySource = ref<CanarySource>('group');
   const manualWhitelistText = ref<string>('');
 
   // 分组下拉
   const groupOptions = ref<{ label: string; value: string }[]>([]);
   const groupLoading = ref(false);
-  const selectedGroupId = ref<string | undefined>(undefined);
+  const selectedGroupIds = ref<string[]>([]);
   const groupDeviceList = ref<string[]>([]);
+  const groupSnapshots = ref<{ groupId: string; groupName: string; deviceCount: number }[]>([]);
   const groupFetching = ref(false);
-
-  // 比例
-  const canaryPercent = ref<number>(10);
-  const percentMarks = {
-    1: '1%',
-    25: '25%',
-    50: '50%',
-    75: '75%',
-    99: '99%',
-  };
 
   /** 发布策略卡片配置 ── tone 决定主题色(蓝/绿/紫),与 Flexy 配色保持一致。 */
   const strategyOptions = computed(() => [
@@ -357,26 +354,30 @@
       label: t('iot.link.product.publish.canarySourceManual'),
       icon: EditOutlined,
     },
-    {
-      value: 'percent' as CanarySource,
-      label: t('iot.link.product.publish.canarySourcePercent'),
-      icon: PercentageOutlined,
-    },
   ]);
 
-  /** 灰度模式(group / manual)下,当前最终生效的设备数。percent 模式走 canaryPercent 独立分支。 */
-  const canaryDeviceCount = computed(() => {
-    if (canarySource.value === 'group') {
-      return groupDeviceList.value.length;
-    }
-    if (canarySource.value === 'manual') {
-      return manualWhitelistText.value
-        .split(/[\n,]/)
-        .map((s) => s.trim())
-        .filter(Boolean).length;
-    }
-    return 0;
+  /** 手填白名单解析:拆分(换行 / 逗号)→ trim → 去空 → 去重。dup = 被去掉的重复项数。 */
+  const manualParsed = computed(() => {
+    const raw = manualWhitelistText.value
+      .split(/[\n,]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const list = Array.from(new Set(raw));
+    return { list, dup: raw.length - list.length };
   });
+
+  /** 灰度(分组 / 指定设备)下,当前最终生效的设备数。 */
+  const canaryDeviceCount = computed(() =>
+    canarySource.value === 'group' ? groupDeviceList.value.length : manualParsed.value.list.length,
+  );
+
+  /** 灰度是否已选定目标(命中设备数 > 0),用于决定是否展示影响范围说明。 */
+  const canaryHasTarget = computed(() => canaryDeviceCount.value > 0);
+
+  /** 影响范围"命中"行文案:命中的设备数。 */
+  const canaryImpactHitText = computed(() =>
+    t('iot.link.product.publish.canaryImpactHitDevices', { count: canaryDeviceCount.value }),
+  );
 
   const [registerModal, { closeModal }] = useModalInner((data) => {
     productIdentification.value = data.productIdentification;
@@ -387,12 +388,13 @@
     form.publishStrategy = 0;
     form.canaryConfigJson = undefined;
     form.publishRemark = undefined;
+    form.maxRetryCount = 3;
 
     canarySource.value = 'group';
     manualWhitelistText.value = '';
-    selectedGroupId.value = undefined;
+    selectedGroupIds.value = [];
     groupDeviceList.value = [];
-    canaryPercent.value = 10;
+    groupSnapshots.value = [];
   });
 
   function onStrategyChange(v: number) {
@@ -440,17 +442,29 @@
     return String(option.label).toLowerCase().includes(input.toLowerCase());
   }
 
-  async function onGroupChange(gid?: string) {
+  async function onGroupsChange(ids?: string[]) {
+    selectedGroupIds.value = ids || [];
     groupDeviceList.value = [];
-    if (!gid) return;
+    groupSnapshots.value = [];
+    if (!ids || !ids.length) return;
     groupFetching.value = true;
     try {
-      const list = (await queryGroupRel({ groupId: gid } as any)) as any[];
-      groupDeviceList.value = (list || [])
-        .map((r) => r?.deviceIdentification)
-        .filter((s): s is string => !!s);
+      const merged = new Set<string>();
+      const snaps: { groupId: string; groupName: string; deviceCount: number }[] = [];
+      for (const gid of ids) {
+        const list = (await queryGroupRel({ groupId: gid } as any)) as any[];
+        const devs = (list || [])
+          .map((r) => r?.deviceIdentification)
+          .filter((s): s is string => !!s);
+        devs.forEach((d) => merged.add(d));
+        const label = groupOptions.value.find((o) => o.value === gid)?.label || gid;
+        snaps.push({ groupId: gid, groupName: label, deviceCount: devs.length });
+      }
+      groupSnapshots.value = snaps;
+      groupDeviceList.value = Array.from(merged);
     } catch {
       groupDeviceList.value = [];
+      groupSnapshots.value = [];
       createMessage.error(t('iot.link.product.publish.groupLoadFailed'));
     } finally {
       groupFetching.value = false;
@@ -461,31 +475,32 @@
   watch(canarySource, (cur) => {
     if (cur !== 'manual') manualWhitelistText.value = '';
     if (cur !== 'group') {
-      selectedGroupId.value = undefined;
+      selectedGroupIds.value = [];
       groupDeviceList.value = [];
+      groupSnapshots.value = [];
     }
-    if (cur !== 'percent') canaryPercent.value = 10;
   });
 
   /**
-   * 把 UI 灰度配置序列化为后端 {@code CanaryRuleMatcher} 期望的 JSON。
-   *
-   * - whitelist 模式(分组 / 手填):{"mode":"whitelist","deviceIdentifications":[...]}
-   * - percent 模式:{"mode":"percent","canaryPercent":30}
+   * 把 UI 灰度配置序列化为后端期望的 JSON(灰度只按明确白名单):
+   * {"mode":"whitelist","source":"group|manual","deviceIdentifications":[...]}。
    */
   function buildCanaryConfigJson(): string | undefined {
     if (form.publishStrategy !== 1) return undefined;
-    if (canarySource.value === 'percent') {
-      return JSON.stringify({ mode: 'percent', canaryPercent: canaryPercent.value });
+    if (canarySource.value === 'group') {
+      // 多选分组:合并去重设备作灰度名单(后端匹配用),并冻结各分组快照(id/名称/当时数量)
+      return JSON.stringify({
+        mode: 'whitelist',
+        source: 'group',
+        groups: groupSnapshots.value,
+        deviceIdentifications: groupDeviceList.value,
+      });
     }
-    const devices =
-      canarySource.value === 'group'
-        ? groupDeviceList.value
-        : manualWhitelistText.value
-            .split(/[\n,]/)
-            .map((s) => s.trim())
-            .filter(Boolean);
-    return JSON.stringify({ mode: 'whitelist', deviceIdentifications: devices });
+    return JSON.stringify({
+      mode: 'whitelist',
+      source: 'manual',
+      deviceIdentifications: manualParsed.value.list,
+    });
   }
 
   async function handleSubmit() {
@@ -493,16 +508,9 @@
       createMessage.warning(t('iot.link.product.publish.noStrategy'));
       return;
     }
-    if (form.publishStrategy === 1) {
-      if (canarySource.value === 'percent') {
-        if (!canaryPercent.value || canaryPercent.value < 1 || canaryPercent.value > 99) {
-          createMessage.warning(t('iot.link.product.publish.noCanaryPercent'));
-          return;
-        }
-      } else if (canaryDeviceCount.value === 0) {
-        createMessage.warning(t('iot.link.product.publish.noCanaryDevice'));
-        return;
-      }
+    if (form.publishStrategy === 1 && canaryDeviceCount.value === 0) {
+      createMessage.warning(t('iot.link.product.publish.noCanaryDevice'));
+      return;
     }
     submitting.value = true;
     try {
@@ -913,6 +921,52 @@
       }
     }
 
+    /* ─── 影子验证流程指引(预建表 → 切流验证 → 正式发布) ─── */
+    .shadow-flow {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(155, 117, 230, 0.32);
+
+      .flow-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #7c5bc7;
+        margin-bottom: 8px;
+      }
+
+      .flow-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 12px;
+        line-height: 1.7;
+        color: #5a6a85;
+
+        & + .flow-step {
+          margin-top: 6px;
+        }
+
+        .flow-no {
+          flex-shrink: 0;
+          width: 18px;
+          height: 18px;
+          margin-top: 1px;
+          border-radius: 50%;
+          background: rgba(155, 117, 230, 0.16);
+          color: #9b75e6;
+          font-size: 11px;
+          font-weight: 700;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .flow-text {
+          flex: 1;
+        }
+      }
+    }
+
     /* ─── 灰度配置 ─── */
     .canary-panel {
       .source-tabs {
@@ -971,141 +1025,6 @@
           font-size: 12px;
           color: #a0aec0;
           line-height: 1.5;
-        }
-      }
-    }
-
-    /* ─── 比例 percent 区块(标题+大数字 / 滑块 / 快捷按钮) ─── */
-    .field-label-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .percent-display {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 2px;
-      padding: 6px 14px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(93, 135, 255, 0.35);
-
-      .percent-value {
-        font-size: 22px;
-        font-weight: 700;
-        line-height: 1;
-        font-variant-numeric: tabular-nums;
-      }
-
-      .percent-unit {
-        font-size: 13px;
-        font-weight: 600;
-        opacity: 0.9;
-      }
-    }
-
-    .percent-block {
-      padding: 4px 8px 28px;
-      background: #f8fafc;
-      border-radius: 12px;
-    }
-
-    .percent-slider {
-      width: 100%;
-    }
-
-    .percent-quick {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 14px;
-      flex-wrap: wrap;
-
-      .quick-label {
-        font-size: 12px;
-        color: #a0aec0;
-        margin-right: 2px;
-      }
-
-      .quick-btn {
-        padding: 4px 12px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 600;
-        color: #5d87ff;
-        background: rgba(93, 135, 255, 0.08);
-        border: 1px solid transparent;
-        cursor: pointer;
-        transition: all 0.18s ease;
-        font-variant-numeric: tabular-nums;
-
-        &:hover {
-          background: rgba(93, 135, 255, 0.15);
-          transform: translateY(-1px);
-        }
-
-        &.active {
-          background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
-          color: #fff;
-          box-shadow: 0 4px 10px rgba(93, 135, 255, 0.35);
-        }
-      }
-    }
-
-    /* ─── antd slider 品牌化 ─── */
-    .ant-slider {
-      margin: 12px 6px 22px;
-
-      .ant-slider-rail {
-        background: #e6ecf5;
-        height: 6px;
-        border-radius: 3px;
-      }
-
-      .ant-slider-track {
-        background: linear-gradient(90deg, #5d87ff 0%, #49beff 100%);
-        height: 6px;
-        border-radius: 3px;
-      }
-
-      .ant-slider-handle {
-        width: 18px;
-        height: 18px;
-        margin-top: -6px;
-        background: #fff;
-        border: 3px solid #5d87ff;
-        box-shadow: 0 4px 10px rgba(93, 135, 255, 0.4);
-
-        &::after {
-          display: none;
-        }
-
-        &:focus-visible {
-          box-shadow: 0 0 0 4px rgba(93, 135, 255, 0.18), 0 4px 10px rgba(93, 135, 255, 0.4);
-        }
-      }
-
-      .ant-slider-dot {
-        width: 8px;
-        height: 8px;
-        border-color: #d6dde7;
-
-        &.ant-slider-dot-active {
-          border-color: #5d87ff;
-        }
-      }
-
-      .ant-slider-mark-text {
-        color: #97a1b0;
-        font-size: 11px;
-
-        &.ant-slider-mark-text-active {
-          color: #5d87ff;
-          font-weight: 600;
         }
       }
     }
@@ -1211,6 +1130,80 @@
           color: #ffae1f;
           font-size: 15px;
         }
+      }
+    }
+
+    /* 灰度影响范围说明 ── 命中→新版本 / 其余→稳定版 / 新设备→稳定版 */
+    .canary-impact {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 1px solid #eef2f7;
+      border-radius: 10px;
+      background: #f8fafc;
+
+      .impact-title {
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #5a6a85;
+      }
+
+      .impact-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        line-height: 1.9;
+        color: #2a3547;
+
+        .impact-icon {
+          flex-shrink: 0;
+          font-size: 14px;
+        }
+
+        &.tone-upgrade .impact-icon {
+          color: #13deb9;
+        }
+        &.tone-hold .impact-icon {
+          color: #5d87ff;
+        }
+        &.tone-new .impact-icon {
+          color: #9b75e6;
+        }
+      }
+    }
+
+    /* 手填白名单实时解析反馈(已识别数 + 去重提示) */
+    .manual-parsed {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #0fb094;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+
+      .ok-icon {
+        color: #13deb9;
+        font-size: 14px;
+      }
+    }
+
+    /* 步骤 3:最大兜底重试次数 */
+    .retry-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+
+      .retry-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #2a3547;
+      }
+
+      .retry-hint {
+        font-size: 12px;
+        color: #8a94a6;
       }
     }
   }

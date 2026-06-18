@@ -59,6 +59,48 @@ export interface PublishDdlItemVO {
   rowBytes?: number;
 }
 
+/** 灰度命中的分组快照(对应后端 CanaryGroup)。 */
+export interface CanaryGroup {
+  groupId?: string;
+  groupName?: string;
+  deviceCount?: number;
+}
+
+/** 灰度执行结果快照(对应后端 StrategyResultDTO.CanaryResult)。 */
+export interface CanaryResult {
+  /** 来源:group | manual | percent。 */
+  source?: string;
+  /** 所选分组明细(source=group)。 */
+  groups?: CanaryGroup[];
+  /** 设备名单(source=manual)。 */
+  deviceIdentifications?: string[];
+  /** 灰度比例(source=percent)。 */
+  percent?: number;
+  /** 规则目标设备数。 */
+  targetCount?: number;
+}
+
+/** 影子执行结果快照(对应后端 StrategyResultDTO.ShadowResult)。 */
+export interface ShadowResult {
+  /** 本次预建成功的超表数。 */
+  preBuiltStableCount?: number;
+}
+
+/**
+ * 策略执行结果快照(对应后端 StrategyResultDTO / canary_result_json,发布那一刻冻结)。
+ * 全量只用通用字段;灰度填 canary;影子填 shadow。
+ */
+export interface StrategyResultDTO {
+  /** 发布策略(0=全量 / 1=灰度 / 2=影子)── 快照自包含。 */
+  strategy?: number;
+  /** 本次实际改绑设备数(去重;含网关连带子设备)。 */
+  affectedDeviceCount?: number;
+  /** 发布那一刻该产品设备总数(占比基数)。 */
+  productTotalAtPublish?: number;
+  canary?: CanaryResult;
+  shadow?: ShadowResult;
+}
+
 /** 发布记录(对应 product_publish_record 表)。 */
 export interface ProductPublishRecordResultVO {
   id?: string;
@@ -88,7 +130,13 @@ export interface ProductPublishRecordResultVO {
    *   {"mode":"percent","canaryPercent":30}
    */
   canaryConfigJson?: string;
+  /** 策略执行结果快照(发布那一刻冻结;全量/灰度/影子按策略填不同字段)。 */
+  canaryResult?: StrategyResultDTO;
   failedReason?: string;
+  /** 已重试次数(达 maxRetryCount 不再重跑)。 */
+  retryCount?: number;
+  /** 最大重试次数(用户可配,上限 10)。 */
+  maxRetryCount?: number;
   startedTime?: string;
   finishedTime?: string;
   remark?: string;

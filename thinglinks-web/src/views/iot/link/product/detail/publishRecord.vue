@@ -66,7 +66,11 @@
               </span>
 
               <div class="version-change">
-                <span v-if="record.sourceVersion" class="version-pill from" :title="record.sourceVersion">
+                <span
+                  v-if="record.sourceVersion"
+                  class="version-pill from"
+                  :title="record.sourceVersion"
+                >
                   {{ record.sourceVersion }}
                 </span>
                 <component
@@ -84,7 +88,9 @@
                 :status="getStatusBadge(record.status)"
                 :text="getStatusLabel(record.status)"
               />
-              <span class="duration">{{ formatDuration(record.startedTime, record.finishedTime) }}</span>
+              <span class="duration">{{
+                formatDuration(record.startedTime, record.finishedTime)
+              }}</span>
             </div>
 
             <!-- 失败:截断摘要 ── 完整原因走详情弹窗(避免长堆栈撑爆卡片) -->
@@ -93,12 +99,7 @@
               <span class="err-msg" :title="record.failedReason">
                 {{ truncate(record.failedReason, 80) }}
               </span>
-              <a-button
-                type="link"
-                size="small"
-                class="err-more"
-                @click="handleViewDetail(record)"
-              >
+              <a-button type="link" size="small" class="err-more" @click="handleViewDetail(record)">
                 {{ t('iot.link.product.publishRecord.action.viewFullReason') }}
               </a-button>
             </div>
@@ -113,15 +114,16 @@
                   })
                 }}
               </span>
-              <a-button
-                type="link"
-                size="small"
-                class="ddl-more"
-                @click="handleViewDetail(record)"
-              >
+              <a-button type="link" size="small" class="ddl-more" @click="handleViewDetail(record)">
                 {{ t('iot.link.product.publishRecord.action.viewDdl') }}
               </a-button>
             </div>
+
+            <!-- 策略执行结果战报(仅发布 intent=0 且有快照):全量总 / 灰度总+展开分组 / 影子总 -->
+            <StrategyResultPanel
+              v-if="record.intent === 0 && record.canaryResult"
+              :result="record.canaryResult"
+            />
 
             <!-- 备注(若有,以浅灰小条形式显示;长备注同样进详情弹窗) -->
             <div v-if="record.remark" class="card-remark" :title="record.remark">
@@ -210,6 +212,7 @@
   import { useModal } from '/@/components/Modal';
   import PublishRecordDetailModal from './PublishRecordDetailModal.vue';
   import SnapshotPreviewModal from './SnapshotPreviewModal.vue';
+  import StrategyResultPanel from './StrategyResultPanel.vue';
 
   const props = defineProps<{
     productIdentification: string;
@@ -320,7 +323,11 @@
     // 兜底:数据加载完毕后 nextTick 检查 sentinel 是否仍在视口
     // 首屏 12 条不够撑出 scrollbar 时,sentinel 一直可见 → 继续拉直到撑满 / hasMore=false
     await nextTick();
-    if (hasMore.value && sentinelRef.value && isElementInViewport(sentinelRef.value as HTMLElement)) {
+    if (
+      hasMore.value &&
+      sentinelRef.value &&
+      isElementInViewport(sentinelRef.value as HTMLElement)
+    ) {
       fetchPage(false);
     }
   }
@@ -328,7 +335,9 @@
   /** 判断元素是否在视口内(用于 fetchPage 兜底)。 */
   function isElementInViewport(el: HTMLElement): boolean {
     const rect = el.getBoundingClientRect();
-    return rect.top < (window.innerHeight || document.documentElement.clientHeight) && rect.bottom > 0;
+    return (
+      rect.top < (window.innerHeight || document.documentElement.clientHeight) && rect.bottom > 0
+    );
   }
 
   /** 工具栏刷新:重置首屏(用户主动刷新一定回到顶部 + 拉最新)。 */
@@ -393,10 +402,14 @@
 
   function getStatusBadge(status?: number): 'processing' | 'success' | 'error' | 'default' {
     switch (status) {
-      case 0:  return 'processing';
-      case 1:  return 'success';
-      case 2:  return 'error';
-      default: return 'default';
+      case 0:
+        return 'processing';
+      case 1:
+        return 'success';
+      case 2:
+        return 'error';
+      default:
+        return 'default';
     }
   }
 
@@ -558,17 +571,23 @@
     &.intent-0 .card-rail {
       background: linear-gradient(180deg, rgba(82, 196, 26, 0.12), rgba(82, 196, 26, 0.02));
       border-right: 3px solid #52c41a;
-      .rail-icon { color: #52c41a; }
+      .rail-icon {
+        color: #52c41a;
+      }
     }
     &.intent-1 .card-rail {
       background: linear-gradient(180deg, rgba(250, 140, 22, 0.12), rgba(250, 140, 22, 0.02));
       border-right: 3px solid #fa8c16;
-      .rail-icon { color: #fa8c16; }
+      .rail-icon {
+        color: #fa8c16;
+      }
     }
     &.intent-2 .card-rail {
       background: linear-gradient(180deg, rgba(255, 77, 79, 0.12), rgba(255, 77, 79, 0.02));
       border-right: 3px solid #ff4d4f;
-      .rail-icon { color: #ff4d4f; }
+      .rail-icon {
+        color: #ff4d4f;
+      }
     }
 
     .card-body {
