@@ -343,7 +343,7 @@ COMMENT ON COLUMN "base_role"."name" IS '名称';
 COMMENT ON COLUMN "base_role"."readonly_" IS '内置角色';
 COMMENT ON COLUMN "base_role"."remarks" IS '备注';
 COMMENT ON COLUMN "base_role"."state" IS '状态';
-COMMENT ON COLUMN "base_role"."type_" IS '角色类型;[10-系统角色 20-自定义角色]; 
+COMMENT ON COLUMN "base_role"."type_" IS '角色类型;[10-系统角色 20-自定义角色];
 @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Global.DATA_TYPE)';
 COMMENT ON COLUMN "base_role"."updated_by" IS '更新人';
 COMMENT ON COLUMN "base_role"."updated_time" IS '更新时间';
@@ -1126,6 +1126,7 @@ CREATE TABLE "ota_upgrades"
     "package_name" VARCHAR(100),
     "package_type" SMALLINT DEFAULT 0,
     "product_identification" VARCHAR(100),
+    "product_version_no" VARCHAR(64) DEFAULT '' NOT NULL,
     "version" VARCHAR(255),
     "file_location" VARCHAR(255),
     "sign_method" SMALLINT NOT NULL DEFAULT 0,
@@ -1158,6 +1159,7 @@ COMMENT ON COLUMN "ota_upgrades"."status" IS '状态';
 COMMENT ON COLUMN "ota_upgrades"."updated_by" IS '更新人';
 COMMENT ON COLUMN "ota_upgrades"."updated_time" IS '更新时间';
 COMMENT ON COLUMN "ota_upgrades"."version" IS '升级包版本号';
+COMMENT ON COLUMN "ota_upgrades"."product_version_no" IS '产品版本序号';
 
 
 CREATE OR REPLACE  INDEX "ota_upgrades_idx_version" ON "ota_upgrades"("version" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
@@ -1510,7 +1512,10 @@ CREATE TABLE "product_publish_record"
     "intent" TINYINT DEFAULT 0,
     "status" TINYINT DEFAULT 0,
     "ddl_summary" CLOB,
+    "canary_result_json" CLOB,
     "failed_reason" VARCHAR(2000) DEFAULT '',
+    "retry_count" INT DEFAULT 0,
+    "max_retry_count" INT DEFAULT 3,
     "started_time" TIMESTAMP(0),
     "finished_time" TIMESTAMP(0),
     "remark" VARCHAR(500) DEFAULT '',
@@ -1530,7 +1535,10 @@ COMMENT ON COLUMN "product_publish_record"."target_version" IS '目标版本号'
 COMMENT ON COLUMN "product_publish_record"."intent" IS '操作意图[0-发布 1-回滚 2-历史清理]';
 COMMENT ON COLUMN "product_publish_record"."status" IS '执行状态[0-执行中 1-成功 2-失败]';
 COMMENT ON COLUMN "product_publish_record"."ddl_summary" IS 'DDL列表JSON数组(已执行的DDL明细 + 重试元数据)';
+COMMENT ON COLUMN "product_publish_record"."canary_result_json" IS '策略执行结果快照JSON';
 COMMENT ON COLUMN "product_publish_record"."failed_reason" IS '失败原因(成功时为空)';
+COMMENT ON COLUMN "product_publish_record"."retry_count" IS '重试次数(达上限不再重跑)';
+COMMENT ON COLUMN "product_publish_record"."max_retry_count" IS '最大重试次数';
 COMMENT ON COLUMN "product_publish_record"."started_time" IS '开始时间';
 COMMENT ON COLUMN "product_publish_record"."finished_time" IS '结束时间';
 COMMENT ON COLUMN "product_publish_record"."remark" IS '备注';
