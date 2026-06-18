@@ -24,32 +24,11 @@
 
       <!-- 设备绑定版本 ── 列出该产品可绑定版本;选完产品默认 activeVersionNo -->
       <template #boundProductVersionNo="{ model, field }">
-        <a-select
-          :value="model[field]"
-          :options="versionOptions"
-          :loading="versionLoading"
-          :disabled="!model.productIdentification"
-          :placeholder="t('iot.link.device.device.shadow.versionPlaceholder')"
-          show-search
-          option-filter-prop="label"
-          option-label-prop="value"
-          allowClear
-          style="width: 100%"
-          @change="(v) => onBoundVersionChange(v, model, field)"
-        >
-          <template #suffixIcon><BranchesOutlined /></template>
-          <template #option="{ value, statusText, isActive }">
-            <div class="ver-opt">
-              <span class="ver-no">{{ value }}</span>
-              <a-tag v-if="statusText" class="ver-status-tag" :color="versionStatusColor(statusText)">
-                {{ statusText }}
-              </a-tag>
-              <a-tag v-if="isActive" class="ver-active-tag" color="orange">
-                {{ t('iot.link.device.device.tag.activeVersion') }}
-              </a-tag>
-            </div>
-          </template>
-        </a-select>
+        <IotProductVersionPicker
+          :modelValue="model[field]"
+          :productIdentification="model.productIdentification"
+          @update:modelValue="(v) => onBoundVersionChange(v, model, field)"
+        />
       </template>
 
       <template #signKey="{ model, field }">
@@ -140,20 +119,12 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   import { ActionEnum } from '/@/enums/commonEnum';
   import { DeviceNodeType } from '/@/enums/link/device';
-  import {
-    save,
-    update,
-    detailBydeviceIdentification,
-  } from '/@/api/iot/link/device/device';
+  import { save, update, detailBydeviceIdentification } from '/@/api/iot/link/device/device';
   import { listByProduct } from '/@/api/iot/link/productVersion/productVersion';
   import { query as queryProducts } from '/@/api/iot/link/product/product';
-  import {
-    ReloadOutlined,
-    BranchesOutlined,
-    TagsOutlined,
-    InfoCircleOutlined,
-  } from '@ant-design/icons-vue';
+  import { ReloadOutlined, TagsOutlined, InfoCircleOutlined } from '@ant-design/icons-vue';
   import { IotProductPicker } from '/@/components/iot/IotProductDevicePicker';
+  import { IotProductVersionPicker } from '/@/components/iot/IotProductVersionPicker';
   import { editFormSchema } from './device.data';
 
   /**
@@ -170,10 +141,10 @@
       BasicForm,
       FormItem: Form.Item,
       ReloadOutlined,
-      BranchesOutlined,
       TagsOutlined,
       InfoCircleOutlined,
       IotProductPicker,
+      IotProductVersionPicker,
     },
     props: {
       api: {
@@ -189,30 +160,14 @@
       const deviceLocationId = ref('');
 
       /**
-       * 版本下拉选项:
-       *   label      ── 完整 versionNo,用于 a-select 搜索 (option-filter-prop="label")
-       *   value      ── 真实选中值
-       *   statusText ── 状态文案(已发布/灰度中/影子),#option 渲染为彩色 tag
-       *   isActive   ── 是否产品 activeVersionNo,#option 渲染"产品最新"高亮 tag
+       * 解析设备绑定版本的默认选中值(版本列表与展示交给 IotProductVersionPicker)。
+       * 默认优先级:编辑回显值(仍可绑定) > 产品 activeVersionNo > 第一个可绑定版本。
        */
-      const versionOptions = ref<
-        Array<{ label: string; value: string; status?: number; statusText?: string; isActive?: boolean }>
-      >([]);
-      const versionLoading = ref(false);
-
-      /**
-       * 拉版本列表 + 计算默认选中。
-       * 默认优先级:编辑回显值(仍可选) > 产品 activeVersionNo > 第一项。
-       */
-      async function loadVersionOptions(
+      async function resolveDefaultBoundVersion(
         productIdentification: string,
         currentVersionNo?: string,
       ): Promise<string | undefined> {
-        if (!productIdentification) {
-          versionOptions.value = [];
-          return undefined;
-        }
-        versionLoading.value = true;
+        if (!productIdentification) return undefined;
         try {
           const [list, productList] = await Promise.all([
             listByProduct(productIdentification),
@@ -220,46 +175,16 @@
           ]);
           const product = Array.isArray(productList) ? productList[0] : productList;
           const activeVersionNo = product?.activeVersionNo;
-
-          versionOptions.value = (list || [])
+          const bindable = (list || [])
             .filter((v) => v.versionNo && SELECTABLE_VERSION_STATUS.has(v.versionStatus ?? -1))
-            .map((v) => ({
-              value: v.versionNo!,
-              label: v.versionNo!,
-              status: v.versionStatus,
-              statusText: statusToText(v.versionStatus),
-              isActive: v.versionNo === activeVersionNo,
-            }));
-
-          if (currentVersionNo && versionOptions.value.find((o) => o.value === currentVersionNo)) {
-            return currentVersionNo;
-          }
-          if (activeVersionNo && versionOptions.value.find((o) => o.value === activeVersionNo)) {
-            return activeVersionNo;
-          }
-          return versionOptions.value[0]?.value;
+            .map((v) => v.versionNo!);
+          if (currentVersionNo && bindable.includes(currentVersionNo)) return currentVersionNo;
+          if (activeVersionNo && bindable.includes(activeVersionNo)) return activeVersionNo;
+          return bindable[0];
         } catch (e) {
-          console.warn('[device-edit] 拉取产品版本列表失败', e);
-          versionOptions.value = [];
+          console.warn('[device-edit] 解析默认绑定版本失败', e);
           return undefined;
-        } finally {
-          versionLoading.value = false;
         }
-      }
-
-      function statusToText(status?: number): string {
-        if (status === 1) return t('iot.link.device.device.shadow.statusPublished');
-        if (status === 2) return t('iot.link.device.device.shadow.statusCanary');
-        if (status === 3) return t('iot.link.device.device.shadow.statusShadow');
-        return '';
-      }
-
-      function versionStatusColor(statusText: string): string {
-        // 跟字典 chip 颜色对齐 ── 已发布绿、灰度橙、影子紫
-        if (statusText === t('iot.link.device.device.shadow.statusPublished')) return 'green';
-        if (statusText === t('iot.link.device.device.shadow.statusCanary')) return 'orange';
-        if (statusText === t('iot.link.device.device.shadow.statusShadow')) return 'purple';
-        return 'default';
       }
 
       /** Picker 同步回 form;走 setFieldsValue 强制 antdv form 内部缓存与外部 reactive 双向同步 */
@@ -277,12 +202,10 @@
         });
 
         if (productIdentification) {
-          const defaultVersion = await loadVersionOptions(productIdentification);
+          const defaultVersion = await resolveDefaultBoundVersion(productIdentification);
           if (defaultVersion) {
             await setFieldsValue({ boundProductVersionNo: defaultVersion });
           }
-        } else {
-          versionOptions.value = [];
         }
       }
 
@@ -349,14 +272,11 @@
           type.value = data?.type || ActionEnum.ADD;
           await resetSchema(editFormSchema(type));
           await resetFields();
-          // 重置版本下拉,避免上次编辑残留
-          versionOptions.value = [];
 
           if (unref(type) !== ActionEnum.ADD) {
             // 设备详情统一走 deviceIdentification（业务唯一标识），不再依赖内部主键 id。
             // 调用方 detail.vue 把整个 deviceDetail 作为 record 传过来，里面已带 deviceIdentification。
-            const recordIdentification =
-              data?.record?.deviceIdentification || data?.record?.id;
+            const recordIdentification = data?.record?.deviceIdentification || data?.record?.id;
             let record = await detailBydeviceIdentification(recordIdentification);
             if (record.deviceLocationResultVO) {
               deviceLocationId.value = record.deviceLocationResultVO.id;
@@ -385,7 +305,7 @@
             // 编辑/查看场景:基于已有 productIdentification 拉版本列表回显 boundProductVersionNo,
             // 若设备已有绑定值则保留;否则默认产品 activeVersionNo
             if (record.productIdentification) {
-              const defaultVersion = await loadVersionOptions(
+              const defaultVersion = await resolveDefaultBoundVersion(
                 record.productIdentification,
                 record.boundProductVersionNo,
               );
@@ -400,11 +320,7 @@
                 const gatewayObj = await getDeviceDetail(record.gatewayId);
                 record.gatewayName = gatewayObj?.deviceName || '选择网关设备';
               } catch (e) {
-                console.warn(
-                  '[device-edit] 父网关查询失败（可能已删除）',
-                  record.gatewayId,
-                  e,
-                );
+                console.warn('[device-edit] 父网关查询失败（可能已删除）', record.gatewayId, e);
                 record.gatewayName = '选择网关设备';
               }
             }
@@ -430,7 +346,6 @@
       async function handleSubmit() {
         try {
           const params = await validate();
-          console.log(params, 'pm');
           setProps({ confirmLoading: true });
           let obj = { ...params };
 
@@ -453,8 +368,6 @@
             obj.deviceLocationSaveVO = deviceLocationUpdateVO;
           }
           // }
-          console.log(obj);
-          // return false;
           if (unref(type) !== ActionEnum.VIEW) {
             if (unref(type) === ActionEnum.EDIT) {
               obj.id = obj.id;
@@ -465,7 +378,13 @@
             }
             createMessage.success(t(`common.tips.${type.value}Success`));
           }
-          close();
+          // 关闭兜底:任何子组件卸载抛错也不打断关闭与列表刷新。
+          // (弹窗关闭时的焦点移除已在 BasicModal 统一处理,修复地图抢焦点导致关不掉的问题)
+          try {
+            close();
+          } catch (err) {
+            console.error('[device-edit] 关闭弹窗异常(已忽略):', err);
+          }
           emit('success');
         } finally {
           setProps({ confirmLoading: false });
@@ -504,12 +423,9 @@
         handleSubmit,
         handleRandomString,
         // 产品 + 版本号联动
-        versionOptions,
-        versionLoading,
         onProductIdentificationUpdate,
         onProductIdentificationChange,
         onBoundVersionChange,
-        versionStatusColor,
         // 设备标签 多标签输入
         splitTags,
         onDeviceTagsChange,
@@ -520,24 +436,6 @@
   });
 </script>
 <style lang="less" scoped>
-  /* 版本下拉 #option 项:版本号 + 状态 tag + 产品最新 tag */
-  .ver-opt {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    .ver-no {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 13px;
-      color: #2a3547;
-    }
-    .ver-status-tag,
-    .ver-active-tag {
-      margin-right: 0;
-      font-size: 11px;
-      line-height: 1.4;
-    }
-  }
-
   .editor_container {
     display: flex;
     align-items: center;

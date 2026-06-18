@@ -19,9 +19,11 @@
       <div class="toolbar-left">
         <!-- 实时连接指示 -->
         <div class="live-indicator" :class="{ on: socketIsSuccess }">
-          <span class="dot" />
+          <span class="dot"></span>
           <span class="text">{{
-            socketIsSuccess ? t('iot.link.device.device.shadow.live') : t('iot.link.device.device.shadow.offline')
+            socketIsSuccess
+              ? t('iot.link.device.device.shadow.live')
+              : t('iot.link.device.device.shadow.offline')
           }}</span>
           <!-- 推送频率,秒值 = SHADOW_REFRESH_INTERVAL_MS / 1000,与定时器常量保持一致 -->
           <span v-if="socketIsSuccess" class="refresh-rate">
@@ -39,30 +41,12 @@
       <div class="toolbar-right">
         <!-- 版本切换 -->
         <a-tooltip placement="topRight" :title="t('iot.link.device.device.shadow.versionTooltip')">
-          <a-select
-            v-model:value="selectedVersionNo"
+          <IotProductVersionPicker
             class="version-select"
-            :options="versionOptions"
-            :loading="versionLoading"
-            :placeholder="t('iot.link.device.device.shadow.versionPlaceholder')"
-            show-search
-            option-filter-prop="label"
-            option-label-prop="value"
-            @change="onVersionChange"
-          >
-            <template #suffixIcon><BranchesOutlined /></template>
-            <template #option="{ value, statusText, isBound }">
-              <div class="ver-opt">
-                <span class="ver-no">{{ value }}</span>
-                <a-tag v-if="statusText" class="ver-tag" :color="versionStatusColor(statusText)">
-                  {{ statusText }}
-                </a-tag>
-                <a-tag v-if="isBound" class="ver-tag" color="blue">
-                  {{ t('iot.link.device.device.tag.boundVersion') }}
-                </a-tag>
-              </div>
-            </template>
-          </a-select>
+            :modelValue="selectedVersionNo"
+            :productIdentification="productResultVO?.productIdentification"
+            @update:modelValue="onVersionChange"
+          />
         </a-tooltip>
         <a-button type="primary" ghost @click="refresh">
           <template #icon><RedoOutlined /></template>
@@ -116,7 +100,7 @@
                 placement="top"
               >
                 <!-- 服务状态:0=启用(ACTIVATED)绿点 / 1=停用(LOCKED)灰点,与 ProductServiceStatusEnum 对齐 -->
-                <span class="status-dot" :class="{ off: Number(item.serviceStatus) !== 0 }" />
+                <span class="status-dot" :class="{ off: Number(item.serviceStatus) !== 0 }"></span>
               </a-tooltip>
               <RightOutlined class="arrow" />
             </div>
@@ -140,15 +124,10 @@
           <div class="prop-card" v-for="item in properties" :key="item.propertyCode">
             <div class="prop-head">
               <div class="prop-name">
-                <span class="dot" />
+                <span class="dot"></span>
                 <span class="text">{{ item.propertyName }}</span>
                 <!-- 读写方法小徽章 ── 卡片头部 icon-only,密集场景一眼分辨 r/w/rw -->
-                <PropertyMethodBadge
-                  v-if="item.method"
-                  :method="item.method"
-                  size="sm"
-                  icon-only
-                />
+                <PropertyMethodBadge v-if="item.method" :method="item.method" size="sm" icon-only />
               </div>
               <div class="prop-actions">
                 <a-tooltip
@@ -156,7 +135,10 @@
                   placement="top"
                   :title="t('common.title.view') + ' Icon'"
                 >
-                  <EyeOutlined class="icon-btn" @click="iconPreview(productPropertiesIcon[item.icon])" />
+                  <EyeOutlined
+                    class="icon-btn"
+                    @click="iconPreview(productPropertiesIcon[item.icon])"
+                  />
                 </a-tooltip>
                 <a-tooltip v-if="item.description" placement="top" :title="item.description">
                   <QuestionCircleOutlined class="icon-btn" />
@@ -210,7 +192,17 @@
 </template>
 <script lang="ts">
   // util
-  import { defineComponent, ref, toRefs, reactive, computed, onMounted, onUnmounted, provide, watch } from 'vue';
+  import {
+    defineComponent,
+    ref,
+    toRefs,
+    reactive,
+    computed,
+    onMounted,
+    onUnmounted,
+    provide,
+    watch,
+  } from 'vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useUserStore } from '/@/store/modules/user';
@@ -221,49 +213,40 @@
     UnorderedListOutlined,
     QuestionCircleOutlined,
     ApiOutlined,
-    BranchesOutlined,
     ClockCircleOutlined,
     RollbackOutlined,
     RightOutlined,
   } from '@ant-design/icons-vue';
-  import { Alert, Empty, Select, Tag, Tooltip } from 'ant-design-vue';
+  import { Alert, Empty, Tag, Tooltip } from 'ant-design-vue';
   import runningDetail from './components/runningDetail.vue';
   import { PropertyMethodBadge } from '/@/components/iot';
   import { useDrawer } from '/@/components/Drawer';
   // api
   import { queryDeviceShadow } from '/@/api/iot/link/deviceShadow/deviceShadow';
   import { findUrlById } from '/@/api/thinglinks/file/upload.ts';
-  import { listByProduct } from '/@/api/iot/link/productVersion/productVersion';
+  import { IotProductVersionPicker } from '/@/components/iot/IotProductVersionPicker';
 
   import { useIntervalFn, useWebSocket } from '@vueuse/core';
   import { isEmpty } from 'lodash-es';
   import { createImgPreview } from '/@/components/Preview/index';
   import { getToken } from '/@/utils/auth';
 
-  /**
-   * 已发布的版本 status,与后端 ProductVersionStatusEnum 对齐:
-   * 0=DRAFT(草稿,不暴露给设备影子查询);1=PUBLISHED;2=CANARY 灰度中;3=SHADOW;4=ARCHIVED 归档(不可选)。
-   * 这里筛选规则:DRAFT / ARCHIVED 不让用户选,其余历史版本都允许"回看"。
-   */
-  const SELECTABLE_VERSION_STATUS = new Set([1, 2, 3]);
-
   export default defineComponent({
     name: 'Running',
     components: {
       AAlert: Alert,
       AEmpty: Empty,
-      ASelect: Select,
       ATag: Tag,
       ATooltip: Tooltip,
       RedoOutlined,
       UnorderedListOutlined,
       QuestionCircleOutlined,
       ApiOutlined,
-      BranchesOutlined,
       ClockCircleOutlined,
       RollbackOutlined,
       RightOutlined,
       EyeOutlined,
+      IotProductVersionPicker,
       runningDetail,
       PropertyMethodBadge,
     },
@@ -298,11 +281,8 @@
         properties: [] as any[],
       });
 
-      // 版本下拉 ── option 结构:label 完整 versionNo 用于搜索,statusText/isBound 给 #option 渲染 tag
+      // 选中查看的版本(默认 = 设备绑定版本);版本列表与展示交给 IotProductVersionPicker
       const selectedVersionNo = ref<string>(props.boundProductVersionNo || '');
-      const versionOptions = ref<
-        Array<{ label: string; value: string; status?: number; statusText?: string; isBound?: boolean }>
-      >([]);
       const versionLoading = ref(false);
 
       const currentService = computed(() => state.services[currentServiceIndex.value]);
@@ -341,7 +321,10 @@
             productPropertiesIcon.value = { ...productPropertiesIcon.value, ...res };
           }
         } catch (err) {
-          console.warn(`[device-shadow] 获取属性 icon 失败, deviceId=${state.deviceIdentification}`, err);
+          console.warn(
+            `[device-shadow] 获取属性 icon 失败, deviceId=${state.deviceIdentification}`,
+            err,
+          );
         }
       };
 
@@ -538,49 +521,6 @@
         }
       };
 
-      /** 拉版本列表;过滤 DRAFT/ARCHIVED;绑定版本被回滚等极端情况下退回第一项 */
-      const loadVersionOptions = async () => {
-        const productIdentification = props.productResultVO?.productIdentification;
-        if (!productIdentification) return;
-        versionLoading.value = true;
-        try {
-          const list = (await listByProduct(productIdentification)) || [];
-          versionOptions.value = list
-            .filter((v) => v.versionNo && SELECTABLE_VERSION_STATUS.has(v.versionStatus ?? -1))
-            .map((v) => ({
-              value: v.versionNo!,
-              label: v.versionNo!,
-              status: v.versionStatus,
-              statusText: statusToText(v.versionStatus),
-              isBound: v.versionNo === props.boundProductVersionNo,
-            }));
-          if (
-            selectedVersionNo.value &&
-            !versionOptions.value.find((o) => o.value === selectedVersionNo.value)
-          ) {
-            selectedVersionNo.value = versionOptions.value[0]?.value || '';
-          }
-        } catch (e) {
-          console.warn('[device-shadow] 拉取版本列表失败', e);
-        } finally {
-          versionLoading.value = false;
-        }
-      };
-
-      function statusToText(status?: number): string {
-        if (status === 1) return t('iot.link.device.device.shadow.statusPublished');
-        if (status === 2) return t('iot.link.device.device.shadow.statusCanary');
-        if (status === 3) return t('iot.link.device.device.shadow.statusShadow');
-        return '';
-      }
-
-      function versionStatusColor(statusText: string): string {
-        if (statusText === t('iot.link.device.device.shadow.statusPublished')) return 'green';
-        if (statusText === t('iot.link.device.device.shadow.statusCanary')) return 'orange';
-        if (statusText === t('iot.link.device.device.shadow.statusShadow')) return 'purple';
-        return 'default';
-      }
-
       const onVersionChange = (value: string) => {
         selectedVersionNo.value = value;
         // 统一路径:无论切到当前绑定 / 历史版本,都按 versionNo 拉对应快照
@@ -611,12 +551,11 @@
 
       onMounted(() => {
         // 首次进入:默认选中 = 设备绑定版本;直接拉该版本快照 → 启动 ws + 加载首个服务影子
-        // 并行拉版本下拉列表(供用户切版本回看用)
+        // 版本下拉列表由 IotProductVersionPicker 自行按产品标识加载
         selectedVersionNo.value = props.boundProductVersionNo || '';
         if (selectedVersionNo.value) {
           loadServicesByVersion(selectedVersionNo.value);
         }
-        loadVersionOptions();
       });
 
       // 父组件 detail 重新 load 后 boundProductVersionNo 可能变化 ── 同步选中 + 重拉
@@ -656,10 +595,8 @@
         socketIsSuccess,
         productPropertiesIcon,
         selectedVersionNo,
-        versionOptions,
         versionLoading,
         isViewingHistory,
-        versionStatusColor,
         // 行为
         changeService,
         refresh,
@@ -778,23 +715,6 @@
 
   .version-select {
     min-width: 280px;
-  }
-
-  /* 版本下拉 #option:版本号 + 状态 tag + 当前绑定 tag */
-  .ver-opt {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    .ver-no {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 13px;
-      color: #2a3547;
-    }
-    .ver-tag {
-      margin-right: 0;
-      font-size: 11px;
-      line-height: 1.4;
-    }
   }
 
   /* ===== 历史版本 banner ===== */
