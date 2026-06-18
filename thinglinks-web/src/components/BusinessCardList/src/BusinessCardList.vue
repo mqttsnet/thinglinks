@@ -636,6 +636,16 @@
         background-color: #f2f4f7;
         color: #8c97a5;
       }
+
+      &.info {
+        background-color: #eef4ff;
+        color: #5d87ff;
+      }
+
+      &.danger {
+        background-color: #fdeded;
+        color: #fa5252;
+      }
     }
 
     &__status-dot {
@@ -654,6 +664,14 @@
 
       .unconnected & {
         background-color: #8c97a5;
+      }
+
+      .info & {
+        background-color: #5d87ff;
+      }
+
+      .danger & {
+        background-color: #fa5252;
       }
     }
 

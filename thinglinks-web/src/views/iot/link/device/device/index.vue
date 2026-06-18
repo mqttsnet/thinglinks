@@ -37,9 +37,13 @@
           <div class="metric-icon active"><CheckCircleOutlined /></div>
           <div class="metric-body">
             <div class="metric-label">{{ t('iot.link.device.device.deviceAllStatus.active') }}</div>
-            <div class="metric-value metric-value--ok">{{ deviceOverview?.activatedCount || 0 }}</div>
+            <div class="metric-value metric-value--ok">{{
+              deviceOverview?.activatedCount || 0
+            }}</div>
             <div class="metric-sub">
-              <span class="sub-key">{{ t('iot.link.device.device.deviceAllStatus.notActivat') }}</span>
+              <span class="sub-key">{{
+                t('iot.link.device.device.deviceAllStatus.notActivat')
+              }}</span>
               <span class="sub-val">{{ deviceOverview?.notActivatedCount || 0 }}</span>
             </div>
           </div>
@@ -50,7 +54,9 @@
           <div class="metric-icon locked"><LockOutlined /></div>
           <div class="metric-body">
             <div class="metric-label">{{ t('iot.link.device.device.deviceAllStatus.lock') }}</div>
-            <div class="metric-value metric-value--warn">{{ deviceOverview?.lockedCount || 0 }}</div>
+            <div class="metric-value metric-value--warn">{{
+              deviceOverview?.lockedCount || 0
+            }}</div>
             <div class="metric-sub">
               <span class="sub-key">{{ t('iot.link.device.device.deviceTotal') }}</span>
               <span class="sub-val">{{ deviceOverview?.totalDevicesCount || 0 }}</span>
@@ -63,11 +69,7 @@
     <!-- ===== 主体表格 + 卡片切换视图 =====
          注意:不传 :is-device,避免 BasicTable 渲染老版 CardList(蓝色"编辑"+红色"停用/删除"那种)
          设备列表统一走下面的 #cardView slot,用通用 BusinessCardList 渲染 Flexy 风格 -->
-    <BasicTable
-      @register="registerTable"
-      @switch-change="getSwitchChange"
-      :switchFlag="switchFlag"
-    >
+    <BasicTable @register="registerTable" @switch-change="getSwitchChange" :switchFlag="switchFlag">
       <!-- 卡片视图(Flexy) ── BusinessCardList,默认开启 -->
       <template #cardView="{ searchData, title }">
         <BusinessCardList
@@ -87,8 +89,8 @@
           badgeField="nodeType"
           badgeDictType="LINK_DEVICE_NODE_TYPE"
           :permissions="cardPermissions"
-          :editModal="EditModal"
           :extraActions="cardExtraActions"
+          @add="handleAdd"
           @view="handleView"
           @edit="handleEdit"
           @delete="handleDelete"

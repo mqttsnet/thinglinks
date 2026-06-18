@@ -1,10 +1,6 @@
 <template>
   <PageWrapper dense contentFullHeight>
-    <BasicTable
-      @register="registerTable"
-      @switch-change="getSwitchChange"
-      :switchFlag="switchFlag"
-    >
+    <BasicTable @register="registerTable" @switch-change="getSwitchChange" :switchFlag="switchFlag">
       <!-- 卡片视图(flexy 风格) ── 通过 BasicTable 的 cardView slot 注入,默认开启 -->
       <template #cardView="{ searchData, title }">
         <BusinessCardList
@@ -23,9 +19,9 @@
           badgeField="productType"
           :badgeDictType="DictEnum.LINK_PRODUCT_TYPE"
           :permissions="cardPermissions"
-          :editModal="EditModal"
           :extraActions="cardExtraActions"
           @input="getSwitchChange"
+          @add="handleAdd"
           @view="handleView"
           @edit="handleEdit"
           @delete="handleDelete"
@@ -93,7 +89,8 @@
           type="primary"
           preIcon="ant-design:download-outlined"
           @click="handleImport"
-        >{{ t('common.title.import') }}</a-button>
+          >{{ t('common.title.import') }}</a-button
+        >
         <a-button preIcon="ant-design:swap-outlined" @click="switchView"
           >{{ t('iot.link.device.device.switchView') }}
         </a-button>
@@ -351,9 +348,15 @@
       function handleCardExtraAction(payload: { event: string; record: Recordable }) {
         const e = new Event('synthetic');
         switch (payload.event) {
-          case 'publish': handlePublish(payload.record, e); break;
-          case 'copy':    handleCopy(payload.record, e); break;
-          case 'export':  handleExport(payload.record, e); break;
+          case 'publish':
+            handlePublish(payload.record, e);
+            break;
+          case 'copy':
+            handleCopy(payload.record, e);
+            break;
+          case 'export':
+            handleExport(payload.record, e);
+            break;
         }
       }
 
