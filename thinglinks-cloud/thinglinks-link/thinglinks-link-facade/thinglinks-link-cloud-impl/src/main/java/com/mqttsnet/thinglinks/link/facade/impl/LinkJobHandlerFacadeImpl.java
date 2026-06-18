@@ -41,6 +41,11 @@ public class LinkJobHandlerFacadeImpl implements LinkJobHandlerFacade {
     }
 
     @Override
+    public R<?> retryProductVersionPublish(Long tenantId) {
+        return linkJobHandlerApi.retryProductVersionPublish(tenantId);
+    }
+
+    @Override
     public R<?> otaUpgradeTasksExecute(Long tenantId) {
         return linkJobHandlerApi.otaUpgradeTasksExecute(tenantId);
     }

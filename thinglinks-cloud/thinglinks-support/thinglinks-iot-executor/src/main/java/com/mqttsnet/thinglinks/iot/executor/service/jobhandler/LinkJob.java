@@ -128,6 +128,28 @@ public class LinkJob extends AbstractTenantJob {
         });
     }
 
+    /**
+     * 全租户产品版本发布重试兜底调度任务 ── 独立于缓存预热,与之解耦:
+     * 故障互不影响、周期可单独加密(建议 2~5 分钟,确保 1h 兜底窗口内多次扫描)。
+     * 单租户异常被捕获不外抛,不中断其余租户。
+     */
+    @XxlJob("flushProductVersionPublishRetryJobHandler")
+    public void flushProductVersionPublishRetryJobHandler() {
+        XxlJobHelper.log("[产品发布重试兜底]开始全租户任务");
+        loadTenant((tenant, param) -> {
+            final Long tenantId = tenant.getId();
+            ContextUtil.setTenantId(tenantId);
+            long start = System.currentTimeMillis();
+            try {
+                linkJobHandlerApi.retryProductVersionPublish(tenantId);
+                XxlJobHelper.log("发布重试兜底完成 tenantId={} | cost={}ms", tenantId, System.currentTimeMillis() - start);
+            } catch (Exception e) {
+                log.error("发布重试兜底异常 tenantId={} | error={}", tenantId, e.getMessage(), e);
+                XxlJobHelper.log("发布重试兜底异常 tenantId={} | error={}", tenantId, e.getMessage());
+            }
+        });
+    }
+
 
     public void executeProductModelCacheRefresh(Long tenantId) {
         long tenantStart = System.currentTimeMillis();

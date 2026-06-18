@@ -60,24 +60,23 @@ public class LinkJobHandlerFacadeImpl implements LinkJobHandlerFacade {
     @Override
     public R<?> refreshProductModelCache(Long tenantId) {
         ArgumentAssert.notNull(tenantId, "tenantId Cannot be null");
-
-        // ─ 步骤 1:retry 兜底 ──────────────────────────────────────────
-        // 扫描 status=RUNNING 的 publish_record:
-        // - 事件路径成功的记录已经是 SUCCESS,这里跳过(过滤条件)
-        // - 事件路径异常 / JVM 重启 / 网络抖动导致卡 RUNNING 的,在这里重试
-        // - 超过 1h 仍 RUNNING 的视为永久失败,标 FAILED 不再重试
-        // 这一步在缓存刷新之前做,因为重试可能改 active 版本对应的 stable / 设备绑定,
-        // 重试完再刷缓存才能拿到最新状态。
-        int retried = productVersionPublishOrchestrator.retryRunningRecordsForTenant(tenantId);
-        if (retried > 0) {
-            log.info("[link-job] retried {} RUNNING publish records for tenant {}", retried, tenantId);
-        }
-
-        // ─ 步骤 2:预热物模型缓存 ─────────────────────────────────────
-        // 按版本快照维度遍历刷新:每个产品的每个激活态版本 (PUBLISHED/CANARY/SHADOW) 都被预热,
+        // 仅做预热:按版本快照维度遍历刷新,每个产品的每个激活态版本 (PUBLISHED/CANARY/SHADOW) 都预热,
         // 避免灰度场景设备命中老版本时还要走 read-through DB IO。
+        // 发布重试兜底已拆到独立 job(见 retryProductVersionPublish),与本预热解耦、故障互不影响。
         log.info("Refreshing all product model cache for tenant (all products × all active versions): {}", tenantId);
         productModelCacheService.refreshAllProductModelCacheForTenant(tenantId);
+        return R.success();
+    }
+
+    @Override
+    public R<?> retryProductVersionPublish(Long tenantId) {
+        ArgumentAssert.notNull(tenantId, "tenantId Cannot be null");
+        // 扫描该租户卡 RUNNING / FAILED 的发布记录幂等重试:事件路径成功的已是 SUCCESS 会跳过;
+        // 事件丢失 / JVM 重启 / 服务抖动卡住的在此重试;超 1h 仍 RUNNING 标 FAILED 不再重试。
+        int retried = productVersionPublishOrchestrator.retryRunningRecordsForTenant(tenantId);
+        if (retried > 0) {
+            log.info("[link-job] retried {} publish records for tenant {}", retried, tenantId);
+        }
         return R.success();
     }
 

@@ -93,6 +93,14 @@ public interface LinkJobHandlerApi {
     R<?> refreshProductModelCache(@RequestParam("tenantId") Long tenantId);
 
 
+    @Operation(summary = "产品版本发布重试兜底", description = "Retries stuck product-version publish records for a specific tenant.")
+    @Parameters({
+            @Parameter(name = "tenantId", description = "Tenant ID", required = true)
+    })
+    @PostMapping("/anyUser/cache/retryProductVersionPublish")
+    R<?> retryProductVersionPublish(@RequestParam("tenantId") Long tenantId);
+
+
     @Operation(summary = "执行OTA升级任务", description = "Executes the OTA upgrade tasks for a specific tenant.")
     @Parameters({
             @Parameter(name = "tenantId", description = "Tenant ID", required = true)

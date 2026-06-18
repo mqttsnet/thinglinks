@@ -6,6 +6,7 @@ import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.thinglinks.cache.device.DeviceCacheService;
 import com.mqttsnet.thinglinks.cache.product.ProductCacheService;
 import com.mqttsnet.thinglinks.cache.product.ProductModelCacheService;
+import com.mqttsnet.thinglinks.productversion.publish.orchestrator.ProductVersionPublishOrchestrator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -51,6 +52,8 @@ public class CacheAnyUserController {
     private final ProductCacheService productCacheService;
 
     private final ProductModelCacheService productModelCacheService;
+
+    private final ProductVersionPublishOrchestrator productVersionPublishOrchestrator;
 
 
     /**
@@ -108,6 +111,25 @@ public class CacheAnyUserController {
         log.info("Refreshing product model cache for tenant ID: {}", tenantId);
         ContextUtil.setTenantId(tenantId);
         productModelCacheService.refreshAllProductModelCacheForTenant(tenantId);
+        return R.success();
+    }
+
+    /**
+     * 产品版本发布重试兜底(独立于缓存预热,微服务模式经此端点触发,补齐 cloud 部署下的发布兜底覆盖)。
+     *
+     * @param tenantId 租户 ID
+     * @return 执行结果
+     */
+    @Operation(summary = "产品版本发布重试兜底", description = "Retries stuck product-version publish records for a specific tenant.")
+    @Parameters({
+            @Parameter(name = "tenantId", description = "Tenant ID", required = true)
+    })
+    @PostMapping("/retryProductVersionPublish")
+    public R<?> retryProductVersionPublish(@RequestParam("tenantId") Long tenantId) {
+        ArgumentAssert.notNull(tenantId, "tenantId Cannot be null");
+        ContextUtil.setTenantId(tenantId);
+        int retried = productVersionPublishOrchestrator.retryRunningRecordsForTenant(tenantId);
+        log.info("[publish-retry-job] tenant={} retried={}", tenantId, retried);
         return R.success();
     }
 
