@@ -42,7 +42,8 @@ export default {
     trendStatAvg: '平均',
     trendStatOut: '範囲外',
     trendSampled: 'ダウンサンプル済',
-    trendSampledTip: '元の点数が多いためチャートはバケット圧縮(ピーク・谷保持)。統計値は全原データに基づく',
+    trendSampledTip:
+      '元の点数が多いためチャートはバケット圧縮(ピーク・谷保持)。統計値は全原データに基づく',
     trendExportTip: 'トレンドデータをエクスポート',
     trendExportPng: 'PNG 画像をエクスポート',
     trendExportCsv: 'CSV データをエクスポート',
@@ -53,6 +54,21 @@ export default {
     filterIdentificationLabel: '製品識別子',
     triggerEmpty: '製品を選択してください',
     triggerButton: '製品を選択',
+  },
+  iotProductVersionPicker: {
+    placeholder: '対象の製品バージョンを選択',
+    pickProductFirst: '先に製品を選択してください',
+    noVersion: 'この製品に選択可能なバージョンがありません(公開済 / カナリア / シャドウが必要)',
+    noPublishTime: '未公開',
+    publishTime: '公開日時',
+    remark: 'メモ',
+    useCustom: 'カスタムバージョン番号「{value}」を使用',
+    noVersionCustom: '選択可能なバージョンなし。バージョン番号を直接入力できます',
+    strategy: {
+      full: '全量',
+      canary: 'カナリア',
+      shadow: 'シャドウ',
+    },
   },
   iotDevicePicker: {
     title: 'デバイスを選択',
@@ -91,7 +107,8 @@ export default {
       matchedAllow: 'ルール一致 ── 許可',
       matchedDeny: 'ルール一致 ── 拒否',
       notMatched: 'このルールにマッチしません',
-      notMatchedDetail: 'topic がこのルールのパターンに合いません。本番では本ルールはスキップされ、他のルールまたはデフォルト判定にフォールバックします',
+      notMatchedDetail:
+        'topic がこのルールのパターンに合いません。本番では本ルールはスキップされ、他のルールまたはデフォルト判定にフォールバックします',
       matchedDetail: 'ルール「{ruleName}」がヒット、有効パターン: {pattern}',
       patternError: 'パターンが不正',
       topicError: 'テスト topic が不正',

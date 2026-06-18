@@ -1,5 +1,10 @@
 export default {
   table: { title: 'OTA升级记录列表' },
+  group: {
+    basic: '基础信息',
+    dispatch: '确认与下发',
+    result: '结果与时间',
+  },
   taskId: '任务ID',
   taskName: '任务名称',
   deviceIdentification: '设备标识',

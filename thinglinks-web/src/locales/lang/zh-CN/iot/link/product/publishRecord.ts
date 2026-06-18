@@ -45,6 +45,7 @@ export default {
     fieldSourceVersion: '源版本',
     fieldTargetVersion: '目标版本',
     fieldOperator: '操作人',
+    fieldRetry: '兜底重试(已重试/上限)',
     fieldStartedTime: '开始时间',
     fieldFinishedTime: '结束时间',
     fieldDuration: '执行耗时',

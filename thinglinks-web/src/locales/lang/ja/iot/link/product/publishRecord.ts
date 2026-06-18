@@ -45,6 +45,7 @@ export default {
     fieldSourceVersion: 'ソースバージョン',
     fieldTargetVersion: '対象バージョン',
     fieldOperator: '操作者',
+    fieldRetry: 'フォールバック再試行(実施/上限)',
     fieldStartedTime: '開始時刻',
     fieldFinishedTime: '終了時刻',
     fieldDuration: '実行時間',

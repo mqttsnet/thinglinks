@@ -1,11 +1,22 @@
 export default {
   table: { title: 'OTA升级包列表' },
+  detailTitle: 'OTA 资源详情',
+  detailAsideTip: '升级包类型决定设备的升级与校验方式',
+  group: {
+    basic: '基础信息',
+    product: '产品与目标版本',
+    package: '升级包',
+    extra: '描述与扩展',
+    timeline: '时间线',
+  },
   id: '主键',
   appId: '应用场景',
   packageName: '包名称',
   packageType: '升级包类型',
   productIdentification: '产品标识',
   version: '升级包版本号',
+  productVersionNo: '目标产品版本',
+  productVersionNoRequired: '请选择目标产品版本',
   upgradePackage: '升级包',
   fileLocation: '升级包的位置',
   signMethod: '签名方式',
@@ -22,6 +33,8 @@ export default {
     version:
       '请输入版本号（格式：x.y.z[-预发布标签][+构建元数据]），例如：1.0.0、1.0.0-alpha、1.0.0+20200101',
     customInfo: '自定义信息不限制格式及内容，会在基于该升级包创建升级任务后的升级通知中发送至设备',
+    productVersionNo:
+      '设备经本升级包升级成功、或上报到对应固件 / 软件版本后，自动把绑定的产品版本切换到这里选择的影子版本生效；需先在产品里发布一个影子版本。',
   },
   versionRule: '版本号格式错误',
   placeholder: {

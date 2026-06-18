@@ -2,6 +2,11 @@ export default {
   table: {
     title: 'OTAアップグレード记录リスト',
   },
+  group: {
+    basic: '基本情報',
+    dispatch: '確認と配信',
+    result: '結果とタイムライン',
+  },
   taskId: 'タスクID',
   taskName: 'タスク名称',
   deviceIdentification: 'デバイス标识',

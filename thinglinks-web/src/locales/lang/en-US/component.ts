@@ -42,7 +42,8 @@ export default {
     trendStatAvg: 'Avg',
     trendStatOut: 'Out',
     trendSampled: 'downsampled',
-    trendSampledTip: 'Too many raw points — chart shows bucketed min/max to keep the shape; stats are still computed from all raw data',
+    trendSampledTip:
+      'Too many raw points — chart shows bucketed min/max to keep the shape; stats are still computed from all raw data',
     trendExportTip: 'Export trend data',
     trendExportPng: 'Export as PNG',
     trendExportCsv: 'Export as CSV',
@@ -53,6 +54,21 @@ export default {
     filterIdentificationLabel: 'Identifier',
     triggerEmpty: 'Please pick a product',
     triggerButton: 'Pick Product',
+  },
+  iotProductVersionPicker: {
+    placeholder: 'Select target product version',
+    pickProductFirst: 'Please select a product first',
+    noVersion: 'No selectable version for this product (need Published / Canary / Shadow)',
+    noPublishTime: 'Not published',
+    publishTime: 'Published at',
+    remark: 'Remark',
+    useCustom: 'Use custom version no. "{value}"',
+    noVersionCustom: 'No selectable version; you can type a version no. directly',
+    strategy: {
+      full: 'Full',
+      canary: 'Canary',
+      shadow: 'Shadow',
+    },
   },
   iotDevicePicker: {
     title: 'Select Device',
@@ -91,7 +107,9 @@ export default {
       matchedAllow: 'Rule matched ── ALLOW',
       matchedDeny: 'Rule matched ── DENY',
       notMatched: 'This rule does not match',
-      notMatchedDetail: 'The topic does not match this rule pattern; in production this rule is skipped and the next rule (or default decision) takes over.',
+      notMatchedDetail:
+        'The topic does not match this rule pattern; in production this rule is skipped ' +
+        'and the next rule (or default decision) takes over.',
       matchedDetail: 'Hit rule "{ruleName}", effective pattern: {pattern}',
       patternError: 'Pattern is invalid',
       topicError: 'Test topic is invalid',
@@ -133,7 +151,8 @@ export default {
     syntaxMulti: 'Multi-level',
     syntaxMultiDesc: '# matches all remaining segments, only at the end',
     quickTemplates: 'Quick Templates',
-    noBasicTopic: 'No topics under this product. Configure in Product Management or switch to Custom',
+    noBasicTopic:
+      'No topics under this product. Configure in Product Management or switch to Custom',
     tipPickProductFirst: 'Pick a product first',
     warnPickBasic: 'Please pick a topic from the list',
     warnInputCustom: 'Please enter a custom topic',

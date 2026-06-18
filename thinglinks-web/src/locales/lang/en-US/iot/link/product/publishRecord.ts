@@ -45,6 +45,7 @@ export default {
     fieldSourceVersion: 'Source version',
     fieldTargetVersion: 'Target version',
     fieldOperator: 'Operator',
+    fieldRetry: 'Fallback retries (done/limit)',
     fieldStartedTime: 'Started at',
     fieldFinishedTime: 'Finished at',
     fieldDuration: 'Duration',

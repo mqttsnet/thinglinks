@@ -61,6 +61,7 @@ export default {
   upgradeTaskDetail: '升级任务详情',
   upgradePackageDetail: '升级包详情',
   taskDetail: '任务详情',
+  taskBasicInfo: '基础信息',
   fetchTaskDetailFail: '获取升级任务详情失败',
   taskId: '任务ID',
 };

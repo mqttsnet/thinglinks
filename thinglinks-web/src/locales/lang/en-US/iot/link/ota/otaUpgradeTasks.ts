@@ -9,7 +9,9 @@ export default {
   upgradeModeTips: {
     staticUpgrade: 'Static Upgrade: A one-time upgrade task with a short lifecycle;',
     dynamicUpgrade:
-      'Dynamic Upgrade: A long-term effective upgrade rule with a long lifecycle that will continuously maintain the scope of devices to be upgraded, including devices that have already reported version numbers and newly activated devices;',
+      'Dynamic Upgrade: A long-term effective upgrade rule with a long lifecycle that will continuously ' +
+      'maintain the scope of devices to be upgraded, including devices that have already reported version ' +
+      'numbers and newly activated devices;',
   },
   upgradeScope: 'Upgrade Scope',
   directUpgrade: 'Direct Upgrade',
@@ -65,6 +67,7 @@ export default {
   upgradeTaskDetail: 'Upgrade Task Detail',
   upgradePackageDetail: 'Upgrade Package Detail',
   taskDetail: 'Task Detail',
+  taskBasicInfo: 'Basic info',
   fetchTaskDetailFail: 'Failed to fetch upgrade task detail',
   taskId: 'Task ID',
   upgradeRecords: 'Upgrade Records',

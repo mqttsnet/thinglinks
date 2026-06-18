@@ -66,6 +66,7 @@ export default {
   upgradeTaskDetail: 'アップグレードタスク詳細',
   upgradePackageDetail: 'アップグレードパッケージ詳細',
   taskDetail: 'タスク詳細',
+  taskBasicInfo: '基本情報',
   fetchTaskDetailFail: 'アップグレードタスク詳細の取得に失敗しました',
   taskId: 'タスクID',
 };

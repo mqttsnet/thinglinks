@@ -54,6 +54,21 @@ export default {
     triggerEmpty: '请选择产品',
     triggerButton: '选择产品',
   },
+  iotProductVersionPicker: {
+    placeholder: '选择目标产品版本',
+    pickProductFirst: '请先选择产品',
+    noVersion: '该产品暂无可选版本(需已发布 / 灰度 / 影子状态)',
+    noPublishTime: '未发布',
+    publishTime: '发布时间',
+    remark: '备注',
+    useCustom: '使用自定义版本序号「{value}」',
+    noVersionCustom: '该产品暂无可选版本,可直接输入版本序号',
+    strategy: {
+      full: '全量',
+      canary: '灰度',
+      shadow: '影子',
+    },
+  },
   iotDevicePicker: {
     title: '选择设备',
     searchPlaceholder: '按设备名称搜索',
@@ -91,7 +106,8 @@ export default {
       matchedAllow: '命中规则,允许通过',
       matchedDeny: '命中规则,拒绝通过',
       notMatched: '未命中此规则',
-      notMatchedDetail: '该 topic 不符合规则的主题模式;实际请求会跳过此规则,继续匹配其他规则或走默认决策',
+      notMatchedDetail:
+        '该 topic 不符合规则的主题模式;实际请求会跳过此规则,继续匹配其他规则或走默认决策',
       matchedDetail: '命中规则「{ruleName}」,生效的最终模式为:{pattern}',
       patternError: '规则模式不合法',
       topicError: '测试 topic 不合法',

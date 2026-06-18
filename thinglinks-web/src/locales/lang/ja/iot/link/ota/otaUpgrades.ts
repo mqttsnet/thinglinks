@@ -2,12 +2,23 @@ export default {
   table: {
     title: 'OTAアップグレード包リスト',
   },
+  detailTitle: 'OTA リソース詳細',
+  detailAsideTip: 'パッケージ種別が端末の更新・検証方式を決定します',
+  group: {
+    basic: '基本情報',
+    product: '製品と対象バージョン',
+    package: 'アップグレードパッケージ',
+    extra: '説明・拡張',
+    timeline: 'タイムライン',
+  },
   id: '主键',
   appId: 'アプリケーションシーン',
   packageName: '包名称',
   packageType: 'アップグレード包タイプ',
   productIdentification: '製品标识',
   version: 'アップグレード包バージョン号',
+  productVersionNo: '対象製品バージョン',
+  productVersionNoRequired: '対象製品バージョンを選択してください',
   upgradePackage: 'アップグレードパッケージ',
   fileLocation: 'アップグレード包的位置',
   signMethod: '署名方法',
@@ -22,9 +33,13 @@ export default {
   createdOrgId: '作成者組織',
   helpMessage: {
     version:
-      '请输入バージョン号（格式：x.y.z[-预リリース标签][+构建元データ]），例如：1.0.0、1.0.0-alpha、1.0.0+20200101',
+      '请输入バージョン号（格式：x.y.z[-预リリース标签][+构建元データ]），' +
+      '例如：1.0.0、1.0.0-alpha、1.0.0+20200101',
     customInfo:
       'カスタム情報は形式や内容に制限はありません。このアップグレードパッケージに基づいてアップグレードタスクを作成した後、アップグレード通知としてデバイスに送信されます',
+    productVersionNo:
+      'デバイスが本パッケージでアップグレード成功、または対応ファーム / ソフトバージョンを報告すると、' +
+      'バインド中の製品バージョンがここで選んだシャドウ版へ自動的に切り替わります。先に製品でシャドウ版を公開してください。',
   },
   versionRule: 'バージョン号格式エラー',
   placeholder: {

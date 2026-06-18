@@ -33,7 +33,7 @@ export default {
   boundProductVersionNo: '绑定产品版本序号',
   boundVersionShort: '绑定版本',
   boundProductVersionTip:
-    '设备绑定的产品版本序号(快照标识)。系统在设备注册或产品灰度发布时写入,数据上报路径按此快照解析物模型,不随产品发布新版本变化。',
+    '设备实际运行的物模型版本(快照标识)。可在此选该产品的 已发布 / 灰度 / 影子 版本 —— 选影子版本即把该设备切到影子版本做验证;数据上报按所选版本解析,不随产品发新版自动变化。',
   boundProductVersionEmpty: '未绑定(首次数据上报时自动按产品当前版本回填)',
   versionInfo: '版本信息',
   swVersion: '软件版本',
@@ -114,7 +114,16 @@ export default {
     viewDetail: '查看详情',
     tipSelectIssued: '请选择"已颁发"状态的证书；已吊销证书将导致设备 SSL 认证失败',
   },
-  tabs: ['基本信息', '设备位置', 'Topic列表', '设备动作', '设备影子', '指令记录', '子设备记录', '设备分组'],
+  tabs: [
+    '基本信息',
+    '设备位置',
+    'Topic列表',
+    '设备动作',
+    '设备影子',
+    '指令记录',
+    '子设备记录',
+    '设备分组',
+  ],
   import: {
     tips: '导入提示说明',
     description: '为了确保设备记录能够顺利导入，请按照以下提示进行操作：',
@@ -166,7 +175,8 @@ export default {
     last7Day: '最近 7 天',
     live: '实时',
     realtimeOff: '历史',
-    realtimeTip: '开启后:从设备上行流实时追加新数据点(最多保留 200 个),时间筛选自动禁用;关闭后回到最近 10 分钟历史',
+    realtimeTip:
+      '开启后:从设备上行流实时追加新数据点(最多保留 200 个),时间筛选自动禁用;关闭后回到最近 10 分钟历史',
     noValueYet: '暂无上报',
   },
   location: {
@@ -187,8 +197,7 @@ export default {
   },
   fieldTip: {
     activeVersionLabel: '产品最新版本',
-    activeVersionTip:
-      '产品维度:产品当前发布生效的版本序号,所有设备共享。产品每发布一版会变化。',
+    activeVersionTip: '产品维度:产品当前发布生效的版本序号,所有设备共享。产品每发布一版会变化。',
     boundVersionLabel: '本设备绑定版本',
     boundVersionTip:
       '设备维度:本设备实际跑在哪一版物模型上。注册或灰度时写入,产品再发新版也不会自动变,是 TD 子表 / 物模型解析 / 灰度路由的依据。',
@@ -220,7 +229,7 @@ export default {
     refreshEvery: '每 {n}s 刷新',
     versionPlaceholder: '选择版本序号查看影子',
     versionTooltip:
-      '默认显示设备绑定版本的影子;切换到已发布的历史版本可查看该版本对应物模型下的属性结构与最新数据。',
+      '默认按设备绑定版本展示;也可切到该产品的 已发布 / 灰度 / 影子 任意版本,按该版本物模型查看上报数据 —— 常用于把设备切到影子版本后,核对新版本解析是否正确。',
     historyBanner:
       '正在查看历史版本影子,数据按所选快照的物模型结构展示,可能与当前设备绑定版本字段不一致。',
     backToBound: '回到绑定版本',

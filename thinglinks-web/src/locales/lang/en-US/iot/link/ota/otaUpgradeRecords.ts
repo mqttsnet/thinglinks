@@ -1,5 +1,10 @@
 export default {
   table: { title: 'OtaUpgradeRecords list' },
+  group: {
+    basic: 'Basic info',
+    dispatch: 'Confirmation & dispatch',
+    result: 'Result & timeline',
+  },
   taskId: 'TaskId',
   deviceIdentification: 'DeviceIdentification',
   upgradeStatus: 'UpgradeStatus',

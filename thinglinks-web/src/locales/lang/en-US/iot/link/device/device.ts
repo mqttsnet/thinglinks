@@ -33,8 +33,9 @@ export default {
   boundProductVersionNo: 'Bound product version ID',
   boundVersionShort: 'Bound version',
   boundProductVersionTip:
-    'The product version ID this device is bound to (snapshot identifier). Written by the system at device registration or canary release, used to resolve the thing-model from the matching snapshot regardless of subsequent product releases.',
-  boundProductVersionEmpty: 'Not bound yet (auto-filled with current product version on first device data report)',
+    'The thing-model version this device runs. Pick a Published / Canary / Shadow version here; pick Shadow to bind it for verification.',
+  boundProductVersionEmpty:
+    'Not bound yet (auto-filled with current product version on first device data report)',
   versionInfo: 'Version info',
   swVersion: 'Software',
   fwVersion: 'Firmware',
@@ -177,7 +178,8 @@ export default {
     last7Day: 'Last 7 days',
     live: 'LIVE',
     realtimeOff: 'History',
-    realtimeTip: 'On: new data points appended from device stream in real time (max 200 buffered), time picker disabled. Off: back to the last 10 minutes of history.',
+    realtimeTip:
+      'On: new data points appended from device stream in real time (max 200 buffered), time picker disabled. Off: back to the last 10 minutes of history.',
     noValueYet: 'No data yet',
   },
   location: {
@@ -189,11 +191,13 @@ export default {
     copyCoordinate: 'Copy coordinate',
     openInAmap: 'Open in AMap',
     recenter: 'Recenter to device',
-    recenterTip: 'If you clicked elsewhere on the map, click to reset back to the device coordinate',
+    recenterTip:
+      'If you clicked elsewhere on the map, click to reset back to the device coordinate',
     mapPreview: 'Map preview',
     markerName: 'Device location',
     emptyTitle: 'Location not configured yet',
-    emptyDesc: 'Once configured, the device will appear on the map for faster on-site troubleshooting and support',
+    emptyDesc:
+      'Once configured, the device will appear on the map for faster on-site troubleshooting and support',
     addLocation: 'Add location',
   },
   fieldTip: {
@@ -207,13 +211,16 @@ export default {
     versionBindingTip:
       'Comparison between the thing-model version this device is actually bound to (device-level) and the latest published version of its product (product-level). Equal = device is up-to-date; not equal = device is in canary / not upgraded / rolled back, and data is still resolved against its bound version.',
     versionConsistent: 'Matches the latest product version',
-    versionInconsistent: 'Device runs a different version from the product latest; data is resolved against the bound version',
+    versionInconsistent:
+      'Device runs a different version from the product latest; data is resolved against the bound version',
   },
   basicInfoTip: {
     identitySection: 'Device identity',
-    identity: 'Device business identifier, client ID and node type — the entry keys when chasing logs',
+    identity:
+      'Device business identifier, client ID and node type — the entry keys when chasing logs',
     productSection: 'Product & version binding',
-    product: 'Product the device belongs to and the version it actually runs — core for canary routing and data-flow lookup',
+    product:
+      'Product the device belongs to and the version it actually runs — core for canary routing and data-flow lookup',
     authSection: 'Protocol & authentication',
     auth: 'Protocol, data format, auth mode, certificate and crypto config',
     manufacturerSection: 'Manufacturer & firmware',
@@ -231,9 +238,9 @@ export default {
     refreshEvery: 'every {n}s',
     versionPlaceholder: 'Pick a version to view shadow',
     versionTooltip:
-      'Defaults to the device-bound version. Switch to any published / canary / shadow version to inspect that snapshot\'s thing-model and its latest data.',
+      "Defaults to the device-bound version. Switch to any published / canary / shadow version to inspect that snapshot's thing-model and its latest data.",
     historyBanner:
-      'Viewing a historical version snapshot. Values are rendered against the selected snapshot\'s thing-model and may differ from the device-bound version.',
+      "Viewing a historical version snapshot. Values are rendered against the selected snapshot's thing-model and may differ from the device-bound version.",
     backToBound: 'Back to bound version',
     versionSwitched: 'Snapshot not found or already purged, cannot switch.',
     emptyServices: 'No services defined in this version',
