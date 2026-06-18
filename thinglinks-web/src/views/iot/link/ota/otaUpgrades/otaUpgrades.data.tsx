@@ -1,5 +1,6 @@
 import { Ref } from 'vue';
 import { BasicColumn, FormSchema } from '/@/components/Table';
+import type { CardField } from '/@/components/BusinessCardList';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum, DictEnum, FileBizTypeEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
@@ -69,6 +70,37 @@ export const columns = (): BasicColumn[] => {
     },
   ];
 };
+
+// 卡片视图字段(Flexy)。名称取 packageName,右上角徽标取 packageType,其余关键信息走此处
+export const cardFields = (): CardField[] => [
+  {
+    label: t('iot.link.ota.otaUpgrades.productIdentification'),
+    field: 'productIdentification',
+    span: 24,
+  },
+  {
+    label: t('iot.link.ota.otaUpgrades.productVersionNo'),
+    field: 'productVersionNo',
+    span: 12,
+  },
+  {
+    label: t('iot.link.ota.otaUpgrades.version'),
+    field: 'version',
+    span: 12,
+  },
+  {
+    label: t('iot.link.ota.otaUpgrades.status'),
+    field: 'status',
+    span: 12,
+    dictType: DictEnum.LINK_OTA_PACKAGES_STATUS,
+  },
+  {
+    label: t('iot.link.ota.otaUpgrades.signMethod'),
+    field: 'signMethod',
+    span: 12,
+    dictType: DictEnum.LINK_OTA_PACKAGES_SIGN_METHOD,
+  },
+];
 
 export const searchFormSchema = (params: Object): FormSchema[] => {
   const { productIdentification } = params;
@@ -153,14 +185,19 @@ export const searchFormSchema = (params: Object): FormSchema[] => {
 };
 
 // 编辑页字段
-export const editFormSchema = (_type: Ref<ActionEnum>, callback: any): FormSchema[] => {
-  const { productIdentification } = callback;
+export const editFormSchema = (_type: Ref<ActionEnum>, _callback?: any): FormSchema[] => {
   return [
     {
       field: 'id',
       label: 'ID',
       component: 'Input',
       show: false,
+    },
+    {
+      field: 'divider-basic',
+      component: 'Divider',
+      label: t('iot.link.ota.otaUpgrades.group.basic'),
+      colProps: { span: 24 },
     },
     {
       label: t('iot.link.ota.otaUpgrades.appId'),
@@ -191,23 +228,53 @@ export const editFormSchema = (_type: Ref<ActionEnum>, callback: any): FormSchem
       },
     },
     {
+      field: 'divider-product',
+      component: 'Divider',
+      label: t('iot.link.ota.otaUpgrades.group.product'),
+      colProps: { span: 24 },
+    },
+    {
       label: t('iot.link.ota.otaUpgrades.productIdentification'),
       field: 'productIdentification',
+      // 复用「新增设备」同款产品选择器(IotProductPicker),由下方 slot 渲染;component 仅占位以通过 componentMap 校验
       component: 'Input',
-      componentProps: {
-        allowClear: false,
-        readonly: true,
-        disabled: _type.value !== ActionEnum.ADD,
-        // placeholder: '请选择',
-        onClick: (e) => productIdentification(e.target.value),
-        class: 'pointer_input',
-      },
+      slot: 'productIdentification',
+      colProps: { span: 22 },
+      rules: [
+        {
+          required: true,
+          trigger: ['change', 'blur'],
+          message: t('iot.link.ota.otaUpgrades.triggerRule.description2'),
+        },
+      ],
+    },
+    {
+      label: t('iot.link.ota.otaUpgrades.productVersionNo'),
+      field: 'productVersionNo',
+      // component 仅用于通过 BasicForm 的 componentMap 校验;实际控件由下方 slot(IotProductVersionPicker)覆盖渲染
+      component: 'Input',
+      slot: 'productVersionNo',
+      colProps: { span: 22 },
+      helpMessage: t('iot.link.ota.otaUpgrades.helpMessage.productVersionNo'),
+      rules: [
+        {
+          required: true,
+          trigger: ['change', 'blur'],
+          message: t('iot.link.ota.otaUpgrades.productVersionNoRequired'),
+        },
+      ],
     },
     {
       label: t('iot.link.ota.otaUpgrades.version'),
       field: 'version',
       component: 'Input',
       helpMessage: t('iot.link.ota.otaUpgrades.helpMessage.version'),
+    },
+    {
+      field: 'divider-package',
+      component: 'Divider',
+      label: t('iot.link.ota.otaUpgrades.group.package'),
+      colProps: { span: 24 },
     },
     {
       label: t('iot.link.ota.otaUpgrades.status'),
@@ -227,7 +294,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>, callback: any): FormSchem
       field: 'fileLocation',
       component: 'Upload',
       colProps: { span: 22 },
-      componentProps: ({ schema, tableAction, formActionType, formModel }) => {
+      componentProps: ({ formActionType }) => {
         return {
           isDef: false,
           maxSize: 2048,
@@ -256,6 +323,12 @@ export const editFormSchema = (_type: Ref<ActionEnum>, callback: any): FormSchem
           stringToNumber: true,
         }),
       },
+    },
+    {
+      field: 'divider-extra',
+      component: 'Divider',
+      label: t('iot.link.ota.otaUpgrades.group.extra'),
+      colProps: { span: 24 },
     },
     {
       label: t('iot.link.ota.otaUpgrades.description'),
@@ -291,8 +364,24 @@ export const editFormSchema = (_type: Ref<ActionEnum>, callback: any): FormSchem
 };
 
 // 前端自定义表单验证规则
+//
+// 注意:必填规则必须放这里,不能只写在 editFormSchema 里。
+// 打开弹窗时 getValidateRules + updateSchema 会用后端注解解析出的规则「整组覆盖」该字段的 rules
+// (deepMerge 对数组走替换而非合并),而后端解析器只认 @NotNull,不认 @NotEmpty / @Size ——
+// 所以仅写在 editFormSchema 的 required 会被覆盖成空,星号与校验都丢失。
+// 放进 customFormSchemaRules 后,getValidateRules 会以 cover 方式把它重新注入,校验才稳定生效(与 version 同理)。
 export const customFormSchemaRules = (_): Partial<FormSchemaExt>[] => {
   return [
+    {
+      field: 'productVersionNo',
+      rules: [
+        {
+          required: true,
+          trigger: ['change', 'blur'],
+          message: t('iot.link.ota.otaUpgrades.productVersionNoRequired'),
+        },
+      ],
+    },
     {
       field: 'fileLocation',
       rules: [

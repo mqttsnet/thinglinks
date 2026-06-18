@@ -1,11 +1,30 @@
 <template>
   <PageWrapper dense contentFullHeight>
-    <BasicTable
-      @register="registerTable"
-      @switch-change="getSwitchChange"
-      :switchFlag="switchFlag"
-      :isOtaUpgradeTasks="true"
-    >
+    <BasicTable @register="registerTable" @switch-change="getSwitchChange" :switchFlag="switchFlag">
+      <!-- 卡片视图(Flexy)── 通用 BusinessCardList,仅改列表展示,不触碰任务新增 / 编辑抽屉逻辑 -->
+      <template #cardView="{ searchData, title }">
+        <BusinessCardList
+          ref="cardListRef"
+          :pageApi="page"
+          :deleteApi="deleteSingle"
+          :title="title"
+          :searchData="searchData"
+          nameField="taskName"
+          :nameFallback="t('iot.link.ota.otaUpgradeTasks.table.title')"
+          :fields="cardFields"
+          badgeField="taskStatus"
+          :badgeDictType="DictEnum.LINK_OTA_TASK_STATUS"
+          :permissions="cardPermissions"
+          :extraActions="cardExtraActions"
+          @add="handleAdd"
+          @edit="handleEdit"
+          @extraAction="handleCardExtraAction"
+        >
+          <template #cardImage>
+            <OtaTaskSvg />
+          </template>
+        </BusinessCardList>
+      </template>
       <template #toolbar>
         <a-button
           type="primary"
@@ -43,13 +62,16 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
+  import { BusinessCardList } from '/@/components/BusinessCardList';
+  import type { CardPermissions, CardAction } from '/@/components/BusinessCardList';
+  import { OtaTaskSvg } from '/@/components/iot/ota/svg';
   import { useDrawer } from '/@/components/Drawer';
   import { useRouter } from 'vue-router';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
-  import { ActionEnum } from '/@/enums/commonEnum';
+  import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
   import { PermModeEnum } from '/@/enums/roleEnum';
   import { page, remove, deleteSingle } from '/@/api/iot/link/ota/otaUpgradeTasks';
-  import { columns, searchFormSchema } from './otaUpgradeTasks.data';
+  import { columns, searchFormSchema, cardFields as buildCardFields } from './otaUpgradeTasks.data';
   import EditModal from './Edit.vue';
   import { useDict } from '/@/components/Dict';
   import { usePermission } from '/@/hooks/web/usePermission';
@@ -64,6 +86,8 @@
       PageWrapper,
       TableAction,
       EditModal,
+      BusinessCardList,
+      OtaTaskSvg,
     },
     setup() {
       const { t } = useI18n();
@@ -71,6 +95,29 @@
       const { push } = useRouter();
       const { hasAnyPermission } = usePermission();
       const [registerDrawer, { openDrawer }] = useDrawer();
+
+      // 卡片视图配置(Flexy)
+      const cardListRef = ref<any>(null);
+      const cardFields = buildCardFields();
+      const cardPermissions: CardPermissions = {
+        add: 'basic:link:otaUpgradeTasks:add',
+        edit: 'basic:link:otaUpgradeTasks:edit',
+        delete: 'basic:link:otaUpgradeTasks:delete',
+      };
+      const cardExtraActions: CardAction[] = [
+        {
+          tooltip: t('common.title.details'),
+          icon: 'ant-design:file-text-outlined',
+          permission: 'link:otaUpgradeTasks:detail:view',
+          event: 'detail',
+        },
+        {
+          tooltip: t('common.title.copy'),
+          icon: 'ant-design:copy-outlined',
+          permission: 'basic:link:otaUpgradeTasks:copy',
+          event: 'copy',
+        },
+      ];
 
       // 表格
       const [registerTable, { reload, getSelectRowKeys }] = useTable({
@@ -113,19 +160,27 @@
           type: ActionEnum.COPY,
         });
       }
+
+      // 卡片额外操作:详情(跳详情页)/ 复制(抽屉)
+      function handleCardExtraAction({ event, record }: { event: string; record: Recordable }) {
+        if (event === 'detail') {
+          if (
+            !hasAnyPermission([
+              'link:otaUpgradeTasks:detail:view',
+              'link:otaUpgradeTasks:detail:records',
+            ])
+          ) {
+            return;
+          }
+          push(`/link/otaUpgradeTasks/${record.id}`);
+        } else if (event === 'copy') {
+          openDrawer(true, { record, type: ActionEnum.COPY });
+        }
+      }
       // 弹出新增页面
       function handleAdd() {
         openDrawer(true, {
           type: ActionEnum.ADD,
-        });
-      }
-
-      // 弹出查看页面
-      function handleView(record: Recordable, e: Event) {
-        e?.stopPropagation();
-        openDrawer(true, {
-          record,
-          type: ActionEnum.VIEW,
         });
       }
 
@@ -151,9 +206,10 @@
         });
       }
 
-      // 新增或编辑成功回调
+      // 新增或编辑成功回调:同时刷新表格视图与卡片视图
       function handleSuccess() {
         reload();
+        cardListRef.value?.reload();
       }
 
       // 删除单条数据
@@ -215,11 +271,6 @@
             authMode: PermModeEnum.HasAny,
           },
           {
-            tooltip: t('common.title.view'),
-            icon: 'ant-design:search-outlined',
-            onClick: handleView.bind(null, record),
-          },
-          {
             tooltip: t('common.title.edit'),
             icon: 'ant-design:edit-outlined',
             onClick: handleEdit.bind(null, record),
@@ -248,7 +299,6 @@
         t,
         registerTable,
         registerDrawer,
-        handleView,
         handleAdd,
         handleCopy,
         handleEdit,
@@ -262,6 +312,15 @@
         handleViewDetail,
         hasAnyPermission,
         getTableActions,
+        // 卡片视图
+        page,
+        deleteSingle,
+        cardListRef,
+        cardFields,
+        cardPermissions,
+        cardExtraActions,
+        handleCardExtraAction,
+        DictEnum,
       };
     },
   });

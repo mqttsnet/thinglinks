@@ -4,19 +4,39 @@
     @register="registerTable"
     @switch-change="getSwitchChange"
     :switchFlag="switchFlag"
-    :isOtaUpgradeRecords="true"
     class="ota-upgrade-records-table"
   >
+    <!-- 卡片视图(Flexy)── 通用 BusinessCardList,与北向集成等页面统一风格 -->
+    <template #cardView="{ searchData, title }">
+      <BusinessCardList
+        ref="cardListRef"
+        :pageApi="cardPageApi"
+        :deleteApi="cardDeleteApi"
+        :title="title"
+        :searchData="searchData"
+        nameField="deviceIdentification"
+        :nameFallback="t('iot.link.ota.otaUpgradeRecords.deviceIdentification')"
+        :fields="cardFields"
+        statusField="upgradeStatus"
+        :statusResolver="recordStatusResolver"
+        :permissions="cardPermissions"
+        detailRouteName="OTA升级任务记录详情"
+        :extraActions="cardExtraActions"
+        @input="getSwitchChange"
+        @extraAction="handleCardExtraAction"
+      >
+        <template #headerExtra>
+          <a-button @click="addDeviceUpgrade">
+            <ToTopOutlined />
+            {{ t('iot.link.ota.otaUpgradeRecords.addDeviceUpgrade') }}
+          </a-button>
+        </template>
+        <template #cardImage="{ record }">
+          <OtaRecordStatusBadge :status="record?.upgradeStatus" :size="74" />
+        </template>
+      </BusinessCardList>
+    </template>
     <template #toolbar>
-      <!-- <a-button
-          type="primary"
-          color="error"
-          preIcon="ant-design:delete-outlined"
-          @click="handleBatchDelete"
-          v-hasAnyPermission="['basic:link:otaUpgradeRecords:delete']"
-        >
-          {{ t('common.title.delete') }}
-        </a-button> -->
       <a-button @click="batchUpgrade">
         <ToTopOutlined />
         {{ t('iot.link.ota.otaUpgradeRecords.batchUpgrade') }}
@@ -38,7 +58,6 @@
       </template>
     </template>
   </BasicTable>
-  <EditModal @register="registerModal" @success="handleSuccess" />
   <AddOtaUpgradeDevice @register="registerModalAddDevice" />
 </template>
 <script lang="ts">
@@ -49,13 +68,18 @@
   import { useLoading } from '/@/components/Loading';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useModal } from '/@/components/Modal';
+  import { BusinessCardList } from '/@/components/BusinessCardList';
+  import type { CardPermissions, CardAction } from '/@/components/BusinessCardList';
+  import { OtaRecordStatusBadge } from '/@/components/iot/ota/svg';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
-  import { ActionEnum } from '/@/enums/commonEnum';
   import { PermModeEnum } from '/@/enums/roleEnum';
   import { page, remove, GetOtaRecordsSummary } from '/@/api/iot/link/ota/otaUpgradeRecords';
   import { upgradeAgain } from '/@/api/iot/link/ota/otaUpgradeTasks';
-  import { columns, searchFormSchema } from '../otaUpgradeRecords.data';
-  import EditModal from '../Edit.vue';
+  import {
+    columns,
+    searchFormSchema,
+    cardFields as buildCardFields,
+  } from '../otaUpgradeRecords.data';
   import SummaryCard from './summaryCard.vue';
   import { useDict } from '/@/components/Dict';
   import { ToTopOutlined } from '@ant-design/icons-vue';
@@ -68,10 +92,11 @@
     components: {
       BasicTable,
       TableAction,
-      EditModal,
       SummaryCard,
       ToTopOutlined,
       AddOtaUpgradeDevice,
+      BusinessCardList,
+      OtaRecordStatusBadge,
     },
     props: {
       taskDetail: {
@@ -93,11 +118,39 @@
         upgradeFailureCount: 0,
       });
       const productIdentification = ref('');
-      const { createMessage, createConfirm } = useMessage();
-      const [registerModal, { openModal }] = useModal();
+      const { createMessage } = useMessage();
       const [openFullLoading, closeFullLoading] = useLoading({
         tip: t('common.loadingText'),
       });
+
+      // 卡片视图(Flexy)配置
+      const cardListRef = ref<any>(null);
+      const cardFields = buildCardFields();
+      const cardPermissions: CardPermissions = {
+        delete: 'basic:link:otaUpgradeRecords:delete',
+        view: 'link:otaUpgradeTasks:detail:records',
+      };
+      const cardExtraActions: CardAction[] = [
+        {
+          tooltip: t('iot.link.ota.otaUpgradeRecords.upgrade'),
+          icon: 'ant-design:to-top-outlined',
+          event: 'upgrade',
+        },
+      ];
+      // 卡片分页:注入当前任务 taskId(记录列表按任务过滤)
+      const cardPageApi = (params: Recordable) => page({ ...params, taskId });
+      const cardDeleteApi = (id: string) => remove([id]);
+      // 升级记录状态 → 卡片右下角状态标签(待升级 琥珀 / 升级中 蓝 / 成功 绿 / 失败 红)
+      const recordStatusResolver = (record: Recordable) => {
+        const s = Number(record?.upgradeStatus);
+        if (s === 2)
+          return { label: t('iot.link.ota.otaUpgradeRecords.statusSuccess'), cls: 'online' };
+        if (s === 1)
+          return { label: t('iot.link.ota.otaUpgradeRecords.statusUpgrading'), cls: 'info' };
+        if (s === 3)
+          return { label: t('iot.link.ota.otaUpgradeRecords.statusFailed'), cls: 'danger' };
+        return { label: t('iot.link.ota.otaUpgradeRecords.statusPending'), cls: 'offline' };
+      };
 
       // 表格
       const [registerTable, { reload, getSelectRows }] = useTable({
@@ -160,15 +213,6 @@
         }
       });
 
-      // 弹出查看页面
-      function handleView(record: Recordable, e: Event) {
-        e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.VIEW,
-        });
-      }
-
       // 点击记录进入详情页
       function handleViewDetail(record: Recordable, e: Event) {
         e?.stopPropagation();
@@ -178,9 +222,10 @@
         });
       }
 
-      // 新增或编辑成功回调
+      // 删除成功 / 重新升级后回调:同步刷新表格与卡片
       function handleSuccess() {
         reload();
+        cardListRef.value?.reload();
       }
 
       async function batchDelete(ids: string[]) {
@@ -197,25 +242,6 @@
         }
       }
 
-      // 点击批量删除
-      function handleBatchDelete() {
-        const ids = getSelectRowKeys();
-        if (!ids || ids.length <= 0) {
-          createMessage.warning(t('common.tips.pleaseSelectTheData'));
-          return;
-        }
-        createConfirm({
-          iconType: 'warning',
-          content: t('common.tips.confirmDelete'),
-          onOk: async () => {
-            try {
-              await batchDelete(ids);
-            } catch (e) {}
-          },
-        });
-      }
-
-      //
       function switchView() {
         switchFlag.value = !switchFlag.value;
       }
@@ -251,9 +277,16 @@
         closeFullLoading();
       };
 
-      const singleUpgrade = (record: Recordable, e: Event) => {
-        batchUpgrade(e, record);
+      const singleUpgrade = (record: Recordable, e?: Event) => {
+        batchUpgrade(e as Event, record);
       };
+
+      // 卡片额外操作:重新升级该设备
+      function handleCardExtraAction({ event, record }: { event: string; record: Recordable }) {
+        if (event === 'upgrade') {
+          singleUpgrade(record);
+        }
+      }
 
       const [registerModalAddDevice, { openModal: openModalAddDevice }] = useModal();
       const addDeviceUpgrade = () => {
@@ -271,11 +304,6 @@
             icon: 'ant-design:file-text-outlined',
             onClick: handleViewDetail.bind(null, record),
             authMode: PermModeEnum.HasAny,
-          },
-          {
-            tooltip: t('common.title.view'),
-            icon: 'ant-design:search-outlined',
-            onClick: handleView.bind(null, record),
           },
           {
             tooltip: t('iot.link.ota.otaUpgradeRecords.upgrade'),
@@ -298,11 +326,8 @@
       return {
         t,
         registerTable,
-        registerModal,
-        handleView,
         handleViewDetail,
         handleDelete,
-        handleBatchDelete,
         handleSuccess,
         switchView,
         getSwitchChange,
@@ -315,6 +340,15 @@
         addDeviceUpgrade,
         getTableActions,
         hasAnyPermission,
+        // 卡片视图
+        cardListRef,
+        cardFields,
+        cardPermissions,
+        cardExtraActions,
+        cardPageApi,
+        cardDeleteApi,
+        recordStatusResolver,
+        handleCardExtraAction,
       };
     },
   });
@@ -324,4 +358,3 @@
     padding: 0 !important;
   }
 </style>
-../../../../../api/iot/link/ota/otaUpgradeRecords

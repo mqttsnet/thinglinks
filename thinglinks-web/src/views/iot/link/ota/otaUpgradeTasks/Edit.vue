@@ -188,9 +188,14 @@
       );
 
       async function handleSubmit() {
+        let params: Recordable;
         try {
-          const params = await validate();
-
+          params = await validate();
+        } catch {
+          // 校验未通过:表单已标红错误项,保持抽屉打开,避免抛出未捕获的 promise
+          return;
+        }
+        try {
           const { upgradeScope } = params;
           if (upgradeScope === 0) {
             params['targetValueList'] = [productIdentification.value];

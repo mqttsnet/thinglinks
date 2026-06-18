@@ -63,24 +63,6 @@
       :searchData="searchData"
       v-if="switchFlag && isAlarmRecord"
     />
-    <OtaUpgradesCardList
-      @input="setSwitchFlag"
-      :title="title"
-      :searchData="searchData"
-      v-if="switchFlag && isOtaUpgrades"
-    />
-    <OtaUpgradeTasksCardList
-      @input="setSwitchFlag"
-      :title="title"
-      :searchData="searchData"
-      v-if="switchFlag && isOtaUpgradeTasks"
-    />
-    <OtaUpgradeRecordsCardList
-      @input="setSwitchFlag"
-      :title="title"
-      :searchData="searchData"
-      v-if="switchFlag && isOtaUpgradeRecords"
-    />
     <PluginInstanceCardList
       @input="setSwitchFlag"
       :title="title"
@@ -155,7 +137,7 @@
       :searchData="searchData"
       :title="title"
       :switchView="setSwitchFlag"
-    />
+    ></slot>
     <Table
       ref="tableElRef"
       v-bind="getBindValues"
@@ -226,9 +208,6 @@
   import RuleGroovyScriptCardList from '/@/components/iot/rule/groovy/RuleGroovyScriptCardList.vue';
   import AlarmListCardList from '/@/components/iot/rule/alarm/AlarmListCardList.vue';
   import AlarmRecordCardList from '/@/components/iot/rule/alarm/AlarmRecordCardList.vue';
-  import OtaUpgradesCardList from '/@/components/iot/link/ota/OtaUpgradesCardList.vue';
-  import OtaUpgradeTasksCardList from '/@/components/iot/link/ota/OtaUpgradeTasksCardList.vue';
-  import OtaUpgradeRecordsCardList from '/@/components/iot/link/ota/OtaUpgradeRecordsCardList.vue';
   import PluginInstanceCardList from '/@/components/iot/rule/plugin/PluginInstanceCardList.vue';
   import PluginInfoCardList from '/@/components/iot/rule/plugin/PluginInfoCardList.vue';
   import DeviceAclRuleCardList from '/@/components/iot/link/operationMaintenance/DeviceAclRuleCardList.vue';
@@ -258,9 +237,6 @@
       RuleGroovyScriptCardList,
       AlarmListCardList,
       AlarmRecordCardList,
-      OtaUpgradesCardList,
-      OtaUpgradeTasksCardList,
-      OtaUpgradeRecordsCardList,
       PluginInstanceCardList,
       PluginInfoCardList,
       DeviceAclRuleCardList,

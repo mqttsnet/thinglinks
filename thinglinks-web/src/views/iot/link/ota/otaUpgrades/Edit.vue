@@ -8,6 +8,21 @@
     :keyboard="true"
   >
     <BasicForm @register="registerForm">
+      <template #productIdentification="{ model }">
+        <IotProductPicker
+          v-model="model.productIdentification"
+          :disabled="type !== ActionEnum.ADD"
+        />
+      </template>
+      <template #productVersionNo="{ model }">
+        <IotProductVersionPicker
+          v-model="model.productVersionNo"
+          :productIdentification="model.productIdentification"
+          :publish-strategies="shadowStrategies"
+          allow-custom
+          :disabled="type === ActionEnum.VIEW"
+        />
+      </template>
       <template #customInfo="{ model, field }">
         <div class="editor_container">
           <FormItem :name="field" :helpMessage="'1111'">
@@ -37,7 +52,6 @@
       </template>
     </BasicForm>
   </BasicModal>
-  <triggerRule @register="registerModalProduct" @success="handleSuccess" />
   <codeEditorDefine @register="registerModalCode" @submit-editor="submitEditor" />
 </template>
 <script lang="ts">
@@ -53,39 +67,40 @@
   import { Api, save, update } from '/@/api/iot/link/ota/otaUpgrades';
   import { getValidateRules } from '/@/api/thinglinks/common/formValidateService';
   import { customFormSchemaRules, editFormSchema } from './otaUpgrades.data';
-  import triggerRule from './modal/triggerRule.vue';
   import { findTenantFileInfoByIds } from '/@/api/thinglinks/file/upload';
   import codeEditorDefine from './modal/codeEditorDefine.vue';
   import SvgIcon from '/@/components/Icon/src/SvgIcon.vue';
+  import { IotProductPicker } from '/@/components/iot/IotProductDevicePicker';
+  import { IotProductVersionPicker } from '/@/components/iot/IotProductVersionPicker';
+  import { ProductPublishStrategyEnum } from '/@/enums/link/productVersion';
 
   export default defineComponent({
     name: '编辑OTA资源',
     components: {
       BasicModal,
       BasicForm,
-      triggerRule,
       FormItem: Form.Item,
       codeEditorDefine,
       SvgIcon,
       BasicHelp,
+      IotProductPicker,
+      IotProductVersionPicker,
     },
     emits: ['success', 'register'],
     setup(_, { emit }) {
       const { t } = useI18n();
       const type = ref<ActionEnum>(ActionEnum.ADD);
+      // OTA 资源的目标版本只取「影子」策略(影子发布预建表,升级成功后自动切到此版本)
+      const shadowStrategies = [ProductPublishStrategyEnum.SHADOW];
       const { createMessage } = useMessage();
-      const [registerModalProduct, { openModal }] = useModal();
       const [registerModalCode, { openModal: openCode }] = useModal();
       const [
         registerForm,
-        { getFieldsValue, setFieldsValue, updateSchema, validate, resetSchema },
+        { getFieldsValue, setFieldsValue, updateSchema, validate, resetSchema, resetFields },
       ] = useForm({
         name: 'otaUpgrades',
         labelWidth: 140,
-        schemas: editFormSchema(type, {
-          productIdentification: (value: string) =>
-            openModal(true, { productIdentification: value, type: ActionEnum.EDIT }),
-        }),
+        schemas: editFormSchema(type),
         showActionButtonGroup: false,
         disabled: (_) => {
           return unref(type) === ActionEnum.VIEW;
@@ -100,12 +115,9 @@
         async (data) => {
           setProps({ confirmLoading: false });
           type.value = data?.type || ActionEnum.ADD;
-          await resetSchema(
-            editFormSchema(type, {
-              productIdentification: (value: string) =>
-                openModal(true, { productIdentification: value, type: ActionEnum.EDIT }),
-            }),
-          );
+          await resetSchema(editFormSchema(type));
+          // 清空上一次弹窗残留的表单值,保证「新增」是干净表单(编辑 / 查看 / 复制再 setFieldsValue 回填)
+          await resetFields();
 
           if (unref(type) !== ActionEnum.ADD) {
             // 赋值
@@ -158,9 +170,6 @@
           setProps({ confirmLoading: false });
         }
       }
-      function handleSuccess(val) {
-        setFieldsValue({ productIdentification: val?.productIdentification });
-      }
       function addCustomInfo() {
         const originCustomInfo = getFieldsValue()?.customInfo || [];
         const customItem = { key: '', value: '', id: Date.now() };
@@ -184,11 +193,10 @@
       return {
         type,
         t,
+        shadowStrategies,
         registerModel,
         registerForm,
         handleSubmit,
-        registerModalProduct,
-        handleSuccess,
         addCustomInfo,
         removeCustomItem,
         registerModalCode,
@@ -220,6 +228,17 @@
 
   :deep(.ant-row .ant-form-item) {
     flex: 1;
+  }
+
+  /* 表单分区小标题:不折行 + 加粗,作为分组标题(避免「基础信息」被挤成两行) */
+  :deep(.ant-divider-horizontal.ant-divider-with-text) {
+    margin: 4px 0 16px;
+    font-weight: 500;
+  }
+
+  :deep(.ant-divider-inner-text),
+  :deep(.ant-divider-inner-text .basic-form-item-label) {
+    white-space: nowrap;
   }
 </style>
 ../../../../../api/iot/link/ota/otaUpgrades

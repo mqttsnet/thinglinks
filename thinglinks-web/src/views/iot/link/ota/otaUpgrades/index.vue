@@ -1,11 +1,31 @@
 <template>
   <PageWrapper contentFullHeight dense>
-    <BasicTable
-      :isOtaUpgrades="true"
-      :switchFlag="switchFlag"
-      @register="registerTable"
-      @switch-change="getSwitchChange"
-    >
+    <BasicTable :switchFlag="switchFlag" @register="registerTable" @switch-change="getSwitchChange">
+      <!-- 卡片视图(Flexy)── 通用 BusinessCardList,与设备 / 北向集成等页面统一风格 -->
+      <template #cardView="{ searchData, title }">
+        <BusinessCardList
+          ref="cardListRef"
+          :pageApi="page"
+          :deleteApi="deleteSingle"
+          :title="title"
+          :searchData="searchData"
+          nameField="packageName"
+          :nameFallback="t('iot.link.ota.otaUpgrades.table.title')"
+          :fields="cardFields"
+          badgeField="packageType"
+          :badgeDictType="DictEnum.LINK_OTA_PACKAGES_TYPE"
+          :permissions="cardPermissions"
+          :extraActions="cardExtraActions"
+          @add="handleAdd"
+          @view="handleViewDetail"
+          @edit="handleEdit"
+          @extraAction="handleCardExtraAction"
+        >
+          <template #cardImage="{ record }">
+            <component :is="getOtaPackageTypeSvg(record?.packageType)" />
+          </template>
+        </BusinessCardList>
+      </template>
       <template #toolbar>
         <a-button
           v-hasAnyPermission="['basic:link:otaUpgrades:delete']"
@@ -39,9 +59,10 @@
           <TableAction
             :actions="[
               {
-                tooltip: t('common.title.view'),
-                icon: 'ant-design:search-outlined',
-                onClick: handleView.bind(null, record),
+                tooltip: t('common.title.details'),
+                icon: 'ant-design:file-text-outlined',
+                onClick: handleViewDetail.bind(null, record),
+                auth: 'link:otaUpgrades:detail',
               },
               {
                 tooltip: t('common.title.edit'),
@@ -77,15 +98,19 @@
 </template>
 <script lang="ts">
   import { defineComponent, ref } from 'vue';
+  import { useRouter } from 'vue-router';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
+  import { BusinessCardList } from '/@/components/BusinessCardList';
+  import type { CardPermissions, CardAction } from '/@/components/BusinessCardList';
+  import { getOtaPackageTypeSvg } from '/@/components/iot/ota/svg';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
-  import { ActionEnum } from '/@/enums/commonEnum';
+  import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
   import { page, remove, deleteSingle } from '/@/api/iot/link/ota/otaUpgrades';
-  import { columns, searchFormSchema } from './otaUpgrades.data';
+  import { columns, searchFormSchema, cardFields as buildCardFields } from './otaUpgrades.data';
   import EditModal from './Edit.vue';
   import { useDict } from '/@/components/Dict';
   import triggerRule from './modal/triggerRule.vue';
@@ -100,12 +125,32 @@
       TableAction,
       EditModal,
       triggerRule,
+      BusinessCardList,
     },
     setup() {
       const { t } = useI18n();
+      const { push } = useRouter();
       const { createMessage, createConfirm } = useMessage();
       const [registerModal, { openModal }] = useModal();
       const [registerModalProduct, { openModal: openModalProduct }] = useModal();
+
+      // 卡片视图配置(Flexy)
+      const cardListRef = ref<any>(null);
+      const cardFields = buildCardFields();
+      const cardPermissions: CardPermissions = {
+        add: 'basic:link:otaUpgrades:add',
+        edit: 'basic:link:otaUpgrades:edit',
+        delete: 'basic:link:otaUpgrades:delete',
+        view: 'link:otaUpgrades:detail',
+      };
+      const cardExtraActions: CardAction[] = [
+        {
+          tooltip: t('common.title.copy'),
+          icon: 'ant-design:copy-outlined',
+          permission: 'basic:link:otaUpgrades:copy',
+          event: 'copy',
+        },
+      ];
 
       // 表格
       const [registerTable, { reload, getSelectRowKeys, getForm }] = useTable({
@@ -152,6 +197,13 @@
         });
       }
 
+      // 卡片额外操作(复制)
+      function handleCardExtraAction({ event, record }: { event: string; record: Recordable }) {
+        if (event === 'copy') {
+          openModal(true, { record, type: ActionEnum.COPY });
+        }
+      }
+
       // 弹出新增页面
       function handleAdd() {
         openModal(true, {
@@ -159,13 +211,10 @@
         });
       }
 
-      // 弹出查看页面
-      function handleView(record: Recordable, e: Event) {
+      // 进入资源详情页(独立页面)── 表格 / 卡片的「详情」统一跳转,不再用弹窗查看
+      function handleViewDetail(record: Recordable, e: Event) {
         e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.VIEW,
-        });
+        push(`/link/otaUpgrades/${record.id}`);
       }
 
       // 弹出编辑页面
@@ -177,9 +226,10 @@
         });
       }
 
-      // 新增或编辑成功回调
+      // 新增或编辑成功回调:同时刷新表格视图与卡片视图
       function handleSuccess() {
         reload();
+        cardListRef.value?.reload();
       }
 
       // 删除单条数据
@@ -241,7 +291,7 @@
         t,
         registerTable,
         registerModal,
-        handleView,
+        handleViewDetail,
         handleAdd,
         handleCopy,
         handleEdit,
@@ -254,6 +304,16 @@
         getDictLabel,
         handleSuccessProduct,
         registerModalProduct,
+        // 卡片视图
+        page,
+        deleteSingle,
+        cardListRef,
+        cardFields,
+        cardPermissions,
+        cardExtraActions,
+        handleCardExtraAction,
+        getOtaPackageTypeSvg,
+        DictEnum,
       };
     },
   });

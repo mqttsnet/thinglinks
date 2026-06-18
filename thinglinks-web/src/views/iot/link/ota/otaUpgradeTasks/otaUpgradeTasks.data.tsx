@@ -1,6 +1,7 @@
 import { Ref, h } from 'vue';
 import { dateUtil } from '/@/utils/dateUtil';
 import { BasicColumn, FormSchema } from '/@/components/Table';
+import type { CardField } from '/@/components/BusinessCardList';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { useDict } from '/@/components/Dict';
 import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
@@ -77,6 +78,30 @@ export const columns = (): BasicColumn[] => {
     },
   ];
 };
+
+// 卡片视图字段(Flexy)。名称取 taskName,右上角徽标取 taskStatus(任务状态字典)
+export const cardFields = (): CardField[] => [
+  {
+    label: t('iot.link.ota.otaUpgradeTasks.upgradeMode'),
+    field: 'echoMap.upgradeMethod',
+    span: 12,
+  },
+  {
+    label: t('iot.link.ota.otaUpgradeTasks.upgradeScope'),
+    field: 'echoMap.upgradeScope',
+    span: 12,
+  },
+  {
+    label: t('iot.link.ota.otaUpgradeTasks.scheduledTime'),
+    field: 'scheduledStartTime',
+    span: 24,
+  },
+  {
+    label: t('thinglinks.common.createdTime'),
+    field: 'createdTime',
+    span: 24,
+  },
+];
 
 export const searchFormSchema = (): FormSchema[] => {
   return [
@@ -421,7 +446,7 @@ export const editFormSchema = (
 
 // 前端自定义表单验证规则
 export const customFormSchemaRules = (
-  _: Ref<ActionEnum>,
+  type: Ref<ActionEnum>,
   getFieldsValue: () => Promise<Recordable>,
 ): Partial<FormSchemaExt>[] => {
   return [
@@ -460,6 +485,11 @@ export const customFormSchemaRules = (
         {
           required: true,
           async validator(_rule: any, value: any) {
+            // 编辑模式下该字段禁用、沿用已保存的计划时间,不再做「未来时间」校验。
+            // 否则编辑历史任务时开始时间已过,会永远校验失败、抽屉无法保存关闭。
+            if (type.value === ActionEnum.EDIT) {
+              return Promise.resolve();
+            }
             if (!value) {
               return Promise.reject(t('iot.link.ota.otaUpgradeTasks.scheduledStartTimeRequired'));
             }
@@ -489,6 +519,10 @@ export const customFormSchemaRules = (
         {
           required: true,
           async validator(_rule: any, value: any) {
+            // 编辑模式下该字段禁用、沿用已保存值,不再校验(与开始时间同理)
+            if (type.value === ActionEnum.EDIT) {
+              return Promise.resolve();
+            }
             if (!value) {
               return Promise.reject(t('iot.link.ota.otaUpgradeTasks.scheduledEndTimeRequired'));
             }

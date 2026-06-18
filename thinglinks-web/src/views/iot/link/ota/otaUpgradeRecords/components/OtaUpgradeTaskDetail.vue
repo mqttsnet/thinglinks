@@ -1,77 +1,133 @@
 <template>
-  <div class="card-wrap" :bordered="false">
-    <div class="card-title">
-      <div>{{ t('iot.link.ota.otaUpgradeTasks.upgradeTaskDetail') }}</div>
-      <div class="card-id">
-        {{ t('iot.link.ota.otaUpgradeTasks.taskId') }}：{{ taskDetail.id }}
-        <CopyOutlined @click="handleCopyTaskId" />
-      </div>
-    </div>
-    <Description @register="registerUpgradeTask" />
-  </div>
-  <div :bordered="false" class="mt-5 card-wrap">
-    <div class="card-title">{{ t('iot.link.ota.otaUpgradeTasks.upgradePackageDetail') }}</div>
-    <Description @register="registerUpgradePackage">
-      <template #fileLocation>
-        <div v-if="fileList && fileList.length > 0" class="file-list">
-          <BasicUpload :value="fileList" :onlyShowPreview="true" :showDeleteBtn="false"></BasicUpload>
+  <!-- 升级任务「基础信息」Tab 内容(头部公共信息已上移到容器,此处只渲染分组明细) -->
+  <div class="info-flex">
+    <div class="info-main">
+      <!-- 任务信息 -->
+      <section class="info-group">
+        <div class="group-title">
+          <span class="title-bar" style="background: #5d87ff"></span>
+          {{ t('iot.link.ota.otaUpgradeTasks.upgradeTaskDetail') }}
         </div>
-        <span v-else class="empty-text">-</span>
-      </template>
-    </Description>
-  </div>
-  <div :bordered="false" class="mt-5 card-wrap">
-    <div class="card-title">{{ t('iot.link.ota.otaUpgradeTasks.upgradeScope') }}</div>
-    <div class="upgrade-scope-content">
-      <div v-if="upgradeScope === 0" class="upgrade-scope-item">
-        <span class="upgrade-scope-label"
-          >{{ t('iot.link.ota.otaUpgradeTasks.productIdentification') }}：</span
-        >
-        <span class="upgrade-scope-value">{{
-          upgradeTask?.otaUpgradesResult?.productIdentification || '-'
-        }}</span>
-      </div>
-      <div v-else-if="upgradeScope === 1" class="upgrade-scope-item">
-        <span class="upgrade-scope-label"
-          >{{ t('iot.link.ota.otaUpgradeTasks.directUpgrade') }}({{
-            t('iot.link.device.device.deviceIdentification')
-          }})：</span
-        >
-        <div class="upgrade-scope-value">
-          <a-tag v-for="(item, index) in targetValueList" :key="index" class="scope-tag">
-            {{ item }}
-          </a-tag>
-          <span v-if="!targetValueList || targetValueList.length === 0" class="empty-text">-</span>
-        </div>
-      </div>
-      <div v-else-if="upgradeScope === 2" class="upgrade-scope-item">
-        <span class="upgrade-scope-label"
-          >{{ t('iot.link.ota.otaUpgradeTasks.groupUpgrade') }}({{
-            t('iot.link.ota.otaUpgradeTasks.groupId')
-          }})：</span
-        >
-        <div class="upgrade-scope-value">
-          <a-tag v-for="(item, index) in targetValueList" :key="index" class="scope-tag">
-            {{ item }}
-          </a-tag>
-          <span v-if="!targetValueList || targetValueList.length === 0" class="empty-text">-</span>
-        </div>
-      </div>
-      <div v-else-if="upgradeScope === 3" class="upgrade-scope-item">
-        <span class="upgrade-scope-label"
-          >{{ t('iot.link.ota.otaUpgradeTasks.areaUpgrade') }}({{
-            t('iot.link.ota.otaUpgradeTasks.areaCode')
-          }})：</span
-        >
-        <div class="upgrade-scope-value">
-          <div v-if="areaList && areaList.length > 0" class="area-list">
-            <div v-for="(item, index) in areaList" :key="index" class="area-item">
-              <span class="area-value">{{ item.provinceName || item.provinceCode || '-' }}</span>
-              <span class="area-separator">｜</span>
-              <span class="area-value">{{ item.cityName || item.cityCode || '-' }}</span>
+        <div class="field-grid">
+          <div
+            v-for="f in taskFields"
+            :key="f.field"
+            class="field-item"
+            :class="{ 'is-full': f.full }"
+          >
+            <div class="field-label">{{ f.label }}</div>
+            <div class="field-value">
+              <span class="value-text" :class="{ mono: f.mono }">{{ f.value || '-' }}</span>
             </div>
           </div>
-          <span v-else class="empty-text">-</span>
+        </div>
+      </section>
+
+      <!-- 升级包 -->
+      <section class="info-group">
+        <div class="group-title">
+          <span class="title-bar" style="background: #fa8c16"></span>
+          {{ t('iot.link.ota.otaUpgradeTasks.upgradePackageDetail') }}
+        </div>
+        <div class="field-grid">
+          <div
+            v-for="f in packageFields"
+            :key="f.field"
+            class="field-item"
+            :class="{ 'is-full': f.full || f.field === 'fileLocation' }"
+          >
+            <div class="field-label">{{ f.label }}</div>
+            <div class="field-value">
+              <template v-if="f.field === 'fileLocation'">
+                <BasicUpload
+                  v-if="fileList && fileList.length > 0"
+                  :value="fileList"
+                  :onlyShowPreview="true"
+                  :showDeleteBtn="false"
+                />
+                <span v-else class="value-empty">-</span>
+              </template>
+              <span v-else class="value-text" :class="{ mono: f.mono }">
+                {{ f.value || '-' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 升级范围 -->
+      <section class="info-group">
+        <div class="group-title">
+          <span class="title-bar" style="background: #9254de"></span>
+          {{ t('iot.link.ota.otaUpgradeTasks.upgradeScope') }}
+        </div>
+        <div class="scope-content">
+          <div v-if="upgradeScope === 0" class="scope-item">
+            <span class="scope-label">
+              {{ t('iot.link.ota.otaUpgradeTasks.productIdentification') }}
+            </span>
+            <span class="value-text mono">
+              {{ upgradeTask?.otaUpgradesResult?.productIdentification || '-' }}
+            </span>
+          </div>
+          <div v-else-if="upgradeScope === 1" class="scope-item">
+            <span class="scope-label">
+              {{ t('iot.link.ota.otaUpgradeTasks.directUpgrade') }}（{{
+                t('iot.link.device.device.deviceIdentification')
+              }}）
+            </span>
+            <div class="scope-tags">
+              <a-tag v-for="(item, index) in targetValueList" :key="index" class="scope-tag">
+                {{ item }}
+              </a-tag>
+              <span v-if="!targetValueList || targetValueList.length === 0" class="value-empty">
+                -
+              </span>
+            </div>
+          </div>
+          <div v-else-if="upgradeScope === 2" class="scope-item">
+            <span class="scope-label">
+              {{ t('iot.link.ota.otaUpgradeTasks.groupUpgrade') }}（{{
+                t('iot.link.ota.otaUpgradeTasks.groupId')
+              }}）
+            </span>
+            <div class="scope-tags">
+              <a-tag v-for="(item, index) in targetValueList" :key="index" class="scope-tag">
+                {{ item }}
+              </a-tag>
+              <span v-if="!targetValueList || targetValueList.length === 0" class="value-empty">
+                -
+              </span>
+            </div>
+          </div>
+          <div v-else-if="upgradeScope === 3" class="scope-item">
+            <span class="scope-label">
+              {{ t('iot.link.ota.otaUpgradeTasks.areaUpgrade') }}（{{
+                t('iot.link.ota.otaUpgradeTasks.areaCode')
+              }}）
+            </span>
+            <div class="scope-tags">
+              <div v-if="areaList && areaList.length > 0" class="area-list">
+                <div v-for="(item, index) in areaList" :key="index" class="area-item">
+                  <span>{{ item.provinceName || item.provinceCode || '-' }}</span>
+                  <span class="area-sep">｜</span>
+                  <span>{{ item.cityName || item.cityCode || '-' }}</span>
+                </div>
+              </div>
+              <span v-else class="value-empty">-</span>
+            </div>
+          </div>
+          <span v-else class="value-empty">-</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- 侧栏:升级任务 SVG 视觉锚 -->
+    <div class="info-aside">
+      <div class="aside-card">
+        <div class="aside-thumb"><OtaTaskSvg /></div>
+        <div class="aside-label">
+          {{ getDictLabel('LINK_OTA_UPGRADE_METHOD', upgradeTask.upgradeMethod, '-') }}
         </div>
       </div>
     </div>
@@ -79,25 +135,22 @@
 </template>
 <script lang="ts" setup>
   import { ref, computed, watch } from 'vue';
-  import { Description, useDescription } from '/@/components/Description/index';
-  import { getUpgradeTaskSchema, getUpgradePackageSchema } from './otaUpgradeTaskDetail.data';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import { useDict } from '/@/components/Dict';
   import { findTenantFileInfoByIds } from '/@/api/thinglinks/file/upload';
-  import { downloadByUrlFromPublic } from '/@/utils/file/download';
-  import { DownloadOutlined, CopyOutlined } from '@ant-design/icons-vue';
-  import { useMessage } from '/@/hooks/web/useMessage';
-  import { handleCopyTextV2 } from '/@/utils/thinglinks/common';
   import { BasicUpload } from '/@/components/Upload';
+  import { OtaTaskSvg } from '/@/components/iot/ota/svg';
+  import { getUpgradeTaskSchema, getUpgradePackageSchema } from './otaUpgradeTaskDetail.data';
 
   const props = defineProps<{
     taskDetail?: any;
   }>();
 
   const { t } = useI18n();
-  const { createMessage } = useMessage();
+  const { getDictLabel } = useDict();
 
   const upgradeTask = ref<any>({});
-  const upgradePackage = ref({});
+  const upgradePackage = ref<any>({});
   const fileList = ref<any[]>([]);
 
   const upgradeScope = computed(() => {
@@ -114,44 +167,42 @@
     }
     return targetValueList.value.map((item: string) => {
       const [provinceCode, cityCode] = item.split(',');
-      return {
-        provinceCode,
-        cityCode,
-        provinceName: '', // 如果需要显示名称，需要调用区域API
-        cityName: '', // 如果需要显示名称，需要调用区域API
-      };
+      return { provinceCode, cityCode, provinceName: '', cityName: '' };
     });
   });
 
-  const handleCopyTaskId = () => {
-    handleCopyTextV2(props.taskDetail.id);
-  };
+  // 整行展示的长文本字段
+  const FULL_FIELDS = ['description', 'remark', 'customInfo', 'sourceVersions'];
+  // 等宽展示的标识/版本字段
+  const MONO_FIELDS = ['productIdentification', 'version', 'sourceVersions', 'upgradeId'];
 
-  const handleDownloadFile = async (file: any) => {
-    try {
-      if (file?.url) {
-        await downloadByUrlFromPublic(file?.url, file?.uniqueFileName);
-      } else {
-        createMessage.warning(t('common.tips.downloadFail'));
-      }
-    } catch (error) {
-      console.error('下载文件失败:', error);
-      createMessage.error(t('common.tips.downloadFail'));
-    }
-  };
+  // 复用 Description 的 schema(label + render)派生分组字段,避免重复定义
+  function resolveFields(schema: any[], data: any) {
+    return schema.map((item) => ({
+      field: item.field,
+      label: item.label,
+      value: item.render ? item.render(data?.[item.field], data) : data?.[item.field],
+      full: FULL_FIELDS.includes(item.field),
+      mono: MONO_FIELDS.includes(item.field),
+    }));
+  }
 
-  // 初始化数据
+  const taskFields = computed(() => resolveFields(getUpgradeTaskSchema(), upgradeTask.value));
+  const packageFields = computed(() =>
+    resolveFields(getUpgradePackageSchema(), upgradePackage.value),
+  );
+
   const initData = async (taskData: any) => {
     if (!taskData) return;
+    upgradeTask.value = Object.assign({}, upgradeTask.value, taskData);
+    upgradePackage.value = upgradeTask.value?.otaUpgradesResult || {};
 
-    upgradeTask.value = Object.assign(upgradeTask.value, taskData);
-    upgradePackage.value = upgradeTask.value?.otaUpgradesResult;
-
-    // 获取文件信息
     const fileLocation = upgradePackage.value?.fileLocation;
     if (fileLocation) {
       try {
-        const fileIds = fileLocation.split(',').filter((id: string) => id);
+        const fileIds = String(fileLocation)
+          .split(',')
+          .filter((id: string) => id);
         if (fileIds.length > 0) {
           const files = await findTenantFileInfoByIds(fileIds);
           fileList.value = Array.isArray(files) ? files : [];
@@ -163,7 +214,6 @@
     }
   };
 
-  // 监听 props 变化，immediate: true 会在组件初始化时执行一次
   watch(
     () => props.taskDetail,
     (newVal) => {
@@ -173,45 +223,103 @@
     },
     { immediate: true },
   );
-
-  const [registerUpgradeTask] = useDescription({
-    data: upgradeTask,
-    schema: getUpgradeTaskSchema(),
-    column: 2,
-  });
-  const [registerUpgradePackage] = useDescription({
-    data: upgradePackage,
-    schema: getUpgradePackageSchema(),
-    column: 2,
-  });
 </script>
 <style scoped lang="less">
-  .upgrade-scope-content {
-    padding: 8px 0;
-  }
-
-  .upgrade-scope-item {
+  .info-flex {
     display: flex;
-    align-items: flex-start;
-    min-height: 32px;
-    line-height: 32px;
+    gap: 28px;
   }
 
-  .upgrade-scope-label {
-    min-width: 140px;
-    font-weight: 600;
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.85);
-    flex-shrink: 0;
-    line-height: 32px;
-  }
-
-  .upgrade-scope-value {
+  .info-main {
     flex: 1;
-    color: rgba(0, 0, 0, 0.65);
+    min-width: 0;
+  }
+
+  .info-aside {
+    flex-shrink: 0;
+    width: 200px;
+  }
+
+  .info-group {
+    & + & {
+      margin-top: 26px;
+      padding-top: 24px;
+      border-top: 1px solid #f0f2f5;
+    }
+  }
+
+  .group-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 14px;
-    line-height: 32px;
-    min-height: 32px;
+    font-weight: 600;
+    color: #2a3547;
+    margin-bottom: 18px;
+
+    .title-bar {
+      width: 3px;
+      height: 14px;
+      border-radius: 2px;
+    }
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 18px 28px;
+  }
+
+  .field-item {
+    min-width: 0;
+
+    &.is-full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .field-label {
+    font-size: 12px;
+    color: #8c97a5;
+    margin-bottom: 6px;
+  }
+
+  .field-value {
+    font-size: 14px;
+    line-height: 1.5;
+
+    .value-text {
+      color: #2a3547;
+      font-weight: 500;
+      word-break: break-all;
+
+      &.mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 13px;
+        color: #4a5568;
+      }
+    }
+  }
+
+  .value-empty {
+    color: #b6bdc8;
+  }
+
+  /* 升级范围 */
+  .scope-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 12px;
+  }
+
+  .scope-label {
+    font-size: 13px;
+    color: #8c97a5;
+    flex-shrink: 0;
+  }
+
+  .scope-tags {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -220,90 +328,68 @@
 
   .scope-tag {
     margin: 0;
-    line-height: 22px;
   }
 
   .area-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    width: 100%;
   }
 
   .area-item {
-    padding: 6px 12px;
-    background: #fafafa;
-    border-radius: 4px;
+    padding: 5px 12px;
+    background: #f7f8fa;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
-    line-height: 20px;
-    min-height: auto;
-  }
+    font-size: 13px;
+    color: #2a3547;
 
-  .area-value {
-    color: rgba(0, 0, 0, 0.85);
-    font-size: 14px;
-  }
-
-  .area-separator {
-    color: rgba(0, 0, 0, 0.25);
-    margin: 0 8px;
-    font-size: 14px;
-  }
-
-  .empty-text {
-    color: rgba(0, 0, 0, 0.25);
-    font-size: 14px;
-  }
-
-  .file-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .file-item {
-    display: flex;
-    align-items: center;
-  }
-
-  .card-title {
-    font-size: 16px;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.85);
-    margin: 16px 0;
-    margin-top: 0;
-    padding: 16px 0;
-    border-bottom: 1px solid #f0f0f0;
-    line-height: 1.5;
-
-    .card-id {
-      font-size: 14px;
-      font-weight: 400;
-      margin-top: 4px;
+    .area-sep {
+      color: #c8cfdb;
+      margin: 0 6px;
     }
   }
 
-  .card-wrap {
-    padding: 0 16px;
+  /* 侧栏 */
+  .aside-card {
+    background: linear-gradient(180deg, #fafbfd 0%, #ffffff 100%);
+    border: 1px solid #eef1f7;
+    border-radius: 14px;
+    padding: 18px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
-  // 强制统一两个 Description 组件的 label 宽度
-  :deep(.ant-descriptions-item-label) {
-    min-width: 80px !important;
-    max-width: 80px !important;
-    width: 80px !important;
+  .aside-thumb {
+    width: 110px;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    :deep(svg) {
+      width: 100%;
+      height: 100%;
+    }
   }
 
-  // 固定第一列的 value 宽度，确保第一列总宽度一致
-  :deep(.ant-descriptions-item-content) {
-    min-width: 200px !important;
-    max-width: 200px !important;
-    width: 200px !important;
+  .aside-label {
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2a3547;
   }
 
-  // 固定每个 item 的总宽度，确保列对齐
-  :deep(.ant-descriptions-item) {
-    min-width: 200px !important;
+  @media (max-width: 768px) {
+    .info-flex {
+      flex-direction: column;
+    }
+
+    .info-aside {
+      width: 100%;
+    }
   }
 </style>

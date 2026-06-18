@@ -1,6 +1,7 @@
 import { Ref } from 'vue';
 import { dateUtil } from '/@/utils/dateUtil';
 import { BasicColumn, FormSchema } from '/@/components/Table';
+import type { CardField } from '/@/components/BusinessCardList';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
@@ -8,6 +9,30 @@ import { dictComponentProps } from '/@/utils/thinglinks/common';
 import { echoMapText } from '/@/utils/echo';
 
 const { t } = useI18n();
+
+// 卡片视图字段(Flexy)。卡名取设备标识,右下角状态走 statusResolver,右侧图走状态徽标
+export const cardFields = (): CardField[] => [
+  {
+    label: t('iot.link.ota.otaUpgradeRecords.sourceVersion'),
+    field: 'sourceVersion',
+    span: 12,
+  },
+  {
+    label: t('iot.link.ota.otaUpgradeRecords.targetVersion'),
+    field: 'targetVersion',
+    span: 12,
+  },
+  {
+    label: t('iot.link.ota.otaUpgradeRecords.progress'),
+    field: 'progress',
+    span: 12,
+  },
+  {
+    label: t('thinglinks.common.createdTime'),
+    field: 'createdTime',
+    span: 12,
+  },
+];
 // 列表页字段
 export const columns = (): BasicColumn[] => {
   return [
