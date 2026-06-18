@@ -68,6 +68,8 @@ export interface BusinessCardListProps {
   statusOnlineLabel?: string;
   /** 离线状态标签文本 */
   statusOfflineLabel?: string;
+  /** 多态状态解析器（可选）：返回 { label, cls } 渲染在线/离线/未连接等多态;不传则回退 statusOnlineValue 二态判定 */
+  statusResolver?: (record: any) => { label: string; cls: string };
   /** 徽章/标签字段名（显示右上角 badge，不传则不显示） */
   badgeField?: string;
   /** 徽章的字典类型（用于翻译显示文本） */
