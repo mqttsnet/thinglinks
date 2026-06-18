@@ -93,4 +93,9 @@ public class DeviceQueryServiceImpl implements DeviceQueryService {
         devicePageQuery.setProductIdentification(productIdentification);
         return deviceManager.getDevicList(devicePageQuery).stream().map(Device::getDeviceIdentification).toList();
     }
+
+    @Override
+    public List<Device> listRebindCursorPageByProduct(String productIdentification, Long afterId, int pageSize) {
+        return deviceManager.listRebindCursorPageByProduct(productIdentification, afterId, pageSize);
+    }
 }

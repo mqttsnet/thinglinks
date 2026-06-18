@@ -85,4 +85,16 @@ public interface DeviceQueryService {
      * @return 设备识别码列表(去重,过滤 blank);产品下无设备返空列表
      */
     List<String> listDeviceIdentificationsByProduct(String productIdentification);
+
+    /**
+     * 游标分页拉某产品设备(投影 id / device_identification / gateway_id),专供流式分批改绑遍历全产品 ──
+     * 恒定内存(不一次性载入全量),按主键 id 升序 + {@code id > afterId} 取下一页。跨域走 Service 层触发
+     * {@code @DS(BASE_TENANT)} 切租户库。
+     *
+     * @param productIdentification 产品标识
+     * @param afterId               游标(上一页末行 id;首页传 null/0)
+     * @param pageSize              单页行数
+     * @return 本页设备;空表示到末页
+     */
+    List<Device> listRebindCursorPageByProduct(String productIdentification, Long afterId, int pageSize);
 }

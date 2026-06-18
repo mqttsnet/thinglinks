@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -81,6 +82,10 @@ import com.mqttsnet.thinglinks.device.vo.update.DeviceUpdateVO;
 import com.mqttsnet.thinglinks.product.service.ProductQueryService;
 import com.mqttsnet.thinglinks.product.vo.query.ProductPageQuery;
 import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
+import com.mqttsnet.thinglinks.productversion.entity.ProductVersion;
+import com.mqttsnet.thinglinks.productversion.enumeration.ProductVersionStatusEnum;
+import com.mqttsnet.thinglinks.productversion.service.ProductVersionQueryService;
+import com.mqttsnet.thinglinks.device.vo.result.DeviceVersionDistributionVO;
 import com.mqttsnet.thinglinks.protocol.enumeration.MqttProtocolTopoStatusEnum;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoAddSubDeviceParam;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoDeleteSubDeviceParam;
@@ -121,6 +126,12 @@ public class DeviceServiceImpl extends SuperServiceImpl<DeviceManager, Long, Dev
      * 类图为 DAG,规避 device↔product 反向依赖循环。
      */
     private final ProductQueryService productQueryService;
+
+    /**
+     * 注入只读 {@link ProductVersionQueryService}(leaf bean,零下游 Service 依赖),校验"切换目标版本"是否存在 / 状态可切;
+     * 与 {@link #productQueryService} 同理经 Service AOP 边界规避 device↔productversion 反向依赖循环。
+     */
+    private final ProductVersionQueryService productVersionQueryService;
 
     private final DeviceLocationService deviceLocationService;
 
@@ -630,6 +641,14 @@ public class DeviceServiceImpl extends SuperServiceImpl<DeviceManager, Long, Dev
         deviceEventPublisher.publishDeviceInfoUpdatedEvent(DeviceInfoUpdatedEventSource.builder()
                 .deviceIdentificationList(Collections.singletonList(existingDevice.getDeviceIdentification()))
                 .build());
+
+        // 绑定版本变更(含切到影子)→ 走校验 + 改绑链路:连带网关子设备 + 发 DeviceRebindEvent 失效缓存。
+        // 通用 update(builderDeviceUpdateVO)刻意不映射 boundProductVersionNo,版本只由这条受控路径改。
+        String newBoundVersion = updateVO.getBoundProductVersionNo();
+        if (StrUtil.isNotBlank(newBoundVersion) && !newBoundVersion.equals(existingDevice.getBoundProductVersionNo())) {
+            switchBoundProductVersion(updateVO.getProductIdentification(),
+                    Collections.singletonList(existingDevice.getDeviceIdentification()), newBoundVersion);
+        }
 
         return updateVO;
     }
@@ -1722,7 +1741,21 @@ public class DeviceServiceImpl extends SuperServiceImpl<DeviceManager, Long, Dev
         if (StrUtil.isNotBlank(device.getBoundProductVersionNo())) {
             return;
         }
-        device.setBoundProductVersionNo(productResultVO.getActiveVersionNo());
+        device.setBoundProductVersionNo(resolveBindVersionForNewDevice(productResultVO));
+    }
+
+    /**
+     * 解析新设备应绑定的版本号:灰度发布进行期间({@code previousFullVersionNo} 非空,持有切换前的稳定版)
+     * 绑"最新全量版本"(稳定版),避免新设备自动落进未验证的灰度组、把灰度比例稀释;无灰度时绑当前生效版本
+     * {@code activeVersionNo}。灰度晋升为全量后 {@code previousFullVersionNo} 被清空
+     * (见 {@code ProductServiceImpl#switchActiveVersionForPublish}),新设备随即自动跟到新版本。
+     *
+     * @param productResultVO 产品信息(提供 activeVersionNo / previousFullVersionNo)
+     * @return 新设备应绑定的版本号
+     */
+    private String resolveBindVersionForNewDevice(ProductResultVO productResultVO) {
+        // previousFullVersionNo 非空(灰度态)取稳定版,否则取 activeVersionNo
+        return StrUtil.blankToDefault(productResultVO.getPreviousFullVersionNo(), productResultVO.getActiveVersionNo());
     }
 
     /**
@@ -1769,6 +1802,10 @@ public class DeviceServiceImpl extends SuperServiceImpl<DeviceManager, Long, Dev
         ArgumentAssert.notBlank(saveVO.getProductIdentification(), "productIdentification Cannot be null");
         ProductResultVO productResultVO = productQueryService.findOneByProductIdentification(saveVO.getProductIdentification());
         ArgumentAssert.notNull(productResultVO, "productIdentification is not exist");
+        // 新建时用户/外部显式选了绑定版本(含影子)→ 校验可用;留空走 fillBoundProductVersionIfBlank 默认(激活版/稳定版)
+        if (StrUtil.isNotBlank(saveVO.getBoundProductVersionNo())) {
+            assertSwitchableTargetVersion(saveVO.getProductIdentification(), saveVO.getBoundProductVersionNo());
+        }
         return productResultVO;
     }
 
@@ -1874,9 +1911,11 @@ public class DeviceServiceImpl extends SuperServiceImpl<DeviceManager, Long, Dev
     //      后续 @DS SPEL 重新求值不生效。这里是单 UPDATE,InnoDB 单 SQL 本身原子,无需事务包裹
 
     @Override
-    public int bulkRebindByProduct(String productIdentification, String toVersion) {
-        int affected = superManager.bulkRebindByProduct(productIdentification, toVersion);
-        // 发改绑事件:监听器 AFTER_COMMIT 失效该产品下设备缓存,否则上报仍读旧 boundProductVersionNo
+    public int bulkRebindByIdentificationsIncludingSubDevices(List<String> rootIdentifications,
+                                                              String productIdentification, String toVersion) {
+        int affected = superManager.bulkRebindByIdentificationsIncludingSubDevices(
+                rootIdentifications, productIdentification, toVersion);
+        // 灰度按网关粒度改绑会连带子设备(未在 rootIdentifications 内),按 productIdentification 失效缓存以覆盖全部
         deviceEventPublisher.publishDeviceRebindEvent(DeviceRebindEventSource.builder()
                 .productIdentification(productIdentification)
                 .toVersion(toVersion)
@@ -1886,14 +1925,16 @@ public class DeviceServiceImpl extends SuperServiceImpl<DeviceManager, Long, Dev
     }
 
     @Override
-    public int bulkRebindByDeviceIdentifications(List<String> deviceIdentifications, String toVersion) {
-        int affected = superManager.bulkRebindByDeviceIdentifications(deviceIdentifications, toVersion);
-        // 灰度白名单改绑:发改绑事件,监听器按设备标识失效缓存
-        deviceEventPublisher.publishDeviceRebindEvent(DeviceRebindEventSource.builder()
-                .deviceIdentifications(deviceIdentifications)
-                .toVersion(toVersion)
-                .contextMap(ContextUtil.getLocalMap())
-                .build());
+    public int bulkRebindByIds(List<Long> ids, List<String> identifications, String toVersion) {
+        int affected = superManager.bulkRebindByIds(ids, toVersion);
+        // 仅失效本批标识缓存(按 identifications 精确失效,避免按产品列全量再逐个失效的放大)
+        if (CollUtil.isNotEmpty(identifications)) {
+            deviceEventPublisher.publishDeviceRebindEvent(DeviceRebindEventSource.builder()
+                    .deviceIdentifications(identifications)
+                    .toVersion(toVersion)
+                    .contextMap(ContextUtil.getLocalMap())
+                    .build());
+        }
         return affected;
     }
 
@@ -1907,6 +1948,90 @@ public class DeviceServiceImpl extends SuperServiceImpl<DeviceManager, Long, Dev
                 .contextMap(ContextUtil.getLocalMap())
                 .build());
         return affected;
+    }
+
+    @Override
+    public int switchBoundProductVersion(String productIdentification, List<String> deviceIdentifications, String targetVersionNo) {
+        if (StrUtil.isBlank(productIdentification) || CollUtil.isEmpty(deviceIdentifications) || StrUtil.isBlank(targetVersionNo)) {
+            throw BizException.wrap("切换设备绑定版本参数不完整:productIdentification / deviceIdentifications / targetVersionNo 均必填");
+        }
+        assertSwitchableTargetVersion(productIdentification, targetVersionNo);
+        // 复用现成"按标识改绑(连带子设备)"链路:UPDATE 收口 product_identification,改绑后发 DeviceRebindEvent 失效缓存
+        int affected = bulkRebindByIdentificationsIncludingSubDevices(deviceIdentifications, productIdentification, targetVersionNo);
+        if (affected == 0) {
+            log.warn("[switch-bound-version] no device matched product={} identifications={} toVersion={}",
+                    productIdentification, deviceIdentifications, targetVersionNo);
+        } else {
+            log.info("[switch-bound-version] ok product={} toVersion={} affected={}", productIdentification, targetVersionNo, affected);
+        }
+        return affected;
+    }
+
+    /**
+     * 校验"设备绑定目标版本"可用:须存在于该产品,且处于 已发布/灰度/影子 状态 ── 仅这些状态的 TD 超表已建好,
+     * 绑过去才有表可写;DRAFT 未建表、ROLLED_BACK/ARCHIVED 可能已被 purge 清理(drop stable),绑过去上报会
+     * 建子表失败 / 落空表。不合法抛 {@link BizException}。新建 / 编辑 / 切换三处复用同一校验口径。
+     *
+     * @param productIdentification 产品标识
+     * @param versionNo             目标版本号
+     */
+    private void assertSwitchableTargetVersion(String productIdentification, String versionNo) {
+        Integer versionStatus = productVersionQueryService
+                .findByProductIdentificationAndVersionNo(productIdentification, versionNo)
+                .map(ProductVersion::getVersionStatus)
+                .orElseThrow(() -> BizException.wrap(
+                        "目标版本不存在:productIdentification=" + productIdentification + ", versionNo=" + versionNo));
+        boolean switchable = ProductVersionStatusEnum.PUBLISHED.getValue().equals(versionStatus)
+                || ProductVersionStatusEnum.CANARY.getValue().equals(versionStatus)
+                || ProductVersionStatusEnum.SHADOW.getValue().equals(versionStatus);
+        if (!switchable) {
+            String desc = ProductVersionStatusEnum.fromValue(versionStatus)
+                    .map(ProductVersionStatusEnum::getDesc).orElse(String.valueOf(versionStatus));
+            throw BizException.wrap("目标版本状态不可切换(需 已发布/灰度/影子,当前=" + desc + "):versionNo=" + versionNo);
+        }
+    }
+
+    @Override
+    public DeviceVersionDistributionVO countDeviceVersionDistribution(String productIdentification) {
+        Map<String, Long> versionCounts = new HashMap<>();
+        long total = 0L;
+        if (StrUtil.isNotBlank(productIdentification)) {
+            // 一次分组统计该产品下各 bound_product_version_no 的设备数(MyBatis-Plus listMaps 自动带逻辑删除条件)
+            List<Map<String, Object>> rows = superManager.listMaps(
+                    Wrappers.<Device>query()
+                            .select("bound_product_version_no AS versionNo", "COUNT(*) AS deviceCount")
+                            .eq("product_identification", productIdentification)
+                            .groupBy("bound_product_version_no"));
+            for (Map<String, Object> row : rows) {
+                Object versionVal = rowValueIgnoreCase(row, "versionNo");
+                long cnt = toLongValue(rowValueIgnoreCase(row, "deviceCount"));
+                versionCounts.put(versionVal == null ? "" : String.valueOf(versionVal), cnt);
+                total += cnt;
+            }
+        }
+        DeviceVersionDistributionVO vo = new DeviceVersionDistributionVO();
+        vo.setTotal(total);
+        vo.setVersionCounts(versionCounts);
+        return vo;
+    }
+
+    /** 大小写不敏感地从 listMaps 行取列值 ── 列别名大小写可能随数据库方言波动。 */
+    private static Object rowValueIgnoreCase(Map<String, Object> row, String key) {
+        Object v = row.get(key);
+        if (v != null) {
+            return v;
+        }
+        for (Map.Entry<String, Object> e : row.entrySet()) {
+            if (e.getKey() != null && e.getKey().equalsIgnoreCase(key)) {
+                return e.getValue();
+            }
+        }
+        return null;
+    }
+
+    /** count(*) 在不同驱动可能返回 Long / BigInteger / BigDecimal,统一转 long。 */
+    private static long toLongValue(Object v) {
+        return v instanceof Number ? ((Number) v).longValue() : 0L;
     }
 
 }

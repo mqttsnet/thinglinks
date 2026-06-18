@@ -15,6 +15,7 @@ import com.mqttsnet.thinglinks.device.vo.result.DeviceSslTestResultVO;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceOverviewResultVO;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceResultVO;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceVersionResultVO;
+import com.mqttsnet.thinglinks.device.vo.result.DeviceVersionDistributionVO;
 import com.mqttsnet.thinglinks.device.vo.save.DeviceSaveVO;
 import com.mqttsnet.thinglinks.device.vo.update.DeviceUpdateVO;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoAddSubDeviceParam;
@@ -352,23 +353,29 @@ public interface DeviceService extends SuperService<Long, Device> {
     // ────────────── 产品版本发布场景的设备改绑(@DS 切租户库走 service 层,不允许跨域调 Manager)──────────────
 
     /**
-     * 全量改绑:把产品下所有设备 SET 到 toVersion(FULL 发布,不论原绑何版本统一覆盖)。
-     * SET 到同一目标值幂等,retry 兜底 job 反复跑也安全。
+     * 灰度按网关粒度改绑:命中的顶层设备(网关 / 直连)及其子设备整体改绑到 toVersion,保证
+     * 子设备版本 = 网关版本 不变式。命中网关时连同 gateway_id 指向它的子设备一并改绑。
+     * 缓存失效按 productIdentification 触发(覆盖被连带改绑、未在 rootIdentifications 中的子设备)。
      *
-     * @param productIdentification 产品标识
-     * @param toVersion             目标版本号
-     * @return 实际改绑设备行数
+     * @param rootIdentifications    灰度命中的顶层设备识别码集合
+     * @param productIdentification  产品标识(缓存失效用)
+     * @param toVersion              目标版本号
+     * @return 实际改绑设备行数(含子设备)
      */
-    int bulkRebindByProduct(String productIdentification, String toVersion);
+    int bulkRebindByIdentificationsIncludingSubDevices(List<String> rootIdentifications,
+                                                       String productIdentification, String toVersion);
 
     /**
-     * 白名单改绑:按设备识别码集合 IN 改绑到 toVersion(CANARY 发布命中集合)。
+     * 流式分批改绑的单批写入:按主键 id 集合改绑 + 仅失效本批 deviceIdentification 的缓存。
+     * 配合 {@link DeviceQueryService#listRebindCursorPageByProduct} 游标遍历,实现大设备量产品的恒定内存、
+     * 小事务、有界 IN 改绑;缓存按本批标识精确失效,不触发"按产品列全量再逐个失效"的放大。
      *
-     * @param deviceIdentifications 设备识别码集合(空集合返 0,不做 IO)
-     * @param toVersion             目标版本号
-     * @return 实际改绑设备行数
+     * @param ids             本批设备主键 id 集合
+     * @param identifications 与 ids 对应的 deviceIdentification 集合(缓存失效用)
+     * @param toVersion       目标版本号
+     * @return 本批改绑行数
      */
-    int bulkRebindByDeviceIdentifications(List<String> deviceIdentifications, String toVersion);
+    int bulkRebindByIds(List<Long> ids, List<String> identifications, String toVersion);
 
     /**
      * 版本切换改绑:把原绑 fromVersion 的设备迁到 toVersion(回滚用,只动当前生效版本、不影响灰度 / 历史版本)。
@@ -380,4 +387,26 @@ public interface DeviceService extends SuperService<Long, Device> {
      * @return 实际改绑设备行数
      */
     int bulkRebindByProductAndVersion(String productIdentification, String fromVersion, String toVersion);
+
+    /**
+     * 切换设备绑定版本(影子发布的"外部切流"入口):把指定产品下给定设备的 bound_product_version_no 改到 targetVersionNo,
+     * 命中网关会连带其子设备一并切换(保持子设备版本=网关版本)。校验目标版本存在且处于 已发布/灰度/影子 状态(TD 超表已就绪),
+     * 否则抛 {@link com.mqttsnet.basic.exception.BizException}。改绑后由 DeviceRebindEvent 在提交后失效设备缓存,下次上报即按
+     * 新版本路由到对应超表。幂等:已在目标版本的设备重复切换为同值写入,无副作用。
+     *
+     * @param productIdentification 产品标识(收口改绑范围 + 校验目标版本归属)
+     * @param deviceIdentifications 待切换设备识别码集合(命中网关连带其子设备)
+     * @param targetVersionNo       目标版本号
+     * @return 实际改绑设备行数(含连带子设备;无匹配设备返 0)
+     */
+    int switchBoundProductVersion(String productIdentification, List<String> deviceIdentifications, String targetVersionNo);
+
+    /**
+     * 统计产品下设备按"绑定版本"的实时分布 ── 供发布管理 / 版本列表展示各版本当前铺开了多少台、占比多少
+     * (回答"灰度/影子执行到啥程度")。total = 该产品设备总数(含未绑定);versionCounts = 版本号 → 设备数。
+     *
+     * @param productIdentification 产品标识
+     * @return 版本分布(总数 + 版本号→设备数);产品标识为空返回空分布
+     */
+    DeviceVersionDistributionVO countDeviceVersionDistribution(String productIdentification);
 }

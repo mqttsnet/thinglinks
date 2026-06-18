@@ -255,35 +255,60 @@ public class DeviceManagerImpl extends SuperManagerImpl<DeviceMapper, Device> im
 
     /**
      * {@inheritDoc}
-     * <p>对应 SQL:UPDATE device SET bound_product_version_no = ? WHERE device_identification IN (...)</p>
+     * <p>对应 SQL:SELECT id, device_identification, gateway_id FROM device
+     * WHERE product_identification = ? AND id &gt; ? ORDER BY id ASC LIMIT ?。
+     * 游标(id&gt;afterId)分页而非 OFFSET 分页,深翻页无性能塌陷,恒定内存遍历全产品。</p>
      */
     @Override
-    public int bulkRebindByDeviceIdentifications(List<String> deviceIdentifications, String toVersion) {
-        if (CollUtil.isEmpty(deviceIdentifications) || StrUtil.isBlank(toVersion)) {
-            return 0;
+    public List<Device> listRebindCursorPageByProduct(String productIdentification, Long afterId, int pageSize) {
+        if (StrUtil.isBlank(productIdentification) || pageSize <= 0) {
+            return java.util.Collections.emptyList();
         }
-        Device update = new Device();
-        update.setBoundProductVersionNo(toVersion);
-
         LambdaQueryWrapper<Device> wrap = Wrappers.<Device>lambdaQuery()
-                .in(Device::getDeviceIdentification, deviceIdentifications);
-        return deviceMapper.update(update, wrap);
+                .select(Device::getId, Device::getDeviceIdentification, Device::getGatewayId)
+                .eq(Device::getProductIdentification, productIdentification)
+                .gt(afterId != null && afterId > 0, Device::getId, afterId)
+                .orderByAsc(Device::getId)
+                .last("LIMIT " + pageSize);
+        return deviceMapper.selectList(wrap);
     }
 
     /**
      * {@inheritDoc}
-     * <p>对应 SQL:UPDATE device SET bound_product_version_no = ? WHERE product_identification = ?</p>
+     * <p>对应 SQL:UPDATE device SET bound_product_version_no = ? WHERE id IN (...)。集合规模受单页约束,IN 有界。</p>
      */
     @Override
-    public int bulkRebindByProduct(String productIdentification, String toVersion) {
-        if (StrUtil.isBlank(productIdentification) || StrUtil.isBlank(toVersion)) {
+    public int bulkRebindByIds(List<Long> ids, String toVersion) {
+        if (CollUtil.isEmpty(ids) || StrUtil.isBlank(toVersion)) {
+            return 0;
+        }
+        Device update = new Device();
+        update.setBoundProductVersionNo(toVersion);
+        return deviceMapper.update(update, Wrappers.<Device>lambdaQuery().in(Device::getId, ids));
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>对应 SQL:UPDATE device SET bound_product_version_no = ?
+     * WHERE product_identification = ? AND (device_identification IN (...) OR gateway_id IN (...))。
+     * gateway_id IN(集合) 把命中网关下的子设备一并改绑,保证子设备版本跟随网关。</p>
+     */
+    @Override
+    public int bulkRebindByIdentificationsIncludingSubDevices(List<String> rootIdentifications,
+                                                              String productIdentification, String toVersion) {
+        if (CollUtil.isEmpty(rootIdentifications) || StrUtil.isBlank(productIdentification) || StrUtil.isBlank(toVersion)) {
             return 0;
         }
         Device update = new Device();
         update.setBoundProductVersionNo(toVersion);
 
+        // 产品收口 + 嵌套 and 包住 OR:得到 product=? AND (id IN ... OR gateway_id IN ...)。
+        // 不嵌套会因 SQL 中 AND 优先级高于 OR 退化成 (product=? AND id IN ...) OR gateway_id IN ...,
+        // OR 分支冲破产品过滤 → 误改他产品挂在命中网关下的子设备。
         LambdaQueryWrapper<Device> wrap = Wrappers.<Device>lambdaQuery()
-                .eq(Device::getProductIdentification, productIdentification);
+                .eq(Device::getProductIdentification, productIdentification)
+                .and(w -> w.in(Device::getDeviceIdentification, rootIdentifications)
+                        .or().in(Device::getGatewayId, rootIdentifications));
         return deviceMapper.update(update, wrap);
     }
 

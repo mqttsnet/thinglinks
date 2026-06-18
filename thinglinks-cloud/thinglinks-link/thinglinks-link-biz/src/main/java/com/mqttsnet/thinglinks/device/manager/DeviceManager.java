@@ -125,22 +125,41 @@ public interface DeviceManager extends SuperManager<Device> {
     int bulkRebindByProductAndVersion(String productIdentification, String fromVersion, String toVersion);
 
     /**
-     * 按设备标识列表改绑版本号(灰度白名单命中 / 用户手动改绑用)。
-     *
-     * @param deviceIdentifications 设备标识列表
-     * @param toVersion 目标版本号
-     * @return 影响行数
-     */
-    int bulkRebindByDeviceIdentifications(List<String> deviceIdentifications, String toVersion);
-
-    /**
-     * 把指定产品下所有设备改绑到 toVersion(全量发布用)。
+     * 游标分页拉某产品的设备(仅投影 id / device_identification / gateway_id),供流式分批改绑用 ──
+     * 按主键 id 升序、{@code id > afterId} 取下一页,恒定内存遍历全产品,避免一次性载入百万行。
      *
      * @param productIdentification 产品标识
+     * @param afterId               游标(上一页末行 id;首页传 null 或 0)
+     * @param pageSize              单页行数
+     * @return 本页设备(投影字段),空表示已到末页
+     */
+    List<Device> listRebindCursorPageByProduct(String productIdentification, Long afterId, int pageSize);
+
+    /**
+     * 按主键 id 集合批量改绑版本号(流式分批的单批写入,集合大小受单页约束,IN 列表有界、事务小)。
+     *
+     * @param ids       设备主键 id 集合
      * @param toVersion 目标版本号
      * @return 影响行数
      */
-    int bulkRebindByProduct(String productIdentification, String toVersion);
+    int bulkRebindByIds(List<Long> ids, String toVersion);
+
+    /**
+     * 按"标识集合 + 其子设备"整体改绑到 toVersion(灰度白名单命中网关时连同子设备一起改,保持
+     * 子设备版本 = 网关版本 不变式)。集合由用户白名单显式给定、规模有界。对应 SQL:
+     * UPDATE device SET bound_product_version_no=? WHERE product_identification=?
+     * AND (device_identification IN(集合) OR gateway_id IN(集合))。
+     *
+     * <p>必须按 productIdentification 收口:gateway_id IN(集合) 会连带网关下的子设备,而网关下可能挂着
+     * <b>其他产品</b>的子设备,不收口会把它们错绑到本产品版本(与流式路径口径一致)。</p>
+     *
+     * @param rootIdentifications 命中的标识集合
+     * @param productIdentification 产品标识(收口范围,防止误改他产品子设备)
+     * @param toVersion 目标版本号
+     * @return 影响行数(含被连带改绑的子设备)
+     */
+    int bulkRebindByIdentificationsIncludingSubDevices(List<String> rootIdentifications,
+                                                       String productIdentification, String toVersion);
 
     /**
      * 兜底回填:单设备 bound_product_version_no IS NULL 时把它写为 version(数据上报兜底用)。
