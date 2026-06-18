@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.request.PageParams;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
@@ -255,6 +256,7 @@ public class OtaUpgradesServiceImpl extends SuperServiceImpl<OtaUpgradesManager,
                 .with(OtaUpgrades::setPackageType, updateVO.getPackageType())
                 .with(OtaUpgrades::setProductIdentification, updateVO.getProductIdentification())
                 .with(OtaUpgrades::setVersion, updateVO.getVersion())
+                .with(OtaUpgrades::setProductVersionNo, updateVO.getProductVersionNo())
                 .with(OtaUpgrades::setFileLocation, updateVO.getFileLocation())
                 .with(OtaUpgrades::setSignMethod, updateVO.getSignMethod())
                 .with(OtaUpgrades::setStatus, updateVO.getStatus())
@@ -279,6 +281,26 @@ public class OtaUpgradesServiceImpl extends SuperServiceImpl<OtaUpgradesManager,
         return Optional.ofNullable(upgrades)
                 .map(upgradeList -> BeanPlusUtil.toBeanList(upgradeList, OtaUpgradesResultVO.class))
                 .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public String resolveProductVersionNo(String productIdentification, String version, Integer packageType) {
+        if (StrUtil.isBlank(productIdentification) || StrUtil.isBlank(version)) {
+            return null;
+        }
+        // 同一(产品 + 版本)理论上唯一(saveUpgradePackage 已按 packageType + version 去重),取最新一条兜底多匹配
+        return superManager.list(Wraps.<OtaUpgrades>lbQ()
+                        .eq(OtaUpgrades::getProductIdentification, productIdentification)
+                        .eq(OtaUpgrades::getVersion, version)
+                        .eq(packageType != null, OtaUpgrades::getPackageType, packageType)
+                        .isNotNull(OtaUpgrades::getProductVersionNo)
+                        .ne(OtaUpgrades::getProductVersionNo, StrUtil.EMPTY)
+                        .orderByDesc(OtaUpgrades::getId))
+                .stream()
+                .map(OtaUpgrades::getProductVersionNo)
+                .filter(StrUtil::isNotBlank)
+                .findFirst()
+                .orElse(null);
     }
 
 }

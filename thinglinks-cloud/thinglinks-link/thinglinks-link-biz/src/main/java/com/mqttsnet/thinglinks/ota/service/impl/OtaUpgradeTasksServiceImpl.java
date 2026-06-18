@@ -57,6 +57,8 @@ import com.mqttsnet.thinglinks.ota.vo.query.OtaUpgradeTasksPageQuery;
 import com.mqttsnet.thinglinks.ota.vo.query.OtaUpgradesPageQuery;
 import com.mqttsnet.thinglinks.ota.vo.result.OtaUpgradeRecordsResultVO;
 import com.mqttsnet.thinglinks.ota.vo.result.OtaUpgradeTasksResultVO;
+import com.mqttsnet.thinglinks.ota.enumeration.OtaUpgradeRecordStatusEnum;
+import com.mqttsnet.thinglinks.ota.service.support.OtaModelVersionSwitcher;
 import com.mqttsnet.thinglinks.ota.vo.result.OtaUpgradesResultVO;
 import com.mqttsnet.thinglinks.ota.vo.save.OtaUpgradeTargetsSaveVO;
 import com.mqttsnet.thinglinks.ota.vo.save.OtaUpgradeTasksSaveVO;
@@ -98,6 +100,8 @@ public class OtaUpgradeTasksServiceImpl extends SuperServiceImpl<OtaUpgradeTasks
     private final OtaUpgradeTargetsService otaUpgradeTargetsService;
 
     private final OtaUpgradeFileUtils otaUpgradeFileUtils;
+
+    private final OtaModelVersionSwitcher otaModelVersionSwitcher;
 
 
     /**
@@ -331,6 +335,13 @@ public class OtaUpgradeTasksServiceImpl extends SuperServiceImpl<OtaUpgradeTasks
         }
         deviceService.updateById(deviceUpdateVO);
 
+        // hook B:设备上报固件 / 软件版本 → 反查对应升级包的目标产品版本(影子版本)并自动切换绑定版本
+        otaModelVersionSwitcher.syncByReportedVersion(
+                deviceDetailsResultVO.getProductIdentification(),
+                deviceDetailsResultVO.getDeviceIdentification(),
+                topoOtaReportParam.getCurrentVersion(),
+                topoOtaReportParam.getPackageType());
+
         // Build OTA report response parameters
         return new TopoOtaReportResponseParam()
                 .setDeviceIdentification(deviceDetailsResultVO.getDeviceIdentification())
@@ -364,6 +375,13 @@ public class OtaUpgradeTasksServiceImpl extends SuperServiceImpl<OtaUpgradeTasks
             deviceUpdateVO.setSwVersion(topoOtaReadResponseParam.getCurrentVersion());
         }
         deviceService.updateById(deviceUpdateVO);
+
+        // hook B:设备上报固件 / 软件版本 → 反查对应升级包的目标产品版本(影子版本)并自动切换绑定版本
+        otaModelVersionSwitcher.syncByReportedVersion(
+                deviceDetailsResultVO.getProductIdentification(),
+                deviceDetailsResultVO.getDeviceIdentification(),
+                topoOtaReadResponseParam.getCurrentVersion(),
+                topoOtaReadResponseParam.getPackageType());
     }
 
 
@@ -462,6 +480,16 @@ public class OtaUpgradeTasksServiceImpl extends SuperServiceImpl<OtaUpgradeTasks
         // Update device information if necessary
         updateDeviceInfo(deviceDetailsResultVO, otaTask, topoOtaCommandResponseParam);
 
+        // hook A:该设备本次升级成功 → 用升级包配置的目标产品版本(影子版本)切换其绑定的产品版本序号
+        if (OtaUpgradeRecordStatusEnum.SUCCESS.getValue().equals(topoOtaCommandResponseParam.getUpgradeStatus())) {
+            OtaUpgradesResultVO upgradePackage = otaTask.getOtaUpgradesResult();
+            if (upgradePackage != null) {
+                otaModelVersionSwitcher.switchOnUpgradeSuccess(
+                        deviceDetailsResultVO.getProductIdentification(),
+                        deviceDetailsResultVO.getDeviceIdentification(),
+                        upgradePackage.getProductVersionNo());
+            }
+        }
 
         LocalDateTime startTime = Optional.ofNullable(topoOtaCommandResponseParam.getStartTime())
                 .map(time -> Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime())

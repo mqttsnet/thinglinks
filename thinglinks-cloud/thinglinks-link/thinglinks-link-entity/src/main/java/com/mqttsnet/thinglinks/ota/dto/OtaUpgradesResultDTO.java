@@ -68,6 +68,10 @@ public class OtaUpgradesResultDTO extends Entity<Long> implements Serializable, 
      */
     private String version;
     /**
+     * 目标产品版本号(影子版本)
+     */
+    private String productVersionNo;
+    /**
      * 升级包的位置
      */
     private String fileLocation;

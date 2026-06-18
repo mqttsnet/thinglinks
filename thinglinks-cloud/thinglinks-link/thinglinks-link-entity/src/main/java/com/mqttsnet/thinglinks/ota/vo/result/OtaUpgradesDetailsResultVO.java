@@ -67,6 +67,11 @@ public class OtaUpgradesDetailsResultVO extends AuditableResultVO {
     @Schema(description = "升级包版本号")
     private String version;
     /**
+     * 目标产品版本号(影子版本)
+     */
+    @Schema(description = "目标产品版本号(影子版本)")
+    private String productVersionNo;
+    /**
      * 升级包的位置
      */
     @Schema(description = "升级包的位置")
