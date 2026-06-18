@@ -4,6 +4,7 @@ export interface OtaUpgradesPageQuery {
   packageType?: number; // 升级包类型(0:软件包、1:固件包)
   productIdentification?: string; // 产品标识
   version?: string; // 升级包版本号
+  productVersionNo?: string; // 目标产品版本号(影子版本):升级成功/上报对应版本后自动切换设备绑定的产品版本
   fileLocation?: string; // 升级包的位置
   status?: number; // 状态
   description?: string; // 升级包功能描述
@@ -18,6 +19,7 @@ export interface OtaUpgradesSaveVO {
   packageType?: number; // 升级包类型(0:软件包、1:固件包)
   productIdentification?: string; // 产品标识
   version?: string; // 升级包版本号
+  productVersionNo?: string; // 目标产品版本号(影子版本):升级成功/上报对应版本后自动切换设备绑定的产品版本
   fileLocation?: string; // 升级包的位置
   status?: number; // 状态
   description?: string; // 升级包功能描述
@@ -33,6 +35,7 @@ export interface OtaUpgradesUpdateVO {
   packageType?: number; // 升级包类型(0:软件包、1:固件包)
   productIdentification?: string; // 产品标识
   version?: string; // 升级包版本号
+  productVersionNo?: string; // 目标产品版本号(影子版本):升级成功/上报对应版本后自动切换设备绑定的产品版本
   fileLocation?: string; // 升级包的位置
   status?: number; // 状态
   description?: string; // 升级包功能描述
@@ -53,6 +56,7 @@ export interface OtaUpgradesResultVO {
   packageType?: number; // 升级包类型(0:软件包、1:固件包)
   productIdentification?: string; // 产品标识
   version?: string; // 升级包版本号
+  productVersionNo?: string; // 目标产品版本号(影子版本):升级成功/上报对应版本后自动切换设备绑定的产品版本
   fileLocation?: string; // 升级包的位置
   status?: number; // 状态
   description?: string; // 升级包功能描述
