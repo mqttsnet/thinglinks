@@ -222,3 +222,33 @@ html[data-theme='light'] {
     }
   }
 }
+
+// 页签溢出下拉(标签放不下时的「更多」下拉):antd 弹层挂在 body 上,
+// 组件作用域样式覆盖不到。MenuItem 会把标签和关闭按钮一起包进 -title-content,
+// 而我们的标签是 display:flex 的块级元素,会占满整行把关闭按钮挤到下一行。
+// 这里全局把 title-content 校正成一行:标签占满剩余并按宽度省略,关闭按钮固定在右侧。
+.ant-tabs-dropdown-menu-title-content {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  > span:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+
+    .thinglinks-multiple-tabs-content__info {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .tab-title {
+      max-width: none;
+    }
+  }
+
+  .ant-tabs-dropdown-menu-item-remove {
+    flex: 0 0 auto;
+    margin-left: 8px;
+  }
+}
