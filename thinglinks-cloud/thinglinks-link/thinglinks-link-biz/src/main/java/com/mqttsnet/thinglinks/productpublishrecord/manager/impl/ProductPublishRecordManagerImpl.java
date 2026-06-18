@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.productpublishrecord.manager.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.mqttsnet.basic.base.manager.impl.SuperManagerImpl;
 import com.mqttsnet.basic.base.request.PageParams;
 import com.mqttsnet.basic.database.mybatis.conditions.Wraps;
@@ -68,6 +69,16 @@ public class ProductPublishRecordManagerImpl extends SuperManagerImpl<ProductPub
                 .orderByAsc(ProductPublishRecord::getCreatedTime)
                 .last("LIMIT " + safeLimit);
         return productPublishRecordMapper.selectList(wrap);
+    }
+
+    @Override
+    public void incrementRetryCount(Long recordId) {
+        if (recordId == null) {
+            return;
+        }
+        productPublishRecordMapper.update(null, Wrappers.<ProductPublishRecord>lambdaUpdate()
+                .setSql("retry_count = retry_count + 1")
+                .eq(ProductPublishRecord::getId, recordId));
     }
 
     @Override

@@ -4,6 +4,8 @@ import java.io.Serial;
 import java.io.Serializable;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -51,4 +53,12 @@ public class ProductVersionPublishVO implements Serializable {
      */
     @Schema(description = "发布说明")
     private String publishRemark;
+
+    /**
+     * 最大兜底重试次数(可选,默认 3,范围 1~10)── 异步执行失败时 Job 兜底重试到此上限即放弃。
+     */
+    @Min(1)
+    @Max(10)
+    @Schema(description = "最大兜底重试次数(默认 3,范围 1~10)")
+    private Integer maxRetryCount;
 }

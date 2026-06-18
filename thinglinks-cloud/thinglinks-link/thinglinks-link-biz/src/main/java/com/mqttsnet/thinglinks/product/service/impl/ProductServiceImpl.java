@@ -638,10 +638,17 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
         String previousActive = product.getActiveVersionNo();
         product.setActiveVersionNo(newActiveVersion);
         if (recordCurrentAsPrevious) {
-            // 灰度发布:把切换前的版本号记入备忘指针,供后续回滚 / 灰度路由
+            // 灰度发布:把切换前的版本号记入备忘指针,供后续回滚 / 灰度路由 / 新设备绑稳定版
             product.setPreviousFullVersionNo(previousActive);
         }
         superManager.updateById(product);
+        if (!recordCurrentAsPrevious) {
+            // 全量发布:产品脱离灰度态,显式清空 previousFullVersionNo。updateById 在 NOT_NULL 策略下写不掉 null,
+            // 必须 set(null) 强制 SET NULL —— 否则灰度晋升为全量后产品长期残留 previous:新设备会一直绑老稳定版
+            // (见 DeviceServiceImpl#resolveBindVersionForNewDevice),"灰度中"统计也会误判
+            superManager.clearPreviousFullVersion(productIdentification);
+            product.setPreviousFullVersionNo(null);
+        }
         // 发缓存失效事件:activeVersionNo 已变,监听器 AFTER_COMMIT 失效产品基础缓存
         productEventPublisher.publishProductCacheEvictEvent(
                 ProductCacheEvictSource.builder().productIdentification(productIdentification)
@@ -657,9 +664,11 @@ public class ProductServiceImpl extends SuperServiceImpl<ProductManager, Long, P
         Product product = Optional.ofNullable(superManager.findOneByProductIdentification(productIdentification))
                 .orElseThrow(() -> BizException.wrap("Product not found: " + productIdentification));
         product.setActiveVersionNo(targetVersion);
-        // 回滚后产品不再处于灰度切换中,清空 previousFullVersionNo 避免 statistics 误统计为"灰度中"
-        product.setPreviousFullVersionNo(null);
         superManager.updateById(product);
+        // 回滚后产品脱离灰度态,显式清空 previousFullVersionNo。updateById 在 NOT_NULL 策略下写不掉 null,
+        // 必须 set(null) 强制 SET NULL —— 否则残留 previous 会让新设备绑老稳定版 +"灰度中"统计误判
+        superManager.clearPreviousFullVersion(productIdentification);
+        product.setPreviousFullVersionNo(null);
         // 发缓存失效事件:activeVersionNo 已变,监听器 AFTER_COMMIT 失效产品基础缓存
         productEventPublisher.publishProductCacheEvictEvent(
                 ProductCacheEvictSource.builder().productIdentification(productIdentification)

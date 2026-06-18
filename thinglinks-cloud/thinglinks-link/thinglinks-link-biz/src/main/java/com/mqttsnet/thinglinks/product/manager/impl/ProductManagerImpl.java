@@ -6,6 +6,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.mqttsnet.basic.base.manager.impl.SuperManagerImpl;
 import com.mqttsnet.basic.base.request.PageParams;
 import com.mqttsnet.basic.database.mybatis.conditions.Wraps;
@@ -112,6 +114,18 @@ public class ProductManagerImpl extends SuperManagerImpl<ProductMapper, Product>
         LbQueryWrap<Product> wrap = Wraps.lbQ();
         wrap.isNotNull(Product::getPreviousFullVersionNo).ne(Product::getPreviousFullVersionNo, "");
         return productMapper.selectCount(wrap);
+    }
+
+    @Override
+    public int clearPreviousFullVersion(String productIdentification) {
+        if (StrUtil.isBlank(productIdentification)) {
+            return 0;
+        }
+        // 用 set(col, null) 显式 SET NULL,绕过全局 update-strategy=NOT_NULL(updateById 会跳过 null)
+        LambdaUpdateWrapper<Product> wrap = Wrappers.<Product>lambdaUpdate()
+                .eq(Product::getProductIdentification, productIdentification)
+                .set(Product::getPreviousFullVersionNo, null);
+        return productMapper.update(null, wrap);
     }
 
 }

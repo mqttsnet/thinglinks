@@ -97,9 +97,11 @@ public class DeviceDataProcessingServiceImpl implements DeviceDataProcessingServ
             String boundProductVersionNo = deviceCacheVO.getBoundProductVersionNo();
             boolean rebuiltFromFallback = false;
             if (StrUtil.isBlank(boundProductVersionNo)) {
+                // 灰度态(previousFullVersionNo 非空)回退到稳定版而非 activeVersionNo(灰度版):未入灰度组的
+                // 存量空版本设备不应把遥测写到灰度超表,与新设备绑稳定版口径一致(见 DeviceServiceImpl#resolveBindVersionForNewDevice)。
                 boundProductVersionNo = linkCacheDataHelper
                     .getProductCacheVO(deviceCacheVO.getProductIdentification())
-                    .map(ProductCacheVO::getActiveVersionNo)
+                    .map(p -> StrUtil.blankToDefault(p.getPreviousFullVersionNo(), p.getActiveVersionNo()))
                     .orElse(null);
                 rebuiltFromFallback = StrUtil.isNotBlank(boundProductVersionNo);
             }
@@ -116,6 +118,9 @@ public class DeviceDataProcessingServiceImpl implements DeviceDataProcessingServ
             // Optional 风格 ── helper 已自带 read-through DB 回源 (product_version 表反序列化),
             // 此处仅处理 DB 也查不到的极端场景。
             // 灰度路由的关键:按"设备绑定的版本号"解析物模型,灰度场景设备绑了旧版,影子也读旧版。
+            // 影子发布(SHADOW)说明:影子是"预建表 + 外部切流"模型 ── 这里只按设备 boundProductVersionNo 路由、
+            // 写其绑定版本的表;设备被外部(手动 / 其他业务系统)改绑到影子版本后,本热路径自然把它的数据写进
+            // 预建好的影子表。发布时不会、也不需要旁路双写影子超表,影子表在设备切过来之前是空表属预期。
             Optional<ProductModelCacheVO> productModelCacheVOOptional =
                 linkCacheDataHelper.resolveProductModelByVersionNo(deviceCacheVO.getProductIdentification(), boundProductVersionNo);
             if (productModelCacheVOOptional.isEmpty()) {

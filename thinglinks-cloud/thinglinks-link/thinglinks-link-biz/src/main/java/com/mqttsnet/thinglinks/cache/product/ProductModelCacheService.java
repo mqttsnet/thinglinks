@@ -137,11 +137,12 @@ public class ProductModelCacheService extends CacheSuperAbstract {
     }
 
     /**
-     * 事件驱动 / 调度任务触发的单产品物模型缓存主动刷新 ── 取产品当前激活版本 activeVersionNo,反查对应版本快照写入缓存。
-     * 只刷新当前激活版本;历史版本(被灰度切走 / 已回滚)由 read-through 按需回源,不主动预热。
+     * 事件驱动 / 调度任务触发的单产品物模型缓存主动刷新 ── 取产品当前激活版本 activeVersionNo 反查快照写入缓存;
+     * 灰度态(previousFullVersionNo 非空)额外预热稳定版,因灰度期稳定设备 + 新设备都绑稳定版,一并暖缓存避免走
+     * read-through。更早的历史版本(已回滚 / 被彻底切走)由 read-through 按需回源,不主动预热。
      *
      * @param productIdentification 产品标识
-     * @return 刷新是否成功(产品不存在 / 当前未激活任何版本 / 异常时返 false)
+     * @return 当前激活版本是否刷新成功(产品不存在 / 当前未激活任何版本 / 异常时返 false;稳定版为尽力而为不影响返回值)
      */
     public boolean refreshProductModelCache(String productIdentification) {
         if (StrUtil.isBlank(productIdentification)) {
@@ -160,21 +161,39 @@ public class ProductModelCacheService extends CacheSuperAbstract {
                     productIdentification);
                 return false;
             }
-            ProductModelCacheVO vo = loadProductModelFromDbByVersionNo(productIdentification, activeVersionNo);
-            if (vo == null) {
-                log.warn("[product-model-refresh] snapshot resolution failed productIdentification={} versionNo={}",
-                    productIdentification, activeVersionNo);
-                return false;
+            boolean ok = warmModelVersion(productIdentification, activeVersionNo, tenantId);
+            // 灰度态额外预热稳定版(previousFullVersionNo):尽力而为,失败不影响当前激活版本的刷新结果
+            String previousFullVersionNo = product.getPreviousFullVersionNo();
+            if (StrUtil.isNotBlank(previousFullVersionNo) && !previousFullVersionNo.equals(activeVersionNo)) {
+                warmModelVersion(productIdentification, previousFullVersionNo, tenantId);
             }
-            CacheKey cacheKey = ProductModelCacheKeyBuilder.build(productIdentification, activeVersionNo);
-            cachePlusOps.del(cacheKey);
-            cachePlusOps.set(cacheKey, vo);
-            log.info("[product-model-refresh] cache refreshed productIdentification={} versionNo={} tenantId={}",
-                productIdentification, activeVersionNo, tenantId);
-            return true;
+            return ok;
         } catch (Exception e) {
             log.error("[product-model-refresh] failed productIdentification={}", productIdentification, e);
             return false;
         }
+    }
+
+    /**
+     * 预热单个版本的物模型缓存:反查版本快照写入缓存。
+     *
+     * @param productIdentification 产品标识
+     * @param versionNo             版本序号
+     * @param tenantId              租户 ID(日志用)
+     * @return 是否成功(快照反查失败返 false)
+     */
+    private boolean warmModelVersion(String productIdentification, String versionNo, Long tenantId) {
+        ProductModelCacheVO vo = loadProductModelFromDbByVersionNo(productIdentification, versionNo);
+        if (vo == null) {
+            log.warn("[product-model-refresh] snapshot resolution failed productIdentification={} versionNo={}",
+                productIdentification, versionNo);
+            return false;
+        }
+        CacheKey cacheKey = ProductModelCacheKeyBuilder.build(productIdentification, versionNo);
+        cachePlusOps.del(cacheKey);
+        cachePlusOps.set(cacheKey, vo);
+        log.info("[product-model-refresh] cache refreshed productIdentification={} versionNo={} tenantId={}",
+            productIdentification, versionNo, tenantId);
+        return true;
     }
 }

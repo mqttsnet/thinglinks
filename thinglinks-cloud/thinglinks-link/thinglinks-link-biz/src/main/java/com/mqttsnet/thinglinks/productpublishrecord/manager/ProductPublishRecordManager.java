@@ -54,4 +54,12 @@ public interface ProductPublishRecordManager extends SuperManager<ProductPublish
      * @return 按 createdTime ASC(老的优先重试)的记录列表
      */
     List<ProductPublishRecord> listByStatusSince(Integer status, LocalDateTime sinceTime, int limit);
+
+    /**
+     * 原子自增指定记录的 retry_count(retry_count = retry_count + 1)。
+     * 用 setSql 而非 updateById 读改写:避免全字段回写覆盖并发(原始 async 可能正在 markSuccess),且天生原子。
+     *
+     * @param recordId 记录 ID
+     */
+    void incrementRetryCount(Long recordId);
 }

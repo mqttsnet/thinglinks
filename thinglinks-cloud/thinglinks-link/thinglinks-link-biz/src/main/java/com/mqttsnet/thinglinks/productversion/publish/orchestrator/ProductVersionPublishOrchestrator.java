@@ -20,6 +20,7 @@ import com.mqttsnet.basic.tds.model.SuperTableDTO;
 import com.mqttsnet.basic.utils.DateUtils;
 import com.mqttsnet.thinglinks.cache.product.ProductModelCacheService;
 import com.mqttsnet.thinglinks.device.service.DeviceService;
+import com.mqttsnet.thinglinks.device.vo.result.DeviceVersionDistributionVO;
 import com.mqttsnet.thinglinks.product.enumeration.ProductTypeEnum;
 import com.mqttsnet.thinglinks.productpublishrecord.entity.ProductPublishRecord;
 import com.mqttsnet.thinglinks.productpublishrecord.enumeration.ProductPublishRecordIntentEnum;
@@ -27,8 +28,10 @@ import com.mqttsnet.thinglinks.productpublishrecord.enumeration.ProductPublishRe
 import com.mqttsnet.thinglinks.productpublishrecord.enumeration.PublishDdlOperationEnum;
 import com.mqttsnet.thinglinks.productpublishrecord.service.ProductPublishRecordService;
 import com.mqttsnet.thinglinks.productpublishrecord.vo.ddl.PublishDdlItemVO;
+import com.mqttsnet.thinglinks.productpublishrecord.vo.result.StrategyResultDTO;
 import com.mqttsnet.thinglinks.productversion.converter.ProductSnapshotConverter;
 import com.mqttsnet.thinglinks.productversion.entity.ProductVersion;
+import com.mqttsnet.thinglinks.productversion.vo.canary.CanaryConfigDTO;
 import com.mqttsnet.thinglinks.productversion.enumeration.ProductPublishStrategyEnum;
 import com.mqttsnet.thinglinks.productversion.event.source.ProductVersionLifecycleEventSource;
 import com.mqttsnet.thinglinks.productversion.publish.strategy.DeviceRebindStrategy;
@@ -51,6 +54,11 @@ import org.springframework.stereotype.Service;
  * <p>幂等性保证(retry 兜底的前提):TD CREATE STABLE if not exists 重复建表无副作用;设备改绑 SET 到同一
  * 目标值幂等;markSuccess / markFailed update 单行无额外副作用。</p>
  *
+ * <p>影子(SHADOW)发布的边界:{@link #runPublish} 对三种策略一视同仁地按快照预建 super table,影子版本也照建;
+ * 但影子<b>不改绑设备、不切激活指针</b>,设备上报仍按各自绑定版本写表。影子表预建后是空表属预期 ── 新版本启用靠
+ * 外部把设备 bound_product_version_no 改到影子版本(用户手动 / 其他业务系统按需切流),不是靠发布时自动写影子表。
+ * 详见 {@link com.mqttsnet.thinglinks.productversion.publish.strategy.ShadowDeviceRebindStrategy}。</p>
+ *
  * @author mqttsnet
  */
 @Slf4j
@@ -62,18 +70,32 @@ public class ProductVersionPublishOrchestrator {
      * = 65496 字节单字段就吃光行上限,这里 cap 到 5000(= NCHAR 20000 字节)给同表其他字段留 ~45KB 空间。
      */
     private static final int TD_VAR_MAX_CHARS = 5000;
-    /** 变长字段缺失 maxlength 时的默认字符数。 */
+    /**
+     * 变长字段缺失 maxlength 时的默认字符数。
+     */
     private static final int TD_VAR_DEFAULT_CHARS = 255;
-    /** retry 兜底扫描时间窗:超过此时长仍 RUNNING 视为永久失败,标 FAILED 不再重试。 */
+    /**
+     * retry 兜底超时阈值:创建超过此时长仍 RUNNING 视为永久卡死,标 FAILED 不再重试。
+     */
     private static final int RETRY_TIMEOUT_HOURS = 1;
-    /** retry 兜底单次扫描每个状态的记录上限 ── 实际单次最多拉 RETRY_BATCH_LIMIT×2(RUNNING + FAILED 各 100 条)。 */
+    /**
+     * RUNNING 记录的扫描回溯窗口 ── 必须 {@code > RETRY_TIMEOUT_HOURS},否则"超时 markFailed"分支不可达
+     * (查询按 created_time 截断,会把超时记录排除在候选外 → 卡死记录被静默遗弃)。设 24h 让执行器停机数小时
+     * 后恢复仍能清扫期间堆积的卡死记录。FAILED 不用此宽窗口(见 {@link #retryRunningRecordsForTenant})。
+     */
+    private static final int RETRY_SCAN_WINDOW_HOURS = 24;
+    /**
+     * retry 兜底单次扫描每个状态的记录上限 ── 实际单次最多拉 RETRY_BATCH_LIMIT×2(RUNNING + FAILED 各 100 条)。
+     */
     private static final int RETRY_BATCH_LIMIT = 100;
     /**
-     * 单条 DDL item 的最大执行次数(首次 + 兜底重试)── 超过视为永久失败 Job 不再尝试。常见暂态错误(网络抖动 /
-     * TD 短暂不可用)1-3 次内会自愈,设 10 给足重试空间。
+     * 记录级最大重试次数缺省值 ── 仅用于 record.maxRetryCount 为空(老数据 / 回滚清理未配)时的兜底;
+     * 正常发布记录的上限取用户配置值(1~10,见 ProductVersionServiceImpl#resolvePublishMaxRetry)。
      */
-    private static final int MAX_ATTEMPT_PER_ITEM = 10;
-    /** 时间戳格式化器 ── DDL item.executedAt 字段的统一格式。 */
+    private static final int DEFAULT_MAX_RETRY = 3;
+    /**
+     * 时间戳格式化器 ── DDL item.executedAt 字段的统一格式。
+     */
     private static final java.time.format.DateTimeFormatter EXECUTED_AT_FORMATTER = DateTimeFormatter.ofPattern(DateUtils.CHINESE_DATETIME_FORMAT_LINE);
 
     private final TdsFacade tdsFacade;
@@ -82,7 +104,9 @@ public class ProductVersionPublishOrchestrator {
     private final ProductSnapshotConverter productSnapshotConverter;
     private final ProductModelCacheService productModelCacheService;
     private final DeviceService deviceService;
-    /** 按 publishStrategy 路由的策略 map ── 构造时把 Spring 注入的 List 收敛为 EnumMap(O(1) 查找)。 */
+    /**
+     * 按 publishStrategy 路由的策略 map ── 构造时把 Spring 注入的 List 收敛为 EnumMap(O(1) 查找)。
+     */
     private final Map<ProductPublishStrategyEnum, DeviceRebindStrategy> strategyRouter;
 
     public ProductVersionPublishOrchestrator(TdsFacade tdsFacade,
@@ -138,6 +162,8 @@ public class ProductVersionPublishOrchestrator {
         List<PublishDdlItemVO> ddlItems = new ArrayList<>();
         List<String> failed = new ArrayList<>();
 
+        // 逐 service 预建 super table。SHADOW 策略下这里同样建出影子版本的超表,但影子不改绑设备、上报热路径
+        // 也只写设备绑定版本的表 ── 影子超表预建后是空表属预期,待外部把设备绑定版本切到影子版本才会有数据写入。
         Optional.ofNullable(snapshot.getServices()).orElse(Collections.emptyList()).forEach(service -> {
             String stableName = ProductTdsNamer.superTableName(
                 productType, src.getProductIdentification(), src.getTargetVersion(), service.getServiceCode());
@@ -174,7 +200,7 @@ public class ProductVersionPublishOrchestrator {
         productPublishRecordService.attachDdlItems(src.getPublishRecordId(), ddlItems);
 
         if (!failed.isEmpty()) {
-            // DDL 部分失败 ── 不刷缓存 + 不改设备,等 Job 兜底 retryRecordPartial 重试到全部成功才闭环
+            // DDL 部分失败 ── 不刷缓存 + 不改设备,等 Job 兜底幂等重跑到全部成功才闭环
             // (此前老逻辑在这里也刷缓存,会让 v 新版本 entry 写入,但 TD 还缺 stable → 设备一旦改绑就上报失败)
             productPublishRecordService.markFailed(src.getPublishRecordId(), String.join("; ", failed));
             return false;
@@ -183,10 +209,59 @@ public class ProductVersionPublishOrchestrator {
         // TD DDL 全部成功 → 先刷缓存(确保 v 新版本 entry 就绪)再按 publishStrategy 改绑设备 → markSuccess
         productModelCacheService.refreshProductModelCache(src.getProductIdentification());
         int affected = rebindDevices(src, versionRow.getCanaryConfigJson());
+        // 组装并回写策略执行结果快照(命中数 + 发布时总数 + 灰度来源/分组 + 影子预建表数),markSuccess 前
+        productPublishRecordService.attachStrategyResult(src.getPublishRecordId(),
+            buildStrategyResult(src, versionRow.getCanaryConfigJson(), affected, ddlItems));
         productPublishRecordService.markSuccess(src.getPublishRecordId());
         log.info("[publish-orchestrator] publish ok product={} version={} strategy={} stables={} devicesRebound={}",
             src.getProductIdentification(), src.getTargetVersion(), src.getPublishStrategy(), ddlItems.size(), affected);
         return true;
+    }
+
+    /**
+     * 组装策略执行结果快照 ── 命中改绑数 + 发布那一刻产品设备总数;灰度补来源/分组/比例/目标数,影子补预建超表数。
+     * 发布完成后写入 {@code canary_result_json},供发布记录 / 版本列表展示"那次发布做了什么"(发布那刻冻结,不随后续变)。
+     *
+     * @param src              版本生命周期事件源
+     * @param canaryConfigJson 灰度配置 JSON(灰度策略含来源/分组/名单/比例)
+     * @param affected         本次实际改绑设备数
+     * @param ddlItems         本次 DDL 明细(影子统计预建超表数用)
+     * @return 策略执行结果快照
+     */
+    private StrategyResultDTO buildStrategyResult(ProductVersionLifecycleEventSource src, String canaryConfigJson,
+                                                  int affected, List<PublishDdlItemVO> ddlItems) {
+        StrategyResultDTO result = new StrategyResultDTO();
+        result.setAffectedDeviceCount(affected);
+        Integer total = Optional.ofNullable(deviceService.countDeviceVersionDistribution(src.getProductIdentification()))
+            .map(DeviceVersionDistributionVO::getTotal)
+            .map(Long::intValue)
+            .orElse(null);
+        result.setProductTotalAtPublish(total);
+
+        ProductPublishStrategyEnum strategy = Optional.ofNullable(src.getPublishStrategy())
+            .orElse(ProductPublishStrategyEnum.FULL);
+        result.setStrategy(strategy.getValue());
+        if (strategy == ProductPublishStrategyEnum.CANARY) {
+            CanaryConfigDTO.parse(canaryConfigJson).ifPresent(cfg -> {
+                StrategyResultDTO.CanaryResult cr = new StrategyResultDTO.CanaryResult();
+                cr.setSource(cfg.getSource());
+                cr.setGroups(cfg.getGroups());
+                cr.setDeviceIdentifications(cfg.getDeviceIdentifications());
+                // 灰度只按明确白名单(分组 / 指定设备),目标数 = 白名单设备数
+                if (cfg.getDeviceIdentifications() != null) {
+                    cr.setTargetCount(cfg.getDeviceIdentifications().size());
+                }
+                result.setCanary(cr);
+            });
+        } else if (strategy == ProductPublishStrategyEnum.SHADOW) {
+            StrategyResultDTO.ShadowResult sr = new StrategyResultDTO.ShadowResult();
+            long stables = ddlItems == null ? 0 : ddlItems.stream()
+                .filter(i -> PublishDdlOperationEnum.CREATE_STABLE == i.getOperation() && Boolean.TRUE.equals(i.getSuccess()))
+                .count();
+            sr.setPreBuiltStableCount((int) stables);
+            result.setShadow(sr);
+        }
+        return result;
     }
 
     /**
@@ -272,21 +347,25 @@ public class ProductVersionPublishOrchestrator {
     }
 
     /**
-     * retry 兜底:事件监听器 async 执行时遇服务异常 / JVM 重启导致中断、publish_record 卡 RUNNING,job 周期扫描
-     * 重试保证最终一致。只拉 {@value #RETRY_TIMEOUT_HOURS} 小时内创建的记录(避免无限重试老记录),超 timeout 的
-     * RUNNING 直接 markFailed,每次限 {@value #RETRY_BATCH_LIMIT} 条,按 intent 分发到幂等的 runPublish/runRollback/runPurge。
+     * retry 兜底:async 执行遇服务异常 / JVM 重启导致 publish_record 卡 RUNNING / FAILED,job 周期扫描按 intent
+     * 幂等整体重跑 {@link #runPublish}/{@link #runRollback}/{@link #runPurge} 保证最终一致(三者天然幂等,见 {@link #rerun})。
+     * RUNNING 回溯 {@value #RETRY_SCAN_WINDOW_HOURS}h(创建超 {@value #RETRY_TIMEOUT_HOURS}h 仍 RUNNING 判卡死 markFailed),
+     * FAILED 只捞 {@value #RETRY_TIMEOUT_HOURS}h 内新近失败,每状态单次限 {@value #RETRY_BATCH_LIMIT} 条。
      *
      * @param tenantId 租户 ID(日志用,实际查询走 @DS(BASE_TENANT) 切租户库)
-     * @return 实际重试的记录数
+     * @return 实际重跑的记录数
      */
     public int retryRunningRecordsForTenant(Long tenantId) {
-        LocalDateTime windowStart = LocalDateTime.now().minusHours(RETRY_TIMEOUT_HOURS);
-        // 同时扫 RUNNING(中断卡住) + FAILED(已失败但可能服务抖动一次后再次重试)
+        LocalDateTime now = LocalDateTime.now();
+        // 创建早于此刻 = 已超时(RUNNING 判永久卡死)/ 已过新近失败重试期(FAILED 不再捞)
+        LocalDateTime timeoutBefore = now.minusHours(RETRY_TIMEOUT_HOURS);
+        // RUNNING 宽窗口回溯:含已超时待 markFailed 的卡死记录,扛执行器停机后恢复清扫
+        LocalDateTime runningScanFrom = now.minusHours(RETRY_SCAN_WINDOW_HOURS);
         List<ProductPublishRecord> candidates = new ArrayList<>();
-        candidates.addAll(productPublishRecordService.listByStatusSince(
-            ProductPublishRecordStatusEnum.RUNNING.getValue(), windowStart, RETRY_BATCH_LIMIT));
-        candidates.addAll(productPublishRecordService.listByStatusSince(
-            ProductPublishRecordStatusEnum.FAILED.getValue(), windowStart, RETRY_BATCH_LIMIT));
+        candidates.addAll(productPublishRecordService.listByStatusSince(ProductPublishRecordStatusEnum.RUNNING.getValue(), runningScanFrom, RETRY_BATCH_LIMIT));
+        // FAILED 只捞 timeout 窗口内的新近失败重试:超 timeout 窗口的老失败视为放弃,不再无限重扫,避免老记录占满
+        // LIMIT 把新失败饿死(每周期幂等整体重跑,达 record.maxRetryCount 上限或窗口老化即停,见 rerun)
+        candidates.addAll(productPublishRecordService.listByStatusSince(ProductPublishRecordStatusEnum.FAILED.getValue(), timeoutBefore, RETRY_BATCH_LIMIT));
         if (candidates.isEmpty()) {
             log.info("[publish-orchestrator-retry] tenantId={} no retry candidates", tenantId);
             return 0;
@@ -294,17 +373,18 @@ public class ProductVersionPublishOrchestrator {
 
         AtomicInteger retried = new AtomicInteger();
         AtomicInteger timedOut = new AtomicInteger();
-        long now = System.currentTimeMillis();
+        long startMs = System.currentTimeMillis();
         for (ProductPublishRecord record : candidates) {
-            if (record.getCreatedTime() != null && record.getCreatedTime().plusHours(RETRY_TIMEOUT_HOURS).isBefore(LocalDateTime.now())) {
-                if (ProductPublishRecordStatusEnum.RUNNING.getValue().equals(record.getStatus())) {
-                    productPublishRecordService.markFailed(record.getId(), "retry timeout: still RUNNING after " + RETRY_TIMEOUT_HOURS + "h, no further retry");
-                    timedOut.incrementAndGet();
-                }
+            // 创建已超 RETRY_TIMEOUT_HOURS 仍 RUNNING → 判永久卡死,markFailed 不再重试
+            if (record.getCreatedTime() != null && record.getCreatedTime().isBefore(timeoutBefore)
+                && ProductPublishRecordStatusEnum.RUNNING.getValue().equals(record.getStatus())) {
+                productPublishRecordService.markFailed(record.getId(),
+                    "retry timeout: still RUNNING after " + RETRY_TIMEOUT_HOURS + "h, no further retry");
+                timedOut.incrementAndGet();
                 continue;
             }
             try {
-                if (retryRecordPartial(record)) {
+                if (rerun(record)) {
                     retried.incrementAndGet();
                 }
             } catch (Exception ex) {
@@ -313,161 +393,35 @@ public class ProductVersionPublishOrchestrator {
             }
         }
 
-        log.info("[publish-orchestrator-retry] tenantId={} scanned={} retried={} timedOut={} cost={}ms", tenantId, candidates.size(), retried.get(), timedOut.get(), System.currentTimeMillis() - now);
+        log.info("[publish-orchestrator-retry] tenantId={} scanned={} retried={} timedOut={} cost={}ms",
+            tenantId, candidates.size(), retried.get(), timedOut.get(), System.currentTimeMillis() - startMs);
         return retried.get();
     }
 
     /**
-     * 精细化重试:只重试 success=false 的 DDL item,成功的跳过(一次抖动只影响某 1 条 service 建表,无需整个
-     * record 全部 service 重做)。遍历每项:success=true 跳过,attemptCount >= {@value #MAX_ATTEMPT_PER_ITEM}
-     * 视为永久失败跳过,否则按 operation 调对应 TD API 并 attemptCount++ 更新状态;写回 ddlItems。全部 success 后
-     * 仅 PUBLISH 意图按 publishStrategy 改绑设备 + 刷缓存 + markSuccess(从 FAILED 改回 SUCCESS 闭环),仍有失败则
-     * 累计 markFailed。TD CREATE/DROP STABLE if (not) exists + 设备 UPDATE 改绑都幂等,Job 与事件流并发触发也安全。
+     * 幂等整体重跑:按 intent 重新执行 {@link #runPublish}/{@link #runRollback}/{@link #runPurge}。三者天然幂等
+     * (CREATE STABLE IF NOT EXISTS / 设备 SET 改绑 / DROP STABLE IF EXISTS),重复执行已成功的部分是无副作用 no-op,
+     * 无需 per-item 级断点续跑。run*** 内部成功 markSuccess(FAILED→SUCCESS 闭环)、失败 markFailed,record 留待下个周期
+     * 再来。终止:retry_count 达 record.maxRetryCount(用户配,缺省 {@value #DEFAULT_MAX_RETRY})不再实际重跑,扫描窗口老化后不再被捞(双重兜底)。
      *
-     * @param record 待重试的发布记录
-     * @return 是否真正执行了至少一次 DDL 重试(全部 success/permanent_failed 时返 false)
+     * @param record 待重跑的发布记录
+     * @return 是否真正重跑了(达上限直接返 false;否则 run*** 返回值,失败由其内部 markFailed)
      */
-    private boolean retryRecordPartial(ProductPublishRecord record) {
-        List<PublishDdlItemVO> ddlItems = record.getDdlItems();
-        if (CollUtil.isEmpty(ddlItems)) {
-            // 兼容老数据 / record 还没来得及写 ddl_summary 的场景:走完整重跑(等价于首次执行)
-            ProductVersionLifecycleEventSource src = reconstructEventSource(record);
-            if (src == null) {
-                return false;
-            }
-            ProductPublishRecordIntentEnum intent = ProductPublishRecordIntentEnum.fromValue(record.getIntent())
-                .orElse(ProductPublishRecordIntentEnum.PUBLISH);
-            // 接 run*** 返回值仅用于本次"是否真重跑了" ── 失败的会被 run*** 内部 markFailed,
-            // record 状态保持 FAILED,下次 Job 还会再捞起来,最终一致
-            boolean rerun = switch (intent) {
-                case PUBLISH -> runPublish(src);
-                case ROLLBACK -> runRollback(src);
-                case PURGE_HISTORY -> runPurge(src);
-            };
-            return rerun;
+    private boolean rerun(ProductPublishRecord record) {
+        // 记录级重试上限:达 record.maxRetryCount(用户配,缺省 DEFAULT_MAX_RETRY)不再实际重跑(保持 FAILED,窗口老化后不再被捞)
+        int maxRetry = Optional.ofNullable(record.getMaxRetryCount()).orElse(DEFAULT_MAX_RETRY);
+        if (Optional.ofNullable(record.getRetryCount()).orElse(0) >= maxRetry) {
+            return false;
         }
-
-        // 一次性 deserialize snapshot,避免每个 CREATE_STABLE 失败 item 都重复反序列化整段 JSON
-        // (snapshot 可能上百 KB,N 个失败 item × N 次 deserialize = O(N²) 浪费)
-        // lazy-load:只有真有 CREATE_STABLE 重试时才 fetch,纯 DROP_STABLE 场景零开销
-        ProductSnapshotVO sharedSnapshot = null;
-        boolean snapshotLoaded = false;
-
-        boolean anyRetried = false;
-        List<String> stillFailed = new ArrayList<>();
-        for (PublishDdlItemVO item : ddlItems) {
-            if (Boolean.TRUE.equals(item.getSuccess())) {
-                continue; // 成功的跳过
-            }
-            int attempts = Optional.ofNullable(item.getAttemptCount()).orElse(0);
-            if (attempts >= MAX_ATTEMPT_PER_ITEM) {
-                stillFailed.add(item.getStableName() + ": permanent_failed (" + attempts + " attempts)");
-                continue;
-            }
-            // 实际执行重试:CREATE_STABLE 调 createSuperTableAndColumn,DROP_STABLE 调 dropSuperTable
-            long t0 = System.currentTimeMillis();
-            item.setAttemptCount(attempts + 1);
-            item.setExecutedAt(LocalDateTime.now().format(EXECUTED_AT_FORMATTER));
-            anyRetried = true;
-
-            if (PublishDdlOperationEnum.DROP_STABLE == item.getOperation()) {
-                R<?> result = tdsFacade.dropSuperTable(item.getStableName());
-                item.setDurationMs(System.currentTimeMillis() - t0);
-                boolean success = !Boolean.FALSE.equals(result.getIsSuccess());
-                item.setSuccess(success);
-                item.setErrorMsg(success ? null : result.getMsg());
-                if (!success) {
-                    stillFailed.add(item.getStableName() + ": " + result.getMsg());
-                }
-                continue;
-            }
-
-            // CREATE_STABLE 重试:需要从 snapshot 反查 service 拼 DTO
-            if (!snapshotLoaded) {
-                sharedSnapshot = loadSnapshot(record);
-                snapshotLoaded = true;
-            }
-            SuperTableDTO dto = rebuildSuperTableDto(sharedSnapshot, item);
-            if (dto == null) {
-                item.setErrorMsg("cannot rebuild DTO (snapshot or service missing)");
-                item.setDurationMs(System.currentTimeMillis() - t0);
-                stillFailed.add(item.getStableName() + ": " + item.getErrorMsg());
-                continue;
-            }
-            R<?> createResult = tdsFacade.createSuperTableAndColumn(dto);
-            item.setDurationMs(System.currentTimeMillis() - t0);
-            // 跟 runPublish 同模式:create + describe 整体原子,describe 失败也算本条失败
-            String enrichErrorMsg = applyCreateAndDescribe(item, createResult);
-            if (enrichErrorMsg != null) {
-                stillFailed.add(item.getStableName() + ": " + enrichErrorMsg);
-            }
-        }
-
-        // 写回结构化 ddlItems(JacksonTypeHandler 自动序列化到 ddl_summary 列)
-        productPublishRecordService.attachDdlItems(record.getId(), ddlItems);
-
-        if (stillFailed.isEmpty()) {
-            // 全部 success → 触发改绑设备(PUBLISH 才需要,ROLLBACK/PURGE 不动 device)+ 刷缓存 + markSuccess
-            ProductPublishRecordIntentEnum intent = ProductPublishRecordIntentEnum.fromValue(record.getIntent())
-                .orElse(ProductPublishRecordIntentEnum.PUBLISH);
-            if (intent == ProductPublishRecordIntentEnum.PUBLISH) {
-                ProductVersionLifecycleEventSource src = reconstructEventSource(record);
-                if (src != null) {
-                    String canaryConfig = productVersionService
-                        .findByProductIdentificationAndVersionNo(record.getProductIdentification(), record.getTargetVersion())
-                        .map(ProductVersion::getCanaryConfigJson)
-                        .orElse(null);
-                    int affected = rebindDevices(src, canaryConfig);
-                    log.info("[publish-orchestrator-retry] devicesRebound={} for record id={} after partial retry succeeded",
-                        affected, record.getId());
-                }
-            }
-            productModelCacheService.refreshProductModelCache(record.getProductIdentification());
-            productPublishRecordService.markSuccess(record.getId());
-            log.info("[publish-orchestrator-retry] record id={} fully recovered after partial retry", record.getId());
-        } else if (anyRetried) {
-            productPublishRecordService.markFailed(record.getId(),
-                "partial retry still failed: " + String.join("; ", stillFailed));
-            log.warn("[publish-orchestrator-retry] record id={} still failing after retry: {}",
-                record.getId(), String.join("; ", stillFailed));
-        }
-        return anyRetried;
-    }
-
-    /**
-     * 按 record + version 反查并反序列化 snapshot ── 与 rebuildSuperTableDto 分离,便于 retry 一次 load 多次复用。
-     *
-     * @param record 发布记录(提供 productIdentification + targetVersion)
-     * @return 产品快照;查不到或反序列化失败返 null
-     */
-    private ProductSnapshotVO loadSnapshot(ProductPublishRecord record) {
-        return productVersionService
-            .findByProductIdentificationAndVersionNo(record.getProductIdentification(), record.getTargetVersion())
-            .map(v -> productSnapshotConverter.deserialize(v.getProductSnapshotJson()).orElse(null))
-            .orElse(null);
-    }
-
-    /**
-     * 从已 load 好的 snapshot + ddl item 重建 SuperTableDTO ── 用于 retry 时重新执行 CREATE_STABLE。
-     *
-     * @param snapshot 已加载的产品快照
-     * @param item     待重建的 DDL item(提供 serviceCode + stableName)
-     * @return 重建的 SuperTableDTO;快照为空或匹配不到 service 返 null
-     */
-    private SuperTableDTO rebuildSuperTableDto(ProductSnapshotVO snapshot, PublishDdlItemVO item) {
-        if (snapshot == null) {
-            return null;
-        }
-        ProductSnapshotServiceVO service = Optional.ofNullable(snapshot.getServices())
-            .orElse(Collections.emptyList())
-            .stream()
-            .filter(s -> s.getServiceCode() != null && s.getServiceCode().equals(item.getServiceCode()))
-            .findFirst()
-            .orElse(null);
-        if (service == null) {
-            return null;
-        }
-        return buildSuperTableDTO(item.getStableName(), service);
+        productPublishRecordService.incrementRetryCount(record.getId());
+        ProductVersionLifecycleEventSource src = reconstructEventSource(record);
+        ProductPublishRecordIntentEnum intent = ProductPublishRecordIntentEnum.fromValue(record.getIntent())
+            .orElse(ProductPublishRecordIntentEnum.PUBLISH);
+        return switch (intent) {
+            case PUBLISH -> runPublish(src);
+            case ROLLBACK -> runRollback(src);
+            case PURGE_HISTORY -> runPurge(src);
+        };
     }
 
     // ────────────── 内部:策略路由 + reconstruct ──────────────
@@ -475,7 +429,7 @@ public class ProductVersionPublishOrchestrator {
     /**
      * 按 publishStrategy 路由到对应策略实现执行设备改绑;策略不存在时回退到 FULL。
      *
-     * @param src             版本生命周期事件源
+     * @param src              版本生命周期事件源
      * @param canaryConfigJson 灰度配置 JSON(灰度策略用)
      * @return 改绑的设备数量
      */

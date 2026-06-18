@@ -72,8 +72,17 @@ public class ProductPublishRecordResultVO extends AuditableResultVO {
     @Schema(description = "灰度配置 JSON(仅灰度策略非空)")
     private String canaryConfigJson;
 
+    @Schema(description = "策略执行结果快照(发布那一刻冻结;全量/灰度/影子按策略填不同字段)")
+    private StrategyResultDTO canaryResult;
+
     @Schema(description = "失败原因")
     private String failedReason;
+
+    @Schema(description = "重试次数(达上限不再重跑)")
+    private Integer retryCount;
+
+    @Schema(description = "最大重试次数(用户可配,上限10)")
+    private Integer maxRetryCount;
 
     @Schema(description = "开始时间")
     private LocalDateTime startedTime;

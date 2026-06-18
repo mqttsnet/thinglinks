@@ -111,6 +111,13 @@ public class ProductCacheVO extends Entity<Long> implements Serializable, EchoVO
     @Schema(description = "版本序号(系统最新发布时生成的快照标识)")
     private String activeVersionNo;
     /**
+     * 灰度期稳定版本序号(仅灰度态有值,晋升 / 回滚后清空,与 product.previous_full_version_no 同步)。
+     * 上报兜底解析:设备无绑定版本且产品处于灰度态时,回退到此稳定版而非 activeVersionNo(灰度版),
+     * 避免未入灰度组的存量设备把遥测写到灰度超表。
+     */
+    @Schema(description = "灰度期稳定版本序号(仅灰度态有值)")
+    private String previousFullVersionNo;
+    /**
      * 图标
      */
     @Schema(description = "图标")

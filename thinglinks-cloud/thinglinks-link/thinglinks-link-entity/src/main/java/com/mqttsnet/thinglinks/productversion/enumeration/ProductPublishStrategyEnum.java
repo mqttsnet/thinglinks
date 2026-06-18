@@ -29,7 +29,9 @@ public enum ProductPublishStrategyEnum {
      */
     CANARY(1, "灰度"),
     /**
-     * 影子发布,旁路验证不影响生产。
+     * 影子发布:仅预建影子版本的 TD 超表、不改绑设备、不切激活指针(预建表 + 外部切流)。
+     * 影子表预建后空表属预期 ── 新版本启用靠外部把设备 bound_product_version_no 改到该版本,改绑后该设备上报
+     * 自然落到预建表;发布时不旁路双写影子表(详见 {@code ShadowDeviceRebindStrategy})。
      */
     SHADOW(2, "影子"),
     ;

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 /**
  * 产品版本灰度发布配置 ── 对应 product_version.canary_config_json 列(JSON 文本)的 typed 视图,
  * JSON 字段名集中管控在本类,业务代码零字符串硬编码,序列化/反序列化走内置 parse / toJson。
- * JSON 形态:{"mode":"whitelist","deviceIdentifications":[...]} 或 {"mode":"percent","canaryPercent":30}。
+ * JSON 形态:{"mode":"whitelist","deviceIdentifications":[...]}(灰度按明确设备集合,前端分组 / 指定设备两种来源拍平成此形态)。
  *
  * @author mqttsnet
  */
@@ -34,17 +34,17 @@ public class CanaryConfigDTO implements Serializable {
     /** 灰度来源:精确白名单(走 deviceIdentifications)。 */
     public static final String MODE_WHITELIST = "whitelist";
 
-    /** 灰度来源:按设备总量百分比一致性哈希(走 canaryPercent)。 */
-    public static final String MODE_PERCENT = "percent";
-
-    @Schema(description = "灰度模式:whitelist(白名单) / percent(百分比)")
+    @Schema(description = "灰度模式:whitelist(白名单)")
     private String mode;
 
-    @Schema(description = "白名单设备识别码列表(mode=whitelist 时使用)")
+    @Schema(description = "白名单设备识别码列表")
     private List<String> deviceIdentifications;
 
-    @Schema(description = "灰度百分比 1~99(mode=percent 时使用;0 / >=100 视为非法)")
-    private Integer canaryPercent;
+    @Schema(description = "灰度来源:group(分组) / manual(指定设备)── 纯展示用,灰度匹配按 deviceIdentifications 名单")
+    private String source;
+
+    @Schema(description = "所选分组明细(source=group;冻结发布那一刻所选分组的 id/名称/设备数)")
+    private List<CanaryGroup> groups;
 
     /**
      * 反序列化:从 canary_config_json 解析为 typed DTO。null/blank 返 {@link Optional#empty()};

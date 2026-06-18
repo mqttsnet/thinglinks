@@ -180,10 +180,12 @@ public class InboundScriptTransformer {
      */
     private Transformed executeScript(CommonDeviceEvent event, String topic, TransformScriptEntry entry,
                                       String scriptUniqueKey, DeviceCacheVO deviceVO, ProductCacheVO productVO) {
-        // 运行时:按设备绑定版本(回退产品生效版本)解析物模型,注入脚本(与在线调试同款绑定)
+        // 运行时:按设备绑定版本解析物模型;空版本回退稳定版(灰度态=previousFullVersionNo,否则=activeVersionNo),
+        // 与数据上报路径口径一致 —— 未入灰度组的空版本设备不应按灰度版解析报文
         String modelVersionNo = deviceVO == null ? null : deviceVO.getBoundProductVersionNo();
         if (StrUtil.isBlank(modelVersionNo) && productVO != null) {
-            modelVersionNo = productVO.getActiveVersionNo();
+            modelVersionNo = StrUtil.blankToDefault(
+                productVO.getPreviousFullVersionNo(), productVO.getActiveVersionNo());
         }
         ProductModelCacheVO productModel = StrUtil.isBlank(modelVersionNo) ? null
             : linkCacheDataHelper.resolveProductModelByVersionNo(event.getProductIdentification(), modelVersionNo).orElse(null);

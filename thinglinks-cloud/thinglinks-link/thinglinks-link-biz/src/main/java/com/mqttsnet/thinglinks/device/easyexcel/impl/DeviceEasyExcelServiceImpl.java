@@ -228,11 +228,17 @@ public class DeviceEasyExcelServiceImpl implements DeviceEasyExcelService {
         device.setDeviceStatus(Integer.valueOf(data.getDeviceStatus()));
         device.setNodeType(Integer.valueOf(data.getNodeType()));
 
-        // 默认绑定产品当前生效版本快照(activeVersionNo);Excel 显式带值时保留不覆盖
+        // 默认绑定版本:灰度态(previousFullVersionNo 非空)绑稳定版,否则绑当前生效版本 activeVersionNo ——
+        // 避免导入设备自动进未验证的灰度组,与新建设备口径一致(见 DeviceServiceImpl#resolveBindVersionForNewDevice);
+        // Excel 显式带值时保留不覆盖。
         if (StrUtil.isBlank(device.getBoundProductVersionNo()) && existenceProductResultVOMap != null) {
             ProductResultVO product = existenceProductResultVOMap.get(data.getProductIdentification());
-            if (product != null && StrUtil.isNotBlank(product.getActiveVersionNo())) {
-                device.setBoundProductVersionNo(product.getActiveVersionNo());
+            if (product != null) {
+                String bindVersion = StrUtil.blankToDefault(
+                        product.getPreviousFullVersionNo(), product.getActiveVersionNo());
+                if (StrUtil.isNotBlank(bindVersion)) {
+                    device.setBoundProductVersionNo(bindVersion);
+                }
             }
         }
         return device;

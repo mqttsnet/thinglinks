@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.mqttsnet.basic.base.entity.Entity;
 import com.mqttsnet.thinglinks.productpublishrecord.vo.ddl.PublishDdlItemVO;
+import com.mqttsnet.thinglinks.productpublishrecord.vo.result.StrategyResultDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -69,9 +70,21 @@ public class ProductPublishRecord extends Entity<Long> {
     @TableField(value = "ddl_summary", typeHandler = JacksonTypeHandler.class)
     private List<PublishDdlItemVO> ddlItems;
 
+    /** 策略执行结果快照(发布那一刻冻结)── DB 列 canary_result_json(JSON),由 {@link JacksonTypeHandler} 自动序列化为 typed。 */
+    @TableField(value = "canary_result_json", typeHandler = JacksonTypeHandler.class)
+    private StrategyResultDTO canaryResult;
+
     /** 失败原因(成功时为 null)。 */
     @TableField(value = "failed_reason", condition = LIKE)
     private String failedReason;
+
+    /** 重试次数 ── 达 {@link #maxRetryCount} 不再实际重跑,保持 FAILED 待扫描窗口老化。 */
+    @TableField(value = "retry_count", condition = EQUAL)
+    private Integer retryCount;
+
+    /** 最大重试次数(发布时用户可配,默认 3、上限 10);达此值不再重跑。 */
+    @TableField(value = "max_retry_count", condition = EQUAL)
+    private Integer maxRetryCount;
 
     /** 开始时间。 */
     @TableField(value = "started_time", condition = EQUAL)

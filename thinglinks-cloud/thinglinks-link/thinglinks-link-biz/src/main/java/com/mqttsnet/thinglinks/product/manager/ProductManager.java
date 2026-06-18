@@ -95,6 +95,18 @@ public interface ProductManager extends SuperManager<Product> {
      * @return 灰度切换中的产品数
      */
     Long countCanaryInProgressProducts();
+
+    /**
+     * 显式清空指定产品的 previous_full_version_no(置 NULL)。
+     *
+     * <p>必须用 {@code UpdateWrapper.set(col, null)} 而非 {@code updateById}:全局 update-strategy=NOT_NULL
+     * 会让 updateById 跳过 null 字段、清不掉。灰度晋升为全量 / 回滚后调用,标记产品已脱离灰度态
+     * (影响新设备绑版策略与"灰度中"统计)。</p>
+     *
+     * @param productIdentification 产品标识
+     * @return 影响行数
+     */
+    int clearPreviousFullVersion(String productIdentification);
 }
 
 

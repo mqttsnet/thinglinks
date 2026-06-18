@@ -236,6 +236,9 @@ public class ProductVersionServiceImpl
                 .filter(ProductPublishStrategyEnum.CANARY::equals)
                 .isPresent();
             productService.switchActiveVersionForPublish(productIdentification, publishedVersion, isCanary);
+            // 被取代的上一个 active 版本若仍是 CANARY(瞬态),demote 为 PUBLISHED(历史态):否则灰度晋升 /
+            // 放量后版本列表会残留 CANARY 标签,误导"仍在灰度中"(实际 active 指针已指向新版本)。
+            demoteSupersededCanary(productIdentification, previousVersion);
         }
 
         // 4. 起新的 DRAFT 行,snapshot 拷贝自刚发布的版本,后续 CRUD 在此基础上累积
@@ -247,9 +250,11 @@ public class ProductVersionServiceImpl
             .build();
         productVersionManager.save(nextDraft);
 
-        // 5. 落发布记录(RUNNING),异步监听器执行 TD DDL 后回写 SUCCESS / FAILED
+        // 5. 落发布记录(RUNNING),异步监听器执行 TD DDL 后回写 SUCCESS / FAILED;
+        //    最大兜底重试次数取用户配置(clamp 到 1~10,缺省 PUBLISH_RETRY_DEFAULT)
+        Integer maxRetry = resolvePublishMaxRetry(vo.getMaxRetryCount());
         ProductPublishRecord record = productPublishRecordService.recordPublish(
-            productIdentification, previousVersion, publishedVersion);
+            productIdentification, previousVersion, publishedVersion, maxRetry);
 
         // 6. 发事件,异步执行 TD DDL + 设备改绑 + 缓存刷新
         productVersionEventPublisher.publishPublished(ProductVersionLifecycleEventSource.builder()
@@ -446,5 +451,47 @@ public class ProductVersionServiceImpl
             case CANARY -> ProductVersionStatusEnum.CANARY;
             case SHADOW -> ProductVersionStatusEnum.SHADOW;
         };
+    }
+
+    /** 最大兜底重试次数缺省值(用户未填时)。 */
+    private static final int PUBLISH_RETRY_DEFAULT = 3;
+    /** 最大兜底重试次数上限(前端 max 与后端 clamp 共用此值)。 */
+    private static final int PUBLISH_RETRY_MAX = 10;
+
+    /**
+     * 解析用户配置的最大兜底重试次数:null 取缺省 {@value #PUBLISH_RETRY_DEFAULT},否则 clamp 到 [1, {@value #PUBLISH_RETRY_MAX}]。
+     * 后端兜底校验(VO 已带 {@code @Min/@Max},此处再 clamp 防直连接口绕过)。
+     *
+     * @param input 用户输入(可空)
+     * @return 1~{@value #PUBLISH_RETRY_MAX} 的有效值
+     */
+    private Integer resolvePublishMaxRetry(Integer input) {
+        if (input == null) {
+            return PUBLISH_RETRY_DEFAULT;
+        }
+        return Math.min(Math.max(input, 1), PUBLISH_RETRY_MAX);
+    }
+
+    /**
+     * 把被取代的上一个 active 版本从 CANARY(瞬态)demote 为 PUBLISHED(历史态)。
+     * 仅 CANARY 需要:灰度版本一旦被新发布取代就不再是"进行中的灰度",残留 CANARY 标签会让版本列表误导;
+     * PUBLISHED 历史版本保持原状(本就是合法历史态);DRAFT/ROLLED_BACK/ARCHIVED/SHADOW 不会成为 active,无需考虑。
+     * 幂等:仅当前状态确为 CANARY 才改,重跑无副作用。
+     *
+     * @param productIdentification 产品标识
+     * @param supersededVersion     被取代的上一个 active 版本号(空白则跳过,如首次发布)
+     */
+    private void demoteSupersededCanary(String productIdentification, String supersededVersion) {
+        if (StrUtil.isBlank(supersededVersion)) {
+            return;
+        }
+        productVersionManager.findByProductIdentificationAndVersionNo(productIdentification, supersededVersion)
+            .filter(v -> ProductVersionStatusEnum.CANARY.getValue().equals(v.getVersionStatus()))
+            .ifPresent(v -> {
+                v.setVersionStatus(ProductVersionStatusEnum.PUBLISHED.getValue());
+                productVersionManager.updateById(v);
+                log.info("[ProductVersion] demoted superseded canary version {} -> PUBLISHED, product={}",
+                    supersededVersion, productIdentification);
+            });
     }
 }
