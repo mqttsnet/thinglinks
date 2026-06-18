@@ -123,7 +123,7 @@ export default {
     title: 'Platform Info',
     version: {
       title: 'Platform Version',
-      subtitle: 'ThingLinks Cloud v2.1',
+      subtitle: 'ThingLinks Cloud v1.4.0',
     },
     docs: {
       title: 'Documentation',

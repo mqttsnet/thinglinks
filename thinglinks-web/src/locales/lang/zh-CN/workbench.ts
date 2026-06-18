@@ -120,7 +120,7 @@ export default {
     title: '平台信息',
     version: {
       title: '平台版本',
-      subtitle: 'ThingLinks Cloud v2.1',
+      subtitle: 'ThingLinks Cloud v1.4.0',
     },
     docs: {
       title: '文档中心',
