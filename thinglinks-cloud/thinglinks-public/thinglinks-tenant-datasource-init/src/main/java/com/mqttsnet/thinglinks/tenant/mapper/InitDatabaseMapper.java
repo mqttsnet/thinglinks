@@ -9,13 +9,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * 初始化数据库DAO
+ * 初始化数据库DAO。
+ *
+ * <p><b>必须 {@code blockAttack="true"} / {@code illegalSql="true"}</b>:本 Mapper 执行多方言建库 DDL
+ * (CREATE DATABASE / CREATE USER / GRANT / DROP DATABASE),映射为 {@code <update>/<delete>} 会被 MyBatis 归类为
+ * UPDATE/DELETE。开启 {@code isBlockAttack} 后,BlockAttackInnerInterceptor 会用 JSqlParser 解析它们,而这些 DDL
+ * (尤其 GRANT、达梦/SQLServer 方言建库)JSqlParser 解析不了 → 新建租户初始化建库失败。illegalSql 同理。</p>
  *
  * @author mqttsnet
  * @date 2019/09/02
  */
 @Repository
-@InterceptorIgnore(tenantLine = "true", dynamicTableName = "true")
+@InterceptorIgnore(tenantLine = "true", dynamicTableName = "true", blockAttack = "true", illegalSql = "true")
 public interface InitDatabaseMapper {
     /**
      * 创建数据库
