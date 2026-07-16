@@ -1623,7 +1623,11 @@ CREATE TABLE `rule_execution_log` (
   `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `created_org_id` bigint DEFAULT NULL COMMENT '创建人组织',
   PRIMARY KEY (`id`) USING BTREE,
-  KEY `idx_rule_identification` (`rule_identification`) USING BTREE COMMENT '规则唯一标识'
+  KEY `idx_rule_identification` (`rule_identification`) USING BTREE COMMENT '规则唯一标识',
+  KEY `idx_start_time` (`start_time`) USING BTREE COMMENT '按执行时间倒序分页 / 时间范围统计',
+  KEY `idx_status_start_time` (`status`,`start_time`) USING BTREE COMMENT '按状态+执行时间筛选执行日志',
+  KEY `idx_rule_start_time` (`rule_identification`,`start_time`) USING BTREE COMMENT '按规则标识+执行时间筛选执行日志',
+  KEY `idx_org_start_time` (`created_org_id`,`start_time`) USING BTREE COMMENT '按组织数据权限+执行时间查询'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='规则执行日志表';
 
 -- ----------------------------
@@ -2470,7 +2474,6 @@ CREATE TABLE `rule_bridge_execution_trace` (
   `bridge_rule_id` bigint DEFAULT NULL COMMENT '关联桥接规则 ID（出站必填；入站为订阅源拉取时为空）',
   `direction` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '10' COMMENT '桥接方向：10-出站 / 20-入站',
   `trigger_source` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '触发来源：DEVICE_DATA-设备数据 / SUBSCRIPTION-订阅源 / TEST_SINK-测试发送 / REPLAY-死信回放',
-  `tenant_id` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '租户ID',
   `product_identification` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '产品标识（出站时来自设备事件）',
   `device_identification` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '设备标识（出站时来自设备事件）',
   `action_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '事件类型（PUBLISH/CONNECT/CLOSE/...，复用 LINK_DEVICE_ACTION_TYPE 字典）',
@@ -2496,8 +2499,11 @@ CREATE TABLE `rule_bridge_execution_trace` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_trace_rule` (`trace_id`,`bridge_rule_id`) USING BTREE COMMENT '同一 envelope 命中多规则时按 (traceId, ruleId) 唯一;RocketMQ 重投同 envelope 同规则被拦截',
   KEY `idx_rule_status_time` (`bridge_rule_id`,`status`,`start_time`) USING BTREE COMMENT '按规则+状态+时间查日志',
+  KEY `idx_rule_time` (`bridge_rule_id`,`start_time`) USING BTREE COMMENT '按规则+时间查日志 / 统计',
+  KEY `idx_start_time` (`start_time`) USING BTREE COMMENT '按执行时间倒序分页 / 时间范围统计',
+  KEY `idx_status_time` (`status`,`start_time`) USING BTREE COMMENT '按状态+执行时间筛选 trace',
   KEY `idx_device_time` (`device_identification`,`start_time`) USING BTREE COMMENT '按设备排查链路',
-  KEY `idx_tenant_time` (`tenant_id`,`start_time`) USING BTREE COMMENT '按租户统计 / 计费'
+  KEY `idx_org_time` (`created_org_id`,`start_time`) USING BTREE COMMENT '按组织数据权限+执行时间查询'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='桥接执行trace主表（链路回放用）';
 
 -- ----------------------------

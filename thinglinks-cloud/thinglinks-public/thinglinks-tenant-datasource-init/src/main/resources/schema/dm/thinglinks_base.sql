@@ -2853,7 +2853,6 @@ CREATE TABLE "rule_bridge_execution_trace"
     "bridge_rule_id" BIGINT DEFAULT NULL,
     "direction" CHAR(2) NOT NULL DEFAULT '10',
     "trigger_source" VARCHAR(20) NOT NULL DEFAULT '',
-    "tenant_id" VARCHAR(128) DEFAULT NULL,
     "product_identification" VARCHAR(128) DEFAULT NULL,
     "device_identification" VARCHAR(128) DEFAULT NULL,
     "action_type" VARCHAR(50) DEFAULT NULL,
@@ -2902,7 +2901,6 @@ COMMENT ON COLUMN "rule_bridge_execution_trace"."start_time" IS '执行开始时
 COMMENT ON COLUMN "rule_bridge_execution_trace"."status" IS '整体状态：00-成功 / 01-失败 / 02-部分成功 / 03-死信';
 COMMENT ON COLUMN "rule_bridge_execution_trace"."step_count" IS '执行的步骤总数（关联 rule_bridge_execution_step 计数）';
 COMMENT ON COLUMN "rule_bridge_execution_trace"."subscription_source_id" IS '关联订阅源 ID（仅入站）';
-COMMENT ON COLUMN "rule_bridge_execution_trace"."tenant_id" IS '租户ID';
 COMMENT ON COLUMN "rule_bridge_execution_trace"."topic" IS '设备事件 topic';
 COMMENT ON COLUMN "rule_bridge_execution_trace"."total_latency_ms" IS '总耗时毫秒（开始到结束）';
 COMMENT ON COLUMN "rule_bridge_execution_trace"."trace_id" IS '全链路追踪ID（贯穿 mqs → RocketMQ → rule，可与设备 publish 日志串联）';
@@ -2911,8 +2909,11 @@ COMMENT ON COLUMN "rule_bridge_execution_trace"."updated_by" IS '最后修改人
 COMMENT ON COLUMN "rule_bridge_execution_trace"."updated_time" IS '最后修改时间';
 
 CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_rule_status_time" ON "rule_bridge_execution_trace"("bridge_rule_id" ASC,"status" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_rule_time" ON "rule_bridge_execution_trace"("bridge_rule_id" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_start_time" ON "rule_bridge_execution_trace"("start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_status_time" ON "rule_bridge_execution_trace"("status" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
 CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_device_time" ON "rule_bridge_execution_trace"("device_identification" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
-CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_tenant_time" ON "rule_bridge_execution_trace"("tenant_id" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_org_time" ON "rule_bridge_execution_trace"("created_org_id" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
 
 -- ----------------------------
 -- Table structure for rule_condition_execution_log
@@ -3124,6 +3125,10 @@ COMMENT ON COLUMN "rule_execution_log"."updated_by" IS '更新人';
 COMMENT ON COLUMN "rule_execution_log"."updated_time" IS '更新时间';
 
 CREATE OR REPLACE INDEX "rule_execution_log_idx_rule_identification" ON "rule_execution_log"("rule_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_execution_log_idx_start_time" ON "rule_execution_log"("start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_execution_log_idx_status_start_time" ON "rule_execution_log"("status" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_execution_log_idx_rule_start_time" ON "rule_execution_log"("rule_identification" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_execution_log_idx_org_start_time" ON "rule_execution_log"("created_org_id" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
 
 -- ----------------------------
 -- Table structure for rule_groovy_script
@@ -4089,4 +4094,3 @@ COMMENT ON COLUMN "video_sip_config"."updated_time" IS '更新时间';
 CREATE OR REPLACE INDEX "video_sip_config_idx_sip_id" ON "video_sip_config"("sip_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
 CREATE OR REPLACE INDEX "video_sip_config_idx_status" ON "video_sip_config"("status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
 CREATE OR REPLACE INDEX "video_sip_config_idx_created_org_id" ON "video_sip_config"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
-
