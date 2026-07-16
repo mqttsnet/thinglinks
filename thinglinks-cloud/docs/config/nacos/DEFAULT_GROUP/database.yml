@@ -7,24 +7,24 @@ thinglinks:
   druid-taosdata: &druid-taosdata
     validation-query: SELECT 1
   mysql: &db-mysql
-    username: 'root'
-    password: 'your-mysql-password'
+    username: ${MYSQL_USERNAME:}
+    password: ${MYSQL_PASSWORD:}
     driverClassName: com.mysql.cj.jdbc.Driver
     # 主主复制集群的连接 URL，使用服务器IP和端口
     # 以下是样例中的默认端口号和数据库名称，请根据实际情况修改
     # connectTimeout/socketTimeout 防止网络异常时连接长时间阻塞
     url: jdbc:mysql://127.0.0.1:13306/thinglinks_ds_c_defaults?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false&connectTimeout=3000&socketTimeout=60000&zeroDateTimeBehavior=CONVERT_TO_NULL&allowMultiQueries=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
   # dameng: &db-dameng
-  #   username: 'SYSDBA'
-  #   password: 'SYSDBA001'
+  #   username: ${DAMENG_USERNAME:}
+  #   password: ${DAMENG_PASSWORD:}
   #   driverClassName: dm.jdbc.driver.DmDriver
   #   # 主主复制集群的连接 URL，使用服务器IP和端口
   #   #以下是样例中的默认端口号和数据库名称，请根据实际情况修改
   #   url: jdbc:dm://127.0.0.1:30236/thinglinks_ds_c_defaults
   taosdata: &db-taosdata
     #Tdengine官方JDBC驱动文档：https://docs.taosdata.com/reference/connector/java/#jdbc-%E9%A9%B1%E5%8A%A8
-    username: 'root'
-    password: 'taosdata'
+    username: ${TDENGINE_USERNAME:}
+    password: ${TDENGINE_PASSWORD:}
     #Tdengine Cloud 模式 需要此Token （非Cloud环境可直接忽略）
     #token: 'your-tdengine-cloud-token'
     #url: jdbc:TAOS-RS://gw.cloud.taosdata.com/xiaonan?useSSL=true&token=${thinglinks.taosdata.token}
@@ -131,8 +131,9 @@ spring:
           # 慢 SQL 记录,慢 SQL 长时间占用连接是连接池耗尽的主要诱因
           log-slow-sql: true
           slow-sql-millis: 1000
-          # 参数化合并同构 SQL,避免统计页被相同模板的 SQL 刷爆
-          merge-sql: true
+          # 关闭 merge-sql:TDengine 带 ? 占位会让 Druid 解析器刷 "illegal name token ?" 噪音,
+          # 且 #{} 生成的 SQL 已是 ? 形态、合并收益有限;不影响慢 SQL/wall/监控统计
+          merge-sql: false
         wall:
           enabled: true
           # 关闭严格语法检查,兼容 TDengine 方言
@@ -160,8 +161,8 @@ spring:
         # 禁止通过页面清空统计数据
         reset-enable: false
         # 监控页访问凭证与 IP 白名单:开发环境暂留空(空 = 无需登录、放行所有来源);生产环境必须设置强口令并收紧 allow 为内网段
-        login-username: ''
-        login-password: ''
+        login-username: ${DRUID_LOGIN_USERNAME:}
+        login-password: ${DRUID_LOGIN_PASSWORD:}
         allow: ''
 
 mybatis-plus:

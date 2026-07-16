@@ -1,33 +1,33 @@
 thinglinks:
   #feign 通用三方API服务
-  feign: 
+  feign:
     #分布式调度平台
     job:
-      accessToken: 'your-access-token'
+      accessToken: ${XXL_JOB_ACCESS_TOKEN:}
       # thinglinks-job-admin服务API
       job-server: http://127.0.0.1:18767
     #bifromq MQTT Broker服务API
-    bifromq: 
+    bifromq:
       #api-service的HTTP端口
       bifromq-api-server: http://127.0.0.1:18091
 
   #openai API
   openai:
-    apiKey: ["your-openai-api-key"]
-    apiHost: https://api.openai.com/
+    apiKey: ["${OPENAI_API_KEY:}"]
+    apiHost: ${OPENAI_API_HOST:}
 
   # 系统级安全密钥和初始化向量（IV）
   security:
     algorithms:
       aes:
         # 16字节Hex
-        key: "your-aes-key-hex"
-        iv: "your-aes-iv-hex-"
+        key: ${THINGLINKS_SECURITY_AES_KEY:}
+        iv: ${THINGLINKS_SECURITY_AES_IV:}
         mode: "CBC"
       sm4:
         # 16字节Hex
-        key: "your-sm4-key-hex"
-        iv: "your-sm4-iv-hex-"
+        key: ${THINGLINKS_SECURITY_SM4_KEY:}
+        iv: ${THINGLINKS_SECURITY_SM4_IV:}
         mode: "CBC"
 
   scan:
@@ -43,26 +43,43 @@ thinglinks:
     caseSensitive: false
     # 系统没有配置某个URI时，是否允许访问
     notConfigUriAllow: true
-    anyone:       # 请求中 需要携带Tenant 且 需要携带Token(需要登录)，但不需要验证uri权限
+    # -------------------------------------------------------------------------
+    # 网关访问策略：按"是否需要 Token / 是否需要 TenantId / 是否校验 uri 权限 / 是否允许经网关访问"区分。
+    # anyone / anyUser / anyTenant 是"放行"清单(命中即降低门槛)；inner 是"拒绝"清单(命中即只许内部直连)。
+    # 路径写两种形态：/*/xxx/** 是网关 StripPrefix 前带服务前缀的形态(如 /tds/anyUser/tds/**)，
+    # /xxx/**   是剥前缀后的形态。鉴权过滤器在路由前执行，两种都要配。
+    # -------------------------------------------------------------------------
+
+    # 需携带 Tenant + 需携带 Token(登录)，但不校验 uri 权限。场景：登录用户都可访问、无需细粒度权限的接口
+    anyone:
       ALL:
         - /*/anyone/**
         - /anyone/**
-    anyUser:      # 请求中 需要携带Tenant，但 不需要携带Token(不需要登录) 和 不需要验证uri权限
+    # 需携带 Tenant，但不需要 Token(免登录)，不校验 uri 权限。可操作租户库；拿不到 userId/employeeId
+    # 场景：对外免登录但需租户上下文的接口(登出、字典/参数查询、文件下载、带 HMAC 签名的 webhook 入站)
+    anyUser:
       ALL:
         - /*/anyUser/**
         - /anyUser/**
-    anyTenant:    # 请求中 不需要携带Tenant 且 不需要携带Token(不需要登录) 和 不需要验证uri权限
+    # 不需要 Tenant、不需要 Token，不校验 uri 权限。场景：连租户都还没有的接口(验证码、登录、注册、门户网站)
+    anyTenant:
       ALL:
         - /*/anyTenant/**
         - /anyTenant/**
         - /magic/web/**
+    # 内部 RPC：仅允许服务间 Feign(Nacos 直连)调用，禁止经网关从外部访问。与 anyUser 相反——anyUser 命中即"放行(免登录)"，inner 命中即"拒绝"。Feign 不过网关，不受影响。
+    # 透传语义与 anyUser 一致：不需要 Token，但 TenantId 等上下文 header 照常透传(可操作租户库)。
+    inner:
+      ALL:
+        - /*/inner/**
+        - /inner/**
   system: # 详情看: SystemProperties
     # 登录时否验证密码有效性 （常用于开发环境快速登录）
     verifyPassword: true
     # 登录时否验证验证码有效性 （常用于开发环境快速登录）
     verifyCaptcha: true
     # 默认用户密码
-    defPwd: '123456'
+    defPwd: ${THINGLINKS_DEFAULT_PASSWORD:}
     # 密码最大输错次数  小于0不限制
     maxPasswordErrorNum: 10
     # 密码错误锁定用户时间  除了0表示锁定到今天结束，还支持m、h、d、w、M、y等单位
@@ -239,7 +256,7 @@ spring:
     multipart:
       max-file-size: 512MB
       max-request-size: 512MB
-  cloud:      
+  cloud:
     openfeign:
       okhttp:
         enabled: true
@@ -263,7 +280,7 @@ spring:
           enabled: true
         response:
           enabled: true
-        
+
 management:
   endpoints:
     web:
@@ -279,14 +296,14 @@ management:
 # actuator 安全配置
 actuator:
   security:
-    username: actuator-admin
-    password: your-actuator-password
+    username: ${ACTUATOR_USERNAME:}
+    password: ${ACTUATOR_PASSWORD:}
     roles: ACTUATOR_ADMIN
 
 # Sa-Token配置
 sa-token:
   # token前缀
-  token-prefix: 
+  token-prefix:
   # token名称 (同时也是cookie名称)
   token-name: Token
   # token有效期，单位s 默认30天, -1代表永不过期

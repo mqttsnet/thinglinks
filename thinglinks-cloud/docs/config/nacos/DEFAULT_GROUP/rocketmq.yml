@@ -1,0 +1,54 @@
+# 切换部署模式只改环境变量，业务代码 0 改动：
+#   自建 Apache：ROCKETMQ_ACCESS_CHANNEL=LOCAL  ROCKETMQ_NAMESRV=host:39876
+#   阿里云    ：ROCKETMQ_ACCESS_CHANNEL=CLOUD  + INSTANCE_ID/AK/SK
+
+rocketmq:
+  # NameServer 地址；多个用半角分号 ; 分隔（不是逗号）
+  name-server: ${ROCKETMQ_NAMESRV:127.0.0.1:9876}
+
+  # 接入通道：LOCAL=自建 Apache；CLOUD=阿里云
+  access-channel: ${ROCKETMQ_ACCESS_CHANNEL:LOCAL}
+
+  producer:
+    # Producer Group（按服务名隔离）
+    group: ${ROCKETMQ_PRODUCER_GROUP:${spring.application.name}-producer}
+    # 阿里云实例 ID；自建留空
+    namespace: ${ROCKETMQ_INSTANCE_ID:}
+    # 阿里云 AK/SK；自建留空。⚠️ 严禁明文写 nacos，走容器环境变量注入
+    access-key: ${ROCKETMQ_AK:}
+    secret-key: ${ROCKETMQ_SK:}
+    # 同步发送超时（ms）
+    send-message-timeout: 10000
+    # 同步/异步失败重试
+    retry-times-when-send-failed: 3
+    retry-times-when-send-async-failed: 3
+    # 单条消息上限 4MB（与阿里云对齐）
+    max-message-size: 4194304
+    # 消息体压缩阈值（≥4KB 自动 GZIP）
+    compress-message-body-threshold: 4096
+    # 失败切换 broker 重试
+    retry-next-server: true
+    # 消息轨迹（按 messageId 全链路查询，运维必开）
+    enable-msg-trace: true
+    customized-trace-topic: RMQ_SYS_TRACE_TOPIC
+
+  consumer:
+    namespace: ${ROCKETMQ_INSTANCE_ID:}
+    access-key: ${ROCKETMQ_AK:}
+    secret-key: ${ROCKETMQ_SK:}
+    # 单次拉消息上限
+    pull-batch-size: 32
+    # 消费线程池：min=核心；max=峰值（桥接吞吐高，max=64）
+    consume-thread-min: 20
+    consume-thread-max: 64
+    # 单条消息处理超时（分钟），超时 broker 重投
+    consume-timeout: 15
+    # 重试上限，超过进死信 %DLQ%<group>
+    max-reconsume-times: 16
+    # 心跳上报间隔（ms）
+    heartbeat-broker-interval: 30000
+
+logging:
+  level:
+    org.apache.rocketmq: INFO
+    com.mqttsnet.basic.rocketmq: INFO

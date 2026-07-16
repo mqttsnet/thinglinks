@@ -8,31 +8,31 @@ thinglinks:
     storageType: ALI_OSS  #  FAST_DFS LOCAL MIN_IO ALI_OSS HUAWEI_OSS QINIU_OSS
     delFile: false
     suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,gzip,tar,gz,xz,xls,xlsx,txt,file,bin,dav,pack,deb,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db,jar,cer
-    publicBucket: 
+    publicBucket:
       - public
-    local: 
+    local:
       storagePath: /Users/mqttsnet/data/projects/uploadfile/file/     # 文件存储路径  （ 某些版本的 window 需要改成  D:\\data\\projects\\uploadfile\\file\\  ）
       urlPrefix: http://127.0.0.1/file/   # 文件访问 （部署nginx后，配置nginx的ip，并配置nginx静态代理storage-path地址的静态资源）
       innerUrlPrefix: null  #  内网的url前缀
     fastDfs:
-      urlPrefix: https://fastdfs.mqttsnet.com/   
+      urlPrefix: https://fastdfs.mqttsnet.com/
     ali:
       # 请填写自己的阿里云存储配置
       urlPrefix: "https://thinglinks.oss-cn-beijing.aliyuncs.com"
       bucket: "thinglinks"
       endpoint: "https://oss-cn-beijing.aliyuncs.com"
-      accessKeyId: "your-aliyun-access-key-id"
-      accessKeySecret: "your-aliyun-access-key-secret"
+      accessKeyId: ${ALI_OSS_ACCESS_KEY_ID:}
+      accessKeySecret: ${ALI_OSS_ACCESS_KEY_SECRET:}
     minIo:
       endpoint: "https://minio.mqttsnet.com"
-      accessKey: "your-minio-access-key"
-      secretKey: "your-minio-secret-key"
+      accessKey: ${MINIO_ACCESS_KEY:}
+      secretKey: ${MINIO_SECRET_KEY:}
       bucket: "thinglinks"
     huawei:
       urlPrefix: "https://huawei.mqttsnet.com/"
       endpoint: "obs.cn-southwest-2.myhuaweicloud.com"
-      accessKey: "1"
-      secretKey: "2"
+      accessKey: ${HUAWEI_ACCESS_KEY:}
+      secretKey: ${HUAWEI_SECRET_KEY:}
       location: "cn-southwest-2"
       bucket: "pjcp-public"
 
@@ -40,8 +40,8 @@ thinglinks:
       domain: qiniu.mqttsnet.com
       useHttps: true
       zone: "z0"
-      accessKey: "1"
-      secretKey: "2"
+      accessKey: ${QINIU_ACCESS_KEY:}
+      secretKey: ${QINIU_SECRET_KEY:}
       bucket: "mqttsnet_admin_cloud"
 
 #FAST_DFS配置
@@ -85,7 +85,7 @@ springdoc:
     - group: 'base_msg'
       paths-to-match: '/**'
       displayName: '基础服务-消息模块'
-      packages-to-scan: 
+      packages-to-scan:
         - com.mqttsnet.thinglinks.msg.controller
         - com.mqttsnet.thinglinks.sms.controller
     - group: 'base_nacos'

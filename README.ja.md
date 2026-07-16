@@ -123,7 +123,7 @@ pnpm run dev
 
 ```bash
 # ワンクリックデプロイ
-docker-compose up -d
+docker compose -f thinglinks-cloud/docker/docker-compose.yml up -d
 ```
 
 > 詳細なデプロイガイドは [mqttsnet.com](https://mqttsnet.com) をご覧ください。
@@ -147,12 +147,12 @@ thinglinks/
 │   ├── thinglinks-openapi/          # Open API Service
 │   ├── thinglinks-public/           # Public Service
 │   ├── thinglinks-base/             # Base Platform Service
-│   └── thinglinks-sdk/              # SDK
+│   ├── thinglinks-sdk/              # SDK
+│   └── docker/                      # Cloud Docker Compose Deployment
 ├── thinglinks-web/                  # Admin Console (Vue 3 + Vben)
 ├── thinglinks-web-visualize/        # Visualization Dashboard (Vue 3 + ECharts)
 ├── thinglinks-job/                  # Scheduled Task Service (XXL-JOB)
 ├── bifromq-plugin/                  # Apache BifroMQ Plugin
-├── docker/                          # Docker Compose Deployment
 ├── docs/                            # Documentation & Screenshots
 └── scripts/                         # Build & Utility Scripts
 ```

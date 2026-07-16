@@ -40,10 +40,10 @@
 | 子模块 | 职责 | 关键包 |
 |---|---|---|
 | **thinglinks-rule-entity** | DTO / 枚举 / VO | `entity.bridge.*` / `dto.bridge.*` / `enumeration.linkage.*` |
-| **thinglinks-rule-facade** | Feign 接口(供其他服务调 rule) | `facade.rule.*` |
+| **thinglinks-rule-facade** | Feign 接口(供其他服务调 rule,内部 RPC 走 `/inner/ruleOpen`) | `facade.rule.*` / [RuleOpenInnerApi](thinglinks-rule-facade/thinglinks-rule-cloud-impl/src/main/java/com/mqttsnet/thinglinks/rule/api/RuleOpenInnerApi.java) |
 | **thinglinks-rule-biz** ⭐ | 核心业务实现 ── 桥接 / 告警 / 规则引擎 / 联动 / 脚本 / 插件 / 执行日志 | `bridge/` / `service/{alarm,script,linkage,plugin,execution}` / `manager/` |
 | **thinglinks-rule-biz-bridge** | 桥接 RocketMQ 消费 + 订阅源生命周期管理 | `bridge/consumer/BridgeDeviceEventConsumer` / `bridge/source/SubscriptionSourceLifecycleManager` |
-| **thinglinks-rule-controller** | REST 入口 + 桥接规则管理 endpoint | `bridge/controller/*` |
+| **thinglinks-rule-controller** | REST 入口 + 桥接规则管理 endpoint + inner 服务间接口 | `bridge/controller/*` / [RuleOpenInnerController](thinglinks-rule-controller/src/main/java/com/mqttsnet/thinglinks/inner/controller/RuleOpenInnerController.java) / [RuleGroovyScriptController](thinglinks-rule-controller/src/main/java/com/mqttsnet/thinglinks/groovy/controller/script/RuleGroovyScriptController.java) |
 | **thinglinks-rule-server** | Spring Boot 启动 + 端口约定 + 配置 | 启动 main + 端口 `18786`(规则引擎) + `50000-51000`(插件) |
 
 ---
@@ -232,7 +232,7 @@ RuleAlarmService.fireAlarm(...)
 ### 5.2 脚本生命周期
 
 ```
-脚本 CRUD(controller / service)
+[RuleGroovyScriptController](thinglinks-rule-controller/src/main/java/com/mqttsnet/thinglinks/groovy/controller/script/RuleGroovyScriptController.java) / [RuleGroovyScriptService](thinglinks-rule-biz/src/main/java/com/mqttsnet/thinglinks/service/script/RuleGroovyScriptService.java)
   │  存 rule_groovy_script 表
   ▼
 RuleGroovyScriptChangedEvent / RuleGroovyScriptDeletedEvent(Spring event)
@@ -269,7 +269,7 @@ SinkDispatcher / BridgeMatcher 执行脚本时从缓存拿
 ### 6.2 触发时机
 
 - 设备事件桥接进 rule → 匹配联动规则 → 触发条件 → 执行动作
-- 数据字典 `RULE_CONDITION_DEVICE_ACTION_TIRGGER_TYPE` 决定 UI 可选触发动作(11 项,详见 mqs README §5.4)
+- 数据字典 `RULE_CONDITION_DEVICE_ACTION_TIRGGER_TYPE` 决定 UI 可选触发动作(12 项:11 个 MQS 动作 + OFFLINE 业务分组,详见 mqs README §5.4)
 
 ### 6.3 ExecutionLog 异步落库
 
@@ -351,7 +351,7 @@ PluginClientService 提供 SDK 调用入口
 
 ## 9. 跨服务联动 / mqs Action Type 对齐
 
-> 本节是**最重要的**:mqs 改了 [DeviceActionTypeEnum](../thinglinks-link/thinglinks-link-entity/src/main/java/com/mqttsnet/thinglinks/device/enumeration/DeviceActionTypeEnum.java) / topic / envelope 字段后,rule 端要同步做的事。
+> 本节是**最重要的**:mqs 改了 [DeviceActionTypeEnum](../thinglinks-public/thinglinks-common/src/main/java/com/mqttsnet/thinglinks/common/enums/DeviceActionTypeEnum.java) / topic / envelope 字段后,rule 端要同步做的事。
 
 ### 9.1 rule 端依赖 mqs 的关键约定
 

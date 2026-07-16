@@ -139,7 +139,7 @@
 | [DeviceLocationService](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/DeviceLocationService.java) | 设备位置(经纬度 / 地理围栏) | [DeviceLocationServiceImpl](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceLocationServiceImpl.java) |
 | [DeviceQrcodeService](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/DeviceQrcodeService.java) | 设备二维码绑定 / 扫码激活 | [DeviceQrcodeServiceImpl](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceQrcodeServiceImpl.java) |
 | [DeviceShadowService](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/DeviceShadowService.java) | 设备影子(期望值 / 实时值) | [DeviceShadowServiceImpl](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceShadowServiceImpl.java) |
-| [DeviceSyncAnyUserService](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/DeviceSyncAnyUserService.java) | 设备同步 ── broker session 探活 / 与 link 设备表对账 | [DeviceSyncAnyUserServiceImpl](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceSyncAnyUserServiceImpl.java) |
+| [DeviceSyncInnerService](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/DeviceSyncInnerService.java) | 设备同步 ── broker session 探活 / 与 link 设备表对账 | [DeviceSyncInnerServiceImpl](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceSyncInnerServiceImpl.java) |
 
 ### 3.2 分组子域 (group/)
 
@@ -176,7 +176,7 @@ DDD 风格,4 个子包配合:
 
 ### 3.6 ⭐ DeviceActionTypeEnum 13 项(跨服务字典契约)
 
-[DeviceActionTypeEnum](thinglinks-link-entity/src/main/java/com/mqttsnet/thinglinks/device/enumeration/DeviceActionTypeEnum.java) 是跨 broker / mqs / rule 共用的**设备动作类型核心字典**,13 项语义稳定(改它要走 [mqs README §5](../thinglinks-mqs/README.md#5--action-type-完整规范设备事件统一字典) 7 处同步流程)。
+[DeviceActionTypeEnum](../thinglinks-public/thinglinks-common/src/main/java/com/mqttsnet/thinglinks/common/enums/DeviceActionTypeEnum.java) 是跨 broker / mqs / rule 共用的**设备动作类型核心字典**,13 项语义稳定(改它要走 [mqs README §5](../thinglinks-mqs/README.md#5--action-type-完整规范设备事件统一字典) 7 处同步流程)。
 
 | 枚举 | 业务含义 | affectsConnectionStatus |
 |---|---|---|
@@ -188,7 +188,7 @@ DDD 风格,4 个子包配合:
 | INBOUND | 第三方订阅源入站 | false |
 | UNKNOWN | 兜底 | false |
 
-**字典对齐**:`LINK_DEVICE_ACTION_TYPE`(13 项)与枚举一一对齐;`RULE_CONDITION_DEVICE_ACTION_TIRGGER_TYPE`(11 项,不含 UNKNOWN/INBOUND)给规则 UI 下拉。
+**字典对齐**:`LINK_DEVICE_ACTION_TYPE`(13 项)与枚举一一对齐;`RULE_CONDITION_DEVICE_ACTION_TIRGGER_TYPE`(12 项:11 个 MQS 动作 + OFFLINE 业务分组,不含 UNKNOWN/INBOUND)给规则 UI 下拉。
 
 ---
 
@@ -277,7 +277,7 @@ OTA 是 link 服务**最复杂的业务子域**,4 张表 + Spring StateMachine +
    ├─→ StaticBatchPushAction / DynamicStartUpgradeAction
    │      └─ 通过 productcommandrequest 下发命令到设备(走 broker)
    │
-   ├─→ 设备回执 (mqs `MqttEventOtaReportService` 等)→ OtaOpenAnyUserFacade.otaReport*
+   ├─→ 设备回执 (mqs `MqttEventOtaReportService` 等)→ OtaOpenInnerFacade.otaReport*
    │
    └─→ OtaTaskExecutionResultEvent → 状态机 fire(COMPLETE/FAIL/TIMEOUT)
           └─ DynamicCompleteUpgradeAction / StaticFailUpgradeAction 等收尾
@@ -297,8 +297,8 @@ OTA 是 link 服务**最复杂的业务子域**,4 张表 + Spring StateMachine +
 控制台 / Facade caller
    │  DeviceCommandWrapperParam(可串行 / 并行)
    ▼
-DeviceOpenAnyUserFacade.issueCommands(...)
-   │  → DeviceOpenAnyUserController#issueCommands
+DeviceOpenInnerFacade.issueCommands(...)
+   │  → DeviceOpenInnerController#issueCommands
    ▼
 DeviceCommandService(校验设备 + 物模型 + 序列化 payload)
    │
@@ -319,7 +319,7 @@ DeviceCommandService(校验设备 + 物模型 + 序列化 payload)
 
 | 组件 | 位置 |
 |---|---|
-| **Facade(对外)** | [DeviceCommandFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceCommandFacade.java) ── 命令查询 / 状态回写;[DeviceOpenAnyUserFacade#issueCommands](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenAnyUserFacade.java) ── 命令下发入口 |
+| **Facade(对外)** | [DeviceCommandFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceCommandFacade.java) ── 命令查询 / 状态回写;[DeviceOpenInnerFacade#issueCommands](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenInnerFacade.java) ── 服务间命令下发入口 |
 | **Service** | [DeviceCommandService](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/DeviceCommandService.java) / [ProductCommandRequestService](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/productcommandrequest/service/ProductCommandRequestService.java) / [ProductCommandResponseService](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/productcommandresponse/service/ProductCommandResponseService.java) |
 | **Controller** | [DeviceCommandController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/device/controller/DeviceCommandController.java) / [ProductCommandController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/productcommand/controller/ProductCommandController.java) |
 | **关键枚举** | [DeviceCommandStatusEnum](thinglinks-link-entity/src/main/java/com/mqttsnet/thinglinks/device/enumeration/DeviceCommandStatusEnum.java) / [DeviceCommandTypeEnum](thinglinks-link-entity/src/main/java/com/mqttsnet/thinglinks/device/enumeration/DeviceCommandTypeEnum.java) |
@@ -378,7 +378,7 @@ DeviceCommandService(校验设备 + 物模型 + 序列化 payload)
 
 ### 8.3 缓存运维接口
 
-[CacheAnyUserController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/anyuser/controller/CacheAnyUserController.java) ── 给 mqs / 控制台调用,刷新 / 清除指定 device / product 缓存。
+[CacheInnerController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/inner/controller/CacheInnerController.java) ── 给 mqs / 控制台调用,刷新 / 清除指定 device / product 缓存。
 
 ---
 
@@ -402,10 +402,10 @@ DeviceCommandService(校验设备 + 物模型 + 序列化 payload)
 |---|---|---|---|
 | **设备本体** | [DeviceFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceFacade.java) | `/device` | 内部设备查询(boot-impl: [DeviceFacadeImpl](thinglinks-link-facade/thinglinks-link-boot-impl/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceFacadeImpl.java) / cloud-impl Feign: [DeviceApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/device/DeviceApi.java))|
 | **设备命令** | [DeviceCommandFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceCommandFacade.java) | `/device/command` | 命令查询 / 回写(cloud: [DeviceCommandApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/device/DeviceCommandApi.java)) |
-| **anyUser 开放** | [DeviceOpenAnyUserFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenAnyUserFacade.java) ⭐ | `/anyUser/deviceOpen` | 给 mqs / broker / rule 调用的设备开放接口(cloud: [DeviceOpenAnyUserApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/anyuser/DeviceOpenAnyUserApi.java)) |
-| **anyUser 开放** | [ProductOpenAnyUserFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/ProductOpenAnyUserFacade.java) | `/anyUser/productOpen` | 产品 / 物模型查询(cloud: [ProductOpenAnyUserApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/anyuser/ProductOpenAnyUserApi.java)) |
-| **anyUser 开放** | [ProductTopicOpenAnyUserFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/ProductTopicOpenAnyUserFacade.java) | `/anyUser/productTopicOpen` | Topic 配置查询(cloud: [ProductTopicOpenAnyUserApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/anyuser/ProductTopicOpenAnyUserApi.java)) |
-| **anyUser 开放** | [OtaOpenAnyUserFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/OtaOpenAnyUserFacade.java) | `/anyUser/otaOpen` | OTA 上报 / 拉包 / 命令响应(cloud: [OtaOpenAnyUserApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/anyuser/OtaOpenAnyUserApi.java),mqs OTA 系列 service 调用) |
+| **inner 内部** | [DeviceOpenInnerFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenInnerFacade.java) ⭐ | `/inner/deviceOpen` | 给 mqs / broker / rule 调用的设备内部接口(cloud: [DeviceOpenInnerApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/inner/DeviceOpenInnerApi.java)) |
+| **inner 内部** | [ProductOpenInnerFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/ProductOpenInnerFacade.java) | `/inner/productOpen` | 产品 / 物模型查询(cloud: [ProductOpenInnerApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/inner/ProductOpenInnerApi.java)) |
+| **inner 内部** | [ProductTopicOpenInnerFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/ProductTopicOpenInnerFacade.java) | `/inner/productTopicOpen` | Topic 配置查询(cloud: [ProductTopicOpenInnerApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/inner/ProductTopicOpenInnerApi.java)) |
+| **inner 内部** | [OtaOpenInnerFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/OtaOpenInnerFacade.java) | `/inner/otaOpen` | OTA 上报 / 拉包 / 命令响应(cloud: [OtaOpenInnerApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/inner/OtaOpenInnerApi.java),mqs OTA 系列 service 调用) |
 | **anyTenant 跨租户** | [DeviceOpenAnyTenantFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenAnyTenantFacade.java) | `/anyTenant/deviceOpen` | 跨租户设备查询(cloud: [DeviceOpenAnyTenantApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/anytenant/DeviceOpenAnyTenantApi.java)) |
 | **定时任务** | [LinkJobHandlerFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/LinkJobHandlerFacade.java) | `/job/linkHandler` | xxl-job 调用入口(OTA offset / 设备探活)(cloud: [LinkJobHandlerApi](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/job/LinkJobHandlerApi.java)) |
 
@@ -414,19 +414,19 @@ DeviceCommandService(校验设备 + 物模型 + 序列化 payload)
 | 前缀 | 控制器目录 | 语义 |
 |---|---|---|
 | (业务前缀) | [device/](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/device/controller/) / [product*/](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/product/controller/) / [ota/](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/ota/controller/) / [cacert/](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/cacert/controller/) | 控制台用户态接口(走 oauth 鉴权) |
-| `/anyUser/...` | [anyuser/controller/](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/anyuser/controller/) | **服务间调用** ── 跳过用户态认证,但仍按租户上下文走多租户切库 |
+| `/inner/...` | [inner/controller/](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/inner/controller/) | **服务间内部 RPC** ── Feign / Nacos 直连;经网关命中 `/inner/**` 会被拒绝;租户上下文按需透传 |
 | `/anyTenant/...` | [anytenant/controller/](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/anytenant/controller/) | **跨租户调用** ── 显式带 tenantId 参数访问其他租户数据,运维 / 平台级 |
 
-### 9.4 anyuser controllers 一览
+### 9.4 inner controllers 一览
 
 | Controller | 用途 |
 |---|---|
-| [DeviceOpenAnyUserController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/anyuser/controller/DeviceOpenAnyUserController.java) ⭐ | 设备状态 CAS 写、子设备维护、设备命令下发、动作落表 |
-| [DeviceSyncAnyUserController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/anyuser/controller/DeviceSyncAnyUserController.java) | 设备同步 / broker session 探活对账 |
-| [ProductOpenAnyUserController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/anyuser/controller/ProductOpenAnyUserController.java) | 产品 / 物模型查询 |
-| [ProductTopicOpenAnyUserController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/anyuser/controller/ProductTopicOpenAnyUserController.java) | Topic 配置查询 |
-| [OtaOpenAnyUserController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/anyuser/controller/OtaOpenAnyUserController.java) | OTA 上报 / 拉包 / 命令响应 |
-| [CacheAnyUserController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/anyuser/controller/CacheAnyUserController.java) | 缓存运维(刷新 / 清除) |
+| [DeviceOpenInnerController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/inner/controller/DeviceOpenInnerController.java) ⭐ | 设备状态 CAS 写、子设备维护、设备命令下发、动作落表 |
+| [DeviceSyncInnerController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/inner/controller/DeviceSyncInnerController.java) | 设备同步 / broker session 探活对账 |
+| [ProductOpenInnerController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/inner/controller/ProductOpenInnerController.java) | 产品 / 物模型查询 |
+| [ProductTopicOpenInnerController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/inner/controller/ProductTopicOpenInnerController.java) | Topic 配置查询 |
+| [OtaOpenInnerController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/inner/controller/OtaOpenInnerController.java) | OTA 上报 / 拉包 / 命令响应 |
+| [CacheInnerController](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/inner/controller/CacheInnerController.java) | 缓存运维(刷新 / 清除) |
 
 ---
 
@@ -449,7 +449,7 @@ DeviceCommandService(校验设备 + 物模型 + 序列化 payload)
 | broker 场景 | 调用 link Facade | 用途 |
 |---|---|---|
 | MQTT 连接鉴权 / ACL | DeviceFacade + DeviceAclRule 查询 | 通过 device + acl 表 + CaCertLicense 校验 |
-| Session 设备探活 | [DeviceOpenAnyUserFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenAnyUserFacade.java)(老路径) | broker session 状态对账 |
+| Session 设备探活 | [DeviceOpenInnerFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenInnerFacade.java) | broker session 状态对账 |
 
 ### 10.2 mqs → link(高频)
 
@@ -459,17 +459,17 @@ mqs 是 link 的**最重要的消费方**:
 |---|---|---|
 | `DeviceCacheEnricher` | [LinkCacheDataHelper#getDeviceCacheVO](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/cache/helper/LinkCacheDataHelper.java) | 每条设备事件查 DeviceCacheVO |
 | `DevicePayloadDecodeStage` | LinkCacheDataHelper#getProductModelCacheVO | 物模型解析 |
-| `DeviceLifecycleStage` | [DeviceOpenAnyUserFacade#updateDeviceConnectionStatusByEvent](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenAnyUserFacade.java) ⭐ | 设备状态 CAS 单调写(详见 §11) |
-| `DeviceActionPersistStage` | DeviceOpenAnyUserFacade#saveDeviceAction | 设备动作审计落 `device_action` |
-| `BridgeIngressRocketmqConsumerHandler` | DeviceOpenAnyUserFacade#saveDeviceAction | 桥接入站设备动作落表 |
-| `MqttEventOtaReportService` 等 4 个 | [OtaOpenAnyUserFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/OtaOpenAnyUserFacade.java) `otaReport*` / `otaPull*` / `saveOtaUpgradeRecord*` | OTA 上报 / 拉包 / 命令响应回 link |
+| `DeviceLifecycleStage` | [DeviceOpenInnerFacade#updateDeviceConnectionStatusByEvent](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenInnerFacade.java) ⭐ | 设备状态 CAS 单调写(详见 §11) |
+| `DeviceActionPersistStage` | DeviceOpenInnerFacade#saveDeviceAction | 设备动作审计落 `device_action` |
+| `BridgeIngressRocketmqConsumerHandler` | DeviceOpenInnerFacade#saveDeviceAction | 桥接入站设备动作落表 |
+| `MqttEventOtaReportService` 等 4 个 | [OtaOpenInnerFacade](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/OtaOpenInnerFacade.java) `otaReport*` / `otaPull*` / `saveOtaUpgradeRecord*` | OTA 上报 / 拉包 / 命令响应回 link |
 
 ### 10.3 rule → link
 
 | rule 场景 | 调用 link | 用途 |
 |---|---|---|
-| INBOUND 桥接 | DeviceOpenAnyUserFacade#saveDeviceAction | 第三方订阅源入站时落 `device_action` |
-| 命令下发 action | DeviceCommandFacade / DeviceOpenAnyUserFacade#issueCommands | 规则触发时下发命令 |
+| INBOUND 桥接 | DeviceOpenInnerFacade#saveDeviceAction | 第三方订阅源入站时落 `device_action` |
+| 命令下发 action | DeviceCommandFacade / DeviceOpenInnerFacade#issueCommands | 规则触发时下发命令 |
 
 ---
 
@@ -505,10 +505,10 @@ UPDATE device
 | 角色 | 行为 |
 |---|---|
 | mqs `DeviceLifecycleStage` | 拿到 actionType + 上游事件 hlc,通过 Facade 调入 |
-| Facade(cloud-impl Feign)| [DeviceOpenAnyUserApi#updateDeviceConnectionStatusByEvent](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/anyuser/DeviceOpenAnyUserApi.java) (HTTP PUT `/anyUser/deviceOpen/updateDeviceConnectionStatusByEvent/{clientId}`) |
-| Controller | [DeviceOpenAnyUserController#updateDeviceConnectionStatusByEvent](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/anyuser/controller/DeviceOpenAnyUserController.java) (L124) |
+| Facade(cloud-impl Feign)| [DeviceOpenInnerApi#updateDeviceConnectionStatusByEvent](thinglinks-link-facade/thinglinks-link-cloud-impl/src/main/java/com/mqttsnet/thinglinks/link/api/inner/DeviceOpenInnerApi.java) (HTTP PUT `/inner/deviceOpen/updateDeviceConnectionStatusByEvent/{clientId}`) |
+| Controller | [DeviceOpenInnerController#updateDeviceConnectionStatusByEvent](thinglinks-link-controller/src/main/java/com/mqttsnet/thinglinks/inner/controller/DeviceOpenInnerController.java) |
 | Service CAS | [DeviceServiceImpl L812](thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceServiceImpl.java) |
-| 旧路径(无 HLC)| Facade [#updateDeviceConnectionStatus(clientId, status)](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenAnyUserFacade.java) ── **无条件覆盖**,仅控制台 / xxl-job / 老监听器用 |
+| 旧方法(无 HLC)| Facade [#updateDeviceConnectionStatus(clientId, status)](thinglinks-link-facade/thinglinks-link-api/src/main/java/com/mqttsnet/thinglinks/link/facade/DeviceOpenInnerFacade.java) ── **无条件覆盖**,仅控制台 / xxl-job / 老监听器用 |
 
 ### 11.4 日志关键词(排查必查)
 
@@ -531,9 +531,9 @@ CAS 命中后,如果设备节点类型 = GATEWAY 且新状态 = OFFLINE,**联动
 
 | 现象 | 排查路径 |
 |---|---|
-| mqs 报"设备不存在" / 物模型解析失败 | ① 控制台查设备是否存在 → ② curl `CacheAnyUserController` 清缓存 → ③ 检查 `LinkCacheDataHelper#getDeviceCacheVO` 日志看是否回查 DB 失败 |
+| mqs 报"设备不存在" / 物模型解析失败 | ① 控制台查设备是否存在 → ② curl `CacheInnerController` 清缓存 → ③ 检查 `LinkCacheDataHelper#getDeviceCacheVO` 日志看是否回查 DB 失败 |
 | 设备状态总是 OFFLINE | 看 link 日志 `[Device.updateByEvent] CAS rejected` ── 上游 hlc 比 DB 老;或 mqs `DeviceLifecycleStage` 未投递 |
-| 字典回显错乱 | `LINK_DEVICE_ACTION_TYPE` 字典对齐 [DeviceActionTypeEnum](thinglinks-link-entity/src/main/java/com/mqttsnet/thinglinks/device/enumeration/DeviceActionTypeEnum.java) |
+| 字典回显错乱 | `LINK_DEVICE_ACTION_TYPE` 字典对齐 [DeviceActionTypeEnum](../thinglinks-public/thinglinks-common/src/main/java/com/mqttsnet/thinglinks/common/enums/DeviceActionTypeEnum.java) |
 
 ### 12.2 OTA 卡住
 

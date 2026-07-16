@@ -1,10 +1,10 @@
 ####### Mysql & Redis 配置 和 database.yml 、redis.yml 配置一样源的即可#######
 mysql:
-  host: 127.0.0.1:3306
+  host: 127.0.0.1:13306
   db: thinglinks_ds_c_defaults
-  username: root
-  password: your-mysql-password
-  
+  username: ${MYSQL_USERNAME:}
+  password: ${MYSQL_PASSWORD:}
+
 # 默认激活环境
 spring:
   datasource:
@@ -12,12 +12,12 @@ spring:
     url: jdbc:mysql://${mysql.host}/${mysql.db}?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
     username: ${mysql.username}
     password: ${mysql.password}
-  data:  
+  data:
     redis:
       host: 127.0.0.1
-      password: your-redis-password
-      port: 6379
-      database: 1
+      password: ${REDIS_PASSWORD:}
+      port: 16379
+      database: 2
       timeout: 5000ms  # 操作超时时间
       connect-timeout: 3000ms  # 连接超时时间
       lettuce:
@@ -75,7 +75,7 @@ dubbo:
     port: -1
     payload: 10485760
     parameters:
-      sba: ignore    
+      sba: ignore
   application:
     qos-enable: false
   registry:

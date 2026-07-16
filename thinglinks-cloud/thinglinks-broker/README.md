@@ -57,8 +57,8 @@
 
 ```
 业务侧 (link / mqs / openapi)
-  → MqttBrokerOpenAnyUserFacade           (Feign / boot)
-    → /anyUser/mqttBrokerOpen/...         (REST,controller)
+  → MqttBrokerOpenInnerFacade           (Feign / boot)
+    → /inner/mqttBrokerOpen/...         (REST,controller)
       → MqttBrokerService                 (业务编排,本服务 biz)
         → BifroMqFacade                   (BifroMQ HTTP API Feign 包装)
           → BifroMQApi @FeignClient        ── url 由 thinglinks.feign.bifromq.bifromq-api-server 配置
@@ -88,7 +88,7 @@
 | Feign 404 → [SessionNotFoundException](thinglinks-broker-biz/src/main/java/com/mqttsnet/thinglinks/broker/mqtt/exception/SessionNotFoundException.java) | 离线 | `R.success(false)` |
 | 任意其它异常(网络 / 反序列化 / 5xx) | **不确定** | `R.fail(...)` ── 调用方必须保留现状,不许写库 |
 
-依赖方:见 [SessionStatusResolver](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqtt/session/SessionStatusResolver.java)(mqs)。
+依赖方:见 [DeviceSyncInnerServiceImpl](../thinglinks-link/thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceSyncInnerServiceImpl.java) 的 broker session 探活对账。
 
 ### 3.4 下行 payload 处理
 
@@ -192,15 +192,16 @@ ThingLinks 通用 facade 拆分:**接口在一个 jar**,**进程内实现在另�
 | [thinglinks-broker-boot-impl](thinglinks-broker-facade/thinglinks-broker-boot-impl/) | 直接调本进程 `MqttBrokerService` / `WebSocketBrokerService` | 单体部署(broker 与调用方同 JVM) |
 | [thinglinks-broker-cloud-impl](thinglinks-broker-facade/thinglinks-broker-cloud-impl/) | 通过 `@FeignClient` 调远端 broker REST | 微服务部署(默认) |
 
-三个对外 Facade:
+四个对外 Facade:
 
 | Facade | 接口 | boot 实现 | cloud Feign | Fallback |
 | --- | --- | --- | --- | --- |
-| MqttBroker | [MqttBrokerOpenAnyUserFacade](thinglinks-broker-facade/thinglinks-broker-api/src/main/java/com/mqttsnet/thinglinks/broker/MqttBrokerOpenAnyUserFacade.java) | [boot](thinglinks-broker-facade/thinglinks-broker-boot-impl/src/main/java/com/mqttsnet/thinglinks/broker/MqttBrokerOpenAnyUserFacadeImpl.java) | [Api](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/MqttBrokerOpenAnyUserApi.java) + [cloud Impl](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/facade/impl/MqttBrokerOpenAnyUserFacadeImpl.java) | [Fallback](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/hystrix/MqttBrokerOpenAnyUserApiFallback.java) |
-| WebSocketBroker | [WebSocketBrokerOpenAnyUserFacade](thinglinks-broker-facade/thinglinks-broker-api/src/main/java/com/mqttsnet/thinglinks/broker/WebSocketBrokerOpenAnyUserFacade.java) | [boot](thinglinks-broker-facade/thinglinks-broker-boot-impl/src/main/java/com/mqttsnet/thinglinks/broker/WebSocketBrokerOpenAnyUserFacadeImpl.java) | [Api](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/WebSocketBrokerOpenAnyUserApi.java) + [cloud Impl](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/facade/impl/WebSocketBrokerOpenAnyUserFacadeImpl.java) | [Fallback](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/hystrix/WebSocketBrokerOpenAnyUserApiFallback.java) |
+| DeviceDownlink | [DeviceDownlinkFacade](thinglinks-broker-facade/thinglinks-broker-api/src/main/java/com/mqttsnet/thinglinks/broker/DeviceDownlinkFacade.java) ⭐ | [boot](thinglinks-broker-facade/thinglinks-broker-boot-impl/src/main/java/com/mqttsnet/thinglinks/broker/DeviceDownlinkFacadeImpl.java) | [Api](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/DeviceDownlinkApi.java) + [cloud Impl](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/facade/impl/DeviceDownlinkFacadeImpl.java) | [Fallback](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/hystrix/DeviceDownlinkApiFallback.java) |
+| MqttBroker | [MqttBrokerOpenInnerFacade](thinglinks-broker-facade/thinglinks-broker-api/src/main/java/com/mqttsnet/thinglinks/broker/MqttBrokerOpenInnerFacade.java) | [boot](thinglinks-broker-facade/thinglinks-broker-boot-impl/src/main/java/com/mqttsnet/thinglinks/broker/MqttBrokerOpenInnerFacadeImpl.java) | [Api](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/MqttBrokerOpenInnerApi.java) + [cloud Impl](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/facade/impl/MqttBrokerOpenInnerFacadeImpl.java) | [Fallback](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/hystrix/MqttBrokerOpenInnerApiFallback.java) |
+| WebSocketBroker | [WebSocketBrokerOpenInnerFacade](thinglinks-broker-facade/thinglinks-broker-api/src/main/java/com/mqttsnet/thinglinks/broker/WebSocketBrokerOpenInnerFacade.java) | [boot](thinglinks-broker-facade/thinglinks-broker-boot-impl/src/main/java/com/mqttsnet/thinglinks/broker/WebSocketBrokerOpenInnerFacadeImpl.java) | [Api](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/WebSocketBrokerOpenInnerApi.java) + [cloud Impl](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/facade/impl/WebSocketBrokerOpenInnerFacadeImpl.java) | [Fallback](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/hystrix/WebSocketBrokerOpenInnerApiFallback.java) |
 | BifroMQ 原生 API | [BifroMqFacade](thinglinks-broker-facade/thinglinks-broker-api/src/main/java/com/mqttsnet/thinglinks/broker/BifroMqFacade.java) | [boot](thinglinks-broker-facade/thinglinks-broker-boot-impl/src/main/java/com/mqttsnet/thinglinks/broker/BifroMqFacadeImpl.java) | [Api](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/BifroMQApi.java) + [cloud Impl](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/facade/impl/BifroMqFacadeImpl.java) | [Fallback](thinglinks-broker-facade/thinglinks-broker-cloud-impl/src/main/java/com/mqttsnet/thinglinks/broker/api/hystrix/BifroMQApiFallback.java) |
 
-⭐ `BifroMqFacade` 是给 **job / 任务调度** 直接用的"裸 BifroMQ API";一般业务请用 `MqttBrokerOpenAnyUserFacade`(封装好了参数 VO + 错误码 + 三态 isOnline)。
+⭐ `DeviceDownlinkFacade` 是 link / mqs 的统一下行入口,由 broker 按设备协议分流 MQTT / WebSocket。`BifroMqFacade` 是给 **job / 任务调度** 直接用的"裸 BifroMQ API";一般业务请优先走 `DeviceDownlinkFacade`,需要 MQTT session 三态探活时再用 `MqttBrokerOpenInnerFacade`。
 
 ---
 
@@ -212,21 +213,20 @@ mqs 收到设备上行消息后,经常需要回写响应到设备(如 OTA 升级
 
 | mqs 处理器 | 调用 | 用途 |
 | --- | --- | --- |
-| [TimeSyncRequestHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqtt/handler/TimeSyncRequestHandler.java) | `MqttBrokerOpenAnyUserFacade.sendMessage` | 时间同步响应 |
-| [OtaCommandResponseHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqtt/handler/OtaCommandResponseHandler.java) | 同上 | OTA 命令响应 |
-| [CommandResponseHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqtt/handler/CommandResponseHandler.java) | 同上 | 通用命令响应 |
-| [DeviceDatasHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqtt/handler/DeviceDatasHandler.java) / [QueryDeviceHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqtt/handler/QueryDeviceHandler.java) / [SecretKeyHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqtt/handler/SecretKeyHandler.java) 等 | 同上 | 各类 ack / 推送 |
-| [SessionStatusResolver](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqtt/session/SessionStatusResolver.java) | `MqttBrokerOpenAnyUserFacade.isOnline` | 设备状态机判定(三态) |
+| [TimeSyncRequestHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqs/uplink/handler/TimeSyncRequestHandler.java) | `DeviceDownlinkFacade.dispatch` | 时间同步响应 |
+| [OtaCommandResponseHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqs/uplink/handler/OtaCommandResponseHandler.java) | 同上 | OTA 命令响应 |
+| [CommandResponseHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqs/uplink/handler/CommandResponseHandler.java) | 同上 | 通用命令响应 |
+| [DeviceDatasHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqs/uplink/handler/DeviceDatasHandler.java) / [QueryDeviceHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqs/uplink/handler/QueryDeviceHandler.java) / [SecretKeyHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqs/uplink/handler/SecretKeyHandler.java) 等 | 同上 | 各类 ack / 推送 |
 
-mqs 处理器统一通过 [AbstractMessageHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqtt/handler/factory/AbstractMessageHandler.java) 持有 `MqttBrokerOpenAnyUserFacade` 引用。
+mqs 处理器统一通过 [AbstractMessageHandler](../thinglinks-mqs/thinglinks-mqs-biz/src/main/java/com/mqttsnet/thinglinks/mqs/uplink/handler/factory/AbstractMessageHandler.java) 持有 `DeviceDownlinkFacade` 引用,组装协议无关的 `DownlinkCommand` 后交给 broker 分流。
 
 ### 6.2 link 调 broker(踢人 / 命令下发)
 
 | link 服务 | 调用 | 用途 |
 | --- | --- | --- |
-| [DeviceActionServiceImpl](../thinglinks-link/thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceActionServiceImpl.java) | `mqttBrokerOpenAnyUserFacade.closeConnection` | 设备禁用 / 解绑时主动踢线 |
-| [DeviceCommandServiceImpl](../thinglinks-link/thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceCommandServiceImpl.java) | `MqttBrokerOpenAnyUserFacade` + `WebSocketBrokerOpenAnyUserFacade` | 统一命令下发(按设备协议路由 MQTT / WS) |
-| [OtaTaskExecutionHandler](../thinglinks-link/thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/ota/service/statemachine/event/handler/OtaTaskExecutionHandler.java) | 同上 | OTA 状态机执行任务下发 |
+| [DeviceActionServiceImpl](../thinglinks-link/thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceActionServiceImpl.java) | `mqttBrokerOpenInnerFacade.closeConnection` | 设备禁用 / 解绑时主动踢线 |
+| [DeviceCommandServiceImpl](../thinglinks-link/thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/device/service/impl/DeviceCommandServiceImpl.java) | `DeviceDownlinkFacade.dispatch` | 统一命令下发(按设备协议路由 MQTT / WS) |
+| [OtaTaskExecutionHandler](../thinglinks-link/thinglinks-link-biz/src/main/java/com/mqttsnet/thinglinks/ota/service/statemachine/event/handler/OtaTaskExecutionHandler.java) | `MqttBrokerOpenInnerFacade` + `WebSocketBrokerOpenInnerFacade` | OTA 状态机执行任务下发 |
 
 ### 6.3 broker 调 link(认证)
 

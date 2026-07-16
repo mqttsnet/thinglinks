@@ -6,8 +6,8 @@ server:
 spring:
   security:
     user:
-      name: thinglinks
-      password: your-monitor-password
+      name: ${MONITOR_USERNAME:}
+      password: ${MONITOR_PASSWORD:}
       roles: ACTUATOR_ADMIN
 
 management:

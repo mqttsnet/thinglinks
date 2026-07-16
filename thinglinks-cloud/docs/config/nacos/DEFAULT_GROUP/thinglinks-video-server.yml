@@ -1,0 +1,43 @@
+springdoc:
+  group-configs:
+    - group: 'video'
+      displayName: 'video服务'
+      paths-to-match: '/**'
+      packages-to-scan: com.mqttsnet.thinglinks
+
+server:
+  port: 18796
+
+
+# 作为28181服务器的配置
+sip:
+  # [必须修改] 28181服务监听的端口（全局共享，所有租户的设备共用此端口）
+  port: 5060
+  # [可选] 国标级联注册失败，再次发起注册的时间间隔。默认60秒（租户可在 video_sip_config.register_interval 中覆盖）
+  register-time-interval: 60
+  # [可选] 命令发送等待回复的超时时间, 单位:毫秒
+  timeout: 5000
+
+# ============================================================
+# 流媒体 / GB28181 平台配置
+# ============================================================
+# 说明：
+#   1) 本配置只保留"平台级全局项"。每个具体 ZLM 节点的地址/端口/密钥/端口范围/录像路径/autoConfig
+#      等都在 DB 表 video_media_server 里按节点独立管理，通过"流媒体管理"页面增删改查。
+#   2) 集群多 ZLM 场景：只需在"流媒体管理"页面新增多条记录，hookHost 留空走下方全局配置；
+#      若个别节点需要回调不同 Gateway，在该节点记录里单独填 hookHost。
+# ============================================================
+media:
+  # ZLM 回调平台 Gateway 的完整 URL 前缀（各 hook 端点会在这个 prefix 后面拼 /on_play、/on_publish 等）
+  # 当 video_media_server.hook_host 为空时走这个全局值；否则按节点单独的值
+  hook-domain-prefix: https://127.0.0.1:18760/video/zlmHook/anyTenant/index/hook
+  # 平台调用 ZLM/ABL REST API 的 HTTP 客户端超时与重试策略（全局通用，所有节点共用）
+  media-rest:
+    connect-timeout: 5000        # 连接超时（ms）
+    read-timeout: 10000          # 读取超时（ms）
+    retry-max-attempts: 3        # 最大重试次数（不含首次）
+    retry-initial-interval: 1000 # 首次重试间隔（ms）
+    retry-multiplier: 2.0        # 指数退避倍率（上限 60s）
+
+
+

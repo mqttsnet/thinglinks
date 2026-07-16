@@ -22,9 +22,9 @@ spring:
       number_format: 0.##########
       new_builtin_class_resolver: safer
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/thinglinks_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai&useSSL=false
-    username: root
-    password: your-mysql-password
+    url: jdbc:mysql://127.0.0.1:13306/thinglinks_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${MYSQL_USERNAME:}
+    password: ${MYSQL_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
@@ -40,9 +40,9 @@ spring:
   mail:
     host: smtp.qq.com
     port: 25
-    username: xxx@qq.com
-    from: xxx@qq.com
-    password: xxx
+    username: ${MAIL_USERNAME:}
+    from: ${MAIL_FROM:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -64,8 +64,8 @@ management:
 # actuator 安全配置
 actuator:
   security:
-    username: actuator-admin
-    password: your-actuator-password
+    username: ${ACTUATOR_USERNAME:}
+    password: ${ACTUATOR_PASSWORD:}
     roles: ACTUATOR_ADMIN
 
 mybatis:
@@ -73,7 +73,7 @@ mybatis:
 
 xxl:
   job:
-    accessToken: abcd@1234@qwer
+    accessToken: ${XXL_JOB_ACCESS_TOKEN:}
     i18n: zh_CN
     triggerpool:
       fast:

@@ -1,10 +1,10 @@
 <div align="center">
 
-[![MQTTSNET Logo](../docs/images/logo.png)](https://mqttsnet.com)
+[![MQTTSNET Logo](./docs/images/logo.png)](https://mqttsnet.com)
 
 </div>
 
-## ThingLinks | [中文文档](../README.zh-CN.md)
+## ThingLinks | [中文文档](README.zh-CN.md)
 
 # Introduction to ThingLinks Platform
 
@@ -61,4 +61,3 @@ Each business module adopts a layered architecture, typically including:
 - **biz**: Business logic layer, implements core business logic
 - **controller**: Controller layer, handles HTTP requests
 - **server**: Service startup layer, Spring Boot application entry
-

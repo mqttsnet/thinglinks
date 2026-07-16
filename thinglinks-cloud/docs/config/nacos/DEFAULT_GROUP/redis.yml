@@ -5,25 +5,25 @@ thinglinks:
     cacheNullVal: false
   redis:
     # 通用配置
-    password: your-redis-password
-    database: 1
+    password: ${REDIS_PASSWORD:}
+    database: 2
     # ===== 任意选择其中一种模式(对应的模式配置注释需要放行) =====
 
     # 模式1：单节点（默认）
     ip: 127.0.0.1
-    port: 6379
-    
+    port: 16379
+
     # 模式2：哨兵模式（注释掉单节点配置，取消注释以下）
     # sentinel:
     #   master: mymaster
     #   nodes: 127.0.0.1:26379,127.0.0.1:26379,127.0.0.1:26379
-    #   password: sentinel-password
-    
+    #   password: ${REDIS_SENTINEL_PASSWORD:}
+
     # 模式3：集群模式（注释掉单节点配置，取消注释以下）
     # cluster:
     #   nodes: 127.0.0.1:6379
     #   max-redirects: 3
-    
+
 
 spring:
   cache:
@@ -32,33 +32,34 @@ spring:
     redis:
       password: ${thinglinks.redis.password}
       database: ${thinglinks.redis.database}
-      timeout: 5000ms
-      connect-timeout: 3000ms
+      #Redis 命令超时（默认 5s 太短）
+      timeout: 10000ms
+      #建 TCP + 认证超时
+      connect-timeout: 5000ms
 
       # 单节点模式配置（与 thinglinks.redis 对应）
       host: ${thinglinks.redis.ip}
       port: ${thinglinks.redis.port}
-      
+
       # 哨兵模式配置（与 thinglinks.redis.sentinel 对应）
       # sentinel:
       #   master: ${thinglinks.redis.sentinel.master}
       #   nodes: ${thinglinks.redis.sentinel.nodes}
       #   password: ${thinglinks.redis.sentinel.password}
-      
+
       # 集群模式配置（与 thinglinks.redis.cluster 对应）
       # cluster:
       #   nodes: ${thinglinks.redis.cluster.nodes}
       #   max-redirects: ${thinglinks.redis.cluster.max-redirects}
-      
+
       lettuce:
         pool:
-          max-active: 1000
+          max-active: 32
           max-idle: 16
-          min-idle: 8
+          min-idle: 4
           test-while-idle: true
-          test-on-borrow: true
           max-wait: 3000ms
           time-between-eviction-runs: 30000ms
-        shutdown-timeout: 100ms
+        shutdown-timeout: 200ms
         client:
           timeout: 30s

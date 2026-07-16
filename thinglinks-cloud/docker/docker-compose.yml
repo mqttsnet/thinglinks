@@ -21,9 +21,9 @@ x-env-config: &env-config
   # Nacos 的命名空间
   NACOS_NAMESPACE: c0858b2e-960e-47b9-9b2d-17294dda787c
   # Nacos 用户名
-  NACOS_USERNAME: thinglinks-test
+  NACOS_USERNAME: ${NACOS_USERNAME:?NACOS_USERNAME must be set}
   # Nacos 密码
-  NACOS_PASSWORD: 12345678
+  NACOS_PASSWORD: ${NACOS_PASSWORD:?NACOS_PASSWORD must be set}
   # 指定服务注册 IP
   NACOS_DISCOVERY_IP: 127.0.0.1
   # JVM 内存参数配置（适配Dockerfile中的配置）
@@ -38,9 +38,9 @@ x-env-config: &env-config
   # 初始代码缓存大小
   JVM_INITIAL_CODE_CACHE: 128m
   # 健康检查用户名
-  ACTUATOR_USERNAME: actuator-admin
+  ACTUATOR_USERNAME: ${ACTUATOR_USERNAME:?ACTUATOR_USERNAME must be set}
   # 健康检查密码
-  ACTUATOR_PASSWORD: Secure@mqttsnet
+  ACTUATOR_PASSWORD: ${ACTUATOR_PASSWORD:?ACTUATOR_PASSWORD must be set}
 
 # 共享卷和网络配置
 x-shared-config: &shared-config
@@ -63,7 +63,7 @@ services:
   thinglinks-base:
     container_name: thinglinks-base-server
     build:
-      context: ../thinglinks-cloud/thinglinks-base/thinglinks-base-server
+      context: ../thinglinks-base/thinglinks-base-server
       dockerfile: Dockerfile
     ports:
       - "18764:18764" # 映射端口
@@ -76,11 +76,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-broker:
     container_name: thinglinks-broker-server
     build:
-      context: ../thinglinks-cloud/thinglinks-broker/thinglinks-broker-server
+      context: ../thinglinks-broker/thinglinks-broker-server
       dockerfile: Dockerfile
     ports:
       - "18790:18790"
@@ -93,11 +93,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-card:
     container_name: thinglinks-card-server
     build:
-      context: ../thinglinks-cloud/thinglinks-card/thinglinks-card-server
+      context: ../thinglinks-card/thinglinks-card-server
       dockerfile: Dockerfile
     ports:
       - "18794:18794"
@@ -110,11 +110,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-gateway:
     container_name: thinglinks-gateway-server
     build:
-      context: ../thinglinks-cloud/thinglinks-gateway/thinglinks-gateway-server
+      context: ../thinglinks-gateway/thinglinks-gateway-server
       dockerfile: Dockerfile
     ports:
       - "18760:18760"
@@ -127,11 +127,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-sop-gateway:
     container_name: thinglinks-sop-gateway-server
     build:
-      context: ../thinglinks-cloud/thinglinks-gateway/thinglinks-sop-gateway-server
+      context: ../thinglinks-gateway/thinglinks-sop-gateway-server
       dockerfile: Dockerfile
     ports:
       - "18750:18750"
@@ -144,11 +144,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-generator:
     container_name: thinglinks-generator-server
     build:
-      context: ../thinglinks-cloud/thinglinks-generator/thinglinks-generator-server
+      context: ../thinglinks-generator/thinglinks-generator-server
       dockerfile: Dockerfile
     ports:
       - "18780:18780"
@@ -161,11 +161,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-link:
     container_name: thinglinks-link-server
     build:
-      context: ../thinglinks-cloud/thinglinks-link/thinglinks-link-server
+      context: ../thinglinks-link/thinglinks-link-server
       dockerfile: Dockerfile
     ports:
       - "18782:18782"
@@ -178,11 +178,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-mobile:
     container_name: thinglinks-mobile-server
     build:
-      context: ../thinglinks-cloud/thinglinks-mobile/thinglinks-mobile-server
+      context: ../thinglinks-mobile/thinglinks-mobile-server
       dockerfile: Dockerfile
     ports:
       - "18798:18798"
@@ -195,11 +195,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-mqs:
     container_name: thinglinks-mqs-server
     build:
-      context: ../thinglinks-cloud/thinglinks-mqs/thinglinks-mqs-server
+      context: ../thinglinks-mqs/thinglinks-mqs-server
       dockerfile: Dockerfile
     ports:
       - "18784:18784"
@@ -212,11 +212,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-oauth:
     container_name: thinglinks-oauth-server
     build:
-      context: ../thinglinks-cloud/thinglinks-oauth/thinglinks-oauth-server
+      context: ../thinglinks-oauth/thinglinks-oauth-server
       dockerfile: Dockerfile
     ports:
       - "18773:18773"
@@ -229,11 +229,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-openapi:
     container_name: thinglinks-openapi-server
     build:
-      context: ../thinglinks-cloud/thinglinks-openapi/thinglinks-openapi-server
+      context: ../thinglinks-openapi/thinglinks-openapi-server
       dockerfile: Dockerfile
     ports:
       - "18766:18766"
@@ -246,11 +246,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-rule:
     container_name: thinglinks-rule-server
     build:
-      context: ../thinglinks-cloud/thinglinks-rule/thinglinks-rule-server
+      context: ../thinglinks-rule/thinglinks-rule-server
       dockerfile: Dockerfile
     ports:
       - "18786:18786"
@@ -264,11 +264,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-sop-admin:
     container_name: thinglinks-sop-admin-server
     build:
-      context: ../thinglinks-cloud/thinglinks-sop-admin/thinglinks-sop-admin-server
+      context: ../thinglinks-sop-admin/thinglinks-sop-admin-server
       dockerfile: Dockerfile
     ports:
       - "18765:18765"
@@ -281,11 +281,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-monitor:
     container_name: thinglinks-monitor-server
     build:
-      context: ../thinglinks-cloud/thinglinks-support/thinglinks-monitor-server
+      context: ../thinglinks-support/thinglinks-monitor-server
       dockerfile: Dockerfile
     ports:
       - "18762:18762"
@@ -298,11 +298,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-base-executor:
     container_name: thinglinks-base-executor
     build:
-      context: ../thinglinks-cloud/thinglinks-support/thinglinks-base-executor
+      context: ../thinglinks-support/thinglinks-base-executor
       dockerfile: Dockerfile
     ports:
       - "18900:18900"
@@ -317,11 +317,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-iot-executor:
     container_name: thinglinks-iot-executor
     build:
-      context: ../thinglinks-cloud/thinglinks-support/thinglinks-iot-executor
+      context: ../thinglinks-support/thinglinks-iot-executor
       dockerfile: Dockerfile
     ports:
       - "18910:18910"
@@ -336,11 +336,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-system:
     container_name: thinglinks-system-server
     build:
-      context: ../thinglinks-cloud/thinglinks-system/thinglinks-system-server
+      context: ../thinglinks-system/thinglinks-system-server
       dockerfile: Dockerfile
     ports:
       - "18778:18778"
@@ -353,11 +353,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-tds:
     container_name: thinglinks-tds-server
     build:
-      context: ../thinglinks-cloud/thinglinks-tds/thinglinks-tds-server
+      context: ../thinglinks-tds/thinglinks-tds-server
       dockerfile: Dockerfile
     ports:
       - "18788:18788"
@@ -370,11 +370,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-video:
     container_name: thinglinks-video-server
     build:
-      context: ../thinglinks-cloud/thinglinks-video/thinglinks-video-server
+      context: ../thinglinks-video/thinglinks-video-server
       dockerfile: Dockerfile
     ports:
       - "18796:18796"
@@ -387,11 +387,11 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
   thinglinks-view:
     container_name: thinglinks-view-server
     build:
-      context: ../thinglinks-cloud/thinglinks-view/thinglinks-view-server
+      context: ../thinglinks-view/thinglinks-view-server
       dockerfile: Dockerfile
     ports:
       - "18792:18792"
@@ -404,22 +404,4 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config
-  # ─── Job (Distributed Task Scheduling) ───────────────────────────────
-  thinglinks-job-admin:
-    container_name: thinglinks-job-admin
-    build:
-      context: ../thinglinks-job/thinglinks-job-admin
-      dockerfile: Dockerfile
-    ports:
-      - "18767:18767"
-    environment:
-      <<: *env-config
-      SERVICE_PORT: 18767
-    healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/thinglinks-job-admin/actuator/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    <<: *shared-config
+    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义

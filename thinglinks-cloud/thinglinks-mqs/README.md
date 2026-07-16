@@ -186,7 +186,7 @@ A→C→B 乱序到达:无 HLC 最终错成 OFFLINE;有 HLC 时 B 的 CAS 检查
 
 ## 7. ⭐ Action Type 完整规范
 
-> 改 [DeviceActionTypeEnum](../thinglinks-link/thinglinks-link-entity/src/main/java/com/mqttsnet/thinglinks/device/enumeration/DeviceActionTypeEnum.java) 时同步本表。
+> 改 [DeviceActionTypeEnum](../thinglinks-public/thinglinks-common/src/main/java/com/mqttsnet/thinglinks/common/enums/DeviceActionTypeEnum.java) 时同步本表。
 
 | Action | 含义 | Producer | Kafka topic | bus 分组 | biz 处理 | 终点 |
 |---|---|---|---|---|---|---|
@@ -335,7 +335,7 @@ public class VendorReportHandlerExample implements TopicHandler {
 | `BridgeMessageEnvelope` 字段 | `BridgeRelayStage.toEnvelope` + rule 端解析 + 本 README 第 6 节 |
 | HLC 流程 | 本 README 第 5 节 + link `DeviceServiceImpl#updateDeviceConnectionStatusByEvent` |
 
-字典:`LINK_DEVICE_ACTION_TYPE`(13 项 ↔ enum)/ `RULE_CONDITION_DEVICE_ACTION_TIRGGER_TYPE`(11 项,规则 UI)── 在运营后台维护,改 enum 同步通知 DBA。
+字典:`LINK_DEVICE_ACTION_TYPE`(13 项 ↔ enum)/ `RULE_CONDITION_DEVICE_ACTION_TIRGGER_TYPE`(12 项:11 个 MQS 动作 + OFFLINE 业务分组,规则 UI)── 在运营后台维护,改 enum 同步通知 DBA。
 
 **PR Review 红线**:代码改动是否影响本 README 某节?改 enum 是否同步字典 SQL / plugin / rule?改 envelope 是否同步 rule 端?
 

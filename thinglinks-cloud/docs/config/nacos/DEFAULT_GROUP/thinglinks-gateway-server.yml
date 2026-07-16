@@ -114,10 +114,24 @@ spring:
             - Path=/video/**
           filters:
             - StripPrefix=1
+        # websocket-Video (流媒体服务)
+        - id: wsVideo
+          uri: lb:ws://thinglinks-video-server
+          predicates:
+            - Path=/wsVideo/**
+          filters:
+            - StripPrefix=1
         - id: broker
           uri: lb://thinglinks-broker-server
           predicates:
             - Path=/broker/**
+          filters:
+            - StripPrefix=1
+        # websocket-Broker (Broker服务)
+        - id: wsBroker
+          uri: lb:ws://thinglinks-broker-server
+          predicates:
+            - Path=/wsBroker/**
           filters:
             - StripPrefix=1
         - id: view
