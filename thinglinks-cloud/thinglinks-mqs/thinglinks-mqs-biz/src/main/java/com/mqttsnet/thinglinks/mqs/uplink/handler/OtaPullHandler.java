@@ -15,7 +15,7 @@ import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.mqs.uplink.service.EventOtaPullService;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoOtaPullParam;
@@ -40,9 +40,9 @@ public class OtaPullHandler extends AbstractMessageHandler implements TopicHandl
     private EventOtaPullService mqttEventOtaPullService;
 
     public OtaPullHandler(LinkCacheDataHelper linkCacheDataHelper,
-                          DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
+                          DeviceOpenInnerFacade deviceOpenInnerApi,
                           ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenInnerApi, protocolMessageAdapter);
     }
 
     /**

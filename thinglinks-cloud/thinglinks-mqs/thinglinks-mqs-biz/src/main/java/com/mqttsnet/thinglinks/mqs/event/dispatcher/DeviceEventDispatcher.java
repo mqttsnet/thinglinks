@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.entity.device.CommonDeviceEvent;
 import com.mqttsnet.thinglinks.mqs.event.hook.DeviceEventContext;
 import com.mqttsnet.thinglinks.mqs.event.hook.DeviceEventHook;

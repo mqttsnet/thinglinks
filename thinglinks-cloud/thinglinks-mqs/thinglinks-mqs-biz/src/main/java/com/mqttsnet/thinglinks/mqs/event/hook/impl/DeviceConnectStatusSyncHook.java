@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.mqs.event.hook.impl;
 
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.device.enumeration.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.entity.device.CommonDeviceEvent;
 import com.mqttsnet.thinglinks.mqs.event.hook.DeviceEventContext;
 import com.mqttsnet.thinglinks.mqs.event.hook.DeviceEventHook;
@@ -49,7 +50,7 @@ public class DeviceConnectStatusSyncHook implements DeviceEventHook {
      * {@inheritDoc}
      * <p>
      * 调 {@link DeviceConnectStatusSyncer#sync} 以事件时间戳做单调写更新 {@code device.connect_status}.
-     * 目标状态由 {@link DeviceActionTypeEnum#fallbackConnectStatus} 给出:
+     * 目标状态由本 hook 显式映射:
      * CONNECT → ONLINE,其余(DISCONNECT/CLOSE/KICKED/HEART_TIMEOUT/ERROR)→ OFFLINE.
      * <p>
      * 单调写键的优先级:
@@ -63,6 +64,12 @@ public class DeviceConnectStatusSyncHook implements DeviceEventHook {
     public void beforeDispatch(DeviceEventContext ctx) {
         CommonDeviceEvent event = ctx.getEvent();
         Long syncKey = event.getEventHlc() != null ? event.getEventHlc() : event.getTs();
-        syncer.sync(ctx.getClientId(), ctx.getType().fallbackConnectStatus(), syncKey);
+        syncer.sync(ctx.getClientId(), fallbackConnectStatus(ctx.getType()), syncKey);
+    }
+
+    private DeviceConnectStatusEnum fallbackConnectStatus(DeviceActionTypeEnum type) {
+        return DeviceActionTypeEnum.CONNECT.equals(type)
+                ? DeviceConnectStatusEnum.ONLINE
+                : DeviceConnectStatusEnum.OFFLINE;
     }
 }

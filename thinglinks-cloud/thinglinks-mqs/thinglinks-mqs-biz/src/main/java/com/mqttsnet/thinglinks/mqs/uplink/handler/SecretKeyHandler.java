@@ -15,7 +15,7 @@ import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceEncryptMethodEnum;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.protocol.vo.result.TopoSecretKeyResponseResultVO;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +35,9 @@ public class SecretKeyHandler extends AbstractMessageHandler implements TopicHan
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public SecretKeyHandler(LinkCacheDataHelper linkCacheDataHelper,
-                            DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
+                            DeviceOpenInnerFacade deviceOpenInnerApi,
                             ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenInnerApi, protocolMessageAdapter);
     }
 
     /**

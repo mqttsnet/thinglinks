@@ -10,8 +10,7 @@ import com.mqttsnet.thinglinks.vo.query.DownlinkCommand;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.cache.vo.product.ProductModelCacheVO;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
-import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.tds.vo.result.SuperTableDescribeVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AbstractMessageHandler {
 
     protected final LinkCacheDataHelper linkCacheDataHelper;
-    protected final DeviceOpenAnyUserFacade deviceOpenAnyUserApi;
+    protected final DeviceOpenInnerFacade deviceOpenInnerApi;
     protected final ProtocolMessageAdapter protocolMessageAdapter;
 
     public AbstractMessageHandler(LinkCacheDataHelper linkCacheDataHelper,
-                                  DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
+                                  DeviceOpenInnerFacade deviceOpenInnerApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
         this.linkCacheDataHelper = linkCacheDataHelper;
-        this.deviceOpenAnyUserApi = deviceOpenAnyUserApi;
+        this.deviceOpenInnerApi = deviceOpenInnerApi;
         this.protocolMessageAdapter = protocolMessageAdapter;
     }
 
@@ -81,10 +80,6 @@ public abstract class AbstractMessageHandler {
     protected Optional<ProductModelCacheVO> resolveProductModelByVersionNo(String productIdentification,
                                                                            String boundProductVersionNo) {
         return linkCacheDataHelper.resolveProductModelByVersionNo(productIdentification, boundProductVersionNo);
-    }
-
-    protected void setDeviceDataCollectionPoolCacheVO(String productIdentification, String deviceIdentification, ProductResultVO productResultVO) {
-        linkCacheDataHelper.setDeviceDataCollectionPoolCacheVO(productIdentification, deviceIdentification, productResultVO);
     }
 
     /**

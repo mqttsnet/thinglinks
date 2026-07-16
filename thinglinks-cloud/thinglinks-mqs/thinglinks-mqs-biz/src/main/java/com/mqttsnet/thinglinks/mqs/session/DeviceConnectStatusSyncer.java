@@ -3,7 +3,7 @@ package com.mqttsnet.thinglinks.mqs.session;
 import cn.hutool.core.util.StrUtil;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceConnectStatusEnum;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DeviceConnectStatusSyncer {
 
-    private final DeviceOpenAnyUserFacade deviceApi;
+    private final DeviceOpenInnerFacade deviceApi;
 
     /**
      * 提交一次基于事件的连接状态同步.

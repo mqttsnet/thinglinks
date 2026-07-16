@@ -101,7 +101,7 @@ public class BridgeMessageEnvelope implements Serializable {
 
     /**
      * 事件类型枚举(PUBLISH/CONNECT/CLOSE/DISCONNECT/SUBSCRIBE/UNSUBSCRIBE/PING/PUBLISH_ACK/HEART_TIMEOUT/ERROR/...)。
-     * 复用字典 LINK_DEVICE_ACTION_TYPE,与 {@code DeviceActionTypeEnum}(link-entity)一一对齐 ──
+     * 复用字典 LINK_DEVICE_ACTION_TYPE,与 {@code com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum} 一一对齐 ──
      * 所有协议(MQTT/WS/TCP)的事件类型都收敛到此一个枚举。
      * <p>规则匹配 actionTypes 用。
      */

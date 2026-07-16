@@ -15,10 +15,10 @@ import com.mqttsnet.basic.rocketmq.listener.AbstractTenantAwareRocketmqListener;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.common.event.bridge.BridgeMessageEnvelope;
 import com.mqttsnet.thinglinks.common.mq.BizMqRouteConstant;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.device.vo.save.DeviceActionSaveVO;
 import com.mqttsnet.thinglinks.entity.device.CommonDeviceEvent;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.event.processor.DevicePublishProcessor;
 import com.mqttsnet.thinglinks.product.enumeration.ProtocolTypeEnum;
 import com.mqttsnet.thinglinks.rule.facade.RuleJobHandlerFacade;
@@ -57,7 +57,7 @@ import org.springframework.stereotype.Component;
 public class BridgeIngressRocketmqConsumer extends AbstractTenantAwareRocketmqListener<BridgeMessageEnvelope> {
 
     private final DevicePublishProcessor devicePublishProcessor;
-    private final DeviceOpenAnyUserFacade deviceOpenAnyUserFacade;
+    private final DeviceOpenInnerFacade deviceOpenInnerFacade;
     private final RuleJobHandlerFacade ruleJobHandlerFacade;
 
     @Override
@@ -190,7 +190,7 @@ public class BridgeIngressRocketmqConsumer extends AbstractTenantAwareRocketmqLi
         vo.setStatus(1);
         vo.setRemark(StrUtil.format("trace={}", envelope.getTraceId()));
 
-        R<?> result = deviceOpenAnyUserFacade.saveDeviceAction(vo);
+        R<?> result = deviceOpenInnerFacade.saveDeviceAction(vo);
         if (result == null || !result.getIsSuccess()) {
             String msg = result == null ? "null result" : result.getMsg();
             log.warn("[BridgeIngressConsumer] RAW_INSERT Feign saveDeviceAction failed traceId={} deviceId={} msg={}",

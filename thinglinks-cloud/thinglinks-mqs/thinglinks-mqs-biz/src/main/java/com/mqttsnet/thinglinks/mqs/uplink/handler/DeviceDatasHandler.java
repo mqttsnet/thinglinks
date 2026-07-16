@@ -12,7 +12,7 @@ import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.mqs.service.DeviceDataProcessingService;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoDeviceDataReportParam;
@@ -36,9 +36,9 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
 
 
     public DeviceDatasHandler(LinkCacheDataHelper linkCacheDataHelper,
-                              DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
+                              DeviceOpenInnerFacade deviceOpenInnerApi,
                               ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenInnerApi, protocolMessageAdapter);
     }
 
     /**
@@ -75,7 +75,6 @@ public class DeviceDatasHandler extends AbstractMessageHandler implements TopicH
             return;
         }
         // 厂商私有 topic/报文已在路由前由「设备上行前置转换」(InboundScriptTransformer)按需转为平台标准结构,此处不再内嵌脚本转换
-        log.info("处理协议报文...设备标识: {}, 报文: {}", deviceCacheVO.getDeviceIdentification(), body);
         // 验证协议格式
         if (!JSON.isValid(body) || !protocolMessageAdapter.validateProtocolData(body)) {
             log.warn("协议格式不正确，设备标识: {}, 报文: {}", deviceCacheVO.getDeviceIdentification(), body);

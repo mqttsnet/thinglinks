@@ -16,7 +16,7 @@ import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoAddSubDeviceParam;
 import com.mqttsnet.thinglinks.protocol.vo.result.TopoAddDeviceResultVO;
@@ -37,9 +37,9 @@ public class AddSubDeviceHandler extends AbstractMessageHandler implements Topic
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public AddSubDeviceHandler(LinkCacheDataHelper linkCacheDataHelper,
-                               DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
+                               DeviceOpenInnerFacade deviceOpenInnerApi,
                                ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenInnerApi, protocolMessageAdapter);
     }
 
     /**
@@ -131,7 +131,7 @@ public class AddSubDeviceHandler extends AbstractMessageHandler implements Topic
         }
 
         TopoAddSubDeviceParam addParam = (TopoAddSubDeviceParam) topoAddSubDeviceParam;
-        R<TopoAddDeviceResultVO> mqttTopoAddDeviceResultVOR = deviceOpenAnyUserApi.saveSubDeviceByMqtt(addParam);
+        R<TopoAddDeviceResultVO> mqttTopoAddDeviceResultVOR = deviceOpenInnerApi.saveSubDeviceByMqtt(addParam);
 
         log.info("Processing /topo/add Topic result: {}", JSON.toJSONString(mqttTopoAddDeviceResultVOR));
         return JSON.toJSONString(mqttTopoAddDeviceResultVOR.getData());

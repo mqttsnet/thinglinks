@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.mqs.bus.stage.distribution;
 
 import com.mqttsnet.thinglinks.bus.stage.AbstractDeviceEventStage;
 import com.mqttsnet.thinglinks.bus.stage.StageContext;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.entity.protocol.DeviceProtocolEvent;
 import com.mqttsnet.thinglinks.enumeration.bus.StagePhaseEnum;
 import com.mqttsnet.thinglinks.mqs.bus.stats.BusStatsService;

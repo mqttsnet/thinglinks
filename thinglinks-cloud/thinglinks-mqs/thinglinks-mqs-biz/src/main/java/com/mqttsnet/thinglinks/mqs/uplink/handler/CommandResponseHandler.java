@@ -10,7 +10,7 @@ import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.mqs.uplink.service.EventCommandService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +31,9 @@ public class CommandResponseHandler extends AbstractMessageHandler implements To
     private EventCommandService mqttEventCommandService;
 
     public CommandResponseHandler(LinkCacheDataHelper linkCacheDataHelper,
-                                  DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
+                                  DeviceOpenInnerFacade deviceOpenInnerApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenInnerApi, protocolMessageAdapter);
     }
 
     /**
@@ -82,7 +82,7 @@ public class CommandResponseHandler extends AbstractMessageHandler implements To
                 .cipherFlag(deviceCacheVO.getEncryptMethod())
                 .build();
             String decryptedBody = protocolMessageAdapter.decryptMessage(body, encryptionDetailsDTO);
-            mqttEventCommandService.processCommand(deviceCacheVO, body, decryptedBody);
+            mqttEventCommandService.processCommand(deviceCacheVO, topic, body, decryptedBody);
         } catch (Exception e) {
             log.error("Failed to decrypt the message", e);
         }

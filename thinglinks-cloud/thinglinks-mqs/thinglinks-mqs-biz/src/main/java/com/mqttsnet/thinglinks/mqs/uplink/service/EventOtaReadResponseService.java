@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.mqs.uplink.service;
 
 import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
-import com.mqttsnet.thinglinks.link.facade.OtaOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.OtaOpenInnerFacade;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoOtaReadResponseParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 public class EventOtaReadResponseService {
 
     @Autowired
-    private OtaOpenAnyUserFacade otaOpenAnyUserFacade;
+    private OtaOpenInnerFacade otaOpenInnerFacade;
 
 
     /**
@@ -44,7 +44,7 @@ public class EventOtaReadResponseService {
      */
     public void handleMqttEventOtaReadResponse(TopoOtaReadResponseParam topoOtaReadResponseParam) {
         try {
-            R<?> otaReadResponseParamR = otaOpenAnyUserFacade.otaReadResponseByMqtt(topoOtaReadResponseParam);
+            R<?> otaReadResponseParamR = otaOpenInnerFacade.otaReadResponseByMqtt(topoOtaReadResponseParam);
             log.info("OTA Read response: {}", JSON.toJSONString(otaReadResponseParamR));
 
             if (!otaReadResponseParamR.getIsSuccess()) {

@@ -27,7 +27,7 @@ import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.entity.device.CommonDeviceEvent;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
 import com.mqttsnet.thinglinks.product.enumeration.ProtocolTypeEnum;
-import com.mqttsnet.thinglinks.rule.facade.RuleOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.rule.facade.RuleOpenInnerFacade;
 import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptDirectCompileParam;
 import com.mqttsnet.thinglinks.vo.result.script.GroovyScriptEngineExecutorResultVO;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +69,7 @@ public class InboundScriptTransformer {
 
     private final CachePlusOps cachePlusOps;
     private final LinkCacheDataHelper linkCacheDataHelper;
-    private final RuleOpenAnyUserFacade ruleOpenAnyUserFacade;
+    private final RuleOpenInnerFacade ruleOpenInnerFacade;
     private final ScriptBindingAssembler bindingAssembler;
 
     /**
@@ -202,7 +202,7 @@ public class InboundScriptTransformer {
         // 脚本唯一键透传给 rule,供按脚本维度记执行统计(total/success/fail)
         param.setScriptUniqueKey(scriptUniqueKey);
 
-        R<GroovyScriptEngineExecutorResultVO> r = ruleOpenAnyUserFacade.executeScriptContent(param);
+        R<GroovyScriptEngineExecutorResultVO> r = ruleOpenInnerFacade.executeScriptContent(param);
         if (r == null || !Boolean.TRUE.equals(r.getIsSuccess()) || r.getData() == null) {
             log.warn("[InboundTransform] script exec non-success clientId={} topic={} r={}", event.getClientId(), topic, JSON.toJSONString(r));
             return null;

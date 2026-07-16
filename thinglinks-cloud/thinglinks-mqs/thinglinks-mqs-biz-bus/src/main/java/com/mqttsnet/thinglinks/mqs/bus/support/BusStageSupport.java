@@ -8,7 +8,7 @@ import cn.hutool.core.util.StrUtil;
 import com.mqttsnet.thinglinks.bus.stage.StageContext;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.constants.bus.BusConstants;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.entity.protocol.DeviceProtocolEvent;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -42,16 +42,16 @@ public class BusStageSupport {
         if (StrUtil.isBlank(actionType) || candidates == null || candidates.length == 0) {
             return false;
         }
-        return Arrays.stream(candidates)
-            .map(DeviceActionTypeEnum::getValue)
-            .anyMatch(actionType::equals);
+        Optional<DeviceActionTypeEnum> actual = DeviceActionTypeEnum.fromValue(actionType);
+        return actual.isPresent() && Arrays.stream(candidates).anyMatch(actual.get()::equals);
     }
 
     /**
      * 单类型快速判断。
      */
     public boolean matchesAction(DeviceProtocolEvent event, DeviceActionTypeEnum target) {
-        return event != null && target != null && target.getValue().equals(event.getEventType());
+        return event != null && target != null
+            && DeviceActionTypeEnum.fromValue(event.getEventType()).filter(target::equals).isPresent();
     }
 
     /**

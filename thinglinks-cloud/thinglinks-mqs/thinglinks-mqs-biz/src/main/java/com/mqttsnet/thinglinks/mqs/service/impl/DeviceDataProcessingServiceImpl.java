@@ -82,7 +82,6 @@ public class DeviceDataProcessingServiceImpl implements DeviceDataProcessingServ
         }
         log.info("processDeviceDataReport....dataReportParam:{}", JSON.toJSONString(dataReportParam));
         dataReportParam.getDevices().forEach(device -> {
-            log.info("processingDeviceDataTopic Processing result:{}", JSON.toJSONString(device));
             String deviceId = device.getDeviceId();
             Optional<DeviceCacheVO> deviceCacheVOOptional = linkCacheDataHelper.getDeviceCacheVO(deviceId);
             if (deviceCacheVOOptional.isEmpty()) {
@@ -250,7 +249,6 @@ public class DeviceDataProcessingServiceImpl implements DeviceDataProcessingServ
                 tableDTO.setSchemaFieldValues(schemaFieldsStream);
                 tableDTO.setTagsFieldValues(tagsFieldsStream);
 
-                log.info("insertTableData param:{}", JSON.toJSONString(tableDTO));
                 R insertedResult = tdsApi.insertTableData(tableDTO);
                 if (Boolean.TRUE.equals(insertedResult.getIsSuccess())) {
                     log.info("insert  table data success, tableName:{}", subTableName);
@@ -276,11 +274,6 @@ public class DeviceDataProcessingServiceImpl implements DeviceDataProcessingServ
                     return emptyResult;
                 });
 
-            // 写入数据收集池
-            linkCacheDataHelper.setDeviceDataCollectionPoolCacheVO(Optional.ofNullable(deviceCacheVO.getProductIdentification()).orElse(""),
-                deviceCacheVO.getDeviceIdentification(), productResultVO);
-
-            // 物模型匹配落库后:触发数据上报后置处理器(默认把结构化数据桥接出站),失败不阻断主链路
             fireDataReportPostProcessors(deviceCacheVO, productResultVO, boundProductVersionNo);
         });
     }

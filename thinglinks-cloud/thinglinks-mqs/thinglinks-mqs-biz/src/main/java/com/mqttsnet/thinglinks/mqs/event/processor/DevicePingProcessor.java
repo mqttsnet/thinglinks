@@ -7,9 +7,9 @@ import com.mqttsnet.basic.cache.repository.CachePlusOps;
 import com.mqttsnet.basic.model.cache.CacheKey;
 import com.mqttsnet.thinglinks.common.cache.mqs.heartbeat.DeviceHeartbeatReconcileCacheKeyBuilder;
 import com.mqttsnet.thinglinks.constants.bus.BusKafkaJsonField;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.entity.device.CommonDeviceEvent;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DevicePingProcessor implements DeviceEventProcessor {
 
-    private final DeviceOpenAnyUserFacade deviceOpenAnyUserApi;
+    private final DeviceOpenInnerFacade deviceOpenInnerApi;
     private final CachePlusOps cachePlusOps;
 
     /**
@@ -62,7 +62,7 @@ public class DevicePingProcessor implements DeviceEventProcessor {
         if (heartbeatTime == null && statusHlc == null) {
             return;
         }
-        R<Boolean> r = deviceOpenAnyUserApi.reportDeviceHeartbeat(event.getClientId(), heartbeatTime, statusHlc);
+        R<Boolean> r = deviceOpenInnerApi.reportDeviceHeartbeat(event.getClientId(), heartbeatTime, statusHlc);
         if (!Boolean.TRUE.equals(r.getIsSuccess())) {
             throw new IllegalStateException("reportDeviceHeartbeat failed clientId=" + event.getClientId()
                     + " msg=" + r.getMsg());

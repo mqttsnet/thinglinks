@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.mqs.event.processor;
 
 import cn.hutool.core.util.StrUtil;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.entity.device.CommonDeviceEvent;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
 import com.mqttsnet.thinglinks.mqs.uplink.handler.TopicHandler;

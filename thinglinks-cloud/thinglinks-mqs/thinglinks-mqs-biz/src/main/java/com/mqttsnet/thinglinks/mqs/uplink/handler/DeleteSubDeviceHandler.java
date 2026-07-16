@@ -15,7 +15,7 @@ import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoDeleteSubDeviceParam;
 import com.mqttsnet.thinglinks.protocol.vo.result.TopoDeviceOperationResultVO;
@@ -36,9 +36,9 @@ public class DeleteSubDeviceHandler extends AbstractMessageHandler implements To
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public DeleteSubDeviceHandler(LinkCacheDataHelper linkCacheDataHelper,
-                                  DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
+                                  DeviceOpenInnerFacade deviceOpenInnerApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenInnerApi, protocolMessageAdapter);
     }
 
     /**
@@ -123,7 +123,7 @@ public class DeleteSubDeviceHandler extends AbstractMessageHandler implements To
      */
     @Override
     protected String processingTopicMessage(Object topoDeleteSubDeviceParam) throws Exception {
-        R<TopoDeviceOperationResultVO> mqttTopoDeleteDeviceResultVOR = deviceOpenAnyUserApi.deleteSubDeviceByMqtt((TopoDeleteSubDeviceParam) topoDeleteSubDeviceParam);
+        R<TopoDeviceOperationResultVO> mqttTopoDeleteDeviceResultVOR = deviceOpenInnerApi.deleteSubDeviceByMqtt((TopoDeleteSubDeviceParam) topoDeleteSubDeviceParam);
         log.info("processingTopoDeleteTopic Processing result:{}", JSON.toJSONString(mqttTopoDeleteDeviceResultVOR));
         return JSON.toJSONString(mqttTopoDeleteDeviceResultVOR.getData());
     }

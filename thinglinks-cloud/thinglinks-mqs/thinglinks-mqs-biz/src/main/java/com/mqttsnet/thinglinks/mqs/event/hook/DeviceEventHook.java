@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.mqs.event.hook;
 
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import org.springframework.core.Ordered;
 
 /**

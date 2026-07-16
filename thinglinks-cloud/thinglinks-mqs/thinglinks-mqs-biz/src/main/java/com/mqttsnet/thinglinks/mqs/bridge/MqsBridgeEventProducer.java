@@ -8,24 +8,25 @@ import com.mqttsnet.thinglinks.common.mq.BizMqRouteConstant;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.SendStatus;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
  * 桥接事件旁路投递器(mqs 端).
  *
  * <h3>定位</h3>
- * 在 mqs 现有事件链路(MQTT / WebSocket / TCP 协议处理)尾部以"旁路 + best-effort"方式
+ * 在 mqs 现有事件链路(MQTT / WebSocket / TCP 协议处理)尾部以"旁路 + 同步确认"方式
  * 投递 {@link BridgeMessageEnvelope} 到 RocketMQ {@link BizMqRouteConstant.Bridge#DEVICE_EVENT},
  * 由 thinglinks-rule 的 BridgeDeviceEventConsumer 消费做规则匹配 + 桥接分发.
  *
- * <h3>容错策略(Outbox 变体)</h3>
+ * <h3>容错策略</h3>
  * <ul>
- *   <li>异步发送:调用方 0 阻塞,asyncSend 后立即返回</li>
- *   <li>失败仅 warn 不抛:mqs 主链路(设备数据持久化)已稳定运行多年,不能因 RocketMQ 故障让设备主数据丢失</li>
- *   <li>桥接故障最坏 = 设备数据没桥接出去(设备会重发,可补偿);主链路 100% 不受影响</li>
+ *   <li>同步确认:返回值明确表示消息是否已被 broker 确认接收</li>
+ *   <li>有限重试:短暂网络抖动不立即丢事件</li>
+ *   <li>失败不抛给主链路:设备数据落库仍优先完成,但调用方可按返回值记录失败指标</li>
  * </ul>
  *
  * <h3>上下文传播</h3>
@@ -39,7 +40,16 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MqsBridgeEventProducer {
 
+    private static final long DEFAULT_SEND_TIMEOUT_MS = 5000L;
+    private static final int DEFAULT_SEND_MAX_ATTEMPTS = 2;
+
     private final ObjectProvider<RocketmqTemplate> rocketmqTemplateProvider;
+
+    @Value("${thinglinks.mqs.bridge-event.sync-send-timeout-ms:5000}")
+    private long sendTimeoutMs;
+
+    @Value("${thinglinks.mqs.bridge-event.sync-send-max-attempts:2}")
+    private int sendMaxAttempts;
 
     /**
      * 启动时主动检查 RocketMQ 是否注入成功.
@@ -67,20 +77,23 @@ public class MqsBridgeEventProducer {
     }
 
     /**
-     * 旁路投递桥接事件(异步、best-effort).
-     * <p>失败只 warn,不抛异常,保证不影响 mqs 主链路.
+     * 投递桥接事件并等待 broker 确认.
+     * <p>失败只 warn 并返回 {@code false},保证不影响 mqs 主链路;调用方必须按返回值记录指标,
+     * 避免把"调用过发送方法"误判为"消息已进入 RocketMQ".
      *
      * @param envelope 桥接消息体(业务侧已构造完毕)
+     * @return {@code true}=已收到 broker SEND_OK;{@code false}=未确认投递成功
      */
-    public void publishBridgeEvent(BridgeMessageEnvelope envelope) {
+    public boolean publishBridgeEvent(BridgeMessageEnvelope envelope) {
         if (envelope == null) {
             log.warn("[MqsBridgeEventProducer] envelope is null, skip");
-            return;
+            return false;
         }
         RocketmqTemplate rocketmqTemplate = rocketmqTemplateProvider.getIfAvailable();
         if (rocketmqTemplate == null) {
-            // 启动 selfCheck 已对此场景 warn 过,运行时再吞调用,不重复刷屏
-            return;
+            log.warn("[MqsBridgeEventProducer] RocketmqTemplate unavailable, skip traceId={} clientId={} action={}",
+                envelope.getTraceId(), envelope.getClientId(), envelope.getActionType());
+            return false;
         }
         if (StrUtil.isBlank(envelope.getTraceId())) {
             envelope.setTraceId(ContextUtil.getLogTraceId());
@@ -93,35 +106,35 @@ public class MqsBridgeEventProducer {
         }
 
         String destination = BizMqRouteConstant.Bridge.DEVICE_EVENT + ":" + nullSafeTag(envelope.getActionType());
-        if (log.isDebugEnabled()) {
-            log.debug("[MqsBridgeEventProducer] about to asyncSend dest={} traceId={} clientId={} action={}",
-                destination, envelope.getTraceId(), envelope.getClientId(), envelope.getActionType());
-        }
+        int attempts = Math.max(1, sendMaxAttempts > 0 ? sendMaxAttempts : DEFAULT_SEND_MAX_ATTEMPTS);
+        long timeoutMs = sendTimeoutMs > 0 ? sendTimeoutMs : DEFAULT_SEND_TIMEOUT_MS;
         try {
-            rocketmqTemplate.asyncSend(destination, envelope, new SendCallback() {
-                @Override
-                public void onSuccess(SendResult sendResult) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("[MqsBridgeEventProducer] sent OK dest={} traceId={} clientId={} action={} msgId={} status={}",
-                            destination, envelope.getTraceId(),
-                            envelope.getClientId(), envelope.getActionType(),
-                            sendResult.getMsgId(), sendResult.getSendStatus());
+            for (int attempt = 1; attempt <= attempts; attempt++) {
+                try {
+                    SendResult sendResult = rocketmqTemplate.syncSend(destination, envelope, timeoutMs);
+                    if (sendResult != null && SendStatus.SEND_OK == sendResult.getSendStatus()) {
+                        log.info("[MqsBridgeEventProducer] sent OK dest={} traceId={} clientId={} action={} msgId={} attempt={}/{}",
+                            destination, envelope.getTraceId(), envelope.getClientId(), envelope.getActionType(),
+                            sendResult.getMsgId(), attempt, attempts);
+                        return true;
                     }
+                    log.warn("[MqsBridgeEventProducer] send not OK dest={} traceId={} clientId={} action={} status={} attempt={}/{}",
+                        destination, envelope.getTraceId(), envelope.getClientId(), envelope.getActionType(),
+                        sendResult == null ? null : sendResult.getSendStatus(), attempt, attempts);
+                } catch (Throwable e) {
+                    log.warn("[MqsBridgeEventProducer] send failed dest={} traceId={} clientId={} action={} attempt={}/{} timeoutMs={} err={}",
+                        destination, envelope.getTraceId(), envelope.getClientId(), envelope.getActionType(),
+                        attempt, attempts, timeoutMs, e.getMessage(), e);
                 }
-
-                @Override
-                public void onException(Throwable e) {
-                    log.warn("[MqsBridgeEventProducer] send failed (non-blocking) dest={} traceId={} clientId={} action={} err={}",
-                        destination, envelope.getTraceId(),
-                        envelope.getClientId(), envelope.getActionType(), e.getMessage(), e);
-                }
-            });
+            }
         } catch (Throwable e) {
-            // 例如 NameServer 完全不可用同步抛异常;同样吞掉不阻塞主链路
-            log.warn("[MqsBridgeEventProducer] asyncSend invocation failed (non-blocking) dest={} traceId={} clientId={} action={}",
+            log.warn("[MqsBridgeEventProducer] send invocation failed dest={} traceId={} clientId={} action={}",
                 destination, envelope.getTraceId(),
                 envelope.getClientId(), envelope.getActionType(), e);
         }
+        log.warn("[MqsBridgeEventProducer] send exhausted dest={} traceId={} clientId={} action={} attempts={}",
+            destination, envelope.getTraceId(), envelope.getClientId(), envelope.getActionType(), attempts);
+        return false;
     }
 
     /**

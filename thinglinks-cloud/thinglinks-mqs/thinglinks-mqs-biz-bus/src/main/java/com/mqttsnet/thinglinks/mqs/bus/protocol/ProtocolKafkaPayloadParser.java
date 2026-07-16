@@ -14,7 +14,7 @@ import com.mqttsnet.thinglinks.common.mq.KafkaConsumerTopicConstant.Mqs.MqsMqtt;
 import com.mqttsnet.thinglinks.common.mq.KafkaConsumerTopicConstant.Mqs.MqsTcp;
 import com.mqttsnet.thinglinks.common.mq.KafkaConsumerTopicConstant.Mqs.MqsWebSocket;
 import com.mqttsnet.thinglinks.constants.bus.BusKafkaJsonField;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.entity.protocol.DeviceProtocolEvent;
 import com.mqttsnet.thinglinks.product.enumeration.ProtocolTypeEnum;
 import lombok.experimental.UtilityClass;

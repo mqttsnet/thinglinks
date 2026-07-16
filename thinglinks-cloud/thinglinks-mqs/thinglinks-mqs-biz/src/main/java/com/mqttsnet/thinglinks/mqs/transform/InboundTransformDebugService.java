@@ -14,7 +14,7 @@ import com.mqttsnet.thinglinks.cache.vo.product.ProductModelCacheVO;
 import com.mqttsnet.thinglinks.enumeration.script.ExecutionStatusEnum;
 import com.mqttsnet.thinglinks.mqs.transform.dto.TransformDebugParam;
 import com.mqttsnet.thinglinks.mqs.transform.dto.TransformDebugResultVO;
-import com.mqttsnet.thinglinks.rule.facade.RuleOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.rule.facade.RuleOpenInnerFacade;
 import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptDirectCompileParam;
 import com.mqttsnet.thinglinks.vo.result.script.GroovyScriptEngineExecutorResultVO;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 public class InboundTransformDebugService {
 
     private final LinkCacheDataHelper linkCacheDataHelper;
-    private final RuleOpenAnyUserFacade ruleOpenAnyUserFacade;
+    private final RuleOpenInnerFacade ruleOpenInnerFacade;
     private final ScriptBindingAssembler bindingAssembler;
 
     public TransformDebugResultVO debug(TransformDebugParam param) {
@@ -98,7 +98,7 @@ public class InboundTransformDebugService {
 
         GroovyScriptEngineExecutorResultVO result;
         try {
-            R<GroovyScriptEngineExecutorResultVO> r = ruleOpenAnyUserFacade.executeScriptContent(compileParam);
+            R<GroovyScriptEngineExecutorResultVO> r = ruleOpenInnerFacade.executeScriptContent(compileParam);
             if (r != null && Boolean.TRUE.equals(r.getIsSuccess()) && r.getData() != null) {
                 result = r.getData();
             } else {

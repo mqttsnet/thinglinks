@@ -18,7 +18,7 @@ import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.protocol.vo.param.TimeSyncRequestParam;
 import com.mqttsnet.thinglinks.protocol.vo.param.TimeSyncResponseParam;
@@ -39,9 +39,9 @@ public class TimeSyncRequestHandler extends AbstractMessageHandler implements To
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public TimeSyncRequestHandler(LinkCacheDataHelper linkCacheDataHelper,
-                                  DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
+                                  DeviceOpenInnerFacade deviceOpenInnerApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenInnerApi, protocolMessageAdapter);
     }
 
     /**

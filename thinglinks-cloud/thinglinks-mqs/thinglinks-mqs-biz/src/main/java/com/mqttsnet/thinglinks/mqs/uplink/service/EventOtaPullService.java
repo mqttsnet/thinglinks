@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
-import com.mqttsnet.thinglinks.link.facade.OtaOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.OtaOpenInnerFacade;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoOtaPullParam;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoOtaPullResponseParam;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 public class EventOtaPullService {
 
     @Autowired
-    private OtaOpenAnyUserFacade otaOpenAnyUserFacade;
+    private OtaOpenInnerFacade otaOpenInnerFacade;
 
 
     /**
@@ -49,7 +49,7 @@ public class EventOtaPullService {
     public Optional<TopoOtaPullResponseParam> handleMqttEventOtaPull(TopoOtaPullParam topoOtaPullParam) {
         try {
 
-            R<TopoOtaPullResponseParam> otaPullResponseParamR = otaOpenAnyUserFacade.otaPullByMqtt(topoOtaPullParam);
+            R<TopoOtaPullResponseParam> otaPullResponseParamR = otaOpenInnerFacade.otaPullByMqtt(topoOtaPullParam);
             log.info("OTA Pull response: {}", JSON.toJSONString(otaPullResponseParamR));
 
             if (!otaPullResponseParamR.getIsSuccess()) {

@@ -3,7 +3,7 @@ package com.mqttsnet.thinglinks.mqs.event.assembler;
 import java.util.Optional;
 
 import cn.hutool.core.util.StrUtil;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.entity.device.CommonDeviceEvent;
 import com.mqttsnet.thinglinks.entity.protocol.DeviceProtocolEvent;
 import com.mqttsnet.thinglinks.product.enumeration.ProtocolTypeEnum;

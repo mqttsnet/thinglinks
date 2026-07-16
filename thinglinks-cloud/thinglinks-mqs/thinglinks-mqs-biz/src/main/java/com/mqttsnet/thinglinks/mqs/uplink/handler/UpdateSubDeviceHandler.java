@@ -15,7 +15,7 @@ import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoUpdateSubDeviceStatusParam;
 import com.mqttsnet.thinglinks.protocol.vo.result.TopoDeviceOperationResultVO;
@@ -36,9 +36,9 @@ public class UpdateSubDeviceHandler extends AbstractMessageHandler implements To
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public UpdateSubDeviceHandler(LinkCacheDataHelper linkCacheDataHelper,
-                                  DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
+                                  DeviceOpenInnerFacade deviceOpenInnerApi,
                                   ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenInnerApi, protocolMessageAdapter);
     }
 
     /**
@@ -123,7 +123,7 @@ public class UpdateSubDeviceHandler extends AbstractMessageHandler implements To
     @Override
     protected String processingTopicMessage(Object topoUpdateSubDeviceParam) throws Exception {
         R<TopoDeviceOperationResultVO> topoDeviceOperationResultVOR =
-            deviceOpenAnyUserApi.updateSubDeviceConnectStatusByMqtt((TopoUpdateSubDeviceStatusParam) topoUpdateSubDeviceParam);
+            deviceOpenInnerApi.updateSubDeviceConnectStatusByMqtt((TopoUpdateSubDeviceStatusParam) topoUpdateSubDeviceParam);
         log.info("processingTopoUpdateTopic Processing result:{}", JSON.toJSONString(topoDeviceOperationResultVOR));
         return JSON.toJSONString(topoDeviceOperationResultVOR.getData());
     }

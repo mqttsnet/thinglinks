@@ -3,7 +3,7 @@ package com.mqttsnet.thinglinks.mqs.uplink.service;
 import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.link.facade.OtaOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.OtaOpenInnerFacade;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoOtaCommandResponseParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 public class EventOtaCommandResponseService {
 
     @Autowired
-    private OtaOpenAnyUserFacade otaOpenAnyUserFacade;
+    private OtaOpenInnerFacade otaOpenInnerFacade;
 
 
     /**
@@ -67,7 +67,7 @@ public class EventOtaCommandResponseService {
     // This is a placeholder for the actual saving logic
     private void saveOtaCommandResponse(TopoOtaCommandResponseParam responseParam) {
         // Implementation for saving the response in your system
-        R<TopoOtaCommandResponseParam> otaCommandResponseParamR = otaOpenAnyUserFacade.saveOtaUpgradeRecordByMqtt(responseParam);
+        R<TopoOtaCommandResponseParam> otaCommandResponseParamR = otaOpenInnerFacade.saveOtaUpgradeRecordByMqtt(responseParam);
         log.info("otaCommandResponseParamR:{}", JSON.toJSONString(otaCommandResponseParamR));
     }
 

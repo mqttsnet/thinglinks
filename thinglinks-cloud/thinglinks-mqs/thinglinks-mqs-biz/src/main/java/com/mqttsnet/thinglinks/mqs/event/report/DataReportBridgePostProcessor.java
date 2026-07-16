@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.mqs.event.report;
 
 import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.thinglinks.common.event.bridge.BridgeMessageEnvelope;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.mqs.bridge.MqsBridgeEventProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,10 +40,16 @@ public class DataReportBridgePostProcessor implements DeviceDataReportPostProces
                 // 物模型结构化数据直接放 rawMessage:下游 Sink/transform/trace 与 RAW 统一处理,0 改动
                 .rawMessage(JSON.toJSONString(ctx.getNormalized()))
                 .ts(ctx.getTs())
+                // 事件时间对齐 RAW 路的透传字段:规则引擎最新快照防回退与防抖窗口以 eventUtc 为准
+                .eventUtc(ctx.getTs())
                 .build();
-            mqsBridgeEventProducer.publishBridgeEvent(envelope);
+            boolean sent = mqsBridgeEventProducer.publishBridgeEvent(envelope);
+            if (!sent) {
+                log.warn("[DataReportBridge] thing-model bridge event was not confirmed by RocketMQ device={} product={}",
+                    ctx.getDeviceIdentification(), ctx.getProductIdentification());
+            }
         } catch (Exception e) {
-            log.warn("[DataReportBridge] publish thing-model bridge event failed (non-blocking) device={} err={}",
+            log.warn("[DataReportBridge] publish thing-model bridge event failed device={} err={}",
                 ctx.getDeviceIdentification(), e.getMessage());
         }
     }

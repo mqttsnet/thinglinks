@@ -23,7 +23,7 @@ import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.entity.uplink.source.UplinkMessageEventSource;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.uplink.handler.factory.AbstractMessageHandler;
 import com.mqttsnet.thinglinks.protocol.vo.param.OpenAiChatRequestParam;
 import com.mqttsnet.thinglinks.protocol.vo.result.OpenAiChatResponseResultVO;
@@ -55,9 +55,9 @@ public class ChatgptRequestHandler extends AbstractMessageHandler implements Top
     private static final Map<String, List<Message>> CONTEXT = new HashMap<>();
 
     public ChatgptRequestHandler(LinkCacheDataHelper linkCacheDataHelper,
-                                 DeviceOpenAnyUserFacade deviceOpenAnyUserApi,
+                                 DeviceOpenInnerFacade deviceOpenInnerApi,
                                  ProtocolMessageAdapter protocolMessageAdapter) {
-        super(linkCacheDataHelper, deviceOpenAnyUserApi, protocolMessageAdapter);
+        super(linkCacheDataHelper, deviceOpenInnerApi, protocolMessageAdapter);
     }
 
     /**

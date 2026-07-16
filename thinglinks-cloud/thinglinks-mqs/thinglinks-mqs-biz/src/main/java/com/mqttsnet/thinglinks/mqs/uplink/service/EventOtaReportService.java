@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
-import com.mqttsnet.thinglinks.link.facade.OtaOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.OtaOpenInnerFacade;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoOtaPullResponseParam;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoOtaReportParam;
 import com.mqttsnet.thinglinks.protocol.vo.param.TopoOtaReportResponseParam;
@@ -38,7 +38,7 @@ import org.springframework.stereotype.Service;
 public class EventOtaReportService {
 
     @Autowired
-    private OtaOpenAnyUserFacade otaOpenAnyUserFacade;
+    private OtaOpenInnerFacade otaOpenInnerFacade;
 
 
     /**
@@ -50,7 +50,7 @@ public class EventOtaReportService {
     public Optional<TopoOtaReportResponseParam> handleMqttEventOtaReport(TopoOtaReportParam topoOtaReportParam) {
         try {
 
-            R<TopoOtaReportResponseParam> otaReportResponseParamR = otaOpenAnyUserFacade.otaReportByMqtt(topoOtaReportParam);
+            R<TopoOtaReportResponseParam> otaReportResponseParamR = otaOpenInnerFacade.otaReportByMqtt(topoOtaReportParam);
             log.info("OTA Report Response: {}", JSON.toJSONString(otaReportResponseParamR));
 
             if (!otaReportResponseParamR.getIsSuccess()) {

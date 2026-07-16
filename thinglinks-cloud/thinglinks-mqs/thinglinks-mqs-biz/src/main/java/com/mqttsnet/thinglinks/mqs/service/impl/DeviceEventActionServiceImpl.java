@@ -11,10 +11,10 @@ import com.mqttsnet.thinglinks.common.cache.link.device.DeviceCacheKeyBuilder;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.device.entity.DeviceAction;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceActionStatusEnum;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.device.vo.save.DeviceActionSaveVO;
 import com.mqttsnet.thinglinks.entity.device.CommonDeviceEvent;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.mqs.service.DeviceEventActionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DeviceEventActionServiceImpl implements DeviceEventActionService {
     @Autowired
-    private DeviceOpenAnyUserFacade deviceOpenAnyUserApi;
+    private DeviceOpenInnerFacade deviceOpenInnerApi;
 
     @Autowired
     private CachePlusUtil cachePlusOpsUtil;
@@ -72,7 +72,7 @@ public class DeviceEventActionServiceImpl implements DeviceEventActionService {
         deviceActionSaveVO.setMessage(eventMessage);
         deviceActionSaveVO.setStatus(DeviceActionStatusEnum.SUCCESSFUL.getValue());
         deviceActionSaveVO.setRemark(describable);
-        R<DeviceAction> deviceActionR = deviceOpenAnyUserApi.saveDeviceAction(deviceActionSaveVO);
+        R<DeviceAction> deviceActionR = deviceOpenInnerApi.saveDeviceAction(deviceActionSaveVO);
         if (Boolean.TRUE.equals(deviceActionR.getIsSuccess())) {
             log.info("Save device action success: deviceAction={}", deviceActionR.getData());
         } else {
@@ -102,7 +102,7 @@ public class DeviceEventActionServiceImpl implements DeviceEventActionService {
             vo.setMessage(event.getRawMessage());
             vo.setStatus(DeviceActionStatusEnum.SUCCESSFUL.getValue());
             vo.setRemark(event.getActionType().getDesc());
-            R<DeviceAction> r = deviceOpenAnyUserApi.saveDeviceAction(vo);
+            R<DeviceAction> r = deviceOpenInnerApi.saveDeviceAction(vo);
             if (!Boolean.TRUE.equals(r.getIsSuccess())) {
                 log.warn("[DeviceEventAction] save failed (non-blocking) clientId={} action={} msg={}",
                     event.getClientId(), event.getActionType(), r.getMsg());

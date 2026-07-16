@@ -54,8 +54,11 @@ public class BridgeRelayStage extends AbstractDeviceEventStage {
     @Override
     protected void doExecute(DeviceProtocolEvent event, StageContext context) {
         try {
-            mqsBridgeEventProducer.publishBridgeEvent(toEnvelope(event));
-            statsService.incrementRelay(getName(), MQ_ROCKETMQ, BizMqRouteConstant.Bridge.DEVICE_EVENT, STATUS_OK);
+            BridgeMessageEnvelope envelope = toEnvelope(event);
+            warnIfIdentityIncomplete(envelope);
+            boolean sent = mqsBridgeEventProducer.publishBridgeEvent(envelope);
+            statsService.incrementRelay(getName(), MQ_ROCKETMQ, BizMqRouteConstant.Bridge.DEVICE_EVENT,
+                sent ? STATUS_OK : STATUS_FAIL);
         } catch (Exception e) {
             log.warn("{} bridge relay failed traceId={} clientId={} action={} err={}",
                 BusConstants.Log.STAGE_FAIL, event.getTraceId(),
@@ -89,5 +92,15 @@ public class BridgeRelayStage extends AbstractDeviceEventStage {
             .eventHlc(event.getEventHlc())
             .eventUtc(event.getEventUtc())
             .build();
+    }
+
+    private void warnIfIdentityIncomplete(BridgeMessageEnvelope envelope) {
+        if (StrUtil.hasBlank(envelope.getTenantId(), envelope.getProductIdentification(),
+            envelope.getDeviceIdentification())) {
+            log.warn("[bus.bridge.relay] identity incomplete before RocketMQ send traceId={} clientId={} tenantId={} product={} device={} action={} topic={}",
+                envelope.getTraceId(), envelope.getClientId(), envelope.getTenantId(),
+                envelope.getProductIdentification(), envelope.getDeviceIdentification(),
+                envelope.getActionType(), envelope.getTopic());
+        }
     }
 }
