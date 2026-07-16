@@ -85,7 +85,6 @@ public class BridgeTraceBuilder {
         trace.setTraceId(resolveTraceId(envelope));
         trace.setStartTime(LocalDateTime.now());
         trace.setTriggerSource(TRIGGER_DEVICE_DATA);
-        trace.setTenantId(envelope.getTenantId());
         trace.setProductIdentification(envelope.getProductIdentification());
         trace.setDeviceIdentification(envelope.getDeviceIdentification());
         trace.setActionType(envelope.getActionType());

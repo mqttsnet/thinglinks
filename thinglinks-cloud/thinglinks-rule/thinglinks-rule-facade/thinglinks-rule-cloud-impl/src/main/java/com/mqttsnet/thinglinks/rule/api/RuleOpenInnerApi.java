@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.rule.api;
 
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.constant.Constants;
-import com.mqttsnet.thinglinks.rule.api.hystrix.RuleOpenAnyUserApiFallback;
+import com.mqttsnet.thinglinks.rule.api.hystrix.RuleOpenInnerApiFallback;
 import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptDirectCompileParam;
 import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptExecuteScriptParam;
 import com.mqttsnet.thinglinks.vo.result.script.GroovyScriptEngineExecutorResultVO;
@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @author mqttsnet
  * @date 2025/4/14 14:59
  */
-@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-rule-server}", fallback = RuleOpenAnyUserApiFallback.class, path = "/anyUser/ruleOpen")
-public interface RuleOpenAnyUserApi {
+@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-rule-server}", fallback = RuleOpenInnerApiFallback.class, path = "/inner/ruleOpen")
+public interface RuleOpenInnerApi {
 
 
     /**

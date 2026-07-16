@@ -26,7 +26,7 @@ import com.mqttsnet.basic.rocketmq.producer.RocketmqTemplate;
 import com.mqttsnet.thinglinks.bridge.event.SubscriptionSourceChangedEvent;
 import com.mqttsnet.thinglinks.common.event.bridge.BridgeMessageEnvelope;
 import com.mqttsnet.thinglinks.common.mq.BizMqRouteConstant;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.entity.bridge.DataSource;
 import com.mqttsnet.thinglinks.entity.bridge.SubscriptionSource;
 import com.mqttsnet.thinglinks.product.enumeration.ProtocolTypeEnum;

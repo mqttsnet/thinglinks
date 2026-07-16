@@ -2,40 +2,35 @@ package com.mqttsnet.thinglinks.service.linkage.impl;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.map.MapUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
-import com.mqttsnet.basic.condition.model.dto.AppointEffectiveTimeDTO;
-import com.mqttsnet.basic.condition.utils.ConditionCronUtil;
-import com.mqttsnet.basic.context.ContextConstants;
+import com.mqttsnet.basic.cache.redis2.CacheResult;
+import com.mqttsnet.basic.cache.repository.CachePlusOps;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.exception.BizException;
-import com.mqttsnet.basic.jackson.JsonUtil;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.basic.utils.SnowflakeIdUtil;
 import com.mqttsnet.basic.utils.StringUtils;
+import com.mqttsnet.thinglinks.common.cache.rule.trigger.RuleTriggerCacheKeys;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
-import com.mqttsnet.thinglinks.common.constant.JobConstant;
 import com.mqttsnet.thinglinks.dto.linkage.RuleConditionActionPolicyDTO;
 import com.mqttsnet.thinglinks.dto.linkage.RuleConditionPolicyDTO;
 import com.mqttsnet.thinglinks.dto.linkage.RulePolicyDTO;
 import com.mqttsnet.thinglinks.dto.linkage.execution.PolicyContext;
+import com.mqttsnet.thinglinks.dto.linkage.execution.TriggerEventDTO;
 import com.mqttsnet.thinglinks.entity.linkage.Rule;
 import com.mqttsnet.thinglinks.enumeration.linkage.RuleStatusEnum;
-import com.mqttsnet.thinglinks.job.dto.JobReturnT;
-import com.mqttsnet.thinglinks.job.dto.XxlJobInfoVO;
-import com.mqttsnet.thinglinks.job.dto.XxlJobTriggerStatusEnum;
-import com.mqttsnet.thinglinks.job.facade.JobFacade;
 import com.mqttsnet.thinglinks.manager.linkage.RuleManager;
 import com.mqttsnet.thinglinks.service.execution.service.RuleExecutionService;
+import com.mqttsnet.thinglinks.service.execution.trigger.RuleEffectiveWindowChecker;
 import com.mqttsnet.thinglinks.service.linkage.RuleConditionActionService;
+import com.mqttsnet.thinglinks.service.linkage.support.RuleTimingJobSynchronizer;
 import com.mqttsnet.thinglinks.service.linkage.RuleConditionService;
 import com.mqttsnet.thinglinks.service.linkage.RuleService;
 import com.mqttsnet.thinglinks.vo.query.linkage.RuleConditionActionPageQuery;
@@ -71,9 +66,11 @@ public class RuleServiceImpl extends SuperServiceImpl<RuleManager, Long, Rule> i
 
     private final RuleConditionActionService ruleConditionActionService;
 
-    private final JobFacade jobFacade;
+    private final RuleTimingJobSynchronizer ruleTimingJobSynchronizer;
 
     private final RuleExecutionService ruleExecutionService;
+
+    private final CachePlusOps cachePlusOps;
 
     /**
      * Saves the rule information.
@@ -88,11 +85,8 @@ public class RuleServiceImpl extends SuperServiceImpl<RuleManager, Long, Rule> i
         checkedRuleSaveVO(saveVO);
         Rule rule = builderRuleSaveVO(saveVO);
 
-        if (saveRuleToSuperManager(rule)) {
-            XxlJobTriggerStatusEnum jobTriggerStatusEnum = Objects.equals(saveVO.getStatus(), RuleStatusEnum.ACTIVATED.getValue())
-                    ? XxlJobTriggerStatusEnum.RUNNING : XxlJobTriggerStatusEnum.STOPPED;
-            scheduleTimingTask(rule, jobTriggerStatusEnum);
-        }
+        // 新建规则不注册调度任务:任务只服务"定时触发"条件,由条件保存时经 RuleTimingJobSynchronizer 对账
+        saveRuleToSuperManager(rule);
 
         return rule;
     }
@@ -113,60 +107,6 @@ public class RuleServiceImpl extends SuperServiceImpl<RuleManager, Long, Rule> i
     }
 
     /**
-     * Schedules a timing task for the rule.
-     *
-     * @param rule                 The rule for which the timing task is to be scheduled.
-     * @param jobTriggerStatusEnum The job trigger status enum.
-     */
-    private void scheduleTimingTask(Rule rule, XxlJobTriggerStatusEnum jobTriggerStatusEnum) {
-
-        AppointEffectiveTimeDTO appointEffectiveTimeDTO = Optional.ofNullable(JsonUtil.parse(rule.getAppointContent(), AppointEffectiveTimeDTO.class))
-                .orElseThrow(() -> BizException.wrap("Invalid appoint content in rule"));
-
-        String cron = ConditionCronUtil.secondsToCron(appointEffectiveTimeDTO.getFrequency());
-        ArgumentAssert.isTrue(ConditionCronUtil.validateCronExpression(cron), "Cron expression is not valid");
-
-        Map<String, String> param = MapUtil.builder(ContextConstants.TENANT_ID_HEADER, ContextUtil.getTenantId().toString())
-                .put("ruleIdentification", rule.getRuleIdentification())
-                .build();
-
-        XxlJobInfoVO xxlJobInfoVO = XxlJobInfoVO.createFromCronExpression(JobConstant.DEF_IOT_JOB_GROUP_NAME,
-                "【Scene linkage rule】" + rule.getRuleIdentification(),
-                cron,
-                JobConstant.SCENE_LINKAGE_RULE_JOB_HANDLER,
-                JsonUtil.toJson(param), jobTriggerStatusEnum);
-
-        AppointEffectiveTimeDTO effectiveTimeDTO = saveTimingTaskToJobApi(xxlJobInfoVO, appointEffectiveTimeDTO);
-        superManager.updateById(rule.setAppointContent(JsonUtil.toJson(effectiveTimeDTO)));
-
-    }
-
-    /**
-     * Saves the timing task to the Job API.
-     *
-     * @param xxlJobInfoVO            The job information value object.
-     * @param appointEffectiveTimeDTO The appointment effective time data transfer object.
-     * @return The updated appointment effective time data transfer object.
-     */
-    private AppointEffectiveTimeDTO saveTimingTaskToJobApi(XxlJobInfoVO xxlJobInfoVO, AppointEffectiveTimeDTO appointEffectiveTimeDTO) {
-        try {
-            JobReturnT<String> saveTimingTaskR = jobFacade.saveTimingTask(xxlJobInfoVO);
-            if (saveTimingTaskR.getCode() == JobReturnT.SUCCESS_CODE) {
-                log.info("saveRule saveTimingTaskR:{}", saveTimingTaskR);
-                appointEffectiveTimeDTO.setTaskId(saveTimingTaskR.getContent());
-                return appointEffectiveTimeDTO;
-            } else {
-                log.error("Failed to save timing task: {}", saveTimingTaskR.getMsg());
-                throw BizException.wrap("Failed to save timing task");
-            }
-        } catch (Exception e) {
-            log.error("Failed to save timing task: {}", e.getMessage(), e);
-            throw BizException.wrap("Failed to save timing task", e);
-        }
-    }
-
-
-    /**
      * Updates the rule based on the provided updateVO.
      *
      * @param updateVO The value object containing update details.
@@ -183,73 +123,16 @@ public class RuleServiceImpl extends SuperServiceImpl<RuleManager, Long, Rule> i
         Rule existingRule = Optional.ofNullable(superManager.getById(updateVO.getId()))
                 .orElseThrow(() -> BizException.wrap("The rule does not exist"));
 
-        // Parse the existing appointment content.
-        AppointEffectiveTimeDTO existingAppoint = JsonUtil.parse(existingRule.getAppointContent(), AppointEffectiveTimeDTO.class);
-
-        // Parse the new appointment content.
-        AppointEffectiveTimeDTO newAppoint = Optional.ofNullable(JsonUtil.parse(updateVO.getAppointContent(), AppointEffectiveTimeDTO.class))
-                .orElseThrow(() -> BizException.wrap("Invalid appoint content in updateVO"));
-
-        // Check if the frequency has changed or the status has changed. If yes, handle job updates.
-        if (!Objects.equals(existingAppoint.getFrequency(), newAppoint.getFrequency())
-                || !Objects.equals(existingRule.getStatus(), updateVO.getStatus())) {
-            XxlJobTriggerStatusEnum jobTriggerStatusEnum = Objects.equals(updateVO.getStatus(), RuleStatusEnum.ACTIVATED.getValue())
-                    ? XxlJobTriggerStatusEnum.RUNNING : XxlJobTriggerStatusEnum.STOPPED;
-            handleJobUpdates(existingAppoint, updateVO, existingRule, jobTriggerStatusEnum);
-        }
-
-
         // Map values from updateVO to the existingRule.
         updateRulePropertiesFromVO(existingRule, updateVO);
 
         // Save the updated rule.
         superManager.updateById(existingRule);
 
+        // 按最新条件集对账定时任务(频率/状态变化统一由同步器重建,非定时规则无任务)
+        ruleTimingJobSynchronizer.sync(existingRule);
+
         return existingRule;
-    }
-
-    /**
-     * Handles the job updates when frequency changes.
-     *
-     * @param existingAppoint      The existing appointment.
-     * @param updateVO             The value object containing update details.
-     * @param existingRule         The existing rule.
-     * @param jobTriggerStatusEnum The job trigger status enum.
-     */
-    private void handleJobUpdates(AppointEffectiveTimeDTO existingAppoint, RuleUpdateVO updateVO, Rule existingRule, XxlJobTriggerStatusEnum jobTriggerStatusEnum) {
-        // Load job details based on task ID.
-        ArgumentAssert.notBlank(existingAppoint.getTaskId(), "The scheduling task ID cannot be empty");
-        JobReturnT<XxlJobInfoVO> jobInfoReturn = jobFacade.loadById(Integer.valueOf(existingAppoint.getTaskId()));
-        if (jobInfoReturn.getCode() != JobReturnT.SUCCESS_CODE) {
-            log.error("Failed to load job info by id: {}", jobInfoReturn.getMsg());
-            throw BizException.wrap("Failed to load job info");
-        }
-
-        // Fetch the job info from the returned object.
-        XxlJobInfoVO jobInfoVO = Optional.ofNullable(jobInfoReturn.getContent())
-                .orElseThrow(() -> BizException.wrap("Empty job info content"));
-
-        // Construct the new appointment DTO.
-        AppointEffectiveTimeDTO newAppointEffectiveTimeDTO = JsonUtil.parse(updateVO.getAppointContent(), AppointEffectiveTimeDTO.class);
-
-        // Update the cron expression.
-        String newCron = ConditionCronUtil.secondsToCron(newAppointEffectiveTimeDTO.getFrequency());
-        XxlJobInfoVO updatedJobInfoVO = XxlJobInfoVO.updateFromCronExpression(
-                jobInfoVO,
-                "【Scene linkage rule】" + existingRule.getRuleIdentification(),
-                newCron,
-                JobConstant.SCENE_LINKAGE_RULE_JOB_HANDLER,
-                JsonUtil.toJson(MapUtil.builder(ContextConstants.TENANT_ID_HEADER, ContextUtil.getTenantId().toString())
-                        .put("ruleIdentification", existingRule.getRuleIdentification())
-                        .build()), jobTriggerStatusEnum
-        );
-
-        JobReturnT<String> stringJobReturnT = jobFacade.updateJob(updatedJobInfoVO);
-        if (stringJobReturnT.getCode() != JobReturnT.SUCCESS_CODE) {
-            log.error("Failed to update job: {}", stringJobReturnT.getMsg());
-            throw BizException.wrap("Failed to update job");
-        }
-
     }
 
     /**
@@ -279,49 +162,9 @@ public class RuleServiceImpl extends SuperServiceImpl<RuleManager, Long, Rule> i
             throw BizException.wrap("The Rule does not exist");
         }
 
-        // Remove the job if it exists.
-        boolean jobRemoved = removeAssociatedJob(rule);
-        log.info("removed job result: {}", jobRemoved);
+        // 清理关联的定时任务(如有)
+        ruleTimingJobSynchronizer.removeOnDelete(rule);
         return superManager.removeById(id);
-    }
-
-    /**
-     * 删除关联的定时任务
-     *
-     * @param rule 规则实体
-     * @return {@link Boolean} 删除结果
-     */
-    private boolean removeAssociatedJob(Rule rule) {
-        try {
-            AppointEffectiveTimeDTO appointEffectiveTimeDTO = JsonUtil.parse(rule.getAppointContent(), AppointEffectiveTimeDTO.class);
-            if (null == appointEffectiveTimeDTO || StringUtils.isBlank(appointEffectiveTimeDTO.getTaskId())) {
-                return true;
-            }
-            Integer taskId = Integer.valueOf(appointEffectiveTimeDTO.getTaskId().trim());
-            // 先检查任务是否存在
-            JobReturnT<XxlJobInfoVO> jobInfoReturn = jobFacade.loadById(taskId);
-            if (jobInfoReturn.getCode() != JobReturnT.SUCCESS_CODE) {
-                log.warn("Job not found with id: {}, message: {}", taskId, jobInfoReturn.getMsg());
-                return true;
-            }
-
-            // 删除任务
-            JobReturnT<String> removeResult = jobFacade.removeJob(taskId);
-            if (removeResult.getCode() != JobReturnT.SUCCESS_CODE) {
-                log.error("Failed to remove job {}: {}", taskId, removeResult.getMsg());
-                throw BizException.wrap("Failed to remove associated job");
-            }
-
-            log.info("Successfully removed job: {}", taskId);
-            return true;
-
-        } catch (NumberFormatException e) {
-            log.error("Invalid taskId format in rule {}: {}", rule.getId(), e.getMessage());
-            throw BizException.wrap("Invalid taskId format");
-        } catch (Exception e) {
-            log.error("Error removing associated job for rule {}", rule.getId(), e);
-            throw BizException.wrap("Error removing associated job");
-        }
     }
 
 
@@ -336,15 +179,23 @@ public class RuleServiceImpl extends SuperServiceImpl<RuleManager, Long, Rule> i
     public Boolean updateRuleStatus(Long id, Integer status) {
         ArgumentAssert.notNull(id, "id Cannot be null");
         ArgumentAssert.notNull(status, "status Cannot be null");
+        if (!RuleStatusEnum.STATE_COLLECTION.contains(status)) {
+            throw BizException.wrap("Status is not exist");
+        }
         Rule rule = superManager.getById(id);
         if (null == rule) {
             throw BizException.wrap("The rule does not exist");
         }
         if (Objects.equals(status, rule.getStatus())) {
-            throw BizException.wrap("The rule status is the same as the current status");
+            return true;
         }
         rule.setStatus(status);
-        return superManager.updateById(rule);
+        boolean updated = superManager.updateById(rule);
+        if (updated) {
+            // 启停切换后对账定时任务(定时规则跟随启停,非定时规则本就无任务)
+            ruleTimingJobSynchronizer.sync(rule);
+        }
+        return updated;
     }
 
     /**
@@ -440,6 +291,10 @@ public class RuleServiceImpl extends SuperServiceImpl<RuleManager, Long, Rule> i
             if (Objects.isNull(ruleDetails)) {
                 throw BizException.wrap("ruleIdentification is not exist");
             }
+            if (!Objects.equals(ruleDetails.getStatus(), RuleStatusEnum.ACTIVATED.getValue())) {
+                log.info("[RuleTrigger] rule disabled, skip timing trigger. rule={}", ruleIdentification);
+                return ruleDetails;
+            }
 
             // Set tenant ID in policy context
             PolicyContext policyContext = new PolicyContext();
@@ -460,6 +315,67 @@ public class RuleServiceImpl extends SuperServiceImpl<RuleManager, Long, Rule> i
             log.warn("Error executing rule policy for Tenant ID: {}, Rule Identification: {}", tenantId, ruleIdentification, e);
             throw BizException.wrap("Failed to execute rule policy", e);
         }
+    }
+
+    @Override
+    public void triggerRulePolicyForEvent(Long tenantId, String ruleIdentification,
+                                          Integer triggerConditionType, TriggerEventDTO triggerEvent) {
+        if (tenantId == null || StringUtils.isBlank(ruleIdentification)) {
+            log.warn("[RuleTrigger] tenantId/ruleIdentification missing, skip. tenantId={} rule={}",
+                    tenantId, ruleIdentification);
+            return;
+        }
+        try {
+            // 事件路径高频:规则详情走缓存(TTL 见 RuleTriggerCacheKeys.DETAILS_TTL),miss 回源 DB
+            RuleDetailsResultVO ruleDetails = getRuleDetailsWithCache(ruleIdentification);
+            if (Objects.isNull(ruleDetails)) {
+                log.warn("[RuleTrigger] rule not found, skip. ruleIdentification={}", ruleIdentification);
+                return;
+            }
+            if (!Objects.equals(ruleDetails.getStatus(), RuleStatusEnum.ACTIVATED.getValue())) {
+                log.info("[RuleTrigger] rule disabled, skip event trigger. rule={}", ruleIdentification);
+                return;
+            }
+            // 生效时间窗校验(effectiveType=指定时间的 week/timeframe 窗口)
+            if (!RuleEffectiveWindowChecker.isEffectiveNow(ruleDetails.getEffectiveType(), ruleDetails.getAppointContent())) {
+                log.info("[RuleTrigger] out of effective window, skip. rule={}", ruleIdentification);
+                return;
+            }
+
+            PolicyContext policyContext = new PolicyContext();
+            policyContext.setRuleExecutionId(Long.valueOf(SnowflakeIdUtil.nextId()));
+            policyContext.setRuleIdentification(ruleIdentification);
+            policyContext.setRuleName(ruleDetails.getRuleName());
+            policyContext.setTenantId(tenantId.toString());
+            policyContext.setTriggerConditionType(triggerConditionType);
+            policyContext.setTriggerEvent(triggerEvent);
+            policyContext.setRulePolicyDTO(convertToRulePolicyDTO(ruleDetails));
+
+            ruleExecutionService.executePolicy(policyContext);
+        } catch (Exception e) {
+            // 事件路径不抛出:单规则失败不影响同事件的其它规则,也不触发 MQ 重试(动作重放风险大于漏评估)
+            log.error("[RuleTrigger] event-driven execution failed rule={} err={}", ruleIdentification, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 规则详情缓存读 ── 事件路径每条消息×每条命中规则调用一次,不能次次查 DB。
+     * cacheNullValues=true:规则已删但索引桶未过期的窗口期内,"查无此规则"的结论也缓存,防止事件风暴打穿 DB。
+     */
+    private RuleDetailsResultVO getRuleDetailsWithCache(String ruleIdentification) {
+        CacheResult<RuleDetailsResultVO> result = cachePlusOps.get(
+                RuleTriggerCacheKeys.ruleDetails(ruleIdentification),
+                k -> {
+                    try {
+                        return getRuleDetailsByIdentification(ruleIdentification);
+                    } catch (Exception e) {
+                        // 查无此规则时底层抛 BizException:转 null 让空值缓存生效,而非每条消息都回源报错
+                        log.warn("[RuleTrigger] rule details load failed rule={} err={}",
+                                ruleIdentification, e.getMessage());
+                        return null;
+                    }
+                }, true);
+        return result == null ? null : result.getValue();
     }
 
     private RulePolicyDTO convertToRulePolicyDTO(RuleDetailsResultVO ruleDetails) {
@@ -521,5 +437,3 @@ public class RuleServiceImpl extends SuperServiceImpl<RuleManager, Long, Rule> i
     }
 
 }
-
-

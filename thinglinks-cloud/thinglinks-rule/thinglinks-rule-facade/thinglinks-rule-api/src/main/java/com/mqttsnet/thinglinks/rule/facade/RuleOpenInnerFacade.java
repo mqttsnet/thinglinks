@@ -22,7 +22,7 @@ import com.mqttsnet.thinglinks.vo.result.script.GroovyScriptEngineExecutorResult
  * @email
  * @date 2025/4/14 14:56
  */
-public interface RuleOpenAnyUserFacade {
+public interface RuleOpenInnerFacade {
     /**
      * 直接执行Groovy脚本
      *

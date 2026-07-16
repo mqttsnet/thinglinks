@@ -41,7 +41,7 @@ public interface RuleJobHandlerApi {
             @Parameter(name = "tenantId", description = "Tenant ID", required = true),
             @Parameter(name = "ruleIdentification", description = "Rule Identification", required = true),
     })
-    @PostMapping("/anyUser/ruleOpen/triggerRulePolicy")
+    @PostMapping("/inner/ruleOpen/triggerRulePolicy")
     R<RuleDetailsResultVO> triggerRulePolicy(@RequestParam("tenantId") Long tenantId, @RequestParam("ruleIdentification") String ruleIdentification);
 
 
@@ -79,7 +79,7 @@ public interface RuleJobHandlerApi {
      */
     @Operation(summary = "运行桥接数据源健康检查",
             description = "扫描所有启用数据源调 testConnection 更新 health_status")
-    @PostMapping("/anyUser/ruleOpen/runBridgeHealthCheck")
+    @PostMapping("/inner/ruleOpen/runBridgeHealthCheck")
     R<Boolean> runBridgeHealthCheck();
 
     /**
@@ -90,7 +90,7 @@ public interface RuleJobHandlerApi {
      */
     @Operation(summary = "运行桥接 trace 历史清理",
             description = "删除超过保留期的 bridge_execution_trace + step")
-    @PostMapping("/anyUser/ruleOpen/runBridgeTraceCleanup")
+    @PostMapping("/inner/ruleOpen/runBridgeTraceCleanup")
     R<Boolean> runBridgeTraceCleanup(@RequestParam(value = "retentionDays", required = false) Integer retentionDays);
 
 }

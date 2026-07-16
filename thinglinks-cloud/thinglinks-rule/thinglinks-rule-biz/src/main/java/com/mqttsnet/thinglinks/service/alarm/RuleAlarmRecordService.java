@@ -1,12 +1,17 @@
 package com.mqttsnet.thinglinks.service.alarm;
 
 import com.mqttsnet.basic.base.service.SuperService;
+import com.mqttsnet.thinglinks.dto.alarm.RuleAlarmActionConfigDTO;
+import com.mqttsnet.thinglinks.dto.linkage.execution.PolicyContext;
 import com.mqttsnet.thinglinks.entity.alarm.RuleAlarmRecord;
 import com.mqttsnet.thinglinks.protocol.vo.param.DeviceAlarmNotificationRequestParam;
 import com.mqttsnet.thinglinks.vo.param.linkage.RuleAlarmRecordHandleParamVO;
 import com.mqttsnet.thinglinks.vo.result.alarm.RuleAlarmRecordDetailsResultVO;
+import com.mqttsnet.thinglinks.vo.result.alarm.RuleAlarmRecordResultVO;
 import com.mqttsnet.thinglinks.vo.save.alarm.RuleAlarmRecordSaveVO;
 import com.mqttsnet.thinglinks.vo.update.alarm.RuleAlarmRecordUpdateVO;
+
+import java.util.List;
 
 
 /**
@@ -53,6 +58,13 @@ public interface RuleAlarmRecordService extends SuperService<Long, RuleAlarmReco
      */
     RuleAlarmRecordDetailsResultVO getAlarmRecordDetails(Long id);
 
+    /**
+     * Fill rule and channel details for alarm record list results.
+     *
+     * @param records alarm record list
+     */
+    void fillAlarmRuleDetails(List<RuleAlarmRecordResultVO> records);
+
 
     /**
      * handle or solve alarm record
@@ -69,6 +81,13 @@ public interface RuleAlarmRecordService extends SuperService<Long, RuleAlarmReco
      * @return {@link Boolean} Boolean value: true: successful, false: failed
      */
     boolean triggerDeviceAlarm(DeviceAlarmNotificationRequestParam notificationParam);
+
+    /**
+     * 场景联动触发设备告警,支持渠道级模板。
+     *
+     * @param actionConfig 触发告警动作配置
+     * @param policyContext 规则执行上下文
+     * @return 是否触发成功
+     */
+    boolean triggerDeviceAlarm(RuleAlarmActionConfigDTO actionConfig, PolicyContext policyContext);
 }
-
-

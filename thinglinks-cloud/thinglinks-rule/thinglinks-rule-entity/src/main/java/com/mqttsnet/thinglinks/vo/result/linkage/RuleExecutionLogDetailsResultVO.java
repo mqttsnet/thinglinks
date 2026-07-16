@@ -75,6 +75,21 @@ public class RuleExecutionLogDetailsResultVO extends AuditableResultVO {
     @Schema(description = "扩展参数（文本格式）")
     private String extendParams;
 
+    @Schema(description = "步骤总数")
+    private Integer stepCount;
+
+    @Schema(description = "总耗时毫秒")
+    private Long totalLatencyMs;
+
+    @Schema(description = "触发来源")
+    private String triggerSource;
+
+    @Schema(description = "结果摘要")
+    private String resultSummary;
+
+    @Schema(description = "执行步骤")
+    private List<RuleExecutionLogStepResultVO> steps;
+
     @Schema(description = "规则条件执行日志列表")
     private List<RuleConditionExecutionLogDetailsResultVO> conditionExecutionLogDetailsResultVOList;
 

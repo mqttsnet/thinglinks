@@ -68,12 +68,6 @@ public class BridgeExecutionTrace extends Entity<Long> {
     private String triggerSource;
 
     /**
-     * 租户ID。
-     */
-    @TableField(value = "tenant_id", condition = EQUAL)
-    private String tenantId;
-
-    /**
      * 产品标识（出站时来自设备事件）。
      */
     @TableField(value = "product_identification", condition = EQUAL)

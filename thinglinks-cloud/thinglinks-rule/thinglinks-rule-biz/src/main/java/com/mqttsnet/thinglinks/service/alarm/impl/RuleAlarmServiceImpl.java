@@ -166,6 +166,7 @@ public class RuleAlarmServiceImpl extends SuperServiceImpl<RuleAlarmManager, Lon
         }
 
         RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO = BeanPlusUtil.toBeanIgnoreError(ruleAlarm, RuleAlarmDetailsResultVO.class);
+        fillAlarmAuditFields(ruleAlarm, ruleAlarmDetailsResultVO);
 
         // Fetch related information for the alarm rule, such as alarm channels.
         RuleAlarmChannelPageQuery alarmChannelPageQuery = new RuleAlarmChannelPageQuery();
@@ -205,6 +206,7 @@ public class RuleAlarmServiceImpl extends SuperServiceImpl<RuleAlarmManager, Lon
         }
 
         RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO = BeanPlusUtil.toBeanIgnoreError(ruleAlarm, RuleAlarmDetailsResultVO.class);
+        fillAlarmAuditFields(ruleAlarm, ruleAlarmDetailsResultVO);
 
         // Fetch related information for the alarm rule, such as alarm channels.
         RuleAlarmChannelPageQuery alarmChannelPageQuery = new RuleAlarmChannelPageQuery();
@@ -216,6 +218,14 @@ public class RuleAlarmServiceImpl extends SuperServiceImpl<RuleAlarmManager, Lon
         }
 
         return ruleAlarmDetailsResultVO;
+    }
+
+    private void fillAlarmAuditFields(RuleAlarm ruleAlarm, RuleAlarmDetailsResultVO resultVO) {
+        if (ruleAlarm == null || resultVO == null) {
+            return;
+        }
+        resultVO.setCreatedBy(ruleAlarm.getCreatedBy());
+        resultVO.setCreatedOrgId(ruleAlarm.getCreatedOrgId());
     }
 
 
@@ -253,5 +263,4 @@ public class RuleAlarmServiceImpl extends SuperServiceImpl<RuleAlarmManager, Lon
                 .with(RuleAlarm::setCreatedOrgId, ContextUtil.getCurrentDeptId());
     }
 }
-
 

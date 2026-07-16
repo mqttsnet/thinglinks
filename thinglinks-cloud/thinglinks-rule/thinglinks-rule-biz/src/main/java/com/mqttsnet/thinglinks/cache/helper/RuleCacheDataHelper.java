@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,13 @@ import java.util.stream.Collectors;
 public class RuleCacheDataHelper {
 
     private static final int DEFAULT_PRIORITY = 100;
+
+    /**
+     * 桥接规则空桶占位 field ── Redis hash 不存在"零 field 的 key",DB 确认无启用规则时若不落任何标记,
+     * 每条桥接消息都会 HGETALL 未命中而穿透 DB。占位 field 的值走框架 NullVal 空值机制
+     * (cacheNullValues=true 时 null 自动转 NullVal),读侧 {@link CacheResult#getValue()} 归一为 null 被过滤。
+     */
+    private static final String BRIDGE_RULE_EMPTY_BUCKET_FIELD = "__empty__";
 
     private final CachePlusOps cachePlusOps;
     /**
@@ -133,6 +141,8 @@ public class RuleCacheDataHelper {
 
     /**
      * 取启用中的桥接规则缓存(命中 0 DB IO;miss 穿透 DB 并回填整桶)。按 priority 升序,永不返 null。
+     * <p>DB 也无规则时回填 {@link #BRIDGE_RULE_EMPTY_BUCKET_FIELD} 占位("确认无规则"结论可缓存),
+     * 后续消息全部命中缓存,不再每条穿透 DB;规则变更事件 del 桶后重建,占位自然被覆盖/清除。
      *
      * @param appId     应用 ID
      * @param direction 桥接方向
@@ -145,15 +155,19 @@ public class RuleCacheDataHelper {
             return List.of();
         }
         CacheKey bucketKey = BridgeRuleEnabledCacheKeyBuilder.builder(appId, direction);
+        // cacheNullValues=true:占位 field 的 null 值由框架转 NullVal 落桶;真实规则 map 无 null 值,行为不变
         Map<String, CacheResult<DataBridgeCacheVO>> result = cachePlusOps.hGetAll(bucketKey, k -> {
             List<DataBridgeResultVO> rules = dbLoader.apply(null);
-            return CollUtil.isEmpty(rules) ? Map.of() : toCacheVoMap(rules);
-        }, false);
+            return CollUtil.isEmpty(rules)
+                    ? Collections.<String, DataBridgeCacheVO>singletonMap(BRIDGE_RULE_EMPTY_BUCKET_FIELD, null)
+                    : toCacheVoMap(rules);
+        }, true);
         if (CollUtil.isEmpty(result)) {
             return List.of();
         }
         return result.values().stream()
-                .map(CacheResult::getRawValue)
+                // getValue 把 NullVal / 空对象占位归一为 null,连同占位 field 一起被过滤
+                .map(CacheResult::getValue)
                 .filter(Objects::nonNull)
                 .sorted(Comparator.comparingInt(r -> Optional.ofNullable(r.getPriority()).orElse(DEFAULT_PRIORITY)))
                 .toList();
@@ -173,6 +187,9 @@ public class RuleCacheDataHelper {
         CacheKey bucketKey = BridgeRuleEnabledCacheKeyBuilder.builder(appId, direction);
         cachePlusOps.del(bucketKey);
         if (CollUtil.isEmpty(rules)) {
+            // 变更后已无启用规则:直接落空桶占位,消费侧后续读取零穿透(否则要等下一条消息 miss 回源一次)
+            cachePlusOps.hSet(BridgeRuleEnabledCacheKeyBuilder.buildHashFieldKey(appId, direction, BRIDGE_RULE_EMPTY_BUCKET_FIELD),
+                    null, true);
             log.info("Refresh bridge rule bucket EMPTY appId={} direction={}", appId, direction);
             return;
         }

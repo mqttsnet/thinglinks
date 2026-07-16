@@ -89,5 +89,8 @@ public class RuleAlarmRecordResultVO extends AuditableResultVO {
     @Schema(description = "描述")
     private String remark;
 
+    @Schema(description = "告警规则详情")
+    private RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO;
+
 
 }

@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -87,9 +87,12 @@ public class PayloadFilterStrategy implements BridgeMatchStrategy {
                 return MatchResult.miss("SpEL parse returned null");
             }
             String safe = StrUtil.nullToEmpty(payload);
-            StandardEvaluationContext ctx = new StandardEvaluationContext(safe);
+            // SimpleEvaluationContext：仅允许属性读取 + 实例方法调用，禁用 T()/构造器/静态方法，杜绝 SpEL 注入 RCE
+            SimpleEvaluationContext ctx = SimpleEvaluationContext.forReadOnlyDataBinding()
+                    .withInstanceMethods()
+                    .build();
             ctx.setVariable("payload", safe);
-            Boolean r = expr.getValue(ctx, Boolean.class);
+            Boolean r = expr.getValue(ctx, safe, Boolean.class);
             return Boolean.TRUE.equals(r)
                     ? MatchResult.hit("SPEL true")
                     : MatchResult.miss("SPEL false");

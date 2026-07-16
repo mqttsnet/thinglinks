@@ -14,25 +14,36 @@ import com.mqttsnet.basic.utils.StrPool;
 import com.mqttsnet.basic.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.constant.BizConstant;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
+import com.mqttsnet.thinglinks.dto.alarm.RuleAlarmActionConfigDTO;
+import com.mqttsnet.thinglinks.dto.alarm.RuleAlarmChannelTemplateDTO;
+import com.mqttsnet.thinglinks.dto.alarm.RuleAlarmRecipientDTO;
+import com.mqttsnet.thinglinks.dto.alarm.RuleAlarmRenderedNotificationDTO;
 import com.mqttsnet.thinglinks.dto.alarm.channel.dingtalk.DingTalkMessageParamDTO;
 import com.mqttsnet.thinglinks.dto.alarm.channel.fs.FeishuMessageParamDTO;
+import com.mqttsnet.thinglinks.dto.alarm.channel.site.SiteMessageParamDTO;
 import com.mqttsnet.thinglinks.dto.alarm.channel.wechat.WeChatWorkMessageParamDTO;
+import com.mqttsnet.thinglinks.dto.linkage.RulePolicyDTO;
+import com.mqttsnet.thinglinks.dto.linkage.execution.PolicyContext;
 import com.mqttsnet.thinglinks.entity.alarm.RuleAlarmRecord;
 import com.mqttsnet.thinglinks.enumeration.alarm.AlarmChannelStatusEnum;
 import com.mqttsnet.thinglinks.enumeration.alarm.AlarmChannelTypeEnum;
 import com.mqttsnet.thinglinks.enumeration.alarm.AlarmRecordHandledStatusEnum;
 import com.mqttsnet.thinglinks.manager.alarm.RuleAlarmRecordManager;
+import com.mqttsnet.thinglinks.msg.enumeration.NoticeRemindModeEnum;
 import com.mqttsnet.thinglinks.msg.facade.MsgFacade;
 import com.mqttsnet.thinglinks.msg.vo.save.ExtendMsgRecipientSaveVO;
+import com.mqttsnet.thinglinks.msg.vo.update.ExtendMsgPublishVO;
 import com.mqttsnet.thinglinks.msg.vo.update.ExtendMsgSendVO;
 import com.mqttsnet.thinglinks.protocol.vo.param.DeviceAlarmNotificationRequestParam;
 import com.mqttsnet.thinglinks.service.alarm.RuleAlarmChannelService;
 import com.mqttsnet.thinglinks.service.alarm.RuleAlarmRecordService;
 import com.mqttsnet.thinglinks.service.alarm.RuleAlarmService;
+import com.mqttsnet.thinglinks.service.alarm.RuleNotificationTemplateService;
 import com.mqttsnet.thinglinks.vo.param.linkage.RuleAlarmRecordHandleParamVO;
 import com.mqttsnet.thinglinks.vo.result.alarm.RuleAlarmChannelDetailsResultVO;
 import com.mqttsnet.thinglinks.vo.result.alarm.RuleAlarmDetailsResultVO;
 import com.mqttsnet.thinglinks.vo.result.alarm.RuleAlarmRecordDetailsResultVO;
+import com.mqttsnet.thinglinks.vo.result.alarm.RuleAlarmRecordResultVO;
 import com.mqttsnet.thinglinks.vo.save.alarm.RuleAlarmRecordSaveVO;
 import com.mqttsnet.thinglinks.vo.update.alarm.RuleAlarmRecordUpdateVO;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +54,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -71,6 +84,9 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
 
     @Autowired
     private MsgFacade msgApi;
+
+    @Autowired
+    private RuleNotificationTemplateService ruleNotificationTemplateService;
 
     /**
      * Save the alarm record.
@@ -111,11 +127,14 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
      * @return Alarm record entity
      */
     private RuleAlarmRecord buildRuleAlarmRecordSaveVO(RuleAlarmRecordSaveVO saveVO) {
-        // Make any necessary modifications or populate fields
-        // Example:
-        saveVO.setCreatedOrgId(ContextUtil.getCurrentDeptId());
-
-        return BeanPlusUtil.copyProperties(saveVO, RuleAlarmRecord.class);
+        RuleAlarmRecord ruleAlarmRecord = BeanPlusUtil.copyProperties(saveVO, RuleAlarmRecord.class);
+        if (ruleAlarmRecord.getCreatedOrgId() == null) {
+            Long currentDeptId = ContextUtil.getCurrentDeptId();
+            if (currentDeptId != null) {
+                ruleAlarmRecord.setCreatedOrgId(currentDeptId);
+            }
+        }
+        return ruleAlarmRecord;
     }
 
     /**
@@ -207,6 +226,27 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
         return alarmRecordDetailsResultVO;
     }
 
+    @Override
+    public void fillAlarmRuleDetails(List<RuleAlarmRecordResultVO> records) {
+        if (CollUtil.isEmpty(records)) {
+            return;
+        }
+        Map<String, RuleAlarmDetailsResultVO> detailCache = new HashMap<>();
+        records.stream()
+                .filter(Objects::nonNull)
+                .forEach(record -> {
+                    String alarmIdentification = record.getAlarmIdentification();
+                    if (StrUtil.isBlank(alarmIdentification)) {
+                        return;
+                    }
+                    RuleAlarmDetailsResultVO detail = detailCache.computeIfAbsent(alarmIdentification,
+                            ruleAlarmService::getRuleAlarmDetailsByAlarmIdentification);
+                    if (detail != null) {
+                        record.setRuleAlarmDetailsResultVO(detail);
+                    }
+                });
+    }
+
     /**
      * handle or solve alarm record
      *
@@ -253,40 +293,100 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
 
     @Override
     public boolean triggerDeviceAlarm(DeviceAlarmNotificationRequestParam requestParam) {
-        // Get rule alarm details by alarm identification
-        RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO = ruleAlarmService.getRuleAlarmDetailsByAlarmIdentification(requestParam.getAlarmIdentification());
+        RuleAlarmActionConfigDTO legacyConfig = RuleAlarmActionConfigDTO.builder()
+                .version(2)
+                .alarmIdentification(requestParam.getAlarmIdentification())
+                .atPhone(requestParam.getAtPhone())
+                .contentData(requestParam.getContentData())
+                .build();
+        return triggerDeviceAlarm(legacyConfig, null);
+    }
 
-        ruleAlarmDetailsResultVO.getRuleAlarmChannelDetailsResultVOList().stream()
+    @Override
+    public boolean triggerDeviceAlarm(RuleAlarmActionConfigDTO actionConfig, PolicyContext policyContext) {
+        ArgumentAssert.notNull(actionConfig, "Alarm action config cannot be null");
+        ArgumentAssert.notBlank(actionConfig.getAlarmIdentification(), "Alarm identification cannot be blank");
+
+        RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO = ruleAlarmService.getRuleAlarmDetailsByAlarmIdentification(actionConfig.getAlarmIdentification());
+        ArgumentAssert.notNull(ruleAlarmDetailsResultVO, "Alarm rule does not exist: {}", actionConfig.getAlarmIdentification());
+
+        List<RuleAlarmChannelDetailsResultVO> channels = Optional.ofNullable(ruleAlarmDetailsResultVO.getRuleAlarmChannelDetailsResultVOList())
+                .orElse(new ArrayList<>());
+        List<RuleAlarmChannelTemplateDTO> configuredTemplates = Optional.ofNullable(actionConfig.getChannelTemplates())
+                .orElse(new ArrayList<>())
+                .stream()
+                .filter(Objects::nonNull)
+                .toList();
+        List<Integer> configuredChannelTypes = configuredTemplates.stream()
+                .filter(item -> !Boolean.FALSE.equals(item.getEnabled()))
+                .map(RuleAlarmChannelTemplateDTO::getChannelType)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        boolean useConfiguredChannels = CollUtil.isNotEmpty(configuredTemplates);
+        List<AlarmNotificationDispatch> notificationDispatches = new ArrayList<>();
+        channels.stream()
                 .filter(item -> AlarmChannelStatusEnum.ACTIVATED.getValue().equals(item.getStatus()))
+                .filter(item -> !useConfiguredChannels || configuredChannelTypes.contains(item.getChannelType()))
                 .forEach(ruleAlarmChannelResultVO -> {
                     try {
-                        sendAlarmNotification(requestParam, ruleAlarmDetailsResultVO, ruleAlarmChannelResultVO);
+                        RuleAlarmChannelTemplateDTO template = ruleNotificationTemplateService.resolveChannelTemplate(
+                                actionConfig,
+                                ruleAlarmChannelResultVO.getChannelType(),
+                                ruleAlarmDetailsResultVO);
+                        RuleAlarmRenderedNotificationDTO rendered = ruleNotificationTemplateService.render(
+                                actionConfig,
+                                template,
+                                ruleAlarmDetailsResultVO,
+                                ruleNotificationTemplateService.buildRuntimeVariables(policyContext, ruleAlarmDetailsResultVO));
+                        notificationDispatches.add(new AlarmNotificationDispatch(rendered, ruleAlarmChannelResultVO));
                     } catch (Exception e) {
-                        log.error("Failed to send alarm notification for channel: {}, error: {}", ruleAlarmChannelResultVO.getChannelType(), e.getMessage(), e);
+                        log.error("Failed to render alarm notification for channel: {}, error: {}", ruleAlarmChannelResultVO.getChannelType(), e.getMessage(), e);
                     }
                 });
-        // Save the alarm record after sending notifications
-        saveAlarmRecord(createAlarmRecordSaveVO(requestParam, ruleAlarmDetailsResultVO));
+        List<RuleAlarmRenderedNotificationDTO> renderedNotifications = notificationDispatches.stream()
+                .map(AlarmNotificationDispatch::getRendered)
+                .toList();
+        saveAlarmRecord(createAlarmRecordSaveVO(actionConfig, ruleAlarmDetailsResultVO, renderedNotifications, policyContext));
+        notificationDispatches.forEach(dispatch -> {
+            try {
+                sendAlarmNotification(dispatch.getRendered(), ruleAlarmDetailsResultVO, dispatch.getChannel());
+            } catch (Exception e) {
+                log.error("Failed to send alarm notification for channel: {}, error: {}",
+                        dispatch.getChannel().getChannelType(), e.getMessage(), e);
+            }
+        });
         return true;
     }
 
-    private void sendAlarmNotification(DeviceAlarmNotificationRequestParam requestParam, RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO, RuleAlarmChannelDetailsResultVO ruleAlarmChannelDetailsResultVO) {
-        ExtendMsgSendVO extendMsgSendVO = new ExtendMsgSendVO();
+    private void sendAlarmNotification(RuleAlarmRenderedNotificationDTO rendered,
+                                       RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO,
+                                       RuleAlarmChannelDetailsResultVO ruleAlarmChannelDetailsResultVO) {
         AlarmChannelTypeEnum alarmChannelTypeEnum = AlarmChannelTypeEnum.fromValue(ruleAlarmChannelDetailsResultVO.getChannelType()).orElse(null);
-
         if (alarmChannelTypeEnum == null) {
             log.error("Alarm channel type not found: {}", ruleAlarmChannelDetailsResultVO.getChannelType());
             return;
         }
+        if (AlarmChannelTypeEnum.SITE_MESSAGE.equals(alarmChannelTypeEnum)) {
+            sendSiteNotification(rendered, ruleAlarmChannelDetailsResultVO);
+            return;
+        }
+        sendRobotNotification(rendered, alarmChannelTypeEnum, ruleAlarmChannelDetailsResultVO);
+    }
+
+    private void sendRobotNotification(RuleAlarmRenderedNotificationDTO rendered,
+                                       AlarmChannelTypeEnum alarmChannelTypeEnum,
+                                       RuleAlarmChannelDetailsResultVO ruleAlarmChannelDetailsResultVO) {
+        ExtendMsgSendVO extendMsgSendVO = new ExtendMsgSendVO();
 
         // Set template code
         extendMsgSendVO.setCode(alarmChannelTypeEnum.getChannelTemplateCode());
 
         // Parse channel configuration parameters
         List<Kv> configList = parseChannelConfig(ruleAlarmChannelDetailsResultVO.getChannelConfig(), alarmChannelTypeEnum);
-        List<ExtendMsgRecipientSaveVO> recipientList = createRecipientList(requestParam);
+        List<ExtendMsgRecipientSaveVO> recipientList = createRobotRecipientList(rendered);
 
-        boolean isAtAll = recipientList.stream()
+        boolean isAtAll = Boolean.TRUE.equals(rendered.getAtAll()) || recipientList.stream()
                 .anyMatch(recipient -> BizConstant.ALL.equals(recipient.getRecipient()));
 
         if (isAtAll) {
@@ -302,15 +402,127 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
         }
 
         // Set alarm content
-        extendMsgSendVO.setContent(requestParam.getContentData());
-        extendMsgSendVO.setTitle(ruleAlarmDetailsResultVO.getAlarmName());
+        extendMsgSendVO.setContent(rendered.getContent());
+        extendMsgSendVO.setTitle(rendered.getTitle());
 
         // Send the alarm message
+        if (CollUtil.isEmpty(recipientList)) {
+            log.warn("Skip alarm robot notification because recipient list is empty. channelType={}", alarmChannelTypeEnum);
+            return;
+        }
         Boolean booleanR = msgApi.sendByTemplate(extendMsgSendVO);
         log.info("Send alarm message result: {}", booleanR);
         if (!booleanR) {
             log.error("Failed to send alarm message: {}", booleanR);
         }
+    }
+
+    private void sendSiteNotification(RuleAlarmRenderedNotificationDTO rendered,
+                                      RuleAlarmChannelDetailsResultVO ruleAlarmChannelDetailsResultVO) {
+        SiteMessageParamDTO siteConfig = parseSiteMessageConfig(ruleAlarmChannelDetailsResultVO.getChannelConfig());
+        List<String> employeeIds = resolveSiteMessageRecipients(rendered, siteConfig);
+        if (CollUtil.isEmpty(employeeIds)) {
+            log.warn("Skip site alarm notification because employee recipient list is empty.");
+            return;
+        }
+        ExtendMsgPublishVO publishVO = ExtendMsgPublishVO.builder()
+                .title(rendered.getTitle())
+                .content(rendered.getContent())
+                .recipientList(employeeIds)
+                .author("规则引擎")
+                .remindMode(normalizeRemindMode(siteConfig.getRemindMode()))
+                .draft(false)
+                .url(StrUtil.blankToDefault(rendered.getUrl(), siteConfig.getUrl()))
+                .target(StrUtil.blankToDefault(siteConfig.getTarget(), "01"))
+                .autoRead(siteConfig.getAutoRead() == null ? false : siteConfig.getAutoRead())
+                .build();
+        Boolean result = msgApi.publish(publishVO);
+        log.info("Publish site alarm notice result: {}", result);
+    }
+
+    private SiteMessageParamDTO parseSiteMessageConfig(String channelConfig) {
+        if (StrUtil.isBlank(channelConfig)) {
+            return defaultSiteMessageConfig();
+        }
+        return parseConfig(channelConfig, SiteMessageParamDTO.class)
+                .map(config -> SiteMessageParamDTO.builder()
+                        .remindMode(StrUtil.blankToDefault(config.getRemindMode(),
+                                NoticeRemindModeEnum.EARLY_WARNING.getCode()))
+                        .target(StrUtil.blankToDefault(config.getTarget(), "01"))
+                        .autoRead(config.getAutoRead() == null ? false : config.getAutoRead())
+                        .url(config.getUrl())
+                        .recipientList(normalizeSiteRecipientList(config.getRecipientList()))
+                        .build())
+                .orElseGet(this::defaultSiteMessageConfig);
+    }
+
+    private SiteMessageParamDTO defaultSiteMessageConfig() {
+        return SiteMessageParamDTO.builder()
+                .remindMode(NoticeRemindModeEnum.EARLY_WARNING.getCode())
+                .target("01")
+                .autoRead(false)
+                .recipientList(new ArrayList<>())
+                .build();
+    }
+
+    private List<String> resolveSiteMessageRecipients(RuleAlarmRenderedNotificationDTO rendered,
+                                                       SiteMessageParamDTO siteConfig) {
+        List<String> actionRecipients = Optional.ofNullable(rendered.getRecipients())
+                .orElse(new ArrayList<>())
+                .stream()
+                .filter(item -> item != null && StrUtil.equalsIgnoreCase("EMPLOYEE", item.getType()))
+                .map(RuleAlarmRecipientDTO::getValue)
+                .filter(StrUtil::isNotBlank)
+                .map(String::trim)
+                .distinct()
+                .toList();
+        if (CollUtil.isNotEmpty(actionRecipients)) {
+            return actionRecipients;
+        }
+        return normalizeSiteRecipientList(siteConfig.getRecipientList());
+    }
+
+    private List<String> normalizeSiteRecipientList(List<String> recipientList) {
+        if (recipientList == null) {
+            return new ArrayList<>();
+        }
+        return recipientList.stream()
+                .filter(StrUtil::isNotBlank)
+                .map(String::trim)
+                .distinct()
+                .toList();
+    }
+
+    private String normalizeRemindMode(String remindMode) {
+        if (Arrays.stream(NoticeRemindModeEnum.values()).anyMatch(item -> item.getCode().equals(remindMode))) {
+            return remindMode;
+        }
+        return NoticeRemindModeEnum.EARLY_WARNING.getCode();
+    }
+
+    private List<ExtendMsgRecipientSaveVO> createRobotRecipientList(RuleAlarmRenderedNotificationDTO rendered) {
+        List<ExtendMsgRecipientSaveVO> recipientList = new ArrayList<>();
+        Optional.ofNullable(rendered.getRecipients())
+                .orElse(new ArrayList<>())
+                .stream()
+                .filter(item -> item != null && (StrUtil.equalsIgnoreCase("PHONE", item.getType()) || StrUtil.equalsIgnoreCase("ALL", item.getType())))
+                .map(RuleAlarmRecipientDTO::getValue)
+                .filter(StrUtil::isNotBlank)
+                .flatMap(value -> Arrays.stream(value.split(StrUtil.COMMA)))
+                .map(String::trim)
+                .filter(StrUtil::isNotBlank)
+                .distinct()
+                .forEach(value -> {
+                    ExtendMsgRecipientSaveVO recipient = new ExtendMsgRecipientSaveVO();
+                    recipient.setRecipient(value);
+                    recipientList.add(recipient);
+                });
+        if (Boolean.TRUE.equals(rendered.getAtAll()) && recipientList.stream().noneMatch(item -> BizConstant.ALL.equals(item.getRecipient()))) {
+            ExtendMsgRecipientSaveVO recipient = new ExtendMsgRecipientSaveVO();
+            recipient.setRecipient(BizConstant.ALL);
+            recipientList.add(recipient);
+        }
+        return recipientList;
     }
 
     private List<ExtendMsgRecipientSaveVO> createRecipientList(DeviceAlarmNotificationRequestParam requestParam) {
@@ -332,15 +544,82 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
         return recipientList;
     }
 
-    private RuleAlarmRecordSaveVO createAlarmRecordSaveVO(DeviceAlarmNotificationRequestParam requestParam, RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO) {
+    private RuleAlarmRecordSaveVO createAlarmRecordSaveVO(RuleAlarmActionConfigDTO actionConfig,
+                                                          RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO,
+                                                          List<RuleAlarmRenderedNotificationDTO> renderedNotifications,
+                                                          PolicyContext policyContext) {
         RuleAlarmRecordSaveVO saveVO = new RuleAlarmRecordSaveVO();
-        saveVO.setAppId(ruleAlarmDetailsResultVO.getAppId());
-        saveVO.setAlarmIdentification(requestParam.getAlarmIdentification());
+        saveVO.setAppId(resolveAlarmRecordAppId(ruleAlarmDetailsResultVO, policyContext));
+        saveVO.setAlarmIdentification(actionConfig.getAlarmIdentification());
         saveVO.setOccurredTime(LocalDateTime.now());
-        saveVO.setContentData(requestParam.getContentData());
+        saveVO.setContentData(buildRecordContent(actionConfig, renderedNotifications));
         saveVO.setHandledStatus(AlarmRecordHandledStatusEnum.PENDING.getValue());
-        saveVO.setRemark(Optional.ofNullable(requestParam.getRemark()).orElse("Alarm triggered and notification sent."));
+        saveVO.setRemark("Alarm triggered and notification sent.");
+        saveVO.setCreatedBy(resolveAlarmRecordCreatedBy(ruleAlarmDetailsResultVO));
+        saveVO.setCreatedOrgId(resolveAlarmRecordCreatedOrgId(ruleAlarmDetailsResultVO, policyContext));
         return saveVO;
+    }
+
+    private Long resolveAlarmRecordCreatedBy(RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO) {
+        return Optional.ofNullable(ruleAlarmDetailsResultVO)
+                .map(RuleAlarmDetailsResultVO::getCreatedBy)
+                .orElse(null);
+    }
+
+    private String resolveAlarmRecordAppId(RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO,
+                                           PolicyContext policyContext) {
+        String alarmAppId = Optional.ofNullable(ruleAlarmDetailsResultVO)
+                .map(RuleAlarmDetailsResultVO::getAppId)
+                .orElse(null);
+        if (StrUtil.isNotBlank(alarmAppId)) {
+            return alarmAppId;
+        }
+        return Optional.ofNullable(policyContext)
+                .map(PolicyContext::getRulePolicyDTO)
+                .map(RulePolicyDTO::getAppId)
+                .orElse(null);
+    }
+
+    private Long resolveAlarmRecordCreatedOrgId(RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO,
+                                                PolicyContext policyContext) {
+        Long alarmCreatedOrgId = Optional.ofNullable(ruleAlarmDetailsResultVO)
+                .map(RuleAlarmDetailsResultVO::getCreatedOrgId)
+                .orElse(null);
+        if (alarmCreatedOrgId != null) {
+            return alarmCreatedOrgId;
+        }
+        return Optional.ofNullable(policyContext)
+                .map(PolicyContext::getRulePolicyDTO)
+                .map(RulePolicyDTO::getCreatedOrgId)
+                .orElse(null);
+    }
+
+    private String buildRecordContent(RuleAlarmActionConfigDTO actionConfig,
+                                      List<RuleAlarmRenderedNotificationDTO> renderedNotifications) {
+        if (CollUtil.isNotEmpty(renderedNotifications)) {
+            RuleAlarmRenderedNotificationDTO first = renderedNotifications.get(0);
+            return StrUtil.blankToDefault(first.getContent(), first.getTitle());
+        }
+        return StrUtil.blankToDefault(actionConfig.getContentData(), "Alarm triggered.");
+    }
+
+    private static class AlarmNotificationDispatch {
+        private final RuleAlarmRenderedNotificationDTO rendered;
+        private final RuleAlarmChannelDetailsResultVO channel;
+
+        private AlarmNotificationDispatch(RuleAlarmRenderedNotificationDTO rendered,
+                                          RuleAlarmChannelDetailsResultVO channel) {
+            this.rendered = rendered;
+            this.channel = channel;
+        }
+
+        private RuleAlarmRenderedNotificationDTO getRendered() {
+            return rendered;
+        }
+
+        private RuleAlarmChannelDetailsResultVO getChannel() {
+            return channel;
+        }
     }
 
     private List<Kv> parseChannelConfig(String channelConfig, AlarmChannelTypeEnum alarmChannelTypeEnum) {
@@ -372,6 +651,7 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
             case FS:
                 Optional<FeishuMessageParamDTO> feishuMessageParam = parseConfig(channelConfig, FeishuMessageParamDTO.class);
                 if (feishuMessageParam.isPresent()) {
+                    cofigList.add(Kv.builder().key("msgType").value("TEXT").build());
                     cofigList.add(Kv.builder().key("appSecret").value(feishuMessageParam.get().getAppSecret()).build());
                     cofigList.add(Kv.builder().key("appId").value(feishuMessageParam.get().getAppId()).build());
                     cofigList.add(Kv.builder().key("token").value(feishuMessageParam.get().getToken()).build());
@@ -395,5 +675,3 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
     }
 
 }
-
-

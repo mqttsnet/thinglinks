@@ -356,6 +356,21 @@ public interface CacheKeyTable {
          */
         String DATA_SOURCE = "data_source";
 
+        /** 规则事件触发索引桶 */
+        String RULE_TRIGGER_INDEX = "rule_trigger_index";
+
+        /** 事件触发规则详情缓存 */
+        String RULE_TRIGGER_DETAILS = "rule_trigger_details";
+
+        /** 设备最新物模型快照 */
+        String RULE_LATEST_SNAPSHOT = "rule_latest_snapshot";
+
+        /** 规则事件防抖计数与首值快照 */
+        String RULE_ANTI_SHAKE = "rule_anti_shake";
+
+        /** 规则动作执行冷却闸 */
+        String RULE_ACTION_COOLDOWN = "rule_action_cooldown";
+
     }
     // Rule规则服务缓存 end
 

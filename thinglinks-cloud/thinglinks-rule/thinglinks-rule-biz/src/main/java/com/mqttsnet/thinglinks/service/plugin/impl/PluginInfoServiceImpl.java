@@ -479,7 +479,7 @@ public class PluginInfoServiceImpl extends SuperServiceImpl<PluginInfoManager, L
         }
         try {
             // 构建目标实例的 URL，例如：http://<instanceIp>:<port>/installPlugin
-            String url = instance.toInetAddrWithHttp() + "/anyUser/ruleOpen/installPlugin";
+            String url = instance.toInetAddrWithHttp() + "/inner/ruleOpen/installPlugin";
 
             // 创建请求参数，tenantId 和 pluginId 应该作为查询参数传递
             UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)
@@ -539,7 +539,7 @@ public class PluginInfoServiceImpl extends SuperServiceImpl<PluginInfoManager, L
         log.info("Attempting to uninstall plugin {} from instance {}", pluginId, instance.getInstanceIdentification());
         try {
             // 构建目标实例的 URL，例如： http://<instanceIp>:<port>/uninstallPlugin
-            String url = instance.toInetAddrWithHttp() + "/anyUser/ruleOpen/uninstallPlugin";
+            String url = instance.toInetAddrWithHttp() + "/inner/ruleOpen/uninstallPlugin";
 
             // 创建请求参数，tenantId 和 pluginId 应该作为查询参数传递
             UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)

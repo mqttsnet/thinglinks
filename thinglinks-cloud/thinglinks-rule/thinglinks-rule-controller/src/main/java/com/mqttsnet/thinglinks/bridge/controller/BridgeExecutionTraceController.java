@@ -12,6 +12,7 @@ import com.mqttsnet.thinglinks.entity.bridge.BridgeExecutionTrace;
 import com.mqttsnet.thinglinks.service.bridge.BridgeExecutionTraceService;
 import com.mqttsnet.thinglinks.vo.query.bridge.BridgeExecutionTracePageQuery;
 import com.mqttsnet.thinglinks.vo.result.bridge.BridgeExecutionTraceResultVO;
+import com.mqttsnet.thinglinks.vo.result.bridge.BridgeExecutionTraceStatsResultVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -22,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +57,18 @@ public class BridgeExecutionTraceController extends SuperController<BridgeExecut
         QueryWrap<BridgeExecutionTrace> queryWrap = super.handlerWrapper(model, params);
         DataScopeHelper.startDataScope("rule_bridge_execution_trace");
         return queryWrap;
+    }
+
+    @Operation(summary = "trace 统计", description = "按查询条件聚合桥接执行日志分布、趋势和触发量 Top 规则")
+    @PostMapping("/stats")
+    public R<BridgeExecutionTraceStatsResultVO> stats(@RequestBody PageParams<BridgeExecutionTracePageQuery> params) {
+        try {
+            BridgeExecutionTracePageQuery query = params == null ? null : params.getModel();
+            return R.success(superService.getTraceStats(query));
+        } catch (Exception e) {
+            log.error("查询 trace 统计失败: {}", e.getMessage(), e);
+            return R.fail();
+        }
     }
 
     @Operation(summary = "trace 详情(含步骤)", description = "返回 trace 元信息 + 按 step_no 升序的步骤列表;同 traceId 命中多规则时建议传 ruleId 精确定位")

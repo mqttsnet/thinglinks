@@ -59,11 +59,16 @@ public class BridgeDeviceEventConsumer extends AbstractTenantAwareRocketmqListen
         String traceId = envelope.getTraceId();
         String clientId = envelope.getClientId();
         String actionType = envelope.getActionType();
+        log.info("[BridgeDeviceEventConsumer] consume msgId={} traceId={} clientId={} product={} device={} action={} payloadKind={} topic={}",
+            raw.getMsgId(), traceId, clientId, envelope.getProductIdentification(),
+            envelope.getDeviceIdentification(), actionType, envelope.getPayloadKind(), envelope.getTopic());
         long matchStart = System.currentTimeMillis();
         try {
             List<DataBridgeCacheVO> hits = matcher.matchOutbound(envelope);
             long matchLatencyMs = System.currentTimeMillis() - matchStart;
             if (hits.isEmpty()) {
+                log.info("[BridgeDeviceEventConsumer] no matched bridge rules traceId={} clientId={} action={} topic={} latency={}ms",
+                    traceId, clientId, actionType, envelope.getTopic(), matchLatencyMs);
                 return;
             }
             log.info("[BridgeDeviceEventConsumer] matched {} rules traceId={} clientId={} action={} topic={} latency={}ms",

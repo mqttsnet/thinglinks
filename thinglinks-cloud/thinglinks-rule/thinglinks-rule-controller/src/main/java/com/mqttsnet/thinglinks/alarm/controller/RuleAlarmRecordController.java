@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.alarm.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.base.controller.SuperController;
@@ -65,6 +66,14 @@ public class RuleAlarmRecordController extends SuperController<RuleAlarmRecordSe
         // 开启数据权限
         DataScopeHelper.startDataScope("rule_alarm_record");
         return queryWrap;
+    }
+
+    @Override
+    public void handlerResult(IPage<RuleAlarmRecordResultVO> page) {
+        superService.fillAlarmRuleDetails(page.getRecords());
+        if (echoService != null) {
+            echoService.action(page);
+        }
     }
 
 
@@ -163,5 +172,3 @@ public class RuleAlarmRecordController extends SuperController<RuleAlarmRecordSe
     }
 
 }
-
-

@@ -23,14 +23,18 @@ import com.mqttsnet.thinglinks.service.bridge.DataBridgeService;
 import com.mqttsnet.thinglinks.vo.query.bridge.BridgeExecutionTracePageQuery;
 import com.mqttsnet.thinglinks.vo.result.bridge.BridgeExecutionStepResultVO;
 import com.mqttsnet.thinglinks.vo.result.bridge.BridgeExecutionTraceResultVO;
+import com.mqttsnet.thinglinks.vo.result.bridge.BridgeExecutionTraceStatsResultVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -48,6 +52,7 @@ public class BridgeExecutionTraceServiceImpl
         implements BridgeExecutionTraceService {
 
     private static final String STATUS_DEAD_LETTER = "03";
+    private static final int TOP_RULE_LIMIT = 8;
 
     private final SinkDispatcher sinkDispatcher;
 
@@ -63,6 +68,14 @@ public class BridgeExecutionTraceServiceImpl
     @Override
     public List<BridgeExecutionTraceResultVO> getTraceResultVOList(BridgeExecutionTracePageQuery query) {
         return BeanPlusUtil.copyToList(superManager.getTraceList(query), BridgeExecutionTraceResultVO.class);
+    }
+
+    @Override
+    public BridgeExecutionTraceStatsResultVO getTraceStats(BridgeExecutionTracePageQuery query) {
+        BridgeExecutionTraceStatsResultVO result = superManager.getTraceStats(query);
+        result.setTimeline(buildTimeline(query));
+        result.setTopRules(superManager.getTraceTopRules(query, TOP_RULE_LIMIT));
+        return result;
     }
 
     @Override
@@ -101,7 +114,7 @@ public class BridgeExecutionTraceServiceImpl
         ArgumentAssert.notNull(rule, "桥接规则不存在或已被删除,无法重放 ruleId=" + trace.getBridgeRuleId());
 
         BridgeMessageEnvelope envelope = BridgeMessageEnvelope.builder()
-                .tenantId(trace.getTenantId())
+                .tenantId(ContextUtil.getTenantIdStr())
                 .productIdentification(trace.getProductIdentification())
                 .deviceIdentification(trace.getDeviceIdentification())
                 .actionType(trace.getActionType())
@@ -127,5 +140,69 @@ public class BridgeExecutionTraceServiceImpl
     public boolean removeBefore(LocalDateTime cutoff) {
         return superManager.remove(Wrappers.<BridgeExecutionTrace>lambdaQuery()
                 .lt(BridgeExecutionTrace::getCreatedTime, cutoff));
+    }
+
+    private List<BridgeExecutionTraceStatsResultVO.TimelinePoint> buildTimeline(BridgeExecutionTracePageQuery query) {
+        Map<String, Object> bounds = superManager.getTraceTimeBounds(query);
+        LocalDateTime minTime = query != null && query.getStartTimeBegin() != null
+                ? query.getStartTimeBegin()
+                : toLocalDateTime(getMapValue(bounds, "minTime"));
+        LocalDateTime maxTime = query != null && query.getStartTimeEnd() != null
+                ? query.getStartTimeEnd()
+                : toLocalDateTime(getMapValue(bounds, "maxTime"));
+        if (minTime == null || maxTime == null) {
+            return List.of();
+        }
+        TimeBucketGranularity granularity = resolveGranularity(minTime, maxTime);
+        return superManager.getTraceTimeline(query, granularity.name());
+    }
+
+    private Object getMapValue(Map<String, Object> row, String key) {
+        if (row == null || row.isEmpty()) {
+            return null;
+        }
+        if (row.containsKey(key)) {
+            return row.get(key);
+        }
+        String underlineKey = StrUtil.toUnderlineCase(key);
+        if (row.containsKey(underlineKey)) {
+            return row.get(underlineKey);
+        }
+        if (row.containsKey(key.toUpperCase())) {
+            return row.get(key.toUpperCase());
+        }
+        return row.get(underlineKey.toUpperCase());
+    }
+
+    private LocalDateTime toLocalDateTime(Object value) {
+        if (value instanceof LocalDateTime localDateTime) {
+            return localDateTime;
+        }
+        if (value instanceof Timestamp timestamp) {
+            return timestamp.toLocalDateTime();
+        }
+        if (value == null) {
+            return null;
+        }
+        try {
+            return LocalDateTime.parse(String.valueOf(value).replace(' ', 'T'));
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private TimeBucketGranularity resolveGranularity(LocalDateTime minTime, LocalDateTime maxTime) {
+        long hours = Math.max(Duration.between(minTime, maxTime).toHours(), 0L);
+        if (hours <= 48) {
+            return TimeBucketGranularity.HOUR;
+        }
+        long days = Math.max(Duration.between(minTime, maxTime).toDays(), 0L);
+        return days <= 60 ? TimeBucketGranularity.DAY : TimeBucketGranularity.MONTH;
+    }
+
+    private enum TimeBucketGranularity {
+        HOUR,
+        DAY,
+        MONTH
     }
 }

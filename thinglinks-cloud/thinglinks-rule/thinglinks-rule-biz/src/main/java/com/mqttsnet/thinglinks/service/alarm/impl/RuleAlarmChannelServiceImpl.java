@@ -1,13 +1,21 @@
 package com.mqttsnet.thinglinks.service.alarm.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
+import com.mqttsnet.thinglinks.dto.alarm.channel.dingtalk.DingTalkMessageParamDTO;
+import com.mqttsnet.thinglinks.dto.alarm.channel.fs.FeishuMessageParamDTO;
+import com.mqttsnet.thinglinks.dto.alarm.channel.site.SiteMessageParamDTO;
+import com.mqttsnet.thinglinks.dto.alarm.channel.wechat.WeChatWorkMessageParamDTO;
 import com.mqttsnet.thinglinks.entity.alarm.RuleAlarmChannel;
+import com.mqttsnet.thinglinks.enumeration.alarm.AlarmChannelTypeEnum;
 import com.mqttsnet.thinglinks.manager.alarm.RuleAlarmChannelManager;
+import com.mqttsnet.thinglinks.msg.enumeration.NoticeRemindModeEnum;
 import com.mqttsnet.thinglinks.service.alarm.RuleAlarmChannelService;
 import com.mqttsnet.thinglinks.vo.query.alarm.RuleAlarmChannelPageQuery;
 import com.mqttsnet.thinglinks.vo.result.alarm.RuleAlarmChannelDetailsResultVO;
@@ -18,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -66,7 +75,8 @@ public class RuleAlarmChannelServiceImpl extends SuperServiceImpl<RuleAlarmChann
      */
     private void checkedAlarmChannelSaveVO(RuleAlarmChannelSaveVO saveVO) {
         ArgumentAssert.notBlank(saveVO.getChannelName(), "Alarm channel name cannot be blank.");
-        // Depending on actual requirements, you can continue to add other parameter validations.
+        AlarmChannelTypeEnum channelType = validateChannelType(saveVO.getChannelType());
+        saveVO.setChannelConfig(normalizeAndValidateChannelConfig(channelType, saveVO.getChannelConfig()));
     }
 
     /**
@@ -171,7 +181,81 @@ public class RuleAlarmChannelServiceImpl extends SuperServiceImpl<RuleAlarmChann
         }
 
         ArgumentAssert.notBlank(updateVO.getChannelName(), "Alarm channel name cannot be blank.");
-        // Depending on actual requirements, you can continue to add other parameter validations.
+        AlarmChannelTypeEnum channelType = validateChannelType(updateVO.getChannelType());
+        updateVO.setChannelConfig(normalizeAndValidateChannelConfig(channelType, updateVO.getChannelConfig()));
+    }
+
+    private AlarmChannelTypeEnum validateChannelType(Integer channelType) {
+        return AlarmChannelTypeEnum.fromValue(channelType)
+                .orElseThrow(() -> BizException.wrap("Unsupported alarm channel type: " + channelType));
+    }
+
+    private String normalizeAndValidateChannelConfig(AlarmChannelTypeEnum channelType, String channelConfig) {
+        if (AlarmChannelTypeEnum.SITE_MESSAGE.equals(channelType)) {
+            SiteMessageParamDTO config = parseChannelConfig(StrUtil.blankToDefault(channelConfig, "{}"),
+                    SiteMessageParamDTO.class, channelType);
+            SiteMessageParamDTO normalized = SiteMessageParamDTO.builder()
+                    .remindMode(normalizeRemindMode(config.getRemindMode()))
+                    .target(StrUtil.blankToDefault(config.getTarget(), "01"))
+                    .autoRead(config.getAutoRead() == null ? false : config.getAutoRead())
+                    .url(config.getUrl())
+                    .recipientList(normalizeRecipientList(config.getRecipientList()))
+                    .build();
+            return JSON.toJSONString(normalized);
+        }
+        ArgumentAssert.notBlank(channelConfig, "Alarm channel config cannot be blank.");
+        switch (channelType) {
+            case DING_TALK:
+                DingTalkMessageParamDTO dingTalk = parseChannelConfig(channelConfig, DingTalkMessageParamDTO.class, channelType);
+                ArgumentAssert.notBlank(dingTalk.getToken(), "DingTalk alarm channel token cannot be blank.");
+                ArgumentAssert.notBlank(dingTalk.getSecret(), "DingTalk alarm channel secret cannot be blank.");
+                break;
+            case ENTERPRISE_WECHAT:
+                WeChatWorkMessageParamDTO weChat = parseChannelConfig(channelConfig, WeChatWorkMessageParamDTO.class, channelType);
+                ArgumentAssert.notBlank(weChat.getToken(), "Enterprise WeChat alarm channel token cannot be blank.");
+                break;
+            case FS:
+                FeishuMessageParamDTO feishu = parseChannelConfig(channelConfig, FeishuMessageParamDTO.class, channelType);
+                ArgumentAssert.notBlank(feishu.getToken(), "Feishu alarm channel token cannot be blank.");
+                ArgumentAssert.notBlank(feishu.getAppId(), "Feishu alarm channel appId cannot be blank.");
+                ArgumentAssert.notBlank(feishu.getAppSecret(), "Feishu alarm channel appSecret cannot be blank.");
+                break;
+            default:
+                throw BizException.wrap("Unsupported alarm channel type: " + channelType);
+        }
+        return channelConfig;
+    }
+
+    private <T> T parseChannelConfig(String channelConfig, Class<T> clazz, AlarmChannelTypeEnum channelType) {
+        try {
+            T config = JSON.parseObject(channelConfig, clazz);
+            if (config == null) {
+                throw BizException.wrap("Alarm channel config cannot be blank.");
+            }
+            return config;
+        } catch (BizException e) {
+            throw e;
+        } catch (Exception e) {
+            throw BizException.wrap("Invalid " + channelType.getDesc() + " alarm channel config.");
+        }
+    }
+
+    private String normalizeRemindMode(String remindMode) {
+        if (Arrays.stream(NoticeRemindModeEnum.values()).anyMatch(item -> item.getCode().equals(remindMode))) {
+            return remindMode;
+        }
+        return NoticeRemindModeEnum.EARLY_WARNING.getCode();
+    }
+
+    private List<String> normalizeRecipientList(List<String> recipientList) {
+        if (recipientList == null) {
+            return List.of();
+        }
+        return recipientList.stream()
+                .filter(StrUtil::isNotBlank)
+                .map(String::trim)
+                .distinct()
+                .toList();
     }
 
     /**
@@ -185,5 +269,3 @@ public class RuleAlarmChannelServiceImpl extends SuperServiceImpl<RuleAlarmChann
     }
 
 }
-
-

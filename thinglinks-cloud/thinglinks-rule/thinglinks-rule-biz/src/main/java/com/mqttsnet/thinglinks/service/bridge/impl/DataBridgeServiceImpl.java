@@ -138,8 +138,6 @@ public class DataBridgeServiceImpl
 
         DataBridge entity = new DataBridge();
         BeanUtils.copyProperties(updateVO, entity);
-        entity.setEnable(Boolean.FALSE);  // 配置变更后自动重置 enable
-
         ArgumentAssert.isTrue(superManager.updateById(entity), "桥接规则更新失败");
         bridgeEventPublisher.publishRuleChangedEvent(entity);
         return updateVO;

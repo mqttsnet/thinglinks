@@ -60,6 +60,16 @@ public class RuleExecutionLogPageQuery implements Serializable {
     @Schema(description = "规则执行开始时间")
     private LocalDateTime startTime;
     /**
+     * 规则执行开始时间-起
+     */
+    @Schema(description = "规则执行开始时间-起")
+    private LocalDateTime startTimeBegin;
+    /**
+     * 规则执行开始时间-止
+     */
+    @Schema(description = "规则执行开始时间-止")
+    private LocalDateTime startTimeEnd;
+    /**
      * 规则执行结束时间
      */
     @Schema(description = "规则执行结束时间")

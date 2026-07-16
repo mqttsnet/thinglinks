@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.anyuser.controller;
+package com.mqttsnet.thinglinks.inner.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Rule 开放 API:请求需携带 TenantId,但不需 Token(免登录)、不验证 uri 权限,处理时注意 ContextUtil.setTenantId(tenantId)。
+ * Rule 规则内部接口(inner)：Feign 服务间 RPC(Nacos 直连、不过网关),透传 TenantId、无需 Token；网关拒绝外部访问。处理时注意 ContextUtil.setTenantId(tenantId)。
  *
  * @author xiaonannet
  * @version 1.0
@@ -41,9 +41,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/anyUser/ruleOpen")
-@Tag(name = "Rule-OpenApi")
-public class RuleOpenAnyUserController {
+@RequestMapping("/inner/ruleOpen")
+@Tag(name = "inner-规则API")
+public class RuleOpenInnerController {
 
 
     private final RuleService ruleService;
@@ -168,7 +168,7 @@ public class RuleOpenAnyUserController {
 
     /**
      * 直接编译执行脚本内容:动态编译 scriptContent → 绑定 executeParams → 执行返回结果。
-     * 供 mqs「设备上行前置转换」运行时 + 在线调试经 Feign({@code RuleOpenAnyUserApi#executeScriptContent})调用。
+     * 供 mqs「设备上行前置转换」运行时 + 在线调试经 Feign({@code RuleOpenInnerApi#executeScriptContent})调用。
      */
     @Operation(summary = "直接编译执行脚本内容", description = "实时编译脚本内容并执行,供 mqs 前置转换 / 在线调试 Feign 调用")
     @PostMapping("/executeScriptContent")

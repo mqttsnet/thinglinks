@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.rule.facade.impl;
 
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.exception.BizException;
-import com.mqttsnet.thinglinks.rule.facade.RuleOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.rule.facade.RuleOpenInnerFacade;
 import com.mqttsnet.thinglinks.service.script.RuleGroovyScriptService;
 import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptDirectCompileParam;
 import com.mqttsnet.thinglinks.vo.param.script.RuleGroovyScriptExecuteScriptParam;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RuleOpenAnyUserFacadeImpl implements RuleOpenAnyUserFacade {
+public class RuleOpenInnerFacadeImpl implements RuleOpenInnerFacade {
 
     private final RuleGroovyScriptService ruleGroovyScriptService;
 

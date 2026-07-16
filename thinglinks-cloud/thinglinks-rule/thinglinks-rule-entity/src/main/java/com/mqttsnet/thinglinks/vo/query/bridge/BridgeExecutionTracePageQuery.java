@@ -47,9 +47,6 @@ public class BridgeExecutionTracePageQuery implements Serializable {
     @Schema(description = "触发来源")
     private String triggerSource;
 
-    @Schema(description = "租户ID")
-    private String tenantId;
-
     @Schema(description = "产品标识")
     private String productIdentification;
 

@@ -100,6 +100,11 @@ public class RuleAlarmRecordSaveVO implements Serializable {
     @Size(max = 255, message = "描述长度不能超过{max}")
     private String remark;
     /**
+     * 创建人
+     */
+    @Schema(description = "创建人")
+    private Long createdBy;
+    /**
      * 创建人组织
      */
     @Schema(description = "创建人组织")

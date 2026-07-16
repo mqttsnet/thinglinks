@@ -4,6 +4,7 @@ import com.mqttsnet.basic.base.service.SuperService;
 import com.mqttsnet.thinglinks.entity.bridge.BridgeExecutionTrace;
 import com.mqttsnet.thinglinks.vo.query.bridge.BridgeExecutionTracePageQuery;
 import com.mqttsnet.thinglinks.vo.result.bridge.BridgeExecutionTraceResultVO;
+import com.mqttsnet.thinglinks.vo.result.bridge.BridgeExecutionTraceStatsResultVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +29,14 @@ public interface BridgeExecutionTraceService extends SuperService<Long, BridgeEx
      * @return {@link List<BridgeExecutionTraceResultVO>} trace VO 列表，不含 steps 子集合
      */
     List<BridgeExecutionTraceResultVO> getTraceResultVOList(BridgeExecutionTracePageQuery query);
+
+    /**
+     * 查询桥接执行日志统计。
+     *
+     * @param query 查询参数（含状态/时间区间/设备等过滤）
+     * @return SQL 聚合后的统计结果
+     */
+    BridgeExecutionTraceStatsResultVO getTraceStats(BridgeExecutionTracePageQuery query);
 
     /**
      * 查询 trace 详情（含 steps 子集合，前端"链路回放"详情抽屉用）。

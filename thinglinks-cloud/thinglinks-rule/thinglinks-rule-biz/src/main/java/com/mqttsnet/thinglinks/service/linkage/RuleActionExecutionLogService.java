@@ -6,6 +6,7 @@ import com.mqttsnet.thinglinks.service.execution.event.executionlog.BaseExecutio
 import com.mqttsnet.thinglinks.vo.query.linkage.RuleActionExecutionLogPageQuery;
 import com.mqttsnet.thinglinks.vo.result.linkage.RuleActionExecutionLogResultVO;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -37,6 +38,13 @@ public interface RuleActionExecutionLogService extends SuperService<Long, RuleAc
      * @return 规则动作执行日志列表 {@link RuleActionExecutionLogResultVO}
      */
     List<RuleActionExecutionLogResultVO> getRuleActionExecutionLogResultVOList(RuleActionExecutionLogPageQuery query);
-}
 
+    /**
+     * 根据规则执行流水号批量删除动作执行日志。
+     *
+     * @param ruleExecutionIds 规则执行流水号集合
+     * @return 是否执行删除
+     */
+    boolean removeByRuleExecutionIds(Collection<Long> ruleExecutionIds);
+}
 

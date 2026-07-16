@@ -105,12 +105,15 @@ public class RuleInstanceServiceImpl extends SuperServiceImpl<RuleInstanceManage
     public Boolean updateRuleInstanceStatus(Long id, Integer status) {
         ArgumentAssert.notNull(id, "id Cannot be null");
         ArgumentAssert.notNull(status, "status Cannot be null");
+        if (!RuleInstanceStatusEnum.STATE_COLLECTION.contains(status)) {
+            throw BizException.wrap("Status is not exist");
+        }
         RuleInstance ruleInstance = superManager.getById(id);
         if (null == ruleInstance) {
             throw BizException.wrap("The ruleInstance does not exist");
         }
-        if (status.equals(ruleInstance.getStatus())) {
-            throw BizException.wrap("The ruleInstance status is the same as the current status");
+        if (Objects.equals(status, ruleInstance.getStatus())) {
+            return true;
         }
         ruleInstance.setStatus(status);
         return superManager.updateById(ruleInstance);
@@ -192,5 +195,4 @@ public class RuleInstanceServiceImpl extends SuperServiceImpl<RuleInstanceManage
     }
 
 }
-
 

@@ -413,6 +413,14 @@ public interface BizMqRouteConstant {
         String BRIDGE_DLQ = "CID_THINGLINKS_BRIDGE_DLQ";
 
         /**
+         * 规则引擎事件触发消费组({@link Bridge#DEVICE_EVENT} CLUSTERING 模式)。
+         * <p>与 {@link #BRIDGE_DEVICE_EVENT}(桥接 Sink 分发)是同 topic 的两个独立消费组,
+         * 各自收到全量设备事件互不影响:本组供 rule 服务把设备上报/生命周期事件实时转化为规则评估。
+         * <p>使用方:rule · {@code RuleTriggerEventConsumer}。
+         */
+        String RULE_TRIGGER_EVENT = "CID_THINGLINKS_RULE_TRIGGER_EVENT";
+
+        /**
          * WS 心跳跨节点同步广播消费组前缀({@link WebSocket#HEARTBEAT_SYNC} BROADCASTING 模式)。
          * <p>运行时拼装节点 HOSTNAME / IP:
          * <pre>{@code Groups.WS_HEARTBEAT_SYNC_PREFIX + "${HOSTNAME:${spring.cloud.client.ip-address}}"}</pre>

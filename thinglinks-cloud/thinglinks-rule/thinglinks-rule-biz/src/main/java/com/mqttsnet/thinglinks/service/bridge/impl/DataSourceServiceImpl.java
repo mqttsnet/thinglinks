@@ -131,10 +131,6 @@ public class DataSourceServiceImpl
 
         DataSource entity = new DataSource();
         BeanUtils.copyProperties(updateVO, entity);
-        // 配置变更后 enable 自动重置(用户必须重新测试 + 手动启用)
-        entity.setEnable(Boolean.FALSE);
-        entity.setHealthStatus(STATUS_UNKNOWN);
-
         ArgumentAssert.isTrue(superManager.updateById(entity), "数据源更新失败");
         bridgeEventPublisher.publishDataSourceChangedEvent(entity.getId());
         return updateVO;

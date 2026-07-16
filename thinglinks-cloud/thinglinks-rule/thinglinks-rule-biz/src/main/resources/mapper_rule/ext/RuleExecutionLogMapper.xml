@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.mapper.linkage.RuleExecutionLogMapper">
+
+    <sql id="RuleExecutionLog_Query_Where">
+        <where>
+            <if test="query != null">
+                <if test="query.id != null">
+                    AND id = #{query.id}
+                </if>
+                <if test="query.ruleIdentification != null and query.ruleIdentification != ''">
+                    AND rule_identification LIKE CONCAT('%', #{query.ruleIdentification}, '%')
+                </if>
+                <if test="query.ruleName != null and query.ruleName != ''">
+                    AND rule_name LIKE CONCAT('%', #{query.ruleName}, '%')
+                </if>
+                <if test="query.status != null">
+                    AND status = #{query.status}
+                </if>
+                <if test="query.startTime != null">
+                    AND start_time = #{query.startTime}
+                </if>
+                <if test="query.startTimeBegin != null">
+                    AND start_time &gt;= #{query.startTimeBegin}
+                </if>
+                <if test="query.startTimeEnd != null">
+                    AND start_time &lt;= #{query.startTimeEnd}
+                </if>
+                <if test="query.endTime != null">
+                    AND end_time = #{query.endTime}
+                </if>
+                <if test="query.remark != null and query.remark != ''">
+                    AND remark LIKE CONCAT('%', #{query.remark}, '%')
+                </if>
+                <if test="query.extendParams != null and query.extendParams != ''">
+                    AND extend_params LIKE CONCAT('%', #{query.extendParams}, '%')
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <sql id="RuleExecutionLog_Latency_Expression">
+        CASE
+            WHEN JSON_VALID(extend_params) = 1
+                AND JSON_EXTRACT(extend_params, '$.latencyMs') IS NOT NULL
+                THEN CAST(JSON_UNQUOTE(JSON_EXTRACT(extend_params, '$.latencyMs')) AS DECIMAL(20, 0))
+            WHEN start_time IS NOT NULL AND end_time IS NOT NULL
+                THEN GREATEST(TIMESTAMPDIFF(MICROSECOND, start_time, end_time) / 1000, 0)
+            ELSE NULL
+        END
+    </sql>
+
+    <select id="selectStats" resultType="java.util.Map">
+        SELECT
+            COALESCE(COUNT(1), 0) AS total,
+            COALESCE(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END), 0) AS completed,
+            COALESCE(SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END), 0) AS executing,
+            COALESCE(SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END), 0) AS not_executed,
+            COALESCE(ROUND(AVG(<include refid="RuleExecutionLog_Latency_Expression"/>)), 0) AS avg_latency_ms
+        FROM rule_execution_log
+        <include refid="RuleExecutionLog_Query_Where"/>
+    </select>
+
+    <select id="selectTimeBounds" resultType="java.util.Map">
+        SELECT
+            MIN(start_time) AS min_time,
+            MAX(start_time) AS max_time
+        FROM rule_execution_log
+        <include refid="RuleExecutionLog_Query_Where"/>
+    </select>
+
+    <select id="selectTimelineStats" resultType="java.util.Map">
+        SELECT
+            <choose>
+                <when test="granularity == 'MONTH'">
+                    DATE_FORMAT(start_time, '%Y-%m')
+                </when>
+                <when test="granularity == 'DAY'">
+                    DATE_FORMAT(start_time, '%m-%d')
+                </when>
+                <otherwise>
+                    DATE_FORMAT(start_time, '%m-%d %H:00')
+                </otherwise>
+            </choose> AS time_label,
+            COALESCE(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END), 0) AS completed,
+            COALESCE(SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END), 0) AS executing,
+            COALESCE(SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END), 0) AS not_executed,
+            COALESCE(ROUND(AVG(<include refid="RuleExecutionLog_Latency_Expression"/>)), 0) AS avg_latency_ms
+        FROM rule_execution_log
+        <where>
+            AND start_time IS NOT NULL
+            <if test="query != null">
+                <if test="query.id != null">
+                    AND id = #{query.id}
+                </if>
+                <if test="query.ruleIdentification != null and query.ruleIdentification != ''">
+                    AND rule_identification LIKE CONCAT('%', #{query.ruleIdentification}, '%')
+                </if>
+                <if test="query.ruleName != null and query.ruleName != ''">
+                    AND rule_name LIKE CONCAT('%', #{query.ruleName}, '%')
+                </if>
+                <if test="query.status != null">
+                    AND status = #{query.status}
+                </if>
+                <if test="query.startTime != null">
+                    AND start_time = #{query.startTime}
+                </if>
+                <if test="query.startTimeBegin != null">
+                    AND start_time &gt;= #{query.startTimeBegin}
+                </if>
+                <if test="query.startTimeEnd != null">
+                    AND start_time &lt;= #{query.startTimeEnd}
+                </if>
+                <if test="query.endTime != null">
+                    AND end_time = #{query.endTime}
+                </if>
+                <if test="query.remark != null and query.remark != ''">
+                    AND remark LIKE CONCAT('%', #{query.remark}, '%')
+                </if>
+                <if test="query.extendParams != null and query.extendParams != ''">
+                    AND extend_params LIKE CONCAT('%', #{query.extendParams}, '%')
+                </if>
+            </if>
+        </where>
+        GROUP BY time_label
+        ORDER BY MIN(start_time)
+    </select>
+
+    <select id="selectIdsForClear" resultType="java.lang.Long">
+        SELECT id
+        FROM rule_execution_log
+        <include refid="RuleExecutionLog_Query_Where"/>
+        ORDER BY id
+        LIMIT #{limit}
+    </select>
+</mapper>
