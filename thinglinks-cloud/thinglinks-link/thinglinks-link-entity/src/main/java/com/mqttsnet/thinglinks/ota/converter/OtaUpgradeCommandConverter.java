@@ -105,9 +105,10 @@ public class OtaUpgradeCommandConverter {
      */
     private static FilePackageInfo extractFilePackageInfo(OtaUpgradesResultDTO upgradePackage,
                                                           Map<Long, OtaUpgradeFileResultDTO> fileInfoMap) {
+        Map<Long, OtaUpgradeFileResultDTO> safeFileInfoMap = Optional.ofNullable(fileInfoMap).orElse(Map.of());
         String fileLocation = Optional.ofNullable(upgradePackage.getFileLocation())
                 .map(locations -> parseFileIds(locations).stream()
-                        .map(fileId -> Optional.ofNullable(fileInfoMap.get(fileId))
+                        .map(fileId -> Optional.ofNullable(safeFileInfoMap.get(fileId))
                                 .map(OtaUpgradeFileResultDTO::getUrl)
                                 .orElse(null))
                         .filter(Objects::nonNull)
@@ -118,7 +119,7 @@ public class OtaUpgradeCommandConverter {
         String fileSign = Optional.ofNullable(upgradePackage.getSignMethod())
                 .flatMap(OtaPackageSignMethodEnum::fromValue)
                 .flatMap(signMethod -> parseFileIds(upgradePackage.getFileLocation()).stream()
-                        .map(fileId -> Optional.ofNullable(fileInfoMap.get(fileId))
+                        .map(fileId -> Optional.ofNullable(safeFileInfoMap.get(fileId))
                                 .flatMap(file -> file.getFileSign(signMethod))
                                 .orElse(null))
                         .filter(Objects::nonNull)

@@ -21,9 +21,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -61,6 +63,25 @@ public class DeviceCommandController extends SuperController<DeviceCommandServic
     @PostMapping("/issueCommands")
     public R<List<DeviceCommandResultVO>> issueCommands(@RequestBody @Valid DeviceCommandWrapperParam commandWrapper) {
         List<DeviceCommandResultVO> result = superService.processDeviceCommands(commandWrapper);
+        echoService.action(result);
+        return R.success(result);
+    }
+
+    /**
+     * 调试台下发记录:命令下发(0)与命令响应(1),按时间倒序,供 MQTT/WebSocket 调试台轮询展示。
+     *
+     * @param deviceIdentification 设备标识(可空 = 当前租户全部)
+     * @param topic                topic 关键字(可空 = 不过滤)
+     * @param limit                返回条数上限(默认 100)
+     * @return 下发/响应记录列表
+     */
+    @Operation(summary = "Debug downlink history", description = "Lists device command issue(0)/response(1) records for the debug console.")
+    @GetMapping("/debugHistory")
+    public R<List<DeviceCommandResultVO>> debugHistory(
+            @RequestParam(required = false) String deviceIdentification,
+            @RequestParam(required = false) String topic,
+            @RequestParam(required = false, defaultValue = "100") Integer limit) {
+        List<DeviceCommandResultVO> result = superService.listDebugHistory(deviceIdentification, topic, limit);
         echoService.action(result);
         return R.success(result);
     }
@@ -117,5 +138,4 @@ public class DeviceCommandController extends SuperController<DeviceCommandServic
 
 
 }
-
 

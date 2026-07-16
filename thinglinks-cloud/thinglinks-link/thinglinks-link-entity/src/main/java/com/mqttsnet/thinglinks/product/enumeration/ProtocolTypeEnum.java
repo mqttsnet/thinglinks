@@ -42,8 +42,12 @@ public enum ProtocolTypeEnum {
     private String desc;
 
     public static Optional<ProtocolTypeEnum> fromValue(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return Optional.empty();
+        }
+        String normalizedValue = value.trim();
         return Stream.of(ProtocolTypeEnum.values())
-                .filter(e -> e.getValue().equals(value))
+                .filter(e -> e.getValue().equalsIgnoreCase(normalizedValue))
                 .findFirst();
     }
 

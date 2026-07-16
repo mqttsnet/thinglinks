@@ -11,8 +11,8 @@ import com.mqttsnet.basic.protocol.factory.ProtocolMessageAdapter;
 import com.mqttsnet.basic.protocol.model.EncryptionDetailsDTO;
 import com.mqttsnet.basic.protocol.model.ProtocolDataMessageDTO;
 import com.mqttsnet.basic.utils.SnowflakeIdUtil;
-import com.mqttsnet.thinglinks.broker.MqttBrokerOpenAnyUserFacade;
-import com.mqttsnet.thinglinks.broker.WebSocketBrokerOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.broker.MqttBrokerOpenInnerFacade;
+import com.mqttsnet.thinglinks.broker.WebSocketBrokerOpenInnerFacade;
 import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceCommandStatusEnum;
@@ -52,8 +52,8 @@ import org.springframework.stereotype.Service;
 public class OtaTaskExecutionHandler {
 
     private final LinkCacheDataHelper linkCacheDataHelper;
-    private final MqttBrokerOpenAnyUserFacade mqttBrokerOpenAnyUserFacade;
-    private final WebSocketBrokerOpenAnyUserFacade webSocketBrokerOpenAnyUserFacade;
+    private final MqttBrokerOpenInnerFacade mqttBrokerOpenInnerFacade;
+    private final WebSocketBrokerOpenInnerFacade webSocketBrokerOpenInnerFacade;
     private final ProtocolMessageAdapter protocolMessageAdapter;
     private final OtaUpgradeRecordsService otaUpgradeRecordsService;
     private final DeviceCommandService deviceCommandService;
@@ -174,7 +174,7 @@ public class OtaTaskExecutionHandler {
                 .setPayload(message)
                 .setExpirySeconds("3600");
 
-        return mqttBrokerOpenAnyUserFacade.sendMessage(request);
+        return mqttBrokerOpenInnerFacade.sendMessage(request);
     }
 
     /**
@@ -194,7 +194,7 @@ public class OtaTaskExecutionHandler {
                 .setClientType("web")
                 .setPayload(message);
 
-        return webSocketBrokerOpenAnyUserFacade.sendMessage(request);
+        return webSocketBrokerOpenInnerFacade.sendMessage(request);
     }
 
     /**

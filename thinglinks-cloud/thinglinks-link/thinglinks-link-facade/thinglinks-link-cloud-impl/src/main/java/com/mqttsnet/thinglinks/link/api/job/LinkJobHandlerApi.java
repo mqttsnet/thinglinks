@@ -48,7 +48,7 @@ public interface LinkJobHandlerApi {
     @Parameters({
             @Parameter(name = "tenantId", description = "Tenant ID", required = true)
     })
-    @PostMapping("/anyUser/cache/refreshDeviceCache")
+    @PostMapping("/inner/cache/refreshDeviceCache")
     R<?> refreshDeviceCacheForTenant(@RequestParam("tenantId") Long tenantId);
 
 
@@ -62,7 +62,7 @@ public interface LinkJobHandlerApi {
     @Parameters({
             @Parameter(name = "tenantId", description = "租户ID", required = true)
     })
-    @PostMapping("/anyUser/deviceSync/syncDeviceConnectionStatus")
+    @PostMapping("/inner/deviceSync/syncDeviceConnectionStatus")
     R<?> syncDeviceConnectionStatus(@RequestParam("tenantId") Long tenantId);
 
     /**
@@ -75,7 +75,7 @@ public interface LinkJobHandlerApi {
     @Parameters({
             @Parameter(name = "tenantId", description = "Tenant ID", required = true)
     })
-    @PostMapping("/anyUser/cache/refreshProductCache")
+    @PostMapping("/inner/cache/refreshProductCache")
     R<?> refreshProductCacheForTenant(@RequestParam("tenantId") Long tenantId);
 
 
@@ -89,7 +89,7 @@ public interface LinkJobHandlerApi {
     @Parameters({
             @Parameter(name = "tenantId", description = "Tenant ID", required = true)
     })
-    @PostMapping("/anyUser/cache/refreshProductModelCache")
+    @PostMapping("/inner/cache/refreshProductModelCache")
     R<?> refreshProductModelCache(@RequestParam("tenantId") Long tenantId);
 
 
@@ -97,7 +97,7 @@ public interface LinkJobHandlerApi {
     @Parameters({
             @Parameter(name = "tenantId", description = "Tenant ID", required = true)
     })
-    @PostMapping("/anyUser/cache/retryProductVersionPublish")
+    @PostMapping("/inner/cache/retryProductVersionPublish")
     R<?> retryProductVersionPublish(@RequestParam("tenantId") Long tenantId);
 
 
@@ -105,7 +105,7 @@ public interface LinkJobHandlerApi {
     @Parameters({
             @Parameter(name = "tenantId", description = "Tenant ID", required = true)
     })
-    @PostMapping("/anyUser/otaOpen/otaUpgradeTasksExecute")
+    @PostMapping("/inner/otaOpen/otaUpgradeTasksExecute")
     R<?> otaUpgradeTasksExecute(@RequestParam("tenantId") Long tenantId);
 
 
@@ -121,6 +121,6 @@ public interface LinkJobHandlerApi {
     @Parameters({
             @Parameter(name = "tenantId", description = "租户ID", required = true)
     })
-    @PostMapping("/anyUser/cache/refreshAclRuleCache")
+    @PostMapping("/inner/cache/refreshAclRuleCache")
     R<?> refreshAclRuleCache(@RequestParam("tenantId") Long tenantId);
 }

@@ -47,7 +47,7 @@ import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import com.mqttsnet.thinglinks.device.entity.Device;
 import com.mqttsnet.thinglinks.device.entity.DeviceAction;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceActionStatusEnum;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceAuthModeEnum;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceConnectStatusEnum;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceEncryptMethodEnum;

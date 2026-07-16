@@ -100,7 +100,11 @@ public class OtaUpgradeContext {
      * 获取目标版本
      */
     public String getTargetVersion() {
-        return Objects.nonNull(upgradeTask) ? upgradeTask.getOtaUpgradesResult().getVersion() : StrPool.EMPTY;
+        if (Objects.isNull(upgradeTask) || Objects.isNull(upgradeTask.getOtaUpgradesResult())
+                || Objects.isNull(upgradeTask.getOtaUpgradesResult().getVersion())) {
+            return StrPool.EMPTY;
+        }
+        return upgradeTask.getOtaUpgradesResult().getVersion();
     }
 
 
@@ -272,7 +276,7 @@ public class OtaUpgradeContext {
      * 清除特定设备的错误信息
      */
     public void clearDeviceError(String deviceIdentification) {
-        if (Objects.nonNull(upgradeTask)) {
+        if (Objects.nonNull(deviceErrors)) {
             deviceErrors.remove(deviceIdentification);
         }
     }

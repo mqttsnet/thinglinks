@@ -12,6 +12,9 @@ import java.util.stream.Stream;
 /**
  * 设备动作类型枚举(跨协议统一)── MQTT / WebSocket / TCP / 第三方桥接入站共用。
  *
+ * @deprecated 设备动作公共契约已迁移到
+ * {@link com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum};本枚举仅保留给旧包名兼容。
+ *
  * <h3>与 BifroMQ event-collector plugin 对齐</h3>
  * <table border="1">
  *   <tr><th>enum</th><th>plugin EventType</th><th>topic / 来源</th></tr>
@@ -43,6 +46,7 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(title = "DeviceActionTypeEnum", description = "设备动作类型 枚举")
+@Deprecated(since = "2026-07-04", forRemoval = false)
 public enum DeviceActionTypeEnum {
 
     // ── 上行数据(业务命名;实际来源 broker DISTED 借用)──

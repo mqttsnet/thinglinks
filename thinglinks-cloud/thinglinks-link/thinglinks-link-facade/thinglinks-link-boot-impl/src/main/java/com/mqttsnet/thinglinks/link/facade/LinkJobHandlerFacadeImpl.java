@@ -5,7 +5,7 @@ import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.thinglinks.cache.device.DeviceCacheService;
 import com.mqttsnet.thinglinks.cache.product.ProductCacheService;
 import com.mqttsnet.thinglinks.cache.product.ProductModelCacheService;
-import com.mqttsnet.thinglinks.device.service.DeviceSyncAnyUserService;
+import com.mqttsnet.thinglinks.device.service.DeviceSyncInnerService;
 import com.mqttsnet.thinglinks.ota.service.OtaUpgradeTaskExecutionService;
 import com.mqttsnet.thinglinks.productversion.publish.orchestrator.ProductVersionPublishOrchestrator;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class LinkJobHandlerFacadeImpl implements LinkJobHandlerFacade {
     private final DeviceCacheService deviceCacheService;
     private final ProductCacheService productCacheService;
     private final ProductModelCacheService productModelCacheService;
-    private final DeviceSyncAnyUserService deviceSyncAnyUserService;
+    private final DeviceSyncInnerService deviceSyncInnerService;
     private final OtaUpgradeTaskExecutionService otaUpgradeTaskExecutionService;
     /**
      * 发布编排器 ── 提供 retry 兜底能力。
@@ -45,7 +45,7 @@ public class LinkJobHandlerFacadeImpl implements LinkJobHandlerFacade {
     public R<?> syncDeviceConnectionStatus(Long tenantId) {
         ArgumentAssert.notNull(tenantId, "tenantId cannot be null");
         log.info("Starting device connection status sync for tenantId: {}", tenantId);
-        deviceSyncAnyUserService.syncDeviceConnectionStatus(tenantId);
+        deviceSyncInnerService.syncDeviceConnectionStatus(tenantId);
         return R.success();
     }
 

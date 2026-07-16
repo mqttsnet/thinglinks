@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.anytenant.controller;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import cn.hutool.core.map.MapUtil;
@@ -79,8 +80,17 @@ public class DeviceOpenAnyTenantController {
             }
             log.info("clientConnectionAuthentication {} Device connection authentication result：true", deviceAuthenticationQuery.getClientIdentifier());
             // 认证成功 → 拉 ACL 规则(deviceInfoResult 理论上 authClient 通过后必填,防御性 null check 兜底)
+            // ACL 拉取与连接认证解耦:已认证通过的设备,ACL 规则拉取失败(缓存反序列化/DB 或切库冷启动等)
+            // 只降级为空列表、不否决连接。ACL 真正生效在 publish/subscribe 的 clientAclValidation(独立接口),此处空列表不降低安全。
             if (authenticationResult.getDeviceInfoResult() != null) {
-                authenticationResult.setAclRuleListResult(deviceAclRuleService.getDeviceAclRuleCacheVOList(authenticationResult.getDeviceInfoResult().getProductIdentification(), authenticationResult.getDeviceInfoResult().getDeviceIdentification()));
+                try {
+                    authenticationResult.setAclRuleListResult(deviceAclRuleService.getDeviceAclRuleCacheVOList(
+                        authenticationResult.getDeviceInfoResult().getProductIdentification(),
+                        authenticationResult.getDeviceInfoResult().getDeviceIdentification()));
+                } catch (Exception aclEx) {
+                    log.warn("clientConnectionAuthentication {} ACL 规则拉取失败,降级为空列表,不影响连接认证", deviceAuthenticationQuery.getClientIdentifier(), aclEx);
+                    authenticationResult.setAclRuleListResult(Collections.emptyList());
+                }
             }
             return ResponseEntity.ok().body(authenticationResult);
         } catch (Exception e) {
