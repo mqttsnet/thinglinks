@@ -21,7 +21,7 @@ import java.util.Map;
  *
  * @author xiaonannet
  */
-@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-tds-server}", fallback = TdsApiFallback.class, path = "/anyUser/tds")
+@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-tds-server}", fallback = TdsApiFallback.class, path = "/inner/tds")
 public interface TdsApi {
 
     /**

@@ -32,8 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 @RestController
-@RequestMapping("/anyUser")
-@Tag(name = "消息模版")
+@RequestMapping("/inner")
+@Tag(name = "inner-消息模版")
 public class MsgController {
     private final MsgBiz msgBiz;
 

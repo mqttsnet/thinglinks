@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -38,6 +39,7 @@ import static com.mqttsnet.basic.utils.ValidatorUtil.REGEX_USERNAME;
 @Schema(title = "BaseEmployeeSaveVO", description = "员工")
 public class BaseEmployeeSaveVO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     @JsonIgnore
     private Long id;

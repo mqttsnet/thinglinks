@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.anyuser.controller;
+package com.mqttsnet.thinglinks.inner.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * WebSocket 相关开放接口（anyUser）
+ * WebSocket 相关内部接口（inner）
  *
  * @author mqttsnet
  * @date 2023-05-22
@@ -28,9 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/anyUser/webSocketBrokerOpen")
-@Tag(name = "开放接口-WebSocketBroker")
-public class WebSocketBrokerOpenAnyUserController {
+@RequestMapping("/inner/webSocketBrokerOpen")
+@Tag(name = "inner-WebSocketBroker")
+public class WebSocketBrokerOpenInnerController {
     @Autowired
     private WebSocketBrokerService webSocketBrokerService;
 

@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.broker.api.hystrix;
 
 import com.mqttsnet.basic.base.R;
-import com.mqttsnet.thinglinks.broker.api.WebSocketBrokerOpenAnyUserApi;
+import com.mqttsnet.thinglinks.broker.api.WebSocketBrokerOpenInnerApi;
 import com.mqttsnet.thinglinks.vo.query.PublishWebSocketMessageRequestVO;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * @date: 2023-05-06 12:37
  **/
 @Component
-public class WebSocketBrokerOpenAnyUserApiFallback implements WebSocketBrokerOpenAnyUserApi {
+public class WebSocketBrokerOpenInnerApiFallback implements WebSocketBrokerOpenInnerApi {
 
     /**
      * WebSocket 推送消息接口

@@ -128,6 +128,14 @@ public class IgnoreProperties {
      */
     private Map<String, Set<String>> anyTenant = MapUtil.newHashMap();
 
+    /**
+     * 内部 RPC 接口：仅允许服务间 Feign(Nacos 直连)调用，禁止经网关从外部访问。
+     * <p>
+     * 与 anyUser 相反：anyUser 命中即放行(免登录)，inner 命中即被网关拒绝。
+     * Feign 直连不过网关，不受影响；透传语义与 anyUser 一致(不需 Token，TenantId 等照常透传)。
+     */
+    private Map<String, Set<String>> inner = MapUtil.newHashMap();
+
 
     public Map<String, Set<String>> buildAnyone() {
         return putAll(getBaseUri(), this.getAnyTenant(), this.getAnyUser(), this.getAnyone());
@@ -174,6 +182,19 @@ public class IgnoreProperties {
     public boolean isIgnoreTenant(String method, String path) {
         Map<String, Set<String>> all = putAll(getBaseUri(), this.getAnyTenant());
         return isIgnore(method, path, all);
+    }
+
+    /**
+     * 是否为内部 RPC 接口(只许 Feign 直连，禁止经网关访问)。
+     * <p>
+     * 独立判定，不并入 baseUri/anyXxx：命中即代表该外部请求应被网关拒绝。
+     *
+     * @param method 请求方法
+     * @param path   相对路径
+     * @return 命中返 {@code true}
+     */
+    public boolean isInner(String method, String path) {
+        return isIgnore(method, path, this.getInner());
     }
 
     /**

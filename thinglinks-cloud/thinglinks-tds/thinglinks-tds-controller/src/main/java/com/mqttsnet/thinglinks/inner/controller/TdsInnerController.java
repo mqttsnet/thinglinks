@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.anyuser.controller;
+package com.mqttsnet.thinglinks.inner.controller;
 
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.context.ContextUtil;
@@ -26,8 +26,8 @@ import java.util.concurrent.CompletableFuture;
 
 
 /**
- * 时序数据库开放接口
- * 请求中 需要携带TenantId，但 不需要携带Token(不需要登录) 和 不需要验证uri权限
+ * 时序数据库内部接口（inner）
+ * Feign 服务间 RPC(Nacos 直连、不过网关)：透传 TenantId、无需 Token；网关拒绝外部访问。
  *
  * @author mqttsnet
  */
@@ -35,9 +35,9 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/anyUser/tds")
-@Tag(name = "时序数据库开放接口——anyUser")
-public class TdsAnyUserController {
+@RequestMapping("/inner/tds")
+@Tag(name = "inner-TDS时序数据库")
+public class TdsInnerController {
 
     @Autowired
     private TdsService tdsService;

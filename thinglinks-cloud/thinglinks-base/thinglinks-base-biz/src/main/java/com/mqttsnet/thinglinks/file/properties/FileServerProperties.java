@@ -206,15 +206,15 @@ public class FileServerProperties {
         /**
          * 访问域名
          */
-        private String domain = "qiniu.mqttsnet.top";
+        private String domain = "qiniu.mqttsnet.com";
         private Boolean useHttps = false;
 
         /**
          * 华东 z0 华北 z1 华南 z2 北美 na0 东南亚 as0
          */
         private Region zone = Region.z0;
-        private String accessKey = "1";
-        private String secretKey = "2";
+        private String accessKey = "";
+        private String secretKey = "";
         private String bucket = "mqttsnet_admin_cloud";
 
         /**
@@ -242,12 +242,12 @@ public class FileServerProperties {
         /**
          * minio用户名
          */
-        private String accessKey = "minioadmin";
+        private String accessKey = "";
 
         /**
          * minio密码
          */
-        private String secretKey = "minioadmin";
+        private String secretKey = "";
 
         /**
          * 文件桶的名称

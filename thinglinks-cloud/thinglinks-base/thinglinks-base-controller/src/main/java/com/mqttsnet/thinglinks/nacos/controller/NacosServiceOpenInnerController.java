@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * -----------------------------------------------------------------------------
- * File Name: NacosServiceOpenAnyTenantController
+ * File Name: NacosServiceOpenInnerController
  * -----------------------------------------------------------------------------
  * Description:
  * Nacos Naming 服务控制器
@@ -48,9 +48,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 @RestController
-@RequestMapping("/anyTenant/nacos")
-@Tag(name = "Nacos服务Open-Api")
-public class NacosServiceOpenAnyTenantController {
+@RequestMapping("/inner/nacos")
+@Tag(name = "inner-Nacos服务API")
+public class NacosServiceOpenInnerController {
 
 
     @Autowired

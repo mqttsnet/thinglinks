@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.broker.api.hystrix;
 
 import com.mqttsnet.basic.base.R;
-import com.mqttsnet.thinglinks.broker.api.MqttBrokerOpenAnyUserApi;
+import com.mqttsnet.thinglinks.broker.api.MqttBrokerOpenInnerApi;
 import com.mqttsnet.thinglinks.vo.query.KillClientRequestVO;
 import com.mqttsnet.thinglinks.vo.query.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.vo.result.MqttSessionDetailsResultVO;
@@ -17,7 +17,7 @@ import java.util.List;
  * @date: 2023-05-06 12:37
  **/
 @Component
-public class MqttBrokerOpenAnyUserApiFallback implements MqttBrokerOpenAnyUserApi {
+public class MqttBrokerOpenInnerApiFallback implements MqttBrokerOpenInnerApi {
 
     /**
      * MQTT推送消息接口

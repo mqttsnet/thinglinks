@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.broker.api;
 
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.constant.Constants;
-import com.mqttsnet.thinglinks.broker.api.hystrix.MqttBrokerOpenAnyUserApiFallback;
+import com.mqttsnet.thinglinks.broker.api.hystrix.MqttBrokerOpenInnerApiFallback;
 import com.mqttsnet.thinglinks.vo.query.KillClientRequestVO;
 import com.mqttsnet.thinglinks.vo.query.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.vo.result.MqttSessionDetailsResultVO;
@@ -24,8 +24,8 @@ import java.util.List;
  * @e-mainl: 13733918655@163.com
  * @date: 2023-05-06 12:35
  **/
-@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-broker-server}", fallback = MqttBrokerOpenAnyUserApiFallback.class, path = "/anyUser/mqttBrokerOpen")
-public interface MqttBrokerOpenAnyUserApi {
+@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-broker-server}", fallback = MqttBrokerOpenInnerApiFallback.class, path = "/inner/mqttBrokerOpen")
+public interface MqttBrokerOpenInnerApi {
 
 
     /**

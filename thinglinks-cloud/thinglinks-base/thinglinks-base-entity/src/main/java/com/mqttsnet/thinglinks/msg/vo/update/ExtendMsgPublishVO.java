@@ -73,6 +73,17 @@ public class ExtendMsgPublishVO implements Serializable {
     @Size(max = 2, message = "提醒方式长度不能超过{max}")
     private String remindMode;
 
+    @Schema(description = "处理地址")
+    @Size(max = 255, message = "处理地址长度不能超过{max}")
+    private String url;
+
+    @Schema(description = "打开方式")
+    @Size(max = 2, message = "打开方式长度不能超过{max}")
+    private String target;
+
+    @Schema(description = "自动已读")
+    private Boolean autoRead;
+
     @Schema(description = "是否草稿")
     private Boolean draft;
 

@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.anyuser.controller;
+package com.mqttsnet.thinglinks.inner.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * MqttBroker相关开放接口（anyUser）
+ * MqttBroker相关内部接口（inner）
  *
  * @author mqttsnet
  * @date 2023-05-22
@@ -38,9 +38,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/anyUser/mqttBrokerOpen")
-@Tag(name = "开放接口-MQTTBroker")
-public class MqttBrokerOpenAnyUserController {
+@RequestMapping("/inner/mqttBrokerOpen")
+@Tag(name = "inner-MQTTBroker")
+public class MqttBrokerOpenInnerController {
     @Autowired
     private MqttBrokerService mqttBrokerService;
 

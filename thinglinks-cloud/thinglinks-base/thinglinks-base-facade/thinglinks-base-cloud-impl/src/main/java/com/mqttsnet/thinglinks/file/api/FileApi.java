@@ -47,7 +47,7 @@ public interface FileApi {
      *
      * @param ids 文件id
      */
-    @PostMapping(value = "/anyUser/file/findUrlById")
+    @PostMapping(value = "/inner/file/findUrlById")
     R<Map<Long, String>> findUrlFromDefById(@RequestBody List<Long> ids);
 
     /**
@@ -56,6 +56,6 @@ public interface FileApi {
      *
      * @param ids 文件id列表
      */
-    @PostMapping(value = "/anyUser/file/findInfoById")
+    @PostMapping(value = "/inner/file/findInfoById")
     R<Map<Long, FileResultVO>> findInfoFromDefById(@RequestBody List<Long> ids);
 }

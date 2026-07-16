@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 /**
- * 设备下行派发 ── 开放接口 Feign 客户端(cloud 部署)。对标 {@link MqttBrokerOpenAnyUserApi}。
+ * 设备下行派发 ── 开放接口 Feign 客户端(cloud 部署)。对标 {@link MqttBrokerOpenInnerApi}。
  *
  * @author mqttsnet
  */
-@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-broker-server}", fallback = DeviceDownlinkApiFallback.class, path = "/anyUser/deviceDownlinkOpen")
+@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-broker-server}", fallback = DeviceDownlinkApiFallback.class, path = "/inner/deviceDownlinkOpen")
 public interface DeviceDownlinkApi {
 
     /**

@@ -45,12 +45,6 @@
             <groupId>com.mqttsnet.basic</groupId>
             <artifactId>thinglinks-boot</artifactId>
         </dependency>
-        <!-- log 只有认证服务biz模块引用，其他服务都在controller模块 -->
-        <dependency>
-            <groupId>com.mqttsnet.basic</groupId>
-            <artifactId>thinglinks-log-starter</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.mqttsnet.basic</groupId>
             <artifactId>thinglinks-captcha-starter</artifactId>

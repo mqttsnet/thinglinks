@@ -26,7 +26,7 @@ public interface MsgApi {
      * @return
      */
     @Operation(summary = "根据模板发送消息", description = "根据模板发送消息")
-    @PostMapping("/anyUser/extendMsg/sendByTemplate")
+    @PostMapping("/inner/extendMsg/sendByTemplate")
     R<Boolean> sendByTemplate(@RequestBody ExtendMsgSendVO data);
 
     /**
@@ -36,6 +36,6 @@ public interface MsgApi {
      * @return
      */
     @Operation(summary = "发布站内信", description = "发布站内信")
-    @PostMapping("/anyUser/extendMsg/publish")
+    @PostMapping("/inner/extendMsg/publish")
     R<Boolean> publish(@RequestBody ExtendMsgPublishVO data);
 }

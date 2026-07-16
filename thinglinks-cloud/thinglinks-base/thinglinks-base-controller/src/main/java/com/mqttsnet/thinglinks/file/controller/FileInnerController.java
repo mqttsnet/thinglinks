@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
- * 所有用户开放接口,文件
+ * 文件相关内部接口（inner）
  * </p>
  *
  * @author mqttsnet
@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/anyUser/file")
-@Tag(name = "开放接口—文件相关")
-public class FileAnyUserController {
+@RequestMapping("/inner/file")
+@Tag(name = "inner-文件相关")
+public class FileInnerController {
     private final FileService fileService;
     private final EchoService echoService;
 

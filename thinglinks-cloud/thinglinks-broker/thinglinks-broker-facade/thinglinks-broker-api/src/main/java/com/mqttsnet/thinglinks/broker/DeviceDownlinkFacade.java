@@ -7,7 +7,7 @@ import com.mqttsnet.thinglinks.vo.query.DownlinkCommand;
  * 设备下行派发 ── 开放接口 API。业务侧(mqs / link)组完 {@link DownlinkCommand} 调本接口,
  * broker 按协议类型分流到 MQTT(BifroMQ)/ WebSocket(会话直推)/ … 通道。
  *
- * <p>对标 {@link MqttBrokerOpenAnyUserFacade}:cloud 部署经 Feign 调 broker,boot 部署本地直调 broker-biz。
+ * <p>对标 {@link MqttBrokerOpenInnerFacade}:cloud 部署经 Feign 调 broker,boot 部署本地直调 broker-biz。
  *
  * @author mqttsnet
  */

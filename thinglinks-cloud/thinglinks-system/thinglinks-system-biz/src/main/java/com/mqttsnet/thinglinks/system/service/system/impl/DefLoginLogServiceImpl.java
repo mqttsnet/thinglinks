@@ -7,6 +7,7 @@ import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
+import com.mqttsnet.basic.log.util.AddressUtil;
 import com.mqttsnet.basic.utils.DateUtils;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import com.mqttsnet.thinglinks.system.entity.system.DefLoginLog;
@@ -20,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -68,6 +71,7 @@ public class DefLoginLogServiceImpl extends SuperServiceImpl<DefLoginLogManager,
             user = this.defUserManager.getUserByUsername(defLoginLog.getUsername());
         }
 
+        defLoginLog.setLocation(resolveIpLocation(defLoginLogSaveVO.getRequestIp()));
         defLoginLog.setLoginDate(DateUtils.formatAsDate(LocalDateTime.now()));
 
         UserAgent userAgent = UserAgentUtil.parse(defLoginLog.getUa());
@@ -88,6 +92,31 @@ public class DefLoginLogServiceImpl extends SuperServiceImpl<DefLoginLogManager,
                     .setCreatedBy(user.getId());
         }
         return defLoginLog;
+    }
+
+    private String resolveIpLocation(String requestIp) {
+        if (StrUtil.isBlank(requestIp) || isLocalHostIp(requestIp)) {
+            return "";
+        }
+        try {
+            return AddressUtil.getRegion(requestIp);
+        } catch (Exception e) {
+            log.warn("解析ip失败 requestIp={}", requestIp, e);
+            return "";
+        }
+    }
+
+    /**
+     * 判断是否为本地IP地址的方法
+     */
+    private boolean isLocalHostIp(String ipAddress) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ipAddress);
+            return inetAddress.isLoopbackAddress();
+        } catch (UnknownHostException e) {
+            // 处理异常情况，如果无法解析IP地址，则不视为本地地址
+            return false;
+        }
     }
 
     @Override

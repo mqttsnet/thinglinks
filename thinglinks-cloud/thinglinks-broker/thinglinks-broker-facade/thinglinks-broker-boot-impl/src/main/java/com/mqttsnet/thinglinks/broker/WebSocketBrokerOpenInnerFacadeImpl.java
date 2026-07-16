@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class WebSocketBrokerOpenAnyUserFacadeImpl implements WebSocketBrokerOpenAnyUserFacade {
+public class WebSocketBrokerOpenInnerFacadeImpl implements WebSocketBrokerOpenInnerFacade {
     @Autowired
     private WebSocketBrokerService webSocketBrokerService;
 

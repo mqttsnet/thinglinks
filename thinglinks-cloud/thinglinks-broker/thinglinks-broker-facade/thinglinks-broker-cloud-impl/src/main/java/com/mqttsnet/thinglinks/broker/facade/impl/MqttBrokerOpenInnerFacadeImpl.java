@@ -1,8 +1,8 @@
 package com.mqttsnet.thinglinks.broker.facade.impl;
 
 import com.mqttsnet.basic.base.R;
-import com.mqttsnet.thinglinks.broker.MqttBrokerOpenAnyUserFacade;
-import com.mqttsnet.thinglinks.broker.api.MqttBrokerOpenAnyUserApi;
+import com.mqttsnet.thinglinks.broker.MqttBrokerOpenInnerFacade;
+import com.mqttsnet.thinglinks.broker.api.MqttBrokerOpenInnerApi;
 import com.mqttsnet.thinglinks.vo.query.KillClientRequestVO;
 import com.mqttsnet.thinglinks.vo.query.PublishMessageRequestVO;
 import com.mqttsnet.thinglinks.vo.result.MqttSessionDetailsResultVO;
@@ -17,28 +17,28 @@ import java.util.List;
  * @since 2024/12/24 15:54
  */
 @Service
-public class MqttBrokerOpenAnyUserFacadeImpl implements MqttBrokerOpenAnyUserFacade {
+public class MqttBrokerOpenInnerFacadeImpl implements MqttBrokerOpenInnerFacade {
     @Autowired
     @Lazy
-    private MqttBrokerOpenAnyUserApi mqttBrokerOpenAnyUserApi;
+    private MqttBrokerOpenInnerApi mqttBrokerOpenInnerApi;
 
     @Override
     public R<?> sendMessage(PublishMessageRequestVO publishMessageRequestVO) {
-        return mqttBrokerOpenAnyUserApi.sendMessage(publishMessageRequestVO);
+        return mqttBrokerOpenInnerApi.sendMessage(publishMessageRequestVO);
     }
 
     @Override
     public R<?> closeConnection(KillClientRequestVO killClientRequestVO) {
-        return mqttBrokerOpenAnyUserApi.closeConnection(killClientRequestVO);
+        return mqttBrokerOpenInnerApi.closeConnection(killClientRequestVO);
     }
 
     @Override
     public R<MqttSessionDetailsResultVO> getSessionInfo(String tenantId, String userId, String clientId) {
-        return mqttBrokerOpenAnyUserApi.getSessionInfo(tenantId, userId, clientId);
+        return mqttBrokerOpenInnerApi.getSessionInfo(tenantId, userId, clientId);
     }
 
     @Override
     public R<Boolean> isOnline(String tenantId, String deviceIdentification, String clientId) {
-        return mqttBrokerOpenAnyUserApi.isOnline(tenantId, deviceIdentification, clientId);
+        return mqttBrokerOpenInnerApi.isOnline(tenantId, deviceIdentification, clientId);
     }
 }

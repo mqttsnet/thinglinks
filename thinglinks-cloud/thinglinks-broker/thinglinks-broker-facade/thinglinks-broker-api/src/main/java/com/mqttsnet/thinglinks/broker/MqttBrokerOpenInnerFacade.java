@@ -14,7 +14,7 @@ import java.util.List;
  * @e-mainl: 13733918655@163.com
  * @date: 2023-05-06 12:35
  **/
-public interface MqttBrokerOpenAnyUserFacade {
+public interface MqttBrokerOpenInnerFacade {
 
 
     /**

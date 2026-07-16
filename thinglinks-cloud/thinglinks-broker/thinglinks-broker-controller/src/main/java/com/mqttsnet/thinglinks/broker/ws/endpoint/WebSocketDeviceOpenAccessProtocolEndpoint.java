@@ -22,7 +22,7 @@ import com.mqttsnet.thinglinks.broker.ws.session.WebSocketSubject;
 import com.mqttsnet.thinglinks.common.cache.broker.ws.WsDeviceSessionInfo;
 import com.mqttsnet.thinglinks.common.constant.CommonIotConstants;
 import com.mqttsnet.thinglinks.common.mq.KafkaConsumerTopicConstant;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceAuthModeEnum;
 import com.mqttsnet.thinglinks.device.vo.query.DeviceAuthenticationQuery;
 import com.mqttsnet.thinglinks.entity.protocol.base.ClientConnectedEvent;

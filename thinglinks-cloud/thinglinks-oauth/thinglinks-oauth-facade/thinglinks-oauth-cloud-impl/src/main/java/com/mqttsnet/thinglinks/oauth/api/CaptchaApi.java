@@ -21,6 +21,6 @@ public interface CaptchaApi {
      * @param templateCode 模版
      * @return
      */
-    @GetMapping(value = "/anyTenant/checkCaptcha")
+    @GetMapping(value = "/checkCaptcha")
     R<Boolean> check(@RequestParam(value = "key") String key, @RequestParam(value = "code") String code, @RequestParam(value = "templateCode") String templateCode);
 }

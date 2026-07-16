@@ -70,6 +70,14 @@ public class AuthenticationSaInterceptor implements WebFilter, Ordered {
             // 写入全局上下文 (同步)
             SaReactorSyncHolder.setContext(exchange);
 
+            // 内部 RPC 接口禁止经网关访问(Feign 走 Nacos 直连，不受此限)
+            String innerPath = SaHolder.getRequest().getRequestPath();
+            String innerMethod = SaHolder.getRequest().getMethod();
+            if (ignoreProperties.isInner(innerMethod, innerPath)) {
+                throw new NotPermissionException("inner api is not accessible via gateway", StpUtil.TYPE)
+                        .setCode(SaErrorCode.CODE_11051);
+            }
+
             // 执行全局过滤器
 
             Map<String, Set<String>> anyUser = ignoreProperties.buildAnyUser();

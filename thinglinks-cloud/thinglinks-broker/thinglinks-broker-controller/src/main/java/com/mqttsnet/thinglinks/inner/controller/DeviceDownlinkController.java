@@ -1,4 +1,4 @@
-package com.mqttsnet.thinglinks.anyuser.controller;
+package com.mqttsnet.thinglinks.inner.controller;
 
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.thinglinks.broker.downlink.DeviceDownlinkDispatchService;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 设备下行派发相关开放接口(anyUser)── 业务侧经 {@code DeviceDownlinkFacade} Feign 进来,
+ * 设备下行派发相关内部接口(inner)── 业务侧经 {@code DeviceDownlinkFacade} Feign 进来,
  * 按协议类型分流到 broker 各下发通道。
  *
  * @author mqttsnet
@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/anyUser/deviceDownlinkOpen")
-@Tag(name = "开放接口-设备下行派发")
+@RequestMapping("/inner/deviceDownlinkOpen")
+@Tag(name = "inner-设备下行派发")
 public class DeviceDownlinkController {
 
     private final DeviceDownlinkDispatchService deviceDownlinkDispatchService;

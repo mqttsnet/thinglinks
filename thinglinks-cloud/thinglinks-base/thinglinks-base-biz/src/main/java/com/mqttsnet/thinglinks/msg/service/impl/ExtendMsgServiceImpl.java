@@ -83,7 +83,7 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
         extendMsg.setType(MsgTemplateTypeEnum.NOTICE.getCode());
         extendMsg.setChannel(SourceType.APP);
 
-        extendMsg.setCreatedOrgId(sysUser.getEmployee() != null ? sysUser.getEmployee().getLastDeptId() : null);
+        extendMsg.setCreatedOrgId((sysUser != null && sysUser.getEmployee() != null) ? sysUser.getEmployee().getLastDeptId() : null);
         if (data != null && data.getDraft() != null && data.getDraft()) {
             extendMsg.setStatus(TaskStatus.DRAFT);
         } else {
@@ -114,7 +114,9 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
                 notice.setIsRead(false);
                 notice.setHandleTime(null);
                 notice.setReadTime(null);
-                notice.setAutoRead(true);
+                notice.setUrl(data.getUrl());
+                notice.setTarget(data.getTarget());
+                notice.setAutoRead(data.getAutoRead() == null ? true : data.getAutoRead());
                 return notice;
             }).toList();
             extendNoticeManager.saveBatch(noticeList);
@@ -122,7 +124,9 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
             data.getRecipientList().forEach(employeeId -> {
                 WebSocketSubject subject = WebSocketSubject.Holder.getSubject(employeeId);
                 // 通知客户端 接收消息
-                subject.notify("1", null);
+                if (subject != null) {
+                    subject.notify("1", null);
+                }
             });
 
             extendMsg.setStatus(TaskStatus.SUCCESS);
@@ -164,7 +168,9 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
         recipientList.forEach(employeeId -> {
             WebSocketSubject subject = WebSocketSubject.Holder.getSubject(employeeId);
             // 通知客户端 接收消息
-            subject.notify("1", null);
+            if (subject != null) {
+                subject.notify("1", null);
+            }
         });
 
         extendMsg.setStatus(TaskStatus.SUCCESS);
@@ -225,5 +231,3 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
 
 
 }
-
-

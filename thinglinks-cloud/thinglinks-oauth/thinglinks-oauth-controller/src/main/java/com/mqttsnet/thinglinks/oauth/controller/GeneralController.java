@@ -40,8 +40,8 @@ public class GeneralController {
     private final ParamService paramService;
     private final EchoService echoService;
 
-    @Operation(summary = "同步枚举到字典", description = "同步枚举到字典")
-    @PostMapping("/anyTenant/enums/syncEnumToDict")
+    @Operation(summary = "同步枚举到字典", description = "同步枚举到字典(管理操作,需登录,移出 anyTenant 免登录前缀)")
+    @PostMapping("/enums/syncEnumToDict")
     public R<Boolean> syncEnumToDict() {
         dictService.syncEnumToDict();
         return R.success();

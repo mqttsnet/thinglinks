@@ -10,6 +10,7 @@ import freemarker.cache.MruCacheStorage;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.cache.TemplateLoader;
+import freemarker.core.TemplateClassResolver;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -47,6 +48,9 @@ public class FreeMarkerUtil {
         TemplateLoader[] loaders = new TemplateLoader[]{SL};
         MultiTemplateLoader mt = new MultiTemplateLoader(loaders);
         FREEMARKER_CFG.setTemplateLoader(mt);
+        // 防 SSTI：禁用 ?new(...) 实例化危险类(如 freemarker.template.utility.Execute)与 ?api 反射访问
+        FREEMARKER_CFG.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
+        FREEMARKER_CFG.setAPIBuiltinEnabled(false);
     }
 
     private static void generateSharedVariable() {

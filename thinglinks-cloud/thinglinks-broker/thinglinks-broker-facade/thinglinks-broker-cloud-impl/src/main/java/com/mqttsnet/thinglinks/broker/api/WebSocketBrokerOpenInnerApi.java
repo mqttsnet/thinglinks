@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.broker.api;
 
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.constant.Constants;
-import com.mqttsnet.thinglinks.broker.api.hystrix.WebSocketBrokerOpenAnyUserApiFallback;
+import com.mqttsnet.thinglinks.broker.api.hystrix.WebSocketBrokerOpenInnerApiFallback;
 import com.mqttsnet.thinglinks.vo.query.PublishWebSocketMessageRequestVO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @e-mainl: 13733918655@163.com
  * @date: 2023-05-06 12:35
  **/
-@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-broker-server}", fallback = WebSocketBrokerOpenAnyUserApiFallback.class, path = "/anyUser/webSocketBrokerOpen")
-public interface WebSocketBrokerOpenAnyUserApi {
+@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-broker-server}", fallback = WebSocketBrokerOpenInnerApiFallback.class, path = "/inner/webSocketBrokerOpen")
+public interface WebSocketBrokerOpenInnerApi {
 
 
     /**

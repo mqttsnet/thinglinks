@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class MqttBrokerOpenAnyUserFacadeImpl implements MqttBrokerOpenAnyUserFacade {
+public class MqttBrokerOpenInnerFacadeImpl implements MqttBrokerOpenInnerFacade {
     @Autowired
     private MqttBrokerService mqttBrokerService;
 

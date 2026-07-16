@@ -47,6 +47,10 @@
             <groupId>com.mqttsnet.basic</groupId>
             <artifactId>thinglinks-mvc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.mqttsnet.basic</groupId>
+            <artifactId>thinglinks-log-starter</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -70,8 +74,14 @@
             <artifactId>spring-cloud-context</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.seata</groupId>
+            <groupId>org.apache.seata</groupId>
             <artifactId>seata-all</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.dubbo.extensions</groupId>
+                    <artifactId>dubbo-filter-seata</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
