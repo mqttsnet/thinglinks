@@ -143,7 +143,8 @@ export default {
       },
       topicPatterns: {
         label: 'MQTT 主题模式',
-        help: '多选;通过"选择主题"按钮从产品基础 topic 中挑选,或自定义带 +/# 通配符及 ${app_id}/${device_identification} 等占位符的主题模板。空 = 不约束 topic,任意 topic 都命中。',
+        // 含 ${} 占位符字面量,用函数式消息避免被 vue-i18n 当插值编译
+        help: () => '多选;通过"选择主题"按钮从产品基础 topic 中挑选,或自定义带 +/# 通配符及 ${app_id}/${device_identification} 等占位符的主题模板。空 = 不约束 topic,任意 topic 都命中。',
       },
       payloadKinds: {
         label: '数据形态',

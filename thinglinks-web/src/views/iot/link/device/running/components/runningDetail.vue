@@ -15,7 +15,6 @@
   -->
   <BasicDrawer
     v-bind="$attrs"
-    :isDetail="true"
     width="780px"
     @register="register"
     :title="t('common.title.details')"
@@ -169,11 +168,13 @@
           :image="emptyImage"
         />
         <!-- 分页 ── 数据量大时(几百~几千)防表格卡顿;BasicTable 分页是前端切片,数据已全拉 -->
+        <!-- canResize 关闭:表格按自然高度展开,抽屉 body 作唯一滚动容器;否则表格内层滚动 +
+             ResizeObserver 会在父级每 5s 刷新时重算高度,把滚动位置弹回顶部 -->
         <BasicTable
           v-else
           :columns="columns"
           :dataSource="echoList"
-          :canResize="true"
+          :canResize="false"
           :loading="loading"
           :striped="true"
           :bordered="true"

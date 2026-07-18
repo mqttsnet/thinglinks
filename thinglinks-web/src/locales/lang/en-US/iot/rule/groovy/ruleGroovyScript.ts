@@ -66,7 +66,7 @@ export default {
   // Labels for device inbound transform script (productCode === topicInboundTransform)
   topicInbound: {
     product: 'Product',
-    productVersion: 'Product Version',
+    productVersion: 'Product Version No.',
     topicPattern: 'Topic Pattern',
     versionPlaceholder: 'Select a product version',
     statusPublished: 'Published',

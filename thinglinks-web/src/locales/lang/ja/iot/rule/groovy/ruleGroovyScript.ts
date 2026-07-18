@@ -67,7 +67,7 @@ export default {
   // デバイス上り変換スクリプト(productCode === topicInboundTransform)専用ラベル
   topicInbound: {
     product: '製品',
-    productVersion: '製品バージョン',
+    productVersion: '製品バージョン番号',
     topicPattern: 'トピックパターン',
     versionPlaceholder: '製品バージョンを選択',
     statusPublished: '公開済み',

@@ -19,8 +19,15 @@ export const Api = {
     url: `${ServicePrefix}/${MODULAR}/issueCommands`,
     method: RequestEnum.POST,
   } as AxiosRequestConfig,
+  DebugHistory: {
+    url: `${ServicePrefix}/${MODULAR}/debugHistory`,
+    method: RequestEnum.GET,
+  } as AxiosRequestConfig,
 };
 export const page = (params: PageParams<DeviceCommandPageQuery>) =>
   defHttp.request<PageResult<DeviceCommandPageQuery>>({ ...Api.Page, params });
 export const issueCommands = (params: DeviceCommandWrapper) =>
   defHttp.request<any>({ ...Api.IssueCommands, params });
+/** 调试台下发记录:命令下发(0)/响应(1),设备可空=当前租户全部,倒序近 N 条 */
+export const debugHistory = (params: { deviceIdentification?: string; limit?: number }) =>
+  defHttp.request<any[]>({ ...Api.DebugHistory, params });

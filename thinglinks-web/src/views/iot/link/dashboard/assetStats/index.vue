@@ -30,7 +30,8 @@
   import { assetSummary } from '/@/api/iot/link/dashboard/dashboard';
 
   export default defineComponent({
-    name: 'AssetStats',
+    // 与菜单名一致,否则 keep-alive 缓存失效、刷新(useRedo 重定向)后整页空白
+    name: '资产统计',
     components: {
       [Row.name]: Row,
       [Col.name]: Col,

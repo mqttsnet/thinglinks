@@ -28,8 +28,11 @@ export default {
   sendFrame: 'メッセージ送信',
   frameDatas: 'データ報告(datas)',
   framePing: 'ハートビート(PING)',
+  frameCmdRsp: 'コマンド応答(deviceRsp)',
   messageHint:
     '業務フレームは topic・payload フィールド、ハートビートは type が PING。デフォルトはデバイスデータ報告(変更可)',
+  cmdRspHint:
+    'プラットフォームからの命令にデバイスとして応答:serviceCode / cmd を「メッセージウィンドウ」で受信した命令に合わせる。errCode 0=成功 / 1=失敗',
   sendBtn: '送信',
 
   // メッセージウィンドウ

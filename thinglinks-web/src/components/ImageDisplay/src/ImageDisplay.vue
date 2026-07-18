@@ -36,9 +36,9 @@ export default defineComponent({
     // 图片URL（与fileId二选一）
     fileUrl: propTypes.string.def(''),
     // 图片宽度
-    imageWidth: propTypes.oneOfType([propTypes.number.def(200), propTypes.string.def(200)]),
+    imageWidth: propTypes.oneOfType([propTypes.number, propTypes.string]).def(200),
     // 图片高度
-    imageHeight: propTypes.oneOfType([propTypes.number.def(200), propTypes.string.def(200)]),
+    imageHeight: propTypes.oneOfType([propTypes.number, propTypes.string]).def(200),
     // 图片样式
     imageStyle: {
       type: Object as PropType<CSSProperties>,

@@ -23,10 +23,10 @@
           badgeField="algorithm"
           :badgeDictType="DictEnum.LINK_CA_CERT_ALGORITHM"
           :permissions="cardPermissions"
-          :editModal="EditMetadataModal"
           :extraActions="cardExtraActions"
           @input="handleSwitchByCard"
           @add="handleImport"
+          @edit="handleEdit"
           @extraAction="handleCardExtraAction"
         >
           <template #cardImage>

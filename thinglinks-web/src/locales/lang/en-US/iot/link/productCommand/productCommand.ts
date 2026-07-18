@@ -24,4 +24,6 @@ export default {
   description7: 'The type of the action parameter for execution is incorrect',
   commmandIssuedSuccess: 'Command issued successfully',
   commmandIssuedError: 'Command issued failed',
+  draftHint:
+    'Params come from the product draft (unpublished) version, for debugging the current draft config only; for a published version or flexible/custom (hex) dispatch, go to Operations → Debug Center → MQTT Debug.',
 };

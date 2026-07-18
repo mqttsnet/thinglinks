@@ -76,14 +76,16 @@ export const useRedo = (_router?: Router) => {
         resolve(false);
         return;
       }
-      if (name && Object.keys(params).length > 0) {
-        params['_redirect_type'] = 'name';
-        params['path'] = String(name);
-      } else {
-        params['_redirect_type'] = 'path';
-        params['path'] = fullPath;
-      }
-      replace({ name: REDIRECT_NAME, params, state: { params }, query }).then(() => resolve(true));
+      const redirectType = name && Object.keys(params).length > 0 ? 'name' : 'path';
+      params['path'] = redirectType === 'name' ? String(name) : fullPath;
+      // _redirect_type 仅经 history.state 传递(redirect/index.vue 从 history.state.params 读取),
+      // 不放进路由 params:redirect 路由未声明该参数,vue-router 4.1+ 会丢弃未声明参数并告警。
+      replace({
+        name: REDIRECT_NAME,
+        params,
+        state: { params: { ...params, _redirect_type: redirectType } },
+        query,
+      }).then(() => resolve(true));
     });
   }
   return redo;

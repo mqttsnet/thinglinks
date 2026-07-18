@@ -140,7 +140,8 @@ export default {
       },
       topicPatterns: {
         label: 'MQTT topic patterns',
-        help: 'Multi-select; pick from product base topics via the "Pick Topic" button or write a custom MQTT pattern with +/# wildcards and ${app_id}/${device_identification} placeholders. Empty = no topic constraint, any topic matches.',
+        // contains literal ${} placeholders — message function avoids vue-i18n interpolation
+        help: () => 'Multi-select; pick from product base topics via the "Pick Topic" button or write a custom MQTT pattern with +/# wildcards and ${app_id}/${device_identification} placeholders. Empty = no topic constraint, any topic matches.',
       },
       payloadKinds: {
         label: 'Payload kinds',

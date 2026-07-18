@@ -1,5 +1,11 @@
 <template>
   <div class="device-debug">
+    <a-alert
+      type="info"
+      show-icon
+      :message="t('iot.link.productCommand.productCommand.draftHint')"
+      style="margin-bottom: 12px"
+    />
     <actionSelect
       ref="triggerAction"
       :type="3"
@@ -17,7 +23,7 @@
 import { defineComponent, reactive, toRefs, getCurrentInstance } from 'vue';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { useI18n } from '/@/hooks/web/useI18n';
-import { Button } from 'ant-design-vue';
+import { Button, Alert } from 'ant-design-vue';
 import actionSelect from '/@/views/iot/rule/engine/linkage/components/action/actionSelect.vue';
 import { issueCommands } from '/@/api/iot/link/deviceCommand/deviceCommand';
 import { convertToType } from '/@/utils/index';
@@ -27,6 +33,7 @@ export default defineComponent({
   name: 'DeviceDebug',
   components: {
     AButton: Button,
+    AAlert: Alert,
     PlusOutlined,
     actionSelect,
   },

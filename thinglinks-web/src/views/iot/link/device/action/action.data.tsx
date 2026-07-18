@@ -3,7 +3,7 @@ import { BasicColumn, FormSchema } from '/@/components/Table';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
-import { Tag, Tooltip } from 'ant-design-vue';
+import { Tag } from 'ant-design-vue';
 import { dictComponentProps, handleCopyTextV2 } from '/@/utils/thinglinks/common';
 import { DictEnum } from '/@/enums/commonEnum';
 import { useDict } from '/@/components/Dict';
@@ -59,9 +59,7 @@ export const columns = ({ openRemarkModal }: { openRemarkModal: Fn }): BasicColu
                 />
               </span>
             ) : null}
-            <Tooltip placement="topLeft" title={record.message}>
-              <span>{record.message}</span>
-            </Tooltip>
+            <span>{record.message}</span>
           </div>
         );
       },
@@ -72,12 +70,16 @@ export const columns = ({ openRemarkModal }: { openRemarkModal: Fn }): BasicColu
       ellipsis: true,
       showSorterTooltip: true,
       customRender: ({ record }) => {
-        // return record.remark;
+        // 备注多为 trace JSON,过长 hover tooltip 展示不下;改走眼睛图标 → ViewValueModal 格式化弹窗(与指令记录一致)
         return (
           <div>
-            <Tooltip placement="topLeft" title={record.remark}>
-              <span>{record.remark}</span>
-            </Tooltip>
+            {record.remark ? (
+              <EyeOutlined
+                onClick={() => openRemarkModal(record.remark, t('iot.link.device.device.remark'))}
+                style={{ marginRight: '10px' }}
+              />
+            ) : null}
+            <span>{record.remark}</span>
           </div>
         );
       },
@@ -96,8 +98,7 @@ export const columns = ({ openRemarkModal }: { openRemarkModal: Fn }): BasicColu
       width: 100,
       customRender: ({ record }) => {
         const label =
-          record?.echoMap?.status ||
-          getDictLabel('LINK_DEVICE_ACTION_STATUS', record?.status, '');
+          record?.echoMap?.status || getDictLabel('LINK_DEVICE_ACTION_STATUS', record?.status, '');
         if (record?.status == 0) {
           return (
             <Tag color="green" style={{ marginRight: '0px' }}>

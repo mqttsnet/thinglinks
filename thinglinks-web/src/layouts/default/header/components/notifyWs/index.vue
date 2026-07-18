@@ -65,7 +65,6 @@
       const { t } = useI18n();
       const employeeId = userStore.getUserInfo.employeeId;
       const tenantId = userStore.getTenantId;
-      console.log('ws1');
       const host = window.location.host;
       const protocol = window.location.protocol;
       const token = getToken();

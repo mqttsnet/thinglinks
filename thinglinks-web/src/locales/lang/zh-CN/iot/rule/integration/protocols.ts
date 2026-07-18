@@ -131,16 +131,17 @@ export default {
     topic: {
       label: '目标 Topic',
       placeholder: 'iot-out-topic',
-      help: 'RocketMQ topic 字符规约：仅支持字母 / 数字 / 下划线 / 中划线（^[%|a-zA-Z0-9_-]+$），长度 ≤ 255；含 . : @ 等字符会被 broker 拒绝',
+      // 本段 help 含 @ / | / % / ${} 字面量,用函数式消息避免被 vue-i18n 当语法编译
+      help: () => 'RocketMQ topic 字符规约：仅支持字母 / 数字 / 下划线 / 中划线（^[%|a-zA-Z0-9_-]+$），长度 ≤ 255；含 . : @ 等字符会被 broker 拒绝',
     },
     tag: {
       label: 'Tag',
-      help: 'Tag 过滤；支持占位符 ${actionType}（运行时按事件类型动态替换）。Tag 字符规约同 topic',
+      help: () => 'Tag 过滤；支持占位符 ${actionType}（运行时按事件类型动态替换）。Tag 字符规约同 topic',
       placeholder: '*',
     },
     producerGroup: {
       label: 'Producer Group',
-      help: '留空时由 starter 自动按 identifier 生成；用户自填请遵守 RocketMQ 字符规约 ^[%|a-zA-Z0-9_-]+$ 且长度 ≤ 255（含点 . 的域名形式会被 broker 拒绝）',
+      help: () => '留空时由 starter 自动按 identifier 生成；用户自填请遵守 RocketMQ 字符规约 ^[%|a-zA-Z0-9_-]+$ 且长度 ≤ 255（含点 . 的域名形式会被 broker 拒绝）',
       placeholder: 'PG_BRIDGE_BIZ01',
     },
     accessChannel: {

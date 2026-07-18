@@ -65,7 +65,7 @@ export default {
   // 设备上行转换脚本(productCode === topicInboundTransform)专用标签
   topicInbound: {
     product: '产品',
-    productVersion: '产品版本',
+    productVersion: '产品版本序号',
     topicPattern: '主题模式',
     versionPlaceholder: '请选择产品版本',
     statusPublished: '已发布',

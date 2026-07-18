@@ -26,4 +26,6 @@ export default {
   description7: '実行アクションパラメータのタイプが正しくありません',
   commmandIssuedSuccess: 'コマンド発行成功',
   commmandIssuedError: 'コマンド発行失敗',
+  draftHint:
+    'コマンドパラメータは製品「ドラフト(未公開)」バージョンのものです。公開済みバージョンへの下発やカスタム/hex 下発は「運用管理 → デバッグセンター → MQTT デバッグ」へ。',
 };

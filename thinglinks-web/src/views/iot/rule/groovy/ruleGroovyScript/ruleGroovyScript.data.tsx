@@ -118,6 +118,14 @@ export const searchFormSchema = (): FormSchema[] => {
       colProps: { span: 6 },
     },
     {
+      // 按绑定的产品发布版本号检索(objectVersion)
+      label: t('iot.rule.groovy.ruleGroovyScript.topicInbound.productVersion'),
+      field: 'objectVersion',
+      component: 'Input',
+      colProps: { span: 6 },
+      componentProps: { allowClear: true },
+    },
+    {
       field: 'createTimeRange',
       label: t('thinglinks.common.createdTime'),
       component: 'RangePicker',
@@ -147,6 +155,12 @@ export const cardFields = (): CardField[] => [
   {
     label: t('iot.rule.groovy.ruleGroovyScript.topicInbound.topicPattern'),
     field: 'topicPattern',
+    span: 12,
+  },
+  {
+    // 绑定的产品发布版本号(objectVersion = 版本级联选中值)
+    label: t('iot.rule.groovy.ruleGroovyScript.topicInbound.productVersion'),
+    field: 'objectVersion',
     span: 12,
   },
   {
@@ -227,7 +241,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       component: 'Input',
       slot: 'objectVersion',
       colProps: { span: 22 },
-      helpMessage: t('iot.rule.groovy.ruleGroovyScript.helpMessage.objectVersion'),
+      helpMessage: t('iot.rule.groovy.ruleGroovyScript.topicInbound.helpMessage.productVersion'),
     },
     {
       label: t('iot.rule.groovy.ruleGroovyScript.topicInbound.topicPattern'),

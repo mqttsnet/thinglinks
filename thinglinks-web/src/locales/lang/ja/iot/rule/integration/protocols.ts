@@ -122,16 +122,17 @@ export default {
     topic: {
       label: 'ターゲット Topic',
       placeholder: 'iot-out-topic',
-      help: 'RocketMQ topic 文字仕様：英字 / 数字 / アンダースコア / ハイフンのみ（^[%|a-zA-Z0-9_-]+$）、長さ ≤ 255；. : @ などを含むと broker に拒否されます',
+      // これらの help は @ / | / % / ${} の字面値を含むため、関数式メッセージで vue-i18n のコンパイルを回避
+      help: () => 'RocketMQ topic 文字仕様：英字 / 数字 / アンダースコア / ハイフンのみ（^[%|a-zA-Z0-9_-]+$）、長さ ≤ 255；. : @ などを含むと broker に拒否されます',
     },
     tag: {
       label: 'Tag',
-      help: 'Tag フィルタ；プレースホルダ ${actionType} 対応（実行時にイベントタイプで置換）。Tag の文字仕様は topic と同じ',
+      help: () => 'Tag フィルタ；プレースホルダ ${actionType} 対応（実行時にイベントタイプで置換）。Tag の文字仕様は topic と同じ',
       placeholder: '*',
     },
     producerGroup: {
       label: 'Producer Group',
-      help: '空欄の場合は starter が identifier で自動生成。手入力時は RocketMQ 文字仕様 ^[%|a-zA-Z0-9_-]+$ かつ長さ ≤ 255 を満たす必要（. を含むドメイン形式は broker に拒否されます）',
+      help: () => '空欄の場合は starter が identifier で自動生成。手入力時は RocketMQ 文字仕様 ^[%|a-zA-Z0-9_-]+$ かつ長さ ≤ 255 を満たす必要（. を含むドメイン形式は broker に拒否されます）',
       placeholder: 'PG_BRIDGE_BIZ01',
     },
     accessChannel: {

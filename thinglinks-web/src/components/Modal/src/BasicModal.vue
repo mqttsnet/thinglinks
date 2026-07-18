@@ -160,6 +160,8 @@
       watch(
         () => unref(visibleRef),
         (v) => {
+          // 打开前 blur 背景聚焦元素:避免 antd 给背景加 aria-hidden 时焦点仍在背景内,触发 a11y 告警
+          if (v) (document.activeElement as HTMLElement | null)?.blur?.();
           emit('visible-change', v);
           emit('update:visible', v);
           instance && modalMethods.emitVisible?.(v, instance.uid);

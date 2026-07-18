@@ -136,7 +136,8 @@ export default {
       },
       topicPatterns: {
         label: 'MQTT トピックパターン',
-        help: '複数選択可;「トピック選択」ボタンで製品の基本 topic から選ぶか、+/# ワイルドカードや ${app_id}/${device_identification} 等のプレースホルダー含む独自テンプレートを記述可能。空 = topic 制約なし、全 topic マッチ。',
+        // ${} プレースホルダの字面値;関数式メッセージで vue-i18n の補間を回避
+        help: () => '複数選択可;「トピック選択」ボタンで製品の基本 topic から選ぶか、+/# ワイルドカードや ${app_id}/${device_identification} 等のプレースホルダー含む独自テンプレートを記述可能。空 = topic 制約なし、全 topic マッチ。',
       },
       payloadKinds: {
         label: 'データ形態',

@@ -28,8 +28,11 @@ export default {
   sendFrame: 'Send Frame',
   frameDatas: 'Data Report (datas)',
   framePing: 'Heartbeat (PING)',
+  frameCmdRsp: 'Command Response (deviceRsp)',
   messageHint:
     'Business frame has topic/payload fields; heartbeat type is PING. Defaults to a device data-report frame, editable',
+  cmdRspHint:
+    'Simulate the device replying to a platform command: set serviceCode / cmd to match the command shown in Messages; errCode 0 = success, 1 = failure',
   sendBtn: 'Send',
 
   // Message window

@@ -122,16 +122,17 @@ export default {
     topic: {
       label: 'Target Topic',
       placeholder: 'iot-out-topic',
-      help: 'RocketMQ topic charset: only letters / digits / underscore / hyphen (^[%|a-zA-Z0-9_-]+$), length ≤ 255; chars like . : @ will be rejected by broker',
+      // help texts here contain literal @ / | / % / ${} — message functions avoid vue-i18n compilation
+      help: () => 'RocketMQ topic charset: only letters / digits / underscore / hyphen (^[%|a-zA-Z0-9_-]+$), length ≤ 255; chars like . : @ will be rejected by broker',
     },
     tag: {
       label: 'Tag',
-      help: 'Tag filter; supports placeholder ${actionType} (replaced at runtime by event type). Tag charset is same as topic',
+      help: () => 'Tag filter; supports placeholder ${actionType} (replaced at runtime by event type). Tag charset is same as topic',
       placeholder: '*',
     },
     producerGroup: {
       label: 'Producer Group',
-      help: 'Leave empty: starter auto-generates by identifier. If filled by user, must conform to RocketMQ charset ^[%|a-zA-Z0-9_-]+$ and length ≤ 255 (domain-like values containing . will be rejected by broker)',
+      help: () => 'Leave empty: starter auto-generates by identifier. If filled by user, must conform to RocketMQ charset ^[%|a-zA-Z0-9_-]+$ and length ≤ 255 (domain-like values containing . will be rejected by broker)',
       placeholder: 'PG_BRIDGE_BIZ01',
     },
     accessChannel: {

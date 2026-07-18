@@ -134,6 +134,10 @@
             <InfoCircleOutlined />
             <span>{{ t('iot.link.operationMaintenance.debug.webSocket.messageHint') }}</span>
           </div>
+          <div v-if="msgType === 'cmdRsp'" class="ws-hint">
+            <InfoCircleOutlined />
+            <span>{{ t('iot.link.operationMaintenance.debug.webSocket.cmdRspHint') }}</span>
+          </div>
           <a-button type="primary" block class="mt-2" :disabled="!connected" @click="send">
             <template #icon><SendOutlined /></template>
             {{ t('iot.link.operationMaintenance.debug.webSocket.sendBtn') }}
@@ -205,6 +209,7 @@
   ]);
   const frameOptions = computed(() => [
     { label: tk('frameDatas'), value: 'datas' },
+    { label: tk('frameCmdRsp'), value: 'cmdRsp' },
     { label: tk('framePing'), value: 'ping' },
   ]);
 
@@ -227,7 +232,7 @@
     url: '',
     message: '',
   });
-  const msgType = ref<'datas' | 'ping'>('datas');
+  const msgType = ref<'datas' | 'ping' | 'cmdRsp'>('datas');
   const connected = ref(false);
   const logs = ref<{ dir: Dir; time: string; msg: string }[]>([]);
   let ws: WebSocket | null = null;
@@ -311,8 +316,39 @@
       2,
     );
   }
+  /** 命令响应报文:模拟设备对平台下发命令的应答(msgType=deviceRsp);errCode 0成功/1失败。
+   *  连上后从 MQTT 调试台下发的命令会出现在「接收窗口」,把 serviceCode/cmd 改成与其一致再发即可闭环。 */
+  function cmdRspTemplate(): string {
+    const did = deviceIdOf();
+    const ts = Date.now();
+    return JSON.stringify(
+      {
+        topic: `/v1/devices/${did}/commandResponse`,
+        payload: {
+          head: { mid: 1, cipherFlag: 0, timeStamp: ts },
+          dataBody: {
+            deviceIdentification: did,
+            msgType: 'deviceRsp',
+            serviceCode: 'default_attributes_controls',
+            cmd: 'setBrightness',
+            errCode: 0,
+            params: { result: 'ok' },
+          },
+          dataSign: '',
+        },
+      },
+      null,
+      2,
+    );
+  }
   function applyTemplate(): void {
-    form.message = msgType.value === 'ping' ? JSON.stringify({ type: 'PING' }) : datasTemplate();
+    if (msgType.value === 'ping') {
+      form.message = JSON.stringify({ type: 'PING' });
+    } else if (msgType.value === 'cmdRsp') {
+      form.message = cmdRspTemplate();
+    } else {
+      form.message = datasTemplate();
+    }
   }
 
   // 改连接字段(未连接时)→ 自动重建地址;用户也可手动编辑地址

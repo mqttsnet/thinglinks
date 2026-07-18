@@ -25,7 +25,10 @@ export default {
   sendFrame: '发送报文',
   frameDatas: '业务上报(datas)',
   framePing: '心跳(PING)',
+  frameCmdRsp: '命令响应(deviceRsp)',
   messageHint: '业务帧含 topic、payload 字段;心跳帧 type 为 PING。默认为设备数据上报报文,可改',
+  cmdRspHint:
+    '模拟设备应答平台下发的命令:把 serviceCode / cmd 改成与「接收窗口」收到的命令一致,errCode 0成功 / 1失败',
   sendBtn: '发送',
 
   // 消息窗口
