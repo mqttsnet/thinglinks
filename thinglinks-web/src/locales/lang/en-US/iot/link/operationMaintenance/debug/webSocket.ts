@@ -32,13 +32,20 @@ export default {
   messageHint:
     'Business frame has topic/payload fields; heartbeat type is PING. Defaults to a device data-report frame, editable',
   cmdRspHint:
-    'Simulate the device replying to a platform command: set serviceCode / cmd to match the command shown in Messages; errCode 0 = success, 1 = failure',
+    'Simulate the device replying to a platform command: set serviceCode / cmd to match the command shown in Messages; ' +
+    'errCode 0 = success, 1 = failure',
   sendBtn: 'Send',
 
   // Message window
   receiveWindow: 'Messages',
+  deviceFilterPrefix: 'Device',
+  deviceFilterPh: 'Filter by device ID',
+  topicFilterPrefix: 'Topic',
+  topicFilterPh: 'Filter by topic',
+  search: 'Search',
   clear: 'Clear',
   empty: 'No messages',
+  emptyFiltered: 'No matching messages',
   dirSent: 'SENT',
   dirRecv: 'RECV',
   dirSys: 'SYS',

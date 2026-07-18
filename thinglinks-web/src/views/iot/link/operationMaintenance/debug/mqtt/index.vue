@@ -111,11 +111,22 @@
                       {{ p.parameterName || p.parameterCode }}
                       <span v-if="p.required === 1" class="mqtt-req">*</span>
                       <span class="mqtt-param-type">{{ p.datatype }}</span>
+                      <span v-if="p.unit" class="mqtt-param-unit">{{ p.unit }}</span>
+                      <span class="mqtt-param-code" v-if="p.parameterName && p.parameterCode">
+                        {{ p.parameterCode }}
+                      </span>
+                    </div>
+                    <div v-if="paramMeta(p).length" class="mqtt-param-meta">
+                      <span v-for="m in paramMeta(p)" :key="m" class="mqtt-meta-item">{{ m }}</span>
+                    </div>
+                    <div v-if="p.parameterDescription" class="mqtt-param-desc">
+                      {{ p.parameterDescription }}
                     </div>
                     <a-select
                       v-if="enumOptions(p).length"
                       v-model:value="p._value"
                       allow-clear
+                      :placeholder="T('selectPh')"
                       style="width: 100%"
                     >
                       <a-select-option v-for="o in enumOptions(p)" :key="o" :value="o">
@@ -126,6 +137,10 @@
                     <a-input-number
                       v-else-if="isNumber(p)"
                       v-model:value="p._value"
+                      :min="paramMin(p)"
+                      :max="paramMax(p)"
+                      :step="paramStep(p)"
+                      :placeholder="numPh(p)"
                       style="width: 100%"
                     />
                     <a-textarea
@@ -135,7 +150,13 @@
                       class="mqtt-mono"
                       placeholder="{ }"
                     />
-                    <a-input v-else v-model:value="p._value" allow-clear />
+                    <a-input
+                      v-else
+                      v-model:value="p._value"
+                      :maxlength="paramMaxLen(p)"
+                      :placeholder="textPh(p)"
+                      allow-clear
+                    />
                   </div>
                 </div>
               </template>
@@ -207,18 +228,56 @@
         </a-card>
       </a-col>
 
-      <!-- 右:下发记录(device_command 真历史 + 配对时间线) -->
+      <!-- 右:下发记录(device_command 真历史,按时间排序展示) -->
       <a-col :xs="24" :md="14" :xl="15">
-        <a-card :title="T('record')" size="small">
+        <a-card class="mqtt-history-card" :title="T('record')" size="small">
           <template #extra>
-            <a-space>
+            <div class="mqtt-history-extra">
+              <div class="mqtt-history-filters">
+                <a-input
+                  v-model:value="historyDeviceIdentification"
+                  allow-clear
+                  size="small"
+                  class="mqtt-history-input mqtt-history-input-device"
+                  :placeholder="T('deviceFilterPh')"
+                  @press-enter="loadHistory"
+                  @change="onHistoryDeviceChange"
+                >
+                  <template #prefix>
+                    <span class="mqtt-filter-prefix">{{ T('deviceFilterPrefix') }}</span>
+                  </template>
+                </a-input>
+                <a-input
+                  v-model:value="historyTopic"
+                  allow-clear
+                  size="small"
+                  class="mqtt-history-input mqtt-history-input-topic"
+                  :placeholder="T('topicFilterPh')"
+                  @press-enter="loadHistory"
+                  @change="onHistoryTopicChange"
+                >
+                  <template #prefix>
+                    <span class="mqtt-filter-prefix">{{ T('topicFilterPrefix') }}</span>
+                  </template>
+                </a-input>
+                <a-button
+                  size="small"
+                  type="primary"
+                  class="mqtt-history-search"
+                  :title="T('search')"
+                  :aria-label="T('search')"
+                  @click="loadHistory"
+                >
+                  <template #icon><SearchOutlined /></template>
+                </a-button>
+              </div>
               <a-radio-group
                 v-model:value="historyScope"
                 size="small"
                 button-style="solid"
                 @change="loadHistory"
               >
-                <a-radio-button value="device" :disabled="!pickDeviceId">
+                <a-radio-button v-if="hasHistoryDevice" value="device">
                   {{ T('scopeDevice') }}
                 </a-radio-button>
                 <a-radio-button value="all">{{ T('scopeAll') }}</a-radio-button>
@@ -227,41 +286,35 @@
                 <template #icon><ReloadOutlined /></template>
                 {{ T('refresh') }}
               </a-button>
-            </a-space>
+            </div>
           </template>
           <div class="mqtt-log">
-            <div v-if="timeline.length === 0" class="mqtt-empty">{{ T('empty') }}</div>
-            <div v-for="(item, i) in timeline" :key="i" class="mqtt-pair">
-              <!-- 下发 -->
-              <div v-if="item.down" class="mqtt-line">
-                <ArrowUpOutlined class="mqtt-ic-up" />
-                <span class="mqtt-cmd">{{ cmdLabel(item.down) }}</span>
-                <a-tag :color="statusColor(item.down)">{{ statusText(item.down) }}</a-tag>
-                <span class="mqtt-topic" :title="item.down.topic">{{ item.down.topic }}</span>
-                <span class="mqtt-time">{{ fmt(item.down.createdTime) }}</span>
-                <EyeOutlined class="mqtt-ic-btn" :title="T('view')" @click="viewRaw(item.down)" />
+            <div v-if="historyRows.length === 0" class="mqtt-empty">{{ T('empty') }}</div>
+            <div v-for="(item, i) in historyRows" :key="historyKey(item, i)" class="mqtt-record">
+              <div class="mqtt-line">
+                <ArrowDownOutlined v-if="isResponseRecord(item)" class="mqtt-ic-down" />
+                <ArrowUpOutlined v-else class="mqtt-ic-up" />
+                <span class="mqtt-cmd">{{ cmdLabel(item) }}</span>
+                <a-tag :color="recordTypeColor(item)">{{ recordTypeText(item) }}</a-tag>
+                <a-tag :color="statusColor(item)">{{ statusText(item) }}</a-tag>
+                <a-tag
+                  v-if="hasBusinessResult(item)"
+                  :color="businessStatusColor(item)"
+                  :title="item.errMsg || ''"
+                >
+                  {{ businessStatusText(item) }}
+                </a-tag>
+                <span class="mqtt-time">{{ fmt(item.createdTime) }}</span>
+                <EyeOutlined class="mqtt-ic-btn" :title="T('view')" @click="viewRaw(item)" />
                 <ReloadOutlined
+                  v-if="isIssueRecord(item)"
                   class="mqtt-ic-btn"
                   :title="T('resend')"
-                  @click="resend(item.down)"
+                  @click="resend(item)"
                 />
               </div>
-              <!-- 响应 -->
-              <div v-if="item.resp" class="mqtt-line mqtt-line--resp">
-                <ArrowDownOutlined class="mqtt-ic-down" />
-                <a-tag :color="statusColor(item.resp)">
-                  {{ T('response') }} · {{ statusText(item.resp) }}
-                </a-tag>
-                <span class="mqtt-time">{{ fmt(item.resp.createdTime) }}</span>
-                <EyeOutlined class="mqtt-ic-btn" :title="T('view')" @click="viewRaw(item.resp)" />
-              </div>
-              <div
-                v-else-if="
-                  item.down && Number(item.down.commandType) === 0 && item.down.serviceCode
-                "
-                class="mqtt-noresp"
-              >
-                {{ T('noResp') }}
+              <div v-if="item.topic" class="mqtt-topic-row" :title="item.topic">
+                {{ item.topic }}
               </div>
             </div>
           </div>
@@ -292,6 +345,7 @@
     ArrowDownOutlined,
     EyeOutlined,
     CopyOutlined,
+    SearchOutlined,
   } from '@ant-design/icons-vue';
   import { PageWrapper } from '/@/components/Page';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -355,7 +409,10 @@
   // 历史
   const records = ref<any[]>([]);
   const historyScope = ref<'device' | 'all'>('all');
+  const historyDeviceIdentification = ref('');
+  const historyTopic = ref('');
   const historyLoading = ref(false);
+  const hasHistoryDevice = computed(() => !!pickDeviceId.value);
   let pollTimer: any = null;
 
   // 查看
@@ -367,12 +424,18 @@
     pickProductId.value = v ?? '';
     pickDeviceId.value = '';
     versionNo.value = '';
+    historyScope.value = 'all';
     resetSnapshot();
+    loadHistory();
   }
   function onPickDevice(val: any, recordsArr: any[]): void {
     const id = Array.isArray(val) ? val[0] : val;
     pickDeviceId.value = id ?? '';
-    if (!id) return;
+    if (!id) {
+      historyScope.value = 'all';
+      loadHistory();
+      return;
+    }
     formState.topic = `/v1/devices/${id}/command`;
     const rec =
       (recordsArr || []).find((r) => String(r?.deviceIdentification) === String(id)) ||
@@ -449,6 +512,52 @@
       .split(/[,，]/)
       .map((s) => s.trim())
       .filter(Boolean);
+  }
+
+  // ───────── 命令参数约束(来自物模型快照,用于展示 + 输入约束)─────────
+  function toNum(v: any): number | undefined {
+    return v === undefined || v === null || v === '' ? undefined : Number(v);
+  }
+  function paramMin(p: any): number | undefined {
+    return toNum(p?.min ?? p?.minValue);
+  }
+  function paramMax(p: any): number | undefined {
+    return toNum(p?.max ?? p?.maxValue);
+  }
+  function paramStep(p: any): number | undefined {
+    return toNum(p?.step);
+  }
+  function paramMaxLen(p: any): number | undefined {
+    return toNum(p?.maxLength ?? p?.maxlength);
+  }
+  // 约束摘要标签:范围 / 步进 / 最大长度 / 必填可选
+  function paramMeta(p: any): string[] {
+    const out: string[] = [];
+    const mi = paramMin(p);
+    const ma = paramMax(p);
+    if (mi !== undefined && ma !== undefined) out.push(`${T('range')} ${mi} ~ ${ma}`);
+    else if (mi !== undefined) out.push(`${T('range')} ≥ ${mi}`);
+    else if (ma !== undefined) out.push(`${T('range')} ≤ ${ma}`);
+    const st = paramStep(p);
+    if (st !== undefined) out.push(`${T('step')} ${st}`);
+    const ml = paramMaxLen(p);
+    if (ml !== undefined) out.push(`${T('maxLen')} ${ml}`);
+    out.push(p?.required === 1 ? T('requiredTag') : T('optionalTag'));
+    return out;
+  }
+  // 数值输入框 placeholder:提示取值范围
+  function numPh(p: any): string {
+    const mi = paramMin(p);
+    const ma = paramMax(p);
+    if (mi !== undefined && ma !== undefined) return `${mi} ~ ${ma}`;
+    if (mi !== undefined) return `≥ ${mi}`;
+    if (ma !== undefined) return `≤ ${ma}`;
+    return T('inputPh');
+  }
+  // 文本输入框 placeholder:提示最大长度
+  function textPh(p: any): string {
+    const ml = paramMaxLen(p);
+    return ml !== undefined ? `${T('maxLen')} ${ml}` : T('inputPh');
   }
 
   function buildParams(): Record<string, any> {
@@ -584,8 +693,8 @@
     requestParams.value = [];
   }
 
-  // ───────── 历史 + 下发↔响应配对 ─────────
-  /** 解析 content/remark,补出 serviceCode/cmd/versionNo/topic(原始下行还原 payload),供配对/展示/重发 */
+  // ───────── 历史记录 ─────────
+  /** 解析 content/remark,补出 serviceCode/cmd/versionNo/topic(原始下行还原 payload),供展示/重发 */
   function enrichRecord(r: any): any {
     try {
       if (Number(r.commandType) === 1) {
@@ -593,12 +702,20 @@
         r.serviceCode = body?.serviceCode;
         r.cmd = body?.cmd;
         r.errCode = body?.errCode;
+        r.errMsg = body?.errMsg || body?.message || body?.msg;
+        try {
+          const c = JSON.parse(r.content || '{}');
+          if (c?.topic) r.topic = c.topic;
+        } catch {
+          /* response content may be the raw protocol body */
+        }
       } else {
         const c = JSON.parse(r.content || '{}');
         if (c && c.serviceCode) {
           r.serviceCode = c.serviceCode;
           r.cmd = c.cmd;
           r.versionNo = c.versionNo;
+          r.topic = c.topic;
         } else if (c && c.topic !== undefined) {
           r.topic = c.topic;
           r.content = c.payload;
@@ -613,10 +730,16 @@
   async function loadHistory(): Promise<void> {
     historyLoading.value = true;
     try {
+      const scope = historyScope.value === 'device' && pickDeviceId.value ? 'device' : 'all';
+      if (scope !== historyScope.value) historyScope.value = scope;
+      const deviceIdentification =
+        historyDeviceIdentification.value.trim() || (scope === 'device' ? pickDeviceId.value : '');
       const params: any = { limit: 100 };
-      if (historyScope.value === 'device' && pickDeviceId.value) {
-        params.deviceIdentification = pickDeviceId.value;
+      if (deviceIdentification) {
+        params.deviceIdentification = deviceIdentification;
       }
+      const topic = historyTopic.value.trim();
+      if (topic) params.topic = topic;
       const list = await debugHistory(params);
       records.value = (Array.isArray(list) ? list : []).map(enrichRecord);
     } catch {
@@ -626,6 +749,10 @@
     }
   }
 
+  function onHistoryDeviceChange(): void {
+    if (!historyDeviceIdentification.value.trim()) loadHistory();
+  }
+
   function ts(r: any): number {
     const v = r?.createdTime;
     if (!v) return 0;
@@ -633,34 +760,21 @@
     return Number.isNaN(n) ? 0 : n;
   }
 
-  // 下发(type=0)配最近一条 设备+服务+命令 相同的响应(type=1);孤立响应单列
-  const timeline = computed(() => {
-    const asc = [...records.value].sort((a, b) => ts(a) - ts(b));
-    const usedResp = new Set<any>();
-    const items: { down: any; resp: any }[] = [];
-    asc.forEach((r, i) => {
-      if (Number(r.commandType) !== 0) return;
-      const key = `${r.deviceIdentification}|${r.serviceCode}|${r.cmd}`;
-      let resp: any = null;
-      for (let j = i + 1; j < asc.length; j++) {
-        const c = asc[j];
-        if (
-          Number(c.commandType) === 1 &&
-          !usedResp.has(c) &&
-          `${c.deviceIdentification}|${c.serviceCode}|${c.cmd}` === key
-        ) {
-          resp = c;
-          usedResp.add(c);
-          break;
-        }
-      }
-      items.push({ down: r, resp });
-    });
-    asc.forEach((r) => {
-      if (Number(r.commandType) === 1 && !usedResp.has(r)) items.push({ down: null, resp: r });
-    });
-    return items.sort((a, b) => ts(b.down || b.resp) - ts(a.down || a.resp));
-  });
+  const historyRows = computed(() =>
+    records.value
+      .map((record, index) => ({ record, index }))
+      .sort(
+        (a, b) =>
+          ts(b.record) - ts(a.record) ||
+          Number(b.record?.id || 0) - Number(a.record?.id || 0) ||
+          b.index - a.index,
+      )
+      .map(({ record }) => record),
+  );
+
+  function onHistoryTopicChange(): void {
+    if (!historyTopic.value.trim()) loadHistory();
+  }
 
   // ───────── 一键重发 ─────────
   async function resend(rec: any): Promise<void> {
@@ -717,27 +831,51 @@
   }
 
   // ───────── 展示 helpers ─────────
+  function isIssueRecord(rec: any): boolean {
+    return Number(rec.commandType) === 0;
+  }
+  function isResponseRecord(rec: any): boolean {
+    return Number(rec.commandType) === 1;
+  }
+  function historyKey(rec: any, index: number): string {
+    return rec?.id ? String(rec.id) : `${rec?.commandType ?? 'unknown'}-${ts(rec)}-${index}`;
+  }
+  function recordTypeText(rec: any): string {
+    if (isResponseRecord(rec)) return T('commandResponse');
+    return T('issueCommand');
+  }
+  function recordTypeColor(rec: any): string {
+    return isResponseRecord(rec) ? 'success' : 'processing';
+  }
+  function hasBusinessResult(rec: any): boolean {
+    return isResponseRecord(rec) && rec.errCode != null;
+  }
+  function businessStatusText(rec: any): string {
+    return Number(rec.errCode) !== 0 ? T('businessFail') : T('businessOk');
+  }
+  function businessStatusColor(rec: any): string {
+    return Number(rec.errCode) !== 0 ? 'error' : 'success';
+  }
   function cmdLabel(rec: any): string {
     if (rec.serviceCode && rec.cmd) return rec.cmd;
     if (rec.topic) return T('rawLabel');
     return '—';
   }
   function statusText(rec: any): string {
-    // 响应:按设备回包 errCode(0/缺省=成功,非0=失败);下发:按落库 status
-    if (Number(rec.commandType) === 1) {
-      return rec.errCode != null && Number(rec.errCode) !== 0 ? T('fail') : T('ok');
-    }
+    // 这里展示链路状态:下发记录看发送是否成功,响应记录看接收/落库是否成功;业务结果由 errCode 单独展示。
     const s = Number(rec.status);
-    if (s === 1) return T('issued');
-    if (s === 2) return T('fail');
-    return T('pending');
+    if (Number(rec.commandType) === 1) {
+      if (s === 1) return T('receiveOk');
+      if (s === 2) return T('receiveFail');
+      return T('receivePending');
+    }
+    if (s === 1) return T('sendOk');
+    if (s === 2) return T('sendFail');
+    return T('sendPending');
   }
   function statusColor(rec: any): string {
-    if (Number(rec.commandType) === 1) {
-      return rec.errCode != null && Number(rec.errCode) !== 0 ? 'error' : 'success';
-    }
     const s = Number(rec.status);
-    if (s === 1) return 'processing';
+    if (s === 1) return 'success';
     if (s === 2) return 'error';
     return 'warning';
   }
@@ -835,6 +973,46 @@
     border-radius: 4px;
   }
 
+  .mqtt-param-unit {
+    margin-left: 6px;
+    padding: 0 6px;
+    font-size: 11px;
+    color: #1c7ed6;
+    background: #e7f5ff;
+    border-radius: 4px;
+  }
+
+  .mqtt-param-code {
+    margin-left: 6px;
+    font-size: 11px;
+    color: #adb5bd;
+    font-family: 'JetBrains Mono', Consolas, monospace;
+  }
+
+  .mqtt-param-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .mqtt-meta-item {
+    padding: 0 6px;
+    font-size: 11px;
+    line-height: 18px;
+    color: #5a6a85;
+    background: #f8f9fb;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+  }
+
+  .mqtt-param-desc {
+    margin-bottom: 4px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #8c8c8c;
+  }
+
   .mqtt-empty-sm {
     padding: 6px 0;
     font-size: 12px;
@@ -892,6 +1070,86 @@
     overflow: auto;
   }
 
+  .mqtt-history-card :deep(.ant-card-head-wrapper) {
+    align-items: flex-start;
+  }
+
+  .mqtt-history-card :deep(.ant-card-head-title) {
+    flex: 0 0 auto;
+    padding-top: 4px;
+  }
+
+  .mqtt-history-card :deep(.ant-card-extra) {
+    flex: 1;
+    min-width: 0;
+    margin-left: 16px;
+  }
+
+  .mqtt-history-extra {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .mqtt-history-filters {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px;
+    background: #f7f9fc;
+    border: 1px solid #eef2f7;
+    border-radius: 8px;
+  }
+
+  .mqtt-history-input {
+    height: 28px;
+    background: #fff;
+    border-color: #e5ebf3;
+    border-radius: 6px;
+    box-shadow: none;
+  }
+
+  .mqtt-history-input-device {
+    width: 210px;
+  }
+
+  .mqtt-history-input-topic {
+    width: 300px;
+  }
+
+  .mqtt-filter-prefix {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding-right: 6px;
+    margin-right: 2px;
+    color: #009688;
+    font-size: 12px;
+    line-height: 18px;
+    border-right: 1px solid #edf1f5;
+  }
+
+  .mqtt-history-search {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #009688;
+    border-color: #009688;
+  }
+
+  :deep(.mqtt-history-input.ant-input-affix-wrapper) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  :deep(.mqtt-history-input.ant-input-affix-wrapper-focused),
+  :deep(.mqtt-history-input.ant-input-affix-wrapper:hover) {
+    border-color: #009688;
+    box-shadow: 0 0 0 2px rgb(0 150 136 / 10%);
+  }
+
   .mqtt-empty {
     padding: 32px 0;
     text-align: center;
@@ -899,7 +1157,7 @@
     font-size: 13px;
   }
 
-  .mqtt-pair {
+  .mqtt-record {
     padding: 8px 0;
     border-bottom: 1px dashed #f0f0f0;
 
@@ -913,11 +1171,6 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-
-    &--resp {
-      margin-top: 6px;
-      padding-left: 18px;
-    }
   }
 
   .mqtt-ic-up {
@@ -933,20 +1186,23 @@
     color: #2a3547;
   }
 
-  .mqtt-topic {
-    max-width: 220px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .mqtt-topic-row {
+    margin-top: 6px;
+    padding-left: 44px;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 12px;
+    line-height: 18px;
     color: #8c8c8c;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-all;
   }
 
   .mqtt-time {
     margin-left: auto;
     color: #bfbfbf;
     font-size: 12px;
+    white-space: nowrap;
   }
 
   .mqtt-ic-btn {
@@ -957,13 +1213,6 @@
     &:hover {
       color: #1890ff;
     }
-  }
-
-  .mqtt-noresp {
-    margin-top: 6px;
-    padding-left: 18px;
-    font-size: 12px;
-    color: #bfbfbf;
   }
 
   .mqtt-view {
@@ -978,5 +1227,34 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 12px;
     color: #595959;
+  }
+
+  @media (max-width: 1200px) {
+    .mqtt-history-extra {
+      justify-content: flex-start;
+    }
+
+    .mqtt-history-filters {
+      width: 100%;
+    }
+
+    .mqtt-history-input-device,
+    .mqtt-history-input-topic {
+      flex: 1;
+      min-width: 180px;
+      width: auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .mqtt-history-filters {
+      flex-wrap: wrap;
+    }
+
+    .mqtt-history-input-device,
+    .mqtt-history-input-topic {
+      width: 100%;
+      min-width: 100%;
+    }
   }
 </style>

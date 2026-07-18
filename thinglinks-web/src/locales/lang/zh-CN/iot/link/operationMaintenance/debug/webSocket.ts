@@ -33,8 +33,14 @@ export default {
 
   // 消息窗口
   receiveWindow: '消息窗口',
+  deviceFilterPrefix: '设备',
+  deviceFilterPh: '按设备标识过滤',
+  topicFilterPrefix: 'Topic',
+  topicFilterPh: '按 topic 过滤',
+  search: '查询',
   clear: '清空',
   empty: '暂无消息',
+  emptyFiltered: '暂无匹配消息',
   dirSent: '发送',
   dirRecv: '接收',
   dirSys: '系统',

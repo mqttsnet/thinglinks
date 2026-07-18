@@ -1,7 +1,7 @@
 import { DeviceCommandPageQuery, DeviceCommandWrapper } from './model/deviceCommandModel';
 import { PageParams, PageResult } from '/@/api/model/baseModel';
 import { defHttp } from '/@/utils/http/axios';
-import { RequestEnum, ContentTypeEnum } from '/@/enums/httpEnum';
+import { RequestEnum } from '/@/enums/httpEnum';
 import { ServicePrefixEnum } from '/@/enums/commonEnum';
 import type { AxiosRequestConfig } from 'axios';
 
@@ -28,6 +28,9 @@ export const page = (params: PageParams<DeviceCommandPageQuery>) =>
   defHttp.request<PageResult<DeviceCommandPageQuery>>({ ...Api.Page, params });
 export const issueCommands = (params: DeviceCommandWrapper) =>
   defHttp.request<any>({ ...Api.IssueCommands, params });
-/** 调试台下发记录:命令下发(0)/响应(1),设备可空=当前租户全部,倒序近 N 条 */
-export const debugHistory = (params: { deviceIdentification?: string; limit?: number }) =>
-  defHttp.request<any[]>({ ...Api.DebugHistory, params });
+/** 调试台下发记录:命令下发(0)/响应(1),设备/topic 可空=当前租户全部,倒序近 N 条 */
+export const debugHistory = (params: {
+  deviceIdentification?: string;
+  topic?: string;
+  limit?: number;
+}) => defHttp.request<any[]>({ ...Api.DebugHistory, params });

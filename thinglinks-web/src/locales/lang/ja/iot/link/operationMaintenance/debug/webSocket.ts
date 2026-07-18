@@ -37,8 +37,14 @@ export default {
 
   // メッセージウィンドウ
   receiveWindow: 'メッセージウィンドウ',
+  deviceFilterPrefix: 'デバイス',
+  deviceFilterPh: 'デバイス識別子で絞り込み',
+  topicFilterPrefix: 'Topic',
+  topicFilterPh: 'topic で絞り込み',
+  search: '検索',
   clear: 'クリア',
   empty: 'メッセージなし',
+  emptyFiltered: '一致するメッセージがありません',
   dirSent: '送信',
   dirRecv: '受信',
   dirSys: 'システム',

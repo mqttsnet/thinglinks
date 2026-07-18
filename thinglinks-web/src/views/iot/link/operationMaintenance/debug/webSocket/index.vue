@@ -9,7 +9,7 @@
         >
           <template #extra>
             <span class="ws-status" :class="connected ? 'is-on' : 'is-off'">
-              <i class="ws-status-dot" />
+              <i class="ws-status-dot"></i>
               {{
                 connected
                   ? t('iot.link.operationMaintenance.debug.webSocket.connected')
@@ -147,23 +147,65 @@
         <a-card
           :title="t('iot.link.operationMaintenance.debug.webSocket.receiveWindow')"
           size="small"
-          class="mt-4"
+          class="mt-4 ws-log-card"
         >
           <template #extra>
-            <a-space>
+            <div class="ws-log-extra">
+              <div class="ws-log-filters">
+                <a-input
+                  v-model:value="logDeviceFilterInput"
+                  allow-clear
+                  size="small"
+                  class="ws-log-input ws-log-input-device"
+                  :placeholder="tk('deviceFilterPh')"
+                  @press-enter="applyLogFilter"
+                  @change="onLogDeviceFilterChange"
+                >
+                  <template #prefix>
+                    <span class="ws-filter-prefix">{{ tk('deviceFilterPrefix') }}</span>
+                  </template>
+                </a-input>
+                <a-input
+                  v-model:value="logTopicFilterInput"
+                  allow-clear
+                  size="small"
+                  class="ws-log-input ws-log-input-topic"
+                  :placeholder="tk('topicFilterPh')"
+                  @press-enter="applyLogFilter"
+                  @change="onLogTopicFilterChange"
+                >
+                  <template #prefix>
+                    <span class="ws-filter-prefix">{{ tk('topicFilterPrefix') }}</span>
+                  </template>
+                </a-input>
+                <a-button
+                  size="small"
+                  type="primary"
+                  class="ws-log-search"
+                  :title="tk('search')"
+                  :aria-label="tk('search')"
+                  @click="applyLogFilter"
+                >
+                  <template #icon><SearchOutlined /></template>
+                </a-button>
+              </div>
               <a-checkbox v-model:checked="prettyOn">
                 {{ t('iot.link.operationMaintenance.debug.webSocket.prettyJson') }}
               </a-checkbox>
               <a-button size="small" :disabled="!logs.length" @click="logs = []">
                 {{ t('iot.link.operationMaintenance.debug.webSocket.clear') }}
               </a-button>
-            </a-space>
+            </div>
           </template>
           <div class="ws-log">
-            <div v-if="!logs.length" class="ws-empty">
-              {{ t('iot.link.operationMaintenance.debug.webSocket.empty') }}
+            <div v-if="!filteredLogs.length" class="ws-empty">
+              {{
+                logs.length
+                  ? t('iot.link.operationMaintenance.debug.webSocket.emptyFiltered')
+                  : t('iot.link.operationMaintenance.debug.webSocket.empty')
+              }}
             </div>
-            <div v-for="(l, i) in logs" :key="i" class="ws-log-row">
+            <div v-for="(l, i) in filteredLogs" :key="`${l.time}-${i}`" class="ws-log-row">
               <span class="ws-dir" :class="l.dir">{{ dirLabel(l.dir) }}</span>
               <span class="ws-time">{{ l.time }}</span>
               <pre class="ws-content">{{ formatMsg(l) }}</pre>
@@ -188,6 +230,7 @@
     SendOutlined,
     InfoCircleOutlined,
     CopyOutlined,
+    SearchOutlined,
   } from '@ant-design/icons-vue';
   import { PageWrapper } from '/@/components/Page';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -217,6 +260,11 @@
   const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
 
   type Dir = 'sent' | 'recv' | 'sys';
+  interface LogItem {
+    dir: Dir;
+    time: string;
+    msg: string;
+  }
   const prettyOn = ref(true);
   // 接入身份:manual=手动填;device=选设备自动填 clientId/账号。默认手动(不选设备)
   const mode = ref<'manual' | 'device'>('manual');
@@ -234,7 +282,11 @@
   });
   const msgType = ref<'datas' | 'ping' | 'cmdRsp'>('datas');
   const connected = ref(false);
-  const logs = ref<{ dir: Dir; time: string; msg: string }[]>([]);
+  const logs = ref<LogItem[]>([]);
+  const logDeviceFilterInput = ref('');
+  const logTopicFilterInput = ref('');
+  const logDeviceFilter = ref('');
+  const logTopicFilter = ref('');
   let ws: WebSocket | null = null;
 
   /** 设备唯一标识 ── 默认取 clientId 的 @ 前缀(可在报文里改) */
@@ -395,8 +447,39 @@
     }
     return v;
   }
+
+  function logMatchText(log: LogItem): string {
+    try {
+      return `${log.msg}\n${JSON.stringify(deepUnwrap(JSON.parse(log.msg)))}`.toLowerCase();
+    } catch {
+      return log.msg.toLowerCase();
+    }
+  }
+
+  function applyLogFilter(): void {
+    logDeviceFilter.value = logDeviceFilterInput.value.trim().toLowerCase();
+    logTopicFilter.value = logTopicFilterInput.value.trim().toLowerCase();
+  }
+
+  function onLogDeviceFilterChange(): void {
+    if (!logDeviceFilterInput.value.trim()) applyLogFilter();
+  }
+
+  function onLogTopicFilterChange(): void {
+    if (!logTopicFilterInput.value.trim()) applyLogFilter();
+  }
+
+  const filteredLogs = computed(() =>
+    logs.value.filter((log) => {
+      const text = logMatchText(log);
+      if (logDeviceFilter.value && !text.includes(logDeviceFilter.value)) return false;
+      if (logTopicFilter.value && !text.includes(logTopicFilter.value)) return false;
+      return true;
+    }),
+  );
+
   /** 展示用:开启美化时把 JSON(含多层转义)缩进展开;系统消息 / 非 JSON 原样 */
-  function formatMsg(l: { dir: Dir; msg: string }): string {
+  function formatMsg(l: LogItem): string {
     if (!prettyOn.value || l.dir === 'sys') return l.msg;
     try {
       return JSON.stringify(deepUnwrap(JSON.parse(l.msg)), null, 2);
@@ -534,6 +617,86 @@
     overflow: auto;
   }
 
+  .ws-log-card :deep(.ant-card-head-wrapper) {
+    align-items: flex-start;
+  }
+
+  .ws-log-card :deep(.ant-card-head-title) {
+    flex: 0 0 auto;
+    padding-top: 4px;
+  }
+
+  .ws-log-card :deep(.ant-card-extra) {
+    flex: 1;
+    min-width: 0;
+    margin-left: 16px;
+  }
+
+  .ws-log-extra {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ws-log-filters {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px;
+    background: #f7f9fc;
+    border: 1px solid #eef2f7;
+    border-radius: 8px;
+  }
+
+  .ws-log-input {
+    height: 28px;
+    background: #fff;
+    border-color: #e5ebf3;
+    border-radius: 6px;
+    box-shadow: none;
+  }
+
+  .ws-log-input-device {
+    width: 210px;
+  }
+
+  .ws-log-input-topic {
+    width: 300px;
+  }
+
+  .ws-filter-prefix {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding-right: 6px;
+    margin-right: 2px;
+    color: #009688;
+    font-size: 12px;
+    line-height: 18px;
+    border-right: 1px solid #edf1f5;
+  }
+
+  .ws-log-search {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #009688;
+    border-color: #009688;
+  }
+
+  :deep(.ws-log-input.ant-input-affix-wrapper) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  :deep(.ws-log-input.ant-input-affix-wrapper-focused),
+  :deep(.ws-log-input.ant-input-affix-wrapper:hover) {
+    border-color: #009688;
+    box-shadow: 0 0 0 2px rgb(0 150 136 / 10%);
+  }
+
   .ws-empty {
     padding: 32px 0;
     text-align: center;
@@ -610,5 +773,34 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 12px;
     color: #2a3547;
+  }
+
+  @media (max-width: 1200px) {
+    .ws-log-extra {
+      justify-content: flex-start;
+    }
+
+    .ws-log-filters {
+      width: 100%;
+    }
+
+    .ws-log-input-device,
+    .ws-log-input-topic {
+      flex: 1;
+      min-width: 180px;
+      width: auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .ws-log-filters {
+      flex-wrap: wrap;
+    }
+
+    .ws-log-input-device,
+    .ws-log-input-topic {
+      width: 100%;
+      min-width: 100%;
+    }
   }
 </style>
