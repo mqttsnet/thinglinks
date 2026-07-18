@@ -142,7 +142,7 @@ public final class BifromqAuthProviderPluginAuthProvider implements IAuthProvide
     }
 
     /**
-     * 按 ACL 规则列表检查 topic 是否允许 ── 直接调用 util-pro {@link MqttTopicMatcher} 做 MQTT 通配符匹配,
+     * 按 ACL 规则列表检查 topic 是否允许 ── 直接调用 Util {@link MqttTopicMatcher} 做 MQTT 通配符匹配，
      * 本方法只承担 ACL 业务语义:
      * <ol>
      *   <li>按 priority 升序排序(数字越小优先级越高)</li>

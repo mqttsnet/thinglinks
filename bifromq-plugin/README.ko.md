@@ -1,18 +1,18 @@
 <div align="center">
 
-# bifromq-plugin — Community Edition
+# bifromq-plugin
 
 **ThingLinks IoT — BifroMQ 플러그인 라이브러리**
 
 [English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | 한국어
-
-[![Edition](https://img.shields.io/badge/Edition-Community-blue?style=flat-square)](../LICENSE-COMMERCIAL)
 
 </div>
 
 ---
 
 BifroMQ MQTT Broker의 [ThingLinks](https://mqttsnet.com) IoT 플랫폼 플러그인 라이브러리. 인증, 이벤트 수집, 리소스 제어, 동적 설정 4개 플러그인.
+
+제품 메타데이터와 호환 버전은 루트의 [`.thinglinks-product.env`](.thinglinks-product.env)에서 확인할 수 있습니다.
 
 ## 🤖 Agent Skills(AI 지원 개발)
 
@@ -27,6 +27,6 @@ BifroMQ 인증/ACL, 이벤트 컬렉터(Kafka), 설정/리소스 provider, `Even
 
 ## 라이선스
 
-[Apache License 2.0](../LICENSE) + [LICENSE-COMMERCIAL](../LICENSE-COMMERCIAL)
+[LICENSE](LICENSE) 및 제품 메타데이터에서 참조하는 추가 조건을 확인하세요.
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

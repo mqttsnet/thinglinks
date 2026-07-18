@@ -121,7 +121,7 @@ public class AclMatcherOptimizedBenchmarkTest {
             matchedCount.incrementAndGet();
         }
 
-        // 用耗时下限近似估算"快路径"占比(算法已下沉到 util-pro MqttTopicMatcher,无 Pattern 编译缓存)
+        // 用耗时下限近似估算"快路径"占比（算法已下沉到 Util MqttTopicMatcher，无 Pattern 编译缓存）
         if (duration < 100_000) { // <0.1ms 视为快路径
             cacheHits.incrementAndGet();
         }
@@ -194,7 +194,7 @@ public class AclMatcherOptimizedBenchmarkTest {
                 (latencyBuckets[i] * 100.0) / total);
         }
 
-        // v1.1 起算法已下沉到 util-pro MqttTopicMatcher,无 Pattern 编译缓存 ──
+        // v1.1 起算法已下沉到 Util MqttTopicMatcher，无 Pattern 编译缓存 ──
         // 改为分段字符串比较,Pattern 编译不再发生,原 caffeine 缓存指标已移除。
         System.out.println("=========================================");
     }

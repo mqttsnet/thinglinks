@@ -2,15 +2,11 @@
 
 <a href="https://mqttsnet.com"><img src="https://avatars.githubusercontent.com/u/94173946?s=200&v=4" alt="ThingLinks" width="160"></a>
 
-# bifromq-plugin — Community Edition
+# bifromq-plugin
 
 **ThingLinks IoT Platform — BifroMQ MQTT Broker Plugin Library**
 
 [English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
-
-[![JDK](https://img.shields.io/badge/JDK-17+-orange?style=flat-square&logo=openjdk)](https://openjdk.org/)
-[![BifroMQ](https://img.shields.io/badge/BifroMQ-3.3.5-blue?style=flat-square)](https://github.com/baidu/bifromq)
-[![Edition](https://img.shields.io/badge/Edition-Community-blue?style=flat-square)](../LICENSE-COMMERCIAL)
 
 </div>
 
@@ -18,7 +14,9 @@
 
 ## About
 
-`bifromq-plugin` is the BifroMQ MQTT broker plugin library for the [ThingLinks](https://mqttsnet.com) IoT platform (Community Edition). It enables runtime integration of custom business logic with the ThingLinks IoT system through BifroMQ's plugin mechanism.
+`bifromq-plugin` is the BifroMQ MQTT broker plugin library for the [ThingLinks](https://mqttsnet.com) IoT platform. It enables runtime integration of custom business logic with the ThingLinks IoT system through BifroMQ's plugin mechanism.
+
+Product metadata and compatibility versions are available in the root [`.thinglinks-product.env`](.thinglinks-product.env) manifest.
 
 ## Plugins
 
@@ -41,9 +39,8 @@ mvn clean package -pl bifromq-auth-provider-plugin -am -DskipTests
 
 ## Requirements
 
-- JDK 17+
-- Maven 3.6+
-- BifroMQ 3.3.5
+- Maven 3.8+
+- Java, BifroMQ, and ThingLinks Util compatibility versions: see [`.thinglinks-product.env`](.thinglinks-product.env)
 
 ## 🤖 Agent Skills (AI-assisted development)
 
@@ -58,7 +55,7 @@ Auto-triggers when you work on BifroMQ auth/ACL, the event collector (Kafka), se
 
 ## License
 
-Licensed under [Apache License 2.0](../LICENSE) with additional terms — see [LICENSE-COMMERCIAL](../LICENSE-COMMERCIAL).
+See [LICENSE](LICENSE) and the additional terms referenced by the product metadata manifest.
 
 ---
 
