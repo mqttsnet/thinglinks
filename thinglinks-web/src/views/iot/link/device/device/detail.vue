@@ -4,17 +4,8 @@
     <a-card :bordered="false" class="header-card">
       <div class="header-row">
         <div class="header-left">
-          <div class="rule-icon" :class="{ 'no-pad': !deviceDetail?.productResultVO?.icon }">
-            <ImageDisplay
-              v-if="deviceDetail?.productResultVO?.icon"
-              :fileId="deviceDetail.productResultVO.icon"
-              :imageWidth="40"
-              :imageHeight="40"
-              :imageStyle="{ 'max-width': '40px', 'max-height': '40px' }"
-              :showBorder="false"
-              :preview="false"
-            />
-            <component v-else :is="getDeviceNodeTypeSvg(deviceDetail?.nodeType)" />
+          <div class="rule-icon device-node-icon">
+            <component :is="getDeviceNodeTypeSvg(deviceDetail?.nodeType)" />
           </div>
           <div class="rule-meta">
             <div class="rule-title">
@@ -329,7 +320,6 @@
   import EditModal from './Edit.vue';
   import { useModal } from '/@/components/Modal';
   import CopyModal from '/@/components/CopyModal/index.vue';
-  import ImageDisplay from '/@/components/ImageDisplay/index.ts';
   const { getDictLabel } = useDict();
   import { ActionEnum } from '/@/enums/commonEnum';
   import { DeviceConnectStatus, DeviceNodeType } from '/@/enums/link/device';
@@ -375,7 +365,6 @@
       renderQrcode,
       basicInfo,
       CopyModal,
-      ImageDisplay,
     },
     emits: ['success', 'register'],
     setup() {
@@ -621,10 +610,20 @@
     flex-shrink: 0;
     overflow: hidden;
 
-    /* SVG 自带渐变背景,撤掉外层 padding 让其充满 */
-    &.no-pad {
+    &.device-node-icon {
+      width: 64px;
+      height: 64px;
       padding: 0;
-      background: transparent;
+      background: linear-gradient(135deg, #eef6ff 0%, #e9f7ff 100%);
+      border: 1px solid rgba(93, 135, 255, 0.14);
+      box-shadow: 0 8px 20px rgba(93, 135, 255, 0.12);
+
+      :deep(svg) {
+        width: 100%;
+        height: 100%;
+        transform: scale(1.12);
+        transform-origin: center;
+      }
     }
 
     :deep(svg) {

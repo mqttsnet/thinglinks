@@ -318,7 +318,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       },
       rules: [{ required: true }],
       helpMessage: [t('iot.link.device.device.cert.tipSelectIssued')],
-      componentProps: ({ formActionType }) => {
+      componentProps: ({ formActionType, formModel }) => {
         return {
           // 当前已选中的证书序列号(用于回显)
           value: formModel.certSerialNumber,
@@ -427,7 +427,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       },
       rules: [{ required: true }],
       component: 'Cascader',
-      componentProps: ({ formActionType }) => {
+      componentProps: ({ formActionType, formModel }) => {
         return {
           options: citiesGd,
           disabled: true,

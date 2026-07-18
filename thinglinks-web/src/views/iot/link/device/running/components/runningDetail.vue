@@ -44,7 +44,11 @@
       </div>
       <!-- 当前值 ── 有值时大字号高亮,空值显示友好提示而非孤零零的 `-` -->
       <div class="hero-value" v-if="hasCurrentValue">
-        <span class="num">{{ currentValueText }}</span>
+        <a-tooltip placement="topRight" :title="currentValueText">
+          <span class="num" :class="{ 'is-long': currentValueText.length > 14 }">
+            {{ currentValueText }}
+          </span>
+        </a-tooltip>
         <span v-if="meta.unit" class="unit">{{ meta.unit }}</span>
       </div>
       <div class="hero-value-empty" v-else>
@@ -531,19 +535,33 @@
       text-align: right;
       display: flex;
       align-items: baseline;
+      justify-content: flex-end;
       gap: 6px;
       flex-shrink: 0;
+      min-width: 0;
+      max-width: 320px;
 
       .num {
+        display: -webkit-box;
         font-size: 30px;
         font-weight: 700;
         color: #2a3547;
         font-variant-numeric: tabular-nums;
-        word-break: break-all;
-        max-width: 240px;
+        max-width: 280px;
         line-height: 1.1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        overflow-wrap: anywhere;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+
+        &.is-long {
+          font-size: 22px;
+          line-height: 1.18;
+        }
       }
       .unit {
+        flex-shrink: 0;
         font-size: 14px;
         color: #97a1b0;
       }

@@ -13,7 +13,7 @@
     - WebSocket 协议升级为 JSON `{serviceCode, versionNo}`,服务端按版本快照解析
       心跳同样发 JSON,避免后端把 serviceCode 误解释
   -->
-  <div class="shadow-wrap">
+  <div ref="shadowWrapRef" class="shadow-wrap" :class="{ 'is-fullscreen': isShadowFullscreen }">
     <!-- ===== 顶部工具栏 ===== -->
     <div class="shadow-toolbar">
       <div class="toolbar-left">
@@ -47,6 +47,30 @@
             :productIdentification="productResultVO?.productIdentification"
             @update:model-value="onVersionChange"
           />
+        </a-tooltip>
+        <a-tooltip
+          placement="top"
+          :title="
+            isShadowFullscreen
+              ? t('layout.header.tooltipExitFull')
+              : t('layout.header.tooltipEntryFull')
+          "
+        >
+          <a-button
+            type="text"
+            class="shadow-tool-btn"
+            :aria-label="
+              isShadowFullscreen
+                ? t('layout.header.tooltipExitFull')
+                : t('layout.header.tooltipEntryFull')
+            "
+            @click="toggleShadowFullscreen"
+          >
+            <template #icon>
+              <FullscreenExitOutlined v-if="isShadowFullscreen" />
+              <FullscreenOutlined v-else />
+            </template>
+          </a-button>
         </a-tooltip>
         <a-button type="primary" ghost @click="refresh">
           <template #icon><RedoOutlined /></template>
@@ -150,7 +174,12 @@
                 placement="topLeft"
                 :title="`${formatValue(item.propertyValue)}${item.unit ? ' ' + item.unit : ''}`"
               >
-                <span class="value-text">{{ formatValue(item.propertyValue) }}</span>
+                <span
+                  class="value-text"
+                  :class="{ 'is-long': formatValue(item.propertyValue).length > 12 }"
+                >
+                  {{ formatValue(item.propertyValue) }}
+                </span>
                 <span v-if="item.unit" class="unit">{{ item.unit }}</span>
               </a-tooltip>
             </div>
@@ -187,7 +216,14 @@
       </div>
     </div>
 
-    <runningDetail @register="runningDetailRegister" />
+    <runningDetail
+      :key="isShadowFullscreen ? 'shadow-detail-fullscreen' : 'shadow-detail-normal'"
+      @register="runningDetailRegister"
+      :get-container="getShadowDrawerContainer"
+      :style="shadowDrawerStyle"
+      class="shadow-detail-drawer-wrap"
+      :z-index="2800"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -216,6 +252,8 @@
     ClockCircleOutlined,
     RollbackOutlined,
     RightOutlined,
+    FullscreenOutlined,
+    FullscreenExitOutlined,
   } from '@ant-design/icons-vue';
   import { Alert, Empty, Tag, Tooltip } from 'ant-design-vue';
   import runningDetail from './components/runningDetail.vue';
@@ -226,7 +264,7 @@
   import { findUrlById } from '/@/api/thinglinks/file/upload.ts';
   import { IotProductVersionPicker } from '/@/components/iot/IotProductVersionPicker';
 
-  import { useIntervalFn, useWebSocket } from '@vueuse/core';
+  import { useFullscreen, useIntervalFn, useWebSocket } from '@vueuse/core';
   import { isEmpty } from 'lodash-es';
   import { createImgPreview } from '/@/components/Preview/index';
   import { getToken } from '/@/utils/auth';
@@ -245,6 +283,8 @@
       ClockCircleOutlined,
       RollbackOutlined,
       RightOutlined,
+      FullscreenOutlined,
+      FullscreenExitOutlined,
       EyeOutlined,
       IotProductVersionPicker,
       runningDetail,
@@ -273,6 +313,9 @@
       const { createMessage } = useMessage();
       const currentServiceIndex = ref(0);
       const [runningDetailRegister, { openDrawer: openDetail }] = useDrawer();
+      const shadowWrapRef = ref<HTMLElement | null>(null);
+      const { toggle: toggleShadowFullscreen, isFullscreen: isShadowFullscreen } =
+        useFullscreen(shadowWrapRef);
 
       const state = reactive({
         deviceIdentification: props.deviceIdentification,
@@ -292,6 +335,12 @@
           !!selectedVersionNo.value &&
           selectedVersionNo.value !== props.boundProductVersionNo,
       );
+      const shadowDrawerStyle = computed(() =>
+        isShadowFullscreen.value ? { position: 'absolute' } : undefined,
+      );
+
+      const getShadowDrawerContainer = () =>
+        (document.fullscreenElement as HTMLElement | null) || document.body;
 
       // WebSocket 连接:/anyone/ 路径 → 网关解 token 写 header → 后端 WebSocketAuthGuard 校验 path tenantId
       // ws 不支持自定义 header,Token / TenantId 走 URL query 由网关 getHeader 从 query fallback 取
@@ -635,9 +684,14 @@
         selectedVersionNo,
         versionLoading,
         isViewingHistory,
+        shadowWrapRef,
+        isShadowFullscreen,
+        shadowDrawerStyle,
         // 行为
         changeService,
         refresh,
+        toggleShadowFullscreen,
+        getShadowDrawerContainer,
         iconPreview,
         openDetailDrawer,
         onVersionChange,
@@ -667,10 +721,38 @@
 
   /* Flexy 风格 ── 配合 detail.vue 的 panel-card 内嵌使用 */
   .shadow-wrap {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 16px;
     min-height: 480px;
+
+    &.is-fullscreen,
+    &:fullscreen {
+      height: 100vh;
+      min-height: 0;
+      padding: 16px;
+      background: @component-background;
+      overflow: hidden;
+
+      .shadow-body {
+        min-height: 0;
+        flex: 1;
+      }
+
+      .service-panel,
+      .property-panel {
+        max-height: none;
+      }
+
+      .service-panel {
+        min-height: 0;
+
+        .service-list {
+          max-height: none;
+        }
+      }
+    }
   }
 
   /* ===== 顶部工具栏 ===== */
@@ -695,6 +777,20 @@
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+  }
+
+  .shadow-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: @text-color-secondary;
+
+    &:hover {
+      color: @primary-color;
+      background: fade(@primary-color, 8%);
     }
   }
 
@@ -983,18 +1079,26 @@
       display: flex;
       align-items: baseline;
       gap: 6px;
+      min-width: 0;
       min-height: 36px;
 
       .value-text {
+        display: block;
+        min-width: 0;
+        max-width: 100%;
         font-size: 24px;
         font-weight: 700;
         color: #2a3547;
         font-variant-numeric: tabular-nums;
-        word-break: break-all;
         line-height: 1.1;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        &.is-long {
+          font-size: 20px;
+          line-height: 1.2;
+        }
       }
 
       .unit {

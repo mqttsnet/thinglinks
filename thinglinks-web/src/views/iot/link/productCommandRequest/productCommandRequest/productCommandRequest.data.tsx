@@ -1,5 +1,4 @@
 import { Ref } from 'vue';
-import { dateUtil } from '/@/utils/dateUtil';
 import { BasicColumn, FormSchema } from '/@/components/Table';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
@@ -7,7 +6,11 @@ import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
 import { echoMapText } from '/@/utils/echo';
 // 与属性 Edit 共用同一份 datatype 校验工具,设备调试参数填写也复用
-import { buildHelpMessage, TD_NCHAR_MAX, thingModelCodeRules } from '/@/utils/iot/dataTypeValidator';
+import {
+  buildHelpMessage,
+  TD_NCHAR_MAX,
+  thingModelCodeRules,
+} from '/@/utils/iot/dataTypeValidator';
 
 const { t } = useI18n();
 // 列表页字段
@@ -101,28 +104,37 @@ export const searchFormSchema = (): FormSchema[] => {
       label: t('iot.link.productCommandRequest.productCommandRequest.parameterCode'),
       field: 'parameterCode',
       component: 'Input',
-      colProps: { span: 6 },
+      colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 5, xxl: 5 },
     },
     {
       label: t('iot.link.productCommandRequest.productCommandRequest.parameterName'),
       field: 'parameterName',
       component: 'Input',
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.productCommandRequest.productCommandRequest.parameterDescription'),
-      field: 'parameterDescription',
-      component: 'Input',
-      colProps: { span: 6 },
+      colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 5, xxl: 5 },
     },
     {
       label: t('iot.link.productCommandRequest.productCommandRequest.datatype'),
       field: 'datatype',
       component: 'Input',
-      colProps: { span: 6 },
+      colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 5, xxl: 5 },
       componentProps: {
         ...dictComponentProps(DictEnum.LINK_PRODUCT_SERVICE_COMMAND_DATA_TYPE),
       },
+    },
+    {
+      field: 'createTimeRange',
+      label: t('common.createdTime'),
+      component: 'RangePicker',
+      colProps: { xs: 24, sm: 24, md: 16, lg: 12, xl: 5, xxl: 5 },
+      componentProps: {
+        style: { width: '100%' },
+      },
+    },
+    {
+      label: t('iot.link.productCommandRequest.productCommandRequest.parameterDescription'),
+      field: 'parameterDescription',
+      component: 'Input',
+      colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 5, xxl: 5 },
     },
     {
       label: t('iot.link.productCommandRequest.productCommandRequest.enumlist'),
@@ -170,12 +182,6 @@ export const searchFormSchema = (): FormSchema[] => {
       label: t('iot.link.productCommandRequest.productCommandRequest.remark'),
       field: 'remark',
       component: 'InputTextArea',
-      colProps: { span: 6 },
-    },
-    {
-      field: 'createTimeRange',
-      label: t('common.createdTime'),
-      component: 'RangePicker',
       colProps: { span: 6 },
     },
   ];
@@ -268,8 +274,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       label: t('iot.link.productCommandRequest.productCommandRequest.maxlength'),
       field: 'maxlength',
       component: 'InputNumber',
-      ifShow: ({ values }) =>
-        ['string', 'DateTime', 'jsonObject'].includes(values.datatype),
+      ifShow: ({ values }) => ['string', 'DateTime', 'jsonObject'].includes(values.datatype),
       helpMessage: t('iot.link.productProperty.productProperty.help.string', { max: TD_NCHAR_MAX }),
       dynamicRules: ({ values }) => {
         if (!['string', 'DateTime', 'jsonObject'].includes(values?.datatype)) return [];
