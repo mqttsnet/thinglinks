@@ -44,7 +44,7 @@ import org.pf4j.Extension;
  * <h3>4.0 升级备注</h3>
  * <ul>
  *   <li>升级时 import 包名 {@code com.baidu.bifromq} → {@code org.apache.bifromq} 全局替换</li>
- *   <li>{@link #TOPIC_MAP} 加 {@code EventType.SERVER_REDIRECTED} → {@code mqtt.server.disconnect.topic}</li>
+ *   <li>{@link #TOPIC_MAP} 中 {@code EventType.SERVER_REDIRECTED} 对应 {@code <前缀>.server.disconnect.topic}</li>
  *   <li>{@link EventProcessorFactory} 注册 {@code ServerRedirectedEventProcessor}(新建)</li>
  * </ul>
  *
@@ -57,13 +57,19 @@ import org.pf4j.Extension;
 public final class BifromqEventCollectorPluginEventProvider implements IEventCollector {
 
     /**
+     * Kafka Topic 公共前缀，与 ThingLinks Cloud/MQS 使用相同的跨服务协议值。
+     * 该值属于运行时通信协议，不属于产品发行元数据。
+     */
+    private static final String KAFKA_TOPIC_PREFIX = "mqtt";
+
+    /**
      * Kafka topic 路由表 ── EventType → topic.
      *
      * <h4>分组策略</h4>
      * <ul>
-     *   <li>{@code BY_CLIENT}(客户端主动断)→ {@code mqtt.client.disconnect.topic}</li>
-     *   <li>{@code KICKED}(同 clientId 抢占)→ {@code mqtt.device.kicked.topic}</li>
-     *   <li>其余 18 个被动 disconnect(含 {@code IDLE} KeepAlive 超时)→ 统一进 {@code mqtt.server.disconnect.topic},
+     *   <li>{@code BY_CLIENT}(客户端主动断)→ {@code <前缀>.client.disconnect.topic}</li>
+     *   <li>{@code KICKED}(同 clientId 抢占)→ {@code <前缀>.device.kicked.topic}</li>
+     *   <li>其余 18 个被动 disconnect(含 {@code IDLE} KeepAlive 超时)→ 统一进 {@code <前缀>.server.disconnect.topic},
      *       下游 mqs 按 actionType=CLOSE 统一写 OFFLINE,reasonCode/特异字段从 message body 取</li>
      * </ul>
      */
@@ -71,49 +77,53 @@ public final class BifromqEventCollectorPluginEventProvider implements IEventCol
 
     static {
         // ── client connected ──
-        TOPIC_MAP.put(EventType.CLIENT_CONNECTED, "mqtt.client.connected.topic");
+        TOPIC_MAP.put(EventType.CLIENT_CONNECTED, topic("client.connected.topic"));
 
         // ── disconnect:语义分流到 3 个 topic ──
-        TOPIC_MAP.put(EventType.BY_CLIENT, "mqtt.client.disconnect.topic");
-        TOPIC_MAP.put(EventType.KICKED, "mqtt.device.kicked.topic");
+        TOPIC_MAP.put(EventType.BY_CLIENT, topic("client.disconnect.topic"));
+        TOPIC_MAP.put(EventType.KICKED, topic("device.kicked.topic"));
         // 18 个被动断都归一到 server.disconnect topic ── 下游 mqs 写 OFFLINE 不需要区分子类型
-        TOPIC_MAP.put(EventType.BY_SERVER, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.IDLE, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.BAD_PACKET, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.CLIENT_CHANNEL_ERROR, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.EXCEED_PUB_RATE, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.EXCEED_RECEIVING_LIMIT, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.INBOX_TRANSIENT_ERROR, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.INVALID_TOPIC, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.INVALID_TOPIC_FILTER, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.MALFORMED_TOPIC, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.MALFORMED_TOPIC_FILTER, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.NO_PUB_PERMISSION, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.PROTOCOL_VIOLATION, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.RE_AUTH_FAILED, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.RESOURCE_THROTTLED, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.SERVER_BUSY, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.TOO_LARGE_SUBSCRIPTION, "mqtt.server.disconnect.topic");
-        TOPIC_MAP.put(EventType.TOO_LARGE_UNSUBSCRIPTION, "mqtt.server.disconnect.topic");
-        // TODO 4.0 升级时补:TOPIC_MAP.put(EventType.SERVER_REDIRECTED, "mqtt.server.disconnect.topic");
+        TOPIC_MAP.put(EventType.BY_SERVER, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.IDLE, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.BAD_PACKET, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.CLIENT_CHANNEL_ERROR, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.EXCEED_PUB_RATE, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.EXCEED_RECEIVING_LIMIT, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.INBOX_TRANSIENT_ERROR, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.INVALID_TOPIC, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.INVALID_TOPIC_FILTER, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.MALFORMED_TOPIC, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.MALFORMED_TOPIC_FILTER, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.NO_PUB_PERMISSION, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.PROTOCOL_VIOLATION, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.RE_AUTH_FAILED, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.RESOURCE_THROTTLED, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.SERVER_BUSY, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.TOO_LARGE_SUBSCRIPTION, topic("server.disconnect.topic"));
+        TOPIC_MAP.put(EventType.TOO_LARGE_UNSUBSCRIPTION, topic("server.disconnect.topic"));
+        // BifroMQ 4.0 的 SERVER_REDIRECTED 事件对应 server.disconnect topic。
 
         // ── pub/sub handling ──
-        TOPIC_MAP.put(EventType.SUB_ACKED, "mqtt.subscription.acked.topic");
-        TOPIC_MAP.put(EventType.UNSUB_ACKED, "mqtt.unsubscription.acked.topic");
+        TOPIC_MAP.put(EventType.SUB_ACKED, topic("subscription.acked.topic"));
+        TOPIC_MAP.put(EventType.UNSUB_ACKED, topic("unsubscription.acked.topic"));
         // DISTED 承载设备 PUBLISH 上行的完整报文(topic/qos/payload/publisher) ──
         // BifroMQ Standalone 无 mqtt-to-kafka connector,这是设备上行唯一可用来源;
         // mqs MqttDeviceDataEdgeAdapter 把本 topic 路由到 DEVICE_DATA group → DevicePayloadDecodeStage → DeviceDatasHandler 走主流程(物模型 + TDS 入库).
         // 上下行都触发:下行命令(backend publisher)在 mqs DeviceCacheEnricher cache miss 后自然 skip,无需额外过滤.
-        TOPIC_MAP.put(EventType.DISTED, "mqtt.distribution.completed.topic");
+        TOPIC_MAP.put(EventType.DISTED, topic("distribution.completed.topic"));
         // DIST_ERROR 是 broker dispatch 失败,businessSystemEventType="DISPATCH_ERROR" 协议层真相命名;
         // mqs MqttDistributionEdgeAdapter → DISTRIBUTION_ACK group → DistributionResultStage 记失败 stats.
-        TOPIC_MAP.put(EventType.DIST_ERROR, "mqtt.distribution.error.topic");
-        TOPIC_MAP.put(EventType.PING_REQ, "mqtt.ping.req.topic");
+        TOPIC_MAP.put(EventType.DIST_ERROR, topic("distribution.error.topic"));
+        TOPIC_MAP.put(EventType.PING_REQ, topic("ping.req.topic"));
 
         // ── audit 类(mqs `bus/inbound/kafka/audit/` 下 3 个独立 consumer 已就绪,仅 log 消费,不入业务流程)──
-        TOPIC_MAP.put(EventType.NOT_AUTHORIZED_CLIENT, "mqtt.client.unauthorized");
-        TOPIC_MAP.put(EventType.MQTT_SESSION_START, "mqtt.session.start");
-        TOPIC_MAP.put(EventType.MQTT_SESSION_STOP, "mqtt.session.stop");
+        TOPIC_MAP.put(EventType.NOT_AUTHORIZED_CLIENT, topic("client.unauthorized"));
+        TOPIC_MAP.put(EventType.MQTT_SESSION_START, topic("session.start"));
+        TOPIC_MAP.put(EventType.MQTT_SESSION_STOP, topic("session.stop"));
+    }
+
+    private static String topic(String suffix) {
+        return KAFKA_TOPIC_PREFIX + "." + suffix;
     }
 
     private final KafkaMessageSender sender;
