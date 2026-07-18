@@ -3,6 +3,7 @@ logs
 #*.gitignore
 rebel.xml
 target/
+.pnpm-store/
 !.mvn/wrapper/maven-wrapper.jar
 log.path_IS_UNDEFINED
 .DS_Store
@@ -34,6 +35,8 @@ nbproject/private/
 # build/
 nbbuild/
 dist/
+!thinglinks-job/thinglinks-job-admin/src/main/resources/static/adminlte/dist/
+!thinglinks-job/thinglinks-job-admin/src/main/resources/static/adminlte/dist/**
 nbdist/
 .nb-gradle/
 generatorConfig.xml
