@@ -34,6 +34,7 @@ db/
 
 | Date | Script | Database | Change Description | Author |
 |------|--------|----------|--------------------|--------|
+| 2026-07-18 | V1.4.0__rename_web_oauth_client.sql | thinglinks_base | Align the Web OAuth client identifier with the product manifest | mqttsnet |
 | 2026-03-23 | thinglinks_job.sql | thinglinks_job | Job scheduler initial schema | mqttsnet |
 
 ### Supported Databases / 支持的数据库
