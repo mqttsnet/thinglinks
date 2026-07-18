@@ -96,6 +96,7 @@ export default {
   metric: {
     success: 'Success',
     failed: 'Failed',
+    partial: 'Partial',
     deadLetter: 'Dead Letter',
     avgLatency: 'Avg Latency',
   },

@@ -69,11 +69,13 @@ export default {
     success: '成功',
     failed: '失敗',
     skipped: 'スキップ',
-    noSteps: 'この trace には実行ステップが記録されていません（ルール未命中またはメインパイプライン異常）',
+    noSteps:
+      'この trace には実行ステップが記録されていません（ルール未命中またはメインパイプライン異常）',
     locate: 'クイック検索',
     fitAll: '全体表示',
     actualSize: '実寸表示',
-    dragHint: 'キャンバスをドラッグしてリンク全体を確認できます。マウスホイール・2 本指スクロールにも対応しています。',
+    dragHint:
+      'キャンバスをドラッグしてリンク全体を確認できます。マウスホイール・2 本指スクロールにも対応しています。',
     descIngest: 'デバイスデータ受信、フィールド数：{count}',
     descRuleMatch: 'マッチ条件命中 ({hit}/{total})',
     descSinkSend: '{total} 件コマンド送信、成功 {success}、失敗 {failed}',
@@ -95,6 +97,7 @@ export default {
   metric: {
     success: '成功',
     failed: '失敗',
+    partial: '一部成功',
     deadLetter: 'デッドレター',
     avgLatency: '平均所要時間',
   },
@@ -103,11 +106,13 @@ export default {
     timeline: '実行トレンド（時間別）',
     topRules: 'トリガー量 Top 8 ルール',
     empty: 'データなし',
-    scopeHint: '本統計はテナント全体の過去 24 時間のデータです。現在のリストのフィルタ条件とは独立しています',
+    scopeHint:
+      '本統計はテナント全体の過去 24 時間のデータです。現在のリストのフィルタ条件とは独立しています',
   },
   tips: {
     replayOnlyDeadLetter: 'デッドレター状態(03)のtraceのみ再生可能',
-    confirmReplay: 'このデッドレターを再生しますか？元の envelope から SinkDispatcher を再実行します',
+    confirmReplay:
+      'このデッドレターを再生しますか？元の envelope から SinkDispatcher を再実行します',
     replaySuccess: '再生タスク登録、新トレースID：',
     replayFailed: '再生失敗',
     exportEmpty: 'エクスポート対象データがありません',

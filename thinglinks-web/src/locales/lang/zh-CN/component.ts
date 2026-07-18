@@ -43,6 +43,7 @@ export default {
     trendStatOut: '越界',
     trendSampled: '已降采样',
     trendSampledTip: '原始点数较多,图表按桶取峰谷压缩,趋势形态保留;统计值仍按全部原始数据计算',
+    trendExport: '导出',
     trendExportTip: '导出趋势数据',
     trendExportPng: '导出 PNG 图片',
     trendExportCsv: '导出 CSV 数据',

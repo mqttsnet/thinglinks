@@ -21,8 +21,21 @@ export default {
   port: 'Port',
   token: 'Token',
   secret: 'Secret',
+  remindMode: 'Notice Level',
+  target: 'Open With',
+  autoRead: 'Auto Read',
+  defaultUrl: 'Default URL',
+  recipientList: 'Employee Recipients',
+  recipientListRequired: 'Please select employee recipients',
+  channelTypeOption: {
+    dingTalk: 'DingTalk',
+    enterpriseWechat: 'WeCom',
+    feishu: 'Feishu',
+    siteMessage: 'In-App Notice',
+  },
   placeholder: {
     sendPeople: 'Used for displaying "Sender" information when sending emails',
     userName: 'The account for sending emails',
+    recipientList: 'Select employees. Multiple selections are supported',
   },
 };

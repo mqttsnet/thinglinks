@@ -44,6 +44,7 @@ export default {
     trendSampled: 'ダウンサンプル済',
     trendSampledTip:
       '元の点数が多いためチャートはバケット圧縮(ピーク・谷保持)。統計値は全原データに基づく',
+    trendExport: 'エクスポート',
     trendExportTip: 'トレンドデータをエクスポート',
     trendExportPng: 'PNG 画像をエクスポート',
     trendExportCsv: 'CSV データをエクスポート',

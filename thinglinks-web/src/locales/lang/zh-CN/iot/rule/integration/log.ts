@@ -100,6 +100,7 @@ export default {
   metric: {
     success: '成功',
     failed: '失败',
+    partial: '部分成功',
     deadLetter: '死信',
     avgLatency: '平均耗时',
   },

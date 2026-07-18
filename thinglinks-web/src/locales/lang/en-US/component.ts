@@ -44,6 +44,7 @@ export default {
     trendSampled: 'downsampled',
     trendSampledTip:
       'Too many raw points — chart shows bucketed min/max to keep the shape; stats are still computed from all raw data',
+    trendExport: 'Export',
     trendExportTip: 'Export trend data',
     trendExportPng: 'Export as PNG',
     trendExportCsv: 'Export as CSV',
