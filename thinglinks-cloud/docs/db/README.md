@@ -12,8 +12,7 @@ This directory contains database initialization scripts, migration files, and re
 db/
 ├── README.md                    # This file / 本文件
 ├── mysql/
-│   └── job/
-│       └── thinglinks_job.sql   # Job scheduler database init script
+│   └── cloud/                   # Cloud initialization and migration scripts
 ├── 数据库使用说明.md              # Database usage guide
 ├── 数据库设计规范.md              # Database design standards
 └── 达梦适配.md                   # DM (Dameng) database adaptation guide
@@ -35,7 +34,6 @@ db/
 | Date | Script | Database | Change Description | Author |
 |------|--------|----------|--------------------|--------|
 | 2026-07-18 | V1.4.0__rename_web_oauth_client.sql | thinglinks_base | Align the Web OAuth client identifier with the product manifest | mqttsnet |
-| 2026-03-23 | thinglinks_job.sql | thinglinks_job | Job scheduler initial schema | mqttsnet |
 
 ### Supported Databases / 支持的数据库
 
@@ -50,3 +48,4 @@ db/
 - [Database Usage Guide / 数据库使用说明](数据库使用说明.md)
 - [Database Design Standards / 数据库设计规范](数据库设计规范.md)
 - [DM Database Adaptation / 达梦适配](达梦适配.md)
+- [Job Scheduler Initialization / Job 调度数据库初始化](../../../thinglinks-job/docs/db/mysql/thinglinks_job.sql)
