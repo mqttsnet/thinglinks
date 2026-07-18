@@ -25,15 +25,24 @@
                 :deviceName="deviceDetail.deviceName || '未知设备'"
               />
               <!-- 连接状态 chip -->
-              <a-tag :color="getConnectStatusColor(deviceDetail?.connectStatus)" v-if="deviceDetail?.connectStatus != null">
+              <a-tag
+                :color="getConnectStatusColor(deviceDetail?.connectStatus)"
+                v-if="deviceDetail?.connectStatus != null"
+              >
                 {{ getDictLabel('LINK_DEVICE_CONNECT_STATUS', deviceDetail.connectStatus, '-') }}
               </a-tag>
               <!-- 节点类型 chip -->
-              <a-tag :color="getNodeTypeColor(deviceDetail?.nodeType)" v-if="deviceDetail?.nodeType != null">
+              <a-tag
+                :color="getNodeTypeColor(deviceDetail?.nodeType)"
+                v-if="deviceDetail?.nodeType != null"
+              >
                 {{ getDictLabel('LINK_DEVICE_NODE_TYPE', deviceDetail.nodeType, '-') }}
               </a-tag>
               <!-- 设备启用状态 chip -->
-              <a-tag :color="deviceDetail?.deviceStatus === 1 ? 'success' : 'default'" v-if="deviceDetail?.deviceStatus != null">
+              <a-tag
+                :color="deviceDetail?.deviceStatus === 1 ? 'success' : 'default'"
+                v-if="deviceDetail?.deviceStatus != null"
+              >
                 {{ getDictLabel('LINK_DEVICE_STATUS', deviceDetail.deviceStatus, '-') }}
               </a-tag>
             </div>
@@ -56,11 +65,15 @@
               </span>
               <!-- 子设备:展示所属网关 -->
               <a-divider
-                v-if="deviceDetail?.nodeType === DeviceNodeType.SUB_DEVICE && deviceDetail?.gatewayId"
+                v-if="
+                  deviceDetail?.nodeType === DeviceNodeType.SUB_DEVICE && deviceDetail?.gatewayId
+                "
                 type="vertical"
               />
               <span
-                v-if="deviceDetail?.nodeType === DeviceNodeType.SUB_DEVICE && deviceDetail?.gatewayId"
+                v-if="
+                  deviceDetail?.nodeType === DeviceNodeType.SUB_DEVICE && deviceDetail?.gatewayId
+                "
                 class="gateway-info"
               >
                 <BranchesOutlined />
@@ -71,7 +84,9 @@
                 </template>
                 <template v-else>
                   <span class="gateway-id" ref="textToCopy">{{ deviceDetail.gatewayId }}</span>
-                  <span class="gateway-deleted">({{ t('iot.link.device.device.gatewayDeleted') }})</span>
+                  <span class="gateway-deleted"
+                    >({{ t('iot.link.device.device.gatewayDeleted') }})</span
+                  >
                 </template>
                 <a-tooltip placement="top" :title="t('common.title.copy')">
                   <span class="copy_btn" @click="handleCopyText">
@@ -118,7 +133,10 @@
       <!-- 1. 连接状态(必看) + 最后心跳时间(辅助判断"是不是真在线") -->
       <a-col :xs="24" :sm="12" :lg="6">
         <a-card :bordered="false" class="metric-card">
-          <div class="metric-icon connect" :class="{ on: deviceDetail?.connectStatus === DeviceConnectStatus.ONLINE }">
+          <div
+            class="metric-icon connect"
+            :class="{ on: deviceDetail?.connectStatus === DeviceConnectStatus.ONLINE }"
+          >
             <ApiOutlined />
           </div>
           <div class="metric-body">
@@ -218,7 +236,11 @@
     </a-row>
 
     <!-- ===== Tabs 主体(Flexy panel-card) ===== -->
-    <a-card v-if="deviceDetail?.deviceIdentification && cardTabList.length" :bordered="false" class="panel-card">
+    <a-card
+      v-if="deviceDetail?.deviceIdentification && cardTabList.length"
+      :bordered="false"
+      class="panel-card"
+    >
       <a-tabs default-active-key="0" v-model:activeKey="currentKey" size="small">
         <a-tab-pane v-for="item in cardTabList" :tab="item.name" :key="item.key" />
       </a-tabs>
@@ -310,10 +332,7 @@
   import ImageDisplay from '/@/components/ImageDisplay/index.ts';
   const { getDictLabel } = useDict();
   import { ActionEnum } from '/@/enums/commonEnum';
-  import {
-    DeviceConnectStatus,
-    DeviceNodeType,
-  } from '/@/enums/link/device';
+  import { DeviceConnectStatus, DeviceNodeType } from '/@/enums/link/device';
   import type { DevicePageQuery } from '/@/api/iot/link/device/model/deviceModel';
   import SvgIcon from '/@/components/Icon/src/SvgIcon.vue';
   import renderQrcode from '../qrcode/index.vue';
@@ -381,9 +400,7 @@
       const runningRef = ref(null);
       watch(currentKey, (val) => {
         if (val !== '4') {
-          if (runningRef.value?.wsInstance) {
-            runningRef.value.wsInstance.close();
-          }
+          runningRef.value?.closeShadowSocket?.();
         }
       });
 
@@ -518,8 +535,8 @@
             name: t('iot.link.device.device.tabs[6]'),
             key: '6',
             isShowAuth:
-              isPermission(['link:device:device:detail:subdevice'])
-              && deviceDetail.nodeType === DeviceNodeType.GATEWAY,
+              isPermission(['link:device:device:detail:subdevice']) &&
+              deviceDetail.nodeType === DeviceNodeType.GATEWAY,
           },
           {
             name: t('iot.link.device.device.tabs[7]'),
@@ -654,11 +671,13 @@
       .label {
         color: #97a1b0;
       }
+
       .value {
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         color: #2a3547;
         font-weight: 500;
       }
+
       :deep(.anticon) {
         color: #5d87ff;
       }
@@ -670,19 +689,23 @@
         font-weight: 500;
         margin-left: 4px;
       }
+
       .gateway-id {
         color: #8c97a5;
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         margin-left: 2px;
       }
+
       .gateway-deleted {
         color: #d03b5b;
         font-weight: 500;
       }
+
       .copy_btn {
         cursor: pointer;
         color: #5d87ff;
         margin-left: 4px;
+
         &:hover {
           color: #2952cc;
         }
@@ -728,19 +751,23 @@
     &.connect {
       background: linear-gradient(135deg, #9b75e6 0%, #b095f0 100%);
       box-shadow: 0 6px 14px rgba(155, 117, 230, 0.35);
+
       &.on {
         background: linear-gradient(135deg, #13deb9 0%, #36e6c3 100%);
         box-shadow: 0 6px 14px rgba(19, 222, 185, 0.35);
       }
     }
+
     &.node {
       background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
       box-shadow: 0 6px 14px rgba(93, 135, 255, 0.35);
     }
+
     &.product {
       background: linear-gradient(135deg, #ffae1f 0%, #ffc94a 100%);
       box-shadow: 0 6px 14px rgba(255, 174, 31, 0.35);
     }
+
     &.version {
       background: linear-gradient(135deg, #fa896b 0%, #ff6a4a 100%);
     }
@@ -780,6 +807,7 @@
       color: #5d87ff;
       cursor: pointer;
       transition: color 0.18s ease;
+
       &:hover {
         color: #2952cc;
         text-decoration: underline;
@@ -803,6 +831,7 @@
       color: #97a1b0;
       flex-shrink: 0;
     }
+
     .sub-val {
       color: #2a3547;
       font-weight: 600;
@@ -874,6 +903,7 @@
 
     :deep(.ant-tabs-nav) {
       margin: 0 0 0 0;
+
       &::before {
         border-bottom: 1px solid #f0f2f5;
       }

@@ -45,7 +45,7 @@
             class="version-select"
             :modelValue="selectedVersionNo"
             :productIdentification="productResultVO?.productIdentification"
-            @update:modelValue="onVersionChange"
+            @update:model-value="onVersionChange"
           />
         </a-tooltip>
         <a-button type="primary" ghost @click="refresh">
@@ -390,7 +390,29 @@
         });
       };
 
-      const wsInstance = ref<any>(null);
+      const wsInstance = ref<ReturnType<typeof useWebSocket> | null>(null);
+      let socketGeneration = 0;
+
+      const closeShadowSocket = () => {
+        socketGeneration += 1;
+        socketIsSuccess.value = false;
+
+        const socket = wsInstance.value;
+        wsInstance.value = null;
+        const nativeSocket = socket?.ws?.value;
+        if (!socket || !nativeSocket) return;
+
+        if (nativeSocket.readyState === WebSocket.CONNECTING) {
+          nativeSocket.addEventListener('open', () => socket.close(1000, 'leave-shadow-tab'), {
+            once: true,
+          });
+          return;
+        }
+
+        if (nativeSocket.readyState === WebSocket.OPEN) {
+          socket.close(1000, 'leave-shadow-tab');
+        }
+      };
 
       /**
        * 首次进入 / 切版本时调用 ── 建立 ws 长连。
@@ -398,14 +420,17 @@
        * 业务数据由切服务 / refresh / load 主动 send 触发。
        */
       const handleInitWs = () => {
-        if (wsInstance.value?.close) {
-          wsInstance.value.close();
-        }
-        wsInstance.value = useWebSocket(wsState.server, {
+        closeShadowSocket();
+        const generation = ++socketGeneration;
+        let reconnectCount = 0;
+        let socket: ReturnType<typeof useWebSocket>;
+        socket = useWebSocket(wsState.server, {
+          autoClose: false,
           autoReconnect: {
-            retries: 3,
+            retries: () => generation === socketGeneration && reconnectCount++ < 3,
             delay: 10000,
             onFailed() {
+              if (generation !== socketGeneration) return;
               socketIsSuccess.value = false;
               console.warn('[device-shadow] WebSocket reconnect failed after 3 retries');
             },
@@ -414,10 +439,27 @@
             message: 'ping',
             interval: 5000,
           },
+          onConnected(ws) {
+            if (generation !== socketGeneration) {
+              socket.close(1000, 'stale-shadow-tab');
+              return;
+            }
+            socketIsSuccess.value = true;
+            ws.send(buildWsMessage());
+          },
+          onDisconnected() {
+            if (generation === socketGeneration) {
+              socketIsSuccess.value = false;
+            }
+          },
+          onError() {
+            if (generation === socketGeneration) {
+              socketIsSuccess.value = false;
+            }
+          },
           onMessage,
         });
-        // 首次连接立即 send 一次业务消息触发当前服务的影子数据下行
-        wsInstance.value.send(buildWsMessage());
+        wsInstance.value = socket;
       };
 
       /**
@@ -429,7 +471,7 @@
       const SHADOW_REFRESH_INTERVAL_MS = 5000;
       useIntervalFn(() => {
         if (socketIsSuccess.value && state.serviceCode && wsInstance.value?.send) {
-          wsInstance.value.send(buildWsMessage());
+          wsInstance.value.send(buildWsMessage(), false);
         }
       }, SHADOW_REFRESH_INTERVAL_MS);
 
@@ -454,7 +496,7 @@
         state.serviceCode = state.services[index]?.serviceCode || '';
         state.properties = [];
         if (wsInstance.value?.send) {
-          wsInstance.value.send(buildWsMessage());
+          wsInstance.value.send(buildWsMessage(), false);
         }
         load();
       };
@@ -569,11 +611,7 @@
         },
       );
 
-      onUnmounted(() => {
-        if (wsInstance.value?.close) {
-          wsInstance.value.close();
-        }
-      });
+      onUnmounted(closeShadowSocket);
 
       /**
        * 给 detail 抽屉等子组件共享 WS 流 ── 实现实时滚动趋势:
@@ -607,11 +645,26 @@
         formatValue,
         runningDetailRegister,
         wsInstance,
+        closeShadowSocket,
       };
     },
   });
 </script>
 <style lang="less" scoped>
+  @keyframes live-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(19, 222, 185, 0.55);
+    }
+
+    70% {
+      box-shadow: 0 0 0 8px rgba(19, 222, 185, 0);
+    }
+
+    100% {
+      box-shadow: 0 0 0 0 rgba(19, 222, 185, 0);
+    }
+  }
+
   /* Flexy 风格 ── 配合 detail.vue 的 panel-card 内嵌使用 */
   .shadow-wrap {
     display: flex;
@@ -681,18 +734,6 @@
         box-shadow: 0 0 0 0 rgba(19, 222, 185, 0.6);
         animation: live-pulse 1.6s infinite;
       }
-    }
-  }
-
-  @keyframes live-pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(19, 222, 185, 0.55);
-    }
-    70% {
-      box-shadow: 0 0 0 8px rgba(19, 222, 185, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(19, 222, 185, 0);
     }
   }
 
@@ -848,6 +889,7 @@
       .line .name {
         color: #1a4ce0;
       }
+
       .line .arrow {
         color: #5d87ff;
         transform: translateX(2px);
@@ -1010,6 +1052,7 @@
       font-weight: 500;
       margin-top: 8px;
     }
+
     .empty-hint {
       font-size: 12px;
       color: #97a1b0;
