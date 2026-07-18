@@ -721,7 +721,7 @@
      - a-row 默认 stretch col,但 ant-card 自身不撑满 col 高度 → 显式 height:100%
      - .ant-card-body 也要 100%,否则卡片高但 body 不高
      - 旧版 .sub-val 用 word-break:break-all,长 connector 文本如
-       "broker.thinglinks.mqttsnet.com:11883" 会竖向堆叠撑高第 1 张卡,
+       "broker.example.com:11883" 会竖向堆叠撑高第 1 张卡,
        造成 4 张大小不一 ── 改 nowrap + ellipsis + tooltip 兜底 */
   .metric-card {
     height: 100%;

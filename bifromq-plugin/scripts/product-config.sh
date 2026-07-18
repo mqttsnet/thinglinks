@@ -790,7 +790,7 @@ main() {
       run_locked set_java_version "$2"
       ;;
     *)
-      fail "未知命令：$command；可用命令：check、render、set-version、set-bifromq-version、set-util-version、set-java-version"
+      fail "未知命令：${command}；可用命令：check、render、set-version、set-bifromq-version、set-util-version、set-java-version"
       ;;
   esac
 }

@@ -785,7 +785,7 @@ main() {
       run_locked set_version_field THINGLINKS_JAVA_VERSION 'Java 编译版本' "$2"
       ;;
     *)
-      fail "未知命令：$command；可用命令：check、render、get-version、get-util-version、get-java-version、set-version、set-util-version、set-java-version"
+      fail "未知命令：${command}；可用命令：check、render、get-version、get-util-version、get-java-version、set-version、set-util-version、set-java-version"
       ;;
   esac
 }
