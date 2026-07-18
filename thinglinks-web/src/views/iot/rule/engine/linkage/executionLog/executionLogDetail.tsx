@@ -2,41 +2,101 @@ import { BasicColumn, FormSchema } from '/@/components/Table';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
 import { DictEnum } from '/@/enums/commonEnum';
 import { useI18n } from '/@/hooks/web/useI18n';
+import { useDict } from '/@/components/Dict';
+import { Tag } from 'ant-design-vue';
 const { t } = useI18n();
+const { getDictLabel } = useDict();
+
+function formatDuration(record: Recordable) {
+  const extendLatency = parseExtendLatency(record?.extendParams);
+  if (extendLatency != null) {
+    return formatLatency(extendLatency);
+  }
+  if (record?.totalLatencyMs != null) {
+    return formatLatency(record.totalLatencyMs);
+  }
+  const start = Date.parse(record?.startTime || '');
+  const end = Date.parse(record?.endTime || '');
+  const diff = end - start;
+  return Number.isFinite(diff) && diff >= 0 ? formatLatency(diff) : '-';
+}
+
+function parseExtendLatency(extendParams?: string) {
+  if (!extendParams) return undefined;
+  try {
+    const parsed = JSON.parse(extendParams);
+    const latency = Number(parsed?.latencyMs);
+    return Number.isFinite(latency) && latency >= 0 ? latency : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function formatLatency(value?: number | string) {
+  const next = Number(value);
+  if (!Number.isFinite(next) || next < 0) return '-';
+  return next === 0 ? '< 1 ms' : `${next} ms`;
+}
+
+function getStatusColor(status) {
+  const value = Number(status);
+  if (value === 2) return 'success';
+  if (value === 1) return 'warning';
+  return 'error';
+}
 
 export function columns(): BasicColumn[] {
   return [
     {
       dataIndex: 'id',
       title: t('iot.link.engine.executionLog.id'),
+      width: 180,
     },
     {
       dataIndex: 'ruleName',
       title: t('iot.link.engine.executionLog.ruleName'),
+      width: 180,
+      ellipsis: true,
+    },
+    {
+      dataIndex: 'ruleIdentification',
+      title: t('iot.link.engine.executionLog.ruleIdentification'),
+      width: 180,
+      ellipsis: true,
     },
     {
       dataIndex: 'status',
       title: t('iot.link.engine.executionLog.status'),
-      slots: { customRender: 'status' },
+      width: 100,
+      customRender: ({ record }) => {
+        return (
+          <Tag color={getStatusColor(record.status)}>
+            {getDictLabel('RULE_EXECUTION_LOG_STATUS', record.status, '-')}
+          </Tag>
+        );
+      },
+    },
+    {
+      dataIndex: 'duration',
+      title: t('iot.link.engine.executionLog.duration'),
+      width: 110,
+      customRender: ({ record }) => formatDuration(record),
     },
     {
       dataIndex: 'startTime',
       title: t('iot.link.engine.executionLog.startTime'),
+      width: 180,
     },
     {
       dataIndex: 'endTime',
       title: t('iot.link.engine.executionLog.endTime'),
+      width: 180,
     },
     {
       dataIndex: 'remark',
       title: t('iot.link.engine.executionLog.remark'),
-      // slots: { customRender: 'remark' },
-      width: 200,
-    },
-    {
-      dataIndex: 'extendParams',
-      title: t('iot.link.engine.executionLog.extendParams'),
-      // slots: { customRender: 'extendParams' },
+      width: 220,
+      ellipsis: true,
     },
   ];
 }
@@ -58,87 +118,15 @@ export function searchFormSchema(): FormSchema[] {
       colProps: { span: 6 },
     },
     {
-      field: 'createTimeRange',
-      label: t('thinglinks.common.createdTime'),
+      field: 'startTimeRange',
+      label: t('iot.link.engine.executionLog.startTime'),
       component: 'RangePicker',
-      colProps: { span: 6 },
-    },
-  ];
-}
-export function conditionColumns(): BasicColumn[] {
-  return [
-    {
-      dataIndex: 'conditionUuid',
-      title: t('iot.link.engine.executionLog.condition.conditionUuid'),
-    },
-    {
-      dataIndex: 'conditionType',
-      title: t('iot.link.engine.executionLog.condition.conditionType'),
-      slots: { customRender: 'conditionType' },
-    },
-    {
-      dataIndex: 'evaluationResult',
-      title: t('iot.link.engine.executionLog.condition.evaluationResult'),
-      slots: { customRender: 'evaluationResult' },
-    },
-    {
-      dataIndex: 'startTime',
-      title: t('iot.link.engine.executionLog.condition.startTime'),
-    },
-    {
-      dataIndex: 'endTime',
-      title: t('iot.link.engine.executionLog.condition.endTime'),
-    },
-    {
-      dataIndex: 'remark',
-      title: t('iot.link.engine.executionLog.remark'),
-      slots: { customRender: 'remark' },
-    },
-    {
-      dataIndex: 'extendParams',
-      title: t('iot.link.engine.executionLog.extendParams'),
-      slots: { customRender: 'extendParams' },
-    },
-  ];
-}
-export function actionColumns(): BasicColumn[] {
-  return [
-    {
-      dataIndex: 'ruleExecutionId',
-      title: t('iot.link.engine.executionLog.action.ruleExecutionId'),
-    },
-    {
-      dataIndex: 'actionType',
-      title: t('iot.link.engine.executionLog.action.actionType'),
-      slots: { customRender: 'actionType' },
-    },
-    {
-      dataIndex: 'actionContent',
-      title: t('iot.link.engine.executionLog.action.actionContent'),
-      slots: { customRender: 'actionContent' },
-    },
-    {
-      dataIndex: 'result',
-      title: t('iot.link.engine.executionLog.action.result'),
-      slots: { customRender: 'result' },
-    },
-    {
-      dataIndex: 'startTime',
-      title: t('iot.link.engine.executionLog.action.startTime'),
-    },
-    {
-      dataIndex: 'endTime',
-      title: t('iot.link.engine.executionLog.action.endTime'),
-    },
-    {
-      dataIndex: 'remark',
-      title: t('iot.link.engine.executionLog.remark'),
-      slots: { customRender: 'remark' },
-    },
-    {
-      dataIndex: 'extendParams',
-      title: t('iot.link.engine.executionLog.extendParams'),
-      slots: { customRender: 'extendParams' },
+      componentProps: {
+        showTime: true,
+        format: 'YYYY-MM-DD HH:mm:ss',
+        valueFormat: 'YYYY-MM-DD HH:mm:ss',
+      },
+      colProps: { span: 8 },
     },
   ];
 }

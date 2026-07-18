@@ -1,4 +1,8 @@
-import { ExecutionLogPageQuery } from './model/executionLogModel';
+import {
+  ExecutionLogPageQuery,
+  GetRuleExecutionLogDetails,
+  RuleExecutionLogStatsResult,
+} from './model/executionLogModel';
 import { PageParams, PageResult } from '/@/api/model/baseModel';
 import { defHttp } from '/@/utils/http/axios';
 import { RequestEnum } from '/@/enums/httpEnum';
@@ -20,6 +24,16 @@ export const Api = {
       method: RequestEnum.GET,
     } as AxiosRequestConfig;
   },
+
+  Stats: {
+    url: `${ServicePrefix}/${MODULAR}/stats`,
+    method: RequestEnum.POST,
+  } as AxiosRequestConfig,
+
+  Clear: {
+    url: `${ServicePrefix}/${MODULAR}/clear`,
+    method: RequestEnum.POST,
+  } as AxiosRequestConfig,
 };
 
 export const page = (params: PageParams<ExecutionLogPageQuery>) =>
@@ -27,3 +41,12 @@ export const page = (params: PageParams<ExecutionLogPageQuery>) =>
 
 export const getRuleExecutionLogDetails = (id: string) =>
   defHttp.request<GetRuleExecutionLogDetails>({ ...Api.GetRuleExecutionLogDetails(id) });
+
+export const stats = (params: PageParams<ExecutionLogPageQuery>) =>
+  defHttp.request<RuleExecutionLogStatsResult>(
+    { ...Api.Stats, params },
+    { errorMessageMode: 'none' },
+  );
+
+export const clearLogs = (params: PageParams<ExecutionLogPageQuery>) =>
+  defHttp.request<number>({ ...Api.Clear, params });

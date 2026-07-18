@@ -85,7 +85,11 @@
   import { useECharts } from '/@/hooks/web/useECharts';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { dateUtil } from '/@/utils/dateUtil';
-  import { page as pageTrace } from '/@/api/iot/rule/integration/bridgeExecutionTrace';
+  import { stats as statsTrace } from '/@/api/iot/rule/integration/bridgeExecutionTrace';
+  import type {
+    BridgeExecutionTraceStatsResultVO,
+    BridgeExecutionTraceStatsTimelinePoint,
+  } from '/@/api/iot/rule/integration/model/bridgeExecutionTraceModel';
 
   defineOptions({ name: 'BridgeLogStatisticsModal' });
 
@@ -100,6 +104,15 @@
   const pieData = ref<{ name: string; value: number; itemStyle: { color: string } }[]>([]);
   const topRules = ref<{ ruleId: string; count: number }[]>([]);
 
+  type MetricKey = 'success' | 'failed' | 'partial' | 'deadLetter';
+
+  const metricConfig: Array<{ key: MetricKey; fallback: string; color: string }> = [
+    { key: 'success', fallback: '成功', color: '#13deb9' },
+    { key: 'failed', fallback: '失败', color: '#fa4b4b' },
+    { key: 'partial', fallback: '部分成功', color: '#ffae1f' },
+    { key: 'deadLetter', fallback: '死信', color: '#f74ba1' },
+  ];
+
   const [registerModal] = useModalInner(async () => {
     // 弹窗打开时拉数据
     await reload();
@@ -108,59 +121,46 @@
   async function reload() {
     loading.value = true;
     try {
-      const since = dateUtil()
-        .subtract(hoursRange.value, 'hour')
-        .format('YYYY-MM-DD HH:mm:ss');
-      const res: any = await pageTrace({
-        size: 1000,
+      const until = dateUtil().format('YYYY-MM-DD HH:mm:ss');
+      const since = dateUtil().subtract(hoursRange.value, 'hour').format('YYYY-MM-DD HH:mm:ss');
+      const res = await statsTrace({
+        size: 1,
         current: 1,
-        model: { startTimeBegin: since },
+        model: { startTimeBegin: since, startTimeEnd: until },
       } as any);
-      const records: any[] = res?.records ?? [];
-      computePie(records);
-      computeTopRules(records);
+      applyStats(res || {});
       await nextTick();
       drawPie();
-      drawLine(records);
+      drawLine(res?.timeline || []);
     } finally {
       loading.value = false;
     }
   }
 
-  function computePie(records: any[]) {
-    const success = records.filter((r) => r.status === '00').length;
-    const failed = records.filter((r) => r.status === '01').length;
-    const dlq = records.filter((r) => r.status === '03').length;
-    pieData.value = [
-      {
-        name: t('iot.rule.integration.log.metric.success'),
-        value: success,
-        itemStyle: { color: '#13deb9' },
-      },
-      {
-        name: t('iot.rule.integration.log.metric.failed'),
-        value: failed,
-        itemStyle: { color: '#fa4b4b' },
-      },
-      {
-        name: t('iot.rule.integration.log.metric.deadLetter'),
-        value: dlq,
-        itemStyle: { color: '#f74ba1' },
-      },
-    ];
+  function metricName(key: MetricKey, fallback: string) {
+    const i18nKey = `iot.rule.integration.log.metric.${key}`;
+    const label = t(i18nKey);
+    return label === i18nKey ? fallback : label;
   }
 
-  function computeTopRules(records: any[]) {
-    const map: Record<string, number> = {};
-    records.forEach((r) => {
-      const key = r.echoMap?.bridgeRuleId ?? r.bridgeRuleId ?? '-';
-      if (!key || key === '-') return;
-      map[key] = (map[key] ?? 0) + 1;
-    });
-    topRules.value = Object.entries(map)
-      .map(([ruleId, count]) => ({ ruleId, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 8);
+  function metricAreaColor(key: MetricKey) {
+    if (key === 'success') return 'rgba(19, 222, 185, 0.18)';
+    if (key === 'failed') return 'rgba(250, 75, 75, 0.18)';
+    return undefined;
+  }
+
+  function applyStats(result: BridgeExecutionTraceStatsResultVO) {
+    pieData.value = metricConfig.map((item) => ({
+      name: metricName(item.key, item.fallback),
+      value: Number(result[item.key] || 0),
+      itemStyle: { color: item.color },
+    }));
+    topRules.value = (result.topRules || [])
+      .filter((item) => item.bridgeRuleId !== undefined && item.bridgeRuleId !== null)
+      .map((item) => ({
+        ruleId: String(item.bridgeRuleId),
+        count: Number(item.count || 0),
+      }));
   }
 
   function drawPie() {
@@ -180,7 +180,8 @@
           },
           label: {
             show: true,
-            formatter: '{b}\n{d}%',
+            formatter: (params: any) =>
+              Number(params.value) > 0 ? `${params.name}\n${params.percent}%` : '',
             color: '#2a3547',
             fontSize: 12,
           },
@@ -190,31 +191,19 @@
     });
   }
 
-  function drawLine(records: any[]) {
-    const slot: Record<string, any> = {};
-    const now = dateUtil().startOf('hour');
-    for (let i = hoursRange.value - 1; i >= 0; i--) {
-      const h = now.subtract(i, 'hour').format('MM-DD HH:00');
-      slot[h] = { hour: h, ok: 0, fail: 0, dlq: 0 };
-    }
-    records.forEach((r) => {
-      if (!r.startTime) return;
-      const key = dateUtil(r.startTime).format('MM-DD HH:00');
-      if (!slot[key]) return;
-      if (r.status === '00') slot[key].ok += 1;
-      else if (r.status === '01') slot[key].fail += 1;
-      else if (r.status === '03') slot[key].dlq += 1;
-    });
-    const buckets = Object.values(slot);
-    const xAxis = buckets.map((b: any) => b.hour);
+  function drawLine(timeline: BridgeExecutionTraceStatsTimelinePoint[]) {
+    const buckets = timeline.length
+      ? timeline
+      : [{ timeLabel: '-', success: 0, failed: 0, partial: 0, deadLetter: 0 }];
+    const xAxis = buckets.map((b) => b.timeLabel || '-');
+    const metrics = metricConfig.map((item) => ({
+      ...item,
+      name: metricName(item.key, item.fallback),
+    }));
     setLineOptions({
       tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
       legend: {
-        data: [
-          t('iot.rule.integration.log.metric.success'),
-          t('iot.rule.integration.log.metric.failed'),
-          t('iot.rule.integration.log.metric.deadLetter'),
-        ],
+        data: metrics.map((item) => item.name),
         top: 0,
         textStyle: { color: '#6b7280', fontSize: 12 },
       },
@@ -227,40 +216,20 @@
       },
       yAxis: {
         type: 'value',
+        minInterval: 1,
         axisLabel: { color: '#6b7280', fontSize: 11 },
         splitLine: { lineStyle: { color: '#f0f2f5' } },
       },
-      series: [
-        {
-          name: t('iot.rule.integration.log.metric.success'),
-          type: 'line',
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 6,
-          data: buckets.map((b: any) => b.ok),
-          itemStyle: { color: '#13deb9' },
-          areaStyle: { color: 'rgba(19, 222, 185, 0.18)' },
-        },
-        {
-          name: t('iot.rule.integration.log.metric.failed'),
-          type: 'line',
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 6,
-          data: buckets.map((b: any) => b.fail),
-          itemStyle: { color: '#fa4b4b' },
-          areaStyle: { color: 'rgba(250, 75, 75, 0.18)' },
-        },
-        {
-          name: t('iot.rule.integration.log.metric.deadLetter'),
-          type: 'line',
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 6,
-          data: buckets.map((b: any) => b.dlq),
-          itemStyle: { color: '#f74ba1' },
-        },
-      ],
+      series: metrics.map((item) => ({
+        name: item.name,
+        type: 'line',
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 6,
+        data: buckets.map((b) => Number(b[item.key] || 0)),
+        itemStyle: { color: item.color },
+        areaStyle: metricAreaColor(item.key) ? { color: metricAreaColor(item.key) } : undefined,
+      })),
     });
   }
 </script>

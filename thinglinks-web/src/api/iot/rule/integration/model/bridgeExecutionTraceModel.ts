@@ -8,13 +8,13 @@ export interface BridgeExecutionTracePageQuery {
   traceId?: string;
   bridgeRuleId?: string;
   direction?: string;
-  triggerSource?: string;        // DEVICE_DATA / SUBSCRIPTION / TEST_SINK / REPLAY
+  triggerSource?: string; // DEVICE_DATA / SUBSCRIPTION / TEST_SINK / REPLAY
   tenantId?: string;
   productIdentification?: string;
   deviceIdentification?: string;
-  actionType?: string;           // PUBLISH / CONNECT / CLOSE / ...
-  status?: string;               // 00-成功 / 01-失败 / 02-部分成功 / 03-死信
-  startTimeBegin?: string;       // 时间区间起
+  actionType?: string; // PUBLISH / CONNECT / CLOSE / ...
+  status?: string; // 00-成功 / 01-失败 / 02-部分成功 / 03-死信
+  startTimeBegin?: string; // 时间区间起
   startTimeEnd?: string;
 }
 
@@ -23,15 +23,15 @@ export interface BridgeExecutionStepResultVO {
   id?: string;
   traceId?: string;
   stepNo?: number;
-  stepType?: string;             // INGEST / RULE_MATCH / RATE_LIMIT / TRANSFORM / SINK_SEND / DEAD_LETTER / INBOUND_FORWARD
-  stepName?: string;             // 步骤可读名称（中文）
-  status?: string;               // 00-成功 / 01-失败 / 02-跳过
+  stepType?: string; // INGEST / RULE_MATCH / RATE_LIMIT / TRANSFORM / SINK_SEND / DEAD_LETTER / INBOUND_FORWARD
+  stepName?: string; // 步骤可读名称（中文）
+  status?: string; // 00-成功 / 01-失败 / 02-跳过
   latencyMs?: number;
-  inputSummary?: string;         // 输入摘要 JSON
-  outputSummary?: string;        // 输出摘要 JSON
+  inputSummary?: string; // 输入摘要 JSON
+  outputSummary?: string; // 输出摘要 JSON
   errorMsg?: string;
-  startedAt?: string;            // 步骤开始时间（毫秒精度）
-  extendParams?: string;         // 步骤特异协议数据 JSON
+  startedAt?: string; // 步骤开始时间（毫秒精度）
+  extendParams?: string; // 步骤特异协议数据 JSON
   remark?: string;
 }
 
@@ -61,6 +61,34 @@ export interface BridgeExecutionTraceResultVO {
   remark?: string;
   /** 详情接口附带 steps 子集合（按 step_no 升序） */
   steps?: BridgeExecutionStepResultVO[];
+}
+
+export interface BridgeExecutionTraceStatsTimelinePoint {
+  timeLabel?: string;
+  success?: number;
+  failed?: number;
+  partial?: number;
+  deadLetter?: number;
+  avgLatencyMs?: number;
+}
+
+export interface BridgeExecutionTraceStatsTopRule {
+  bridgeRuleId?: string | number;
+  count?: number;
+  success?: number;
+  failed?: number;
+  deadLetter?: number;
+}
+
+export interface BridgeExecutionTraceStatsResultVO {
+  total?: number;
+  success?: number;
+  failed?: number;
+  partial?: number;
+  deadLetter?: number;
+  avgLatencyMs?: number;
+  timeline?: BridgeExecutionTraceStatsTimelinePoint[];
+  topRules?: BridgeExecutionTraceStatsTopRule[];
 }
 
 export interface BridgeExecutionStepPageQuery {
