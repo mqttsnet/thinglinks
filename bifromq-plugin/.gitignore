@@ -1,0 +1,67 @@
+# Maven 与 Java 构建产物
+target/
+!.mvn/wrapper/maven-wrapper.jar
+out/
+*.class
+**/.flattened-pom*.xml
+dependency-reduced-pom.xml
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+buildNumber.properties
+.mvn/timing.properties
+
+# 运行日志与诊断文件
+logs/
+*.log
+*.log.gz
+log.path_IS_UNDEFINED
+*.hprof
+*.jfr
+hs_err_pid*
+replay_pid*
+
+# 本地环境配置
+.env
+.env.local
+.env.*.local
+
+# Eclipse 与 Spring Tool Suite
+.apt_generated/
+.apt_generated_tests/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Visual Studio Code
+.vscode/
+
+# NetBeans 私有配置
+**/nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# 编辑器临时文件
+*.sw?
+*~
+.#*
+*#
+
+# 操作系统生成文件
+.DS_Store
+Thumbs.db
+
+# 本地 AI 工具状态
+.claude/
