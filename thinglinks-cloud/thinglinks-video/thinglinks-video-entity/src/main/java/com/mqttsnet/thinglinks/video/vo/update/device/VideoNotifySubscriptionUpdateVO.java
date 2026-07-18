@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.video.vo.update.device;
 import com.mqttsnet.basic.base.entity.SuperEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,7 +45,9 @@ public class VideoNotifySubscriptionUpdateVO implements Serializable {
     @Schema(description = "渠道类型")
     private String channelType;
 
-    @Schema(description = "渠道凭证(JSON)")
+    @Schema(description = "渠道凭证(JSON，仅写入；不传或空白时保留原值)", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @Size(max = 16384, message = "渠道凭证长度不能超过{max}")
+    @ToString.Exclude
     private String channelConfig;
 
     @Schema(description = "消息模板编码")

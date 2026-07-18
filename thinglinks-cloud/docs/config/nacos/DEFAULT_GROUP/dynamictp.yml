@@ -3,7 +3,7 @@ dynamictp:
   enabled: true                               # 是否启用 dynamictp，默认true
   enabledCollect: true                        # 是否开启监控指标采集，默认true
   collectorTypes: micrometer          # 监控数据采集器类型（logging | micrometer | internal_logging | JMX），默认micrometer
-  #logPath: /Users/xiaonannet/Documents/data/logs/dynamictp/user-center/  # 监控日志数据路径，默认 ${user.home}/logs，采集类型非logging不用配置
+  # logPath: ${user.home}/logs/dynamictp/  # 监控日志数据路径，采集类型非 logging 时使用
   monitorInterval: 30                          # 监控时间间隔（报警检测、指标采集），默认5s
 
   # 告警渠道

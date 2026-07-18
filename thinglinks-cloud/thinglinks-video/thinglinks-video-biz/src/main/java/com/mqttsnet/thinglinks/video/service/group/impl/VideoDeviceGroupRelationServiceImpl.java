@@ -1,12 +1,14 @@
 package com.mqttsnet.thinglinks.video.service.group.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
-import cn.hutool.core.bean.BeanUtil;
 import com.mqttsnet.thinglinks.video.entity.group.VideoDeviceGroupRelation;
 import com.mqttsnet.thinglinks.video.manager.group.VideoDeviceGroupRelationManager;
 import com.mqttsnet.thinglinks.video.service.group.VideoDeviceGroupRelationService;
+import com.mqttsnet.thinglinks.video.service.support.VideoIdentityNormalizer;
 import com.mqttsnet.thinglinks.video.vo.result.group.VideoDeviceGroupRelationResultVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,16 @@ import java.util.List;
 public class VideoDeviceGroupRelationServiceImpl extends SuperServiceImpl<VideoDeviceGroupRelationManager, Long, VideoDeviceGroupRelation> implements VideoDeviceGroupRelationService {
 
     @Override
+    protected <SaveVO> VideoDeviceGroupRelation saveBefore(SaveVO saveVO) {
+        return normalizeIdentity(super.saveBefore(saveVO));
+    }
+
+    @Override
+    protected <UpdateVO> VideoDeviceGroupRelation updateBefore(UpdateVO updateVO) {
+        return normalizeIdentity(super.updateBefore(updateVO));
+    }
+
+    @Override
     public List<VideoDeviceGroupRelation> listByGroupId(Long groupId) {
         return superManager.listByGroupId(groupId);
     }
@@ -42,12 +54,13 @@ public class VideoDeviceGroupRelationServiceImpl extends SuperServiceImpl<VideoD
     public void bindDevice(Long groupId, String deviceIdentification, String channelIdentification) {
         VideoDeviceGroupRelation relation = VideoDeviceGroupRelation.builder()
                 .groupId(groupId)
-                .deviceIdentification(deviceIdentification)
-                .channelIdentification(channelIdentification)
+                .deviceIdentification(StrUtil.trim(deviceIdentification))
+                .channelIdentification(VideoIdentityNormalizer.trimAsciiSpaceToNull(channelIdentification))
                 .sortOrder(0)
                 .build();
         superManager.save(relation);
-        log.info("绑定设备到分组: groupId={}, device={}, channel={}", groupId, deviceIdentification, channelIdentification);
+        log.info("绑定设备到分组: groupId={}, device={}, channel={}", groupId,
+                relation.getDeviceIdentification(), relation.getChannelIdentification());
     }
 
     @Override
@@ -70,5 +83,12 @@ public class VideoDeviceGroupRelationServiceImpl extends SuperServiceImpl<VideoD
     @Override
     public List<VideoDeviceGroupRelationResultVO> listResultVOByDeviceIdentification(String deviceIdentification) {
         return BeanUtil.copyToList(listByDeviceIdentification(deviceIdentification), VideoDeviceGroupRelationResultVO.class);
+    }
+
+    private VideoDeviceGroupRelation normalizeIdentity(VideoDeviceGroupRelation relation) {
+        relation.setDeviceIdentification(StrUtil.trim(relation.getDeviceIdentification()));
+        relation.setChannelIdentification(
+                VideoIdentityNormalizer.trimAsciiSpaceToNull(relation.getChannelIdentification()));
+        return relation;
     }
 }

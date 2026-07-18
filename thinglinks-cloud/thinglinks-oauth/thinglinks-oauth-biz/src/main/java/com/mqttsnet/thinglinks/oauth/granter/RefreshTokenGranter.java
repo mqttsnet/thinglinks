@@ -25,7 +25,6 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.thinglinks.oauth.vo.result.LoginResultVO;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +42,6 @@ import static com.mqttsnet.basic.context.ContextConstants.TENANT_ID_KEY;
  * @date 2020年03月31日10:23:53
  */
 @Component
-@Slf4j
 public class RefreshTokenGranter {
 
     @Autowired
@@ -56,7 +54,6 @@ public class RefreshTokenGranter {
         // sa-token parseToken 返 Object,实际是 createToken 时传入的 JSON 字符串 ── String.valueOf 兜底防 NPE
         JSONObject obj = JSON.parseObject(String.valueOf(str));
         Long userId = obj.getLong(JWT_KEY_USER_ID);
-        log.info("token={},obj={}", refreshToken, obj);
         if (userId == null) {
             // 刷新token过期，重新登录
             throw new BizException("回话过期，请重新登陆");

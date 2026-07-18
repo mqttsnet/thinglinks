@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.video.service.device.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
@@ -25,6 +26,18 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class VideoNotifySubscriptionServiceImpl extends SuperServiceImpl<VideoNotifySubscriptionManager, Long, VideoNotifySubscription> implements VideoNotifySubscriptionService {
+
+    /**
+     * 更新接口不携带渠道凭证或只携带空白字符时，保留原凭证。
+     */
+    @Override
+    protected <UpdateVO> VideoNotifySubscription updateBefore(UpdateVO updateVO) {
+        VideoNotifySubscription entity = super.updateBefore(updateVO);
+        if (StrUtil.isBlank(entity.getChannelConfig())) {
+            entity.setChannelConfig(null);
+        }
+        return entity;
+    }
 
     @Override
     public List<VideoNotifySubscription> findMatchingByEventType(String eventType) {

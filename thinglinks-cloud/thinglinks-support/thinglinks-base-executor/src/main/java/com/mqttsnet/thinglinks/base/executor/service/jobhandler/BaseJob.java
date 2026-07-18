@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * @program: thinglinks-job-pro
+ * @program: thinglinks-base-executor
  * @description: Base Job
  * @packagename: com.xxl.job.executor.service.jobhandler
  * @author: ShiHuan Sun

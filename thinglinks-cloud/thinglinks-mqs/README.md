@@ -330,7 +330,7 @@ public class VendorReportHandlerExample implements TopicHandler {
 
 | 改 mqs 哪里 | 同步改 |
 |---|---|
-| `DeviceActionTypeEnum` 增删改 | ① bifromq-plugin-pro `EventTypeEnum`(如来自 plugin)② DBA 字典 SQL ③ rule 规则 JSON ④ 本 README 第 7 节 |
+| `DeviceActionTypeEnum` 增删改 | ① bifromq-plugin `EventTypeEnum`(如来自 plugin)② DBA 字典 SQL ③ rule 规则 JSON ④ 本 README 第 7 节 |
 | Kafka topic 新增 | EdgeAdapter `@TopicRoute` + `KafkaInboundConsumer` + 本 README 第 4 节 |
 | `BridgeMessageEnvelope` 字段 | `BridgeRelayStage.toEnvelope` + rule 端解析 + 本 README 第 6 节 |
 | HLC 流程 | 本 README 第 5 节 + link `DeviceServiceImpl#updateDeviceConnectionStatusByEvent` |

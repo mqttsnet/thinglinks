@@ -24,7 +24,7 @@ import java.util.Optional;
  * </ol>
  *
  * <p><b>设计原则</b>:与 BifroMQ 认证插件 ACL 鉴权使用同一份 {@link MqttTopicMatcher} +
- * {@link TopicPlaceholders}(util-pro 下沉),前后端语义 1:1 对齐,避免重复实现。
+ * {@link TopicPlaceholders}(ThingLinks Util 下沉),前后端语义 1:1 对齐,避免重复实现。
  *
  * @author mqttsnet
  * @since 2026-05-09

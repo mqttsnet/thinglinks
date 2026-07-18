@@ -67,7 +67,9 @@ public class FileAnyoneController {
 //        if (ContextUtil.isEmptyTenantId()) {
 //            return R.validFail(BASE_VALID_PARAM.build("请携带租户信息"));
 //        }
-        return R.success(fileService.upload(file, fileUploadVO));
+        FileUploadVO anonymousUpload = new FileUploadVO();
+        anonymousUpload.setBizType(fileUploadVO.getBizType());
+        return R.success(fileService.upload(file, anonymousUpload));
     }
 
     /**

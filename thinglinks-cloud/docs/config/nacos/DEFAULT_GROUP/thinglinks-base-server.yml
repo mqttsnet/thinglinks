@@ -5,44 +5,45 @@ thinglinks:
     # initDatabasePrefix:
     #   - thinglinks_local_ds_c_base
   file:
-    storageType: ALI_OSS  #  FAST_DFS LOCAL MIN_IO ALI_OSS HUAWEI_OSS QINIU_OSS
+    storageType: ${THINGLINKS_FILE_STORAGE_TYPE:LOCAL}  # FAST_DFS LOCAL MIN_IO ALI_OSS HUAWEI_OSS QINIU_OSS
     delFile: false
+    # 单个上传文件的容量上限
+    maxUploadSize: ${THINGLINKS_FILE_MAX_UPLOAD_SIZE:64MB}
     suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,gzip,tar,gz,xz,xls,xlsx,txt,file,bin,dav,pack,deb,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db,jar,cer
     publicBucket:
       - public
     local:
-      storagePath: /Users/mqttsnet/data/projects/uploadfile/file/     # 文件存储路径  （ 某些版本的 window 需要改成  D:\\data\\projects\\uploadfile\\file\\  ）
-      urlPrefix: http://127.0.0.1/file/   # 文件访问 （部署nginx后，配置nginx的ip，并配置nginx静态代理storage-path地址的静态资源）
-      innerUrlPrefix: null  #  内网的url前缀
+      storagePath: ${THINGLINKS_FILE_LOCAL_STORAGE_PATH:./data/files/}
+      urlPrefix: ${THINGLINKS_FILE_LOCAL_URL_PREFIX:http://127.0.0.1:18764/file/}
+      innerUrlPrefix: ${THINGLINKS_FILE_LOCAL_INNER_URL_PREFIX:}
     fastDfs:
-      urlPrefix: https://fastdfs.mqttsnet.com/
+      urlPrefix: ${THINGLINKS_FASTDFS_URL_PREFIX:http://127.0.0.1:10000/}
     ali:
-      # 请填写自己的阿里云存储配置
-      urlPrefix: "https://thinglinks.oss-cn-beijing.aliyuncs.com"
-      bucket: "thinglinks"
-      endpoint: "https://oss-cn-beijing.aliyuncs.com"
+      urlPrefix: ${ALI_OSS_URL_PREFIX:}
+      bucket: ${ALI_OSS_BUCKET:}
+      endpoint: ${ALI_OSS_ENDPOINT:}
       accessKeyId: ${ALI_OSS_ACCESS_KEY_ID:}
       accessKeySecret: ${ALI_OSS_ACCESS_KEY_SECRET:}
     minIo:
-      endpoint: "https://minio.mqttsnet.com"
+      endpoint: ${MINIO_ENDPOINT:http://127.0.0.1:9000}
       accessKey: ${MINIO_ACCESS_KEY:}
       secretKey: ${MINIO_SECRET_KEY:}
-      bucket: "thinglinks"
+      bucket: ${MINIO_BUCKET:thinglinks}
     huawei:
-      urlPrefix: "https://huawei.mqttsnet.com/"
-      endpoint: "obs.cn-southwest-2.myhuaweicloud.com"
+      urlPrefix: ${HUAWEI_OSS_URL_PREFIX:}
+      endpoint: ${HUAWEI_OSS_ENDPOINT:}
       accessKey: ${HUAWEI_ACCESS_KEY:}
       secretKey: ${HUAWEI_SECRET_KEY:}
-      location: "cn-southwest-2"
-      bucket: "pjcp-public"
+      location: ${HUAWEI_OSS_LOCATION:}
+      bucket: ${HUAWEI_OSS_BUCKET:}
 
     qiNiu:
-      domain: qiniu.mqttsnet.com
-      useHttps: true
-      zone: "z0"
+      domain: ${QINIU_DOMAIN:}
+      useHttps: ${QINIU_USE_HTTPS:true}
+      zone: ${QINIU_ZONE:z0}
       accessKey: ${QINIU_ACCESS_KEY:}
       secretKey: ${QINIU_SECRET_KEY:}
-      bucket: "mqttsnet_admin_cloud"
+      bucket: ${QINIU_BUCKET:}
 
 #FAST_DFS配置
 fdfs:
@@ -63,6 +64,14 @@ fdfs:
 
 server:
   port: 18764
+
+spring:
+  servlet:
+    multipart:
+      # Base 服务单个上传文件的解析上限
+      max-file-size: ${THINGLINKS_FILE_MAX_UPLOAD_SIZE:64MB}
+      # Base 服务单次上传请求的解析上限
+      max-request-size: ${THINGLINKS_FILE_MAX_UPLOAD_SIZE:64MB}
 
 springdoc:
   group-configs:

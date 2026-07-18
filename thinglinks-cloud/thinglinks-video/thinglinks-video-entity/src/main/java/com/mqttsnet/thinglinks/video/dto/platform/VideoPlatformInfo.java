@@ -44,9 +44,6 @@ public class VideoPlatformInfo {
     @Schema(description = "SIP认证用户名(默认使用设备国标编号)")
     private String username;
 
-    @Schema(description = "SIP认证密码")
-    private String password;
-
     @Schema(description = "注册周期 (秒)")
     private int expires;
 

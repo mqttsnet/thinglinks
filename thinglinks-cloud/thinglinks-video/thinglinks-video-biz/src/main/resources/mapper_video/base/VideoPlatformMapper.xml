@@ -19,7 +19,8 @@
         <result column="device_ip" property="deviceIp"/>
         <result column="device_port" property="devicePort"/>
         <result column="username" property="username"/>
-        <result column="password" property="password"/>
+        <result column="password" property="password"
+                typeHandler="com.mqttsnet.basic.mybatis.typehandler.EncryptTypeHandler"/>
         <result column="expires" property="expires"/>
         <result column="keep_timeout" property="keepTimeout"/>
         <result column="transport" property="transport"/>

@@ -17,8 +17,8 @@ package com.mqttsnet.thinglinks.dto.bridge.protocol;
  *   <li>协议级校验由 Sink.testConnection 负责；DTO 层只描述形状</li>
  * </ul>
  *
- * <h3>与 util-pro Sink 内部 POJO 的关系</h3>
- * <p>util-pro 的每个 {@code Sink} 实现自带内部 POJO 用于 JSON 解析（Sink 封装细节，业务层不关心）。
+ * <h3>与 ThingLinks Util Sink 内部 POJO 的关系</h3>
+ * <p>ThingLinks Util 的每个 {@code Sink} 实现自带内部 POJO 用于 JSON 解析（Sink 封装细节，业务层不关心）。
  * 本 entity DTO 是 <b>service / 前端表单 / 校验</b> 共享的<b>canonical 类型</b>，与 Sink 内部 POJO
  * 字段名严格对齐（相当于"同一份契约的两个副本"）。修改字段必须前后端一起改。
  *

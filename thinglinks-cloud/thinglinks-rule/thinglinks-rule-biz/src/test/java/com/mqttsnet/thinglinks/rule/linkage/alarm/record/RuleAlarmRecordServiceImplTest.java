@@ -1,5 +1,8 @@
 package com.mqttsnet.thinglinks.rule.linkage.alarm.record;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.mqttsnet.thinglinks.common.constant.BizConstant;
 import com.mqttsnet.thinglinks.dto.alarm.RuleAlarmActionConfigDTO;
 import com.mqttsnet.thinglinks.dto.alarm.RuleAlarmChannelTemplateDTO;
@@ -36,6 +39,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
@@ -81,6 +85,30 @@ class RuleAlarmRecordServiceImplTest {
         ReflectionTestUtils.setField(service, "ruleNotificationTemplateService", ruleNotificationTemplateService);
         ReflectionTestUtils.setField(service, "msgApi", msgApi);
         ReflectionTestUtils.setField(service, "superManager", ruleAlarmRecordManager);
+    }
+
+    @Test
+    @DisplayName("渠道配置解析失败时日志不记录原始配置")
+    void invalidChannelConfigShouldNotBeWrittenToLog() {
+        Logger serviceLogger = (Logger) LoggerFactory.getLogger(RuleAlarmRecordServiceImpl.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        serviceLogger.addAppender(appender);
+
+        try {
+            List<?> result = ReflectionTestUtils.invokeMethod(service, "parseChannelConfig",
+                    "{\"token\":\"record-sensitive-token\"", AlarmChannelTypeEnum.DING_TALK);
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+        } finally {
+            serviceLogger.detachAppender(appender);
+            appender.stop();
+        }
+
+        String loggedMessages = appender.list.stream()
+                .map(ILoggingEvent::getFormattedMessage)
+                .reduce("", (left, right) -> left + right);
+        assertFalse(loggedMessages.contains("record-sensitive-token"));
     }
 
     @Test

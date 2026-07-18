@@ -63,7 +63,7 @@ public interface BridgeExecutionTraceManager extends SuperManager<BridgeExecutio
     BridgeExecutionTrace getByTraceId(String traceId);
 
     /**
-     * 按 (traceId, ruleId) 精确查询 ── trace 表 uk_trace_rule 联合唯一保证唯一性。
+     * 按 (traceId, ruleId) 精确查询；trace 表通过 uk_trace_rule_key 归一可空规则 ID 后保证唯一性。
      */
     BridgeExecutionTrace getByTraceIdAndRuleId(String traceId, Long ruleId);
 }

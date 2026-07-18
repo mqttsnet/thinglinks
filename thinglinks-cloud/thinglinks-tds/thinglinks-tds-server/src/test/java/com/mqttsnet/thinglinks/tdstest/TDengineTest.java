@@ -91,7 +91,6 @@ public class TDengineTest {
     @Test
     public void setMqTemplateProducer() {
         String str = "{ \"operationType\": \"ADD\", \"productType\": \"COMMON\", \"productIdentification\": \"b6d1914cfe824acf974fb24a242a05bc\", \"serviceCode\": \"xxxxx\" }";
-//    mqTemplateProducer.sendMessage(ConsumerTopicConstant.THINGLINKS_PRO_PRODUCT_SERVICE_MSG,str);
     }
 
 }

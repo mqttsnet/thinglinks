@@ -77,18 +77,20 @@ public class ChinaMobileCardStrategy extends AbstractCard {
         String transid = generateTransid(channelInfo, startTs);
         try {
             String res = fetchTokenResponse(channelInfo, transid);
-            log.info("移动官方onelink直连 获取token结果: {}", res);
             ApiResponse response = JSONObject.parseObject(res, ApiResponse.class);
             if (Objects.isNull(response)) {
+                log.warn("移动官方 Onelink 直连获取令牌时返回空响应");
                 return null;
             }
+            log.debug("移动官方 Onelink 直连令牌请求完成，status={}", response.getStatus());
             // 判断是否成功
             if (HttpStatus.ONE_LINK_STATUS.equals(response.getStatus())) {
                 // 获取token成功
                 return processSuccessfulResponse(response, transid, channelInfo, iotToken);
             }
         } catch (Exception e) {
-            log.error("移动官方onelink直连 获取token异常: {}", e.getMessage(), e);
+            log.error("移动官方 Onelink 直连获取令牌失败，exceptionType={}",
+                    e.getClass().getSimpleName());
         }
         return null;
     }

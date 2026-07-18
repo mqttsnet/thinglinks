@@ -3,10 +3,12 @@ package com.mqttsnet.thinglinks.video.vo.save.device;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -36,7 +38,9 @@ public class VideoNotifySubscriptionSaveVO implements Serializable {
     @Schema(description = "渠道类型: NOTICE/DINGTALK/FEISHU/ENTERPRISE_WECHAT/SMS")
     private String channelType;
 
-    @Schema(description = "渠道凭证(JSON)")
+    @Schema(description = "渠道凭证(JSON，仅写入)", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @Size(max = 16384, message = "渠道凭证长度不能超过{max}")
+    @ToString.Exclude
     private String channelConfig;
 
     @NotBlank(message = "消息模板编码不能为空")

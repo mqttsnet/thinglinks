@@ -12,6 +12,7 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 
@@ -41,39 +42,52 @@ public class MqttCertGenerator {
     private static final String SERVER_DN = "CN=SERVER,O=mqttsnet,OU=www.mqttsnet.com,C=CN,ST=BJ,L=BJ";
     private static final String CLIENT_DN = "CN=CLIENT,O=mqttsnet,OU=www.mqttsnet.com,C=CN,ST=BJ,L=BJ";
 
-    private static final String P12_PASSWORD = "password";
+    /** PKCS12 客户端证书口令的环境变量名称。 */
+    private static final String P12_PASSWORD_ENV = "THINGLINKS_MQTT_P12_PASSWORD";
 
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
     public static void main(String[] args) throws Exception {
-        String outputDir = "./ssl";
-        createDirectories(outputDir);
+        char[] p12Password = requirePkcs12Password(System.getenv(P12_PASSWORD_ENV));
+        try {
+            String outputDir = "./ssl";
+            createDirectories(outputDir);
 
-        // Generate CA
-        KeyPair caKeyPair = generateKeyPair();
-        X509Certificate caCert = generateCACert(caKeyPair);
-        savePEM(outputDir + "/ca/ca.key", caKeyPair.getPrivate().getEncoded(), "PRIVATE KEY");
-        savePEM(outputDir + "/ca/ca.cer", caCert.getEncoded(), "CERTIFICATE");
+            // Generate CA
+            KeyPair caKeyPair = generateKeyPair();
+            X509Certificate caCert = generateCACert(caKeyPair);
+            savePEM(outputDir + "/ca/ca.key", caKeyPair.getPrivate().getEncoded(), "PRIVATE KEY");
+            savePEM(outputDir + "/ca/ca.cer", caCert.getEncoded(), "CERTIFICATE");
 
-        // Generate Server
-        KeyPair serverKeyPair = generateKeyPair();
-        X509Certificate serverCert = generateCert(serverKeyPair.getPublic(), caKeyPair, SERVER_DN);
-        savePEM(outputDir + "/server/server.key", serverKeyPair.getPrivate().getEncoded(), "PRIVATE KEY");
-        savePEM(outputDir + "/server/server.cer", serverCert.getEncoded(), "CERTIFICATE");
-        convertToPKCS8(outputDir + "/server/server.key", outputDir + "/server/server_pkcs8.key");
+            // Generate Server
+            KeyPair serverKeyPair = generateKeyPair();
+            X509Certificate serverCert = generateCert(serverKeyPair.getPublic(), caKeyPair, SERVER_DN);
+            savePEM(outputDir + "/server/server.key", serverKeyPair.getPrivate().getEncoded(), "PRIVATE KEY");
+            savePEM(outputDir + "/server/server.cer", serverCert.getEncoded(), "CERTIFICATE");
+            convertToPKCS8(outputDir + "/server/server.key", outputDir + "/server/server_pkcs8.key");
 
-        // Generate Client
-        KeyPair clientKeyPair = generateKeyPair();
-        X509Certificate clientCert = generateCert(clientKeyPair.getPublic(), caKeyPair, CLIENT_DN);
-        savePEM(outputDir + "/client/client.key", clientKeyPair.getPrivate().getEncoded(), "PRIVATE KEY");
-        savePEM(outputDir + "/client/client.cer", clientCert.getEncoded(), "CERTIFICATE");
-        convertToPKCS8(outputDir + "/client/client.key", outputDir + "/client/client_pkcs8.key");
-        createPKCS12(clientCert, clientKeyPair.getPrivate(), caCert,
-                outputDir + "/client/client.p12", P12_PASSWORD);
+            // Generate Client
+            KeyPair clientKeyPair = generateKeyPair();
+            X509Certificate clientCert = generateCert(clientKeyPair.getPublic(), caKeyPair, CLIENT_DN);
+            savePEM(outputDir + "/client/client.key", clientKeyPair.getPrivate().getEncoded(), "PRIVATE KEY");
+            savePEM(outputDir + "/client/client.cer", clientCert.getEncoded(), "CERTIFICATE");
+            convertToPKCS8(outputDir + "/client/client.key", outputDir + "/client/client_pkcs8.key");
+            createPKCS12(clientCert, clientKeyPair.getPrivate(), caCert,
+                    outputDir + "/client/client.p12", p12Password);
 
-        System.out.println("All certificates generated successfully in: " + outputDir);
+            System.out.println("All certificates generated successfully in: " + outputDir);
+        } finally {
+            Arrays.fill(p12Password, '\0');
+        }
+    }
+
+    static char[] requirePkcs12Password(String password) {
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("PKCS12 证书口令未配置，请设置环境变量 " + P12_PASSWORD_ENV);
+        }
+        return password.toCharArray();
     }
 
     private static void createDirectories(String baseDir) throws Exception {
@@ -146,7 +160,7 @@ public class MqttCertGenerator {
 
     private static void createPKCS12(X509Certificate cert, PrivateKey privateKey,
                                      X509Certificate caCert, String filename,
-                                     String password) throws Exception {
+                                     char[] password) throws Exception {
         KeyStore pkcs12 = KeyStore.getInstance("PKCS12", "BC");
         pkcs12.load(null, null);
 
@@ -154,14 +168,13 @@ public class MqttCertGenerator {
         Certificate[] chain = new Certificate[]{cert, caCert};
 
         // 设置私钥条目
-        pkcs12.setKeyEntry("client", privateKey, password.toCharArray(), chain);
+        pkcs12.setKeyEntry("client", privateKey, password, chain);
 
         // 保存文件
         try (FileOutputStream fos = new FileOutputStream(filename)) {
-            pkcs12.store(fos, password.toCharArray());
+            pkcs12.store(fos, password);
         }
     }
 
 
 }
-

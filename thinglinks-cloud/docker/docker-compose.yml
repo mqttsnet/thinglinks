@@ -3,12 +3,6 @@ networks:
   backend:
     driver: bridge
 
-# 作者及社区信息
-x-metadata-config: &metadata-config
-  maintainer: "mqttsnet@163.com"
-  community: "mqttsnet"
-  copyright: "Copyright © 2019–present mqttsnet"
-
 # 共享环境配置
 x-env-config: &env-config
   TZ: Asia/Shanghai
@@ -18,12 +12,20 @@ x-env-config: &env-config
   NACOS_IP: 127.0.0.1
   # Nacos 服务器端口
   NACOS_PORT: 18848
-  # Nacos 的命名空间
-  NACOS_NAMESPACE: c0858b2e-960e-47b9-9b2d-17294dda787c
+  # Nacos 命名空间，值来自部署环境变量 NACOS_NAMESPACE
+  NACOS_NAMESPACE: ${NACOS_NAMESPACE:?NACOS_NAMESPACE must be set}
+  # Seata 命名空间，值来自部署环境变量 SEATA_NAMESPACE
+  SEATA_NAMESPACE: ${SEATA_NAMESPACE:?SEATA_NAMESPACE must be set}
   # Nacos 用户名
   NACOS_USERNAME: ${NACOS_USERNAME:?NACOS_USERNAME must be set}
   # Nacos 密码
   NACOS_PASSWORD: ${NACOS_PASSWORD:?NACOS_PASSWORD must be set}
+  # AES 密钥，用于数据库敏感字段加密
+  THINGLINKS_SECURITY_AES_KEY: ${THINGLINKS_SECURITY_AES_KEY:?THINGLINKS_SECURITY_AES_KEY must be set}
+  # AES 初始化向量，用于 CBC 模式加解密
+  THINGLINKS_SECURITY_AES_IV: ${THINGLINKS_SECURITY_AES_IV:?THINGLINKS_SECURITY_AES_IV must be set}
+  # 单个上传文件的容量上限
+  THINGLINKS_FILE_MAX_UPLOAD_SIZE: ${THINGLINKS_FILE_MAX_UPLOAD_SIZE:-64MB}
   # 指定服务注册 IP
   NACOS_DISCOVERY_IP: 127.0.0.1
   # JVM 内存参数配置（适配Dockerfile中的配置）
@@ -66,17 +68,17 @@ services:
       context: ../thinglinks-base/thinglinks-base-server
       dockerfile: Dockerfile
     ports:
-      - "18764:18764" # 映射端口
+      - "127.0.0.1:18764:18764" # Base 服务本机调试端口
     environment:
       <<: *env-config
       SERVICE_PORT: 18764
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-broker:
     container_name: thinglinks-broker-server
     build:
@@ -88,12 +90,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18790
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-card:
     container_name: thinglinks-card-server
     build:
@@ -105,12 +107,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18794
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-gateway:
     container_name: thinglinks-gateway-server
     build:
@@ -122,12 +124,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18760
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-sop-gateway:
     container_name: thinglinks-sop-gateway-server
     build:
@@ -139,12 +141,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18750
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-generator:
     container_name: thinglinks-generator-server
     build:
@@ -156,12 +158,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18780
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-link:
     container_name: thinglinks-link-server
     build:
@@ -173,12 +175,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18782
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-mobile:
     container_name: thinglinks-mobile-server
     build:
@@ -190,12 +192,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18798
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-mqs:
     container_name: thinglinks-mqs-server
     build:
@@ -207,12 +209,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18784
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-oauth:
     container_name: thinglinks-oauth-server
     build:
@@ -224,12 +226,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18773
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-openapi:
     container_name: thinglinks-openapi-server
     build:
@@ -241,12 +243,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18766
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-rule:
     container_name: thinglinks-rule-server
     build:
@@ -259,12 +261,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18786
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-sop-admin:
     container_name: thinglinks-sop-admin-server
     build:
@@ -276,12 +278,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18765
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-monitor:
     container_name: thinglinks-monitor-server
     build:
@@ -293,12 +295,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18762
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/thinglinks-monitor-server/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/thinglinks-monitor-server/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-base-executor:
     container_name: thinglinks-base-executor
     build:
@@ -312,12 +314,12 @@ services:
       SERVICE_PORT: 18900
       EXECUTOR_PORT: 18901
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-iot-executor:
     container_name: thinglinks-iot-executor
     build:
@@ -331,12 +333,12 @@ services:
       SERVICE_PORT: 18910
       EXECUTOR_PORT: 18911
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-system:
     container_name: thinglinks-system-server
     build:
@@ -348,12 +350,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18778
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-tds:
     container_name: thinglinks-tds-server
     build:
@@ -365,12 +367,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18788
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-video:
     container_name: thinglinks-video-server
     build:
@@ -382,12 +384,12 @@ services:
       <<: *env-config
       SERVICE_PORT: 18796
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config
   thinglinks-view:
     container_name: thinglinks-view-server
     build:
@@ -399,9 +401,9 @@ services:
       <<: *env-config
       SERVICE_PORT: 18792
     healthcheck:
-      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:${SERVICE_PORT}/actuator/health" ]
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
-    <<: *shared-config  # 只引用 shared-config，因为 metadata-config 不应用于服务定义
+    <<: *shared-config

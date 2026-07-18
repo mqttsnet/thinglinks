@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -52,6 +53,7 @@ public class PlatformRegisterCache implements Serializable {
 
     private String username;
 
+    @ToString.Exclude
     private String password;
 
     private String callId;

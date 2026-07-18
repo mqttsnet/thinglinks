@@ -39,7 +39,6 @@ public class VideoChannelCacheVO implements Serializable {
     private Boolean onlineStatus;
     private String host;
     private Integer port;
-    private String password;
     private BigDecimal longitude;
     private BigDecimal latitude;
     private String fullAddress;

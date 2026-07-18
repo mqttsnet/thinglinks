@@ -132,7 +132,7 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
             extendMsg.setStatus(TaskStatus.SUCCESS);
             superManager.updateById(extendMsg);
         } else {
-            // 务必启动 thinglinks-job-pro 项目，否则调用会失败！
+            // 延时消息任务由 thinglinks-base-executor 模块执行。
             Map<String, Long> param = MapUtil.builder(ContextConstants.TENANT_ID_HEADER, ContextUtil.getTenantId()).put("msgId", extendMsg.getId()).build();
 
             XxlJobInfoVO xxlJobInfoVO = XxlJobInfoVO.create(JobConstant.DEF_BASE_JOB_GROUP_NAME,
@@ -219,7 +219,7 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
             // 具体的发送逻辑请看： MsgSendListener
             SpringUtils.publishEvent(new MsgSendEvent(msgEventVO));
         } else {
-            // 务必启动 thinglinks-job-pro 项目，否则调用会失败！
+            // 延时消息任务由 thinglinks-base-executor 模块执行。
             Map<String, Long> param = MapUtil.builder(ContextConstants.TENANT_ID_HEADER, ContextUtil.getTenantId()).put("msgId", extendMsg.getId()).build();
 
             XxlJobInfoVO xxlJobInfoVO = XxlJobInfoVO.create(JobConstant.DEF_BASE_JOB_GROUP_NAME,

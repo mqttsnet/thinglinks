@@ -14,7 +14,7 @@ import com.mqttsnet.thinglinks.generator.config.EntityConfig;
 import com.mqttsnet.thinglinks.generator.config.GeneratorConfig;
 import com.mqttsnet.thinglinks.generator.config.MapperConfig;
 import com.mqttsnet.thinglinks.generator.config.ServiceConfig;
-import com.mqttsnet.thinglinks.generator.config.WebProConfig;
+import com.mqttsnet.thinglinks.generator.config.WebVbenConfig;
 import com.mqttsnet.thinglinks.generator.converts.ITypeConvert;
 import com.mqttsnet.thinglinks.generator.converts.TypeConverts;
 import com.mqttsnet.thinglinks.generator.entity.DefGenTable;
@@ -53,16 +53,16 @@ public class GenUtils {
         ServiceConfig serviceConfig = generatorConfig.getServiceConfig();
         MapperConfig mapperConfig = generatorConfig.getMapperConfig();
         EntityConfig entityConfig = generatorConfig.getEntityConfig();
-        WebProConfig webProConfig = generatorConfig.getWebProConfig();
+        WebVbenConfig webVbenConfig = generatorConfig.getWebVbenConfig();
 
         DefGenTable genTable = new DefGenTable();
         genTable.setName(tableMeta.getTableName());
         genTable.setComment(tableMeta.getComment());
         genTable.setSwaggerComment(getSwaggerComment(tableMeta.getComment()));
-        genTable.setMenuName(getName(genTable.getSwaggerComment(), webProConfig.getFormatMenuName(), "管理"));
+        genTable.setMenuName(getName(genTable.getSwaggerComment(), webVbenConfig.getFormatMenuName(), "管理"));
         genTable.setAuthor(generatorConfig.getAuthor());
         genTable.setEntityName(convertClassName(generatorConfig, tableMeta.getTableName()));
-        genTable.setTplType(webProConfig.getTpl());
+        genTable.setTplType(webVbenConfig.getTpl());
         genTable.setParent(generatorConfig.getPackageInfoConfig().getParent());
         genTable.setPlusApplicationName(StrPool.EMPTY);
         genTable.setPlusModuleName(StrPool.EMPTY);

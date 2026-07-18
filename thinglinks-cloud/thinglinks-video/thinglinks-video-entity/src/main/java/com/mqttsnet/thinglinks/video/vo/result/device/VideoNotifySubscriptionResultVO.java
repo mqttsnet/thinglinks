@@ -45,9 +45,6 @@ public class VideoNotifySubscriptionResultVO implements Serializable, EchoVO {
     @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = "NOTIFY_CHANNEL_TYPE")
     private String channelType;
 
-    @Schema(description = "渠道凭证(JSON)")
-    private String channelConfig;
-
     @Schema(description = "消息模板编码")
     private String templateCode;
 

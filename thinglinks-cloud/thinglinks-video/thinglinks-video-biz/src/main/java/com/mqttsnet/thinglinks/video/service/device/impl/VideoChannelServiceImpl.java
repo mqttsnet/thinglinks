@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.video.service.device.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
 import com.mqttsnet.basic.database.mybatis.conditions.query.QueryWrap;
@@ -36,6 +36,19 @@ import java.util.List;
 public class VideoChannelServiceImpl extends SuperServiceImpl<VideoChannelManager, Long, VideoChannel> implements VideoChannelService {
 
     private final ApplicationEventPublisher eventPublisher;
+
+    /**
+     * 更新接口未提供口令或只提供空白字符时，将字段置为 {@code null}，由全局
+     * MyBatis-Plus {@code NOT_NULL} 更新策略跳过该列，保留数据库中的原口令。
+     */
+    @Override
+    protected <UpdateVO> VideoChannel updateBefore(UpdateVO updateVO) {
+        VideoChannel entity = super.updateBefore(updateVO);
+        if (StrUtil.isBlank(entity.getPassword())) {
+            entity.setPassword(null);
+        }
+        return entity;
+    }
 
     @Override
     public List<VideoChannelResultVO> listByDeviceIdentification(String deviceIdentification) {

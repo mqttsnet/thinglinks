@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.video.vo.save.platform;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -58,7 +59,9 @@ public class VideoPlatformSaveVO implements Serializable {
     @Schema(description = "用户名")
     private String username;
 
-    @Schema(description = "密码")
+    @Schema(description = "认证密码（仅写入）", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @Size(max = 255, message = "认证密码长度不能超过{max}")
+    @ToString.Exclude
     private String password;
 
     @Schema(description = "注册有效期(秒)")

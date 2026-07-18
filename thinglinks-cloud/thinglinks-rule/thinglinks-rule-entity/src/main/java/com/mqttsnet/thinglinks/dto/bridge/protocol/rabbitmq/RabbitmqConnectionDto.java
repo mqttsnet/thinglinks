@@ -5,7 +5,7 @@ import com.mqttsnet.thinglinks.dto.bridge.protocol.ProtocolConnectionDto;
 /**
  * RabbitMQ 连接参数 DTO。
  *
- * <p>⚠ 字段名 {@code exchangeName}（不是 {@code exchange}）── 与 util-pro
+ * <p>⚠ 字段名 {@code exchangeName}（不是 {@code exchange}）── 与 ThingLinks Util
  * {@code RabbitmqSink.RmqConnConfig.exchangeName} 严格对齐。
  * 前端旧 schema 用 {@code exchange} 是 bug，重构后的 RabbitmqProtocol 模块统一用 exchangeName。
  *

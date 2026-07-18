@@ -50,17 +50,6 @@
             <version>${revision}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.mqttsnet.thinglinks</groupId>
-            <artifactId>thinglinks-oauth-api</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.mqttsnet.thinglinks</groupId>
-            <artifactId>thinglinks-oauth-cloud-impl</artifactId>
-            <version>${revision}</version>
-        </dependency>
-
         <!-- 想使用seata请加入以下依赖 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

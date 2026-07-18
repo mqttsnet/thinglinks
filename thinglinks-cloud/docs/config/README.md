@@ -24,13 +24,13 @@ config/
 
 ## Security Notice / 安全须知
 
-All passwords and API keys in these template files are **placeholders**. Before importing into Nacos:
+Passwords, API keys, private endpoints, and storage locations are read from environment variables. Empty values disable the corresponding optional integration; local file storage and localhost endpoints are the safe development defaults. `THINGLINKS_SECURITY_AES_KEY` and `THINGLINKS_SECURITY_AES_IV` are required because they protect encrypted database fields.
 
-1. Replace all `your-*-password` and `your-*-key` values with actual credentials
-2. Never commit real credentials to this repository
-3. Use Nacos's built-in encryption or external secret management for production
+密码、API 密钥、私有服务地址和存储位置均通过环境变量注入。空值表示对应的可选集成未配置；本地文件存储和 localhost 地址用于开发环境的安全默认配置。凭据适合保存在部署平台的密钥管理服务中，不写入本目录的模板文件。
 
-所有模板文件中的密码和密钥均为**占位符**。导入 Nacos 前请替换为实际值，切勿将真实凭据提交到代码仓库。
+`THINGLINKS_SECURITY_AES_KEY` 是数据库敏感字段的 AES 密钥，长度为 16、24 或 32 字节；`THINGLINKS_SECURITY_AES_IV` 是 CBC 模式初始化向量，长度为 16 字节。两项均为运行必需配置，Docker 部署可从 `docker/.env.example` 复制环境变量模板后填写。
+
+文件存储类型由 `THINGLINKS_FILE_STORAGE_TYPE` 指定。各云存储使用对应的 `ALI_OSS_*`、`MINIO_*`、`HUAWEI_OSS_*` 或 `QINIU_*` 环境变量；本地存储使用 `THINGLINKS_FILE_LOCAL_STORAGE_PATH` 和 `THINGLINKS_FILE_LOCAL_URL_PREFIX`。
 
 ## Change Log / 变更记录
 
@@ -47,6 +47,9 @@ When modifying Nacos configuration templates, please follow these guidelines:
 
 | Date | File | Change | Affected Services | Author |
 |------|------|--------|-------------------|--------|
+| 2026-07-19 | common.yml | Require AES key and IV for encrypted database fields | All | ThingLinks |
+| 2026-07-19 | common.yml | Remove the default browser authorization value | API documentation | ThingLinks |
+| 2026-07-19 | thinglinks-base-server.yml | Externalize file storage endpoints and use local storage by default | Base | ThingLinks |
 | 2026-03-23 | common.yml | Replace hardcoded credentials with placeholders | All | mqttsnet |
 | 2026-03-23 | database.yml | Replace MySQL password with placeholder | All | mqttsnet |
 | 2026-03-23 | redis.yml | Replace Redis password with placeholder | All | mqttsnet |

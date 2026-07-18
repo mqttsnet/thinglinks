@@ -21,7 +21,8 @@
         <result column="online_status" property="onlineStatus"/>
         <result column="host" property="host"/>
         <result column="port" property="port"/>
-        <result column="password" property="password"/>
+        <result column="password" property="password"
+                typeHandler="com.mqttsnet.basic.mybatis.typehandler.EncryptTypeHandler"/>
         <result column="longitude" property="longitude"/>
         <result column="latitude" property="latitude"/>
         <result column="full_address" property="fullAddress"/>

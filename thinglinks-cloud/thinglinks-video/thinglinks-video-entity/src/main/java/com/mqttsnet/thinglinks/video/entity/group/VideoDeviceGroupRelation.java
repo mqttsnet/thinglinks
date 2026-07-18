@@ -23,7 +23,9 @@ import lombok.experimental.Accessors;
  * 对应数据库表 {@code video_device_group_relation}，实现设备/通道与分组的多对多关联，
  * 支持同一设备出现在多个分组中，通过 {@code channelIdentification} 区分设备级和通道级关联。
  * <p>
- * 唯一约束：{@code (group_id, device_identification, channel_identification)}
+ * 业务唯一约束：{@code (group_id, device_identification, channel_identification)}。
+ * 数据库通过生成列 {@code channel_identification_key} 归一可空通道标识，避免空值绕过唯一约束；
+ * 生成列由数据库维护，不映射到实体。
  *
  * @author mqttsnet
  * @version 1.0.0
@@ -48,6 +50,9 @@ public class VideoDeviceGroupRelation extends Entity<Long> {
     @TableField(value = "device_identification", condition = LIKE)
     private String deviceIdentification;
 
+    /**
+     * 通道国标编号，空值表示设备级关联。
+     */
     @TableField(value = "channel_identification", condition = LIKE)
     private String channelIdentification;
 

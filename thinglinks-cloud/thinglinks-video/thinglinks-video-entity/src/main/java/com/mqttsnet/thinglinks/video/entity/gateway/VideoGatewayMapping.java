@@ -52,7 +52,8 @@ public class VideoGatewayMapping extends Entity<Long> {
     @TableField(value = "src_device_identification", condition = LIKE)
     private String srcDeviceIdentification;
     /**
-     * 源通道标识
+     * 源通道标识，空值表示设备级映射。
+     * 数据库通过生成列 {@code src_channel_identification_key} 归一可空值，生成列不映射到实体。
      */
     @TableField(value = "src_channel_identification", condition = LIKE)
     private String srcChannelIdentification;

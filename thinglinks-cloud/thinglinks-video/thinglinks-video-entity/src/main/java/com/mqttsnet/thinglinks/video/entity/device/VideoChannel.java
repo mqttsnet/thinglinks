@@ -6,11 +6,14 @@ import static com.mqttsnet.thinglinks.model.constant.Condition.LIKE;
 import java.io.Serial;
 import java.math.BigDecimal;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.Fastjson2TypeHandler;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mqttsnet.basic.base.entity.Entity;
+import com.mqttsnet.basic.mybatis.typehandler.EncryptTypeHandler;
 import com.mqttsnet.thinglinks.video.dto.device.config.VideoChannelConfig;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -105,7 +108,10 @@ public class VideoChannel extends Entity<Long> {
     /**
      * 设备口令
      */
-    @TableField(value = "password", condition = LIKE)
+    @JsonIgnore
+    @ToString.Exclude
+    @TableField(value = "password", condition = EQUAL, typeHandler = EncryptTypeHandler.class,
+            insertStrategy = FieldStrategy.NOT_EMPTY, updateStrategy = FieldStrategy.NOT_EMPTY)
     private String password;
     /**
      * 经度

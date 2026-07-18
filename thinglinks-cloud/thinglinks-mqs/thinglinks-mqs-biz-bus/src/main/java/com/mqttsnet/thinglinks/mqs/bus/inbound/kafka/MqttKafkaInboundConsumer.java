@@ -2,6 +2,7 @@ package com.mqttsnet.thinglinks.mqs.bus.inbound.kafka;
 
 import java.util.List;
 
+import com.mqttsnet.thinglinks.common.mq.ConsumerGroupConstant;
 import com.mqttsnet.thinglinks.common.mq.KafkaConsumerTopicConstant;
 import com.mqttsnet.thinglinks.mqs.bus.dispatcher.BusPipelineDispatcher;
 import com.mqttsnet.thinglinks.mqs.bus.stats.BusStatsService;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MqttKafkaInboundConsumer extends AbstractProtocolKafkaInboundConsumer {
 
-    private static final String CONSUMER_GROUP = "CID_THINGLINKS_BUS_MQTT";
+    private static final String CONSUMER_GROUP = ConsumerGroupConstant.THINGLINKS_CONSUMER_GROUP_PREFIX + "BUS_MQTT";
     private static final String PROTOCOL_NAME = "MQTT";
 
     public MqttKafkaInboundConsumer(BusPipelineDispatcher dispatcher, BusStatsService statsService) {

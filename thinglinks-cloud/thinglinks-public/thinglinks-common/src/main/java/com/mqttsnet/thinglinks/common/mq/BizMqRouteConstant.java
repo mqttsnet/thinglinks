@@ -8,10 +8,10 @@ package com.mqttsnet.thinglinks.common.mq;
  *
  * <h2>命名规约</h2>
  * <ul>
- *   <li><b>Topic</b>:项目前缀 {@code thinglinks-} + 业务域 + 用途,全小写连字符。例:
- *       {@code thinglinks-bridge-device-event}</li>
+ *   <li><b>Topic</b>:项目前缀 {@code ${THINGLINKS_MQ_NAMESPACE}-} + 业务域 + 用途,全小写连字符。例:
+ *       {@code ${THINGLINKS_MQ_NAMESPACE}-bridge-device-event}</li>
  *   <li><b>Tag</b>:业务事件类型(eventType / actionType / sourceType 等)。例:{@code PUBLISH} / {@code instance-up}</li>
- *   <li><b>ConsumerGroup</b>:大写 {@code CID_THINGLINKS_<DOMAIN>_<PURPOSE>};
+ *   <li><b>ConsumerGroup</b>:大写 {@code CID_${THINGLINKS_MQ_NAMESPACE_UPPER}_<DOMAIN>_<PURPOSE>};
  *       BROADCASTING 模式额外附加节点 IP / 主机名后缀让每节点独立 group(避免 offset 抢占)</li>
  *   <li><b>Destination 拼接</b>:业务侧 send 时用 {@code topic + ":" + tag} 拼装传给
  *       {@code RocketMQTemplate}(spring rocketmq 的 destination 语法)</li>
@@ -27,7 +27,7 @@ package com.mqttsnet.thinglinks.common.mq;
  * │                       │ 主链路:解析 + 持久化 DeviceAction(不变)                          │
  * │                       │ 旁路:MqsBridgeEventProducer.publishBridgeEvent (best-effort)   │
  * │                       ↓                                                                  │
- * │           [ Topic: thinglinks-bridge-device-event ]   ← Bridge#DEVICE_EVENT             │
+ * │           [ Topic: ${THINGLINKS_MQ_NAMESPACE}-bridge-device-event ]   ← Bridge#DEVICE_EVENT             │
  * │           [ Tag:   actionType (PUBLISH/CONNECT/...) ]                                   │
  * │           [ Mode:  CLUSTERING / Group: BRIDGE_DEVICE_EVENT ]                            │
  * │                       │                                                                  │
@@ -45,7 +45,7 @@ package com.mqttsnet.thinglinks.common.mq;
  * │           │ rule.SubscriptionSourceLifecycleManager (订阅 / HTTP endpoint)                │
  * │           │   → 字段映射 → BridgeMessageEnvelope                                          │
  * │           ↓                                                                              │
- * │           [ Topic: thinglinks-bridge-ingress ]   ← Bridge#INGRESS                       │
+ * │           [ Topic: ${THINGLINKS_MQ_NAMESPACE}-bridge-ingress ]   ← Bridge#INGRESS                       │
  * │           [ Tag:   targetHandler (MQTT_FORWARD/RAW_INSERT/RULE_TRIGGER) ]               │
  * │           [ Mode:  CLUSTERING / Group: BRIDGE_INGRESS ]                                  │
  * │                       │                                                                  │
@@ -61,7 +61,7 @@ package com.mqttsnet.thinglinks.common.mq;
  * │ 设备 PING (ws 心跳)                                                                    │
  * │   → broker.WsHeartbeatTracker.update                                                   │
  * │   → 本地 lastActiveTime + Redis TTL + Owner 续命                                         │
- * │   → [ Topic: thinglinks-ws-heartbeat-sync ]   ← WebSocket#HEARTBEAT_SYNC                │
+ * │   → [ Topic: ${THINGLINKS_MQ_NAMESPACE}-ws-heartbeat-sync ]   ← WebSocket#HEARTBEAT_SYNC                │
  * │   → [ Mode:  BROADCASTING / Group: WS_HEARTBEAT_SYNC_PREFIX + ${HOSTNAME或IP} ]         │
  * │   → 各 broker 节点 WsHeartbeatSyncListener 收到 → 持有该 session 的节点更新本地存活(重连漂移兜底) │
  * └───────────────────────────────────────────────────────────────────────────────────────┘
@@ -71,7 +71,7 @@ package com.mqttsnet.thinglinks.common.mq;
  * │ 业务侧下发命令 → 任一 broker 节点                                                       │
  * │   → WebSocketBrokerServiceImpl.publishMessage(vo)                                      │
  * │   → 编码 ws 子协议报文 + 在线校验(查 Redis session 信息)                                │
- * │   → [ Topic: thinglinks-ws-command-downlink ]   ← WebSocket#COMMAND_DOWNLINK           │
+ * │   → [ Topic: ${THINGLINKS_MQ_NAMESPACE}-ws-command-downlink ]   ← WebSocket#COMMAND_DOWNLINK           │
  * │   → [ Mode:  BROADCASTING / Group: WS_COMMAND_DOWNLINK_PREFIX + ${spring.application.name} ] │
  * │   → 每个 broker 节点 WsCommandDownlinkListener 收到 → 查本地 Holder                       │
  * │       ├─ 命中(持有该设备 TCP 的节点)→ 推 socket                                         │
@@ -87,7 +87,7 @@ package com.mqttsnet.thinglinks.common.mq;
  *   </tr>
  *   <tr>
  *     <td>{@link Bridge#DEVICE_EVENT}</td>
- *     <td>thinglinks-bridge-device-event</td>
+ *     <td>${THINGLINKS_MQ_NAMESPACE}-bridge-device-event</td>
  *     <td>CLUSTERING</td>
  *     <td>mqs · {@code MqsBridgeEventProducer}</td>
  *     <td>rule · {@code BridgeDeviceEventConsumer}</td>
@@ -95,7 +95,7 @@ package com.mqttsnet.thinglinks.common.mq;
  *   </tr>
  *   <tr>
  *     <td>{@link Bridge#INGRESS}</td>
- *     <td>thinglinks-bridge-ingress</td>
+ *     <td>${THINGLINKS_MQ_NAMESPACE}-bridge-ingress</td>
  *     <td>CLUSTERING</td>
  *     <td>rule · {@code SubscriptionSourceLifecycleManager} / {@code BridgeIngressOpenAnyUserController}</td>
  *     <td>mqs · {@code BridgeIngressRocketmqConsumerHandler}</td>
@@ -103,7 +103,7 @@ package com.mqttsnet.thinglinks.common.mq;
  *   </tr>
  *   <tr>
  *     <td>{@link Bridge#DEAD_LETTER}</td>
- *     <td>thinglinks-bridge-dlq</td>
+ *     <td>${THINGLINKS_MQ_NAMESPACE}-bridge-dlq</td>
  *     <td>CLUSTERING</td>
  *     <td>rule · {@code SinkDispatcher.sendToDeadLetter} <i>(预留)</i></td>
  *     <td>监控告警 <i>(待接入)</i></td>
@@ -111,7 +111,7 @@ package com.mqttsnet.thinglinks.common.mq;
  *   </tr>
  *   <tr>
  *     <td>{@link WebSocket#HEARTBEAT_SYNC}</td>
- *     <td>thinglinks-ws-heartbeat-sync</td>
+ *     <td>${THINGLINKS_MQ_NAMESPACE}-ws-heartbeat-sync</td>
  *     <td>BROADCASTING</td>
  *     <td>broker · {@code WsHeartbeatTracker}</td>
  *     <td>broker 全节点 · {@code WsHeartbeatSyncListener}</td>
@@ -119,7 +119,7 @@ package com.mqttsnet.thinglinks.common.mq;
  *   </tr>
  *   <tr>
  *     <td>{@link WebSocket#COMMAND_DOWNLINK}</td>
- *     <td>thinglinks-ws-command-downlink</td>
+ *     <td>${THINGLINKS_MQ_NAMESPACE}-ws-command-downlink</td>
  *     <td>BROADCASTING</td>
  *     <td>broker · {@code WebSocketBrokerServiceImpl}</td>
  *     <td>broker 全节点 · {@code WsCommandDownlinkListener}</td>
@@ -164,6 +164,12 @@ package com.mqttsnet.thinglinks.common.mq;
  */
 public interface BizMqRouteConstant {
 
+    /** Topic 前缀，由根目录产品清单中的消息队列命名空间组成。 */
+    String TOPIC_PREFIX = ConsumerGroupConstant.THINGLINKS_MQ_NAMESPACE + "-";
+
+    /** Consumer Group 前缀，引用 ConsumerGroupConstant 中的消费组前缀。 */
+    String CONSUMER_GROUP_PREFIX = ConsumerGroupConstant.THINGLINKS_CONSUMER_GROUP_PREFIX;
+
     // =========================================================================================
     // 业务域:桥接(rule 服务承载)
     // =========================================================================================
@@ -195,10 +201,10 @@ public interface BizMqRouteConstant {
          *   <li><b>ConsumerGroup</b>:{@link Groups#BRIDGE_DEVICE_EVENT}</li>
          *   <li><b>QPS 预期</b>:跟设备 publish 量级一致,生产环境建议 ≥ 5k(队列数 ≥ 16)</li>
          *   <li><b>失败处理</b>:Consumer 抛异常 → broker 重投 → 超 max-reconsume-times 进
-         *       {@code %DLQ%CID_THINGLINKS_BRIDGE_DEVICE_EVENT}(自动死信 topic)</li>
+         *       {@code %DLQ%CID_${THINGLINKS_MQ_NAMESPACE_UPPER}_BRIDGE_DEVICE_EVENT}(自动死信 topic)</li>
          * </ul>
          */
-        String DEVICE_EVENT = "thinglinks-bridge-device-event";
+        String DEVICE_EVENT = TOPIC_PREFIX + "bridge-device-event";
 
         /**
          * <h3>桥接入站消息 Topic — 第三方 → mqs 还原</h3>
@@ -220,7 +226,7 @@ public interface BizMqRouteConstant {
          *       RULE_TRIGGER 失败仅记 log 不重投(规则副作用不能重复执行)</li>
          * </ul>
          */
-        String INGRESS = "thinglinks-bridge-ingress";
+        String INGRESS = TOPIC_PREFIX + "bridge-ingress";
 
         /**
          * <h3>桥接死信 Topic — 兜底回放与告警</h3>
@@ -240,7 +246,7 @@ public interface BizMqRouteConstant {
          * 内置 DLQ 是 broker 重投耗尽后的兜底,本 topic 是 rule 业务层主动投递的"业务死信"
          * (重试 + 退避策略由 rule 自己控制,而非依赖 broker 重投)。
          */
-        String DEAD_LETTER = "thinglinks-bridge-dlq";
+        String DEAD_LETTER = TOPIC_PREFIX + "bridge-dlq";
     }
 
     // =========================================================================================
@@ -278,7 +284,7 @@ public interface BizMqRouteConstant {
          *   <li><b>失败处理</b>:成功路径不打日志(避免高频刷屏);失败 warn 不抛(广播模式吞掉)</li>
          * </ul>
          */
-        String HEARTBEAT_SYNC = "thinglinks-ws-heartbeat-sync";
+        String HEARTBEAT_SYNC = TOPIC_PREFIX + "ws-heartbeat-sync";
 
         /**
          * <h3>WS 设备下行命令广播 Topic</h3>
@@ -303,7 +309,7 @@ public interface BizMqRouteConstant {
          *   <li><b>失败处理</b>:消费异常吞掉不抛(广播模式),由设备重试 / 业务重发兜底</li>
          * </ul>
          */
-        String COMMAND_DOWNLINK = "thinglinks-ws-command-downlink";
+        String COMMAND_DOWNLINK = TOPIC_PREFIX + "ws-command-downlink";
     }
 
     // =========================================================================================
@@ -334,7 +340,7 @@ public interface BizMqRouteConstant {
          *   <li><b>ConsumerGroup</b>:{@link Groups#ALARM_REALTIME}</li>
          * </ul>
          */
-        String REALTIME = "thinglinks-alarm-realtime";
+        String REALTIME = TOPIC_PREFIX + "alarm-realtime";
     }
 
     /**
@@ -385,7 +391,7 @@ public interface BizMqRouteConstant {
      *
      * <p><b>命名规约</b>:
      * <ul>
-     *   <li>{@code CLUSTERING} 模式:固定 group 名 {@code CID_THINGLINKS_<DOMAIN>_<PURPOSE>},
+     *   <li>{@code CLUSTERING} 模式:固定 group 名 {@code CID_${THINGLINKS_MQ_NAMESPACE_UPPER}_<DOMAIN>_<PURPOSE>},
      *       多副本同 group 共享 offset,broker 负载均衡</li>
      *   <li>{@code BROADCASTING} 模式:必须每节点独立 group(否则各节点抢占同一 offset 互相覆盖),
      *       本接口提供 {@code _PREFIX} 常量,业务侧 Consumer 注解里拼接节点标识(优先 HOSTNAME,兜底 IP):
@@ -398,19 +404,19 @@ public interface BizMqRouteConstant {
          * 桥接出站事件消费组({@link Bridge#DEVICE_EVENT} CLUSTERING 模式)。
          * <p>使用方:rule · {@code BridgeDeviceEventConsumer}。
          */
-        String BRIDGE_DEVICE_EVENT = "CID_THINGLINKS_BRIDGE_DEVICE_EVENT";
+        String BRIDGE_DEVICE_EVENT = CONSUMER_GROUP_PREFIX + "BRIDGE_DEVICE_EVENT";
 
         /**
          * 桥接入站消息消费组({@link Bridge#INGRESS} CLUSTERING 模式)。
          * <p>使用方:mqs · {@code BridgeIngressRocketmqConsumerHandler}。
          */
-        String BRIDGE_INGRESS = "CID_THINGLINKS_BRIDGE_INGRESS";
+        String BRIDGE_INGRESS = CONSUMER_GROUP_PREFIX + "BRIDGE_INGRESS";
 
         /**
          * 桥接死信消费组({@link Bridge#DEAD_LETTER} CLUSTERING 模式)。
          * <p>使用方:监控告警系统<i>(待接入)</i>。
          */
-        String BRIDGE_DLQ = "CID_THINGLINKS_BRIDGE_DLQ";
+        String BRIDGE_DLQ = CONSUMER_GROUP_PREFIX + "BRIDGE_DLQ";
 
         /**
          * 规则引擎事件触发消费组({@link Bridge#DEVICE_EVENT} CLUSTERING 模式)。
@@ -418,7 +424,7 @@ public interface BizMqRouteConstant {
          * 各自收到全量设备事件互不影响:本组供 rule 服务把设备上报/生命周期事件实时转化为规则评估。
          * <p>使用方:rule · {@code RuleTriggerEventConsumer}。
          */
-        String RULE_TRIGGER_EVENT = "CID_THINGLINKS_RULE_TRIGGER_EVENT";
+        String RULE_TRIGGER_EVENT = CONSUMER_GROUP_PREFIX + "RULE_TRIGGER_EVENT";
 
         /**
          * WS 心跳跨节点同步广播消费组前缀({@link WebSocket#HEARTBEAT_SYNC} BROADCASTING 模式)。
@@ -426,7 +432,7 @@ public interface BizMqRouteConstant {
          * <pre>{@code Groups.WS_HEARTBEAT_SYNC_PREFIX + "${HOSTNAME:${spring.cloud.client.ip-address}}"}</pre>
          * <p>使用方:broker · {@code WsHeartbeatSyncListener}。
          */
-        String WS_HEARTBEAT_SYNC_PREFIX = "CID_THINGLINKS_WS_HEARTBEAT_SYNC_";
+        String WS_HEARTBEAT_SYNC_PREFIX = CONSUMER_GROUP_PREFIX + "WS_HEARTBEAT_SYNC_";
 
         /**
          * WS 下行命令广播消费组前缀({@link WebSocket#COMMAND_DOWNLINK} BROADCASTING 模式)。
@@ -434,12 +440,12 @@ public interface BizMqRouteConstant {
          * <pre>{@code Groups.WS_COMMAND_DOWNLINK_PREFIX + "${spring.application.name}"}</pre>
          * <p>使用方:broker · {@code WsCommandDownlinkListener}。
          */
-        String WS_COMMAND_DOWNLINK_PREFIX = "CID_THINGLINKS_WS_COMMAND_DOWNLINK_";
+        String WS_COMMAND_DOWNLINK_PREFIX = CONSUMER_GROUP_PREFIX + "WS_COMMAND_DOWNLINK_";
 
         /**
          * 实时告警事件消费组({@link Alarm#REALTIME} CLUSTERING 模式)。
          * <p>使用方:rule · {@code AlarmRealtimeConsumer}<i>(待接入)</i>。
          */
-        String ALARM_REALTIME = "CID_THINGLINKS_ALARM_REALTIME";
+        String ALARM_REALTIME = CONSUMER_GROUP_PREFIX + "ALARM_REALTIME";
     }
 }

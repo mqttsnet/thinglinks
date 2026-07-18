@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.mqs.bus.inbound.kafka.audit;
 
+import com.mqttsnet.thinglinks.common.mq.ConsumerGroupConstant;
 import com.mqttsnet.thinglinks.common.mq.KafkaConsumerTopicConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class NotAuthorizedClientAuditConsumer {
 
-    private static final String CONSUMER_GROUP = "CID_THINGLINKS_AUDIT_NOT_AUTHORIZED";
+    private static final String CONSUMER_GROUP = ConsumerGroupConstant.THINGLINKS_CONSUMER_GROUP_PREFIX + "AUDIT_NOT_AUTHORIZED";
 
     @KafkaListener(
         topics = KafkaConsumerTopicConstant.Mqs.MqsMqtt.THINGLINKS_MQTT_CLIENT_UNAUTHORIZED_TOPIC,

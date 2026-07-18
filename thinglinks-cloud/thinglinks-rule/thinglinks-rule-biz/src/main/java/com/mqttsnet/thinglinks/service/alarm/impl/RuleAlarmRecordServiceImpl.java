@@ -96,7 +96,7 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
      */
     @Override
     public RuleAlarmRecordSaveVO saveAlarmRecord(RuleAlarmRecordSaveVO saveVO) {
-        log.info("saveRuleAlarmRecord saveVO:{}", saveVO);
+        log.info("Saving alarm record. handledStatus={}", saveVO.getHandledStatus());
 
         // Validate parameters
         checkRuleAlarmRecordSaveVO(saveVO);
@@ -145,7 +145,7 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
      */
     @Override
     public RuleAlarmRecordUpdateVO updateAlarmRecord(RuleAlarmRecordUpdateVO updateVO) {
-        log.info("updateRuleAlarmRecord updateVO:{}", updateVO);
+        log.info("Updating alarm record. id={}, handledStatus={}", updateVO.getId(), updateVO.getHandledStatus());
 
         // Validate parameters
         checkRuleAlarmRecordUpdateVO(updateVO);
@@ -255,7 +255,8 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
      */
     @Override
     public RuleAlarmRecordUpdateVO handleOrSolveAlarmRecord(RuleAlarmRecordHandleParamVO recordHandleParamVO) {
-        log.info("handleAlarmRecord handleDTO: {}", recordHandleParamVO);
+        log.info("Handling alarm record. id={}, handledStatus={}",
+                recordHandleParamVO.getId(), recordHandleParamVO.getHandledStatus());
 
         // Validate parameters
         ArgumentAssert.notNull(recordHandleParamVO.getId(), "ID cannot be null");
@@ -341,7 +342,8 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
                                 ruleNotificationTemplateService.buildRuntimeVariables(policyContext, ruleAlarmDetailsResultVO));
                         notificationDispatches.add(new AlarmNotificationDispatch(rendered, ruleAlarmChannelResultVO));
                     } catch (Exception e) {
-                        log.error("Failed to render alarm notification for channel: {}, error: {}", ruleAlarmChannelResultVO.getChannelType(), e.getMessage(), e);
+                        log.error("Failed to render alarm notification. channelType={}, exceptionType={}",
+                                ruleAlarmChannelResultVO.getChannelType(), e.getClass().getSimpleName());
                     }
                 });
         List<RuleAlarmRenderedNotificationDTO> renderedNotifications = notificationDispatches.stream()
@@ -352,8 +354,8 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
             try {
                 sendAlarmNotification(dispatch.getRendered(), ruleAlarmDetailsResultVO, dispatch.getChannel());
             } catch (Exception e) {
-                log.error("Failed to send alarm notification for channel: {}, error: {}",
-                        dispatch.getChannel().getChannelType(), e.getMessage(), e);
+                log.error("Failed to send alarm notification. channelType={}, exceptionType={}",
+                        dispatch.getChannel().getChannelType(), e.getClass().getSimpleName());
             }
         });
         return true;
@@ -624,7 +626,7 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
 
     private List<Kv> parseChannelConfig(String channelConfig, AlarmChannelTypeEnum alarmChannelTypeEnum) {
         if (StrUtil.isBlank(channelConfig)) {
-            log.error("Channel config is empty: {}", channelConfig);
+            log.error("Alarm channel config is empty. channelType={}", alarmChannelTypeEnum);
             return new ArrayList<>();
         }
         List<Kv> cofigList = new ArrayList<>();
@@ -635,8 +637,6 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
                     cofigList.add(Kv.builder().key("msgType").value("MARKDOWN").build());
                     cofigList.add(Kv.builder().key("secret").value(dingTalkMessageParam.get().getSecret()).build());
                     cofigList.add(Kv.builder().key("token").value(dingTalkMessageParam.get().getToken()).build());
-                } else {
-                    log.error("Failed to parse DingTalkMessageParamDTO from channel config, channelConfig: {} ", channelConfig);
                 }
                 break;
             case ENTERPRISE_WECHAT:
@@ -644,8 +644,6 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
                 if (weChatWorkMessageParam.isPresent()) {
                     cofigList.add(Kv.builder().key("msgType").value("MARKDOWN").build());
                     cofigList.add(Kv.builder().key("token").value(weChatWorkMessageParam.get().getToken()).build());
-                } else {
-                    log.error("Failed to parse WeChatWorkMessageParamDTO from channel config, channelConfig: {} ", channelConfig);
                 }
                 break;
             case FS:
@@ -655,8 +653,6 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
                     cofigList.add(Kv.builder().key("appSecret").value(feishuMessageParam.get().getAppSecret()).build());
                     cofigList.add(Kv.builder().key("appId").value(feishuMessageParam.get().getAppId()).build());
                     cofigList.add(Kv.builder().key("token").value(feishuMessageParam.get().getToken()).build());
-                } else {
-                    log.error("Failed to parse FeishuMessageParamDTO from channel config, channelConfig: {} ", channelConfig);
                 }
                 break;
             default:
@@ -669,7 +665,8 @@ public class RuleAlarmRecordServiceImpl extends SuperServiceImpl<RuleAlarmRecord
         try {
             return Optional.ofNullable(JSON.parseObject(config, clazz));
         } catch (Exception e) {
-            log.error("Failed to parse config to {}: {}", clazz.getSimpleName(), e.getMessage());
+            log.error("Failed to parse alarm channel config. configType={}, exceptionType={}",
+                    clazz.getSimpleName(), e.getClass().getSimpleName());
             return Optional.empty();
         }
     }

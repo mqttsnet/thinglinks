@@ -1,5 +1,8 @@
 package com.mqttsnet.thinglinks.rule.linkage.alarm.channel;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.thinglinks.dto.alarm.channel.site.SiteMessageParamDTO;
 import com.mqttsnet.thinglinks.entity.alarm.RuleAlarmChannel;
@@ -17,11 +20,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -107,6 +112,34 @@ class RuleAlarmChannelServiceImplTest {
                 .build()));
 
         verify(ruleAlarmChannelManager, never()).save(any(RuleAlarmChannel.class));
+    }
+
+    @Test
+    @DisplayName("新增机器人渠道时日志不记录令牌和签名密钥")
+    void saveRobotChannelShouldNotLogCredentials() {
+        when(ruleAlarmChannelManager.save(any(RuleAlarmChannel.class))).thenReturn(true);
+        Logger serviceLogger = (Logger) LoggerFactory.getLogger(RuleAlarmChannelServiceImpl.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        serviceLogger.addAppender(appender);
+
+        try {
+            service.saveAlarmChannel(RuleAlarmChannelSaveVO.builder()
+                    .channelName("钉钉机器人")
+                    .channelType(AlarmChannelTypeEnum.DING_TALK.getValue())
+                    .channelConfig("{\"token\":\"sensitive-token\",\"secret\":\"sensitive-secret\"}")
+                    .status(AlarmChannelStatusEnum.ACTIVATED.getValue())
+                    .build());
+        } finally {
+            serviceLogger.detachAppender(appender);
+            appender.stop();
+        }
+
+        String loggedMessages = appender.list.stream()
+                .map(ILoggingEvent::getFormattedMessage)
+                .reduce("", (left, right) -> left + right);
+        assertFalse(loggedMessages.contains("sensitive-token"));
+        assertFalse(loggedMessages.contains("sensitive-secret"));
     }
 
     @Test

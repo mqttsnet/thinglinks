@@ -99,11 +99,6 @@ public class VideoChannelPageQuery implements Serializable {
     @Schema(description = "端口")
     private Integer port;
     /**
-     * 设备口令
-     */
-    @Schema(description = "设备口令")
-    private String password;
-    /**
      * 经度
      */
     @Schema(description = "经度")

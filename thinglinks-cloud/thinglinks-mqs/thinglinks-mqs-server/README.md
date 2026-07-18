@@ -36,7 +36,7 @@
 
 参考实现源码:
 
-- 推送侧 `bifromq-plugin-pro/bifromq-event-collector-plugin/`
+- 推送侧 `bifromq-plugin/bifromq-event-collector-plugin/`
     - `event-provider/.../BifromqEventCollectorPluginEventProvider.java` ── topic 路由表
     - `event-provider/.../processor/*EventProcessor.java` ── 各事件字段构造
 - 消费侧 `thinglinks-mqs/thinglinks-mqs-biz/.../consumer/kafka/`
@@ -49,7 +49,7 @@
 
 | 事件类型(业务)           | MQTT(基线)                            | WebSocket                                | TCP                                |
 |--------------------|-------------------------------------|------------------------------------------|------------------------------------|
-| 设备主消息(数据上行入口主通道)   | `thinglinks-pro-mqs-mqttMsg`        | `thinglinks-pro-mqs-websocketMsg`        | `thinglinks-pro-mqs-tcpMsg`        |
+| 设备主消息(数据上行入口主通道)   | `thinglinks-mqs-mqttMsg`        | `thinglinks-mqs-websocketMsg`        | `thinglinks-mqs-tcpMsg`        |
 | 设备上线 CONNECT       | `mqtt.client.connected.topic`       | `websocket.client.connected.topic`       | `tcp.client.connected.topic`       |
 | 客户端主动断开 DISCONNECT | `mqtt.client.disconnect.topic`      | `websocket.client.disconnect.topic`      | `tcp.client.disconnect.topic`      |
 | 服务端断开 CLOSE        | `mqtt.server.disconnect.topic`      | `websocket.server.disconnect.topic`      | `tcp.server.disconnect.topic`      |

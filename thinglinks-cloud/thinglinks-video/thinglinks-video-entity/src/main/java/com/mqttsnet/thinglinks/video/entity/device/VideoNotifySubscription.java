@@ -5,10 +5,13 @@ import static com.mqttsnet.thinglinks.model.constant.Condition.LIKE;
 
 import java.io.Serial;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mqttsnet.basic.base.entity.Entity;
+import com.mqttsnet.basic.mybatis.typehandler.EncryptTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -57,7 +60,10 @@ public class VideoNotifySubscription extends Entity<Long> {
      * 钉钉: {"token":"xxx","secret":"xxx"}
      * 飞书: {"appId":"xxx","appSecret":"xxx","token":"xxx"}
      */
-    @TableField(value = "channel_config")
+    @JsonIgnore
+    @ToString.Exclude
+    @TableField(value = "channel_config", typeHandler = EncryptTypeHandler.class,
+            insertStrategy = FieldStrategy.NOT_EMPTY, updateStrategy = FieldStrategy.NOT_EMPTY)
     private String channelConfig;
 
     /**

@@ -5,10 +5,13 @@ import static com.mqttsnet.thinglinks.model.constant.Condition.LIKE;
 
 import java.io.Serial;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mqttsnet.basic.base.entity.Entity;
+import com.mqttsnet.basic.mybatis.typehandler.EncryptTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -84,7 +87,10 @@ public class VideoPlatform extends Entity<Long> {
     @TableField(value = "username", condition = LIKE)
     private String username;
 
-    @TableField(value = "password", condition = EQUAL)
+    @JsonIgnore
+    @ToString.Exclude
+    @TableField(value = "password", condition = EQUAL, typeHandler = EncryptTypeHandler.class,
+            insertStrategy = FieldStrategy.NOT_EMPTY, updateStrategy = FieldStrategy.NOT_EMPTY)
     private String password;
 
     @TableField(value = "expires", condition = EQUAL)

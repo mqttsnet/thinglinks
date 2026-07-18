@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.video.service.platform.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
@@ -23,6 +24,18 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class VideoPlatformServiceImpl extends SuperServiceImpl<VideoPlatformManager, Long, VideoPlatform> implements VideoPlatformService {
+
+    /**
+     * 更新接口不携带认证密码或只携带空白字符时，保留原密码。
+     */
+    @Override
+    protected <UpdateVO> VideoPlatform updateBefore(UpdateVO updateVO) {
+        VideoPlatform entity = super.updateBefore(updateVO);
+        if (StrUtil.isBlank(entity.getPassword())) {
+            entity.setPassword(null);
+        }
+        return entity;
+    }
 
     @Override
     public VideoPlatform getByServerGbId(String serverGbId) {

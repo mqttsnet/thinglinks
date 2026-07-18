@@ -5,7 +5,7 @@ import com.mqttsnet.thinglinks.dto.bridge.protocol.ProtocolConnectionDto;
 /**
  * MySQL 连接参数 DTO。
  *
- * <p>⚠ {@code username} 落在 connection 段（不是 credential），与 util-pro
+ * <p>⚠ {@code username} 落在 connection 段（不是 credential），与 ThingLinks Util
  * {@code MysqlSink.MysqlConnConfig} 对齐。前端 MysqlProtocol 模块的
  * connectionFields() 也把 username 放 connection 段。
  *

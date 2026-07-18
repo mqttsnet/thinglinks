@@ -1,61 +1,36 @@
-# Database Management / 数据库管理
+# 数据库管理
 
-## Overview / 概述
+本目录保存 ThingLinks Cloud 数据库初始化脚本、增量脚本和数据库规范。
 
-This directory contains database initialization scripts, migration files, and related documentation for the ThingLinks platform.
-
-本目录包含 ThingLinks 平台的数据库初始化脚本、迁移文件及相关文档。
-
-## Directory Structure / 目录结构
-
-```
+```text
 db/
-├── README.md                    # This file / 本文件
+├── README.md
 ├── mysql/
-│   └── cloud/                   # Cloud initialization and migration scripts
-├── 数据库使用说明.md              # Database usage guide
-├── 数据库设计规范.md              # Database design standards
-└── 达梦适配.md                   # DM (Dameng) database adaptation guide
+│   ├── README.md
+│   ├── default/
+│   │   ├── baseline/
+│   │   └── migration/
+│   └── tenant/
+│       ├── baseline/
+│       └── migration/
+├── 数据库使用说明.md
+├── 数据库设计规范.md
+└── 达梦适配.md
 ```
 
-## Database Change Management / 数据库变更管理
+MySQL 全量初始化、增量升级命令和脚本维护规则见 [MySQL 脚本说明](mysql/README.md)。
 
-### Rules / 规范
+## 支持的数据库
 
-1. **Script naming convention** — Use `V{version}__{description}.sql` format (e.g., `V1.3.0__add_device_shadow_table.sql`)
-2. **One change per script** — Each script should contain a single logical change
-3. **Idempotent** — Scripts should be safe to run multiple times (use `IF NOT EXISTS`, `IF EXISTS`)
-4. **Record every change** — Update the changelog below when adding or modifying scripts
-5. **Backward compatible** — Avoid dropping columns/tables in use; use deprecation first
-6. **Include rollback** — For critical changes, provide a rollback script
+| 数据库 | 版本 | 用途 |
+| --- | --- | --- |
+| MySQL | 8.0 及以上 | 默认库与租户业务库 |
+| TDengine | 3.0 及以上 | 设备时序数据 |
+| 达梦 | 8.x | MySQL 的可选替代方案 |
 
-### Changelog / 变更记录
+## 相关说明
 
-| Date | Script | Database | Change Description | Author |
-|------|--------|----------|--------------------|--------|
-| 2026-07-18 | V1.4.0__register_rule_notification_apis.sql | thinglinks_ds_c_defaults | Register variable and preview APIs for scene linkage notifications | mqttsnet |
-| 2026-07-18 | V1.4.0__rename_web_oauth_client.sql | thinglinks_ds_c_defaults | Align the Web OAuth client identifier with the product manifest | mqttsnet |
-
-### Resource API Cache Refresh / 资源接口缓存刷新
-
-After running a migration that changes `def_resource_api`, call
-`POST /system/defResource/clearCache?applicationId=3`, then wait up to 60 seconds for the gateway
-refresh or restart the gateway.
-
-修改 `def_resource_api` 的迁移执行完成后，调用
-`POST /system/defResource/clearCache?applicationId=3`，再等待网关刷新（最长 60 秒），或重启网关。
-
-### Supported Databases / 支持的数据库
-
-| Database | Version | Usage |
-|----------|---------|-------|
-| MySQL | 8.0+ | Primary relational database |
-| TDengine | 3.0+ | Time-series data (device metrics) |
-| DM (Dameng) | 8.x | Alternative (see 达梦适配.md) |
-
-### Related Documentation / 相关文档
-
-- [Database Usage Guide / 数据库使用说明](数据库使用说明.md)
-- [Database Design Standards / 数据库设计规范](数据库设计规范.md)
-- [DM Database Adaptation / 达梦适配](达梦适配.md)
-- [Job Scheduler Database / Job 调度数据库](../../../thinglinks-job/docs/db/mysql/README.md)
+- [数据库初始化指南](数据库使用说明.md)
+- [数据库设计规范](数据库设计规范.md)
+- [达梦适配](达梦适配.md)
+- [Job 调度数据库](../../../thinglinks-job/docs/db/mysql/README.md)

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.stream.Stream;
 
 /**
- * web pro 前端组件
+ * Web 前端组件
  *
  * @author mqttsnet
  * @date 2022/3/23 20:11

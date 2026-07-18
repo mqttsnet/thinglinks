@@ -69,7 +69,7 @@ public class TdsFacadeImpl implements TdsFacade {
     @Override
     public R batchCreateSuperTable(Map<String, Object> schema) {
         try {
-            // schema 是 Feign 契约中性 Map;TdsUtils(thinglinks-util-pro 外部库)签名固定接 hutool JSONObject,
+            // schema 是 Feign 契约中性 Map;TdsUtils(thinglinks-util 外部库)签名固定接 hutool JSONObject,
             // 这里走 Map.putAll 适配 ── 只用 Map 接口,不走 JSONUtil.toBean / parseObj 的 setFormatIfDate 风险 path
             JSONObject hutoolJson = new JSONObject();
             hutoolJson.putAll(schema);

@@ -74,7 +74,7 @@ public class BridgeTraceBuilder {
 
     /**
      * 启动 trace 上下文。traceId 优先级:ContextUtil → envelope.traceId → snowflake 兜底。
-     * 同一 envelope 命中多条规则时 traceId 相同,由 trace 表联合唯一索引 (trace_id, bridge_rule_id) 区分。
+     * 同一 envelope 命中多条规则时 traceId 相同，由 trace 表的规则 ID 归一唯一索引区分。
      *
      * @param envelope 桥接消息封装
      * @param rule     命中的数据桥接规则缓存(可为 null)

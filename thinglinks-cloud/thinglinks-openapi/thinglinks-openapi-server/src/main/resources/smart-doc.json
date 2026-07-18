@@ -3,11 +3,11 @@
   "outPath": "target/doc",
   "projectName": "ThingLinks开放平台",
   "packageFilters": "com.mqttsnet.thinglinks.openapi.open.*",
-  "openUrl": "https://torna.thinglinks.mqttsnet.com/api",
-  "appToken": "1dbdf70891c64af89d052d2179dbd4e8",
+  "openUrl": "http://localhost:7700/api",
+  "appToken": "",
   "debugEnvName": "本地环境",
-  "debugEnvUrl": "http://127.0.0.1:18760",
-  "tornaDebug": true,
+  "debugEnvUrl": "http://localhost:18760",
+  "tornaDebug": false,
   "replace": true,
   "showValidation": false
 }

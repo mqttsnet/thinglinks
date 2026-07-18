@@ -30,11 +30,11 @@ public class GeneratorConfig {
      */
     private String outputDir;
     /**
-     * 前端工程thinglinks-web-pro 跟路径
+     * 前端工程 thinglinks-web 根路径
      */
     private String frontOutputDir;
     /**
-     * 前端工程thinglinks-web-pro-soybean 跟路径
+     * 前端工程 thinglinks-web-soybean 根路径
      */
     private String frontSoyOutputDir;
     /**
@@ -118,7 +118,7 @@ public class GeneratorConfig {
      * Web 端配置
      */
     @NestedConfigurationProperty
-    private WebProConfig webProConfig = new WebProConfig();
+    private WebVbenConfig webVbenConfig = new WebVbenConfig();
     /** 文件覆盖策略 */
     @NestedConfigurationProperty
     private FileOverrideStrategy fileOverrideStrategy = new FileOverrideStrategy();

@@ -51,6 +51,7 @@ public class BridgeExecutionTrace extends Entity<Long> {
 
     /**
      * 关联桥接规则 ID（出站必填；入站为订阅源拉取时为空）。
+     * 数据库通过生成列 bridge_rule_id_key 归一空值，生成列不映射到实体。
      */
     @TableField(value = "bridge_rule_id", condition = EQUAL)
     private Long bridgeRuleId;

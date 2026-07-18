@@ -54,7 +54,7 @@ public class RuleAlarmChannelServiceImpl extends SuperServiceImpl<RuleAlarmChann
      */
     @Override
     public RuleAlarmChannelSaveVO saveAlarmChannel(RuleAlarmChannelSaveVO saveVO) {
-        log.info("saveAlarmChannel saveVO:{}", saveVO);
+        log.info("Saving alarm channel. channelType={}, status={}", saveVO.getChannelType(), saveVO.getStatus());
 
         // Validate the parameters.
         checkedAlarmChannelSaveVO(saveVO);
@@ -97,7 +97,8 @@ public class RuleAlarmChannelServiceImpl extends SuperServiceImpl<RuleAlarmChann
      */
     @Override
     public RuleAlarmChannelUpdateVO updateAlarmChannel(RuleAlarmChannelUpdateVO updateVO) {
-        log.info("updateAlarmChannel updateVO:{}", updateVO);
+        log.info("Updating alarm channel. id={}, channelType={}, status={}",
+                updateVO.getId(), updateVO.getChannelType(), updateVO.getStatus());
 
         // Validate the parameters.
         checkedAlarmChannelUpdateVO(updateVO);

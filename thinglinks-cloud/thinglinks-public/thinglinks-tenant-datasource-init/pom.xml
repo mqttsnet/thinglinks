@@ -12,7 +12,7 @@
 
     <artifactId>thinglinks-tenant-datasource-init</artifactId>
     <name>${project.artifactId}</name>
-    <description>企业版-租户服务DATASOURCE多数据源模式初始化数据源插件</description>
+    <description>租户服务 DATASOURCE 多数据源模式初始化数据源插件</description>
     <dependencies>
         <dependency>
             <groupId>com.mqttsnet.thinglinks</groupId>

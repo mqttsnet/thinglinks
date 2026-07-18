@@ -111,8 +111,9 @@ public class VideoChannelSaveVO implements Serializable {
     /**
      * 设备口令
      */
-    @Schema(description = "设备口令")
+    @Schema(description = "设备口令（仅写入）", accessMode = Schema.AccessMode.WRITE_ONLY)
     @Size(max = 255, message = "设备口令长度不能超过{max}")
+    @ToString.Exclude
     private String password;
     /**
      * 经度

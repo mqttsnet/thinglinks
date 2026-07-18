@@ -20,9 +20,10 @@ thinglinks:
   security:
     algorithms:
       aes:
-        # 16字节Hex
-        key: ${THINGLINKS_SECURITY_AES_KEY:}
-        iv: ${THINGLINKS_SECURITY_AES_IV:}
+        # AES 密钥，用于数据库敏感字段加密，长度为 16、24 或 32 字节
+        key: ${THINGLINKS_SECURITY_AES_KEY}
+        # AES 初始化向量，用于 CBC 模式加解密，长度为 16 字节
+        iv: ${THINGLINKS_SECURITY_AES_IV}
         mode: "CBC"
       sm4:
         # 16字节Hex
@@ -134,7 +135,7 @@ thinglinks:
         modelRef: String
         parameterType: header
         required: true
-        defaultValue: "dGhpbmdMaW5rc19wcm86dGhpbmdMaW5rc19wcm9fc2VjcmV0"
+        defaultValue: ""
       - name: TenantId
         description: 租户ID
         modelRef: String

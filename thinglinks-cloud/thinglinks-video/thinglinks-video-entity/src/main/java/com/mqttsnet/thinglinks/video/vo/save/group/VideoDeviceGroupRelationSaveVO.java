@@ -1,6 +1,9 @@
 package com.mqttsnet.thinglinks.video.vo.save.group;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,16 +41,20 @@ public class VideoDeviceGroupRelationSaveVO implements Serializable {
      * 分组ID
      */
     @Schema(description = "分组ID")
+    @NotNull(message = "请填写分组ID")
     private Long groupId;
     /**
      * 设备唯一标识
      */
     @Schema(description = "设备唯一标识")
+    @NotBlank(message = "请填写设备唯一标识")
+    @Size(max = 50, message = "设备唯一标识长度不能超过{max}")
     private String deviceIdentification;
     /**
      * 通道唯一标识
      */
-    @Schema(description = "通道唯一标识")
+    @Schema(description = "通道唯一标识；不传、空字符串或仅半角空格表示设备级关联")
+    @Size(max = 50, message = "通道唯一标识长度不能超过{max}")
     private String channelIdentification;
     /**
      * 排序号

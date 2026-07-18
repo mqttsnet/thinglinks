@@ -84,15 +84,12 @@ public interface EchoDictType {
         String GrantType = "GrantType";
         String MsgTemplateCodeEnum = "MsgTemplateCodeEnum";
         String OrgTypeEnum = "OrgTypeEnum";
-        String ProductType = "ProductType";
         String TaskStatus = "TaskStatus";
         String DateType = "DateType";
-        String DefGenTestSimpleType2Enum = "DefGenTestSimpleType2Enum";
         String InterfaceExecModeEnum = "InterfaceExecModeEnum";
         String RoleCategoryEnum = "RoleCategoryEnum";
         String UserStatusEnum = "UserStatusEnum";
         String DataTypeEnum = "DataTypeEnum";
-        String DefGenTestTreeType2Enum = "DefGenTestTreeType2Enum";
         String LoginStatusEnum = "LoginStatusEnum";
         String PopupTypeEnum = "PopupTypeEnum";
         String TplEnum = "TplEnum";

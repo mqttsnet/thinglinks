@@ -7,7 +7,8 @@
         <id column="id" property="id"/>
         <result column="subscription_name" property="subscriptionName"/>
         <result column="channel_type" property="channelType"/>
-        <result column="channel_config" property="channelConfig"/>
+        <result column="channel_config" property="channelConfig"
+                typeHandler="com.mqttsnet.basic.mybatis.typehandler.EncryptTypeHandler"/>
         <result column="template_code" property="templateCode"/>
         <result column="event_types" property="eventTypes"/>
         <result column="priority_filter" property="priorityFilter"/>
