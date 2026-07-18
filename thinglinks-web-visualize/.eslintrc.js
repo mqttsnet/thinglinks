@@ -2,7 +2,8 @@ module.exports = {
   root: true,
   parser: 'vue-eslint-parser',
   globals: {
-    postMessage: true
+    postMessage: true,
+    __THINGLINKS_PRODUCT_INFO__: 'readonly'
   },
   parserOptions: {
     parser: '@typescript-eslint/parser',

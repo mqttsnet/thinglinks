@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://mqttsnet.com"><img src="../docs/images/logo.png" alt="ThingLinks" width="160"></a>
+<a href="https://mqttsnet.com"><img src="https://avatars.githubusercontent.com/u/94173946?s=200&v=4" alt="ThingLinks" width="160"></a>
 
 # thinglinks-web-visualize
 
@@ -15,6 +15,8 @@
 ## 简介
 
 `thinglinks-web-visualize` 是 [ThingLinks](https://github.com/mqttsnet/thinglinks) 多租户 SaaS 云物联网平台的数据可视化大屏前端。基于 Vue 3 + TypeScript + Vite 构建，支持多种图表类型、3D 可视化、地图展示等，适用于物联网数据监控和业务大屏场景。
+
+产品身份、发行信息和组件版本统一维护在 [`.thinglinks-product.env`](.thinglinks-product.env)，更新与验证命令见[产品配置快捷操作](docs/产品配置快捷操作.md)。
 
 ## 技术栈
 
@@ -96,6 +98,6 @@ pnpm lint:fix      # 代码检查并自动修复
 
 ## 开源协议
 
-本项目是 [ThingLinks](https://github.com/mqttsnet/thinglinks) 的子模块，开源协议遵循主项目 [LICENSE](../LICENSE) 和 [LICENSE-COMMERCIAL](../LICENSE-COMMERCIAL)。
+授权内容见 [LICENSE](LICENSE) 及产品元数据清单所引用的附加条款。
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

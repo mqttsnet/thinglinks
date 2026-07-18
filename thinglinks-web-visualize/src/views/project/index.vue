@@ -5,7 +5,7 @@
         <project-layout-sider></project-layout-sider>
       </n-space>
       <n-layout>
-        <layout-header-pro></layout-header-pro>
+        <layout-header-user></layout-header-user>
         <n-layout
           id="go-project-content-top"
           class="content-top"
@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { ProjectLayoutSider } from './layout/components/ProjectLayoutSider'
-import { LayoutHeaderPro } from '@/layout/components/LayoutHeaderPro'
+import { LayoutHeaderUser } from '@/layout/components/LayoutHeaderUser'
 import { LayoutTransitionMain } from '@/layout/components/LayoutTransitionMain/index'
 import { goDialog } from '@/utils'
 

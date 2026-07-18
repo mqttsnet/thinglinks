@@ -75,14 +75,11 @@ const global = {
   align_range_desc: 'ワークスペースでチャートを移動する際の吸着距離',
   // 私たちについて
   about_us: '私たちについて',
-  copyright: '著作権声明：',
-  copyright_desc: 'thinglinks 大画面可視化システムの著作権は MqttsNet コミュニティに帰属します',
-  license_note: 'ライセンス備考：',
-  license_note_desc: 'オープンソース Apache ライセンスを遵守してください。上記の声明',
-  license_note_required: '削除できません',
-  license_note_warning: '、そうでない場合は著作権侵害と見なされ、結果は自己責任となります！',
-  commercial_license: '商用ライセンス：',
-  commercial_license_desc: '著作権声明を保持したくない場合は、プロジェクトコミュニティに連絡してライセンスを取得してください',
+  product_name: '製品名：',
+  component_name: 'コンポーネント名：',
+  component_version: 'バージョン：',
+  product_edition: 'エディション：',
+  license_file: 'ライセンスファイル：',
   // 編集ツール
   import: 'インポート',
   export: 'エクスポート',
@@ -127,4 +124,3 @@ export default {
   project,
   components
 }
-

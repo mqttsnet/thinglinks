@@ -1,4 +1,5 @@
-import { defineConfig } from 'vite'
+import type { ConfigEnv, UserConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 import { OUTPUT_DIR, brotliSize, chunkSizeWarningLimit, terserOptions, rollupOptions } from './build/constant'
@@ -6,8 +7,8 @@ import viteCompression from 'vite-plugin-compression'
 import { viteMockServe } from 'vite-plugin-mock'
 import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 import { createProxy } from './build/vite/proxy';
-import { loadEnv } from 'vite';
 import { wrapperEnv } from './build/utils';
+import { loadProductConfig, toPublicProductInfo, toViteProductEnv } from './build/productConfig';
 
 function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir)
@@ -16,11 +17,21 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
 
   const root = process.cwd();
 
-  const env = loadEnv(mode, root);
+  const productConfig = loadProductConfig(root);
+  const productEnv = toViteProductEnv(productConfig);
+  const env = { ...loadEnv(mode, root), ...productEnv };
 
   const viteEnv = wrapperEnv(env);
 
   const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY, VITE_DROP_CONSOLE } = viteEnv;
+  console.log(
+    'mode=%s, root=%s, product=%s@%s, edition=%s',
+    mode,
+    root,
+    productConfig.componentCode,
+    productConfig.componentVersion,
+    productConfig.editionCode
+  );
   return {
     base: process.env.NODE_ENV === 'production' ? './' : '/',
     // 路径重定向
@@ -57,6 +68,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           additionalData: `@import "src/styles/common/style.scss";`
         }
       }
+    },
+    define: {
+      __THINGLINKS_PRODUCT_INFO__: JSON.stringify(toPublicProductInfo(productConfig)),
+      'import.meta.env.VITE_GLOB_CLIENT_ID': JSON.stringify(productEnv.VITE_GLOB_CLIENT_ID)
     },
     plugins: [
       vue(),

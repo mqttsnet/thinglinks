@@ -12,28 +12,36 @@
 
       <n-list-item>
         <n-space class="go-my-2" :size="20">
-          <n-text class="item-left">{{ t('global.copyright') }}</n-text>
-          <n-text>
-            {{ t('global.copyright_desc') }}
-          </n-text>
+          <n-text class="item-left">{{ t('global.product_name') }}</n-text>
+          <n-text>{{ productInfo.productName }}</n-text>
         </n-space>
       </n-list-item>
 
       <n-list-item>
         <n-space class="go-my-2" :size="20">
-          <n-text class="item-left">{{ t('global.license_note') }}</n-text>
-          <n-text>
-            {{ t('global.license_note_desc') }} <n-text type="error">{{ t('global.license_note_required') }}</n-text>{{ t('global.license_note_warning') }}
-          </n-text>
+          <n-text class="item-left">{{ t('global.component_name') }}</n-text>
+          <n-text>{{ productInfo.componentName }}</n-text>
         </n-space>
       </n-list-item>
 
       <n-list-item>
-        <n-space  class="go-mt-2" :size="20">
-          <n-text class="item-left">{{ t('global.commercial_license') }}</n-text>
-          <n-text>
-            {{ t('global.commercial_license_desc') }}
-          </n-text>
+        <n-space class="go-my-2" :size="20">
+          <n-text class="item-left">{{ t('global.component_version') }}</n-text>
+          <n-text>{{ productInfo.componentVersion }}</n-text>
+        </n-space>
+      </n-list-item>
+
+      <n-list-item>
+        <n-space class="go-my-2" :size="20">
+          <n-text class="item-left">{{ t('global.product_edition') }}</n-text>
+          <n-text>{{ editionName }}</n-text>
+        </n-space>
+      </n-list-item>
+
+      <n-list-item>
+        <n-space class="go-mt-2" :size="20">
+          <n-text class="item-left">{{ t('global.license_file') }}</n-text>
+          <n-text>{{ productInfo.licenseFile }}</n-text>
         </n-space>
       </n-list-item>
     </n-list>
@@ -41,8 +49,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { icon } from '@/plugins'
+import { useLangStore } from '@/store/modules/langStore/langStore'
+import { getProductEditionName, productInfo } from '@/settings/productSetting'
 
 const props = defineProps({
   modelShow: Boolean
@@ -53,6 +63,8 @@ const { HelpOutlineIcon, CloseIcon } = icon.ionicons5
 const modelShowRef = ref(false)
 
 const t = window['$t']
+const langStore = useLangStore()
+const editionName = computed(() => getProductEditionName(langStore.getLang))
 
 watch(() => props.modelShow, (newValue) => {
   modelShowRef.value = newValue

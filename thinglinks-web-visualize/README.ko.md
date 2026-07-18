@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://mqttsnet.com"><img src="../docs/images/logo.png" alt="ThingLinks" width="160"></a>
+<a href="https://mqttsnet.com"><img src="https://avatars.githubusercontent.com/u/94173946?s=200&v=4" alt="ThingLinks" width="160"></a>
 
 # thinglinks-web-visualize
 
@@ -15,6 +15,8 @@
 ## 소개
 
 `thinglinks-web-visualize`는 [ThingLinks](https://github.com/mqttsnet/thinglinks) 멀티테넌트 SaaS 클라우드 IoT 플랫폼의 데이터 시각화 및 대형 스크린 대시보드 프론트엔드입니다. Vue 3 + TypeScript + Vite로 구축되었으며, 다양한 차트 유형, 3D 시각화, 지도 디스플레이를 지원합니다.
+
+제품 정보, 에디션 및 컴포넌트 버전은 [`.thinglinks-product.env`](.thinglinks-product.env)에서 통합 관리합니다. 업데이트와 검증 명령은 [제품 설정 빠른 작업](docs/产品配置快捷操作.md)을 참조하세요.
 
 ## 기술 스택
 
@@ -57,6 +59,6 @@ pnpm build
 
 ## 라이선스
 
-본 프로젝트는 [ThingLinks](https://github.com/mqttsnet/thinglinks)의 서브모듈입니다. 라이선스는 메인 프로젝트의 [LICENSE](../LICENSE) 및 [LICENSE-COMMERCIAL](../LICENSE-COMMERCIAL)을 따릅니다.
+[LICENSE](LICENSE) 및 제품 메타데이터 매니페스트에서 참조하는 추가 약관을 확인하세요.
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

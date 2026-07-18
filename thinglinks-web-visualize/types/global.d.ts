@@ -13,4 +13,17 @@ interface Window {
   opener: any
 }
 
+declare const __THINGLINKS_PRODUCT_INFO__: {
+  productCode: string
+  productName: string
+  componentCode: string
+  componentName: string
+  componentVersion: string
+  editionCode: 'community' | 'commercial' | 'enterprise'
+  mqNamespace: string
+  licenseModel: string
+  licenseFile: string
+  editionNames: Record<'zh-CN' | 'en-US' | 'ja', string>
+}
+
 declare type Recordable<T = any> = Record<string, T>

@@ -2,7 +2,7 @@
   <!-- 工作台相关 -->
   <div class="go-chart">
     <n-layout>
-      <layout-header-pro>
+      <layout-header-user>
         <template #left>
           <header-left-btn></header-left-btn>
         </template>
@@ -12,7 +12,7 @@
         <template #ri-left>
           <header-right-btn></header-right-btn>
         </template>
-      </layout-header-pro>
+      </layout-header-user>
       <n-layout-content content-style="overflow:hidden; display: flex">
         <div style="overflow:hidden; display: flex">
           <content-charts></content-charts>
@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { loadAsyncComponent } from '@/utils'
-import { LayoutHeaderPro } from '@/layout/components/LayoutHeaderPro'
+import { LayoutHeaderUser } from '@/layout/components/LayoutHeaderUser'
 import { useContextMenu } from './hooks/useContextMenu.hook'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import { useChartHistoryStore } from '@/store/modules/chartHistoryStore/chartHistoryStore'
