@@ -7,7 +7,7 @@ export const FlipperNumberConfig: ConfigType = {
   conKey: 'VCFlipperNumber',
   title: 'project.component_flipper_number',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName.MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.DECORATES,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'flipper-number.png'

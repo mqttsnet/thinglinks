@@ -59,6 +59,6 @@ pnpm build
 
 ## ライセンス
 
-[LICENSE](LICENSE) および製品メタデータマニフェストが参照する追加条項を確認してください。
+[Apache License 2.0](LICENSE) の下で公開されています。
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

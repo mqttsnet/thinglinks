@@ -72,7 +72,7 @@ const iconNames = [
 const iconList = iconNames.map(name => ({
   ...IconConfig,
   category: ChatCategoryEnum.COMMON,
-  categoryName: getChatCategoryEnumName.COMMON,
+  get categoryName() { return getChatCategoryEnumName().COMMON },
   package: PackagesCategoryEnum.ICONS,
   image: name,
   icon: name,

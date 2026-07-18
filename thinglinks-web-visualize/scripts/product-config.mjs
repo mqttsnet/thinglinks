@@ -42,6 +42,7 @@ const forbiddenMarkerPatterns = [
   /\bconsole\.(?:debug|info|log|warn|error)\s*\([^)\r\n]*(?<!jessibuca)[-_]pro(?=['"`])/i,
   /旗舰版|商业版|社区版|开源版/,
   /\b(?:pro(?:fessional)?|enterprise|commercial|community|open\s+source)\s+edition\b/i,
+  /(?:^|[,{;\s])["']?(?:[a-z][a-z0-9]*[_-]?)?edition(?:[_-]?code)?["']?\s*(?::|=)\s*["']?(?:community|commercial|enterprise)["']?(?=\s*(?:[,;}\]#]|\/\/|$))/i,
 ];
 
 const scanExclusions = [
@@ -190,13 +191,60 @@ function getProductConfigJournalPath(projectRoot) {
   return path.resolve(projectRoot, gitPath);
 }
 
+function isUnsupportedDirectoryFsync(error) {
+  if (['EINVAL', 'ENOTSUP', 'ENOSYS'].includes(error.code)) return true;
+  return process.platform === 'win32' && ['EBADF', 'EISDIR', 'EPERM'].includes(error.code);
+}
+
+function fsyncFile(file) {
+  const descriptor = fs.openSync(file, 'r+');
+  try {
+    fs.fsyncSync(descriptor);
+  } finally {
+    fs.closeSync(descriptor);
+  }
+}
+
+function fsyncDirectory(directory) {
+  let descriptor;
+  try {
+    descriptor = fs.openSync(directory, 'r');
+    fs.fsyncSync(descriptor);
+  } catch (error) {
+    if (!isUnsupportedDirectoryFsync(error)) throw error;
+  } finally {
+    if (descriptor !== undefined) fs.closeSync(descriptor);
+  }
+}
+
+function writeFileDurably(target, content, options) {
+  fs.writeFileSync(target, content, { ...options, flag: 'wx' });
+  fsyncFile(target);
+}
+
+function renameDurably(source, target) {
+  fs.renameSync(source, target);
+  fsyncDirectory(path.dirname(target));
+}
+
+function removeFileDurably(target) {
+  try {
+    fs.unlinkSync(target);
+  } catch (error) {
+    if (error.code === 'ENOENT') return false;
+    throw error;
+  }
+  fsyncDirectory(path.dirname(target));
+  return true;
+}
+
 function writeJsonAtomically(target, value) {
   const temporary = `${target}.tmp-${process.pid}-${randomUUID()}`;
   try {
-    fs.writeFileSync(temporary, `${JSON.stringify(value)}\n`, { mode: 0o600 });
-    fs.renameSync(temporary, target);
+    writeFileDurably(temporary, `${JSON.stringify(value)}\n`, { mode: 0o600 });
+    renameDurably(temporary, target);
   } finally {
-    if (fs.existsSync(temporary)) fs.unlinkSync(temporary);
+    removeFileDurably(temporary);
   }
 }
 
@@ -247,7 +295,21 @@ function readProductConfigJournal(projectRoot) {
 }
 
 function removeProductConfigJournal(journalPath) {
-  if (fs.existsSync(journalPath)) fs.unlinkSync(journalPath);
+  let removed = false;
+  try {
+    fs.unlinkSync(journalPath);
+    removed = true;
+  } catch (error) {
+    if (error.code === 'ENOENT') return;
+    throw error;
+  }
+
+  try {
+    fsyncDirectory(path.dirname(journalPath));
+  } catch (error) {
+    if (removed) error.productConfigJournalRemoved = true;
+    throw error;
+  }
 }
 
 function replaceJournalFiles(projectRoot, files, lock, contentField) {
@@ -256,16 +318,16 @@ function replaceJournalFiles(projectRoot, files, lock, contentField) {
     for (const file of files) {
       const target = path.join(projectRoot, file.relativePath);
       const temporary = `${target}.tmp-${process.pid}-${randomUUID()}`;
-      fs.writeFileSync(temporary, file[contentField], { mode: file.mode });
       prepared.push({ target, temporary });
+      writeFileDurably(temporary, file[contentField], { mode: file.mode });
     }
     for (const item of prepared) {
       assertProductConfigLockOwnership(lock);
-      fs.renameSync(item.temporary, item.target);
+      renameDurably(item.temporary, item.target);
     }
   } finally {
     for (const item of prepared) {
-      if (fs.existsSync(item.temporary)) fs.unlinkSync(item.temporary);
+      removeFileDurably(item.temporary);
     }
   }
 }
@@ -416,6 +478,30 @@ function listTrackedAndUntrackedFiles(projectRoot) {
   return output.toString('utf8').split('\0').filter(Boolean).map(normalizeRelativePath);
 }
 
+function inspectScannableFile(projectRoot, relativePath) {
+  const root = path.resolve(projectRoot);
+  const segments = normalizeRelativePath(relativePath).split('/');
+  if (segments.some((segment) => !segment || segment === '.' || segment === '..')) {
+    throw productError(`Git 文件路径不安全：${relativePath}`);
+  }
+
+  let current = root;
+  for (const segment of segments) {
+    current = path.join(current, segment);
+    let stats;
+    try {
+      stats = fs.lstatSync(current);
+    } catch (error) {
+      if (error.code === 'ENOENT') return { exists: false };
+      throw productError(`无法检查待扫描文件 ${relativePath}：${error.message}`);
+    }
+    if (stats.isSymbolicLink()) return { exists: true, symbolicLink: true };
+  }
+
+  const stats = fs.lstatSync(current);
+  return { exists: true, symbolicLink: false, regularFile: stats.isFile(), absolutePath: current };
+}
+
 function findForbiddenMarkers(projectRoot, values, overlays = new Map()) {
   const protectedPaths = values.THINGLINKS_SYNC_PROTECTED_PATHS.split(',').map((item) =>
     normalizeRelativePath(item.trim()),
@@ -427,16 +513,22 @@ function findForbiddenMarkers(projectRoot, values, overlays = new Map()) {
   for (const file of listTrackedAndUntrackedFiles(projectRoot)) {
     if (isExcluded(file)) continue;
 
-    const absolutePath = path.join(projectRoot, file);
+    const inspected = inspectScannableFile(projectRoot, file);
+    if (!inspected.exists) continue;
+    if (inspected.symbolicLink) {
+      findings.push(`${file}: 待扫描文件不得使用符号链接`);
+      continue;
+    }
+    if (!inspected.regularFile) continue;
+
     let buffer;
     if (overlays.has(file)) {
       buffer = Buffer.from(overlays.get(file), 'utf8');
     } else {
       try {
-        if (!fs.statSync(absolutePath).isFile()) continue;
-        buffer = fs.readFileSync(absolutePath);
-      } catch {
-        continue;
+        buffer = fs.readFileSync(inspected.absolutePath);
+      } catch (error) {
+        throw productError(`无法读取待扫描文件 ${file}：${error.message}`);
       }
     }
     if (hasForbiddenMarker(file)) {
@@ -489,8 +581,9 @@ function replaceFilesAtomically(projectRoot, changes, lock) {
       const original = fs.readFileSync(target, 'utf8');
       const mode = fs.statSync(target).mode;
       const temporary = `${target}.tmp-${process.pid}-${Math.random().toString(16).slice(2)}`;
-      fs.writeFileSync(temporary, content, { mode });
-      prepared.push({ relativePath, target, temporary, original, next: content, mode });
+      const preparedFile = { relativePath, target, temporary, original, next: content, mode };
+      prepared.push(preparedFile);
+      writeFileDurably(temporary, content, { mode });
     }
     assertProductConfigLockOwnership(lock);
     if (fs.existsSync(journalPath)) {
@@ -509,7 +602,7 @@ function replaceFilesAtomically(projectRoot, changes, lock) {
     });
   } catch (error) {
     for (const item of prepared) {
-      if (fs.existsSync(item.temporary)) fs.unlinkSync(item.temporary);
+      removeFileDurably(item.temporary);
     }
     throw productError(`无法准备原子更新：${error.message}`);
   }
@@ -520,10 +613,14 @@ function replaceFilesAtomically(projectRoot, changes, lock) {
       assertProductConfigLockOwnership(lock);
       fs.renameSync(item.temporary, item.target);
       replaced.push(item);
+      fsyncDirectory(path.dirname(item.target));
     }
     assertProductConfigLockOwnership(lock);
     removeProductConfigJournal(journalPath);
   } catch (error) {
+    if (error.productConfigJournalRemoved) {
+      throw productError(`原子更新已提交，但无法确认事务 journal 删除已持久化：${error.message}`);
+    }
     const rollbackFiles = [];
     let rollbackError;
     try {
@@ -536,14 +633,14 @@ function replaceFilesAtomically(projectRoot, changes, lock) {
         const rollback = `${item.target}.rollback-${process.pid}-${Math.random()
           .toString(16)
           .slice(2)}`;
-        fs.writeFileSync(rollback, item.original, { mode: item.mode });
+        writeFileDurably(rollback, item.original, { mode: item.mode });
         rollbackFiles.push(rollback);
         try {
           assertProductConfigLockOwnership(lock);
         } catch {
           throw productError(`原子更新失败且锁归属已变化，未执行回滚：${error.message}`);
         }
-        fs.renameSync(rollback, item.target);
+        renameDurably(rollback, item.target);
       }
       assertProductConfigLockOwnership(lock);
       removeProductConfigJournal(journalPath);
@@ -551,7 +648,7 @@ function replaceFilesAtomically(projectRoot, changes, lock) {
       rollbackError = currentRollbackError;
     } finally {
       for (const rollback of rollbackFiles) {
-        if (fs.existsSync(rollback)) fs.unlinkSync(rollback);
+        removeFileDurably(rollback);
       }
     }
     if (rollbackError) {
@@ -561,7 +658,7 @@ function replaceFilesAtomically(projectRoot, changes, lock) {
     throw productError(`原子更新失败，已回滚：${error.message}`);
   } finally {
     for (const item of prepared) {
-      if (fs.existsSync(item.temporary)) fs.unlinkSync(item.temporary);
+      removeFileDurably(item.temporary);
     }
   }
 }

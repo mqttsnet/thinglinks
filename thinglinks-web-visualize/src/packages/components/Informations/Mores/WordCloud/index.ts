@@ -7,7 +7,7 @@ export const WordCloudConfig: ConfigType = {
   conKey: 'VCWordCloud',
   title: 'project.component_word_cloud',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.INFORMATIONS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'words_cloud.png'

@@ -7,8 +7,7 @@ export const PipelineVConfig: ConfigType = {
   conKey: 'VCPipelineV',
   title: 'project.component_pipeline_v',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName.MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.DECORATES,
   image: 'Pipeline_V.png'
 }
-

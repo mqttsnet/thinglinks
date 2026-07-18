@@ -1,14 +1,19 @@
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
-import { useSync } from './useSync.hook' 
 import { WinKeyboard, MacKeyboard, MenuEnum } from '@/enums/editPageEnum'
 import throttle from 'lodash/throttle'
 import debounce from 'lodash/debounce'
 import keymaster from 'keymaster'
-import { setKeyboardDressShow } from '@/utils'
+import {
+  getTrackedKeyboardKey,
+  isEditableKeyboardTarget,
+  resetKeyboardHoldState,
+  setKeyboardDressShow,
+  updateKeyboardHoldState
+} from '@/utils'
+import type { KeyboardHoldState } from '@/utils'
 
 // Keymaster可以支持识别以下组合键： ⇧，shift，option，⌥，alt，ctrl，control，command，和⌘
 const chartEditStore = useChartEditStore()
-const useSyncIns = useSync()
 const winCtrlMerge = (e: string) => `${WinKeyboard.CTRL}+${e}`
 const winShiftMerge = (e: string) => `${WinKeyboard.SHIFT}+${e}`
 const winAltMerge = (e: string) => `${WinKeyboard.ALT}+${e}`
@@ -111,43 +116,43 @@ const macKeyList: Array<string> = [
   macKeyboardValue.show
 ]
 
+let keyboardState: KeyboardHoldState = resetKeyboardHoldState()
+let windowBlurHandler: (() => void) | undefined
+
+const syncKeyboardState = (state: KeyboardHoldState) => {
+  keyboardState = state
+  window.$KeyboardActive = { ...state }
+  setKeyboardDressShow(state)
+}
+
+const resetKeyboardState = () => syncKeyboardState(resetKeyboardHoldState())
+
 // 处理键盘记录
 const keyRecordHandle = () => {
-  // 默认赋值
-  window.$KeyboardActive = {
-    ctrl: false,
-    space: false
-  }
+  if (windowBlurHandler) window.removeEventListener('blur', windowBlurHandler)
+  resetKeyboardState()
 
   document.onkeydown = (e: KeyboardEvent) => {
-    const { keyCode } = e
-    if (keyCode == 32 && e.target == document.body) e.preventDefault()
+    const key = getTrackedKeyboardKey(e)
+    if (!key) return
+    if (key === 'space' && isEditableKeyboardTarget(e.target)) return
+    if (key === 'space') e.preventDefault()
 
-    if ([17, 32].includes(keyCode) && window.$KeyboardActive) {
-      setKeyboardDressShow(e.keyCode)
-      switch (keyCode) {
-        case 17: window.$KeyboardActive.ctrl = true; break
-        case 32: window.$KeyboardActive.space = true; break
-      }
-    }
+    syncKeyboardState(updateKeyboardHoldState(keyboardState, key, true))
   }
 
   document.onkeyup = (e: KeyboardEvent) => {
-    const { keyCode } = e
-    if (keyCode == 32 && e.target == document.body) e.preventDefault()
-
-    if ([17, 32].includes(keyCode) && window.$KeyboardActive) {
-      setKeyboardDressShow()
-      switch (keyCode) {
-        case 17: window.$KeyboardActive.ctrl = false; break
-        case 32: window.$KeyboardActive.space = false; break
-      }
-    }
+    const key = getTrackedKeyboardKey(e)
+    if (!key) return
+    syncKeyboardState(updateKeyboardHoldState(keyboardState, key, false))
   }
+
+  windowBlurHandler = resetKeyboardState
+  window.addEventListener('blur', windowBlurHandler)
 }
 
 // 初始化监听事件
-export const useAddKeyboard = () => {
+export const useAddKeyboard = (saveProject?: () => unknown) => {
   const throttleTime = 50
   const switchHandle = (keyboardValue: typeof winKeyboardValue, e: string) => {
     switch (e) {
@@ -223,7 +228,7 @@ export const useAddKeyboard = () => {
 
       // 保存 ct+s
       case keyboardValue.save:
-        keymaster(e, throttle(() => { useSyncIns.dataSyncUpdate(); return false }, 200))
+        keymaster(e, throttle(() => { saveProject?.(); return false }, 200))
         break;
     }
   }
@@ -239,8 +244,11 @@ export const useAddKeyboard = () => {
 
 // 卸载监听事件
 export const useRemoveKeyboard = () => {
-  document.onkeydown = () => {};
-  document.onkeyup = () => {};
+  document.onkeydown = null
+  document.onkeyup = null
+  if (windowBlurHandler) window.removeEventListener('blur', windowBlurHandler)
+  windowBlurHandler = undefined
+  resetKeyboardState()
 
   winKeyList.forEach((key: string) => {
     keymaster.unbind(key)

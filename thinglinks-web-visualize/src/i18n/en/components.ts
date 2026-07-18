@@ -28,14 +28,12 @@ export default {
     bottom: 'Bottom',
     enable: 'Enable',
     disable: 'Disable',
-    show: 'Show',
     hide: 'Hide',
     shadow: 'Shadow',
     showShadow: 'Show Shadow',
     blur: 'Blur',
     border: 'Border',
     borderWidth: 'Border Width',
-    borderColor: 'Border Color',
     gap: 'Gap',
     background: 'Background',
     backgroundColor: 'Background Color',
@@ -43,7 +41,6 @@ export default {
     source: 'Source',
     customSource: 'Custom Source',
     control: 'Control',
-    player: 'Player',
     indicator: 'Indicator',
     dotType: 'Style',
     dotPlacement: 'Position',
@@ -51,9 +48,7 @@ export default {
     effect: 'Effect',
     fit: 'Style',
     sort: 'Sort',
-    range: 'Range',
     block: 'Block',
-    topDistance: 'Top Distance',
     isShow: 'Is Show',
     hoverSize: 'Hover Size',
     formatter: 'Display Type',
@@ -80,7 +75,6 @@ export default {
     timeConfig: 'Time Config',
     gradientParams: 'Gradient Params',
     startValue: 'Start Value',
-    endValue: 'End Value',
     offsetAngle: 'Offset Angle',
     colorRotation: 'Color Rotation',
     info: 'Info',
@@ -107,7 +101,6 @@ export default {
     dataName: 'Data Name',
     percentage: 'Percentage',
     namePercentage: 'Name:Percentage',
-    line: 'Line',
     solidPoint: 'Solid Point',
     graph: 'Graph',
     solidPointSize: 'Solid Point Size',
@@ -272,4 +265,3 @@ export default {
     waitTimeSuffix: 'Carousel Time(s)'
   }
 }
-

@@ -69,8 +69,7 @@ import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore
 import { EditCanvasTypeEnum } from '@/store/modules/chartEditStore/chartEditStore.d'
 import {
   fetchRouteParamsLocation,
-  fetchPathByName,
-  routerTurnByPath,
+  routerTurnByNameWithQuery,
   setSessionStorage,
   getLocalStorage
 } from '@/utils'
@@ -139,12 +138,19 @@ const editHandle = () => {
   window['$message'].warning(t('global.sync_content_tip'))
   chartEditStore.setEditCanvas(EditCanvasTypeEnum.IS_CODE_EDIT, true)
   setTimeout(() => {
-    // 获取id路径
-    const path = fetchPathByName(EditEnum.CHART_EDIT_NAME, 'href')
-    if (!path) return
     const id = fetchRouteParamsLocation()
+    if (!id) return
     updateToSession(id)
-    routerTurnByPath(path, [id], undefined, true)
+    const isMyProject = routerParamsInfo.query?.isMyProject
+      ? Number(routerParamsInfo.query.isMyProject)
+      : 0
+    routerTurnByNameWithQuery(
+      EditEnum.CHART_EDIT_NAME,
+      { identification: id, isMyProject },
+      undefined,
+      undefined,
+      true
+    )
   }, 2000)
 }
 
@@ -225,6 +231,7 @@ $asideBottom: 70px;
 
 @include go('chart-edit-tools') {
   @extend .go-background-filter;
+  z-index: 9;
   position: absolute;
   display: flex;
   justify-content: space-around;

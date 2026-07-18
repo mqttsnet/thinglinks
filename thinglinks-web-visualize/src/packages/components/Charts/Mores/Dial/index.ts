@@ -7,7 +7,7 @@ export const DialConfig: ConfigType = {
   conKey: 'VCDial',
   title: 'project.component_dial',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.COMMON,
   image:'dial.png'

@@ -7,7 +7,7 @@ export const IframeConfig: ConfigType = {
   conKey: 'VCIframe',
   title: 'project.component_iframe',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.INFORMATIONS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'iframe.png'

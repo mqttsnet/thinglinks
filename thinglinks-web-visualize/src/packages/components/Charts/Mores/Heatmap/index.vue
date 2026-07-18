@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, PropType } from 'vue'
+import { shallowRef, watch, computed, PropType } from 'vue'
 import VChart from 'vue-echarts'
 import { useCanvasInitOptions } from '@/hooks/useCanvasInitOptions.hook'
 import dataJson from './data.json'
@@ -55,7 +55,7 @@ const option = computed(() => {
   return mergeTheme(props.chartConfig.option, props.themeSetting, includes)
 })
 
-const vChartRef = ref<typeof VChart>()
+const vChartRef = shallowRef<InstanceType<typeof VChart>>()
 
 const dataSetHandle = (dataset: typeof dataJson) => {
   const { seriesData, xAxis, yAxis } = dataset

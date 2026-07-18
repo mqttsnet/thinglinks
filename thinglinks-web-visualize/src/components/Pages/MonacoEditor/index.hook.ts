@@ -1,4 +1,4 @@
-import { ref, onBeforeUnmount, nextTick } from 'vue'
+import { shallowRef, onBeforeUnmount, nextTick } from 'vue'
 import { useDesignStore } from '@/store/modules/designStore/designStore'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
 
@@ -7,7 +7,7 @@ const designStore = useDesignStore()
 
   let monacoEditor: monaco.editor.IStandaloneCodeEditor | null = null
   let initReadOnly = false
-  const el = ref<HTMLElement | null>(null)
+  const el = shallowRef<HTMLElement | null>(null)
 
   // 格式化
   const onFormatDoc = async () => {

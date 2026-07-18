@@ -15,7 +15,7 @@ export const ProcessConfig: ConfigType = {
   // 子分类目录
   category: ChatCategoryEnum.MORE,
   // 子分类目录
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   // 包分类
   package: PackagesCategoryEnum.CHARTS,
   // 图片

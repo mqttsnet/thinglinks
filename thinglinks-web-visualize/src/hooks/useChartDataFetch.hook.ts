@@ -1,4 +1,5 @@
-import { ref, toRefs, toRaw, watch } from 'vue'
+import { onUnmounted, shallowRef, toRefs, toRaw, watch } from 'vue'
+import type { WatchStopHandle } from 'vue'
 import type VChart from 'vue-echarts'
 import { customizeHttp } from '@/api/http'
 import { useChartDataPondFetch } from '@/hooks/'
@@ -22,8 +23,9 @@ export const useChartDataFetch = (
   useChartEditStore: ChartEditStoreType,
   updateCallback?: (...args: any) => any
 ) => {
-  const vChartRef = ref<typeof VChart | null>(null)
-  let fetchInterval: any = 0
+  const vChartRef = shallowRef<InstanceType<typeof VChart> | null>(null)
+  let fetchInterval: ReturnType<typeof setInterval> | undefined
+  let stopRequestWatch: WatchStopHandle | undefined
 
   // 数据池
   const { addGlobalDataInterface } = useChartDataPondFetch()
@@ -61,63 +63,65 @@ export const useChartDataFetch = (
     // 非请求类型
     if (requestDataType.value !== RequestDataTypeEnum.AJAX) return
 
-    try {
-      // 处理地址
-      // @ts-ignore
-      if (requestUrl?.value) {
-        // requestOriginUrl 允许为空
-        const completePath = requestOriginUrl && requestOriginUrl.value + requestUrl.value
-        if (!completePath) return
+    // 处理地址
+    if (requestUrl?.value) {
+      // requestOriginUrl 允许为空
+      const completePath = `${requestOriginUrl?.value || ''}${requestUrl.value}`
+      if (!completePath) return
 
-        clearInterval(fetchInterval)
+      if (fetchInterval) clearInterval(fetchInterval)
+      stopRequestWatch?.()
 
-        const fetchFn = async () => {
+      const fetchFn = async () => {
+        try {
           const res = await customizeHttp(toRaw(targetComponent.request), toRaw(chartEditStore.getRequestGlobalConfig))
           if (res) {
-            try {
-              const filter = targetComponent.filter
-              const { data } = res
-              echartsUpdateHandle(newFunctionHandle(data, res, filter))
-              // 更新回调函数
-              if (updateCallback) {
-                updateCallback(newFunctionHandle(data, res, filter))
-              }
-            } catch (error) {
-              console.error(error)
-            }
+            const filter = targetComponent.filter
+            const { data } = res
+            const nextData = newFunctionHandle(data, res, filter)
+            echartsUpdateHandle(nextData)
+            // 更新回调函数
+            if (updateCallback) await updateCallback(nextData)
           }
+        } catch (error) {
+          // 轮询请求必须自行收口，避免产生未处理的 Promise rejection。
+          console.error('获取图表数据失败', error)
         }
-
-        // 普通初始化与组件交互处理监听
-        watch(
-          () => targetComponent.request,
-          () => {
-            fetchFn()
-          },
-          {
-            immediate: true,
-            deep: true
-          }
-        )
-
-        // 定时时间
-        const time = targetInterval && targetInterval.value ? targetInterval.value : globalRequestInterval.value
-        // 单位
-        const unit = targetInterval && targetInterval.value ? targetUnit.value : globalUnit.value
-        // 开启轮询
-        if (time) fetchInterval = setInterval(fetchFn, intervalUnitHandle(time, unit))
       }
-      // eslint-disable-next-line no-empty
-    } catch (error) {
-      console.log(error)
+
+      // 普通初始化与组件交互处理监听
+      stopRequestWatch = watch(
+        () => targetComponent.request,
+        () => {
+          void fetchFn()
+        },
+        {
+          immediate: true,
+          deep: true
+        }
+      )
+
+      // 定时时间
+      const targetRequestInterval = targetInterval?.value
+      const time = targetRequestInterval || globalRequestInterval.value
+      // 单位
+      const unit = targetRequestInterval ? targetUnit.value : globalUnit.value
+      // 开启轮询
+      if (time) fetchInterval = setInterval(() => void fetchFn(), intervalUnitHandle(time, unit))
     }
   }
 
   if (isPreview()) {
     // 判断是否是数据池类型
     targetComponent.request.requestDataType === RequestDataTypeEnum.Pond
-      ? addGlobalDataInterface(targetComponent, useChartEditStore, updateCallback || echartsUpdateHandle)
+      ? addGlobalDataInterface(targetComponent, updateCallback || echartsUpdateHandle)
       : requestIntervalFn()
   }
+
+  onUnmounted(() => {
+    if (fetchInterval) clearInterval(fetchInterval)
+    stopRequestWatch?.()
+  })
+
   return { vChartRef }
 }

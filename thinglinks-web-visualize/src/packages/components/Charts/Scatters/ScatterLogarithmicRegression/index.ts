@@ -7,7 +7,7 @@ export const ScatterLogarithmicRegressionConfig: ConfigType = {
   conKey: 'VCScatterLogarithmicRegression',
   title: 'project.component_scatter_logarithmic_regression',
   category: ChatCategoryEnum.SCATTER,
-  categoryName: getChatCategoryEnumName().SCATTER,
+  get categoryName() { return getChatCategoryEnumName().SCATTER },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'scatter-logarithmic-regression.png'

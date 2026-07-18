@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import { router } from '@/router';
+import { isAxiosError } from 'axios';
+import router from '@/router';
 /* enum */ 
 import {
   APPLICATION_ID_KEY,
@@ -21,7 +22,7 @@ import type { DefUserInfoResultVO } from '/#/store';
 import { getUserInfoById, loginApi, logout, switchTenantAndOrg } from '@/api/thinglinks/common/oauth'
 /* utils */
 import { getAuthCache, setAuthCache } from '@/utils/auth';
-import { routerTurnByName, cryptoEncode, setLocalStorage } from '@/utils'
+import { clearLocalStorage, routerTurnByName } from '@/utils'
 /* hooks */
 import { useGlobSetting } from '@/hooks/setting'
 
@@ -29,10 +30,17 @@ const globSetting = useGlobSetting();
 const DEF_APP_ID = globSetting.defApplicationId;
 const { GO_LOGIN_INFO_STORE } = StorageEnum;
 
+// 清理旧版本保存在 localStorage 中的登录表单（其中可能包含密码）。
+try {
+  clearLocalStorage(GO_LOGIN_INFO_STORE)
+} catch (error) {
+  console.warn('清理旧版本登录信息失败', error)
+}
+
 interface UserState {
   userInfo: Nullable<DefUserInfoResultVO>;
   token?: string;
-  roleList: RoleEnum[];
+  roleList: string[];
   sessionTimeout?: boolean;
   lastUpdateTime: number;
   refreshToken?: string;
@@ -40,6 +48,10 @@ interface UserState {
   tenantId?: string;
   applicationId: string;
   applicationName: string;
+}
+
+interface ApiErrorPayload {
+  msg?: string;
 }
 
 export const useUserStore = defineStore({
@@ -65,27 +77,27 @@ export const useUserStore = defineStore({
   }),
   getters: {
     // 当前用户信息
-    getUserInfo(): DefUserInfoResultVO {
-      return this.userInfo || getAuthCache<DefUserInfoResultVO>(USER_INFO_KEY) || {};
+    getUserInfo(): DefUserInfoResultVO | null {
+      return this.userInfo || getAuthCache(USER_INFO_KEY) || null;
     },
     // 当前用户的Token
     getToken(): string {
-      return this.token || getAuthCache<string>(TOKEN_KEY);
+      return this.token || String(getAuthCache(TOKEN_KEY) || '');
     },
     getLastUpdateTime(): number {
       return this.lastUpdateTime;
     },
     // 当前租户ID
     getTenantId(): string {
-      return this.tenantId || getAuthCache<string>(TENANT_ID_KEY);
+      return this.tenantId || String(getAuthCache(TENANT_ID_KEY) || '');
     },
     // 当前应用ID
     getApplicationId(): string {
-      return this.applicationId || getAuthCache<string>(APPLICATION_ID_KEY);
+      return this.applicationId || String(getAuthCache(APPLICATION_ID_KEY) || '');
     },
     // 当前应用名称
     getApplicationName(): string {
-      return this.applicationName || getAuthCache<string>(APPLICATION_NAME_KEY);
+      return this.applicationName || getAuthCache(APPLICATION_NAME_KEY) || '';
     },
     getSessionTimeout(): boolean {
       return !!this.sessionTimeout;
@@ -147,20 +159,11 @@ export const useUserStore = defineStore({
       },
     ): Promise<DefUserInfoResultVO | null> {
       try {
-        const { goHome = true, mode, ...loginParams } = params;
-        const data:any = await loginApi(loginParams, mode);
-        if (data.isSuccess) {
-          const { token, tenantId, refreshToken, expiration } = data.data;
+        const { goHome: _goHome = true, mode, ...loginParams } = params;
+        const response = await loginApi(loginParams, mode);
+        if (response.isSuccess && response.data) {
+          const { token, tenantId, refreshToken, expiration } = response.data;
           window['$message'].success(window['$t']('login.login_success'));
-          setLocalStorage(
-            GO_LOGIN_INFO_STORE,
-            cryptoEncode(
-              JSON.stringify({
-                username: params.username,
-                password: params.password,
-              })
-            )
-          );
           // save token
           this.setRefreshToken(refreshToken);
           this.setExpireTime(expiration);
@@ -170,33 +173,34 @@ export const useUserStore = defineStore({
           
           return this.getUserInfoAction(mode, true);
         }else{
-          window['$message'].error(data.msg)
-          return Promise.reject(data);
+          window['$message'].error(response.msg)
+          return Promise.reject(response);
         }
       } catch (error) {
-        const {data} = error.response
-        window['$message'].error(data.msg)
-        return Promise.reject(data);
+        if (isAxiosError<ApiErrorPayload>(error) && error.response?.data) {
+          const errorData = error.response.data
+          window['$message'].error(errorData.msg || '登录失败')
+          return Promise.reject(errorData);
+        }
+        return Promise.reject(error);
       }
     },
     // 刷新时加载用户信息
     async getUserInfoAction(
-      mode: ErrorMessageMode = 'none',
+      _mode: ErrorMessageMode = 'none',
       isSetAppId = false,
     ): Promise<DefUserInfoResultVO> {
-      const userInfo = await getUserInfoById()
+      const response = await getUserInfoById()
+      if (!response.isSuccess || !response.data) {
+        throw new Error(response.errorMsg || response.msg || '获取用户信息失败')
+      }
+      const userInfo = response.data
       if (isSetAppId) {
         this.setApplicationId(userInfo?.defApplication?.id ?? DEF_APP_ID)
         this.setApplicationName(userInfo?.defApplication?.name ?? '')
       }
-      if (userInfo) {
-        //@ts-ignore
-        this.setUserInfo(userInfo)
-        //@ts-ignore
-        return userInfo
-      } else {
-        throw new Error('获取用户信息失败')
-      }
+      this.setUserInfo(userInfo)
+      return userInfo
     },
     setUserInfo(info: DefUserInfoResultVO | null) {
       this.userInfo = info;
@@ -220,10 +224,12 @@ export const useUserStore = defineStore({
           token: this.getToken,
         };
         await logout(param).finally(() => {
+          clearLocalStorage(GO_LOGIN_INFO_STORE)
           this.setToken('');
           routerTurnByName(PageEnum.BASE_LOGIN_NAME);
         });
       } else {
+        clearLocalStorage(GO_LOGIN_INFO_STORE)
         this.setToken('');
         routerTurnByName(PageEnum.BASE_LOGIN_NAME);
       }

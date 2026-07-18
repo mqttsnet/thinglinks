@@ -28,14 +28,12 @@ export default {
     bottom: '下',
     enable: '有効',
     disable: '無効',
-    show: '表示',
     hide: '非表示',
     shadow: '影',
     showShadow: '影を表示',
     blur: 'ぼかし',
     border: '枠線',
     borderWidth: '枠線の太さ',
-    borderColor: '枠線の色',
     gap: '間隔',
     background: '背景',
     backgroundColor: '背景色',
@@ -43,7 +41,6 @@ export default {
     source: 'ソース',
     customSource: 'カスタムソース',
     control: 'コントロール',
-    player: 'プレーヤー',
     indicator: 'インジケーター',
     dotType: 'スタイル',
     dotPlacement: '位置',
@@ -51,9 +48,7 @@ export default {
     effect: '効果',
     fit: 'スタイル',
     sort: '並び替え',
-    range: '範囲',
     block: 'ブロック',
-    topDistance: '上部の距離',
     isShow: '表示するか',
     hoverSize: 'ホバー時のサイズ',
     formatter: '表示タイプ',
@@ -80,7 +75,6 @@ export default {
     timeConfig: '時間設定',
     gradientParams: 'グラデーションパラメータ',
     startValue: '開始値',
-    endValue: '終了値',
     offsetAngle: 'オフセット角度',
     colorRotation: '色の回転',
     info: '情報',
@@ -107,7 +101,6 @@ export default {
     dataName: 'データ名',
     percentage: 'パーセンテージ',
     namePercentage: '列名:パーセンテージ',
-    line: '線',
     solidPoint: '実点',
     graph: 'グラフ',
     solidPointSize: '実点のサイズ',
@@ -272,4 +265,3 @@ export default {
     waitTimeSuffix: 'カルーセル時間(s)'
   }
 }
-

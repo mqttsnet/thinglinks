@@ -7,7 +7,7 @@ export const CapsuleChartConfig: ConfigType = {
   conKey: 'VCCapsuleChart',
   title: 'project.component_capsule_chart',
   category: ChatCategoryEnum.BAR,
-  categoryName: getChatCategoryEnumName().BAR,
+  get categoryName() { return getChatCategoryEnumName().BAR },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'capsule.png'

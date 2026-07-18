@@ -98,6 +98,6 @@ pnpm lint:fix      # Lint and auto-fix
 
 ## License
 
-See [LICENSE](LICENSE) and the additional terms referenced by the product metadata manifest.
+Licensed under the [Apache License 2.0](LICENSE).
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

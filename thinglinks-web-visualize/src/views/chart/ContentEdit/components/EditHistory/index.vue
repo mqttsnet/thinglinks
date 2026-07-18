@@ -132,7 +132,8 @@ const getHistoryActionName = (actionType: HistoryActionTypeEnum | HistoryTargetT
     [HistoryActionTypeEnum.SHOW]: t('project.show'),
     [HistoryTargetTypeEnum.CANVAS]: t('project.history_canvas_init')
   }
-  return actionNameMap[actionType] || historyActionTypeName[actionType] || ''
+  const fallbackActionNameMap: Partial<Record<HistoryActionTypeEnum | HistoryTargetTypeEnum, string>> = historyActionTypeName
+  return actionNameMap[actionType] || fallbackActionNameMap[actionType] || ''
 }
 
 // 设置类型对应文本

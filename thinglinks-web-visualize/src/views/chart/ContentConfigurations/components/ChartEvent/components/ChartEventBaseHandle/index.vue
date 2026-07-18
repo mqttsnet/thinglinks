@@ -125,7 +125,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, toRefs, toRaw } from 'vue'
-import { MonacoEditor } from '@/components/Pages/MonacoEditor'
+import MonacoEditor from '@/components/Pages/MonacoEditor/index.vue'
 import { useTargetData } from '../../../hooks/useTargetData.hook'
 import { BaseEvent } from '@/enums/eventEnum'
 import { icon } from '@/plugins'

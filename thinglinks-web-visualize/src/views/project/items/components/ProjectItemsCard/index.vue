@@ -17,11 +17,7 @@
             object-fit="contain"
             height="180"
             preview-disabled
-            :src="
-              cardData.indexImageId?.indexOf('http') > -1
-                ? cardData.indexImageId
-                : requireUrl('project/moke-20211219181327.png')
-            "
+            :src="cardImage"
             :alt="cardData.projectName || cardData.templateName"
             :fallback-src="requireErrorImg()"
           ></n-image>
@@ -123,7 +119,15 @@ const canDelete = computed(() => {
 
 // title
 const cardTitle = computed(() => {
-  return props.cardData.projectName || props.cardData.projectIdentification || props.cardData.templateName || props.cardData.templateIdentification || ''
+  const cardData = props.cardData
+  return cardData?.projectName || cardData?.projectIdentification || cardData?.templateName || cardData?.templateIdentification || ''
+})
+
+const cardImage = computed(() => {
+  const cardData = props.cardData
+  if (cardData?.indexImage) return cardData.indexImage
+  if (cardData?.indexImageId?.startsWith('http')) return cardData.indexImageId
+  return requireUrl('project/moke-20211219181327.png')
 })
 
 // 按钮列表：根据 isMyProject 和 status 控制编辑按钮显示

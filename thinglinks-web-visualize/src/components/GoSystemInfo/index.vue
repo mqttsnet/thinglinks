@@ -13,7 +13,7 @@
       <n-list-item>
         <n-space class="go-my-2" :size="20">
           <n-text class="item-left">{{ t('global.product_name') }}</n-text>
-          <n-text>{{ productInfo.productName }}</n-text>
+          <n-text>{{ productName }}</n-text>
         </n-space>
       </n-list-item>
 
@@ -52,7 +52,7 @@
 import { computed, ref, watch } from 'vue'
 import { icon } from '@/plugins'
 import { useLangStore } from '@/store/modules/langStore/langStore'
-import { getProductEditionName, productInfo } from '@/settings/productSetting'
+import { getProductEditionName, getProductName, productInfo } from '@/settings/productSetting'
 
 const props = defineProps({
   modelShow: Boolean
@@ -64,6 +64,7 @@ const modelShowRef = ref(false)
 
 const t = window['$t']
 const langStore = useLangStore()
+const productName = computed(() => getProductName(langStore.getLang))
 const editionName = computed(() => getProductEditionName(langStore.getLang))
 
 watch(() => props.modelShow, (newValue) => {

@@ -7,7 +7,7 @@ export const TextBarrageConfig: ConfigType = {
   conKey: 'VCTextBarrage',
   title: 'project.component_text_barrage',
   category: ChatCategoryEnum.TEXT,
-  categoryName: getChatCategoryEnumName().TEXT,
+  get categoryName() { return getChatCategoryEnumName().TEXT },
   package: PackagesCategoryEnum.INFORMATIONS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'text_barrage.png'

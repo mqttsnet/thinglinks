@@ -96,7 +96,9 @@ const global = {
   updating: '正在进行更新...',
   source_window_closed: '源窗口已关闭，视图同步失败！',
   overwrite_source_confirm: '是否覆盖源视图内容? 此操作不可撤！',
-  syncing_content: '正在同步内容...',
+  source_save_success: '内容已保存并同步到源窗口',
+  source_save_failed: '内容保存失败，请稍后重试',
+  source_project_invalid: '未找到有效的项目数据，请重新打开编辑器',
   content_format_error: '内容格式有误',
   // 文件上传
   only_support_json_file: '仅支持上传 【JSON】 格式文件，请重新上传！',

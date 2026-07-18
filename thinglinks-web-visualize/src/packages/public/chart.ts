@@ -4,6 +4,8 @@ import { EchartsDataType } from '../index.d'
 import { globalThemeJson } from '@/settings/chartThemes/index'
 import type VChart from 'vue-echarts'
 
+export type VChartInstance = InstanceType<typeof VChart>
+
 /**
  * * 合并 color 和全局配置项
  * @param option 配置
@@ -40,7 +42,7 @@ export const setData = (option: any, data: EchartsDataType) => {
  * @param instance
  * @param data
  */
-export const setOption = <T extends typeof VChart | undefined, D>(instance: T, data: D) => {
+export const setOption = <D>(instance: VChartInstance | null | undefined, data: D) => {
   if (!instance) return
   const option = instance.getOption()
   option.dataset = null

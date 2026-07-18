@@ -1,12 +1,8 @@
-import { toRaw } from 'vue'
+import { onUnmounted, toRaw } from 'vue'
 import { customizeHttp } from '@/api/http'
 import { CreateComponentType } from '@/packages/index.d'
-import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import { RequestGlobalConfigType, RequestDataPondItemType } from '@/store/modules/chartEditStore/chartEditStore.d'
 import { newFunctionHandle, intervalUnitHandle } from '@/utils'
-
-// 获取类型
-type ChartEditStoreType = typeof useChartEditStore
 
 // 数据池存储的数据类型
 type DataPondMapType = {
@@ -24,9 +20,7 @@ const newPondItemInterval = (
   dataPondMapItem?: DataPondMapType[]
 ) => {
   if (!dataPondMapItem) return
-  let fetchInterval: any = 0
-
-  clearInterval(fetchInterval)
+  let fetchInterval: ReturnType<typeof setInterval> | undefined
 
   // 请求
   const fetchFn = async () => {
@@ -34,23 +28,20 @@ const newPondItemInterval = (
       const res = await customizeHttp(toRaw(requestDataPondItem.dataPondRequestConfig), toRaw(requestGlobalConfig))
 
       if (res) {
-        try {
-          // 遍历更新回调函数
-          dataPondMapItem.forEach(item => {
-            item.updateCallback(newFunctionHandle(res?.data, res, item.filter))
-          })
-        } catch (error) {
-          console.error(error)
-          return error
-        }
+        // 同步和异步回调都纳入统一异常处理。
+        await Promise.all(
+          dataPondMapItem.map(item =>
+            Promise.resolve(item.updateCallback(newFunctionHandle(res.data, res, item.filter)))
+          )
+        )
       }
     } catch (error) {
-      return error
+      console.error('获取数据池数据失败', error)
     }
   }
 
   // 立即调用
-  fetchFn()
+  void fetchFn()
 
   const targetInterval = requestDataPondItem.dataPondRequestConfig.requestInterval
   const targetUnit = requestDataPondItem.dataPondRequestConfig.requestIntervalUnit
@@ -63,22 +54,28 @@ const newPondItemInterval = (
   // 单位
   const unit = targetInterval  ? targetUnit : globalUnit
   // 开启轮询
-  if (time) fetchInterval = setInterval(fetchFn, intervalUnitHandle(time, unit))
+  if (time) fetchInterval = setInterval(() => void fetchFn(), intervalUnitHandle(time, unit))
+
+  return () => {
+    if (fetchInterval) clearInterval(fetchInterval)
+  }
 }
 
 /**
  * 数据池接口处理
  */
 export const useChartDataPondFetch = () => {
+  const stopIntervals: Array<() => void> = []
+
+  const stopAllIntervals = () => {
+    stopIntervals.splice(0).forEach(stop => stop())
+  }
+
   // 新增全局接口
   const addGlobalDataInterface = (
     targetComponent: CreateComponentType,
-    useChartEditStore: ChartEditStoreType,
     updateCallback: (...args: any) => any
   ) => {
-    const chartEditStore = useChartEditStore()
-    const { requestDataPond } = chartEditStore.getRequestGlobalConfig
-
     // 组件对应的数据池 Id
     const requestDataPondId = targetComponent.request.requestDataPondId as string
     // 新增数据项
@@ -92,20 +89,25 @@ export const useChartDataPondFetch = () => {
 
   // 清除旧数据
   const clearMittDataPondMap = () => {
+    stopAllIntervals()
     mittDataPondMap.clear()
   }
 
   // 初始化数据池
   const initDataPond = (requestGlobalConfig: RequestGlobalConfigType) => {
+    stopAllIntervals()
     const { requestDataPond } = requestGlobalConfig
     // 根据 mapId 查找对应的数据池配置
     for (let pondKey of mittDataPondMap.keys()) {
       const requestDataPondItem = requestDataPond.find(item => item.dataPondId === pondKey)
       if (requestDataPondItem) {
-        newPondItemInterval(requestGlobalConfig, requestDataPondItem, mittDataPondMap.get(pondKey))
+        const stop = newPondItemInterval(requestGlobalConfig, requestDataPondItem, mittDataPondMap.get(pondKey))
+        if (stop) stopIntervals.push(stop)
       }
     }
   }
+
+  onUnmounted(stopAllIntervals)
 
   return {
     addGlobalDataInterface,

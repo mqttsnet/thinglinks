@@ -1,13 +1,18 @@
-import { onUnmounted } from 'vue';
+import { getCurrentInstance, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import html2canvas from 'html2canvas'
-import { getUUID, httpErrorHandle, fetchRouteParamsLocation, base64toFile, dataURLToBlob, JSONStringify, JSONParse } from '@/utils'
+import {
+  dataURLToBlob,
+  fetchRouteParamsLocation,
+  getUUID,
+  httpErrorHandle,
+  JSONParse,
+  JSONStringify
+} from '@/utils'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import { EditCanvasTypeEnum, ChartEditStoreEnum, ProjectInfoEnum, ChartEditStorage } from '@/store/modules/chartEditStore/chartEditStore.d'
 import { EditCanvasConfigEnum } from '@/store/modules/chartEditStore/chartEditStore.d'
 import { useChartHistoryStore } from '@/store/modules/chartHistoryStore/chartHistoryStore'
-import { StylesSetting } from '@/components/Pages/ChartItemSetting'
-import { useSystemStore } from '@/store/modules/systemStore/systemStore'
 import { useChartLayoutStore } from '@/store/modules/chartLayoutStore/chartLayoutStore'
 import { ChartLayoutStoreEnum } from '@/store/modules/chartLayoutStore/chartLayoutStore.d'
 import { fetchChartComponent, fetchConfigComponent, createComponent } from '@/packages/index'
@@ -20,10 +25,11 @@ import { uploadFile, getIndexImage } from '@/api/path'
 import { fetchProjectApi, updateProjectApi } from '@/api/thinglinks/view/projectApiSelector'
 // 画布枚举
 import { SyncEnum } from '@/enums/editPageEnum'
-import { CreateComponentType, CreateComponentGroupType, ConfigType } from '@/packages/index.d'
+import { CreateComponentType, CreateComponentGroupType } from '@/packages/index.d'
 import { BaseEvent, EventLife } from '@/enums/eventEnum'
 import { PublicGroupConfigClass } from '@/packages/public/publicConfig'
 import merge from 'lodash/merge'
+import type { ProjectDetailsVO } from '@/api/thinglinks/view/projectModel'
 
 /**
  * * 画布-版本升级对旧数据无法兼容的补丁
@@ -105,7 +111,6 @@ export const useSync = () => {
   const route = useRoute()
   const chartEditStore = useChartEditStore()
   const chartHistoryStore = useChartHistoryStore()
-  const systemStore = useSystemStore()
   const chartLayoutStore = useChartLayoutStore()
   /**
    * * 组件动态注册
@@ -229,17 +234,18 @@ export const useSync = () => {
    * @param projectData 项目数据
    * @returns
    */
-  const updateStoreInfo = async (projectData: {
-    id: string,
-    projectName: string,
-    templateName: string,
-    templateIdentification: string,
-    indexImage: string,
-    indexImageId: string
-    remarks: string,
-    state: number
-  }) => {
-    const { id, projectName, templateName, templateIdentification, remarks, indexImage, indexImageId = '', status, projectIdentification } = projectData
+  const updateStoreInfo = async (projectData: ProjectDetailsVO) => {
+    const {
+      id,
+      projectName = '',
+      templateName = '',
+      templateIdentification = '',
+      remark = '',
+      indexImage = '',
+      indexImageId = '',
+      status = projectData.state ?? -1,
+      projectIdentification = ''
+    } = projectData
 
     // ID
     chartEditStore.setProjectInfo(ProjectInfoEnum.PROJECT_ID, id)
@@ -252,7 +258,7 @@ export const useSync = () => {
     // 模板标识
     chartEditStore.setProjectInfo(ProjectInfoEnum.TEMPLATE_IDENTIFICATION, templateIdentification)
     // 描述
-    chartEditStore.setProjectInfo(ProjectInfoEnum.REMARKS, remarks)
+    chartEditStore.setProjectInfo(ProjectInfoEnum.REMARKS, remark)
     // 缩略图
     chartEditStore.setProjectInfo(ProjectInfoEnum.THUMBNAIL, indexImage)
     // 发布
@@ -260,9 +266,17 @@ export const useSync = () => {
     // 背景图片
     // 因接口原因首先根据背景图片Id获取背景图片地址
     if (indexImageId) {
-      const getIndexImageRes = await getIndexImage([indexImageId])
-      if (getIndexImageRes.code === ResultEnum.DATA_SUCCESS) {
-        chartEditStore.setEditCanvasConfig(EditCanvasConfigEnum.BACKGROUND_IMAGE, getIndexImageRes?.data[indexImageId])
+      try {
+        const getIndexImageRes = await getIndexImage([indexImageId])
+        if (getIndexImageRes?.code === ResultEnum.DATA_SUCCESS) {
+          chartEditStore.setEditCanvasConfig(
+            EditCanvasConfigEnum.BACKGROUND_IMAGE,
+            getIndexImageRes.data[indexImageId]
+          )
+        }
+      } catch (error) {
+        console.error('获取项目背景图失败', error)
+        window['$message'].warning('项目已加载，但背景图获取失败')
       }
     }
   }
@@ -274,83 +288,129 @@ export const useSync = () => {
     // t，导致图层重复
     chartEditStore.componentList = []
     chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.START)
+    let succeeded = false
+
+    try {
       // 优先从 query 参数中获取 identification 和 isMyProject
-      const identification = route.query?.identification as string || fetchRouteParamsLocation()
+      const identification = (route.query?.identification as string) || fetchRouteParamsLocation()
       const isMyProject = route.query?.isMyProject ? Number(route.query.isMyProject) : 0
       const res = await fetchProjectApi({ identification }, isMyProject)
       if (res && res.code === ResultEnum.DATA_SUCCESS) {
-          updateStoreInfo(res.data)
-          // 更新全局数据
+        await updateStoreInfo(res.data)
+        // 更新全局数据
         res.data.content && (await updateComponent(JSONParse(res.data.content)))
-        setTimeout(() => {
-          chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.SUCCESS)
-        }, 1000)
+        succeeded = true
         return
-      } else {
-        chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.FAILURE)
-        httpErrorHandle()
       }
+      httpErrorHandle()
+    } catch (error) {
+      console.error('获取项目数据失败', error)
+      httpErrorHandle()
+    } finally {
+      chartEditStore.setEditCanvas(
+        EditCanvasTypeEnum.SAVE_STATUS,
+        succeeded ? SyncEnum.SUCCESS : SyncEnum.FAILURE
+      )
+    }
   }
 
   // * 数据保存
-  const dataSyncUpdate = throttle(async (updateImg = true) => {
-    // 优先从 query 参数中获取 identification 和 isMyProject，兼容新的 router.query 形式
-    const identification = route.query?.identification as string;
-    if(!identification) return
+  const persistData = async (
+    updateImg = true,
+    storageInfo: ChartEditStorage = chartEditStore.getStorageInfo,
+    projectId = chartEditStore.getProjectInfo[ProjectInfoEnum.PROJECT_ID],
+    isMyProjectOverride?: number,
+    notifyFailure = true
+  ): Promise<boolean> => {
+    const isMyProject =
+      isMyProjectOverride ?? (route.query?.isMyProject ? Number(route.query.isMyProject) : 0)
 
-    // 获取 isMyProject 参数
-    const isMyProject = route.query?.isMyProject ? Number(route.query.isMyProject) : 0
-
-    let projectId = chartEditStore.getProjectInfo[ProjectInfoEnum.PROJECT_ID];
-    if(projectId === null || projectId === ''){
-      window['$message'].error('数据初未始化成功,请刷新页面！')
-      return
+    if (!projectId) {
+      chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.FAILURE)
+      if (notifyFailure) window['$message'].error('项目数据未初始化成功，请刷新页面')
+      return false
     }
 
     chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.START)
 
-    // 异常处理：缩略图上传失败不影响JSON的保存
+    // 缩略图上传失败不影响项目 JSON 保存。
     try {
+      let indexImageId: string | undefined
       if (updateImg) {
-        // 获取缩略图片
-        const range = document.querySelector('.go-edit-range') as HTMLElement
-        // 生成图片
-        const canvasImage: HTMLCanvasElement = await html2canvas(range, {
-          backgroundColor: null,
-          allowTaint: true,
-          useCORS: true
-        })
+        try {
+          const range = document.querySelector<HTMLElement>('.go-edit-range')
+          if (!range) throw new Error('未找到可视化编辑区域')
 
-        // 上传预览图 转换为Blob后再次new File进行文件命名
-        const file = new File([dataURLToBlob(canvasImage.toDataURL('image/png'))], `${getUUID()}.png`, { type: "image/png" });
-        const uploadRes = await uploadFile({
-          file,
-          bizType: 'DEF__VIEW__AVATAR',
-        })
-
-        // 保存数据
-        let params = new FormData()
-        params.append('id', projectId)
-        params.append('indexImageId', uploadRes?.data.id || '')
-        params.append('content', JSONStringify(chartEditStore.getStorageInfo || {}))
-        params.append('projectName', chartEditStore.getStorageInfo.editCanvasConfig.projectName || '')
-        const res = await updateProjectApi(params, isMyProject)
-
-        if (res && res.code === ResultEnum.DATA_SUCCESS) {
-          // 成功状态
-          setTimeout(() => {
-            chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.SUCCESS)
-          }, 1000)
-          return
+          const canvasImage = await html2canvas(range, {
+            backgroundColor: null,
+            allowTaint: true,
+            useCORS: true
+          })
+          const file = new File(
+            [dataURLToBlob(canvasImage.toDataURL('image/png'))],
+            `${getUUID()}.png`,
+            { type: 'image/png' }
+          )
+          const uploadRes = await uploadFile({
+            file,
+            bizType: 'DEF__VIEW__AVATAR'
+          })
+          if (uploadRes?.code !== ResultEnum.DATA_SUCCESS || !uploadRes.data?.id) {
+            throw new Error(uploadRes?.msg || '缩略图上传接口返回失败')
+          }
+          indexImageId = uploadRes.data.id
+        } catch (error) {
+          console.error('更新项目缩略图失败', error)
+          window['$message'].warning('缩略图更新失败，项目数据仍会继续保存')
         }
-        // 失败状态
-        chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.FAILURE)
       }
-    } catch (e) {
-      console.log(e)
+
+      const params = new FormData()
+      params.append('id', projectId)
+      if (indexImageId) params.append('indexImageId', indexImageId)
+      params.append('content', JSONStringify(storageInfo))
+      params.append('projectName', storageInfo.editCanvasConfig?.projectName || '')
+
+      const res = await updateProjectApi(params, isMyProject)
+      if (!res || res.code !== ResultEnum.DATA_SUCCESS) {
+        throw new Error(res?.msg || '保存接口返回失败')
+      }
+
+      chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.SUCCESS)
+      return true
+    } catch (error) {
+      console.error('保存项目数据失败', error)
+      chartEditStore.setEditCanvas(EditCanvasTypeEnum.SAVE_STATUS, SyncEnum.FAILURE)
+      if (notifyFailure) window['$message'].error('项目数据保存失败，请稍后重试')
+      return false
     }
-    
-  }, 3000)
+  }
+
+  const throttledDataSyncUpdate = throttle(persistData, 3000)
+
+  if (getCurrentInstance()) {
+    onUnmounted(() => {
+      throttledDataSyncUpdate.cancel()
+    })
+  }
+
+  // JSON 编辑器保存需要立即完成并可被 await，不进入缩略图自动保存的节流窗口。
+  const dataSyncUpdate = (
+    updateImg = true,
+    storageInfo: ChartEditStorage = chartEditStore.getStorageInfo,
+    projectId = chartEditStore.getProjectInfo[ProjectInfoEnum.PROJECT_ID],
+    isMyProjectOverride?: number,
+    notifyFailure = true
+  ) =>
+    updateImg
+      ? throttledDataSyncUpdate(
+          true,
+          storageInfo,
+          projectId,
+          isMyProjectOverride,
+          notifyFailure
+        )
+      : persistData(false, storageInfo, projectId, isMyProjectOverride, notifyFailure)
 
   // * 定时处理
   const intervalDataSyncUpdate = () => {

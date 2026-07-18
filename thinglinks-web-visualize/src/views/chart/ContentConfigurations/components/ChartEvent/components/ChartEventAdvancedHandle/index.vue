@@ -159,7 +159,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, watch, toRefs, toRaw } from 'vue'
-import { MonacoEditor } from '@/components/Pages/MonacoEditor'
+import MonacoEditor from '@/components/Pages/MonacoEditor/index.vue'
 import { useTargetData } from '../../../hooks/useTargetData.hook'
 import { templateList } from './importTemplate'
 import { npmPkgs } from '@/hooks'

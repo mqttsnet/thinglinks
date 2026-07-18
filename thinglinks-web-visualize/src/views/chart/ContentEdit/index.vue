@@ -1,5 +1,4 @@
 <template>
-  <!-- <edit-rule></edit-rule> -->
   <content-box
     id="go-chart-edit-layout"
     :flex="true"
@@ -13,7 +12,7 @@
     @dragover="dragoverHandle"
     @dragenter="dragoverHandle"
   >
-    <edit-rule>
+    <edit-rule ref="editRuleRef">
       <!-- 画布主体 -->
       <div id="go-chart-edit-content" @contextmenu="handleContextMenu">
         <!-- 展示 -->
@@ -30,7 +29,7 @@
               <!-- 分组 -->
               <edit-group
                 v-if="item.isGroup"
-                :groupData="(item as CreateComponentGroupType)"
+                :groupData="item as CreateComponentGroupType"
                 :groupIndex="index"
               ></edit-group>
 
@@ -40,9 +39,9 @@
                 :data-id="item.id"
                 :index="index"
                 :style="{
-                ...useComponentStyle(item.attr, index),
-                ...getBlendModeStyle(item.styles) as any
-              }"
+                  ...useComponentStyle(item.attr, index),
+                  ...(getBlendModeStyle(item.styles) as any),
+                }"
                 :item="item"
                 @click="mouseClickHandle($event, item)"
                 @mousedown="mousedownHandle($event, item)"
@@ -77,13 +76,17 @@
 
     <!-- 底部控制 -->
     <template #bottom>
-      <EditBottom></EditBottom>
+      <EditBottom
+        :reset="editRuleMethods.reset"
+        :zoom-in="editRuleMethods.zoomIn"
+        :zoom-out="editRuleMethods.zoomOut"
+      ></EditBottom>
     </template>
   </content-box>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, computed, provide } from 'vue'
+import { onMounted, onUnmounted, computed, provide, ref } from 'vue'
 import { chartColors } from '@/settings/chartThemes/index'
 import { MenuEnum } from '@/enums/editPageEnum'
 import { CreateComponentType, CreateComponentGroupType } from '@/packages/index.d'
@@ -93,7 +96,7 @@ import { MenuOptionsItemType } from '@/views/chart/hooks/useContextMenu.hook.d'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import { SCALE_KEY } from '@/views/preview/hooks/useScale.hook'
 import { useLayout } from './hooks/useLayout.hook'
-import { useAddKeyboard } from '../hooks/useKeyboard.hook'
+import { useAddKeyboard, useRemoveKeyboard } from '../hooks/useKeyboard.hook'
 import { useSync } from '../hooks/useSync.hook'
 import { dragHandle, dragoverHandle, mousedownHandleUnStop, useMouseHandle } from './hooks/useDrag.hook'
 import { useComponentStyle, useSizeStyle } from './hooks/useStyle.hook'
@@ -108,10 +111,17 @@ import { EditTools } from './components/EditTools'
 
 const chartEditStore = useChartEditStore()
 const { handleContextMenu } = useContextMenu()
-const { dataSyncFetch, intervalDataSyncUpdate } = useSync()
+const { dataSyncFetch, dataSyncUpdate, intervalDataSyncUpdate } = useSync()
 
 // 编辑时注入scale变量，消除警告
 provide(SCALE_KEY, null)
+
+const editRuleRef = ref()
+const editRuleMethods = {
+  reset: () => editRuleRef.value?.reset?.(),
+  zoomIn: () => editRuleRef.value?.zoomIn?.(),
+  zoomOut: () => editRuleRef.value?.zoomOut?.()
+}
 
 // 布局处理
 useLayout(async () => {})
@@ -182,11 +192,15 @@ const rangeStyle = computed(() => {
 
 onMounted(() => {
   // 键盘事件
-  useAddKeyboard()
+  useAddKeyboard(() => dataSyncUpdate())
   // 获取数据
   dataSyncFetch()
   // 定时更新数据
   intervalDataSyncUpdate()
+})
+
+onUnmounted(() => {
+  useRemoveKeyboard()
 })
 </script>
 
@@ -199,8 +213,8 @@ onMounted(() => {
   @include background-image('background-point');
 
   @include goId('chart-edit-content') {
-    border-radius: 10px;
     overflow: hidden;
+    height: 100%;
     @extend .go-transition;
     @include fetch-theme('box-shadow');
 

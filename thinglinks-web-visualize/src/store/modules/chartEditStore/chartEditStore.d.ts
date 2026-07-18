@@ -12,6 +12,7 @@ import {
 } from '@/enums/httpEnum'
 import { PreviewScaleEnum } from '@/enums/styleEnum'
 import type { ChartColorsNameType, CustomColorsType, GlobalThemeJsonType } from '@/settings/chartThemes/index'
+import type { Raw } from 'vue'
 
 // 项目数据枚举
 export enum ProjectInfoEnum {
@@ -63,8 +64,8 @@ export enum EditCanvasTypeEnum {
 // 编辑区域（临时）
 export type EditCanvasType = {
   // 编辑区域 DOM
-  [EditCanvasTypeEnum.EDIT_LAYOUT_DOM]: HTMLElement | null
-  [EditCanvasTypeEnum.EDIT_CONTENT_DOM]: HTMLElement | null
+  [EditCanvasTypeEnum.EDIT_LAYOUT_DOM]: Raw<HTMLElement> | null
+  [EditCanvasTypeEnum.EDIT_CONTENT_DOM]: Raw<HTMLElement> | null
   // 偏移大小
   [EditCanvasTypeEnum.OFFSET]: number
   // 缩放

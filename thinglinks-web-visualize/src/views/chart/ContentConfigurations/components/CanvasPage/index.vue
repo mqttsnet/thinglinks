@@ -287,10 +287,10 @@ const customRequest = (options: UploadCustomRequestOptions) => {
       if (uploadRes && uploadRes.code === ResultEnum.DATA_SUCCESS) {
         if (uploadRes.data.id) {
           const getIndexImageRes = await getIndexImage([uploadRes.data.id])
-          if (getIndexImageRes.code === ResultEnum.DATA_SUCCESS) {
+          if (getIndexImageRes?.code === ResultEnum.DATA_SUCCESS) {
             chartEditStore.setEditCanvasConfig(
               EditCanvasConfigEnum.BACKGROUND_IMAGE,
-              getIndexImageRes?.data[uploadRes.data.id]
+              getIndexImageRes.data[uploadRes.data.id]
             )
           }
         }

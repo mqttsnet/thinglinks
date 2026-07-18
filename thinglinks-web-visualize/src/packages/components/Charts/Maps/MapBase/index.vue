@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, reactive, watch, ref, nextTick } from 'vue'
+import { PropType, reactive, watch, shallowRef, nextTick } from 'vue'
 import config, { includes } from './config'
 import VChart from 'vue-echarts'
 import { useCanvasInitOptions } from '@/hooks/useCanvasInitOptions.hook'
@@ -49,7 +49,7 @@ use([
 const option = reactive({
   value: mergeTheme(props.chartConfig.option, props.themeSetting, includes)
 })
-const vChartRef = ref<typeof VChart>()
+const vChartRef = shallowRef<InstanceType<typeof VChart>>()
 
 //动态获取json注册地图
 const getGeojson = (regionId: string) => {

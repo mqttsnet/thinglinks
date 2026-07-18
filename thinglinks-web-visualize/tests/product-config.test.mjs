@@ -43,6 +43,8 @@ THINGLINKS_LICENSE_FILE=LICENSE-COMMERCIAL
 THINGLINKS_WEB_CLIENT_ID=thinglinks_web
 # 消息命名空间
 THINGLINKS_MQ_NAMESPACE=thinglinks
+# 产品公共站点
+THINGLINKS_PUBLIC_SITE_URL=https://thinglinks.mqttsnet.com
 # 清单版本
 THINGLINKS_PRODUCT_MANIFEST_VERSION=1
 # 仓库独立维护路径
@@ -418,6 +420,52 @@ test('临时文件准备后锁引用切换时每次 rename 前阻止旧 writer �
   assert.equal(getProductLockOid(root), liveOid);
 });
 
+test('临时文件 fsync 失败时不残留未登记的 tmp 文件', (t) => {
+  const root = createFixture(t);
+  const manifestPath = path.join(root, '.thinglinks-product.env');
+  const packagePath = path.join(root, 'package.json');
+  const manifestBefore = fs.readFileSync(manifestPath, 'utf8');
+  const packageBefore = fs.readFileSync(packagePath, 'utf8');
+  const originalOpenSync = fs.openSync;
+  const originalFsyncSync = fs.fsyncSync;
+  const fdPaths = new Map();
+  let injected = false;
+
+  fs.openSync = function (file, flags, mode) {
+    const fd = originalOpenSync(file, flags, mode);
+    fdPaths.set(fd, path.resolve(String(file)));
+    return fd;
+  };
+  fs.fsyncSync = function (fd) {
+    const target = fdPaths.get(fd);
+    if (!injected && target?.startsWith(root) && target.includes('.tmp-')) {
+      injected = true;
+      const error = new Error('synthetic temporary fsync EIO');
+      error.code = 'EIO';
+      throw error;
+    }
+    return originalFsyncSync(fd);
+  };
+
+  try {
+    assert.throws(
+      () => runCli(['set-version', '1.2.3'], root),
+      /synthetic temporary fsync EIO/,
+    );
+  } finally {
+    fs.openSync = originalOpenSync;
+    fs.fsyncSync = originalFsyncSync;
+  }
+
+  assert.equal(injected, true);
+  assert.equal(fs.readFileSync(manifestPath, 'utf8'), manifestBefore);
+  assert.equal(fs.readFileSync(packagePath, 'utf8'), packageBefore);
+  assert.deepEqual(
+    fs.readdirSync(root).filter((entry) => entry.includes('.tmp-')),
+    [],
+  );
+});
+
 test('首个 rename 后锁引用切换时不再写后续目标或执行无锁回滚', (t) => {
   const root = createFixture(t);
   const manifestPath = path.join(root, '.thinglinks-product.env');
@@ -462,6 +510,120 @@ test('首个 rename 后锁引用切换时不再写后续目标或执行无锁回
   assert.equal(getProductLockOid(root), liveOid);
 });
 
+test('首个目标 rename 后目录 fsync EIO 时回滚已替换文件', (t) => {
+  const root = createFixture(t);
+  const manifestPath = path.join(root, '.thinglinks-product.env');
+  const packagePath = path.join(root, 'package.json');
+  const manifestBefore = fs.readFileSync(manifestPath, 'utf8');
+  const packageBefore = fs.readFileSync(packagePath, 'utf8');
+  const gitDir = execFileSync('git', ['rev-parse', '--git-dir'], {
+    cwd: root,
+    encoding: 'utf8',
+  }).trim();
+  const journalPath = path.resolve(root, gitDir, PRODUCT_JOURNAL_FILE);
+  const originalOpenSync = fs.openSync;
+  const originalFsyncSync = fs.fsyncSync;
+  const originalRenameSync = fs.renameSync;
+  const fdPaths = new Map();
+  let firstTargetRenamed = false;
+  let injected = false;
+
+  fs.openSync = function (file, flags, mode) {
+    const fd = originalOpenSync(file, flags, mode);
+    fdPaths.set(fd, path.resolve(String(file)));
+    return fd;
+  };
+  fs.renameSync = function (source, target) {
+    const result = originalRenameSync(source, target);
+    if (target === manifestPath && String(source).includes('.tmp-')) {
+      firstTargetRenamed = true;
+    }
+    return result;
+  };
+  fs.fsyncSync = function (fd) {
+    if (!injected && firstTargetRenamed && fdPaths.get(fd) === root) {
+      injected = true;
+      const error = new Error('synthetic first target directory fsync EIO');
+      error.code = 'EIO';
+      throw error;
+    }
+    return originalFsyncSync(fd);
+  };
+
+  try {
+    assert.throws(
+      () => runCli(['set-version', '1.2.3'], root),
+      /synthetic first target directory fsync EIO/,
+    );
+  } finally {
+    fs.openSync = originalOpenSync;
+    fs.fsyncSync = originalFsyncSync;
+    fs.renameSync = originalRenameSync;
+  }
+
+  assert.equal(firstTargetRenamed, true);
+  assert.equal(injected, true);
+  assert.equal(fs.readFileSync(manifestPath, 'utf8'), manifestBefore);
+  assert.equal(fs.readFileSync(packagePath, 'utf8'), packageBefore);
+  assert.equal(fs.existsSync(journalPath), false);
+});
+
+test('journal 删除后的目录 fsync EIO 不回滚已提交文件或形成混合版本', (t) => {
+  const root = createFixture(t);
+  const manifestPath = path.join(root, '.thinglinks-product.env');
+  const packagePath = path.join(root, 'package.json');
+  const journalPath = path.resolve(
+    root,
+    execFileSync('git', ['rev-parse', '--git-path', PRODUCT_JOURNAL_FILE], {
+      cwd: root,
+      encoding: 'utf8',
+    }).trim(),
+  );
+  const originalOpenSync = fs.openSync;
+  const originalFsyncSync = fs.fsyncSync;
+  const originalUnlinkSync = fs.unlinkSync;
+  const fdPaths = new Map();
+  let journalRemoved = false;
+  let injected = false;
+
+  fs.openSync = function (file, flags, mode) {
+    const fd = originalOpenSync(file, flags, mode);
+    fdPaths.set(fd, path.resolve(String(file)));
+    return fd;
+  };
+  fs.unlinkSync = function (file) {
+    const result = originalUnlinkSync(file);
+    if (path.resolve(String(file)) === journalPath) journalRemoved = true;
+    return result;
+  };
+  fs.fsyncSync = function (fd) {
+    const target = fdPaths.get(fd);
+    if (journalRemoved && target === path.dirname(journalPath)) {
+      injected = true;
+      const error = new Error('synthetic journal directory fsync EIO');
+      error.code = 'EIO';
+      throw error;
+    }
+    return originalFsyncSync(fd);
+  };
+
+  try {
+    assert.throws(
+      () => runCli(['set-version', '1.2.3'], root),
+      /原子更新已提交.*journal 删除已持久化/,
+    );
+  } finally {
+    fs.openSync = originalOpenSync;
+    fs.fsyncSync = originalFsyncSync;
+    fs.unlinkSync = originalUnlinkSync;
+  }
+
+  assert.equal(injected, true);
+  assert.match(fs.readFileSync(manifestPath, 'utf8'), /^THINGLINKS_COMPONENT_VERSION=1\.2\.3$/m);
+  assert.equal(JSON.parse(fs.readFileSync(packagePath, 'utf8')).version, '1.2.3');
+  assert.equal(fs.existsSync(journalPath), false);
+});
+
 test('未完成的多文件更新由持久 journal 在下一次写入前恢复', (t) => {
   const root = createFixture(t);
   const manifestPath = path.join(root, '.thinglinks-product.env');
@@ -498,6 +660,191 @@ test('未完成的多文件更新由持久 journal 在下一次写入前恢复',
   assert.equal(fs.existsSync(journalPath), false);
   assert.match(fs.readFileSync(manifestPath, 'utf8'), /^THINGLINKS_COMPONENT_VERSION=1\.0\.8$/m);
   assert.equal(JSON.parse(fs.readFileSync(packagePath, 'utf8')).version, '1.0.8');
+});
+
+test('journal 和目标文件在 rename 前同步文件、rename 后同步父目录', (t) => {
+  const root = createFixture(t);
+  const manifestPath = path.join(root, '.thinglinks-product.env');
+  const packagePath = path.join(root, 'package.json');
+  const gitDir = execFileSync('git', ['rev-parse', '--git-dir'], {
+    cwd: root,
+    encoding: 'utf8',
+  }).trim();
+  const journalPath = path.resolve(root, gitDir, PRODUCT_JOURNAL_FILE);
+  const originalOpenSync = fs.openSync;
+  const originalFsyncSync = fs.fsyncSync;
+  const originalRenameSync = fs.renameSync;
+  const originalUnlinkSync = fs.unlinkSync;
+  const fdPaths = new Map();
+  const events = [];
+
+  fs.openSync = function (file, flags, mode) {
+    const fd = originalOpenSync(file, flags, mode);
+    fdPaths.set(fd, path.resolve(String(file)));
+    return fd;
+  };
+  fs.fsyncSync = function (fd) {
+    events.push({ type: 'fsync', path: fdPaths.get(fd) });
+    return originalFsyncSync(fd);
+  };
+  fs.renameSync = function (source, target) {
+    events.push({
+      type: 'rename',
+      source: path.resolve(String(source)),
+      target: path.resolve(String(target)),
+    });
+    return originalRenameSync(source, target);
+  };
+  fs.unlinkSync = function (target) {
+    events.push({ type: 'unlink', target: path.resolve(String(target)) });
+    return originalUnlinkSync(target);
+  };
+
+  try {
+    runCli(['set-version', '1.2.3'], root);
+  } finally {
+    fs.openSync = originalOpenSync;
+    fs.fsyncSync = originalFsyncSync;
+    fs.renameSync = originalRenameSync;
+    fs.unlinkSync = originalUnlinkSync;
+  }
+
+  for (const target of [journalPath, manifestPath, packagePath]) {
+    const renameIndex = events.findIndex(
+      (event) => event.type === 'rename' && event.target === target,
+    );
+    assert.notEqual(renameIndex, -1, `缺少 ${target} 的 rename`);
+    const rename = events[renameIndex];
+    assert.equal(
+      events
+        .slice(0, renameIndex)
+        .some((event) => event.type === 'fsync' && event.path === rename.source),
+      true,
+      `${target} rename 前应 fsync 临时文件`,
+    );
+    assert.deepEqual(
+      events[renameIndex + 1],
+      { type: 'fsync', path: path.dirname(target) },
+      `${target} rename 后应立即 fsync 父目录`,
+    );
+  }
+
+  const journalUnlinkIndex = events.findIndex(
+    (event) => event.type === 'unlink' && event.target === journalPath,
+  );
+  assert.notEqual(journalUnlinkIndex, -1, '成功事务应删除 journal');
+  assert.deepEqual(events[journalUnlinkIndex + 1], {
+    type: 'fsync',
+    path: path.dirname(journalPath),
+  });
+});
+
+test('临时文件清理后同步父目录', (t) => {
+  const root = createFixture(t);
+  const gitDir = execFileSync('git', ['rev-parse', '--git-dir'], {
+    cwd: root,
+    encoding: 'utf8',
+  }).trim();
+  const journalPath = path.resolve(root, gitDir, PRODUCT_JOURNAL_FILE);
+  const originalOpenSync = fs.openSync;
+  const originalFsyncSync = fs.fsyncSync;
+  const originalRenameSync = fs.renameSync;
+  const originalUnlinkSync = fs.unlinkSync;
+  const fdPaths = new Map();
+  const events = [];
+
+  fs.openSync = function (file, flags, mode) {
+    const fd = originalOpenSync(file, flags, mode);
+    fdPaths.set(fd, path.resolve(String(file)));
+    return fd;
+  };
+  fs.fsyncSync = function (fd) {
+    events.push({ type: 'fsync', path: fdPaths.get(fd) });
+    return originalFsyncSync(fd);
+  };
+  fs.renameSync = function (source, target) {
+    if (path.resolve(String(target)) === journalPath) {
+      throw new Error('synthetic journal rename failure');
+    }
+    return originalRenameSync(source, target);
+  };
+  fs.unlinkSync = function (target) {
+    events.push({ type: 'unlink', target: path.resolve(String(target)) });
+    return originalUnlinkSync(target);
+  };
+
+  try {
+    assert.throws(() => runCli(['render'], root), /synthetic journal rename failure/);
+  } finally {
+    fs.openSync = originalOpenSync;
+    fs.fsyncSync = originalFsyncSync;
+    fs.renameSync = originalRenameSync;
+    fs.unlinkSync = originalUnlinkSync;
+  }
+
+  const temporaryUnlinks = events
+    .map((event, index) => ({ event, index }))
+    .filter(({ event }) => event.type === 'unlink' && event.target.includes('.tmp-'));
+  assert.notEqual(temporaryUnlinks.length, 0);
+  for (const { event, index } of temporaryUnlinks) {
+    assert.deepEqual(events[index + 1], {
+      type: 'fsync',
+      path: path.dirname(event.target),
+    });
+  }
+});
+
+test('目录 fsync 不支持时兼容，真实 I/O 错误不被吞掉', (t) => {
+  const unsupportedRoot = createFixture(t);
+  const originalOpenSync = fs.openSync;
+  const originalFsyncSync = fs.fsyncSync;
+  const fdPaths = new Map();
+
+  fs.openSync = function (file, flags, mode) {
+    const fd = originalOpenSync(file, flags, mode);
+    fdPaths.set(fd, path.resolve(String(file)));
+    return fd;
+  };
+  fs.fsyncSync = function (fd) {
+    if (fs.statSync(fdPaths.get(fd)).isDirectory()) {
+      const error = new Error('synthetic unsupported directory fsync');
+      error.code = 'EINVAL';
+      throw error;
+    }
+    return originalFsyncSync(fd);
+  };
+
+  try {
+    assert.doesNotThrow(() => runCli(['render'], unsupportedRoot));
+  } finally {
+    fs.openSync = originalOpenSync;
+    fs.fsyncSync = originalFsyncSync;
+  }
+
+  const ioErrorRoot = createFixture(t);
+  let injected = false;
+  fs.openSync = function (file, flags, mode) {
+    const fd = originalOpenSync(file, flags, mode);
+    fdPaths.set(fd, path.resolve(String(file)));
+    return fd;
+  };
+  fs.fsyncSync = function (fd) {
+    if (!injected && !fs.statSync(fdPaths.get(fd)).isDirectory()) {
+      injected = true;
+      const error = new Error('synthetic fsync EIO');
+      error.code = 'EIO';
+      throw error;
+    }
+    return originalFsyncSync(fd);
+  };
+
+  try {
+    assert.throws(() => runCli(['render'], ioErrorRoot), /synthetic fsync EIO/);
+  } finally {
+    fs.openSync = originalOpenSync;
+    fs.fsyncSync = originalFsyncSync;
+  }
+  assert.equal(injected, true);
 });
 
 test('release 的 delete-CAS 失败时报告归属变化并保留新 owner', (t) => {
@@ -552,6 +899,18 @@ test('检查覆盖未跟踪且未忽略的发行标识文件', (t) => {
   fs.writeFileSync(path.join(root, 'local-note.md'), '临时说明：ThingLinks-Web-Pro');
 
   assert.throws(() => checkProductConfig(root), /local-note\.md/);
+});
+
+test('普通待扫描符号链接指向仓外时拒绝且不解析外部内容', (t) => {
+  const root = createFixture(t);
+  const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'thinglinks-scan-outside-'));
+  t.after(() => fs.rmSync(outside, { recursive: true, force: true }));
+  const outsideFile = path.join(outside, 'external.md');
+  fs.writeFileSync(outsideFile, 'Community Edition');
+  fs.symlinkSync(outsideFile, path.join(root, 'linked-note.md'));
+  execFileSync('git', ['add', 'linked-note.md'], { cwd: root });
+
+  assert.throws(() => checkProductConfig(root), /linked-note\.md.*符号链接/);
 });
 
 test('检查识别 BifroMQ 插件旧发行名称', (t) => {
@@ -623,6 +982,36 @@ test('以 Pro 开头的普通单词不会被误判为发行标识', (t) => {
       'thinglinksproduct thinglinksprofessional thinglinksprotocol thinglinksproject thinglinksprocess thinglinksproperties',
       'jessibuca-pro Jessibuca-Pro ant-pro-page-container-main',
       'console.log("thinglinks-protocol-starter", "jessibuca-pro", "Professional", "Product");',
+    ].join('\n'),
+  );
+
+  assert.doesNotThrow(() => checkProductConfig(root));
+});
+
+test('配置上下文中的裸发行编码会被识别', (t) => {
+  const markers = [
+    'edition: community',
+    '"editionCode": "enterprise",',
+    "const productEdition = 'commercial';",
+    'THINGLINKS_EDITION_CODE=community',
+  ];
+
+  for (const [index, marker] of markers.entries()) {
+    const root = createFixture(t);
+    const file = `edition-context-${index}.txt`;
+    fs.writeFileSync(path.join(root, file), marker);
+    assert.throws(() => checkProductConfig(root), new RegExp(file));
+  }
+});
+
+test('普通英文中的发行单词不会被误判', (t) => {
+  const root = createFixture(t);
+  fs.writeFileSync(
+    path.join(root, 'ordinary-english.md'),
+    [
+      'The community discusses enterprise architecture and commercial support.',
+      'Enterprise customers can join the community for commercial integrations.',
+      'This edition compares communities and enterprises without defining configuration.',
     ].join('\n'),
   );
 
@@ -710,7 +1099,7 @@ test('同步保护路径拒绝 glob 且必须保护清单和授权文件', (t) =
   }
 });
 
-test('同步保护路径中的每个文件或目录均在仓库中存在', (t) => {
+test('同步保护路径中的每个普通文件均在仓库中存在', (t) => {
   const current =
     'THINGLINKS_SYNC_PROTECTED_PATHS=.thinglinks-product.env,LICENSE,LICENSE-COMMERCIAL';
   const root = createFixture(t, MANIFEST.replace(current, `${current},docs/product-boundary`));
@@ -718,13 +1107,15 @@ test('同步保护路径中的每个文件或目录均在仓库中存在', (t) =
   assert.throws(() => checkProductConfig(root), /同步保护路径不存在：docs\/product-boundary/);
 });
 
-test('同步保护路径支持仓库中已存在的文件和目录', (t) => {
+test('同步保护路径拒绝目录，防止整个 src 或 docs 绕过扫描', (t) => {
   const current =
     'THINGLINKS_SYNC_PROTECTED_PATHS=.thinglinks-product.env,LICENSE,LICENSE-COMMERCIAL';
-  const root = createFixture(t, MANIFEST.replace(current, `${current},docs`));
-  fs.mkdirSync(path.join(root, 'docs'));
+  for (const directory of ['src', 'docs']) {
+    const root = createFixture(t, MANIFEST.replace(current, `${current},${directory}`));
+    fs.mkdirSync(path.join(root, directory));
 
-  assert.doesNotThrow(() => checkProductConfig(root));
+    assert.throws(() => checkProductConfig(root), /同步保护路径.*普通文件/);
+  }
 });
 
 test('授权文件和同步保护路径拒绝符号链接及仓库 realpath 越界', (t) => {
@@ -777,6 +1168,20 @@ test('校验清单格式版本、授权模型和运行标识', (t) => {
         'THINGLINKS_MQ_NAMESPACE=ThingLinks!',
       ),
       message: /THINGLINKS_MQ_NAMESPACE/,
+    },
+    {
+      manifest: MANIFEST.replace(
+        'THINGLINKS_PUBLIC_SITE_URL=https://thinglinks.mqttsnet.com',
+        'THINGLINKS_PUBLIC_SITE_URL=http://thinglinks.mqttsnet.com',
+      ),
+      message: /THINGLINKS_PUBLIC_SITE_URL/,
+    },
+    {
+      manifest: MANIFEST.replace(
+        'THINGLINKS_PUBLIC_SITE_URL=https://thinglinks.mqttsnet.com',
+        'THINGLINKS_PUBLIC_SITE_URL=https://thinglinks.mqttsnet.com/private?token=value',
+      ),
+      message: /THINGLINKS_PUBLIC_SITE_URL/,
     },
   ];
 
@@ -926,6 +1331,21 @@ test('产品清单拒绝未知配置键和非注释语法', (t) => {
     const root = createFixture(t, manifest);
     assert.throws(() => checkProductConfig(root), message);
   }
+});
+
+test('中文注释与配置键之间不允许空行', (t) => {
+  const root = createFixture(
+    t,
+    MANIFEST.replace(
+      '# 产品名称\nTHINGLINKS_PRODUCT_NAME',
+      '# 产品名称\n\nTHINGLINKS_PRODUCT_NAME',
+    ),
+  );
+
+  assert.throws(
+    () => checkProductConfig(root),
+    /配置项 THINGLINKS_PRODUCT_NAME 前必须紧邻一行中文注释/,
+  );
 });
 
 test('非发行身份字段拒绝独立英文版本词和中文版本标识', (t) => {

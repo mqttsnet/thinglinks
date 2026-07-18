@@ -7,7 +7,7 @@ export const InputsTabConfig: ConfigType = {
   conKey: 'VCInputsTab',
   title: 'project.component_inputs_tab',
   category: ChatCategoryEnum.INPUTS,
-  categoryName: getChatCategoryEnumName.INPUTS,
+  get categoryName() { return getChatCategoryEnumName().INPUTS },
   package: PackagesCategoryEnum.INFORMATIONS,
   chartFrame: ChartFrameEnum.STATIC,
   image: 'inputs_tab.png'

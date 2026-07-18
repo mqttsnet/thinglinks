@@ -96,7 +96,9 @@ const global = {
   updating: 'Updating...',
   source_window_closed: 'Source window is closed, view synchronization failed!',
   overwrite_source_confirm: 'Overwrite source view content? This operation cannot be undone!',
-  syncing_content: 'Syncing content...',
+  source_save_success: 'Content saved and synchronized to the source window',
+  source_save_failed: 'Content could not be saved. Please try again later',
+  source_project_invalid: 'No valid project data was found. Please reopen the editor',
   content_format_error: 'Content format error',
   // file upload
   only_support_json_file: 'Only 【JSON】 format files are supported, please upload again!',

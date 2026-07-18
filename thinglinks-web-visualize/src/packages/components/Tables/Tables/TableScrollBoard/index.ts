@@ -7,7 +7,7 @@ export const TableScrollBoardConfig: ConfigType = {
   conKey: 'VCTableScrollBoard',
   title: 'project.component_table_scroll_board',
   category: ChatCategoryEnum.TABLE,
-  categoryName: getChatCategoryEnumName().TABLE,
+  get categoryName() { return getChatCategoryEnumName().TABLE },
   package: PackagesCategoryEnum.TABLES,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'table_scrollboard.png'

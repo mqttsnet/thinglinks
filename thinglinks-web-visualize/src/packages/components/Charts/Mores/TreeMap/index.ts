@@ -7,7 +7,7 @@ export const TreeMapConfig: ConfigType = {
   conKey: 'VCTreeMap',
   title: 'project.component_tree_map',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'tree_map.png'

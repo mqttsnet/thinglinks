@@ -20,6 +20,7 @@ export interface ThingLinksProductConfig {
   licenseFile: string;
   webClientId: string;
   mqNamespace: string;
+  publicSiteUrl: string;
   manifestVersion: string;
   syncProtectedPaths: string;
 }
@@ -40,6 +41,7 @@ const KEY_MAP = {
   licenseFile: 'THINGLINKS_LICENSE_FILE',
   webClientId: 'THINGLINKS_WEB_CLIENT_ID',
   mqNamespace: 'THINGLINKS_MQ_NAMESPACE',
+  publicSiteUrl: 'THINGLINKS_PUBLIC_SITE_URL',
   manifestVersion: 'THINGLINKS_PRODUCT_MANIFEST_VERSION',
   syncProtectedPaths: 'THINGLINKS_SYNC_PROTECTED_PATHS',
 } as const;
@@ -81,11 +83,17 @@ export function toPublicProductInfo(config: ThingLinksProductConfig) {
   return {
     productCode: config.productCode,
     productName: config.productName,
+    productNames: {
+      'zh-CN': config.productNameZh,
+      'en-US': config.productName,
+      ja: config.productName,
+    },
     componentCode: config.componentCode,
     componentName: config.componentName,
     componentVersion: config.componentVersion,
     editionCode: config.editionCode,
     mqNamespace: config.mqNamespace,
+    publicSiteUrl: config.publicSiteUrl,
     licenseModel: config.licenseModel,
     licenseFile: config.licenseFile,
     editionNames: {

@@ -1,5 +1,5 @@
 <template>
-  <div class="go-edit-range go-transition" :style="rangeStyle" @mousedown="mousedownBoxSelect($event, undefined)">
+  <div class="go-edit-range go-transition" @mousedown="mousedownBoxSelect($event, undefined)">
     <slot></slot>
     <!-- 水印 -->
     <edit-watermark></edit-watermark>
@@ -33,15 +33,6 @@ const size = computed(() => {
   }
 })
 
-const rangeStyle = computed(() => {
-  // 缩放
-  const scale = {
-    transform: `scale(${getEditCanvas.value.scale})`
-  }
-  // @ts-ignore
-  return { ...useSizeStyle(size.value), ...scale }
-})
-
 // 模态层
 const rangeModelStyle = computed(() => {
   const dragStyle = getEditCanvas.value.isCreate && { 'z-index': 99999 }
@@ -52,6 +43,7 @@ const rangeModelStyle = computed(() => {
 
 <style lang="scss" scoped>
 @include go(edit-range) {
+  height: 100%;
   position: relative;
   transform-origin: left top;
   background-size: cover;

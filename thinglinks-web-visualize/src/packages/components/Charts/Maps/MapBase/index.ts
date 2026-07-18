@@ -7,7 +7,7 @@ export const MapBaseConfig: ConfigType = {
     conKey: 'VCMapBase',
     title: 'project.component_map_base',
     category: ChatCategoryEnum.MAP,
-    categoryName: getChatCategoryEnumName().MAP,
+    get categoryName() { return getChatCategoryEnumName().MAP },
     package: PackagesCategoryEnum.CHARTS,
     chartFrame: ChartFrameEnum.COMMON,
     image: 'map.png'

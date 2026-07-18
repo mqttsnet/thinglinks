@@ -96,7 +96,9 @@ const global = {
   updating: '更新中...',
   source_window_closed: 'ソースウィンドウが閉じられています。ビューの同期に失敗しました！',
   overwrite_source_confirm: 'ソースビューの内容を上書きしますか？この操作は元に戻せません！',
-  syncing_content: 'コンテンツを同期中...',
+  source_save_success: 'コンテンツを保存し、ソースウィンドウに同期しました',
+  source_save_failed: 'コンテンツを保存できませんでした。しばらくしてから再試行してください',
+  source_project_invalid: '有効なプロジェクトデータが見つかりません。エディターを開き直してください',
   content_format_error: 'コンテンツ形式エラー',
   // ファイルアップロード
   only_support_json_file: '【JSON】形式のファイルのみサポートされています。再度アップロードしてください！',

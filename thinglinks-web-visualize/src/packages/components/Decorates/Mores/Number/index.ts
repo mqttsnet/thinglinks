@@ -7,7 +7,7 @@ export const NumberConfig: ConfigType = {
   conKey: 'VCNumber',
   title: 'project.component_number',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName.MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.DECORATES,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'number.png'

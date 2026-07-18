@@ -25,10 +25,14 @@ export const getSessionStorageInfo = async () => {
     // 接口调用
     const res = await fetchProjectApi({ identification: id }, isMyProject)
     if (res && res.code === ResultEnum.DATA_SUCCESS) {
-      const { content, state } = res.data
-      if (state === -1) {
+      const { content, status, state } = res.data
+      if ((status ?? state) === -1) {
         // 跳转未发布页
         return { isRelease: false }
+      }
+      if (!content) {
+        httpErrorHandle()
+        return
       }
       const parseData = { ...JSONParse(content), id }
       const { editCanvasConfig, requestGlobalConfig, componentList } = parseData

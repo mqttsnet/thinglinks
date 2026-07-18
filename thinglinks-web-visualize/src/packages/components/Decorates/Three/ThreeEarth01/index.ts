@@ -7,7 +7,7 @@ export const ThreeEarth01Config: ConfigType = {
   conKey: 'VCThreeEarth01',
   title: 'project.component_three_earth_01',
   category: ChatCategoryEnum.THREE,
-  categoryName: getChatCategoryEnumName.THREE,
+  get categoryName() { return getChatCategoryEnumName().THREE },
   package: PackagesCategoryEnum.DECORATES,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'threeEarth01.png'

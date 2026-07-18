@@ -7,7 +7,7 @@ export const CountDownConfig: ConfigType = {
   conKey: 'VCCountDown',
   title: 'project.component_count_down',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName.MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.DECORATES,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'countdown.png'

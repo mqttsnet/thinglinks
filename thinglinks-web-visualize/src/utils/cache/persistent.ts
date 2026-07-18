@@ -25,7 +25,7 @@ import { DEFAULT_CACHE_TIME } from '@/settings/encryptionSetting';
 import { toRaw } from 'vue';
 import { omit, pick } from 'lodash-es';
 
-interface BasicStore {
+export interface BasicStore {
   [TOKEN_KEY]: string | number | null | undefined;
   [REFRESH_TOKEN_KEY]: string | number | null | undefined;
   [TENANT_ID_KEY]: string | number | null | undefined;
@@ -34,7 +34,7 @@ interface BasicStore {
   [PERM_CODE_KEY]: Recordable;
   [PERM_KEY]: Recordable;
   [EXPIRE_TIME_KEY]: string | number | null | undefined;
-  [USER_INFO_KEY]: DefUserInfoResultVO;
+  [USER_INFO_KEY]: Nullable<DefUserInfoResultVO>;
   [ROLES_KEY]: string[];
   [LOCK_INFO_KEY]: LockInfo;
   [PROJ_CFG_KEY]: ProjectConfig;
@@ -52,8 +52,8 @@ type SessionKeys = keyof SessionStore;
 const ls = createLocalStorage();
 const ss = createSessionStorage();
 
-const localMemory = new Memory(DEFAULT_CACHE_TIME);
-const sessionMemory = new Memory(DEFAULT_CACHE_TIME);
+const localMemory = new Memory<LocalStore, LocalStore[LocalKeys]>(DEFAULT_CACHE_TIME);
+const sessionMemory = new Memory<SessionStore, SessionStore[SessionKeys]>(DEFAULT_CACHE_TIME);
 
 function initPersistentMemory() {
   const localCache = ls.get(APP_LOCAL_CACHE_KEY);
@@ -67,7 +67,7 @@ export class Persistent {
     return localMemory.get(key)?.value as Nullable<T>;
   }
 
-  static setLocal(key: LocalKeys, value: LocalStore[LocalKeys], immediate = false): void {
+  static setLocal<K extends LocalKeys>(key: K, value: LocalStore[K], immediate = false): void {
     localMemory.set(key, toRaw(value));
     immediate && ls.set(APP_LOCAL_CACHE_KEY, localMemory.getCache);
   }
@@ -86,7 +86,7 @@ export class Persistent {
     return sessionMemory.get(key)?.value as Nullable<T>;
   }
 
-  static setSession(key: SessionKeys, value: SessionStore[SessionKeys], immediate = false): void {
+  static setSession<K extends SessionKeys>(key: K, value: SessionStore[K], immediate = false): void {
     sessionMemory.set(key, toRaw(value));
     immediate && ss.set(APP_SESSION_CACHE_KEY, sessionMemory.getCache);
   }

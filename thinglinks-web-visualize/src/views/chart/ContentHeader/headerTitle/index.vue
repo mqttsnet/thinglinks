@@ -81,8 +81,8 @@ const handleBlur = async () => {
   let id = chartEditStore.getProjectInfo[ProjectInfoEnum.PROJECT_ID];
   const params = {
     id,
+    [titleEnum]: title.value
   }
-  params[titleEnum] = title.value
   const res = (await updateProjectApi(params, isMyProject))
   if (res && res.code === ResultEnum.DATA_SUCCESS) {
     dataSyncUpdate()

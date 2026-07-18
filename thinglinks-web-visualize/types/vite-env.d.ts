@@ -6,5 +6,5 @@ interface ImportMetaEnv {
   // 开发地址
   VITE_DEV_PATH: string
   // 生产地址
-  VITE_PRO_PATH: string
+  VITE_PRODUCTION_PATH: string
 }

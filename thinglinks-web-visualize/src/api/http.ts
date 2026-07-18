@@ -8,18 +8,32 @@ import {
   RequestParamsObjType
 } from '@/enums/httpEnum'
 import type { RequestGlobalConfigType, RequestConfigType } from '@/store/modules/chartEditStore/chartEditStore.d'
+import type { BinaryResponseData, BinaryResponseType, MyResponseType } from './axios'
 
-export const get = <T = any>(url: string, params?: object, responseType?: string) => {
-  return axiosInstance<T>({
+export const get = <T = any>(url: string, params?: object) => {
+  return axiosInstance.request<T, MyResponseType<T>>({
     url: url,
     method: RequestHttpEnum.GET,
-    params: params,
+    params: params
+  })
+}
+
+// 二进制等非业务包装响应由 Axios 响应拦截器直接返回响应体。
+export const getRaw = <T extends BinaryResponseType>(
+  url: string,
+  params: object | undefined,
+  responseType: T
+): Promise<BinaryResponseData<T>> => {
+  return axiosInstance.request<BinaryResponseData<T>, BinaryResponseData<T>>({
+    url,
+    method: RequestHttpEnum.GET,
+    params,
     responseType
   })
 }
 
 export const post = <T = any>(url: string, data?: object, headersType?: string) => {
-  return axiosInstance<T>({
+  return axiosInstance.request<T, MyResponseType<T>>({
     url: url,
     method: RequestHttpEnum.POST,
     data: data,
@@ -30,7 +44,7 @@ export const post = <T = any>(url: string, data?: object, headersType?: string) 
 }
 
 export const patch = <T = any>(url: string, data?: object, headersType?: string) => {
-  return axiosInstance<T>({
+  return axiosInstance.request<T, MyResponseType<T>>({
     url: url,
     method: RequestHttpEnum.PATCH,
     data: data,
@@ -41,7 +55,7 @@ export const patch = <T = any>(url: string, data?: object, headersType?: string)
 }
 
 export const put = <T = any>(url: string, data?: object, headersType?: ContentTypeEnum) => {
-  return axiosInstance<T>({
+  return axiosInstance.request<T, MyResponseType<T>>({
     url: url,
     method: RequestHttpEnum.PUT,
     data: data,
@@ -52,7 +66,7 @@ export const put = <T = any>(url: string, data?: object, headersType?: ContentTy
 }
 
 export const del = <T = any>(url: string, params?: object) => {
-  return axiosInstance<T>({
+  return axiosInstance.request<T, MyResponseType<T>>({
     url: url,
     method: RequestHttpEnum.DELETE,
     params

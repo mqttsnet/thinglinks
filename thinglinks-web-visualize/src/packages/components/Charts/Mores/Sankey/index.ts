@@ -7,7 +7,7 @@ export const SankeyConfig: ConfigType = {
   conKey: 'VCSankey',
   title: 'project.component_sankey',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'sankey.png'

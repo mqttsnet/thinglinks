@@ -7,7 +7,7 @@ export const HeatmapConfig: ConfigType = {
   conKey: 'VCHeatmap',
   title: 'project.component_heatmap',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'heatmap.png'

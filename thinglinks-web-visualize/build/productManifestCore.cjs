@@ -65,6 +65,7 @@ const REQUIRED_KEYS = [
   'THINGLINKS_LICENSE_FILE',
   'THINGLINKS_WEB_CLIENT_ID',
   'THINGLINKS_MQ_NAMESPACE',
+  'THINGLINKS_PUBLIC_SITE_URL',
   'THINGLINKS_PRODUCT_MANIFEST_VERSION',
   'THINGLINKS_SYNC_PROTECTED_PATHS',
 ];
@@ -79,6 +80,7 @@ const NEUTRAL_IDENTITY_KEYS = [
   'THINGLINKS_NPM_PACKAGE_NAME',
   'THINGLINKS_WEB_CLIENT_ID',
   'THINGLINKS_MQ_NAMESPACE',
+  'THINGLINKS_PUBLIC_SITE_URL',
 ];
 
 function productError(message) {
@@ -163,7 +165,10 @@ function parseProductManifestContent(content, source = MANIFEST_FILE) {
 
   for (const [index, line] of lines.entries()) {
     const trimmed = line.trim();
-    if (!trimmed) continue;
+    if (!trimmed) {
+      previousContent = '';
+      continue;
+    }
     if (trimmed.startsWith('#')) {
       previousContent = trimmed;
       continue;
@@ -226,6 +231,23 @@ function parseProductManifestContent(content, source = MANIFEST_FILE) {
   ];
   for (const [key, safePattern] of runtimeIdentifiers) {
     if (!safePattern.test(values[key])) throw productError(`${key} 格式不安全`);
+  }
+
+  let publicSiteUrl;
+  try {
+    publicSiteUrl = new URL(values.THINGLINKS_PUBLIC_SITE_URL);
+  } catch {
+    throw productError('THINGLINKS_PUBLIC_SITE_URL 不是有效地址');
+  }
+  if (
+    publicSiteUrl.protocol !== 'https:' ||
+    publicSiteUrl.username ||
+    publicSiteUrl.password ||
+    publicSiteUrl.search ||
+    publicSiteUrl.hash ||
+    publicSiteUrl.pathname !== '/'
+  ) {
+    throw productError('THINGLINKS_PUBLIC_SITE_URL 应为不含认证信息、路径和参数的 HTTPS 站点地址');
   }
 
   const licensePath = normalizeProductRelativePath(values.THINGLINKS_LICENSE_FILE);
@@ -307,7 +329,7 @@ function assertProductLicenseFile(projectRoot, values) {
 function assertProductProtectedPaths(projectRoot, values) {
   const protectedPaths = parseSyncProtectedPaths(values.THINGLINKS_SYNC_PROTECTED_PATHS);
   for (const relativePath of protectedPaths) {
-    assertRepositoryPath(projectRoot, relativePath, 'file-or-directory', '同步保护路径');
+    assertRepositoryPath(projectRoot, relativePath, 'file', '同步保护路径');
   }
 }
 

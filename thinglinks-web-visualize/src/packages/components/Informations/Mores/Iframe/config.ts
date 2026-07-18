@@ -2,11 +2,12 @@ import { PublicConfigClass } from '@/packages/public'
 import { CreateComponentType } from '@/packages/index.d'
 import { chartInitConfig } from '@/settings/designSetting'
 import { IframeConfig } from './index'
+import { productInfo } from '@/settings/productSetting'
 import cloneDeep from 'lodash/cloneDeep'
 
 export const option = {
   // 网站路径
-  dataset: "https://mqttsnet.com",
+  dataset: productInfo.publicSiteUrl,
   // 圆角
   borderRadius: 10
 }

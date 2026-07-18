@@ -98,6 +98,6 @@ pnpm lint:fix      # 代码检查并自动修复
 
 ## 开源协议
 
-授权内容见 [LICENSE](LICENSE) 及产品元数据清单所引用的附加条款。
+本项目采用 [Apache License 2.0](LICENSE) 开源协议。
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

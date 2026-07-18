@@ -7,7 +7,7 @@ export const BarCrossrangeConfig: ConfigType = {
   conKey: 'VCBarCrossrange',
   title: 'project.component_bar_crossrange',
   category: ChatCategoryEnum.BAR,
-  categoryName: getChatCategoryEnumName().BAR,
+  get categoryName() { return getChatCategoryEnumName().BAR },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'bar_y.png'
