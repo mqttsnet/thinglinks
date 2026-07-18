@@ -12,6 +12,8 @@ export interface CardField {
   dictType?: string;
   /** 列宽（基于 24 栅格，默认 24=整行）。可配合其他字段组成一行（如两列各 12） */
   span?: number;
+  /** 长文本字段多行展示。默认单行省略，开启后最多展示 3 行 */
+  multiline?: boolean;
 }
 
 /**
@@ -26,6 +28,8 @@ export interface CardAction {
   permission?: string;
   /** 点击事件名（触发 emit） */
   event: string;
+  /** 直接处理点击（可选）。传入后优先执行 handler，不再向外 emit event */
+  handler?: (record: Record<string, any>) => void | Promise<void>;
   /** 图标尺寸（默认 16px） */
   iconSize?: number;
   /** 是否禁用该按钮（保持可见但不可点击；未定义默认可点击）。向后兼容的可选扩展字段 */

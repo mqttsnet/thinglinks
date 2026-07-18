@@ -29,9 +29,7 @@
             v-if="downsampled"
             :title="t('component.iotProp.trendSampledTip') || '原始点数较多已自动降采样,峰谷仍保留'"
           >
-            <span class="sub">
-              ({{ t('component.iotProp.trendSampled') || '已降采样' }})
-            </span>
+            <span class="sub">({{ t('component.iotProp.trendSampled') || '已降采样' }})</span>
           </a-tooltip>
         </div>
         <div class="stat-item">
@@ -51,9 +49,17 @@
           <span class="num">{{ stats.outOfRange }}</span>
         </div>
         <!-- 导出 ── PNG / CSV 二选一,放最右侧 -->
-        <a-dropdown class="export-dropdown" :trigger="['click']" placement="bottomRight">
+        <a-dropdown
+          class="export-dropdown"
+          :trigger="['click']"
+          placement="bottomRight"
+          :getPopupContainer="getPopupContainer"
+        >
           <a-tooltip :title="t('component.iotProp.trendExportTip') || '导出趋势'">
-            <DownloadOutlined class="export-icon" />
+            <a-button class="export-btn" size="small" type="text">
+              <template #icon><DownloadOutlined /></template>
+              {{ t('component.iotProp.trendExport') || '导出' }}
+            </a-button>
           </a-tooltip>
           <template #overlay>
             <a-menu @click="onExport">
@@ -67,7 +73,7 @@
           </template>
         </a-dropdown>
       </div>
-      <div ref="chartRef" class="chart-canvas" :style="{ height: `${height}px` }" />
+      <div ref="chartRef" class="chart-canvas" :style="{ height: `${height}px` }"></div>
     </template>
   </div>
 </template>
@@ -75,11 +81,7 @@
 <script lang="ts" setup>
   import { computed, nextTick, onBeforeUnmount, ref, Ref, watch } from 'vue';
   import { Dropdown, Menu, Tooltip } from 'ant-design-vue';
-  import {
-    DownloadOutlined,
-    FileExcelOutlined,
-    FileImageOutlined,
-  } from '@ant-design/icons-vue';
+  import { DownloadOutlined, FileExcelOutlined, FileImageOutlined } from '@ant-design/icons-vue';
   import dayjs from 'dayjs';
   import { useECharts } from '/@/hooks/web/useECharts';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -136,7 +138,17 @@
 
   const { t } = useI18n();
   const chartRef = ref<HTMLDivElement | null>(null);
-  const { setOptions, resize, getInstance } = useECharts(chartRef as Ref<HTMLDivElement>);
+  const { setOptions, resize, getInstance } = useECharts(
+    chartRef as Ref<HTMLDivElement>,
+    'default',
+    {
+      renderer: 'canvas',
+    },
+  );
+  const getPopupContainer = (triggerNode?: HTMLElement) =>
+    (document.fullscreenElement as HTMLElement | null) ||
+    triggerNode?.ownerDocument?.body ||
+    document.body;
 
   type Point = { ts: string | number; tsMs: number; value: number };
 
@@ -270,16 +282,12 @@
   /** 构建 echarts option ── markLine 画 min/max 阈值线,越界点用 itemStyle red */
   function buildOption() {
     const fmt = pickTimeFormat(points.value);
-    const xData = points.value.map((p) =>
-      p.tsMs ? dayjs(p.tsMs).format(fmt) : String(p.ts),
-    );
+    const xData = points.value.map((p) => (p.tsMs ? dayjs(p.tsMs).format(fmt) : String(p.ts)));
     const seriesData = points.value.map((p) => {
       const out =
         (minNum.value !== null && p.value < minNum.value) ||
         (maxNum.value !== null && p.value > maxNum.value);
-      return out
-        ? { value: p.value, itemStyle: { color: '#d03b5b' }, symbolSize: 8 }
-        : p.value;
+      return out ? { value: p.value, itemStyle: { color: '#d03b5b' }, symbolSize: 8 } : p.value;
     });
 
     const markLines: any[] = [];
@@ -308,7 +316,9 @@
         formatter: (params: any[]) => {
           const p = Array.isArray(params) ? params[0] : params;
           const valueWithUnit = `${p.value}${props.unit ? ' ' + props.unit : ''}`;
-          return `<b>${props.propertyName || props.propertyCode}</b><br/>${p.axisValueLabel}<br/>${valueWithUnit}`;
+          return `<b>${props.propertyName || props.propertyCode}</b><br/>${
+            p.axisValueLabel
+          }<br/>${valueWithUnit}`;
         },
       },
       // 鼠标滚轮 + 滑块 ── 鼠标可缩放,移动端 / 触屏也能拖
@@ -398,8 +408,41 @@
     return `${base}-${ts}.${ext}`;
   }
 
+  function loadImage(src: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Image load failed'));
+      img.src = src;
+    });
+  }
+
+  /**
+   * ECharts 当前全局只注册了 SVGRenderer。getDataURL({ type: 'png' }) 在 SVG 渲染器下
+   * 仍可能返回 image/svg+xml,不能直接按 .png 保存,否则 macOS 预览会认为文件损坏。
+   */
+  async function normalizePngDataUrl(dataUrl: string): Promise<string> {
+    if (!dataUrl.startsWith('data:image/svg+xml')) {
+      return dataUrl;
+    }
+    const img = await loadImage(dataUrl);
+    const width = img.naturalWidth || chartRef.value?.clientWidth || 1;
+    const height = img.naturalHeight || chartRef.value?.clientHeight || props.height || 1;
+    const pixelRatio = 2;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(width * pixelRatio));
+    canvas.height = Math.max(1, Math.round(height * pixelRatio));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return dataUrl;
+    ctx.scale(pixelRatio, pixelRatio);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+    return canvas.toDataURL('image/png');
+  }
+
   /** PNG ── echarts.getDataURL,高清 pixelRatio=2,白底防透明 */
-  function exportPng() {
+  async function exportPng() {
     const inst = getInstance?.();
     if (!inst) return;
     const url = (inst as any).getDataURL({
@@ -407,7 +450,11 @@
       pixelRatio: 2,
       backgroundColor: '#fff',
     });
-    triggerDownload(url, buildFilename('png'));
+    if (!url.startsWith('data:image/svg+xml')) {
+      triggerDownload(url, buildFilename('png'));
+      return;
+    }
+    triggerDownload(await normalizePngDataUrl(url), buildFilename('png'));
   }
 
   /**
@@ -433,8 +480,9 @@
   }
 
   function onExport({ key }: { key: string }) {
-    if (key === 'png') exportPng();
-    else if (key === 'csv') exportCsv();
+    if (key === 'png') {
+      exportPng();
+    } else if (key === 'csv') exportCsv();
   }
 
   // ============================ 渲染 ============================
@@ -509,21 +557,27 @@
         }
       }
 
-      /* 导出 icon 靠右,鼠标 hover 提色 */
+      /* 导出入口靠右,用小型按钮减少裸 icon 的漂浮感 */
       .export-dropdown {
         margin-left: auto;
 
-        .export-icon {
-          padding: 4px;
-          color: #97a1b0;
-          font-size: 14px;
-          cursor: pointer;
-          border-radius: 4px;
-          transition: background 0.18s ease, color 0.18s ease;
+        .export-btn {
+          height: 26px;
+          padding: 0 8px;
+          color: #5d87ff;
+          font-size: 12px;
+          border-radius: 6px;
+          background: #eef3ff;
+          border: 1px solid #dbe6ff;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 
           &:hover {
             color: #5d87ff;
-            background: #eef3ff;
+            background: #e7efff;
+            border-color: #b9ccff;
           }
         }
       }

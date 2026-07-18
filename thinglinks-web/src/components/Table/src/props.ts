@@ -23,31 +23,11 @@ export const basicProps = {
     type: Boolean as PropType<boolean>,
     default: false,
   },
-  isProduct: {
-    type: Boolean as PropType<boolean>,
-    default: false,
-  },
-  isLinkAge: {
-    type: Boolean as PropType<boolean>,
-    default: false,
-  },
   isChained: {
     type: Boolean as PropType<boolean>,
     default: false,
   },
-  isChannel: {
-    type: Boolean as PropType<boolean>,
-    default: false,
-  },
   isRuleGroovyScript: {
-    type: Boolean as PropType<boolean>,
-    default: false,
-  },
-  isAlarmList: {
-    type: Boolean as PropType<boolean>,
-    default: false,
-  },
-  isAlarmRecord: {
     type: Boolean as PropType<boolean>,
     default: false,
   },

@@ -50,7 +50,10 @@
               <!-- 动态字段 -->
               <a-row :gutter="[4, 0]">
                 <a-col v-for="(field, idx) in normalizedFields" :key="idx" :span="field.span || 24">
-                  <div class="biz-card__field">
+                  <div
+                    class="biz-card__field"
+                    :class="{ 'biz-card__field--multiline': field.multiline }"
+                  >
                     <div class="biz-card__label">{{ field.label }}</div>
                     <div class="biz-card__value" :title="getFieldValue(record, field)">
                       {{ getFieldValue(record, field) }}
@@ -110,16 +113,15 @@
                       action.color ? `biz-card__action-btn--${action.color}` : '',
                       action.disabled && action.disabled(record) ? 'is-disabled' : '',
                     ]"
+                    :data-action-event="action.event"
+                    :data-action-disabled="action.disabled?.(record) ? 'true' : 'false'"
+                    role="button"
+                    tabindex="0"
+                    @click.stop="handleExtraActionClick(action, record, $event)"
+                    @keydown.enter.stop.prevent="handleExtraActionClick(action, record, $event)"
                   >
                     <a-tooltip placement="top" :title="action.tooltip">
-                      <Icon
-                        :icon="action.icon"
-                        :size="action.iconSize || 16"
-                        @click.stop="
-                          !(action.disabled && action.disabled(record)) &&
-                            handleExtraAction(action.event, record, $event)
-                        "
-                      />
+                      <Icon :icon="action.icon" :size="action.iconSize || 16" />
                     </a-tooltip>
                   </div>
                 </template>
@@ -394,7 +396,24 @@
     });
   };
 
-  const handleExtraAction = (event: string, record: any, e: MouseEvent) => {
+  const handleExtraActionClick = (
+    action: CardAction,
+    record: any,
+    e: MouseEvent | KeyboardEvent,
+  ) => {
+    if (action.disabled?.(record)) {
+      e?.stopPropagation();
+      return;
+    }
+    if (action.handler) {
+      e?.stopPropagation();
+      action.handler(record);
+      return;
+    }
+    handleExtraAction(action.event, record, e);
+  };
+
+  const handleExtraAction = (event: string, record: any, e: MouseEvent | KeyboardEvent) => {
     e?.stopPropagation();
     emit('extraAction', { event, record });
   };
@@ -535,6 +554,17 @@
         max-width: 100%;
         font-weight: 500;
       }
+
+      &--multiline {
+        .biz-card__value {
+          display: -webkit-box;
+          white-space: normal;
+          word-break: break-word;
+          line-height: 1.45;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+        }
+      }
     }
 
     &__actions {
@@ -622,12 +652,12 @@
       background: #f5f7fa;
       border: 1px solid #edf2f7;
       border-radius: 14px;
-      padding: 16px;
+      padding: 12px;
 
       :deep(svg) {
         width: 100%;
         height: 100%;
-        opacity: 0.7;
+        opacity: 0.9;
       }
 
       :deep(img) {
@@ -886,7 +916,7 @@
         height: 70px;
         right: 14px;
         top: 16px;
-        padding: 12px;
+        padding: 8px;
         border-radius: 12px;
       }
 
@@ -918,18 +948,18 @@
   // 超小屏（<480px）
   @media screen and (max-width: 480px) {
     .biz-card {
-      min-height: 150px;
+      min-height: 158px;
 
       &__info {
-        max-width: calc(100% - 70px);
+        max-width: calc(100% - 82px);
       }
 
       &__image {
-        width: 56px;
-        height: 56px;
+        width: 66px;
+        height: 66px;
         right: 10px;
         top: 12px;
-        padding: 10px;
+        padding: 6px;
         border-radius: 10px;
       }
 

@@ -20,18 +20,6 @@
       :searchData="searchData"
       v-if="switchFlag && isDevice"
     />
-    <ProductCardList
-      @input="setSwitchFlag"
-      :title="title"
-      :searchData="searchData"
-      v-if="switchFlag && isProduct"
-    />
-    <linkAgeCardList
-      @input="setSwitchFlag"
-      :title="title"
-      :searchData="searchData"
-      v-if="switchFlag && isLinkAge"
-    />
     <ChainedCardList
       @input="setSwitchFlag"
       :title="title"
@@ -39,29 +27,11 @@
       v-if="switchFlag && isChained"
       :switchFlag="switchFlag"
     />
-    <ChannelCardList
-      @input="setSwitchFlag"
-      :title="title"
-      :searchData="searchData"
-      v-if="switchFlag && isChannel"
-    />
     <RuleGroovyScriptCardList
       @input="setSwitchFlag"
       :title="title"
       :searchData="searchData"
       v-if="switchFlag && isRuleGroovyScript"
-    />
-    <AlarmListCardList
-      @input="setSwitchFlag"
-      :title="title"
-      :searchData="searchData"
-      v-if="switchFlag && isAlarmList"
-    />
-    <AlarmRecordCardList
-      @input="setSwitchFlag"
-      :title="title"
-      :searchData="searchData"
-      v-if="switchFlag && isAlarmRecord"
     />
     <PluginInstanceCardList
       @input="setSwitchFlag"
@@ -201,13 +171,8 @@
   import { warn } from '/@/utils/log';
   // components
   import CardList from '/@/components/iot/link/device/CardList.vue';
-  import ProductCardList from '/@/components/iot/link/product/ProductCardList.vue';
-  import linkAgeCardList from '/@/components/iot/rule/engine/linkAgeCardList.vue';
   import ChainedCardList from '/@/components/iot/rule/engine/ChainedCardList.vue';
-  import ChannelCardList from '/@/components/iot/rule/alarm/ChannelCardList.vue';
   import RuleGroovyScriptCardList from '/@/components/iot/rule/groovy/RuleGroovyScriptCardList.vue';
-  import AlarmListCardList from '/@/components/iot/rule/alarm/AlarmListCardList.vue';
-  import AlarmRecordCardList from '/@/components/iot/rule/alarm/AlarmRecordCardList.vue';
   import PluginInstanceCardList from '/@/components/iot/rule/plugin/PluginInstanceCardList.vue';
   import PluginInfoCardList from '/@/components/iot/rule/plugin/PluginInfoCardList.vue';
   import DeviceAclRuleCardList from '/@/components/iot/link/operationMaintenance/DeviceAclRuleCardList.vue';
@@ -230,13 +195,8 @@
       HeaderCell,
       CopyModal,
       CardList,
-      ProductCardList,
-      linkAgeCardList,
       ChainedCardList,
-      ChannelCardList,
       RuleGroovyScriptCardList,
-      AlarmListCardList,
-      AlarmRecordCardList,
       PluginInstanceCardList,
       PluginInfoCardList,
       DeviceAclRuleCardList,

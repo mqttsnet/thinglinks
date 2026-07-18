@@ -24,7 +24,8 @@
           type="primary"
           preIcon="ant-design:download-outlined"
           @click="handleImport"
-        >{{ t('common.title.import') }}</a-button>
+          >{{ t('common.title.import') }}</a-button
+        >
         <a-button preIcon="ant-design:swap-outlined" @click="switchView">{{
           t('common.switchView')
         }}</a-button>
@@ -85,33 +86,41 @@
               <div class="btns" v-if="!isSelect">
                 <div class="btn" v-hasPermission="['link:product:product:delete']">
                   <a-tooltip placement="top" :title="t('common.title.delete')">
-                    <img
-                      src="../../../../assets/images/iot/link/device/delete-y.png"
-                      alt=""
-                      @click="handleDelete(record)"
+                    <Icon
+                      icon="ant-design:delete-outlined"
+                      :size="16"
+                      class="action-icon action-icon--danger"
+                      @click.stop="handleDelete(record)"
                     />
                   </a-tooltip>
                 </div>
                 <div class="btn" v-hasPermission="['link:product:product:copy']">
                   <a-tooltip placement="top" :title="t('common.title.copy')">
-                    <img
-                      src="../../../../assets/images/iot/link/device/copy-y.png"
-                      alt=""
-                      @click="handleCopy(record)"
+                    <Icon
+                      icon="ant-design:copy-outlined"
+                      :size="16"
+                      class="action-icon"
+                      @click.stop="handleCopy(record, $event)"
                     />
                   </a-tooltip>
                 </div>
-                <div class="btn" style="height: 15px;" v-hasPermission="['link:product:product:export']">
+                <div class="btn" v-hasPermission="['link:product:product:export']">
                   <a-tooltip placement="top" :title="t('common.title.export')">
-                    <ExportOutlined @click="handleExport(record)" style="font-size: 14px; color: #1A66FF; cursor: pointer; position: absolute; left: 0; right: 0;" />
+                    <Icon
+                      icon="ant-design:export-outlined"
+                      :size="16"
+                      class="action-icon"
+                      @click.stop="handleExport(record)"
+                    />
                   </a-tooltip>
                 </div>
                 <div class="btn" v-hasPermission="['link:product:product:edit']">
                   <a-tooltip placement="top" :title="t('common.title.edit')">
-                    <img
-                      src="../../../../assets/images/iot/link/device/edit-y.png"
-                      alt=""
-                      @click="handleEdit(record)"
+                    <Icon
+                      icon="ant-design:edit-outlined"
+                      :size="16"
+                      class="action-icon"
+                      @click.stop="handleEdit(record)"
                     />
                   </a-tooltip>
                 </div>
@@ -161,20 +170,18 @@
   import { page, deleteSingle, exportJson } from '/@/api/iot/link/product/product';
   // components
   import { Row, Col, Button, Spin, Tooltip, Pagination } from 'ant-design-vue';
-  import { ExportOutlined } from '@ant-design/icons-vue';
   import { useRouter } from 'vue-router';
   import EditModal from '/@/views/iot/link/product/product/Edit.vue';
   import ImportModal from '/@/views/iot/link/product/product/ImportModal.vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { usePermission } from '/@/hooks/web/usePermission';
   import { useDict } from '/@/components/Dict';
-  import Icon4 from '/@/assets/images/iot/link/device/Icon4.png';
-  import Icon5 from '/@/assets/images/iot/link/device/Icon5.png';
   import { getProductTypeSvg } from '/@/components/iot/svg';
   import ThumbUrl from '/@/components/Upload/src/ThumbUrl.vue';
   import { BasicForm, useForm } from '/@/components/Form';
   import { productSearchSchema } from '/@/components/Table/src/types/components/PublicSearchSchema';
   import { cleanInput } from '/@/utils';
+  import { Icon } from '/@/components/Icon';
 
   const { getDictLabel } = useDict();
   interface deviceItem {
@@ -198,8 +205,8 @@
       ATooltip: Tooltip,
       APagination: Pagination,
       BasicForm,
-      ExportOutlined,
       ThumbUrl,
+      Icon,
     },
     props: {
       title: {
@@ -409,8 +416,6 @@
         handleSuccess,
         handleView,
         selectItem,
-        Icon4,
-        Icon5,
         getProductTypeSvg,
         current,
         total,
@@ -433,7 +438,7 @@
     },
   });
 </script>
-<style scoped>
+<style scoped lang="less">
   @import '../../../Table/src/types/components/cardCommon.less';
 
   /* 产品图标:容器给定 90×90;内联 SVG 是子组件根节点,需 :deep 穿透 scope 才能命中并撑满 */
@@ -446,5 +451,23 @@
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  .action-icon {
+    color: @primary-color;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: @primary-color;
+    }
+
+    &--danger {
+      color: @button-error-color;
+
+      &:hover {
+        color: @button-error-hover-color;
+      }
+    }
   }
 </style>
