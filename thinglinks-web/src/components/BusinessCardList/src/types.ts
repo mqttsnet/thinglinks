@@ -30,6 +30,8 @@ export interface CardAction {
   iconSize?: number;
   /** 是否禁用该按钮（保持可见但不可点击；未定义默认可点击）。向后兼容的可选扩展字段 */
   disabled?: (record: Record<string, any>) => boolean;
+  /** 操作色调。交互按钮使用系统按钮语义色,不直接写色值 */
+  color?: 'primary' | 'success' | 'warning' | 'error';
 }
 
 /**
@@ -82,4 +84,6 @@ export interface BusinessCardListProps {
   editModal?: Component;
   /** 额外操作按钮定义 */
   extraActions?: CardAction[];
+  /** 卡片布局变体。default 用于产品/设备/北向集成大卡片,model 用于物模型属性/命令紧凑卡片 */
+  variant?: 'default' | 'model';
 }

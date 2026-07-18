@@ -6,6 +6,7 @@
     width="760px"
     @ok="handleSubmit"
     :confirmLoading="submitting"
+    :maskClosable="false"
     wrapClassName="publish-flexy-wrap"
   >
     <a-spin :spinning="submitting">

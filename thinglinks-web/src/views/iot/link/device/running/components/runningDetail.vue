@@ -18,6 +18,7 @@
     width="780px"
     @register="register"
     :title="t('common.title.details')"
+    :maskClosable="false"
     class="property-detail-drawer"
   >
     <!-- ===== Hero 卡 ===== -->
@@ -55,7 +56,7 @@
     <!-- ===== 元数据卡 ===== -->
     <div class="meta-section">
       <div class="section-title">
-        <span class="title-bar" style="background: #5d87ff" />
+        <span class="title-bar" style="background: #5d87ff"></span>
         {{ t('iot.link.device.device.running.basicMeta') }}
       </div>
       <div class="meta-grid">
@@ -93,7 +94,7 @@
     <!-- ===== 描述卡(有内容才显示) ===== -->
     <div v-if="meta.description || meta.remark" class="meta-section">
       <div class="section-title">
-        <span class="title-bar" style="background: #8c97a5" />
+        <span class="title-bar" style="background: #8c97a5"></span>
         {{ t('iot.link.device.device.running.description') }}
       </div>
       <div v-if="meta.description" class="desc-text">{{ meta.description }}</div>
@@ -103,7 +104,7 @@
     <!-- ===== 趋势图卡(仅数值型属性显示;string / 标识符等非数值不画趋势,避免对字符串做无意义的数值统计) ===== -->
     <div v-if="isNumericProperty && echoList.length" class="meta-section">
       <div class="section-title">
-        <span class="title-bar" style="background: #fa896b" />
+        <span class="title-bar" style="background: #fa896b"></span>
         {{ t('iot.link.device.device.running.trend') }}
       </div>
       <PropertyTrendChart
@@ -120,23 +121,21 @@
     <!-- ===== 历史数据卡 ===== -->
     <div class="meta-section history-section">
       <div class="section-title">
-        <span class="title-bar" style="background: #13c2c2" />
+        <span class="title-bar" style="background: #13c2c2"></span>
         {{ t('iot.link.device.device.running.historyData') }}
         <a-tag v-if="echoList.length" class="count-tag">{{ echoList.length }}</a-tag>
         <!-- 实时模式开关 ── parent 未 provide WS 时禁用 -->
         <div class="realtime-toggle" v-if="stream">
-          <span class="live-dot" :class="{ on: isLive }" />
+          <span class="live-dot" :class="{ on: isLive }"></span>
           <span class="live-label">
-            {{ realtimeMode
-              ? t('iot.link.device.device.running.live')
-              : t('iot.link.device.device.running.realtimeOff') }}
+            {{
+              realtimeMode
+                ? t('iot.link.device.device.running.live')
+                : t('iot.link.device.device.running.realtimeOff')
+            }}
           </span>
           <a-tooltip :title="t('iot.link.device.device.running.realtimeTip')">
-            <a-switch
-              v-model:checked="realtimeMode"
-              size="small"
-              @change="onRealtimeChange"
-            />
+            <a-switch v-model:checked="realtimeMode" size="small" @change="onRealtimeChange" />
           </a-tooltip>
         </div>
       </div>
@@ -178,7 +177,12 @@
           :loading="loading"
           :striped="true"
           :bordered="true"
-          :pagination="{ pageSize: 20, showSizeChanger: true, showQuickJumper: true, pageSizeOptions: ['10','20','50','100'] }"
+          :pagination="{
+            pageSize: 20,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            pageSizeOptions: ['10', '20', '50', '100'],
+          }"
           showTableSetting
         />
       </div>
@@ -247,10 +251,10 @@
       const ts = prop.createdTime || dayjs().format('YYYY-MM-DD HH:mm:ss.SSS');
       // 头部 ts 一致视为重复(后端连续推同一帧不应再 append)
       if (echoList.value[0]?.ts === ts) return;
-      echoList.value = [
-        { [ctx.propertyCode]: prop.propertyValue, ts },
-        ...echoList.value,
-      ].slice(0, MAX_REALTIME_POINTS);
+      echoList.value = [{ [ctx.propertyCode]: prop.propertyValue, ts }, ...echoList.value].slice(
+        0,
+        MAX_REALTIME_POINTS,
+      );
     },
   );
 
@@ -342,9 +346,7 @@
         customRender: (params: any) => {
           const node = typeof inner === 'function' ? inner(params) : params.value;
           const num = parseFloat(params?.value);
-          const out =
-            !isNaN(num) &&
-            ((!isNaN(min) && num < min) || (!isNaN(max) && num > max));
+          const out = !isNaN(num) && ((!isNaN(min) && num < min) || (!isNaN(max) && num > max));
           if (!out) return node;
           return h(
             'span',
@@ -363,8 +365,14 @@
   const getPopupContainerRef = () => rangePickerWrap.value;
 
   const rangePresets = ref([
-    { label: t('iot.link.device.device.running.last10Min'), value: [dayjs().add(-10, 'm'), dayjs()] },
-    { label: t('iot.link.device.device.running.last1Hour'), value: [dayjs().add(-1, 'h'), dayjs()] },
+    {
+      label: t('iot.link.device.device.running.last10Min'),
+      value: [dayjs().add(-10, 'm'), dayjs()],
+    },
+    {
+      label: t('iot.link.device.device.running.last1Hour'),
+      value: [dayjs().add(-1, 'h'), dayjs()],
+    },
     { label: t('iot.link.device.device.running.last1Day'), value: [dayjs().add(-1, 'd'), dayjs()] },
     { label: t('iot.link.device.device.running.last7Day'), value: [dayjs().add(-7, 'd'), dayjs()] },
   ]);

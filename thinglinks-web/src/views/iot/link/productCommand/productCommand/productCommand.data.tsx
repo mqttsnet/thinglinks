@@ -1,14 +1,53 @@
 import { Ref } from 'vue';
-import { dateUtil } from '/@/utils/dateUtil';
 import { BasicColumn, FormSchema } from '/@/components/Table';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
-import { Tag, Tooltip, message } from 'ant-design-vue';
+import { Tooltip } from 'ant-design-vue';
 import CopyableText from '/@/components/CopyableText';
+import type { CardField } from '/@/components/BusinessCardList';
 import { thingModelCodeRules } from '/@/utils/iot/dataTypeValidator';
 
 const { t } = useI18n();
+
+const tableEllipsisStyle = {
+  display: 'inline-block',
+  maxWidth: '100%',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+};
+
+const renderTextCell = (value: unknown) => {
+  const text = value == null || value === '' ? '--' : String(value);
+  return (
+    <Tooltip placement="topLeft" title={text === '--' ? '' : text}>
+      <span style={tableEllipsisStyle}>{text}</span>
+    </Tooltip>
+  );
+};
+
+/**
+ * BusinessCardList 卡片字段配置。
+ * 命令没有独立 icon 字段,列表页统一使用默认命令 SVG。
+ */
+export const cardFields = (): CardField[] => [
+  {
+    label: t('iot.link.productCommand.productCommand.commandCode'),
+    field: 'commandCode',
+    span: 24,
+  },
+  {
+    label: t('iot.link.productCommand.productCommand.description'),
+    field: 'description',
+    span: 24,
+  },
+  {
+    label: t('iot.link.productCommand.productCommand.remark'),
+    field: 'remark',
+    span: 24,
+  },
+];
 
 // 列表页字段
 export const columns = (): BasicColumn[] => {
@@ -16,59 +55,46 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.link.productCommand.productCommand.serviceId'),
       dataIndex: 'serviceId',
+      width: 220,
+      ellipsis: true,
+      customRender: ({ record }) => {
+        return <CopyableText text={record.serviceId || ''} style={{ maxWidth: '100%' }} />;
+      },
     },
     {
       title: t('iot.link.productCommand.productCommand.commandCode'),
       dataIndex: 'commandCode',
-      width: 150,
+      width: 180,
       ellipsis: true,
       customRender: ({ record }) => {
-        return <CopyableText text={record.commandCode || ''} />;
+        return <CopyableText text={record.commandCode || ''} style={{ maxWidth: '100%' }} />;
       },
     },
     {
       title: t('iot.link.productCommand.productCommand.commandName'),
       dataIndex: 'commandName',
-      width: 150,
+      width: 180,
       ellipsis: true,
       customRender: ({ record }) => {
-        return (
-          <Tooltip placement="topLeft" title={record.commandName}>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {record.commandName}
-            </span>
-          </Tooltip>
-        );
+        return renderTextCell(record.commandName);
       },
     },
     {
       title: t('iot.link.productCommand.productCommand.description'),
       dataIndex: 'description',
-      width: 200,
+      width: 260,
       ellipsis: true,
       customRender: ({ record }) => {
-        return (
-          <Tooltip placement="topLeft" title={record.description}>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {record.description}
-            </span>
-          </Tooltip>
-        );
+        return renderTextCell(record.description);
       },
     },
     {
       title: t('iot.link.productCommand.productCommand.remark'),
       dataIndex: 'remark',
-      width: 150,
+      width: 200,
       ellipsis: true,
       customRender: ({ record }) => {
-        return (
-          <Tooltip placement="topLeft" title={record.remark}>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {record.remark}
-            </span>
-          </Tooltip>
-        );
+        return renderTextCell(record.remark);
       },
     },
     // {
@@ -102,19 +128,22 @@ export const searchFormSchema = (): FormSchema[] => {
       label: t('iot.link.productCommand.productCommand.commandCode'),
       field: 'commandCode',
       component: 'Input',
-      colProps: { span: 6 },
+      colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 8, xxl: 8 },
+      componentProps: { allowClear: true },
     },
     {
       label: t('iot.link.productCommand.productCommand.commandName'),
       field: 'commandName',
       component: 'Input',
-      colProps: { span: 6 },
+      colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 8, xxl: 8 },
+      componentProps: { allowClear: true },
     },
     {
       label: t('iot.link.productCommand.productCommand.description'),
       field: 'description',
       component: 'Input',
-      colProps: { span: 6 },
+      colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 8, xxl: 8 },
+      componentProps: { allowClear: true },
     },
     // {
     //   label: t('iot.link.productCommand.productCommand.remark'),

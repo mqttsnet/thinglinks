@@ -5,6 +5,7 @@
     :title="t('iot.link.product.versionList.changeLogDrawerTitle')"
     width="720px"
     :closable="true"
+    :maskClosable="false"
     class="change-log-drawer"
   >
     <!-- 版本信息条 -->

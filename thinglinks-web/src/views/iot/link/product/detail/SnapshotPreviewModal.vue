@@ -6,6 +6,7 @@
     width="1000px"
     :minHeight="600"
     :showOkBtn="false"
+    :maskClosable="false"
     :cancelText="t('common.title.close')"
     class="snapshot-preview-modal"
   >
@@ -23,7 +24,7 @@
           <SnapshotIdTag v-if="snapshot.versionNo" :value="snapshot.versionNo" color="blue" />
           <a-tag :color="statusTagColor" class="sp-status-tag">{{ statusLabel }}</a-tag>
 
-          <span class="sp-divider" />
+          <span class="sp-divider"></span>
 
           <span v-if="snapshot.productIdentification" class="meta-kv">
             <KeyOutlined class="meta-icon" />
@@ -82,7 +83,7 @@
           </a-button>
         </div>
 
-        <span class="sp-toolbar-flex" />
+        <span class="sp-toolbar-flex"></span>
 
         <a-radio-group v-model:value="viewMode" button-style="solid" size="small">
           <a-radio-button value="visual">
@@ -217,12 +218,12 @@
   /** versionStatus → ant-tag color。 */
   const statusTagColor = computed(() => {
     const s = versionRow.value?.versionStatus;
-    if (s === 1) return 'success';   // PUBLISHED
-    if (s === 2) return 'warning';   // CANARY
-    if (s === 3) return 'purple';    // SHADOW
-    if (s === 4) return 'default';   // ROLLED_BACK
-    if (s === 5) return 'default';   // ARCHIVED
-    return 'default';                 // DRAFT / unknown
+    if (s === 1) return 'success'; // PUBLISHED
+    if (s === 2) return 'warning'; // CANARY
+    if (s === 3) return 'purple'; // SHADOW
+    if (s === 4) return 'default'; // ROLLED_BACK
+    if (s === 5) return 'default'; // ARCHIVED
+    return 'default'; // DRAFT / unknown
   });
 
   /** 维度统计:产品字段数。 */
@@ -233,20 +234,12 @@
 
   /** 全服务属性合计。 */
   const propertyCount = computed(
-    () =>
-      snapshot.value?.services?.reduce(
-        (sum, s) => sum + (s.properties?.length ?? 0),
-        0,
-      ) ?? 0,
+    () => snapshot.value?.services?.reduce((sum, s) => sum + (s.properties?.length ?? 0), 0) ?? 0,
   );
 
   /** 全服务命令合计。 */
   const commandCount = computed(
-    () =>
-      snapshot.value?.services?.reduce(
-        (sum, s) => sum + (s.commands?.length ?? 0),
-        0,
-      ) ?? 0,
+    () => snapshot.value?.services?.reduce((sum, s) => sum + (s.commands?.length ?? 0), 0) ?? 0,
   );
 
   /** 美化后的 JSON 字符串。 */

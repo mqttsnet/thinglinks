@@ -1,10 +1,6 @@
 <template>
   <PageWrapper dense contentFullHeight>
-    <BasicTable
-      @register="registerTable"
-      :switchFlag="switchFlag"
-      @switch-change="getSwitchChange"
-    >
+    <BasicTable @register="registerTable" :switchFlag="switchFlag" @switch-change="getSwitchChange">
       <template #cardView="{ searchData, title }">
         <BusinessCardList
           ref="cardListRef"
@@ -26,7 +22,7 @@
           :editModal="EditModal"
           :extraActions="cardExtraActions"
           @input="handleSwitchByCard"
-          @extraAction="handleCardExtraAction"
+          @extra-action="handleCardExtraAction"
         >
           <template #cardImage="{ record }">
             <component :is="getSourceTypeSvg(record?.sourceType)" />
@@ -140,7 +136,7 @@
   import { BusinessCardList } from '/@/components/BusinessCardList';
   import type { CardAction, CardPermissions } from '/@/components/BusinessCardList';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
-  import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
+  import { DictEnum } from '/@/enums/commonEnum';
   import {
     page,
     deleteSingle,
@@ -187,6 +183,7 @@
       icon: 'ant-design:play-circle-outlined',
       permission: 'rule:integration:datasource:toggle',
       event: 'toggle',
+      color: 'success',
       disabled: (r: any) => r.enable === true,
     },
     {
@@ -194,6 +191,7 @@
       icon: 'ant-design:pause-circle-outlined',
       permission: 'rule:integration:datasource:toggle',
       event: 'toggle',
+      color: 'warning',
       disabled: (r: any) => r.enable !== true,
     },
   ];
@@ -290,9 +288,7 @@
       handleSuccess();
     } catch (e: any) {
       createMessage.error(
-        t('iot.rule.integration.datasource.tips.enableMustTestPass') +
-          ': ' +
-          (e?.message ?? ''),
+        t('iot.rule.integration.datasource.tips.enableMustTestPass') + ': ' + (e?.message ?? ''),
       );
     }
   }

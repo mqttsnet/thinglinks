@@ -4,14 +4,65 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum, DictEnum, FileBizTypeEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
-import { Tag, Tooltip, message } from 'ant-design-vue';
+import { Tooltip } from 'ant-design-vue';
 import CopyableText from '/@/components/CopyableText';
+import type { CardField } from '/@/components/BusinessCardList';
 // dataTypeValidator: 物模型 datatype 校验/提示统一工具,跟设备调试参数填写共用
 // 本文件目前只用到 buildHelpMessage(动态 tooltip) + TD_NCHAR_MAX(上限常量);
 // buildRules / validateByDatatype 留给后续命令参数 / 设备调试场景调用
-import { buildHelpMessage, TD_NCHAR_MAX, thingModelCodeRules } from '/@/utils/iot/dataTypeValidator';
+import {
+  buildHelpMessage,
+  TD_NCHAR_MAX,
+  thingModelCodeRules,
+} from '/@/utils/iot/dataTypeValidator';
 
 const { t } = useI18n();
+
+const tableEllipsisStyle = {
+  display: 'inline-block',
+  maxWidth: '100%',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+};
+
+const renderTextCell = (value: unknown) => {
+  const text = value == null || value === '' ? '--' : String(value);
+  return (
+    <Tooltip placement="topLeft" title={text === '--' ? '' : text}>
+      <span style={tableEllipsisStyle}>{text}</span>
+    </Tooltip>
+  );
+};
+
+/**
+ * BusinessCardList 卡片字段配置。
+ * 名称由 nameField=propertyName 渲染,右侧图片由列表页根据 icon 决定。
+ */
+export const cardFields = (): CardField[] => [
+  {
+    label: t('iot.link.productProperty.productProperty.propertyCode'),
+    field: 'propertyCode',
+    span: 24,
+  },
+  {
+    label: t('iot.link.productProperty.productProperty.datatype'),
+    field: 'datatype',
+    dictType: DictEnum.LINK_PRODUCT_SERVICE_PROPERTY_DATA_TYPE,
+    span: 24,
+  },
+  {
+    label: t('iot.link.productProperty.productProperty.method'),
+    field: 'method',
+    dictType: DictEnum.ACCESS_MODE,
+    span: 24,
+  },
+  {
+    label: t('iot.link.productProperty.productProperty.description'),
+    field: 'description',
+    span: 24,
+  },
+];
 
 // 列表页字段
 export const columns = (): BasicColumn[] => {
@@ -19,109 +70,105 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.link.productProperty.productProperty.serviceId'),
       dataIndex: 'serviceId',
+      width: 220,
+      ellipsis: true,
+      customRender: ({ record }) => {
+        return <CopyableText text={record.serviceId || ''} style={{ maxWidth: '100%' }} />;
+      },
     },
     {
       title: t('iot.link.productProperty.productProperty.propertyCode'),
       dataIndex: 'propertyCode',
-      width: 150,
+      width: 180,
       ellipsis: true,
       customRender: ({ record }) => {
-        return <CopyableText text={record.propertyCode || ''} />;
+        return <CopyableText text={record.propertyCode || ''} style={{ maxWidth: '100%' }} />;
       },
     },
     {
       title: t('iot.link.productProperty.productProperty.propertyName'),
       dataIndex: 'propertyName',
-      width: 120,
+      width: 160,
       ellipsis: true,
       customRender: ({ record }) => {
-        return (
-          <Tooltip placement="topLeft" title={record.propertyName}>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {record.propertyName}
-            </span>
-          </Tooltip>
-        );
+        return renderTextCell(record.propertyName);
       },
     },
     {
       title: t('iot.link.productProperty.productProperty.datatype'),
       dataIndex: 'datatype',
-      width: 100,
+      width: 120,
     },
     {
       title: t('iot.link.productProperty.productProperty.description'),
       dataIndex: 'description',
-      width: 150,
+      width: 220,
       ellipsis: true,
       customRender: ({ record }) => {
-        return (
-          <Tooltip placement="topLeft" title={record.description}>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {record.description}
-            </span>
-          </Tooltip>
-        );
+        return renderTextCell(record.description);
       },
     },
     {
       title: t('iot.link.productProperty.productProperty.enumlist'),
       dataIndex: 'enumlist',
-      width: 100,
+      width: 160,
+      ellipsis: true,
+      customRender: ({ record }) => renderTextCell(record.enumlist),
     },
     {
       title: t('iot.link.productProperty.productProperty.max'),
       dataIndex: 'max',
-      width: 80,
+      width: 100,
+      customRender: ({ record }) => renderTextCell(record.max),
     },
     {
       title: t('iot.link.productProperty.productProperty.maxlength'),
       dataIndex: 'maxlength',
-      width: 100,
+      width: 110,
+      customRender: ({ record }) => renderTextCell(record.maxlength),
     },
     {
       title: t('iot.link.productProperty.productProperty.method'),
       dataIndex: 'method',
-      width: 100,
+      width: 110,
     },
     {
       title: t('iot.link.productProperty.productProperty.min'),
       dataIndex: 'min',
-      width: 80,
+      width: 100,
+      customRender: ({ record }) => renderTextCell(record.min),
     },
     {
       title: t('iot.link.productProperty.productProperty.required'),
       dataIndex: 'required',
-      width: 90,
+      width: 100,
     },
     {
       title: t('iot.link.productProperty.productProperty.step'),
       dataIndex: 'step',
-      width: 80,
+      width: 100,
+      customRender: ({ record }) => renderTextCell(record.step),
     },
     {
       title: t('iot.link.productProperty.productProperty.unit'),
       dataIndex: 'unit',
-      width: 70,
+      width: 90,
+      ellipsis: true,
+      customRender: ({ record }) => renderTextCell(record.unit),
     },
     {
       title: t('iot.link.productProperty.productProperty.icon'),
       dataIndex: 'icon',
-      width: 80,
+      width: 96,
+      align: 'center',
     },
     {
       title: t('iot.link.productProperty.productProperty.remark'),
       dataIndex: 'remark',
-      width: 120,
+      width: 180,
       ellipsis: true,
       customRender: ({ record }) => {
-        return (
-          <Tooltip placement="topLeft" title={record.remark}>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {record.remark}
-            </span>
-          </Tooltip>
-        );
+        return renderTextCell(record.remark);
       },
     },
     {
@@ -145,20 +192,23 @@ export const searchFormSchema = (): FormSchema[] => {
       label: t('iot.link.productProperty.productProperty.propertyCode'),
       field: 'propertyCode',
       component: 'Input',
-      colProps: { span: 6 },
+      colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 8, xxl: 8 },
+      componentProps: { allowClear: true },
     },
     {
       label: t('iot.link.productProperty.productProperty.propertyName'),
       field: 'propertyName',
       component: 'Input',
-      colProps: { span: 6 },
+      colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 8, xxl: 8 },
+      componentProps: { allowClear: true },
     },
     {
       label: t('iot.link.productProperty.productProperty.description'),
       field: 'description',
       component: 'Input',
-      colProps: { span: 6 },
-    }
+      colProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 8, xxl: 8 },
+      componentProps: { allowClear: true },
+    },
   ];
 };
 
@@ -212,18 +262,16 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       field: 'icon',
       component: 'Upload',
       // colProps: { span: 22 },
-      componentProps: ({ schema, tableAction, formActionType, formModel }) => {
+      componentProps: ({ formActionType }) => {
         return {
           isDef: false,
           maxSize: 2048,
           multiple: false,
           maxNumber: 1,
-          accept: ['.png','.jpg'],
+          accept: ['.png', '.jpg'],
           uploadParams: { bizType: FileBizTypeEnum.BASE_LINK_PRODUCT_ICON },
           resultField: 'id',
           onChange: async (file) => {
-            console.log(111, file);
-
             await formActionType.setFieldsValue({ icon: [file[0]] });
             await formActionType.validateFields(['icon']);
           },
@@ -298,8 +346,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       label: t('iot.link.productProperty.productProperty.maxlength'),
       field: 'maxlength',
       component: 'InputNumber',
-      ifShow: ({ values }) =>
-        ['string', 'DateTime', 'jsonObject'].includes(values.datatype),
+      ifShow: ({ values }) => ['string', 'DateTime', 'jsonObject'].includes(values.datatype),
       // 时序库 NCHAR 单字段上限 16374 字节,超出后端 DDL 会失败 → 表单端就 cap
       helpMessage: t('iot.link.productProperty.productProperty.help.string', {
         max: TD_NCHAR_MAX,

@@ -5,6 +5,7 @@
     :title="t('iot.link.product.publishRecord.diff.drawerTitle')"
     width="920px"
     :closable="true"
+    :maskClosable="false"
     class="diff-drawer"
   >
     <template v-if="loading">

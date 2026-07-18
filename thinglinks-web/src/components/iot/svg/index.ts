@@ -22,6 +22,7 @@ import GatewayProductSvg from './GatewayProductSvg.vue';
 import CommonDeviceSvg from './CommonDeviceSvg.vue';
 import GatewayDeviceSvg from './GatewayDeviceSvg.vue';
 import SubDeviceSvg from './SubDeviceSvg.vue';
+import ProductModelCardSvg from './ProductModelCardSvg.vue';
 
 export {
   CommonProductSvg,
@@ -29,6 +30,7 @@ export {
   CommonDeviceSvg,
   GatewayDeviceSvg,
   SubDeviceSvg,
+  ProductModelCardSvg,
 };
 
 /**

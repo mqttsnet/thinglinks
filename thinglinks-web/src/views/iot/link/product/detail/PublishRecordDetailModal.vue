@@ -5,6 +5,7 @@
     :title="t('iot.link.product.publishRecord.detail.title')"
     width="820px"
     :showOkBtn="false"
+    :maskClosable="false"
     :cancelText="t('common.title.close')"
     wrapClassName="publish-record-detail-wrap"
   >

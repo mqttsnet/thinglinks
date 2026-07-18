@@ -1,10 +1,6 @@
 <template>
   <PageWrapper dense contentFullHeight>
-    <BasicTable
-      @register="registerTable"
-      :switchFlag="switchFlag"
-      @switch-change="getSwitchChange"
-    >
+    <BasicTable @register="registerTable" :switchFlag="switchFlag" @switch-change="getSwitchChange">
       <template #cardView="{ searchData, title }">
         <BusinessCardList
           ref="cardListRef"
@@ -26,7 +22,7 @@
           :editModal="EditModal"
           :extraActions="cardExtraActions"
           @input="handleSwitchByCard"
-          @extraAction="handleCardExtraAction"
+          @extra-action="handleCardExtraAction"
         >
           <template #cardImage>
             <DataBridgeSvg />
@@ -154,11 +150,7 @@
   import type { CardAction, CardPermissions } from '/@/components/BusinessCardList';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
   import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
-  import {
-    page,
-    deleteSingle,
-    changeStatus,
-  } from '/@/api/iot/rule/integration/dataBridge';
+  import { page, deleteSingle, changeStatus } from '/@/api/iot/rule/integration/dataBridge';
   import { columns, searchFormSchema, cardFields as buildCardFields } from './bridge.data';
   import EditModal from './Edit.vue';
   import TestSinkModal from './TestSinkModal.vue';
@@ -200,6 +192,7 @@
       icon: 'ant-design:play-circle-outlined',
       permission: 'rule:integration:bridge:enable',
       event: 'toggle',
+      color: 'success',
       disabled: (r: any) => r.enable === true,
     },
     {
@@ -207,6 +200,7 @@
       icon: 'ant-design:pause-circle-outlined',
       permission: 'rule:integration:bridge:disable',
       event: 'toggle',
+      color: 'warning',
       disabled: (r: any) => r.enable !== true,
     },
     {

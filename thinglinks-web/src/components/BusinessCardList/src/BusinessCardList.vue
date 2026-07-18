@@ -1,5 +1,5 @@
 <template>
-  <div class="biz-card-list">
+  <div :class="['biz-card-list', `biz-card-list--${cardVariant}`]">
     <div v-if="loading" class="biz-card-list__loading">
       <a-spin />
     </div>
@@ -8,7 +8,7 @@
     <div class="biz-card-list__header">
       <span class="biz-card-list__title">{{ title }}</span>
       <div class="biz-card-list__toolbar">
-        <slot name="headerExtra" />
+        <slot name="headerExtra"></slot>
         <a-button
           v-if="permissions?.add"
           v-hasAnyPermission="[permissions.add]"
@@ -26,7 +26,7 @@
 
     <!-- 卡片网格 -->
     <div class="biz-card-list__content">
-      <a-row v-if="dataList.length > 0" :gutter="[24, 12]">
+      <a-row v-if="dataList.length > 0" :gutter="gridGutter">
         <a-col
           v-for="record in dataList"
           :key="record.id"
@@ -35,7 +35,7 @@
           :md="12"
           :lg="12"
           :xl="8"
-          :xxl="6"
+          :xxl="cardVariant === 'model' ? 8 : 6"
         >
           <div class="biz-card" @click="handleCardClick(record, $event)">
             <!-- 左侧信息 -->
@@ -49,11 +49,7 @@
 
               <!-- 动态字段 -->
               <a-row :gutter="[4, 0]">
-                <a-col
-                  v-for="(field, idx) in normalizedFields"
-                  :key="idx"
-                  :span="field.span || 24"
-                >
+                <a-col v-for="(field, idx) in normalizedFields" :key="idx" :span="field.span || 24">
                   <div class="biz-card__field">
                     <div class="biz-card__label">{{ field.label }}</div>
                     <div class="biz-card__value" :title="getFieldValue(record, field)">
@@ -82,10 +78,14 @@
                 <div
                   v-if="permissions?.delete"
                   v-hasAnyPermission="[permissions.delete]"
-                  class="biz-card__action-btn"
+                  class="biz-card__action-btn biz-card__action-btn--error"
                 >
                   <a-tooltip placement="top" :title="t('common.title.delete')">
-                    <Icon icon="ant-design:delete-outlined" :size="16" @click.stop="handleDelete(record)" />
+                    <Icon
+                      icon="ant-design:delete-outlined"
+                      :size="16"
+                      @click.stop="handleDelete(record)"
+                    />
                   </a-tooltip>
                 </div>
                 <div
@@ -94,7 +94,11 @@
                   class="biz-card__action-btn"
                 >
                   <a-tooltip placement="top" :title="t('common.title.edit')">
-                    <Icon icon="ant-design:edit-outlined" :size="16" @click.stop="handleEdit(record)" />
+                    <Icon
+                      icon="ant-design:edit-outlined"
+                      :size="16"
+                      @click.stop="handleEdit(record)"
+                    />
                   </a-tooltip>
                 </div>
                 <!-- 额外操作 -->
@@ -103,6 +107,7 @@
                     v-if="!action.permission || hasPermission(action.permission)"
                     :class="[
                       'biz-card__action-btn',
+                      action.color ? `biz-card__action-btn--${action.color}` : '',
                       action.disabled && action.disabled(record) ? 'is-disabled' : '',
                     ]"
                   >
@@ -118,7 +123,7 @@
                     </a-tooltip>
                   </div>
                 </template>
-                <slot name="cardActions" :record="record" />
+                <slot name="cardActions" :record="record"></slot>
               </div>
             </div>
 
@@ -135,12 +140,8 @@
             </div>
 
             <!-- 右下角状态标签 -->
-            <div
-              v-if="statusField"
-              class="biz-card__status"
-              :class="resolveCardStatus(record).cls"
-            >
-              <span class="biz-card__status-dot" />
+            <div v-if="statusField" class="biz-card__status" :class="resolveCardStatus(record).cls">
+              <span class="biz-card__status-dot"></span>
               <span class="biz-card__status-text">{{ resolveCardStatus(record).label }}</span>
             </div>
           </div>
@@ -177,7 +178,7 @@
 <script setup lang="ts">
   import { ref, reactive, watch, computed } from 'vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
+  import { ActionEnum } from '/@/enums/commonEnum';
   import { useModal } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useDict } from '/@/components/Dict';
@@ -214,13 +215,17 @@
     detailRouteName: { type: String, default: undefined },
     editModal: { type: Object as PropType<Component>, default: undefined },
     extraActions: { type: Array as PropType<CardAction[]>, default: () => [] },
+    variant: {
+      type: String as PropType<'default' | 'model'>,
+      default: 'default',
+    },
   });
 
   const emit = defineEmits(['input', 'add', 'edit', 'view', 'delete', 'extraAction']);
 
   const { t } = useI18n();
   const { push } = useRouter();
-  const { detailRouteName: autoDetailRouteName, goDetail } = useDetailRoute();
+  const { detailRouteName: autoDetailRouteName } = useDetailRoute();
   const { getDictLabel } = useDict();
   const { createMessage, createConfirm } = useMessage();
   const { hasPermission: checkPermission } = usePermission();
@@ -234,6 +239,10 @@
   const model = reactive<any>({});
   const loading = ref<boolean>(false);
 
+  const cardVariant = computed(() => props.variant);
+  const gridGutter = computed<[number, number]>(() =>
+    props.variant === 'model' ? [16, 12] : [24, 12],
+  );
   const normalizedFields = computed(() => props.fields);
 
   /**
@@ -262,7 +271,7 @@
 
   const getFieldValue = (record: any, field: CardField): string => {
     const val = getNestedValue(record, field.field);
-    if (val == null) return '';
+    if (val == null || val === '') return props.variant === 'model' ? '--' : '';
     if (field.dictType) {
       return getDictLabel(field.dictType, String(val)) || String(val);
     }
@@ -361,7 +370,7 @@
     emit('view', record);
   };
 
-  const handleCardClick = (record: any, e: MouseEvent) => {
+  const handleCardClick = (_record: any, _e: MouseEvent) => {
     // 仅在有详情路由时整卡片可点击
   };
 
@@ -418,7 +427,7 @@
 
 <style lang="less" scoped>
   .biz-card-list {
-    background-color: #f5f7fa;
+    background-color: @app-content-background;
     padding: 24px;
     min-height: 100%;
 
@@ -442,7 +451,7 @@
     &__title {
       font-weight: 600;
       font-size: 17px;
-      color: #2a3547;
+      color: @text-color-base;
     }
 
     &__toolbar {
@@ -465,7 +474,7 @@
   .biz-card {
     display: flex;
     position: relative;
-    background: #fff;
+    background: @component-background;
     border: none;
     padding: 20px;
     border-radius: 16px;
@@ -474,11 +483,11 @@
     overflow: hidden;
     transition: all 0.25s ease;
     cursor: default;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04), 0 2px 12px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 1px 4px fade(@text-color-base, 4%), 0 2px 12px fade(@text-color-base, 3%);
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 16px fade(@text-color-base, 8%), 0 8px 24px fade(@text-color-base, 4%);
     }
 
     &__info {
@@ -497,7 +506,7 @@
     &__name {
       font-weight: 600;
       font-size: 15px;
-      color: #2a3547;
+      color: @text-color-base;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -510,7 +519,7 @@
 
       .biz-card__label {
         font-size: 11px;
-        color: #a0aec0;
+        color: @text-color-help-dark;
         white-space: nowrap;
         text-transform: uppercase;
         letter-spacing: 0.3px;
@@ -522,7 +531,7 @@
         overflow: hidden;
         white-space: nowrap;
         font-size: 13px;
-        color: #4a5568;
+        color: @text-color-secondary;
         max-width: 100%;
         font-weight: 500;
       }
@@ -538,7 +547,7 @@
 
     &__action-btn {
       cursor: pointer;
-      color: #718096;
+      color: @text-color-secondary;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -549,19 +558,50 @@
       transition: all 0.2s ease;
 
       &:hover {
-        color: #5d87ff;
-        background-color: rgba(93, 135, 255, 0.08);
+        color: @primary-color;
+        background-color: fade(@primary-color, 8%);
       }
 
       &.is-disabled {
         cursor: not-allowed;
-        color: #c2cfe0;
+        color: @disabled-color;
         opacity: 0.5;
         pointer-events: none;
 
         &:hover {
-          color: #c2cfe0;
+          color: @disabled-color;
           background-color: transparent;
+        }
+      }
+
+      &--primary {
+        color: @primary-color;
+      }
+
+      &--success {
+        color: @button-success-color;
+
+        &:hover {
+          color: @button-success-hover-color;
+          background-color: fade(@button-success-color, 8%);
+        }
+      }
+
+      &--warning {
+        color: @button-warn-color;
+
+        &:hover {
+          color: @button-warn-hover-color;
+          background-color: fade(@button-warn-color, 8%);
+        }
+      }
+
+      &--error {
+        color: @button-error-color;
+
+        &:hover {
+          color: @button-error-hover-color;
+          background-color: fade(@button-error-color, 8%);
         }
       }
     }
@@ -578,7 +618,9 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      background: linear-gradient(135deg, #eef2ff 0%, #e8f4fd 100%);
+      color: @primary-color;
+      background: fade(@primary-color, 8%);
+      border: 1px solid fade(@primary-color, 12%);
       border-radius: 14px;
       padding: 16px;
 
@@ -600,8 +642,8 @@
       top: 0;
       right: 0;
       border-radius: 0 16px 0 12px;
-      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-      color: #5d87ff;
+      background: fade(@primary-color, 10%);
+      color: @primary-color;
       padding: 3px 10px;
       font-size: 11px;
       font-weight: 600;
@@ -623,28 +665,28 @@
       white-space: nowrap;
 
       &.online {
-        background-color: #ebfaf2;
-        color: #13deb9;
+        background-color: fade(@button-success-color, 10%);
+        color: @button-success-color;
       }
 
       &.offline {
-        background-color: #fef5e5;
-        color: #ffae1f;
+        background-color: fade(@button-warn-color, 10%);
+        color: @button-warn-color;
       }
 
       &.unconnected {
-        background-color: #f2f4f7;
-        color: #8c97a5;
+        background-color: fade(@disabled-color, 12%);
+        color: @text-color-secondary;
       }
 
       &.info {
-        background-color: #eef4ff;
-        color: #5d87ff;
+        background-color: fade(@primary-color, 10%);
+        color: @primary-color;
       }
 
       &.danger {
-        background-color: #fdeded;
-        color: #fa5252;
+        background-color: fade(@button-error-color, 10%);
+        color: @button-error-color;
       }
     }
 
@@ -655,28 +697,146 @@
       flex-shrink: 0;
 
       .online & {
-        background-color: #13deb9;
+        background-color: @button-success-color;
       }
 
       .offline & {
-        background-color: #ffae1f;
+        background-color: @button-warn-color;
       }
 
       .unconnected & {
-        background-color: #8c97a5;
+        background-color: @text-color-secondary;
       }
 
       .info & {
-        background-color: #5d87ff;
+        background-color: @primary-color;
       }
 
       .danger & {
-        background-color: #fa5252;
+        background-color: @button-error-color;
       }
     }
 
     &__status-text {
       flex-shrink: 0;
+    }
+  }
+
+  .biz-card-list--model {
+    background-color: transparent;
+    padding: 12px 16px 16px;
+
+    .biz-card-list__header {
+      margin-bottom: 12px;
+    }
+
+    .biz-card-list__title {
+      font-size: 16px;
+    }
+
+    .biz-card-list__pagination {
+      margin-top: 12px;
+    }
+
+    .biz-card {
+      min-height: 184px;
+      padding: 16px;
+      border: 1px solid @border-color-base;
+      border-radius: 10px;
+      box-shadow: none;
+
+      &:hover {
+        transform: translateY(-1px);
+        border-color: fade(@primary-color, 42%);
+        box-shadow: 0 4px 14px fade(@primary-color, 8%);
+      }
+
+      &__info {
+        max-width: calc(100% - 66px);
+      }
+
+      &__name-row {
+        padding-right: 52px;
+        margin-bottom: 10px;
+      }
+
+      &__name {
+        display: -webkit-box;
+        overflow: hidden;
+        min-height: 21px;
+        white-space: normal;
+        text-overflow: ellipsis;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-height: 1.45;
+      }
+
+      &__field {
+        display: grid;
+        grid-template-columns: 64px minmax(0, 1fr);
+        align-items: baseline;
+        column-gap: 8px;
+        margin-bottom: 5px;
+
+        .biz-card__label {
+          margin-bottom: 0;
+          overflow: hidden;
+          color: @text-color-help-dark;
+          font-size: 12px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          text-transform: none;
+          letter-spacing: 0;
+        }
+
+        .biz-card__value {
+          color: @text-color-base;
+          font-size: 13px;
+          line-height: 1.45;
+        }
+
+        &:last-child {
+          .biz-card__value {
+            display: -webkit-box;
+            white-space: normal;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+          }
+        }
+      }
+
+      &__actions {
+        gap: 2px;
+        padding-top: 8px;
+      }
+
+      &__action-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+      }
+
+      &__image {
+        top: 46px;
+        right: 16px;
+        width: 50px;
+        height: 50px;
+        padding: 7px;
+        color: @primary-color;
+        background: fade(@primary-color, 6%);
+        border: 1px solid fade(@primary-color, 16%);
+        border-radius: 12px;
+
+        :deep(svg) {
+          opacity: 1;
+        }
+      }
+
+      &__badge {
+        color: @primary-color;
+        background: fade(@primary-color, 10%);
+        border-radius: 0 10px 0 10px;
+      }
     }
   }
 

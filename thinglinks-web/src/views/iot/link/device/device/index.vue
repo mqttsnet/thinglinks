@@ -94,7 +94,7 @@
           @view="handleView"
           @edit="handleEdit"
           @delete="handleDelete"
-          @extraAction="handleCardExtraAction"
+          @extra-action="handleCardExtraAction"
         >
           <!--
             设备图视觉优先级:节点类型 SVG > 产品 icon。
@@ -171,7 +171,7 @@
               <template #trigger>
                 <a-tooltip>
                   <template #title>{{ t('iot.link.device.device.qrcode') }}</template>
-                  <QrcodeOutlined :style="{ color: '#009688', fontSize: '16px' }" />
+                  <QrcodeOutlined class="device-qrcode-trigger" />
                 </a-tooltip>
               </template>
             </renderQrCode>
@@ -507,6 +507,7 @@
       background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
       box-shadow: 0 6px 14px rgba(93, 135, 255, 0.35);
     }
+
     &.online {
       background: linear-gradient(135deg, #9b75e6 0%, #b095f0 100%);
       box-shadow: 0 6px 14px rgba(155, 117, 230, 0.35);
@@ -516,10 +517,12 @@
         box-shadow: 0 6px 14px rgba(19, 222, 185, 0.35);
       }
     }
+
     &.active {
       background: linear-gradient(135deg, #13deb9 0%, #36e6c3 100%);
       box-shadow: 0 6px 14px rgba(19, 222, 185, 0.35);
     }
+
     &.locked {
       background: linear-gradient(135deg, #fa896b 0%, #ff6a4a 100%);
       box-shadow: 0 6px 14px rgba(250, 137, 107, 0.35);
@@ -549,9 +552,11 @@
     &--ok {
       color: #13deb9;
     }
+
     &--warn {
       color: #fa896b;
     }
+
     &--mono {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 14px;
@@ -568,14 +573,27 @@
       color: #97a1b0;
       margin-right: 4px;
     }
+
     .sub-val {
       color: #2a3547;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
     }
+
     .sub-divider {
       margin: 0 6px;
       color: #d1d8e0;
+    }
+  }
+
+  .device-qrcode-trigger {
+    color: @primary-color;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: lighten(@primary-color, 8%);
     }
   }
 
