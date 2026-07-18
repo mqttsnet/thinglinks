@@ -12,12 +12,12 @@ export type NotificationChannelType =
 
 export interface NotificationTemplatePreset {
   id: string;
-  name: string;
-  description: string;
+  nameKey: string;
+  descriptionKey: string;
   channelTypes: NotificationChannelType[];
   format: RuleAlarmChannelTemplate['format'];
-  titleTemplate: string;
-  contentTemplate: string;
+  titleTemplateKey: string;
+  contentTemplateKey: string;
   urlTemplate?: string;
   atAll?: boolean;
   docUrl?: string;

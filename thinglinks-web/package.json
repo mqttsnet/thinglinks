@@ -42,7 +42,8 @@
     "product:check": "node ./scripts/product-config.mjs check",
     "product:render": "node ./scripts/product-config.mjs render",
     "product:set-version": "node ./scripts/product-config.mjs set-version",
-    "product:test": "node --test tests/build-utils-log.test.mjs tests/db-url.test.mjs tests/env-comments.test.mjs tests/gen-project-help.test.mjs tests/product-build-gate.test.mjs tests/product-config-build.test.mjs tests/product-config.test.mjs"
+    "product:test": "node --test tests/build-utils-log.test.mjs tests/db-url.test.mjs tests/env-comments.test.mjs tests/gen-project-help.test.mjs tests/notification-config.test.mjs tests/product-build-gate.test.mjs tests/product-config-build.test.mjs tests/product-config.test.mjs",
+    "test:notification": "node --test tests/notification-config.test.mjs"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",

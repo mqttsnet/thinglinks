@@ -4,10 +4,12 @@ import { ENTERPRISE_WECHAT_NOTIFICATION_TEMPLATES } from './enterpriseWechat';
 import { FEISHU_NOTIFICATION_TEMPLATES } from './feishu';
 import { SITE_MESSAGE_NOTIFICATION_TEMPLATES } from './siteMessage';
 import { NOTIFICATION_CHANNEL_TYPE } from './types';
+import { resolveNotificationTemplateMessages } from './notificationConfig.mjs';
 import type { NotificationChannelType, NotificationTemplatePreset } from './types';
 
 export { NOTIFICATION_CHANNEL_TYPE };
 export type { NotificationChannelType, NotificationTemplatePreset };
+export type NotificationTemplateMessageResolver = (key: string) => unknown;
 
 export const NOTIFICATION_TEMPLATE_PRESETS: NotificationTemplatePreset[] = [
   ...DING_TALK_NOTIFICATION_TEMPLATES,
@@ -46,19 +48,24 @@ export function getDefaultNotificationTemplatePreset(channelType: number) {
 export function applyNotificationTemplatePreset(
   base: RuleAlarmChannelTemplate,
   preset: NotificationTemplatePreset,
+  resolveMessage: NotificationTemplateMessageResolver,
 ): RuleAlarmChannelTemplate {
+  const localizedMessages = resolveNotificationTemplateMessages(preset, resolveMessage);
   return {
     ...base,
     templateId: preset.id,
     format: preset.format,
-    titleTemplate: preset.titleTemplate,
-    contentTemplate: preset.contentTemplate,
+    ...localizedMessages,
     urlTemplate: preset.urlTemplate || '',
     atAll: preset.atAll ?? base.atAll ?? false,
   };
 }
 
-export function createNotificationChannelTemplate(channelType: number, templateId?: string) {
+export function createNotificationChannelTemplate(
+  channelType: number,
+  resolveMessage: NotificationTemplateMessageResolver,
+  templateId?: string,
+) {
   const preset =
     getNotificationTemplatePreset(templateId) || getDefaultNotificationTemplatePreset(channelType);
   return applyNotificationTemplatePreset(
@@ -68,5 +75,6 @@ export function createNotificationChannelTemplate(channelType: number, templateI
       atAll: false,
     },
     preset,
+    resolveMessage,
   );
 }

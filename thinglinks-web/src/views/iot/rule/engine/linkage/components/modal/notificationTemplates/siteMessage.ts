@@ -4,29 +4,25 @@ import type { NotificationTemplatePreset } from './types';
 export const SITE_MESSAGE_NOTIFICATION_TEMPLATES: NotificationTemplatePreset[] = [
   {
     id: 'site-message-core',
-    name: '站内信',
-    description: '系统内提醒，内容短、可跳执行日志。',
+    nameKey: 'iot.link.engine.linkage.notificationPresets.siteMessageCore.name',
+    descriptionKey: 'iot.link.engine.linkage.notificationPresets.siteMessageCore.description',
     channelTypes: [NOTIFICATION_CHANNEL_TYPE.SITE_MESSAGE],
     format: 'NOTICE',
-    titleTemplate: '告警：${alarm.name}',
-    contentTemplate: [
-      '${alarm.name}',
-      '规则：${rule.name}',
-      '设备：${device.name}（${device.identification}）',
-      '事件：${trigger.actionType}',
-      '时间：${trigger.time}',
-      '执行流水：${rule.executionId}',
-    ].join('\n'),
+    titleTemplateKey: 'iot.link.engine.linkage.notificationPresets.siteMessageCore.titleTemplate',
+    contentTemplateKey:
+      'iot.link.engine.linkage.notificationPresets.siteMessageCore.contentTemplate',
     urlTemplate: '${link.executionLogUrl}',
   },
   {
     id: 'site-message-compact',
-    name: '站内短提醒',
-    description: '列表页阅读更省空间。',
+    nameKey: 'iot.link.engine.linkage.notificationPresets.siteMessageCompact.name',
+    descriptionKey: 'iot.link.engine.linkage.notificationPresets.siteMessageCompact.description',
     channelTypes: [NOTIFICATION_CHANNEL_TYPE.SITE_MESSAGE],
     format: 'NOTICE',
-    titleTemplate: '${device.name} ${trigger.actionType}',
-    contentTemplate: '${alarm.name}，${trigger.time} 触发，规则：${rule.name}',
+    titleTemplateKey:
+      'iot.link.engine.linkage.notificationPresets.siteMessageCompact.titleTemplate',
+    contentTemplateKey:
+      'iot.link.engine.linkage.notificationPresets.siteMessageCompact.contentTemplate',
     urlTemplate: '${link.executionLogUrl}',
   },
 ];

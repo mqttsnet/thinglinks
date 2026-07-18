@@ -117,7 +117,7 @@
                   :key="preset.id"
                   :value="preset.id"
                 >
-                  {{ preset.name }}
+                  {{ t(preset.nameKey) }}
                 </a-select-option>
               </a-select>
               <a-button :loading="previewLoading" @click="handlePreview">
@@ -134,8 +134,8 @@
               :class="['preset-item', selectedTemplateId === preset.id ? 'active' : '']"
               @click="applyPreset(preset.id)"
             >
-              <span>{{ preset.name }}</span>
-              <em>{{ preset.description }}</em>
+              <span>{{ t(preset.nameKey) }}</span>
+              <em>{{ t(preset.descriptionKey) }}</em>
             </button>
           </div>
 
@@ -193,15 +193,16 @@
           <div class="muted variable-tip">{{ t('iot.link.engine.linkage.variableTip') }}</div>
           <a-spin :spinning="variablesLoading">
             <div class="variable-group" v-for="group in variableGroups" :key="group.groupCode">
-              <div class="group-title">{{ group.groupName }}</div>
+              <div class="group-title">{{ variableGroupName(group) }}</div>
               <button
                 v-for="variable in group.variables"
                 :key="variable.key"
                 type="button"
                 class="variable-item"
+                :title="variableDescription(group.groupCode, variable)"
                 @click="insertVariable(variable.placeholder)"
               >
-                <span>{{ variable.label }}</span>
+                <span>{{ variableLabel(group.groupCode, variable) }}</span>
                 <code>{{ variable.placeholder }}</code>
               </button>
             </div>
@@ -230,6 +231,7 @@
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import { i18n } from '/@/locales/setupI18n';
   import AlarmListCardList from '../../../../../../../components/iot/rule/alarm/AlarmListCardList.vue';
   import { ActionEnum } from '/@/enums/commonEnum';
   import { getRuleAlarmDetails, page as pageAlarm } from '/@/api/iot/rule/alarm/alarm';
@@ -246,10 +248,15 @@
     getNotificationTemplatePresets,
   } from './notificationTemplates';
   import { FALLBACK_NOTIFICATION_VARIABLE_GROUPS } from './notificationTemplates/variables';
+  import {
+    getNotificationValidationErrorKey,
+    getNotificationVariableLocaleKeys,
+  } from './notificationTemplates/notificationConfig.mjs';
   import type {
     RuleAlarmChannelTemplate,
     RuleAlarmRecipient,
     RuleAlarmRenderedNotification,
+    RuleNotificationVariable,
     RuleNotificationVariableGroup,
   } from '/@/api/iot/rule/engine/linkage/notification';
 
@@ -263,6 +270,10 @@
   const emit = defineEmits(['saveTriggerAlarm']);
   const { t } = useI18n();
   const { createMessage } = useMessage();
+
+  function resolvePresetMessage(key: string) {
+    return key ? i18n.global.tm(key) : '';
+  }
 
   const currentType = ref<ActionEnum>(ActionEnum.ADD);
   const current = ref(0);
@@ -367,7 +378,11 @@
   function normalizeTemplates(actionContent: Recordable): RuleAlarmChannelTemplate[] {
     if (Array.isArray(actionContent?.channelTemplates) && actionContent.channelTemplates.length) {
       return actionContent.channelTemplates.map((item) => ({
-        ...createNotificationChannelTemplate(Number(item.channelType), item.templateId),
+        ...createNotificationChannelTemplate(
+          Number(item.channelType),
+          resolvePresetMessage,
+          item.templateId,
+        ),
         ...item,
         channelType: Number(item.channelType),
         enabled: item.enabled !== false,
@@ -375,7 +390,7 @@
     }
     const legacyContent = actionContent?.contentData || '';
     return DEFAULT_CHANNELS.map((channelType) => {
-      const template = createNotificationChannelTemplate(channelType);
+      const template = createNotificationChannelTemplate(channelType, resolvePresetMessage);
       return {
         ...template,
         contentTemplate: legacyContent || template.contentTemplate,
@@ -423,12 +438,37 @@
     if (variableGroups.value.length) return;
     variablesLoading.value = true;
     try {
-      variableGroups.value = await getNotificationVariables();
+      const remoteGroups = await getNotificationVariables();
+      variableGroups.value = remoteGroups?.length
+        ? remoteGroups
+        : FALLBACK_NOTIFICATION_VARIABLE_GROUPS;
     } catch {
       variableGroups.value = FALLBACK_NOTIFICATION_VARIABLE_GROUPS;
     } finally {
       variablesLoading.value = false;
     }
+  }
+
+  function variableGroupName(group: RuleNotificationVariableGroup) {
+    const localeKey = getNotificationVariableLocaleKeys(group.groupCode)?.groupName;
+    return translateVariableMetadata(localeKey, group.groupName);
+  }
+
+  function variableLabel(groupCode: string, variable: RuleNotificationVariable) {
+    const localeKey = getNotificationVariableLocaleKeys(groupCode, variable.key)?.label;
+    return translateVariableMetadata(localeKey, variable.label);
+  }
+
+  function variableDescription(groupCode: string, variable: RuleNotificationVariable) {
+    const localeKey = getNotificationVariableLocaleKeys(groupCode, variable.key)?.description;
+    return translateVariableMetadata(localeKey, variable.description);
+  }
+
+  function translateVariableMetadata(localeKey?: string, fallback = '') {
+    if (!localeKey) return fallback;
+    const fullKey = `iot.link.engine.linkage.${localeKey}`;
+    const translated = t(fullKey);
+    return translated === fullKey ? fallback : translated;
   }
 
   function ensureChannelTemplates() {
@@ -515,14 +555,14 @@
       (item) => Number(item.channelType) === Number(channelType),
     );
     if (!template) {
-      template = createNotificationChannelTemplate(channelType);
+      template = createNotificationChannelTemplate(channelType, resolvePresetMessage);
       channelTemplates.value.push(template);
     }
     return template;
   }
 
   function defaultTemplate(channelType: number): RuleAlarmChannelTemplate {
-    return createNotificationChannelTemplate(channelType);
+    return createNotificationChannelTemplate(channelType, resolvePresetMessage);
   }
 
   function syncSelectedTemplateId() {
@@ -534,7 +574,11 @@
   function applyPreset(presetId: string) {
     const preset = getNotificationTemplatePreset(presetId);
     if (!preset) return;
-    const template = applyNotificationTemplatePreset(getTemplate(activeChannelType.value), preset);
+    const template = applyNotificationTemplatePreset(
+      getTemplate(activeChannelType.value),
+      preset,
+      resolvePresetMessage,
+    );
     const index = channelTemplates.value.findIndex(
       (item) => Number(item.channelType) === Number(activeChannelType.value),
     );
@@ -572,23 +616,9 @@
   }
 
   function validateBeforeSubmit() {
-    const enabledTemplates = channelTemplates.value.filter((item) => item.enabled === true);
-    if (!enabledTemplates.length) {
-      createMessage.error(t('iot.link.engine.linkage.channelRequired'));
-      return false;
-    }
-    const hasPhoneRecipient = recipients.value.some(
-      (item) => item.type === 'PHONE' || item.type === 'ALL',
-    );
-    const needRobotRecipient = enabledTemplates.some(
-      (item) => Number(item.channelType) !== CHANNEL_TYPE.SITE_MESSAGE && !item.atAll,
-    );
-    if (needRobotRecipient && !hasPhoneRecipient) {
-      createMessage.error(t('iot.link.engine.linkage.robotRecipientRequired'));
-      return false;
-    }
-    if (enabledTemplates.some((item) => !item.titleTemplate || !item.contentTemplate)) {
-      createMessage.error(t('iot.link.engine.linkage.templateRequired'));
+    const errorKey = getNotificationValidationErrorKey(channelTemplates.value, recipients.value);
+    if (errorKey) {
+      createMessage.error(t(`iot.link.engine.linkage.${errorKey}`));
       return false;
     }
     return true;
