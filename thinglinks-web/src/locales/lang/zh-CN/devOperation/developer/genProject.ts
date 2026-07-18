@@ -15,13 +15,14 @@ export default {
   parent: '基础包',
   moduleName: '模块名',
   version: '版本号',
+  versionGuide: '填写目标工程采用的语义化版本，例如 x.y.z；应与目标工程根 POM 中的版本保持一致。',
   serverPort: '端口号',
   seata: '是否使用Seata',
   utilParent: 'util基础包',
   helpMessage: {
     outputDir: ['请确保thinglinks-generator服务在本地启动', '项目生成到指定的绝对路径'],
     description: '服务的中文名称',
-    projectPrefix: '如：thinglinks-cloud-pro中的thinglinks',
+    projectPrefix: '如：thinglinks-cloud 中的 thinglinks',
     serviceName: ['如： thinglinks-base-server 中的link', '如： thinglinks-system-server system'],
     parent: [
       'thinglinks-cloud 项目的基础包',
@@ -32,9 +33,9 @@ export default {
       '如： com.mqttsnet.thinglinks.base.dao.common 包中的 base',
       'com.mqttsnet.thinglinks.file.dao.xxx 包中的 file',
     ],
-    groupId: 'thinglinks-cloud-pro项目 pom文件的groupId',
+    groupId: 'thinglinks-cloud 项目 pom 文件的 groupId',
     version: 'thinglinks-cloud pom文件中的版本号',
-    serverPort: 'thinglinks-cloud-pro项目 新建服务的端口号',
+    serverPort: 'thinglinks-cloud 项目新建服务的端口号',
     seata: '开启后，必须启动seata-server',
     utilParent: [
       'thinglinks-util项目的基础包',

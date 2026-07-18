@@ -41,7 +41,14 @@
           <template #tab>
             {{ item.name }}
           </template>
-          <ThumbUrl :file-url="imgModules[item.key]" height="100%" width="100%" />
+          <Alert
+            v-if="item.description"
+            :message="item.name"
+            :description="item.description"
+            show-icon
+            type="info"
+          />
+          <ThumbUrl v-else :file-url="imgModules[item.key]" height="100%" width="100%" />
         </TabPane>
       </Tabs>
     </div>
@@ -77,6 +84,7 @@
   interface TabModel {
     name: string;
     key: string;
+    description?: string;
   }
 
   const images = import.meta.globEager('../../../../assets/project/*.{png,jpg}');
@@ -116,9 +124,13 @@
         { key: 'project_parent', name: t('devOperation.developer.genProject.parent') },
         { key: 'project_moduleName', name: t('devOperation.developer.genProject.moduleName') },
         { key: 'project_groupId', name: 'groupId' },
+        {
+          key: 'project_version',
+          name: t('devOperation.developer.genProject.version'),
+          description: t('devOperation.developer.genProject.versionGuide'),
+        },
         { key: 'project_utilParent', name: t('devOperation.developer.genProject.utilParent') },
         { key: 'project_utilGroupId', name: 'utilGroupId' },
-        { key: 'project_version', name: t('devOperation.developer.genProject.version') },
         { key: 'project_description', name: t('devOperation.developer.genProject.description') },
         { key: 'project_serverPort', name: t('devOperation.developer.genProject.serverPort') },
       ]);
