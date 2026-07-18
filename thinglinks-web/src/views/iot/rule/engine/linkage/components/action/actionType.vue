@@ -8,9 +8,9 @@
       v-for="item in typeList"
       :key="item.id"
       :disabled="item.disabled"
-      @click="handleselect(item, $event)"
+      @click="handleselect(item)"
     >
-      <img :src="item.id == 0 ? deviceExport : handleWarning" alt="" />
+      <Icon :icon="getActionTypeIcon(item.id)" class="type-icon" />
       <div class="title">{{ item.name }}</div>
     </a-button>
     <!-- </div> -->
@@ -20,16 +20,12 @@
 <script lang="ts">
   import { defineComponent, reactive, toRefs } from 'vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { BasicModal, useModalInner } from '/@/components/Modal';
-  import deviceExport from '/@/assets/images/iot/rule/linkage/device_export.png';
-  import handleWarning from '/@/assets/images/iot/rule/linkage/handle_warning.png';
+  import { Icon } from '/@/components/Icon';
   export default defineComponent({
     name: 'ActionType',
-    components: {},
-    props: {
-      BasicModal,
-    },
-    setup(props, { emit }) {
+    components: { Icon },
+    props: {},
+    setup(_, { emit }) {
       const { t } = useI18n();
       const state = reactive({
         typeList: [
@@ -47,17 +43,19 @@
       const selectTypeCard = (column) => {
         emit('selectTypeCard', column);
       };
-      const handleselect = (record: Recordable, e: Event) => {
-        // e?.stopPropagation();
+      const handleselect = (record: Recordable) => {
         state.typeId = record.id;
         selectTypeCard(record);
+      };
+      const getActionTypeIcon = (id: number | string) => {
+        if (Number(id) === 1) return 'ant-design:alert-outlined';
+        return 'ant-design:cloud-upload-outlined';
       };
 
       return {
         t,
         handleselect,
-        handleWarning,
-        deviceExport,
+        getActionTypeIcon,
         ...toRefs(state),
       };
     },
@@ -86,10 +84,11 @@
         border-color: @primary-color;
       }
 
-      img {
-        width: 80px;
-        margin: 0 auto;
-        margin-bottom: 6px;
+      .type-icon {
+        display: block;
+        margin: 14px auto 16px;
+        color: @primary-color;
+        font-size: 48px;
       }
     }
   }

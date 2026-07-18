@@ -27,12 +27,12 @@
       <div class="form_box" v-show="activeStep == 0">
         <a-row :gutter="[24, 24]">
           <a-col :span="6" class="heightwrapper">
-            <SelectedProduct :selectedProduct="selectedProduct" @deleteProduct="deleteProduct" />
+            <SelectedProduct :selectedProduct="selectedProduct" @delete-product="deleteProduct" />
           </a-col>
           <a-col :span="18" class="heightwrapper">
             <ProductCardList
               :isSelect="true"
-              @selectProductCard="selectProductCard"
+              @select-product-card="selectProductCard"
               :productIdentification="selectedProduct.productIdentification"
             />
           </a-col>
@@ -41,28 +41,33 @@
       <div class="form_box" v-if="activeStep == 1">
         <a-row
           :gutter="[20]"
-          v-if="selectedDevice.deviceIdentification == 'all' || selectType == 1"
+          v-if="isAllDevice(selectedDevice.deviceIdentification) || selectType == 1"
         >
           <a-col :span="12">
             <div
               class="select-all-device"
-              :class="{ active: selectedDevice.deviceIdentification == 'all' }"
-              @click="selectType = 1; selectedDevice.deviceIdentification = 'all'; selectedDeviceIds = [];"
+              :class="{ active: isAllDevice(selectedDevice.deviceIdentification) }"
+              @click="
+                selectType = 1;
+                selectedDevice.deviceIdentification = 'all';
+                selectedDeviceIds = [];
+              "
             >
               <span>{{ t('iot.link.engine.linkage.allDevices') }}</span>
-              <img
-                src="../../../../../../../assets/images/iot/link/deviceAndProduct/childrenDevice.png"
-                alt=""
-              />
+              <GatewayDeviceSvg class="select-device-svg" />
             </div>
           </a-col>
           <a-col :span="12">
-            <div class="select-all-device" @click="selectType = 2; selectedDevice.deviceIdentification = ''; selectedDeviceIds = [];">
+            <div
+              class="select-all-device"
+              @click="
+                selectType = 2;
+                selectedDevice.deviceIdentification = '';
+                selectedDeviceIds = [];
+              "
+            >
               <span>{{ t('iot.link.engine.linkage.custom') }}</span>
-              <img
-                src="../../../../../../../assets/images/iot/link/deviceAndProduct/commonDevice.png"
-                alt=""
-              />
+              <CommonDeviceSvg class="select-device-svg" />
             </div>
           </a-col>
         </a-row>
@@ -70,7 +75,11 @@
           <div class="return">
             <a-button
               type="primary"
-              @click="selectType = 1; selectedDevice.deviceIdentification = 'all'; selectedDeviceIds = [];"
+              @click="
+                selectType = 1;
+                selectedDevice.deviceIdentification = 'all';
+                selectedDeviceIds = [];
+              "
               >{{ t('common.back') }}</a-button
             >
           </div>
@@ -88,7 +97,7 @@
       <div class="form_box" v-if="activeStep == 2 && triggerType >= 2">
         <actionsList
           ref="actionsListState"
-          @selectTypeCard="selectActionCard"
+          @select-type-card="selectActionCard"
           :productIdentification="selectedProduct.productIdentification"
           :actionItem="actionItem"
         />
@@ -107,63 +116,34 @@
   import { defineComponent, ref, toRefs, reactive, getCurrentInstance, unref } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { BasicForm } from '/@/components/Form/index';
-  import {
-    Steps,
-    Form,
-    Row,
-    Col,
-    Dropdown,
-    Menu,
-    Radio,
-    Checkbox,
-    TimePicker,
-    Card,
-    Select,
-  } from 'ant-design-vue';
+  import { Steps, Row, Col } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { ActionEnum } from '/@/enums/commonEnum';
   import ProductCardList from '/@/components/iot/link/product/ProductCardList.vue';
   import BasicDeviceSelector from '/@/components/iot/BasicSelect/BasicDevice/BasicDeviceSelector.vue';
-  import TriggerType from './TriggerType.vue';
   import SelectedProduct from './SelectedProduct.vue';
   import actionsList from '../action/actionsList.vue';
+  import { CommonDeviceSvg, GatewayDeviceSvg } from '/@/components/iot/svg';
   import { getFullProductInfo } from '/@/api/iot/link/product/product';
   import { detailBydeviceIdentification } from '/@/api/iot/link/device/device';
   import { canConvertType } from '/@/utils/index';
-  import { CloseCircleOutlined } from '@ant-design/icons-vue';
 
-  import { useDict } from '/@/components/Dict';
-  const { getDictList } = useDict();
+  const ALL_DEVICE_VALUE = 'all';
 
   export default defineComponent({
     name: '规则联动详情',
     components: {
       BasicModal,
-      BasicForm,
       ProductCardList,
-      CloseCircleOutlined,
       BasicDeviceSelector,
-      TriggerType,
       SelectedProduct,
       actionsList,
+      CommonDeviceSvg,
+      GatewayDeviceSvg,
       [Steps.name]: Steps,
       [Steps.Step.name]: Steps.Step,
-      [Form.name]: Form,
-      [Form.Item.name]: Form.Item,
       ARow: Row,
       ACol: Col,
-      ADropdown: Dropdown,
-      [Menu.name]: Menu,
-      [Menu.Item.name]: Menu.Item,
-      ARadioGroup: Radio.Group,
-      ARadioButton: Radio.Button,
-      ARadio: Radio,
-      ACheckbox: Checkbox,
-      ATimePicker: TimePicker,
-      ACard: Card,
-      [Select.name]: Select,
-      ASelectOption: Select.Option,
     },
     props: {
       triggerType: {
@@ -247,14 +227,17 @@
         state.selectedProduct = res;
       };
       const getSelectDetailByDeviceIdentification = async (deviceIdentification) => {
-        if (deviceIdentification == 'all') {
+        if (isAllDevice(deviceIdentification)) {
           state.selectedDeviceIds = [];
-          state.selectedDevice.deviceIdentification = 'all';
-        } else {
+          state.selectedDevice.deviceIdentification = ALL_DEVICE_VALUE;
+        } else if (deviceIdentification) {
           const res = await detailBydeviceIdentification(deviceIdentification);
           state.selectedDevice = res;
           state.selectedDeviceIds = [deviceIdentification];
           state.selectType = 2;
+        } else {
+          state.selectedDeviceIds = [];
+          state.selectedDevice = {};
         }
       };
       const selectProductCard = (column) => {
@@ -355,6 +338,7 @@
       const deleteProduct = () => {
         state.selectedProduct = {};
       };
+      const isAllDevice = (value) => value === ALL_DEVICE_VALUE;
 
       return {
         type,
@@ -364,6 +348,7 @@
         selectTypeCard,
         handleSubmit,
         deleteProduct,
+        isAllDevice,
         next,
         prev,
         ...toRefs(state),
@@ -371,7 +356,7 @@
     },
   });
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
   .heightwrapper {
     height: 100%;
   }
@@ -387,7 +372,7 @@
     color: #2e3033;
     line-height: 20px;
     padding-left: 9px;
-    border-left: 3px solid #1a66ff;
+    border-left: 3px solid @primary-color;
   }
 
   .two {
@@ -409,11 +394,12 @@
     border-radius: 4px;
 
     &.active {
-      border-color: #1a66ff;
+      border-color: @primary-color;
     }
 
-    img {
+    .select-device-svg {
       width: 120px;
+      height: auto;
     }
   }
 

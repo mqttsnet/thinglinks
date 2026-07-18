@@ -26,11 +26,7 @@
         </div>
         <div class="btns">
           <div class="btn">
-            <img
-              src="../../../../../../../assets/images/iot/link/device/delete-y.png"
-              alt=""
-              @click="deleteProduct()"
-            />
+            <Icon icon="ant-design:delete-outlined" class="action-icon" @click="deleteProduct()" />
           </div>
         </div>
         <div class="product-img">
@@ -50,27 +46,27 @@
   import { ApartmentOutlined } from '@ant-design/icons-vue';
   import { useDict } from '/@/components/Dict';
   import { getProductTypeSvg } from '/@/components/iot/svg';
+  import { Icon } from '/@/components/Icon';
   const { getDictLabel } = useDict();
 
   export default defineComponent({
     name: 'SelectedProduct',
     components: {
       ApartmentOutlined,
+      Icon,
     },
     props: {
       selectedProduct: {
         type: Object,
-        default: {},
+        default: () => ({}),
       },
     },
     setup(props, { emit }) {
       const { t } = useI18n();
-      console.log(props);
       // 监听selectedProduct
       watch(
         () => props.selectedProduct,
-        (data: object) => {
-          console.log(data);
+        () => {
           state.selectedProduct = { ...props.selectedProduct };
         },
       );
@@ -143,7 +139,7 @@
     }
 
     &.normal {
-      background-image: url('../../../../../../../assets/images/iot/link/device/bg-normal.png');
+      background: linear-gradient(135deg, fade(@primary-color, 6%), #fff 52%);
 
       .status {
         background: #d9dffd;
@@ -218,7 +214,7 @@
         width: 138px;
         height: 28px;
         border-radius: 45px 45px 45px 45px;
-        border: 2px solid #1a66ff;
+        border: 2px solid @primary-color;
         justify-content: center;
         align-items: center;
 
@@ -238,11 +234,10 @@
             top: 5px;
           }
 
-          img {
-            width: 15px;
-            height: 15px;
-            margin: 0 auto;
+          .action-icon {
+            color: @button-error-color;
             cursor: pointer;
+            font-size: 15px;
           }
         }
       }
@@ -254,9 +249,9 @@
       top: 10px;
       width: 30%;
 
-      img {
-        cursor: pointer;
+      :deep(svg) {
         width: 100%;
+        height: auto;
       }
     }
 

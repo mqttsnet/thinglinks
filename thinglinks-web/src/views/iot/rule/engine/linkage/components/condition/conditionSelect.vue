@@ -49,7 +49,7 @@
                           v-for="connectChildrenItem in connectList"
                           :key="connectChildrenItem.name"
                           :value="connectChildrenItem.value"
-                          :title="connectChildrenItpem.desc"
+                          :title="connectChildrenItem.desc"
                           >{{ connectChildrenItem.desc }}</a-menu-item
                         >
                       </a-menu>
@@ -72,7 +72,7 @@
                       class="mr8 type ant-tag-red"
                       @click="handleSelectRule(index, childrenIndex)"
                     >
-                      <span v-if="!childrenItem.leftParam.deviceIdentification">{{
+                      <span v-if="!childrenItem.leftParam.productIdentification">{{
                         t('iot.link.engine.executionLog.triggerTips')
                       }}</span>
                       <span class="condition-item" v-else>
@@ -86,18 +86,11 @@
                           )
                         }}
                         <ApiOutlined />
-                        {{
-                          getName(
-                            childrenItem.leftParam.deviceIdentification,
-                            'deviceIdentification',
-                            childrenItem.device,
-                            'deviceName',
-                          )
-                        }}
+                        {{ getDeviceScopeName(childrenItem) }}
                         <!-- {{ childrenItem.triggerTypeObj.selectedType.name }} -->
                       </span>
                     </a-button>
-                    <template v-if="childrenItem.leftParam.deviceIdentification">
+                    <template v-if="childrenItem.leftParam.productIdentification">
                       <a-dropdown placement="bottomLeft" class="mr8" :trigger="['click']">
                         <a-button class="ant-tag-orange">{{
                           childrenItem.leftParam.serviceCode
@@ -485,8 +478,6 @@
       };
       // 选择属性
       const selectProperty = async ($event, index, childrenIndex) => {
-        console.log($event, index, childrenIndex);
-
         // 设置属性json
         state.conditions[index].conditions[childrenIndex].leftParam = {
           ...state.conditions[index].conditions[childrenIndex].leftParam,
@@ -528,9 +519,6 @@
 
       // 选择操作符
       const selectOperate = async ($event, index, childrenIndex) => {
-        console.log($event, index, childrenIndex);
-
-        console.log(state.conditions[index].conditions[childrenIndex]);
         state.conditions[index].conditions[childrenIndex].operator = {
           desc: $event.item.title,
           value: $event.key,
@@ -552,7 +540,6 @@
         state.conditions[index].conditions[childrenIndex].logicalOperator = $event.key;
       };
       const addConditionsGroup = () => {
-        console.log(state.conditions);
         state.conditions.push({
           type: 'GROUP',
           conditions: [
@@ -636,34 +623,24 @@
       };
 
       const cancel = (e: MouseEvent) => {
-        console.log(e);
+        return e;
       };
       const saveTriggerRule = (res) => {
-        console.log(res);
-        // return false;
-        // state.triggerTypeObj = { ...res };
+        const conditionItem = state.conditions[res.index].conditions[res.childrenIndex];
+        const nextDeviceIdentification = normalizeAllDevice(
+          res.selectedDevice?.deviceIdentification,
+        );
+        const nextProductIdentification = res.selectedProduct?.productIdentification || '';
 
-        if (
-          res.selectedProduct.deviceIdentification ==
-          state.conditions[res.index].conditions[res.childrenIndex].leftParam.deviceIdentification
-        ) {
-          return false;
-        } else {
-          state.conditions[res.index].conditions[res.childrenIndex].leftParam.deviceIdentification =
-            res.selectedDevice.deviceIdentification;
-          getDeviceInfoList(res.selectedDevice.deviceIdentification, res.index, res.childrenIndex);
+        if (nextDeviceIdentification !== conditionItem.leftParam.deviceIdentification) {
+          conditionItem.leftParam.deviceIdentification = nextDeviceIdentification;
+          getDeviceInfoList(nextDeviceIdentification, res.index, res.childrenIndex);
         }
 
-        // 判断当前选的产品是否同编辑的一致
-        if (
-          res.selectedProduct.productIdentification ==
-          state.conditions[res.index].conditions[res.childrenIndex].leftParam.productIdentification
-        ) {
-          return false;
-        } else {
-          state.conditions[res.index].conditions[res.childrenIndex].leftParam = {
-            productIdentification: res.selectedProduct.productIdentification,
-            deviceIdentification: res.selectedDevice.deviceIdentification,
+        if (nextProductIdentification !== conditionItem.leftParam.productIdentification) {
+          conditionItem.leftParam = {
+            productIdentification: nextProductIdentification,
+            deviceIdentification: nextDeviceIdentification,
           };
           state.conditions[res.index].conditions[res.childrenIndex].operator = {
             desc: '',
@@ -677,11 +654,7 @@
             },
           ];
 
-          getProductInfoList(
-            res.selectedProduct.productIdentification,
-            res.index,
-            res.childrenIndex,
-          );
+          getProductInfoList(nextProductIdentification, res.index, res.childrenIndex);
         }
       };
       // 获取产品详情
@@ -690,12 +663,16 @@
           return false;
         }
         const res = await getFullProductInfo(productIdentification);
-        console.log('product');
         state.conditions[index].conditions[childrenIndex].product = res;
       }
       // 获取设备
       async function getDeviceInfoList(deviceIdentification, index, childrenIndex) {
-        if (!deviceIdentification || deviceIdentification === BizConstant.ALL) {
+        if (!deviceIdentification) {
+          state.conditions[index].conditions[childrenIndex].device = {};
+          return false;
+        }
+        if (isAllDevice(deviceIdentification)) {
+          state.conditions[index].conditions[childrenIndex].device = {};
           return false;
         }
         const res = await detailBydeviceIdentification(deviceIdentification);
@@ -736,9 +713,27 @@
         }
       };
 
+      const isAllDevice = (value) => value === BizConstant.ALL;
+
+      const normalizeAllDevice = (value) => (isAllDevice(value) ? BizConstant.ALL : value || '');
+
+      const getDeviceScopeName = (conditionItem) => {
+        const deviceIdentification = conditionItem?.leftParam?.deviceIdentification;
+        if (isAllDevice(deviceIdentification)) {
+          return t('iot.link.engine.linkage.allDeviceScope');
+        }
+        return deviceIdentification
+          ? getName(
+              deviceIdentification,
+              'deviceIdentification',
+              conditionItem.device,
+              'deviceName',
+            ) || deviceIdentification
+          : '';
+      };
+
       const copyUUid = (uuid) => {
         let result = copyTextToClipboard(uuid);
-        console.log(result, 'result');
         if (result) {
           createMessage.success(t('common.tips.copySuccess'));
         } else {
@@ -750,6 +745,7 @@
         t,
         registerModal,
         getName,
+        getDeviceScopeName,
         saveTriggerRule,
         ...toRefs(state),
         getDictList,

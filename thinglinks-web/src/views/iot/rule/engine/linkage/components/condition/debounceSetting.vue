@@ -30,7 +30,7 @@
         />
       </span>
       {{ t('iot.link.engine.executionLog.processing') }}
-      <a-radio-group size="mini" v-model:value="occurrenceRadio" button-style="solid">
+      <a-radio-group size="small" v-model:value="occurrenceRadio" button-style="solid">
         <a-radio-button :value="1">{{ t('iot.link.engine.executionLog.first') }}</a-radio-button>
         <a-radio-button :value="2">{{ t('iot.link.engine.executionLog.last') }}</a-radio-button>
       </a-radio-group>
@@ -71,12 +71,14 @@
   watch(
     () => props.disabled,
     (val: boolean) => {
-      if (val) {
-        antiShake.value = 1;
-      } else {
-        antiShake.value = 0;
-      }
       disabled.value = val;
+    },
+  );
+
+  watch(
+    () => props.antiShake,
+    (val: number) => {
+      antiShake.value = val;
     },
   );
 

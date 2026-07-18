@@ -109,15 +109,7 @@
   </div>
 </template>
 <script lang="ts">
-  import {
-    defineComponent,
-    ref,
-    toRefs,
-    reactive,
-    onMounted,
-    watch,
-    getCurrentInstance,
-  } from 'vue';
+  import { defineComponent, ref, toRefs, reactive, watch, getCurrentInstance } from 'vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { BasicForm } from '/@/components/Form/index';
   import { copyTextToClipboard } from '/@/hooks/web/useCopyToClipboard';
@@ -197,12 +189,6 @@
       const state = reactive({
         actionIndex: props.actionChildrenIndex,
       });
-      onMounted(() => {
-        load();
-      });
-      const load = async () => {
-        console.log(props.actionItem);
-      };
 
       // 删除单个
       const delActionsChildren = (index, actionIndex, actionsAddType) => {
@@ -232,8 +218,6 @@
       };
       const copyFn = (text) => {
         let result = copyTextToClipboard(text);
-        console.log(result, 'result');
-        console.log(text, 'text');
         if (result) {
           createMessage.success(t('common.tips.copySuccess'));
         } else {

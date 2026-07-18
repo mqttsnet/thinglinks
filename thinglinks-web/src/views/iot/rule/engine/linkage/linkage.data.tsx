@@ -3,8 +3,29 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { DictEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
+import type { CardField } from '/@/components/BusinessCardList';
 
 const { t } = useI18n();
+
+// 卡片视图字段(flexy 风格;生效类型走右上角徽章、状态走右下角角标,不在此重复)
+export const cardFields = (): CardField[] => [
+  {
+    label: t('iot.link.engine.linkage.ruleIdentification'),
+    field: 'ruleIdentification',
+    span: 24,
+  },
+  {
+    label: t('iot.link.engine.linkage.remark'),
+    field: 'remark',
+    span: 24,
+  },
+  {
+    label: t('thinglinks.common.createdTime'),
+    field: 'createTime',
+    span: 24,
+  },
+];
+
 // 列表页字段
 export const columns = (): BasicColumn[] => {
   return [
@@ -48,18 +69,12 @@ export const searchFormSchema = (): FormSchema[] => {
       label: t('iot.link.engine.linkage.ruleName'),
       field: 'ruleName',
       component: 'Input',
-      componentProps: {
-        // placeholder: `请输入${t('iot.link.engine.linkage.ruleName')}`,
-      },
       colProps: { span: 6 },
     },
     {
       label: t('iot.link.engine.linkage.ruleIdentification'),
       field: 'ruleIdentification',
       component: 'Input',
-      componentProps: {
-        // placeholder: `请输入${t('iot.link.engine.linkage.ruleIdentification')}`,
-      },
       colProps: { span: 6 },
     },
     {
@@ -71,8 +86,8 @@ export const searchFormSchema = (): FormSchema[] => {
   ];
 };
 
-// 编辑页字段（联动规则）
-export const editFormSchemaLinkage = (weekOptions: any[] = []): FormSchema[] => {
+// 编辑弹窗 ── 基础信息卡(与 Edit.vue 的 flexy 分卡布局一一对应)
+export const editBasicFormSchema = (): FormSchema[] => {
   return [
     {
       label: 'ID',
@@ -80,20 +95,12 @@ export const editFormSchemaLinkage = (weekOptions: any[] = []): FormSchema[] => 
       component: 'Input',
       show: false,
     },
-    // 注意 appointContent 无实际意义，主要用于编辑提交
+    // 注意 appointContent 无实际意义，主要用于编辑提交时保留原始扩展字段
     {
       label: 'appointContent',
       field: 'appointContent',
       component: 'Input',
       show: false,
-    },
-    {
-      label: '',
-      labelWidth: 0,
-      colProps: { span: 23 },
-      field: 'titleBasic',
-      component: 'FormTitle',
-      componentProps: { title: t('iot.link.engine.linkage.basicInfo') },
     },
     {
       label: t('iot.link.engine.linkage.ruleName'),
@@ -112,11 +119,47 @@ export const editFormSchemaLinkage = (weekOptions: any[] = []): FormSchema[] => 
       },
     },
     {
+      label: t('iot.link.engine.linkage.status'),
+      field: 'status',
+      component: 'Switch',
+      rules: [
+        {
+          required: true,
+          async validator(_, value) {
+            value === 0 || value ? Promise.resolve() : Promise.reject();
+          },
+        },
+      ],
+      componentProps: {
+        checkedValue: 1,
+        unCheckedValue: 0,
+      },
+    },
+    {
+      label: t('iot.link.engine.linkage.remark'),
+      field: 'remark',
+      component: 'InputTextArea',
+      colProps: { span: 24 },
+      required: true,
+      componentProps: {
+        maxlength: 500,
+        showCount: true,
+        autoSize: { minRows: 2, maxRows: 5 },
+      },
+    },
+  ];
+};
+
+// 编辑弹窗 ── 生效时间卡(生效类型 + 触发频率 + 周/时段窗口)
+export const editEffectiveFormSchema = (weekOptions: any[] = []): FormSchema[] => {
+  return [
+    {
       label: t('iot.link.engine.linkage.effectiveType'),
       field: 'effectiveType',
       component: 'ApiRadioGroup',
       required: true,
       defaultValue: 0,
+      colProps: { span: 24 },
       componentProps: {
         stringToNumber: true,
         ...dictComponentProps(DictEnum.RULE_EFFECTIVE_TYPE),
@@ -130,14 +173,13 @@ export const editFormSchemaLinkage = (weekOptions: any[] = []): FormSchema[] => 
         {
           required: true,
           async validator(_, value) {
-            if (value <= 0) {
+            if (value == null || value <= 0) {
               return Promise.reject(t('iot.link.engine.linkage.mustGreaterThanZero'));
             }
             return Promise.resolve();
           },
         },
       ],
-      ifShow: ({ values }) => values.effectiveType !== undefined, // 保持显示
     },
     {
       label: t('iot.link.engine.linkage.week'),
@@ -176,35 +218,6 @@ export const editFormSchemaLinkage = (weekOptions: any[] = []): FormSchema[] => 
       },
       required: true,
       ifShow: ({ values }) => values.effectiveType == 1,
-    },
-    {
-      label: t('iot.link.engine.linkage.remark'),
-      field: 'remark',
-      component: 'InputTextArea',
-      colProps: { span: 23 },
-      required: true,
-      componentProps: {
-        maxlength: 500,
-        showCount: true,
-        autoSize: { minRows: 2, maxRows: 5 },
-      },
-    },
-    {
-      label: t('iot.link.engine.linkage.status'),
-      field: 'status',
-      component: 'Switch',
-      rules: [
-        {
-          required: true,
-          async validator(_, value) {
-            value === 0 || value ? Promise.resolve() : Promise.reject();
-          },
-        },
-      ],
-      componentProps: {
-        checkedValue: 1,
-        unCheckedValue: 0,
-      },
     },
   ];
 };

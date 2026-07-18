@@ -16,18 +16,7 @@
         :key="item.value"
         @click="handleSelect(item, $event)"
       >
-        <img
-          :src="
-            item.value === '0'
-              ? deviceProperty
-              : item.value === '1'
-              ? deviceDs
-              : item.value === '2'
-              ? deviceStatus
-              : deviceStatus
-          "
-          alt=""
-        />
+        <Icon :icon="getConditionTypeIcon(item.value)" class="type-icon" />
         <div class="title">{{ item.label }}</div>
       </a-button>
     </div>
@@ -37,14 +26,13 @@
   import { defineComponent, reactive, toRefs, unref, ref, watch } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { ActionEnum } from '/@/enums/commonEnum';
-  import deviceProperty from '/@/assets/images/iot/rule/linkage/device_property.png';
-  import deviceDs from '/@/assets/images/iot/rule/linkage/device_ds.png';
-  import deviceStatus from '/@/assets/images/iot/rule/linkage/device_status.png';
+  import { Icon } from '/@/components/Icon';
   import { useI18n } from '/@/hooks/web/useI18n';
   export default defineComponent({
     name: 'ConditionType',
     components: {
       BasicModal,
+      Icon,
     },
     props: {
       options: {
@@ -74,7 +62,6 @@
           // 赋值
         } else {
           // 重置
-          console.log('重置选项');
         }
       });
       const state = reactive({
@@ -89,6 +76,14 @@
         emit('selectTypeCard', state.conditionType);
         closeModal();
       };
+      const getConditionTypeIcon = (value: string | number) => {
+        const iconMap: Record<number, string> = {
+          0: 'ant-design:control-outlined',
+          1: 'ant-design:database-outlined',
+          2: 'ant-design:api-outlined',
+        };
+        return iconMap[Number(value)] || 'ant-design:api-outlined';
+      };
 
       watch(
         () => props.conditionType,
@@ -102,9 +97,7 @@
         handleSelect,
         registerModal,
         handleSubmit,
-        deviceProperty,
-        deviceDs,
-        deviceStatus,
+        getConditionTypeIcon,
         ...toRefs(state),
       };
     },
@@ -133,10 +126,11 @@
         border-color: @primary-color;
       }
 
-      img {
-        width: 80px;
-        margin: 0 auto;
-        margin-bottom: 6px;
+      .type-icon {
+        display: block;
+        margin: 14px auto 16px;
+        color: @primary-color;
+        font-size: 48px;
       }
     }
   }

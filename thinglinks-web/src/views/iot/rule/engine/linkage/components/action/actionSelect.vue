@@ -204,7 +204,6 @@
       });
       onMounted(() => {
         load();
-        console.log(props.productIdentification);
 
         if (state.type == 3) {
           addActionsType3();
@@ -237,9 +236,7 @@
             });
             actionContentSerialItem.product = productInfo ? productInfo[0] : {};
             actionContentSerialItem.device = deviceInfo ? deviceInfo[0] : {};
-            console.log(actionContentSerialItem.params);
             actionContentSerialItem.params = getParamsList(actionContentSerialItem.params);
-            console.log(actionContentSerialItem.params);
           });
           item.actionContent?.parallel?.forEach((ite, childrenIndex) => {
             let actionContentParallelItem =
@@ -303,7 +300,6 @@
 
       // 添加触发告警动作
       const triggerAlarmHandle = (index: number) => {
-        console.log(index);
         openTriggerAlarmModal(true, { type: ActionEnum.ADD, actionIndex: index });
       };
 
@@ -332,7 +328,6 @@
 
       // 保存提交单个动作到页面
       const saveTriggerAction = async (res) => {
-        console.log(res);
         const product = await getFullProductInfo(res.selectedProduct.productIdentification);
         if (res.actionsAddType == 1) {
           // 添加串行

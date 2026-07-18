@@ -233,7 +233,6 @@
       });
 
       onMounted(async () => {
-        console.log(props);
         await initData();
       });
       const initData = async () => {
@@ -265,7 +264,6 @@
         if (!$event.key) {
           return false;
         }
-        console.log($event.key);
         state.command.service = {
           serviceCode: $event.key,
         };
@@ -280,14 +278,11 @@
             value: '',
           },
         ];
-
-        console.log(state.productCommandList);
       };
       const selectComand = ($event) => {
         if (!$event.key) {
           return false;
         }
-        console.log($event);
         state.command.commands = {
           commandCode: $event.key,
         };
@@ -310,13 +305,11 @@
             return state.command.params.map((ite) => ite.key).indexOf(item.parameterCode) == -1;
           },
         );
-        console.log(state.filterProductCommandRequestListOptions);
       };
       const selectComandRequest = ($event, index) => {
         if (!$event.key) {
           return false;
         }
-        console.log($event, $event?.item?.params.dataType);
         // state.command.commandRequest = {
         //   commandRequestCode: $event.key,
         // };
@@ -342,7 +335,6 @@
       async function getProductInfoList(productIdentification) {
         const res = await getFullProductInfo(productIdentification);
         state.productServiceList = res.services;
-        console.log(state.productServiceList);
       }
 
       const getcmdList = (serviceCode, services) => {
@@ -382,15 +374,13 @@
             }
           });
         } catch (err) {
-          console.log(err);
+          return;
         }
       };
       const { createMessage } = useMessage();
 
       const confirmValue = (item) => {
         if (!canConvertType(item?.datatype, item?.val)) {
-          console.log(typeof '123');
-
           createMessage.warning('参数值类型错误');
           return;
         }
