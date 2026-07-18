@@ -45,8 +45,8 @@
   }
 
   .model-svg__surface {
-    fill: fade(@primary-color, 8%);
-    stroke: fade(@primary-color, 18%);
+    fill: #f5f7fa;
+    stroke: #edf2f7;
     stroke-width: 1.5;
   }
 
@@ -58,7 +58,7 @@
   }
 
   .model-svg__muted-line {
-    stroke: fade(@primary-color, 42%);
+    stroke: #b8c5d6;
     stroke-width: 2.4;
     stroke-linecap: round;
     stroke-linejoin: round;

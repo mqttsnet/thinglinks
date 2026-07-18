@@ -687,8 +687,8 @@
     flex: none;
 
     :deep(.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)) {
-      background: #009688;
-      border-color: #009688;
+      background: @primary-color;
+      border-color: @primary-color;
     }
   }
 
@@ -724,15 +724,15 @@
     height: 18px;
     padding-right: 6px;
     margin-right: 2px;
-    color: #009688;
+    color: @primary-color;
     font-size: 12px;
     line-height: 18px;
     border-right: 1px solid #edf1f5;
   }
 
   .action-search-btn {
-    background: #009688;
-    border-color: #009688;
+    background: @primary-color;
+    border-color: @primary-color;
   }
 
   :deep(.action-keyword.ant-input-affix-wrapper) {
@@ -742,8 +742,8 @@
 
   :deep(.action-keyword.ant-input-affix-wrapper-focused),
   :deep(.action-keyword.ant-input-affix-wrapper:hover) {
-    border-color: #009688;
-    box-shadow: 0 0 0 2px rgb(0 150 136 / 10%);
+    border-color: @primary-color;
+    box-shadow: none;
   }
 
   .action-summary {

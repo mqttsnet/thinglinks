@@ -1,28 +1,60 @@
 <template>
   <!-- ─────── 模型定义 tab(Flexy 风格,左右两栏独立滚动) ─────── -->
-  <div class="md-wrap">
+  <div :class="['md-wrap', { 'is-side-collapsed': state.serviceCollapsed }]">
     <!-- ============ 左侧:服务列表卡片 ============ -->
     <div class="md-side">
       <div class="md-side-head">
-        <span class="md-side-title">
+        <span v-if="!state.serviceCollapsed" class="md-side-title">
           <ApiOutlined class="title-icon" />
           {{ t('iot.link.productService.productService.serviceList') }}
         </span>
+        <span v-else class="md-side-icon">
+          <ApiOutlined />
+        </span>
         <div class="md-side-actions">
-          <a-tooltip :title="t('common.title.add')">
+          <a-tooltip v-if="!state.serviceCollapsed" :title="t('common.title.add')">
             <a-button type="primary" size="small" shape="circle" @click="handleAdd">
               <template #icon><PlusOutlined /></template>
             </a-button>
           </a-tooltip>
-          <a-tooltip :title="t('common.title.refresh')">
+          <a-tooltip v-if="!state.serviceCollapsed" :title="t('common.title.refresh')">
             <a-button size="small" shape="circle" @click="handleList">
               <template #icon><RedoOutlined /></template>
+            </a-button>
+          </a-tooltip>
+          <a-tooltip
+            :title="
+              state.serviceCollapsed
+                ? t('iot.link.productService.productService.expandServicePanel')
+                : t('iot.link.productService.productService.collapseServicePanel')
+            "
+          >
+            <a-button
+              size="small"
+              shape="circle"
+              :aria-label="
+                state.serviceCollapsed
+                  ? t('iot.link.productService.productService.expandServicePanel')
+                  : t('iot.link.productService.productService.collapseServicePanel')
+              "
+              @click="toggleServiceCollapsed"
+            >
+              <template #icon>
+                <MenuUnfoldOutlined
+                  v-if="state.serviceCollapsed"
+                  :aria-label="t('iot.link.productService.productService.expandServicePanel')"
+                />
+                <MenuFoldOutlined
+                  v-else
+                  :aria-label="t('iot.link.productService.productService.collapseServicePanel')"
+                />
+              </template>
             </a-button>
           </a-tooltip>
         </div>
       </div>
 
-      <div class="md-side-list">
+      <div v-if="!state.serviceCollapsed" class="md-side-list">
         <a-empty
           v-if="!state.list.length"
           class="md-empty"
@@ -69,6 +101,32 @@
             </a-tooltip>
           </div>
         </div>
+      </div>
+
+      <div v-else class="md-side-rail">
+        <a-empty
+          v-if="!state.list.length"
+          class="md-empty md-empty-rail"
+          :image="Empty.PRESENTED_IMAGE_SIMPLE"
+          :description="false"
+        />
+        <template v-else>
+          <a-tooltip
+            v-for="item in state.list"
+            :key="item.id"
+            :title="item.serviceName"
+            placement="right"
+          >
+            <button
+              type="button"
+              :class="['svc-rail-item', { active: item.id === state.serviceId }]"
+              @click="changeService(item.id)"
+            >
+              <span :class="['svc-rail-dot', item.serviceStatus == 0 ? 'on' : 'off']"></span>
+              <span class="svc-rail-text">{{ getServiceInitial(item.serviceName) }}</span>
+            </button>
+          </a-tooltip>
+        </template>
       </div>
     </div>
 
@@ -128,6 +186,8 @@
     EditOutlined,
     DeleteOutlined,
     RedoOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
     LinkOutlined,
     DisconnectOutlined,
     ApiOutlined,
@@ -152,6 +212,8 @@
       EditOutlined,
       DeleteOutlined,
       RedoOutlined,
+      MenuFoldOutlined,
+      MenuUnfoldOutlined,
       LinkOutlined,
       DisconnectOutlined,
       ApiOutlined,
@@ -175,6 +237,7 @@
         productId: props.id,
         serviceId: '',
         type: 1,
+        serviceCollapsed: false,
       });
 
       async function handleList() {
@@ -190,6 +253,15 @@
 
       function changeService(serviceId: string) {
         state.serviceId = serviceId;
+      }
+
+      function toggleServiceCollapsed() {
+        state.serviceCollapsed = !state.serviceCollapsed;
+      }
+
+      function getServiceInitial(serviceName?: string) {
+        const name = String(serviceName || '').trim();
+        return name ? name.slice(0, 2) : '--';
       }
 
       function handleAdd() {
@@ -241,6 +313,8 @@
         handleDelete,
         handleSuccess,
         changeService,
+        toggleServiceCollapsed,
+        getServiceInitial,
         handleList,
         getDictLabel,
       };
@@ -257,6 +331,10 @@
     background: #f5f7fa;
     border-radius: 12px;
     padding: 12px;
+
+    &.is-side-collapsed {
+      gap: 10px;
+    }
   }
 
   /* ============ 左侧服务列表 ============ */
@@ -269,6 +347,12 @@
     border-radius: 12px;
     box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
     overflow: hidden;
+    transition: flex-basis 0.18s ease, width 0.18s ease;
+
+    .is-side-collapsed & {
+      flex-basis: 58px;
+      width: 58px;
+    }
   }
 
   .md-side-head {
@@ -279,6 +363,13 @@
     padding: 12px 14px;
     border-bottom: 1px solid #f0f2f5;
 
+    .is-side-collapsed & {
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 8px;
+      padding: 10px 8px;
+    }
+
     .md-side-title {
       display: inline-flex;
       align-items: center;
@@ -288,14 +379,29 @@
       color: #2a3547;
 
       .title-icon {
-        color: #5d87ff;
+        color: @primary-color;
         font-size: 15px;
       }
+    }
+
+    .md-side-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      color: @primary-color;
+      background: fade(@primary-color, 8%);
+      border-radius: 8px;
     }
 
     .md-side-actions {
       display: inline-flex;
       gap: 4px;
+
+      .is-side-collapsed & {
+        justify-content: center;
+      }
     }
   }
 
@@ -307,6 +413,79 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+  }
+
+  .md-side-rail {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 8px;
+    overflow-y: auto;
+  }
+
+  .md-empty-rail {
+    margin: 10px auto;
+  }
+
+  .svc-rail-item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    color: @text-color-secondary;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    background: #f8fafc;
+    border: 1px solid @border-color-base;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: @primary-color;
+      background: fade(@primary-color, 6%);
+      border-color: fade(@primary-color, 45%);
+      outline: none;
+    }
+
+    &.active {
+      color: @primary-color;
+      background: fade(@primary-color, 8%);
+      border-color: @primary-color;
+      box-shadow: 0 2px 8px fade(@primary-color, 16%);
+    }
+  }
+
+  .svc-rail-dot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+
+    &.on {
+      background-color: @button-success-color;
+    }
+
+    &.off {
+      background-color: @button-warn-color;
+    }
+  }
+
+  .svc-rail-text {
+    max-width: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* ─── 服务卡片(Flexy 风格 + 选中态突出) ─── */
@@ -323,17 +502,17 @@
     transition: all 0.18s ease;
 
     &:hover {
-      background: #eef2ff;
+      background: #f5f7fa;
       transform: translateY(-1px);
     }
 
     &.active {
-      background: linear-gradient(135deg, #eef2ff 0%, #f0f7ff 100%);
-      border-color: #5d87ff;
-      box-shadow: 0 4px 12px rgba(93, 135, 255, 0.16);
+      background: #f5f7fa;
+      border-color: @primary-color;
+      box-shadow: 0 4px 12px rgb(15 23 42 / 8%);
 
       .svc-name {
-        color: #2952cc;
+        color: @primary-color;
       }
     }
   }
@@ -375,7 +554,7 @@
       border-radius: 6px;
       font-size: 11px;
       color: #5b6b82;
-      background: rgba(93, 135, 255, 0.08);
+      background: #edf2f7;
     }
   }
 
@@ -453,6 +632,11 @@
     .md-side {
       flex: 0 0 auto;
       max-height: 220px;
+
+      .is-side-collapsed & {
+        flex-basis: auto;
+        width: 100%;
+      }
     }
     .md-side-list {
       flex-direction: row;
@@ -462,6 +646,13 @@
       .svc-card {
         flex: 0 0 200px;
       }
+    }
+
+    .md-side-rail {
+      flex-direction: row;
+      justify-content: flex-start;
+      overflow-x: auto;
+      overflow-y: hidden;
     }
   }
 </style>

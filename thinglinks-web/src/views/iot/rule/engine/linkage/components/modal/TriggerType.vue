@@ -65,8 +65,8 @@ export default defineComponent({
     cursor: pointer;
 
     &.active {
-      border-color: #009688;
-      color: #009688;
+      border-color: @primary-color;
+      color: @primary-color;
     }
 
     img {

@@ -829,7 +829,7 @@
         left: 0;
         width: 4px;
         height: 20px;
-        background-color: #009688;
+        background-color: @primary-color;
         border-radius: 0 3px 3px 0;
         content: ' ';
       }
@@ -848,7 +848,7 @@
       color: #fff;
       font-weight: 800;
       font-size: 14px;
-      background-color: #009688;
+      background-color: @primary-color;
       border-radius: 20px;
     }
 

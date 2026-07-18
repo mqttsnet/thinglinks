@@ -393,11 +393,11 @@
     min-height: 36px;
 
     &:hover:not(.disabled) {
-      border-color: #1966ff;
+      border-color: @primary-color;
     }
     &.focused {
-      border-color: #1966ff;
-      box-shadow: 0 0 0 2px rgba(25, 102, 255, 0.12);
+      border-color: @primary-color;
+      box-shadow: none;
     }
     &.disabled {
       cursor: not-allowed;
@@ -455,7 +455,7 @@
 
   .count-text {
     font-size: 13px;
-    color: #1966ff;
+    color: @primary-color;
     font-weight: 500;
   }
 
@@ -464,7 +464,7 @@
     color: #2c2f33;
 
     strong {
-      color: #1966ff;
+      color: @primary-color;
       font-size: 14px;
       margin-right: 2px;
     }

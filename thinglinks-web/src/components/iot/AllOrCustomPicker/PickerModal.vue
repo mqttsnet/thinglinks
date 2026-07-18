@@ -643,14 +643,14 @@
     position: relative;
 
     &:hover {
-      border-color: #c7d4ff;
+      border-color: @primary-color;
       transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(25, 102, 255, 0.08);
+      box-shadow: 0 4px 10px rgb(15 23 42 / 6%);
     }
     &.active {
-      border-color: #1966ff;
-      background: linear-gradient(180deg, #f5f9ff 0%, #ffffff 100%);
-      box-shadow: 0 4px 14px rgba(25, 102, 255, 0.16);
+      border-color: @primary-color;
+      background: #fff;
+      box-shadow: 0 4px 14px rgb(15 23 42 / 8%);
     }
   }
   .mode-icon {
@@ -668,8 +668,8 @@
       color: #13deb9;
     }
     &.icon-custom {
-      background: rgba(25, 102, 255, 0.1);
-      color: #1966ff;
+      background: #f5f7fa;
+      color: @primary-color;
     }
   }
   .mode-text {
@@ -694,7 +694,7 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #1966ff;
+    background: @primary-color;
     color: #fff;
     display: flex;
     align-items: center;
@@ -763,14 +763,14 @@
     width: 100%;
 
     &:hover {
-      border-color: #91caff;
-      box-shadow: 0 4px 16px rgba(24, 144, 255, 0.1);
+      border-color: @primary-color;
+      box-shadow: 0 4px 16px rgb(15 23 42 / 6%);
       transform: translateY(-2px);
     }
     &.selected {
-      border-color: #1677ff;
-      background: #f0f7ff;
-      box-shadow: 0 4px 16px rgba(24, 144, 255, 0.15);
+      border-color: @primary-color;
+      background: #fff;
+      box-shadow: 0 4px 16px rgb(15 23 42 / 8%);
     }
     &.disabled {
       cursor: not-allowed;
@@ -803,8 +803,8 @@
     .card-badge {
       flex-shrink: 0;
       font-size: 12px;
-      color: #1677ff;
-      background: #e6f4ff;
+      color: @primary-color;
+      background: #f5f7fa;
       padding: 2px 8px;
       border-radius: 4px;
       max-width: 120px;
@@ -892,7 +892,7 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: #1677ff;
+    background: @primary-color;
     color: #fff;
     font-size: 14px;
     font-weight: 700;

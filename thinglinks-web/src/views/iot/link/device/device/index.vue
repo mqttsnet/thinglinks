@@ -593,7 +593,7 @@
     transition: color 0.2s ease;
 
     &:hover {
-      color: lighten(@primary-color, 8%);
+      color: @primary-color;
     }
   }
 

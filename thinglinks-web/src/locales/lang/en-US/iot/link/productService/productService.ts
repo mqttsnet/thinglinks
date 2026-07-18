@@ -18,9 +18,13 @@ export default {
   commandList: 'Commands',
   emptyService: 'No services yet, click + to add',
   pickServiceHint: 'Pick a service from the left panel',
+  collapseServicePanel: 'Collapse service list',
+  expandServicePanel: 'Expand service list',
   helpMessage: {
     serviceCode:
-      'Supports lowercase English letters, numbers and underscores. All names should be in lowercase. Uppercase English letters are prohibited. Multiple words should be separated by underscores. Length [2,50]',
+      'Supports lowercase English letters, numbers and underscores. ' +
+      'All names should be in lowercase. Uppercase English letters are prohibited. ' +
+      'Multiple words should be separated by underscores. Length [2,50]',
     description:
       'The text description does not affect the actual function and can be configured as an empty string””',
   },

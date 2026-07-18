@@ -432,7 +432,7 @@
     height: 34px;
     flex-shrink: 0;
     border-radius: 8px;
-    color: #5d87ff;
+    color: @primary-color;
     background: #ecf2ff;
     font-size: 17px;
   }
@@ -470,8 +470,8 @@
     &:hover,
     &:focus,
     &:focus-within {
-      border-color: #5d87ff;
-      box-shadow: 0 0 0 3px rgba(93, 135, 255, 0.12);
+      border-color: @primary-color;
+      box-shadow: none;
     }
 
     :deep(.ant-input) {
@@ -503,8 +503,8 @@
 
     &:hover :deep(.ant-select-selector),
     &.ant-select-focused :deep(.ant-select-selector) {
-      border-color: #5d87ff !important;
-      box-shadow: 0 0 0 3px rgba(93, 135, 255, 0.12) !important;
+      border-color: @primary-color !important;
+      box-shadow: none !important;
     }
   }
 
@@ -533,7 +533,7 @@
     height: 30px;
     flex-shrink: 0;
     border-radius: 8px;
-    color: #5d87ff;
+    color: @primary-color;
     background: #ecf2ff;
   }
 

@@ -703,11 +703,11 @@
 
       .copy_btn {
         cursor: pointer;
-        color: #5d87ff;
+        color: @primary-color;
         margin-left: 4px;
 
         &:hover {
-          color: #2952cc;
+          color: @primary-color;
         }
       }
     }
@@ -804,12 +804,12 @@
     }
 
     .product-link {
-      color: #5d87ff;
+      color: @primary-color;
       cursor: pointer;
       transition: color 0.18s ease;
 
       &:hover {
-        color: #2952cc;
+        color: @primary-color;
         text-decoration: underline;
       }
     }

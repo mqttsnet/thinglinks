@@ -452,13 +452,13 @@
         &.ant-btn-primary {
           background: #fff;
           border-color: #fff;
-          color: #1677ff;
+          color: @primary-color;
 
           &:hover,
           &:focus {
             background: #f0f5ff;
             border-color: #f0f5ff;
-            color: #1677ff;
+            color: @primary-color;
           }
         }
       }
@@ -557,7 +557,7 @@
       color: #1f2937;
 
       :deep(svg) {
-        color: #1890ff;
+        color: @primary-color;
         font-size: 16px;
       }
     }

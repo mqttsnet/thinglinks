@@ -130,7 +130,7 @@
       // cursor: pointer;
 
       &.active {
-        border-color: #009688;
+        border-color: @primary-color;
       }
 
       img {

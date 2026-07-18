@@ -394,7 +394,7 @@
     font-size: 13px;
 
     :deep(svg) {
-      color: #1677ff;
+      color: @primary-color;
     }
   }
 
@@ -458,9 +458,9 @@
       transition: all 0.2s;
 
       &:hover {
-        background: #1677ff;
+        background: @primary-color;
         color: #fff;
-        border-color: #1677ff;
+        border-color: @primary-color;
       }
     }
   }

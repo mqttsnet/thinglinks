@@ -97,7 +97,7 @@
     overflow-y: auto;
 
     .select-title {
-      color: #1966ff;
+      color: @primary-color;
       font-size: 16px;
       margin-bottom: 8px;
     }
@@ -121,7 +121,7 @@
 
     &.isSelected {
       box-shadow: 0px 0px 8px 0px rgba(34, 78, 166, 0.25);
-      border: 2px solid #1966ff;
+      border: 2px solid @primary-color;
 
       .select-icon {
         position: absolute;
@@ -130,7 +130,7 @@
         z-index: 2;
         width: 60px;
         height: 60px;
-        background: #1966ff;
+        background: @primary-color;
         color: #d9dffd;
         transform: rotate(-45deg);
 
@@ -147,7 +147,7 @@
 
       .status {
         background: #d9dffd;
-        color: #1966ff;
+        color: @primary-color;
       }
     }
 

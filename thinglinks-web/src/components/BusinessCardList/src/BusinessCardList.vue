@@ -34,7 +34,7 @@
           :sm="24"
           :md="12"
           :lg="12"
-          :xl="8"
+          :xl="cardVariant === 'model' ? 12 : 8"
           :xxl="cardVariant === 'model' ? 8 : 6"
         >
           <div class="biz-card" @click="handleCardClick(record, $event)">
@@ -559,7 +559,7 @@
 
       &:hover {
         color: @primary-color;
-        background-color: fade(@primary-color, 8%);
+        background-color: #f5f7fa;
       }
 
       &.is-disabled {
@@ -583,7 +583,7 @@
 
         &:hover {
           color: @button-success-hover-color;
-          background-color: fade(@button-success-color, 8%);
+          background-color: #f5f7fa;
         }
       }
 
@@ -592,7 +592,7 @@
 
         &:hover {
           color: @button-warn-hover-color;
-          background-color: fade(@button-warn-color, 8%);
+          background-color: #f5f7fa;
         }
       }
 
@@ -601,7 +601,7 @@
 
         &:hover {
           color: @button-error-hover-color;
-          background-color: fade(@button-error-color, 8%);
+          background-color: #f5f7fa;
         }
       }
     }
@@ -619,8 +619,8 @@
       justify-content: center;
       overflow: hidden;
       color: @primary-color;
-      background: fade(@primary-color, 8%);
-      border: 1px solid fade(@primary-color, 12%);
+      background: #f5f7fa;
+      border: 1px solid #edf2f7;
       border-radius: 14px;
       padding: 16px;
 
@@ -642,7 +642,7 @@
       top: 0;
       right: 0;
       border-radius: 0 16px 0 12px;
-      background: fade(@primary-color, 10%);
+      background: #f5f7fa;
       color: @primary-color;
       padding: 3px 10px;
       font-size: 11px;
@@ -680,7 +680,7 @@
       }
 
       &.info {
-        background-color: fade(@primary-color, 10%);
+        background-color: #f5f7fa;
         color: @primary-color;
       }
 
@@ -724,14 +724,14 @@
 
   .biz-card-list--model {
     background-color: transparent;
-    padding: 12px 16px 16px;
+    padding: 8px 8px 12px;
 
     .biz-card-list__header {
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .biz-card-list__title {
-      font-size: 16px;
+      font-size: 15px;
     }
 
     .biz-card-list__pagination {
@@ -739,25 +739,25 @@
     }
 
     .biz-card {
-      min-height: 184px;
-      padding: 16px;
+      min-height: 178px;
+      padding: 14px;
       border: 1px solid @border-color-base;
       border-radius: 10px;
       box-shadow: none;
 
       &:hover {
         transform: translateY(-1px);
-        border-color: fade(@primary-color, 42%);
-        box-shadow: 0 4px 14px fade(@primary-color, 8%);
+        border-color: @primary-color;
+        box-shadow: 0 4px 14px rgb(15 23 42 / 8%);
       }
 
       &__info {
-        max-width: calc(100% - 66px);
+        max-width: calc(100% - 58px);
       }
 
       &__name-row {
-        padding-right: 52px;
-        margin-bottom: 10px;
+        padding-right: 46px;
+        margin-bottom: 8px;
       }
 
       &__name {
@@ -773,10 +773,10 @@
 
       &__field {
         display: grid;
-        grid-template-columns: 64px minmax(0, 1fr);
+        grid-template-columns: 62px minmax(0, 1fr);
         align-items: baseline;
         column-gap: 8px;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
 
         .biz-card__label {
           margin-bottom: 0;
@@ -790,17 +790,20 @@
         }
 
         .biz-card__value {
+          display: -webkit-box;
+          overflow: hidden;
           color: @text-color-base;
           font-size: 13px;
           line-height: 1.45;
+          white-space: normal;
+          word-break: break-all;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
         }
 
         &:last-child {
           .biz-card__value {
-            display: -webkit-box;
-            white-space: normal;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
           }
         }
       }
@@ -817,14 +820,14 @@
       }
 
       &__image {
-        top: 46px;
-        right: 16px;
-        width: 50px;
-        height: 50px;
+        top: 42px;
+        right: 14px;
+        width: 46px;
+        height: 46px;
         padding: 7px;
         color: @primary-color;
-        background: fade(@primary-color, 6%);
-        border: 1px solid fade(@primary-color, 16%);
+        background: #f5f7fa;
+        border: 1px solid #edf2f7;
         border-radius: 12px;
 
         :deep(svg) {
@@ -833,8 +836,12 @@
       }
 
       &__badge {
+        max-width: 45%;
+        overflow: hidden;
         color: @primary-color;
-        background: fade(@primary-color, 10%);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        background: #f5f7fa;
         border-radius: 0 10px 0 10px;
       }
     }

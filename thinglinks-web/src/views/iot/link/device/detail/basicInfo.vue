@@ -44,10 +44,7 @@
               />
 
               <!-- 设备绑定版本为空时的友好提示 -->
-              <span
-                v-else-if="field.kind === 'snapshot' && !field.value"
-                class="value-empty"
-              >
+              <span v-else-if="field.kind === 'snapshot' && !field.value" class="value-empty">
                 <InfoCircleOutlined />
                 {{ t('iot.link.device.device.boundProductVersionEmpty') }}
               </span>
@@ -65,16 +62,28 @@
                 </template>
                 <template v-else>
                   <div class="version-row">
-                    <span class="row-label">{{ t('iot.link.device.device.fieldTip.boundVersionLabel') }}</span>
-                    <SnapshotIdTag v-if="field.boundValue" :value="field.boundValue" color="purple" />
+                    <span class="row-label">{{
+                      t('iot.link.device.device.fieldTip.boundVersionLabel')
+                    }}</span>
+                    <SnapshotIdTag
+                      v-if="field.boundValue"
+                      :value="field.boundValue"
+                      color="purple"
+                    />
                     <span v-else class="value-empty">
                       <InfoCircleOutlined />
                       {{ t('iot.link.device.device.boundProductVersionEmpty') }}
                     </span>
                   </div>
                   <div class="version-row">
-                    <span class="row-label">{{ t('iot.link.device.device.fieldTip.activeVersionLabel') }}</span>
-                    <SnapshotIdTag v-if="field.activeValue" :value="field.activeValue" color="blue" />
+                    <span class="row-label">{{
+                      t('iot.link.device.device.fieldTip.activeVersionLabel')
+                    }}</span>
+                    <SnapshotIdTag
+                      v-if="field.activeValue"
+                      :value="field.activeValue"
+                      color="blue"
+                    />
                     <span v-else class="value-empty">-</span>
                   </div>
                   <div class="hint hint-warn">
@@ -85,22 +94,13 @@
               </div>
 
               <!-- 证书:仅 SSL 模式下展示富文本 -->
-              <DeviceCertInfo
-                v-else-if="field.kind === 'cert'"
-                :serialNumber="field.value || ''"
-              />
+              <DeviceCertInfo v-else-if="field.kind === 'cert'" :serialNumber="field.value || ''" />
 
               <!-- 可复制字段(deviceIdentification / clientId / productIdentification 等) -->
-              <CopyableText
-                v-else-if="field.kind === 'copyable'"
-                :text="field.value || ''"
-              />
+              <CopyableText v-else-if="field.kind === 'copyable'" :text="field.value || ''" />
 
               <!-- 敏感字段 ── 默认脱敏 + 👁 切换明文 + 📋 复制 -->
-              <SecretField
-                v-else-if="field.kind === 'secret'"
-                :modelValue="field.value"
-              />
+              <SecretField v-else-if="field.kind === 'secret'" :modelValue="field.value" />
 
               <!-- 多标签 ── 后端逗号串拆成一排 Tag chip(对齐编辑表单的多标签输入) -->
               <template v-else-if="field.kind === 'tags'">
@@ -242,7 +242,6 @@
                 value: getDictLabel('LINK_DEVICE_CONNECT_STATUS', d.connectStatus, '-'),
                 statusColor: connectStatusColor(d.connectStatus),
               },
-              { label: D('userName'), value: d.userName, kind: 'copyable' },
               { label: D('deviceTags'), kind: 'tags', full: true, tags: splitTags(d.deviceTags) },
             ],
           },
@@ -258,7 +257,11 @@
             color: '#fa8c16',
             fields: [
               { label: P('productName'), value: prod.productName },
-              { label: P('productIdentification'), value: prod.productIdentification, kind: 'copyable' },
+              {
+                label: P('productIdentification'),
+                value: prod.productIdentification,
+                kind: 'copyable',
+              },
               {
                 label: P('productType'),
                 value: getDictLabel('LINK_PRODUCT_TYPE', prod.productType, '-'),
@@ -298,8 +301,16 @@
                 label: D('authMode'),
                 value: getDictLabel('LINK_DEVICE_AUTH_MODE', d.authMode, '-'),
               },
+              { label: D('userName'), value: d.userName, kind: 'copyable' },
               ...(isSsl
-                ? [{ label: D('certSerialNumber'), value: d.certSerialNumber, kind: 'cert', full: true }]
+                ? [
+                    {
+                      label: D('certSerialNumber'),
+                      value: d.certSerialNumber,
+                      kind: 'cert',
+                      full: true,
+                    },
+                  ]
                 : []),
               {
                 label: D('encryptMethod'),

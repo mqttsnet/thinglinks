@@ -375,7 +375,7 @@
     user-select: all;
 
     &:hover {
-      color: #5d87ff;
+      color: @primary-color;
       text-decoration: underline dotted;
     }
   }

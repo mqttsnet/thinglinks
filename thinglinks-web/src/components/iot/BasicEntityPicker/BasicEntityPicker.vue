@@ -291,12 +291,12 @@
     transition: all 0.18s ease;
 
     &:hover {
-      border-color: #1677ff;
+      border-color: @primary-color;
     }
 
     &.focused {
-      border-color: #1677ff;
-      box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+      border-color: @primary-color;
+      box-shadow: none;
     }
 
     &.disabled {
@@ -334,7 +334,7 @@
     }
 
     .bep-more-hint {
-      color: #1677ff;
+      color: @primary-color;
       font-size: 12px;
       margin-left: 2px;
     }

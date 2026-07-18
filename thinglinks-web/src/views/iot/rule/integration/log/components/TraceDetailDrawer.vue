@@ -1090,12 +1090,12 @@
     }
 
     .copy-icon {
-      color: #5d87ff;
+      color: @primary-color;
       cursor: pointer;
       transition: color 0.15s;
 
       &:hover {
-        color: #2563eb;
+        color: @primary-color;
       }
     }
 
@@ -1130,7 +1130,7 @@
     font-weight: 700;
 
     &.highlight {
-      color: #5d87ff;
+      color: @primary-color;
       font-size: 18px;
     }
 
@@ -1334,7 +1334,7 @@
 
     &.focused {
       border-width: 3px;
-      box-shadow: 0 4px 16px rgba(93, 135, 255, 0.25);
+      box-shadow: 0 4px 16px rgb(15 23 42 / 12%);
       transform: translateY(-2px);
     }
 
@@ -1577,8 +1577,8 @@
     }
 
     &.focused {
-      box-shadow: 0 4px 16px rgba(93, 135, 255, 0.15);
-      border-color: #5d87ff;
+      box-shadow: 0 4px 16px rgb(15 23 42 / 10%);
+      border-color: @primary-color;
     }
 
     &:hover {
@@ -1904,7 +1904,7 @@
       gap: 6px;
 
       &:hover {
-        color: #5d87ff;
+        color: @primary-color;
       }
     }
 

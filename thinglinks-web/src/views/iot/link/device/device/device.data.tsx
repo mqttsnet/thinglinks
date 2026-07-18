@@ -14,10 +14,7 @@ import { InfoCircleOutlined } from '@ant-design/icons-vue';
 import CopyableText from '/@/components/CopyableText';
 import { SnapshotIdTag } from '/@/components/iot';
 import type { CardField } from '/@/components/BusinessCardList';
-import {
-  DeviceAuthMode,
-  DeviceNodeType,
-} from '/@/enums/link/device';
+import { DeviceAuthMode, DeviceNodeType } from '/@/enums/link/device';
 import DeviceCertInfo from '/@/components/Form/src/components/cacert/DeviceCertInfo.vue';
 
 const { getDictLabel } = useDict();
@@ -321,7 +318,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       },
       rules: [{ required: true }],
       helpMessage: [t('iot.link.device.device.cert.tipSelectIssued')],
-      componentProps: ({ formModel, formActionType }) => {
+      componentProps: ({ formActionType }) => {
         return {
           // 当前已选中的证书序列号(用于回显)
           value: formModel.certSerialNumber,
@@ -430,7 +427,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       },
       rules: [{ required: true }],
       component: 'Cascader',
-      componentProps: ({ formModel, formActionType }) => {
+      componentProps: ({ formActionType }) => {
         return {
           options: citiesGd,
           disabled: true,
@@ -478,7 +475,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       colProps: {
         span: 22,
       },
-      componentProps: ({ formModel, formActionType }) => {
+      componentProps: ({ formActionType }) => {
         return {
           disabled: true,
           // placeholder: `请输入${t('iot.link.device.device.address')}`,
@@ -510,7 +507,7 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       field: 'map',
       rules: [{ required: true }],
       component: 'AMap',
-      componentProps: ({ formModel, formActionType }) => {
+      componentProps: ({ formModel }) => {
         // console.log(formModel, '地图渲染');
         return {
           address: formModel.address,
@@ -524,7 +521,6 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
             formModel.map = e;
           },
           onAddressClick: (e, addressComponent, formattedAddress) => {
-            const { updateSchema } = formActionType;
             console.log(e);
             console.log(addressComponent);
             console.log(formattedAddress);
@@ -823,7 +819,7 @@ const detailLabelStyle = {
 };
 
 /**
- * 设备身份 ── deviceIdentification / clientId / nodeType / userName。
+ * 设备身份 ── deviceIdentification / clientId / nodeType。
  *
  * 设计意图:首屏左侧第一卡片,回答"这台设备是谁、怎么连进来的",
  * 设备业务标识 + 客户端 ID 用 CopyableText 方便用户拷贝去查日志。
@@ -848,12 +844,6 @@ export function detailIdentitySchema(): DescItem[] {
       label: t('iot.link.device.device.nodeType'),
       labelStyle,
       render: (curVal) => getDictLabel(DictEnum.LINK_DEVICE_NODE_TYPE, curVal, ''),
-    },
-    {
-      field: 'userName',
-      label: t('iot.link.device.device.userName'),
-      labelStyle,
-      render: (curVal) => <CopyableText text={curVal || ''} />,
     },
   ];
 }
@@ -937,12 +927,17 @@ export function detailProtocolAuthSchema(): DescItem[] {
       render: (curVal) => getDictLabel(DictEnum.LINK_DEVICE_AUTH_MODE, curVal, ''),
     },
     {
+      field: 'userName',
+      label: t('iot.link.device.device.userName'),
+      labelStyle,
+      render: (curVal) => <CopyableText text={curVal || ''} />,
+    },
+    {
       field: 'certSerialNumber',
       label: t('iot.link.device.device.certSerialNumber'),
       labelStyle,
       // 仅 SSL 模式下展示富文本(certName + 状态 chip + 算法 chip + 剩余天数 chip)
-      show: (data) =>
-        String(data?.authMode ?? '') === String(DeviceAuthMode.SSL_TLS_CERTIFICATE),
+      show: (data) => String(data?.authMode ?? '') === String(DeviceAuthMode.SSL_TLS_CERTIFICATE),
       render: (curVal) => <DeviceCertInfo serialNumber={curVal} />,
     },
     {

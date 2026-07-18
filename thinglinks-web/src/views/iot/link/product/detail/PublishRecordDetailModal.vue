@@ -1212,11 +1212,11 @@
         height: 22px;
         font-size: 11.5px;
         font-weight: 500;
-        color: #5d87ff;
+        color: @primary-color;
 
         &:hover {
-          color: #2952cc;
-          background: rgba(93, 135, 255, 0.06);
+          color: @primary-color;
+          background: #f5f7fa;
         }
 
         .anticon {

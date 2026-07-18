@@ -12,7 +12,10 @@
           @change="onInputChange"
         >
           <template #prefix>
-            <FunctionOutlined v-if="modelValue && isWildcard(modelValue as string)" :style="{ color: '#1677ff' }" />
+            <FunctionOutlined
+              v-if="modelValue && isWildcard(modelValue as string)"
+              class="topic-mode-icon--custom"
+            />
             <UnorderedListOutlined v-else-if="modelValue" :style="{ color: '#52c41a' }" />
             <FilterOutlined v-else />
           </template>
@@ -207,6 +210,10 @@
 </script>
 
 <style lang="less" scoped>
+  .topic-mode-icon--custom {
+    color: @primary-color;
+  }
+
   .product-topic-picker {
     width: 100%;
   }

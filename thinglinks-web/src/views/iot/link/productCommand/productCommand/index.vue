@@ -1,6 +1,7 @@
 <template>
-  <div class="command-container">
+  <div class="command-container model-list-container">
     <BasicTable
+      class="model-list-table"
       @register="registerTable"
       ref="basicTableRef"
       @switch-change="getSwitchChange"
@@ -162,12 +163,20 @@
         columns: columns(),
         formConfig: {
           name: 'ProductCommandSearch',
-          labelWidth: 84,
+          labelWidth: 72,
           schemas: searchFormSchema(),
           autoSubmitOnEnter: true,
-          baseColProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 8, xxl: 8 },
+          baseColProps: { xs: 24, sm: 12, md: 8, lg: 8, xl: 6, xxl: 6 },
           compact: true,
-          actionColOptions: { span: 24, style: { textAlign: 'right' } },
+          actionColOptions: {
+            xs: 24,
+            sm: 24,
+            md: 24,
+            lg: 24,
+            xl: 6,
+            xxl: 6,
+            style: { textAlign: 'right' },
+          },
           resetButtonOptions: {
             preIcon: 'ant-design:rest-outlined',
           },
@@ -339,5 +348,42 @@
 <style lang="less" scoped>
   .command-container {
     height: 100%;
+  }
+
+  .model-list-container {
+    :deep(.thinglinks-basic-table-form-container),
+    :deep(.vben-basic-table-form-container) {
+      padding: 0;
+    }
+
+    :deep(.thinglinks-basic-table .ant-form),
+    :deep(.vben-basic-table .ant-form) {
+      padding: 10px 12px 2px;
+      margin-bottom: 10px;
+      border: 1px solid @border-color-base;
+      border-radius: 8px;
+    }
+
+    :deep(.thinglinks-basic-table .ant-form-item),
+    :deep(.vben-basic-table .ant-form-item) {
+      margin-bottom: 8px !important;
+    }
+
+    :deep(.thinglinks-basic-table .ant-form-item-label),
+    :deep(.vben-basic-table .ant-form-item-label) {
+      padding-right: 6px;
+    }
+
+    :deep(.thinglinks-basic-table .ant-form-item-control-input),
+    :deep(.vben-basic-table .ant-form-item-control-input) {
+      min-height: 32px;
+    }
+
+    :deep(.thinglinks-basic-table .ant-input),
+    :deep(.thinglinks-basic-table .ant-select-selector),
+    :deep(.vben-basic-table .ant-input),
+    :deep(.vben-basic-table .ant-select-selector) {
+      min-height: 32px;
+    }
   }
 </style>

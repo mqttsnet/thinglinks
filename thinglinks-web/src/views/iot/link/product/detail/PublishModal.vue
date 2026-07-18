@@ -544,7 +544,7 @@
    * <b>当前方案</b>:整块去 scoped,所有选择器都在 .publish-flexy-wrap 命名空间下,
    * 该 wrap class 仅本 modal 使用,不会污染其他页面 / modal。
    *
-   * <b>配色</b>:主蓝 #5d87ff、灰度绿 #13deb9、影子紫 #9b75e6、警告橙 #ffae1f。
+   * <b>配色</b>:主操作色跟随框架 @primary-color,其余为发布状态语义色。
    * ────────────────────────────────────────────────────────────────────── */
   .publish-flexy-wrap {
     .ant-modal-content {
@@ -573,7 +573,7 @@
       transition: color 0.18s;
 
       &:hover {
-        color: #5d87ff;
+        color: @primary-color;
       }
     }
 
@@ -597,13 +597,10 @@
       }
 
       .ant-btn-primary {
-        background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
-        border: none;
-        box-shadow: 0 6px 14px rgba(93, 135, 255, 0.35);
+        box-shadow: none !important;
 
         &:hover {
-          box-shadow: 0 8px 18px rgba(93, 135, 255, 0.45);
-          transform: translateY(-1px);
+          box-shadow: none !important;
         }
       }
     }
@@ -640,10 +637,10 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
+        background: @primary-color;
         color: #fff;
         flex-shrink: 0;
-        box-shadow: 0 6px 14px rgba(93, 135, 255, 0.35);
+        box-shadow: 0 6px 14px rgb(15 23 42 / 12%);
 
         .header-icon {
           font-size: 20px;
@@ -681,7 +678,7 @@
         gap: 6px;
         padding: 2px 10px;
         border-radius: 10px;
-        background: rgba(93, 135, 255, 0.1);
+        background: #f5f7fa;
         line-height: 1.6;
 
         .version-label {
@@ -692,7 +689,7 @@
         .version-value {
           font-size: 12px;
           font-weight: 600;
-          color: #5d87ff;
+          color: @primary-color;
           font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
           letter-spacing: 0.2px;
         }
@@ -721,11 +718,11 @@
         width: 26px;
         height: 26px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
+        background: @primary-color;
         color: #fff;
         font-size: 13px;
         font-weight: 700;
-        box-shadow: 0 4px 10px rgba(93, 135, 255, 0.35);
+        box-shadow: 0 4px 10px rgb(15 23 42 / 12%);
       }
 
       .step-title-text {
@@ -801,19 +798,19 @@
         width: 22px;
         height: 22px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
+        background: @primary-color;
         color: #fff;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         font-size: 12px;
-        box-shadow: 0 4px 10px rgba(93, 135, 255, 0.4);
+        box-shadow: 0 4px 10px rgb(15 23 42 / 12%);
       }
 
       /* tone idle */
       &.tone-blue .card-icon-wrap {
-        background: rgba(93, 135, 255, 0.12);
-        color: #5d87ff;
+        background: #f5f7fa;
+        color: @primary-color;
       }
       &.tone-green .card-icon-wrap {
         background: rgba(19, 222, 185, 0.14);
@@ -829,12 +826,12 @@
         background: #fff;
 
         &.tone-blue {
-          border-color: #5d87ff;
-          box-shadow: 0 6px 20px rgba(93, 135, 255, 0.18);
+          border-color: @primary-color;
+          box-shadow: 0 6px 20px rgb(15 23 42 / 10%);
           .card-icon-wrap {
-            background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
+            background: @primary-color;
             color: #fff;
-            box-shadow: 0 8px 18px rgba(93, 135, 255, 0.4);
+            box-shadow: 0 8px 18px rgb(15 23 42 / 12%);
           }
         }
         &.tone-green {
@@ -908,8 +905,8 @@
       &.tone-blue {
         background: linear-gradient(135deg, #eef5ff 0%, #f5f9ff 100%);
         .tip-icon-wrap {
-          background: rgba(93, 135, 255, 0.16);
-          color: #5d87ff;
+          background: #f5f7fa;
+          color: @primary-color;
         }
       }
 
@@ -995,15 +992,15 @@
         transition: all 0.18s ease;
 
         &:hover {
-          color: #5d87ff;
-          background: rgba(93, 135, 255, 0.08);
+          color: @primary-color;
+          background: #f5f7fa;
         }
 
         &.active {
           background: #fff;
-          color: #5d87ff;
+          color: @primary-color;
           font-weight: 700;
-          box-shadow: 0 3px 10px rgba(93, 135, 255, 0.18);
+          box-shadow: 0 3px 10px rgb(15 23 42 / 8%);
         }
 
         .anticon {
@@ -1040,13 +1037,13 @@
       transition: all 0.18s ease;
 
       &:hover {
-        border-color: #5d87ff;
+        border-color: @primary-color;
       }
 
       &:focus,
       &-focused {
-        border-color: #5d87ff;
-        box-shadow: 0 0 0 3px rgba(93, 135, 255, 0.12);
+        border-color: @primary-color;
+        box-shadow: none;
       }
     }
 
@@ -1166,7 +1163,7 @@
           color: #13deb9;
         }
         &.tone-hold .impact-icon {
-          color: #5d87ff;
+          color: @primary-color;
         }
         &.tone-new .impact-icon {
           color: #9b75e6;

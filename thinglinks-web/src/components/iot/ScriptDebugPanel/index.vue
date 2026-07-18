@@ -777,7 +777,7 @@
 
     .topic-fill {
       display: inline-flex;
-      color: #5d87ff;
+      color: @primary-color;
     }
 
     .origin-body-label {

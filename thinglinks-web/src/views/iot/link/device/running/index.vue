@@ -974,7 +974,7 @@
         transition: color 0.18s ease;
 
         &:hover {
-          color: #5d87ff;
+          color: @primary-color;
         }
       }
     }
@@ -1025,12 +1025,12 @@
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        color: #5d87ff;
+        color: @primary-color;
         cursor: pointer;
         transition: color 0.18s ease;
 
         &:hover {
-          color: #2952cc;
+          color: @primary-color;
         }
       }
     }

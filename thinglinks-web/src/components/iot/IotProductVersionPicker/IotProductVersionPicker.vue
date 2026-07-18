@@ -279,7 +279,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #5d87ff;
+      color: @primary-color;
       font-size: 13px;
     }
 

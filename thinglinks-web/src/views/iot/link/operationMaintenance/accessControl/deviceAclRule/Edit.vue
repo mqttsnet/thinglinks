@@ -287,7 +287,7 @@
         transform: translateY(-50%);
         width: 3px;
         height: 14px;
-        background: #1677ff;
+        background: @primary-color;
         border-radius: 2px;
       }
 

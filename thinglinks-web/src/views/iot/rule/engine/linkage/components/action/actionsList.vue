@@ -464,7 +464,7 @@
         left: 0;
         top: 50%;
         margin-top: -7px;
-        background-color: #009688;
+        background-color: @primary-color;
       }
     }
 

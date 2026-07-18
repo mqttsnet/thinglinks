@@ -491,7 +491,7 @@
     },
   });
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
   .detail-info {
     padding: 16px 16px 0;
 
@@ -586,12 +586,12 @@
           background-position: center center;
           background-size: 104% 104%;
           transition: all 0.5s;
-          // min-height: 228px;
+          /* min-height: 228px; */
           margin-right: 10px;
           height: 100%;
 
           &.active {
-            border: 1px #009688 solid;
+            border: 1px @primary-color solid;
           }
 
           .header {
@@ -599,8 +599,8 @@
             border-bottom: 1px #e8e8e8 solid;
 
             &.active {
-              border-bottom: 1px #009688 solid;
-              background-color: rgba(93, 156, 126, 0.3);
+              border-bottom: 1px @primary-color solid;
+              background-color: #f5f7fa;
             }
           }
 
@@ -609,7 +609,7 @@
           }
 
           &:hover {
-            border-color: #009688;
+            border-color: @primary-color;
             transform: scale(1.01);
             box-shadow: 0px 4px 12px rgba(0, 26, 51, 0.08);
           }

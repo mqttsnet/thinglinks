@@ -151,7 +151,7 @@
       &:hover,
       &:focus-visible {
         background: #f4f6fb;
-        color: #5d87ff;
+        color: @primary-color;
         outline: none;
       }
     }

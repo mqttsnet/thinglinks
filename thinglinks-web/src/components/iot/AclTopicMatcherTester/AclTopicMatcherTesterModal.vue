@@ -443,7 +443,7 @@
     color: #1f2937;
 
     :deep(.anticon) {
-      color: #1677ff;
+      color: @primary-color;
       font-size: 14px;
     }
 
@@ -501,7 +501,7 @@
     display: inline-block;
     padding: 4px 10px;
     background: #f0f7ff;
-    color: #1677ff;
+    color: @primary-color;
     border-radius: 4px;
     font-family: 'JetBrains Mono', Menlo, Consolas, 'Courier New', monospace;
     font-size: 13px;
@@ -545,7 +545,7 @@
     font-weight: 600;
 
     :deep(.anticon) {
-      color: #1677ff;
+      color: @primary-color;
     }
   }
 
@@ -599,7 +599,7 @@
 
   .amt-resolved-value {
     flex: 1;
-    color: #1677ff;
+    color: @primary-color;
     background: #f0f7ff;
     padding: 2px 8px;
     border-radius: 3px;

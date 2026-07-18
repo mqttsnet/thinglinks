@@ -157,7 +157,7 @@
     flex-shrink: 0;
 
     &:hover {
-      color: #5d87ff;
+      color: @primary-color;
     }
   }
 </style>

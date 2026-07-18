@@ -488,7 +488,7 @@
     height: 34px;
     flex-shrink: 0;
     border-radius: 8px;
-    color: #5d87ff;
+    color: @primary-color;
     background: #ecf2ff;
     font-size: 17px;
   }
@@ -525,8 +525,8 @@
     &:hover,
     &:focus,
     &:focus-within {
-      border-color: #5d87ff;
-      box-shadow: 0 0 0 3px rgba(93, 135, 255, 0.12);
+      border-color: @primary-color;
+      box-shadow: none;
     }
 
     :deep(.ant-input) {
@@ -540,19 +540,19 @@
   }
 
   .filter-prefix {
-    color: #5d87ff;
+    color: @primary-color;
     font-size: 12px;
     font-weight: 600;
   }
 
   .add-btn {
-    background: #13deb9;
-    border-color: #13deb9;
+    background: @primary-color;
+    border-color: @primary-color;
 
     &:hover,
     &:focus {
-      background: #0fc6a6;
-      border-color: #0fc6a6;
+      background: @primary-color;
+      border-color: @primary-color;
     }
   }
 
@@ -581,7 +581,7 @@
     height: 30px;
     flex-shrink: 0;
     border-radius: 8px;
-    color: #5d87ff;
+    color: @primary-color;
     background: #ecf2ff;
   }
 
@@ -672,7 +672,7 @@
     height: 34px;
     flex-shrink: 0;
     border-radius: 8px;
-    color: #5d87ff;
+    color: @primary-color;
     background: #ecf2ff;
     font-size: 17px;
   }

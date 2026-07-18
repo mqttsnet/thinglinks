@@ -4,7 +4,7 @@
  * 适用场景:服务 / 属性 / 命令 / 命令请求参数 / 命令响应参数 等"物模型定义"系列 Edit 弹窗,
  * 视觉与发布弹窗(PublishModal)、产品详情顶部 metric 风格保持一致。
  *
- * 配色:主蓝 #5d87ff、灰底 #f5f7fa、卡片白 + 柔阴影、按钮主蓝渐变。
+ * 配色:主色跟随框架 @primary-color,灰底 + 卡片白 + 柔阴影。
  *
  * 此 less 不带 scoped/wrap 局部限定,挂在 wrapClassName 下做命名空间隔离。
  */
@@ -35,7 +35,7 @@
     transition: color 0.18s;
 
     &:hover {
-      color: #5d87ff;
+      color: @primary-color;
     }
   }
 
@@ -78,19 +78,19 @@
     transition: all 0.18s ease;
 
     &:hover {
-      border-color: #5d87ff;
+      border-color: @primary-color;
     }
 
     &:focus,
     &-focused {
-      border-color: #5d87ff;
-      box-shadow: 0 0 0 3px rgba(93, 135, 255, 0.12);
+      border-color: @primary-color;
+      box-shadow: none;
     }
   }
 
   /* 问号 tooltip 图标颜色统一(BasicForm 的 helpMessage 图标) */
   .ant-form-item-tooltip {
-    color: #5d87ff;
+    color: @primary-color;
   }
 
   /* 操作按钮组(底部 cancel + ok)Flexy 化 */
@@ -107,21 +107,18 @@
     }
 
     .ant-btn-primary {
-      background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
-      border: none;
-      box-shadow: 0 6px 14px rgba(93, 135, 255, 0.35);
+      box-shadow: none !important;
 
       &:hover:not([disabled]) {
-        box-shadow: 0 8px 18px rgba(93, 135, 255, 0.45);
-        transform: translateY(-1px);
+        box-shadow: none !important;
       }
     }
   }
 
   /* Radio Button Group(method / required 等)更现代 */
   .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
-    background: linear-gradient(135deg, #5d87ff 0%, #49beff 100%);
-    border-color: #5d87ff;
-    box-shadow: 0 4px 10px rgba(93, 135, 255, 0.3);
+    background: @primary-color;
+    border-color: @primary-color;
+    box-shadow: none;
   }
 }

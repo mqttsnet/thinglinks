@@ -3,8 +3,8 @@
 // 统一圆角变量
 @input-border-radius: 7px;
 @input-border-color: #dfe5ef;
-@input-focus-color: #5d87ff;
-@input-focus-shadow: 0 0 0 2px rgba(93, 135, 255, 0.1);
+@input-focus-color: @primary-color;
+@input-focus-shadow: none;
 
 // input
 .ant-input {
@@ -108,12 +108,12 @@ textarea.ant-input {
   }
 
   &:not(.ant-select-disabled):hover .ant-select-selector {
-    border-color: #5d87ff !important;
+    border-color: @input-focus-color !important;
   }
 
   &.ant-select-focused:not(.ant-select-disabled) .ant-select-selector {
-    border-color: #5d87ff !important;
-    box-shadow: 0 0 0 2px rgba(93, 135, 255, 0.1) !important;
+    border-color: @input-focus-color !important;
+    box-shadow: @input-focus-shadow !important;
   }
 }
 

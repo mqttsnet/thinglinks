@@ -378,7 +378,7 @@
       width: 3px;
       height: 14px;
       border-radius: 2px;
-      background: #5d87ff;
+      background: @primary-color;
 
       &.map-bar {
         background: #13c2c2;
@@ -411,7 +411,7 @@
 
     .loc-icon {
       font-size: 12px;
-      color: #5d87ff;
+      color: @primary-color;
     }
   }
 
@@ -443,7 +443,7 @@
       flex-shrink: 0;
 
       &:hover {
-        color: #5d87ff;
+        color: @primary-color;
       }
     }
   }
@@ -499,8 +499,8 @@
       align-items: center;
       justify-content: center;
       font-size: 38px;
-      color: #5d87ff;
-      box-shadow: 0 8px 24px rgba(93, 135, 255, 0.18);
+      color: @primary-color;
+      box-shadow: 0 8px 24px rgb(15 23 42 / 10%);
       margin-bottom: 4px;
     }
 

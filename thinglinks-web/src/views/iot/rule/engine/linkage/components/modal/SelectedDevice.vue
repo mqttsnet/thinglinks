@@ -159,7 +159,7 @@
     overflow-y: auto;
 
     .select-title {
-      color: #1966ff;
+      color: @primary-color;
       font-size: 16px;
       margin-bottom: 8px;
       display: flex;

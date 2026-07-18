@@ -808,7 +808,7 @@ onBeforeUnmount(() => {
   &.active {
     background: @primary-color;
     color: #fff;
-    box-shadow: 0 2px 12px fade(@primary-color, 30%);
+    box-shadow: 0 2px 12px rgb(15 23 42 / 12%);
   }
 }
 
@@ -861,7 +861,7 @@ onBeforeUnmount(() => {
 
   &:focus-within {
     border-color: @primary-color;
-    box-shadow: 0 0 0 2px fade(@primary-color, 10%);
+    box-shadow: none;
   }
 
   // 字段选择下拉
