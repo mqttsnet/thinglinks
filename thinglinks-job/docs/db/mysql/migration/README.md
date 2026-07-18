@@ -2,11 +2,15 @@
 
 后续数据库结构变更直接在本目录增加 SQL 文件，不预留空脚本。
 
-第一个增量脚本从 `V0001` 开始，之后依次使用 `V0002`、`V0003`：
+| 序号 | 文件 | 用途 |
+| --- | --- | --- |
+| V0001 | [`V0001__sync_thinglinks_job_definitions.sql`](V0001__sync_thinglinks_job_definitions.sql) | 补齐 ThingLinks 任务定义并修正旧版默认配置 |
+
+后续脚本依次使用 `V0002`、`V0003`：
 
 ```text
-V0001__add_job_info_index.sql
 V0002__add_job_log_column.sql
+V0003__add_job_info_index.sql
 ```
 
 文件名使用 `V{四位序号}__{英文小写下划线描述}.sql`。序号只表示数据库变更顺序，与 Job 应用版本和发行类型无关。

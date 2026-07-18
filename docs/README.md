@@ -356,7 +356,7 @@ thinglinks-job/docs/db/mysql/          # 独立 Job 工程初始化脚本
 - [数据库使用说明](../thinglinks-cloud/docs/db/数据库使用说明.md)
 - [数据库设计规范](../thinglinks-cloud/docs/db/数据库设计规范.md)
 - [达梦数据库适配](../thinglinks-cloud/docs/db/达梦适配.md)
-- [Job 调度数据库初始化脚本](../thinglinks-job/docs/db/mysql/thinglinks_job.sql)
+- [Job 调度数据库脚本说明](../thinglinks-job/docs/db/mysql/README.md)
 
 ---
 

@@ -22,10 +22,12 @@ Product identity, component version, dependency versions and release metadata ar
 
 ## Build Order
 
+Install the ThingLinks Util version declared by `.thinglinks-product.env` from its standalone repository into the local Maven repository first. Then run these commands from any directory inside the `thinglinks` monorepo:
+
 ```bash
-cd thinglinks-util && mvn clean install -DskipTests
-cd ../thinglinks-cloud && mvn clean install -DskipTests
-cd ../thinglinks-job && mvn clean package -DskipTests
+MONOREPO_ROOT="$(git rev-parse --show-toplevel)"
+mvn --batch-mode -f "$MONOREPO_ROOT/thinglinks-cloud/pom.xml" -DskipTests install
+mvn --batch-mode -f "$MONOREPO_ROOT/thinglinks-job/pom.xml" -DskipTests package
 ```
 
 The database initialization script is located at [`docs/db/mysql/baseline/thinglinks_job.sql`](docs/db/mysql/baseline/thinglinks_job.sql). Incremental migration notes are documented in the [database script guide](docs/db/mysql/README.md).

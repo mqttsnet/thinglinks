@@ -22,10 +22,12 @@
 
 ## 编译顺序
 
+先在独立的 ThingLinks Util 仓库中，将 `.thinglinks-product.env` 声明的 Util 版本安装到本地 Maven 仓库。随后可在 `thinglinks` 单仓库的任意目录执行：
+
 ```bash
-cd thinglinks-util && mvn clean install -DskipTests
-cd ../thinglinks-cloud && mvn clean install -DskipTests
-cd ../thinglinks-job && mvn clean package -DskipTests
+MONOREPO_ROOT="$(git rev-parse --show-toplevel)"
+mvn --batch-mode -f "$MONOREPO_ROOT/thinglinks-cloud/pom.xml" -DskipTests install
+mvn --batch-mode -f "$MONOREPO_ROOT/thinglinks-job/pom.xml" -DskipTests package
 ```
 
 数据库初始化脚本位于 [`docs/db/mysql/baseline/thinglinks_job.sql`](docs/db/mysql/baseline/thinglinks_job.sql)，增量升级注意事项见 [数据库脚本说明](docs/db/mysql/README.md)。
