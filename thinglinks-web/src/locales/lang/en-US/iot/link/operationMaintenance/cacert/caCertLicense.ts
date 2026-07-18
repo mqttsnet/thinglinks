@@ -65,7 +65,9 @@ export default {
   },
 
   import: {
-    tip: 'Paste a standard PEM CA root certificate. The system will auto-extract cert name, serial number, validity period, signature algorithm, etc.',
+    tip:
+      'Paste a standard PEM CA root certificate. The system will auto-extract cert name, ' +
+      'serial number, validity period, signature algorithm, etc.',
     confirm: 'Import',
     success: 'Certificate imported successfully',
     failed: 'Failed to import certificate',
@@ -76,6 +78,8 @@ export default {
     tip: 'PEM-derived fields (serial number, CN, algorithm, etc.) are read-only. You can only update the display name and remark.',
     success: 'Saved successfully',
     failed: 'Failed to save',
+    noId: 'Select a certificate to edit',
+    backList: 'Back to list',
   },
 
   detail: {

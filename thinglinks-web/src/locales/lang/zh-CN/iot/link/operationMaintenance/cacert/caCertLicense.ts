@@ -76,6 +76,8 @@ export default {
     tip: '证书序列号、通用名、签名算法等 PEM 解析字段不可改;仅可调整证书显示名与备注',
     success: '保存成功',
     failed: '保存失败',
+    noId: '请选择要编辑的证书',
+    backList: '返回列表',
   },
 
   detail: {
