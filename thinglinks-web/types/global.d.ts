@@ -17,6 +17,16 @@ declare global {
     };
     lastBuildTime: string;
   };
+  const __THINGLINKS_PRODUCT_INFO__: {
+    productCode: string;
+    productName: string;
+    componentCode: string;
+    componentName: string;
+    componentVersion: string;
+    editionCode: 'community' | 'commercial' | 'enterprise';
+    mqNamespace: string;
+    editionNames: Record<'zh-CN' | 'en-US' | 'ja', string>;
+  };
   // declare interface Window {
   //   // Global vue app instance
   //   __APP__: App<Element>;

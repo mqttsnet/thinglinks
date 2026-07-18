@@ -25,8 +25,6 @@ export default {
   了解ThingLinks: 'Understand ThingLinks',
   在线文档: 'Online document',
   官网: 'Official website',
-  企业版: 'Enterprise Edition',
-  开源版: 'Open source version',
   蓝图: 'blueprint',
   全局附件管理: 'Global Attachment Management',
   附件管理: 'Attachment Management',

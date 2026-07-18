@@ -6,7 +6,10 @@
 import type { PlatformTileVO, ShortcutVO } from './types';
 
 /** 按 appKey 映射的 Flexy 渐变色板（Logo 底座 / Card Accent） */
-export const APP_GRADIENT_MAP: Record<string, { gradient: string; color: string; textColor: string }> = {
+export const APP_GRADIENT_MAP: Record<
+  string,
+  { gradient: string; color: string; textColor: string }
+> = {
   basicPlatform: {
     gradient: 'linear-gradient(135deg, #d4e7fe 0%, #a6c8ff 100%)',
     color: '#5d87ff',
@@ -71,7 +74,6 @@ export const PLATFORM_TILES: PlatformTileVO[] = [
   {
     key: 'version',
     title: 'workbench.platform.version.title',
-    subtitle: 'workbench.platform.version.subtitle',
     icon: 'ant-design:appstore-outlined',
     color: '#5d87ff',
     url: 'https://mqttsnet.com',

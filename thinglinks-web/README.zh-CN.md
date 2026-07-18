@@ -2,16 +2,13 @@
 
 <a href="https://mqttsnet.com"><img src="./docs/images/logo.png" alt="ThingLinks" width="160"></a>
 
-# thinglinks-web — 旗舰版
+# thinglinks-web
 
-**ThingLinks 物联网平台 — 管理控制台（旗舰版）**
+**ThingLinks 物联网平台 — 管理控制台**
 
 [English](README.md) | 简体中文 | [日本語](README.ja.md) | [한국어](README.ko.md)
 
-[![Vue 3](https://img.shields.io/badge/Vue-3.3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)](https://vuejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-4.6-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-4.3-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Edition](https://img.shields.io/badge/版本-旗舰版-gold?style=flat-square)](LICENSE-COMMERCIAL)
+[![Vue 3](https://img.shields.io/badge/Vue-3.3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)](https://vuejs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-4.6-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![Vite](https://img.shields.io/badge/Vite-4.3-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
 
 </div>
 
@@ -19,11 +16,9 @@
 
 ## 简介
 
-`thinglinks-web` 是 [ThingLinks](https://mqttsnet.com) 多租户 SaaS 云物联网平台的管理控制台前端（旗舰版），基于 Vue 3 + TypeScript + Vite 构建。
+`thinglinks-web` 是 [ThingLinks](https://mqttsnet.com) 多租户 SaaS 云物联网平台的管理控制台前端，基于 Vue 3 + TypeScript + Vite 构建。
 
-### 授权激活
-
-购买后，请将授权 ID 填入 [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL) 并通过 git commit 提交。git 提交记录作为授权生效的关键证明。通过 [mqttsnet.com](https://mqttsnet.com) 验证授权状态。
+产品发行版本与组件版本元数据见根目录 [`.thinglinks-product.env`](.thinglinks-product.env)。
 
 ## 快速开始
 
@@ -54,6 +49,6 @@ npx skills add mqttsnet/thinglinks-skills@thinglinks-web -g
 
 ## 开源协议
 
-基于 [Apache License 2.0](LICENSE)，附加条款详见 [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL)。
+授权范围以 [LICENSE](LICENSE) 及产品元数据清单引用的附加条款为准。
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

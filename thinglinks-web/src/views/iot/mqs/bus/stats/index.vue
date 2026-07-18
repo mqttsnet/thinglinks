@@ -87,7 +87,7 @@
       <a-tab-pane key="test" :tab="t('iot.mqs.bus.stats.route.test')">
         <a-form layout="vertical">
           <a-form-item :label="t('iot.mqs.bus.stats.test.sourceTopic')" required>
-            <a-input v-model:value="testSourceTopic" placeholder="thinglinks-pro-mqs-mqttMsg" />
+            <a-input v-model:value="testSourceTopic" :placeholder="defaultTestSourceTopic" />
           </a-form-item>
           <a-form-item :label="t('iot.mqs.bus.stats.test.rawJson')" required>
             <a-textarea
@@ -148,6 +148,7 @@ import {
   type BusTodaySummary,
 } from '/@/api/iot/mqs/bus/stats';
 import { dispatchManual, type DispatchOutcome } from '/@/api/iot/mqs/bus/test';
+import { productInfo } from '/@/settings/productSetting';
 
 const { t } = useI18n();
 const { createMessage } = useMessage();
@@ -165,7 +166,8 @@ const summary = ref<BusTodaySummary | null>(null);
 const health = ref<BusHealth | null>(null);
 
 // 测试
-const testSourceTopic = ref<string>('thinglinks-pro-mqs-mqttMsg');
+const defaultTestSourceTopic = `${productInfo.mqNamespace}-mqs-mqttMsg`;
+const testSourceTopic = ref<string>(defaultTestSourceTopic);
 const testRawJson = ref<string>('');
 const testLoading = ref(false);
 const testOutcome = ref<DispatchOutcome | null>(null);

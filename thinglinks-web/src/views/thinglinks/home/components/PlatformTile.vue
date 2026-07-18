@@ -18,6 +18,8 @@
   import { useRouter } from 'vue-router';
   import { Icon } from '/@/components/Icon';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import { useLocale } from '/@/locales/useLocale';
+  import { getProductEditionName, productInfo } from '/@/settings/productSetting';
   import type { PlatformTileVO } from '../types';
 
   interface Props {
@@ -26,6 +28,7 @@
   const props = defineProps<Props>();
   const router = useRouter();
   const { t } = useI18n();
+  const { getLocale } = useLocale();
 
   const iconBg = computed(() => {
     const c = props.item.color;
@@ -34,11 +37,8 @@
 
   const subtitleText = computed(() => {
     if (props.item.dynamicSubtitle === 'version') {
-      const pkg = (globalThis as any).__APP_INFO__?.pkg;
-      if (pkg?.version) {
-        const name = pkg.name || 'thinglinks';
-        return `${name} v${pkg.version}`;
-      }
+      const edition = getProductEditionName(getLocale.value);
+      return `${productInfo.componentName} v${productInfo.componentVersion} · ${edition}`;
     }
     return props.item.subtitle ? t(props.item.subtitle) : '';
   });

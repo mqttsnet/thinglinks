@@ -2,16 +2,13 @@
 
 <a href="https://mqttsnet.com"><img src="./docs/images/logo.png" alt="ThingLinks" width="160"></a>
 
-# thinglinks-web — Enterprise Edition
+# thinglinks-web
 
-**ThingLinks IoT Platform — Admin Console (Enterprise)**
+**ThingLinks IoT Platform — Admin Console**
 
 [English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
 
-[![Vue 3](https://img.shields.io/badge/Vue-3.3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)](https://vuejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-4.6-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-4.3-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Edition](https://img.shields.io/badge/Edition-Enterprise-gold?style=flat-square)](LICENSE-COMMERCIAL)
+[![Vue 3](https://img.shields.io/badge/Vue-3.3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)](https://vuejs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-4.6-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![Vite](https://img.shields.io/badge/Vite-4.3-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
 
 </div>
 
@@ -19,11 +16,9 @@
 
 ## About
 
-`thinglinks-web` is the admin console frontend for the [ThingLinks](https://mqttsnet.com) multi-tenant SaaS cloud IoT platform (Enterprise Edition). Built with Vue 3 + TypeScript + Vite.
+`thinglinks-web` is the admin console frontend for the [ThingLinks](https://mqttsnet.com) multi-tenant SaaS cloud IoT platform. Built with Vue 3 + TypeScript + Vite.
 
-### License Activation
-
-After purchasing, fill in the provided Authorization ID in [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL) and commit via git. The git commit history serves as proof of activation. Verify at [mqttsnet.com](https://mqttsnet.com).
+Product edition and component version metadata are available in [`.thinglinks-product.env`](.thinglinks-product.env).
 
 ## Quick Start
 
@@ -54,6 +49,6 @@ Auto-triggers when you build IoT pages, define API calls, use shared components 
 
 ## License
 
-Licensed under [Apache License 2.0](LICENSE) with additional terms — see [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL).
+See [LICENSE](LICENSE) and the additional terms referenced by the product metadata manifest.
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

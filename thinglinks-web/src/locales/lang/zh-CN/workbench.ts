@@ -3,8 +3,7 @@ export default {
 
   brand: {
     slogan: '云端 · 连接 · 智能',
-    tagline: 'ThingLinks IoT · 企业级 SaaS 平台',
-    edition: '企业版',
+    tagline: 'ThingLinks IoT · 多租户 SaaS 平台',
   },
 
   system: {
@@ -119,8 +118,7 @@ export default {
   platform: {
     title: '平台信息',
     version: {
-      title: '平台版本',
-      subtitle: 'ThingLinks Cloud v1.4.0',
+      title: '控制台版本',
     },
     docs: {
       title: '文档中心',

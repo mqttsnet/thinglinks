@@ -3,8 +3,7 @@ export default {
 
   brand: {
     slogan: 'Cloud · Connected · Intelligent',
-    tagline: 'ThingLinks IoT · Enterprise SaaS Platform',
-    edition: 'Enterprise',
+    tagline: 'ThingLinks IoT · Multi-tenant SaaS Platform',
   },
 
   system: {
@@ -77,8 +76,7 @@ export default {
       '"{name}" is currently unavailable. The menu may have been removed or your access has changed.',
     appNotAccessible:
       'Application "{app}" is no longer in your accessible scope. Your administrator may have updated permissions.',
-    appExpired:
-      'Application "{app}" has expired. Please contact your administrator to renew.',
+    appExpired: 'Application "{app}" has expired. Please contact your administrator to renew.',
     appCheckFailed: 'Failed to verify application status, please try again later',
   },
 
@@ -122,8 +120,7 @@ export default {
   platform: {
     title: 'Platform Info',
     version: {
-      title: 'Platform Version',
-      subtitle: 'ThingLinks Cloud v1.4.0',
+      title: 'Console Version',
     },
     docs: {
       title: 'Documentation',

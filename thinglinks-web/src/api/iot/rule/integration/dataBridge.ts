@@ -56,7 +56,7 @@ export const deleteSingle = (id: string) =>
 export const remove = (params: string[]) =>
   defHttp.request<boolean>({ ...Api.Delete, params });
 
-/** 测试发送（基于规则当前配置 + 用户提供的样例 envelope，调 util-pro Sink.send 实际发送一次） */
+/** 测试发送（基于规则当前配置 + 用户提供的样例 envelope，调用 thinglinks-util Sink.send 实际发送一次） */
 export const testSink = (id: string, sampleEnvelope: TestSinkRequest) =>
   defHttp.request<TestSinkResult>({ ...Api.TestSink(id), params: sampleEnvelope });
 

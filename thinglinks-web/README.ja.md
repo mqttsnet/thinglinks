@@ -2,13 +2,11 @@
 
 <a href="https://mqttsnet.com"><img src="./docs/images/logo.png" alt="ThingLinks" width="160"></a>
 
-# thinglinks-web — Enterprise Edition
+# thinglinks-web
 
-**ThingLinks IoT — 管理コンソール（Enterprise）**
+**ThingLinks IoT — 管理コンソール**
 
 [English](README.md) | [简体中文](README.zh-CN.md) | 日本語 | [한국어](README.ko.md)
-
-[![Edition](https://img.shields.io/badge/Edition-Enterprise-gold?style=flat-square)](LICENSE-COMMERCIAL)
 
 </div>
 
@@ -16,11 +14,9 @@
 
 ## 概要
 
-`thinglinks-web` は [ThingLinks](https://mqttsnet.com) マルチテナント SaaS クラウド IoT プラットフォームの管理コンソール（Enterprise Edition）です。
+`thinglinks-web` は [ThingLinks](https://mqttsnet.com) マルチテナント SaaS クラウド IoT プラットフォームの管理コンソールです。
 
-### ライセンス認証
-
-ご購入後、ライセンス ID を [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL) に記入し git commit で記録してください。
+製品エディションとコンポーネントバージョンのメタデータは、ルートの [`.thinglinks-product.env`](.thinglinks-product.env) にあります。
 
 ## 🤖 Agent Skills(AI 支援開発)
 
@@ -35,6 +31,6 @@ IoT ページ、API 呼び出し、共有コンポーネント / ルールスク
 
 ## ライセンス
 
-[Apache License 2.0](LICENSE) + [LICENSE-COMMERCIAL](LICENSE-COMMERCIAL)
+[LICENSE](LICENSE) と製品メタデータで参照される追加条件を確認してください。
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

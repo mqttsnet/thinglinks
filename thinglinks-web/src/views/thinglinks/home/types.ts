@@ -62,6 +62,6 @@ export interface PlatformTileVO {
   color: string;
   url: string;
   external?: boolean;
-  /** 运行时替换 subtitle 的来源标记。'version' → pkg.name + pkg.version */
+  /** 运行时替换 subtitle 的来源标记。'version' → 根产品清单中的组件版本与发行名称 */
   dynamicSubtitle?: 'version';
 }

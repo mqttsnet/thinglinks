@@ -3,8 +3,7 @@ export default {
 
   brand: {
     slogan: 'クラウド · 接続 · インテリジェント',
-    tagline: 'ThingLinks IoT · エンタープライズ SaaS プラットフォーム',
-    edition: 'エンタープライズ版',
+    tagline: 'ThingLinks IoT · マルチテナント SaaS プラットフォーム',
   },
 
   system: {
@@ -77,8 +76,7 @@ export default {
       '「{name}」は現在アクセスできません。メニューが廃止されたか、権限が変更された可能性があります',
     appNotAccessible:
       'アプリ「{app}」はアクセス権限外になりました。管理者により権限が調整された可能性があります',
-    appExpired:
-      'アプリ「{app}」は有効期限切れです。管理者に延長を依頼してください',
+    appExpired: 'アプリ「{app}」は有効期限切れです。管理者に延長を依頼してください',
     appCheckFailed: 'アプリ状態の確認に失敗しました。しばらくしてから再試行してください',
   },
 
@@ -122,8 +120,7 @@ export default {
   platform: {
     title: 'プラットフォーム情報',
     version: {
-      title: 'プラットフォームバージョン',
-      subtitle: 'ThingLinks Cloud v1.4.0',
+      title: 'コンソールバージョン',
     },
     docs: {
       title: 'ドキュメント',
