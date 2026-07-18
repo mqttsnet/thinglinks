@@ -1,11 +1,31 @@
 <template>
   <PageWrapper dense contentFullHeight>
-    <BasicTable
-      @register="registerTable"
-      @switch-change="getSwitchChange"
-      :switchFlag="switchFlag"
-      :isChannel="true"
-    >
+    <BasicTable @register="registerTable" @switch-change="getSwitchChange" :switchFlag="switchFlag">
+      <template #cardView="{ searchData, title }">
+        <BusinessCardList
+          ref="cardListRef"
+          :pageApi="pageWithChannelTypeLabel"
+          :title="title"
+          :searchData="searchData"
+          nameField="channelName"
+          :nameFallback="t('iot.link.engine.channel.table.title')"
+          :fields="cardFields"
+          statusField="status"
+          :statusResolver="resolveChannelStatus"
+          :extraActions="cardExtraActions"
+          @input="getSwitchChange"
+          @extra-action="handleCardExtraAction"
+        >
+          <template #headerExtra>
+            <a-button type="primary" preIcon="ant-design:plus-outlined" @click="handleAdd">
+              {{ t('common.title.add') }}
+            </a-button>
+          </template>
+          <template #cardImage>
+            <AlarmChannelSvg />
+          </template>
+        </BusinessCardList>
+      </template>
       <template #toolbar>
         <a-button
           type="primary"
@@ -24,7 +44,7 @@
         </a-button>
       </template>
       <template #channelType="{ record }">
-        {{ getDictLabel('RULE_ALARM_CHANNEL_TYPE', record?.channelType, '') }}
+        {{ resolveAlarmChannelTypeLabel(record?.channelType) }}
       </template>
       <template #status="{ record }">
         {{ getDictLabel('RULE_ALARM_CHANNEL_STATUS', record?.status, '') }}
@@ -63,12 +83,20 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
+  import { BusinessCardList } from '/@/components/BusinessCardList';
+  import type { CardAction } from '/@/components/BusinessCardList';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
   import { ActionEnum } from '/@/enums/commonEnum';
   import { page, remove, deleteSingle } from '../../../../../api/iot/rule/alarm/channel';
-  import { columns, searchFormSchema } from './channel.data';
+  import {
+    columns,
+    resolveAlarmChannelTypeLabel,
+    searchFormSchema,
+    cardFields as buildCardFields,
+  } from './channel.data';
   import EditModal from './Edit.vue';
   import { useDict } from '/@/components/Dict';
+  import { AlarmChannelSvg } from '/@/components/iot/svg';
   const { getDictLabel } = useDict();
 
   export default defineComponent({
@@ -78,23 +106,41 @@
       BasicTable,
       PageWrapper,
       TableAction,
+      BusinessCardList,
       EditModal,
+      AlarmChannelSvg,
     },
     setup() {
       const { t } = useI18n();
       const { createMessage, createConfirm } = useMessage();
       const [registerModal, { openModal }] = useModal();
+      const cardListRef = ref<any>(null);
+      const cardFields = buildCardFields();
+      const cardExtraActions: CardAction[] = [
+        {
+          tooltip: t('common.title.edit'),
+          icon: 'ant-design:edit-outlined',
+          event: 'edit',
+        },
+        {
+          tooltip: t('common.title.delete'),
+          icon: 'ant-design:delete-outlined',
+          color: 'error',
+          event: 'delete',
+        },
+      ];
 
       // 表格
       const [registerTable, { reload, getSelectRowKeys }] = useTable({
         title: t('iot.link.engine.channel.table.title'),
-        api: page,
+        api: pageWithChannelTypeLabel,
         immediate: false,
         columns: columns(),
         formConfig: {
           name: 'ChannelSearch',
-          labelWidth: 120,
+          labelWidth: 96,
           schemas: searchFormSchema(),
+          compact: true,
           autoSubmitOnEnter: true,
           resetButtonOptions: {
             preIcon: 'ant-design:rest-outlined',
@@ -119,27 +165,10 @@
         },
       });
 
-      // 弹出复制页面
-      function handleCopy(record: Recordable, e: Event) {
-        e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.COPY,
-        });
-      }
       // 弹出新增页面
       function handleAdd() {
         openModal(true, {
           type: ActionEnum.ADD,
-        });
-      }
-
-      // 弹出查看页面
-      function handleView(record: Recordable, e: Event) {
-        e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.VIEW,
         });
       }
 
@@ -155,6 +184,7 @@
       // 新增或编辑成功回调
       function handleSuccess() {
         reload();
+        cardListRef.value?.reload();
       }
 
       // 删除单条数据
@@ -176,6 +206,45 @@
         if (record?.id) {
           handleDeleteSingle(record.id);
         }
+      }
+
+      function handleCardDelete(record: Recordable) {
+        if (!record?.id) return;
+        createConfirm({
+          iconType: 'warning',
+          content: t('common.tips.confirmDelete'),
+          onOk: () => handleDeleteSingle(record.id),
+        });
+      }
+
+      function handleCardExtraAction(payload: { event: string; record: Recordable }) {
+        const event = new Event('synthetic');
+        if (payload.event === 'edit') {
+          handleEdit(payload.record, event);
+          return;
+        }
+        if (payload.event === 'delete') {
+          handleCardDelete(payload.record);
+        }
+      }
+
+      function resolveChannelStatus(record: Recordable) {
+        const label = getDictLabel('RULE_ALARM_CHANNEL_STATUS', record?.status, '-');
+        return {
+          label,
+          cls: Number(record?.status) === 1 ? 'online' : 'offline',
+        };
+      }
+
+      async function pageWithChannelTypeLabel(...args: any[]) {
+        const result = await page(...args);
+        const records = result?.records || result?.data?.records || [];
+        if (Array.isArray(records)) {
+          records.forEach((record) => {
+            record.channelTypeLabel = resolveAlarmChannelTypeLabel(record?.channelType);
+          });
+        }
+        return result;
       }
 
       // 点击批量删除
@@ -213,9 +282,7 @@
         t,
         registerTable,
         registerModal,
-        handleView,
         handleAdd,
-        handleCopy,
         handleEdit,
         handleDelete,
         handleBatchDelete,
@@ -224,8 +291,15 @@
         switchView,
         getSwitchChange,
         switchFlag,
+        cardFields,
+        cardExtraActions,
+        cardListRef,
+        handleCardExtraAction,
+        resolveChannelStatus,
+        page: pageWithChannelTypeLabel,
+        pageWithChannelTypeLabel,
+        resolveAlarmChannelTypeLabel,
       };
     },
   });
 </script>
-../../../../../api/iot/link/channel/channel

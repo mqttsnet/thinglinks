@@ -1,16 +1,46 @@
 import { Ref } from 'vue';
-import { dateUtil } from '/@/utils/dateUtil';
 import { BasicColumn, FormSchema } from '/@/components/Table';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
-import { Tag } from 'ant-design-vue';
 import { query } from '../../../../../api/iot/rule/alarm/channel';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
 import { DictEnum } from '/@/enums/commonEnum';
 import { echoMapText } from '/@/utils/echo';
+import type { CardField } from '/@/components/BusinessCardList';
 
 const { t } = useI18n();
+const searchColProps = { xs: 24, sm: 12, md: 8, lg: 6, xl: 6, xxl: 4 };
+
+export const cardFields = (): CardField[] => [
+  {
+    label: t('iot.link.engine.alarm.alarmIdentification'),
+    field: 'alarmIdentification',
+  },
+  {
+    label: t('iot.link.engine.alarm.level'),
+    field: 'level',
+    dictType: DictEnum.RULE_ALARM_LEVEL,
+    span: 12,
+  },
+  {
+    label: t('iot.link.engine.alarm.alarmScene'),
+    field: 'alarmScene',
+    dictType: DictEnum.RULE_ALARM_SCENE,
+    span: 12,
+  },
+  {
+    label: t('iot.link.engine.alarm.appId'),
+    field: 'appId',
+    span: 12,
+  },
+  {
+    label: t('iot.link.engine.alarm.createTime'),
+    field: 'createdTime',
+    span: 12,
+  },
+];
+
 // 列表页字段
 export const columns = (): BasicColumn[] => {
   return [
@@ -77,13 +107,13 @@ export const searchFormSchema = (): FormSchema[] => {
       field: 'alarmName',
       label: t('iot.link.engine.alarm.alarmName'),
       component: 'Input',
-      colProps: { span: 6 },
+      colProps: searchColProps,
     },
     {
       field: 'alarmScene',
       label: t('iot.link.engine.alarm.alarmScene'),
       component: 'ApiSelect',
-      colProps: { span: 6 },
+      colProps: searchColProps,
       show: true,
       componentProps: {
         ...dictComponentProps(DictEnum.RULE_ALARM_SCENE),
@@ -93,13 +123,13 @@ export const searchFormSchema = (): FormSchema[] => {
       field: 'alarmIdentification',
       label: t('iot.link.engine.alarm.alarmIdentification'),
       component: 'Input',
-      colProps: { span: 6 },
+      colProps: searchColProps,
     },
     {
       field: 'level',
       label: t('iot.link.engine.alarm.level'),
       component: 'ApiSelect',
-      colProps: { span: 6 },
+      colProps: searchColProps,
       show: true,
       componentProps: {
         ...dictComponentProps(DictEnum.RULE_ALARM_LEVEL),
@@ -109,7 +139,7 @@ export const searchFormSchema = (): FormSchema[] => {
       field: 'status',
       label: t('iot.link.engine.alarm.status'),
       component: 'ApiSelect',
-      colProps: { span: 6 },
+      colProps: searchColProps,
       show: true,
       componentProps: {
         ...dictComponentProps(DictEnum.RULE_ALARM_STATUS),
@@ -177,9 +207,10 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       show: true,
       rules: [{ required: true }],
       componentProps: {
-        disabled: false,
-        allowClear: true,
         ...dictComponentProps(DictEnum.RULE_ALARM_LEVEL),
+        disabled: false,
+        optionType: 'button',
+        buttonStyle: 'solid',
       },
     },
     {

@@ -23,6 +23,10 @@ import CommonDeviceSvg from './CommonDeviceSvg.vue';
 import GatewayDeviceSvg from './GatewayDeviceSvg.vue';
 import SubDeviceSvg from './SubDeviceSvg.vue';
 import ProductModelCardSvg from './ProductModelCardSvg.vue';
+import SceneLinkageSvg from './SceneLinkageSvg.vue';
+import AlarmRuleSvg from './AlarmRuleSvg.vue';
+import AlarmChannelSvg from './AlarmChannelSvg.vue';
+import AlarmRecordSvg from './AlarmRecordSvg.vue';
 
 export {
   CommonProductSvg,
@@ -31,6 +35,10 @@ export {
   GatewayDeviceSvg,
   SubDeviceSvg,
   ProductModelCardSvg,
+  SceneLinkageSvg,
+  AlarmRuleSvg,
+  AlarmChannelSvg,
+  AlarmRecordSvg,
 };
 
 /**

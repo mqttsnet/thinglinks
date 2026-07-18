@@ -14,6 +14,7 @@ export interface BaseEmployeePageQuery {
   isDefault?: boolean;
   userId?: string;
   positionId?: string;
+  orgIdList?: string[];
   realName?: string;
   positionStatus?: string;
   state?: boolean;
@@ -53,6 +54,8 @@ export interface BaseEmployeeResultVO {
   echoMap?: any;
   activeStatus?: string;
   orgIdList?: string[];
+  lastDeptId?: string;
+  lastCompanyId?: string;
   defUser: DefUserResultVO;
   createdOrgId: string;
 }

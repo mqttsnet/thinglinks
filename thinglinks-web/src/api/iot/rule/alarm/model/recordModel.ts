@@ -1,4 +1,3 @@
-import { Ref } from 'vue';
 export interface AlarmRecordPageQuery {
   appId?: string; // 应用ID
   channelId?: string; // 渠道ID
@@ -16,7 +15,7 @@ export interface AlarmRecordPageQuery {
 }
 
 export interface AlarmRecordSaveVO {
-  id?: string; 
+  id?: string;
   appId?: string; // 应用ID
   alarmName?: string; // 告警名称
   alarmIdentification?: string; // 告警编码
@@ -58,4 +57,38 @@ export interface AlarmRecordResultVO {
   occurredTime?: string; // 发生时间
   resolutionNotes?: string; // 	解决记录
   resolvedTime?: string; // 解决时间
+  alarmName?: string; // 告警名称
+  ruleAlarmDetailsResultVO?: RuleAlarmDetailsResultVO; // 告警规则详情
+}
+
+export interface RuleAlarmDetailsResultVO {
+  echoMap?: any;
+  id?: string | number;
+  createdTime?: string;
+  createdBy?: string;
+  updatedTime?: string;
+  updatedBy?: string;
+  appId?: string;
+  alarmName?: string;
+  alarmIdentification?: string;
+  alarmScene?: string;
+  alarmChannelIds?: string;
+  level?: number;
+  status?: number;
+  remark?: string;
+  ruleAlarmChannelDetailsResultVOList?: RuleAlarmChannelDetailsResultVO[];
+}
+
+export interface RuleAlarmChannelDetailsResultVO {
+  echoMap?: any;
+  id?: string | number;
+  createdTime?: string;
+  createdBy?: string;
+  updatedTime?: string;
+  updatedBy?: string;
+  channelName?: string;
+  channelType?: number;
+  channelConfig?: string;
+  status?: number;
+  remark?: string;
 }

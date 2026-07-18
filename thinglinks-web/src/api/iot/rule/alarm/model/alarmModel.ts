@@ -1,4 +1,3 @@
-import { Ref } from 'vue';
 export interface AlarmPageQuery {
   appId?: string; // 应用ID
   alarmChannelIds?: any; // 告警渠道ID集合
@@ -54,6 +53,7 @@ export interface AlarmResultVO {
   alarmScene?: string; // 告警场景
   alarmChannelIds?: any; // 告警渠道ID集合
   alarmChannelResultVOS?: any; // 告警渠道详情
+  ruleAlarmChannelDetailsResultVOList?: any[]; // 告警渠道详情
   remark?: string; // 规则描述
   status?: number; // 状态
 }
