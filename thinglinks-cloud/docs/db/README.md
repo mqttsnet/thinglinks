@@ -33,7 +33,17 @@ db/
 
 | Date | Script | Database | Change Description | Author |
 |------|--------|----------|--------------------|--------|
-| 2026-07-18 | V1.4.0__rename_web_oauth_client.sql | thinglinks_base | Align the Web OAuth client identifier with the product manifest | mqttsnet |
+| 2026-07-18 | V1.4.0__register_rule_notification_apis.sql | thinglinks_ds_c_defaults | Register variable and preview APIs for scene linkage notifications | mqttsnet |
+| 2026-07-18 | V1.4.0__rename_web_oauth_client.sql | thinglinks_ds_c_defaults | Align the Web OAuth client identifier with the product manifest | mqttsnet |
+
+### Resource API Cache Refresh / 资源接口缓存刷新
+
+After running a migration that changes `def_resource_api`, call
+`POST /system/defResource/clearCache?applicationId=3`, then wait up to 60 seconds for the gateway
+refresh or restart the gateway.
+
+修改 `def_resource_api` 的迁移执行完成后，调用
+`POST /system/defResource/clearCache?applicationId=3`，再等待网关刷新（最长 60 秒），或重启网关。
 
 ### Supported Databases / 支持的数据库
 
@@ -48,4 +58,4 @@ db/
 - [Database Usage Guide / 数据库使用说明](数据库使用说明.md)
 - [Database Design Standards / 数据库设计规范](数据库设计规范.md)
 - [DM Database Adaptation / 达梦适配](达梦适配.md)
-- [Job Scheduler Initialization / Job 调度数据库初始化](../../../thinglinks-job/docs/db/mysql/thinglinks_job.sql)
+- [Job Scheduler Database / Job 调度数据库](../../../thinglinks-job/docs/db/mysql/README.md)
