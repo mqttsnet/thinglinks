@@ -82,6 +82,7 @@ declare global {
     VITE_USE_IMAGEMIN: boolean;
     VITE_GENERATE_UI: string;
     VITE_GLOB_TIPS: string;
+    VITE_GOOGLE_MAPS_API_KEY?: string;
   }
 
   declare function parseInt(s: string | number, radix?: number): number;
