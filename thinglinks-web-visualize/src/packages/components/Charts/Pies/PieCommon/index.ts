@@ -7,7 +7,7 @@ export const PieCommonConfig: ConfigType = {
   conKey: 'VCPieCommon',
   title: 'project.component_pie_common',
   category: ChatCategoryEnum.PIE,
-  categoryName: getChatCategoryEnumName().PIE,
+  get categoryName() { return getChatCategoryEnumName().PIE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'pie.png'

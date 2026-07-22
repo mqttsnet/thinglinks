@@ -7,7 +7,7 @@ export const LineLinearSingleConfig: ConfigType = {
   conKey: 'VCLineLinearSingle',
   title: 'project.component_line_linear_single',
   category: ChatCategoryEnum.LINE,
-  categoryName: getChatCategoryEnumName().LINE,
+  get categoryName() { return getChatCategoryEnumName().LINE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'line_linear_single.png'

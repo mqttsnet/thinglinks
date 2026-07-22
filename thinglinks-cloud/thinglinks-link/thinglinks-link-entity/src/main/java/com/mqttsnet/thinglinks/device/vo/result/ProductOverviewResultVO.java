@@ -1,8 +1,6 @@
 package com.mqttsnet.thinglinks.device.vo.result;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +11,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Map;
 
 /**
  * -----------------------------------------------------------------------------
@@ -43,12 +39,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "ProductOverviewResultVO", description = "产品概况统计")
-public class ProductOverviewResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class ProductOverviewResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "产品总量")
     private Integer productsTotalCount;
@@ -67,5 +61,14 @@ public class ProductOverviewResultVO extends Entity<Long> implements Serializabl
 
     @Schema(description = "停用量")
     private Integer disabledCount;
+
+    @Schema(description = "今日新增产品量")
+    private Integer todayNewCount;
+
+    @Schema(description = "近7天新增产品量")
+    private Integer weekNewCount;
+
+    @Schema(description = "近30天新增产品量")
+    private Integer monthNewCount;
 
 }

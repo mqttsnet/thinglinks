@@ -8,7 +8,7 @@ export const PieCircleConfig: ConfigType = {
   conKey: 'VCPieCircle',
   title: 'project.component_pie_circle',
   category: ChatCategoryEnum.PIE,
-  categoryName: getChatCategoryEnumName().PIE,
+  get categoryName() { return getChatCategoryEnumName().PIE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'pie-circle.png'

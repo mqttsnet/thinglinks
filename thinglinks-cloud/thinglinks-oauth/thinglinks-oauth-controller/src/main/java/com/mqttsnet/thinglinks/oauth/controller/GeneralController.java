@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.oauth.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.base.R;
+import com.mqttsnet.basic.interfaces.echo.EchoService;
 import com.mqttsnet.thinglinks.model.vo.result.Option;
 import com.mqttsnet.thinglinks.oauth.service.DictService;
 import com.mqttsnet.thinglinks.oauth.service.ParamService;
@@ -37,9 +38,10 @@ public class GeneralController {
 
     private final DictService dictService;
     private final ParamService paramService;
+    private final EchoService echoService;
 
-    @Operation(summary = "同步枚举到字典", description = "同步枚举到字典")
-    @PostMapping("/anyTenant/enums/syncEnumToDict")
+    @Operation(summary = "同步枚举到字典", description = "同步枚举到字典(管理操作,需登录,移出 anyTenant 免登录前缀)")
+    @PostMapping("/enums/syncEnumToDict")
     public R<Boolean> syncEnumToDict() {
         dictService.syncEnumToDict();
         return R.success();
@@ -48,13 +50,23 @@ public class GeneralController {
     @Operation(summary = "返回服务中所有枚举类", description = "只能扫描实现了BaseEnum类的枚举")
     @PostMapping("/anyUser/dict/enums/findAll")
     public R<List<DefDictResultVO>> findAll() {
-        return R.success(dictService.findAll());
+        List<DefDictResultVO> result = dictService.findAll();
+        echoService.action(result);
+        return R.success(result);
     }
 
     @Operation(summary = "根据字典类型编码批量查询字典项", description = "根据字典类型编码批量查询字典项")
     @PostMapping("/anyUser/dict/findDictItemByType")
     public R<Map<String, List<DefDictItemResultVO>>> findDictItemByType(@RequestBody List<String> query) {
-        return R.success(dictService.findDictItemByType(query));
+        Map<String, List<DefDictItemResultVO>> result = dictService.findDictItemByType(query);
+        if (MapUtil.isNotEmpty(result)) {
+            List<DefDictItemResultVO> flat = result.values().stream()
+                    .filter(CollUtil::isNotEmpty)
+                    .flatMap(List::stream)
+                    .toList();
+            echoService.action(flat);
+        }
+        return R.success(result);
     }
 
 
@@ -86,7 +98,15 @@ public class GeneralController {
     @Deprecated
     public R<Map<String, List<DefDictItemResultVO>>> findDictMapByType2(@RequestBody List<CodeQueryVO> codeQueryVO) {
         Map<String, List<DefDictItemResultVO>> map = dictService.findDictMapByType(codeQueryVO.stream().map(CodeQueryVO::getType).toList());
-        return R.success(mapByDict(map, codeQueryVO));
+        Map<String, List<DefDictItemResultVO>> result = mapByDict(map, codeQueryVO);
+        if (MapUtil.isNotEmpty(result)) {
+            List<DefDictItemResultVO> flat = result.values().stream()
+                    .filter(CollUtil::isNotEmpty)
+                    .flatMap(List::stream)
+                    .toList();
+            echoService.action(flat);
+        }
+        return R.success(result);
     }
 
     public Map<String, List<DefDictItemResultVO>> mapByDict(Map<String, List<DefDictItemResultVO>> map, List<CodeQueryVO> codeQueryVO) {

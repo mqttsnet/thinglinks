@@ -14,8 +14,9 @@ import com.mqttsnet.basic.utils.StrPool;
 import com.mqttsnet.basic.utils.StringUtils;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
-import com.mqttsnet.thinglinks.video.empowerment.media.VideoStreamProxyTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.media.VideoStreamProxyTypeEnum;
 import com.mqttsnet.thinglinks.video.entity.media.VideoStreamProxy;
+import com.mqttsnet.thinglinks.video.utils.MediaUrlUtils;
 import com.mqttsnet.thinglinks.video.manager.media.VideoStreamProxyManager;
 import com.mqttsnet.thinglinks.video.service.anytenant.ZlmMediaServerOpenAnyTenantService;
 import com.mqttsnet.thinglinks.video.service.media.VideoMediaServerService;
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -87,19 +89,23 @@ public class VideoStreamProxyServiceImpl extends SuperServiceImpl<VideoStreamPro
         // 校验参数
         checkUpdateVO(updateVO);
 
-        // 构建参数
-        Builder<VideoStreamProxy> videoStreamProxyBuilder = builderVideoStreamProxyUpdateVO(updateVO);
-
-        // 启用状态需要添加流代理到 ZLM
-        if (updateVO.getStatus()) {
-            addStreamProxyToZlm(BeanPlusUtil.toBeanIgnoreError(videoStreamProxyBuilder.build(), VideoStreamProxyResultVO.class));
+        // 启用状态：先调 ZLM 拿到 streamKey/dstUrl/ffmpegCmdKey 再落库
+        // 禁用状态：直接关流，dstUrl/streamKey/ffmpegCmdKey 清空
+        VideoStreamProxyResultVO computed = BeanPlusUtil.toBeanIgnoreError(updateVO, VideoStreamProxyResultVO.class);
+        if (Boolean.TRUE.equals(updateVO.getStatus())) {
+            computed = addStreamProxyToZlm(computed);
         } else {
-            removeStreamProxyToZlm(BeanPlusUtil.toBeanIgnoreError(updateVO, VideoStreamProxyResultVO.class));
+            removeStreamProxyToZlm(computed);
+            computed.setStreamKey(null);
+            computed.setDstUrl(null);
+            computed.setFfmpegCmdKey(null);
         }
 
-
-        // 更新
-        superManager.updateById(videoStreamProxyBuilder.with(VideoStreamProxy::setId, updateVO.getId()).build());
+        // 用 ZLM 调用后的最新值（dstUrl/streamKey/ffmpegCmdKey）build entity，前端传的同名字段已忽略
+        VideoStreamProxy entity = builderVideoStreamProxyUpdateVO(updateVO, computed)
+                .with(VideoStreamProxy::setId, updateVO.getId())
+                .build();
+        superManager.updateById(entity);
         return updateVO;
     }
 
@@ -138,25 +144,44 @@ public class VideoStreamProxyServiceImpl extends SuperServiceImpl<VideoStreamPro
         VideoStreamProxyResultVO videoStreamProxyResultVO = getStreamProxyDetails(id);
 
         VideoMediaServerResultDTO videoMediaServerResultDTO = videoMediaServerService.getVideoMediaServerResultDTO(videoStreamProxyResultVO.getMediaIdentification());
+        if (videoMediaServerResultDTO == null) {
+            log.warn("[getPlayUrl] 未找到流媒体服务器, mediaIdentification={}", videoStreamProxyResultVO.getMediaIdentification());
+            videoStreamProxyResultVO.setZlmMediaServerStreamInfoList(Collections.emptyList());
+            return videoStreamProxyResultVO;
+        }
 
-        List<ZlmMediaServerStreamInfoResultVO> mediaServerStreamInfoList = zlmMediaServerOpenAnyTenantService.getMediaServerStreamInfoList(videoMediaServerResultDTO, videoStreamProxyResultVO.getAppId(), videoStreamProxyResultVO.getStreamIdentification());
-        videoStreamProxyResultVO.setZlmMediaServerStreamInfoList(mediaServerStreamInfoList);
+        try {
+            List<ZlmMediaServerStreamInfoResultVO> mediaServerStreamInfoList = zlmMediaServerOpenAnyTenantService.getMediaServerStreamInfoList(videoMediaServerResultDTO, videoStreamProxyResultVO.getAppId(), videoStreamProxyResultVO.getStreamIdentification());
+            videoStreamProxyResultVO.setZlmMediaServerStreamInfoList(mediaServerStreamInfoList);
+        } catch (Exception e) {
+            log.warn("[getPlayUrl] 获取播放地址失败, mediaIdentification={}, error={}", videoStreamProxyResultVO.getMediaIdentification(), e.getMessage());
+            videoStreamProxyResultVO.setZlmMediaServerStreamInfoList(Collections.emptyList());
+        }
 
         return videoStreamProxyResultVO;
     }
 
 
-    private Builder<VideoStreamProxy> builderVideoStreamProxyUpdateVO(VideoStreamProxyUpdateVO updateVO) {
+    /**
+     * 用前端 updateVO + 后端计算结果 computed 构造 Entity。
+     * <p>关键差异：{@code dstUrl / streamKey / ffmpegCmdKey} 三个字段以 {@code computed}（即 ZLM 调用结果）为准，
+     * 前端传的同名值会被忽略——避免用户篡改这些后端语义字段。
+     */
+    private Builder<VideoStreamProxy> builderVideoStreamProxyUpdateVO(VideoStreamProxyUpdateVO updateVO,
+                                                                     VideoStreamProxyResultVO computed) {
         return Builder.of(VideoStreamProxy::new)
                 .with(VideoStreamProxy::setAppId, updateVO.getAppId())
                 .with(VideoStreamProxy::setProxyType, updateVO.getProxyType())
                 .with(VideoStreamProxy::setProxyName, updateVO.getProxyName())
                 .with(VideoStreamProxy::setStreamIdentification, updateVO.getStreamIdentification())
+                // 用户输入字段：default 模式用 url，ffmpeg 模式用 srcUrl
                 .with(VideoStreamProxy::setUrl, updateVO.getUrl())
                 .with(VideoStreamProxy::setSrcUrl, updateVO.getSrcUrl())
-                .with(VideoStreamProxy::setDstUrl, updateVO.getDstUrl())
+                // 后端计算字段：以 ZLM 调用结果为准，覆盖前端传值
+                .with(VideoStreamProxy::setDstUrl, computed.getDstUrl())
+                .with(VideoStreamProxy::setFfmpegCmdKey, computed.getFfmpegCmdKey())
+                .with(VideoStreamProxy::setStreamKey, computed.getStreamKey())
                 .with(VideoStreamProxy::setTimeoutMs, updateVO.getTimeoutMs())
-                .with(VideoStreamProxy::setFfmpegCmdKey, updateVO.getFfmpegCmdKey())
                 .with(VideoStreamProxy::setRtpType, updateVO.getRtpType())
                 .with(VideoStreamProxy::setGbIdentification, updateVO.getGbIdentification())
                 .with(VideoStreamProxy::setMediaIdentification, updateVO.getMediaIdentification())
@@ -164,7 +189,6 @@ public class VideoStreamProxyServiceImpl extends SuperServiceImpl<VideoStreamPro
                 .with(VideoStreamProxy::setEnableMp4, updateVO.getEnableMp4())
                 .with(VideoStreamProxy::setStatus, updateVO.getStatus())
                 .with(VideoStreamProxy::setEnableRemoveNoneReader, updateVO.getEnableRemoveNoneReader())
-                .with(VideoStreamProxy::setStreamKey, updateVO.getStreamKey())
                 .with(VideoStreamProxy::setEnableDisableNoneReader, updateVO.getEnableDisableNoneReader())
                 .with(VideoStreamProxy::setExtendParams, updateVO.getExtendParams())
                 .with(VideoStreamProxy::setRemark, updateVO.getRemark())
@@ -256,6 +280,10 @@ public class VideoStreamProxyServiceImpl extends SuperServiceImpl<VideoStreamPro
     public VideoStreamProxyResultVO addStreamProxyToZlm(VideoStreamProxyResultVO videoStreamProxyResultVO) {
         VideoMediaServerResultDTO videoMediaServerResultDTO = videoMediaServerService
                 .getVideoMediaServerResultDTO(videoStreamProxyResultVO.getMediaIdentification());
+        if (videoMediaServerResultDTO == null) {
+            log.warn("[拉流代理] 未找到流媒体服务器, mediaIdentification={}", videoStreamProxyResultVO.getMediaIdentification());
+            return videoStreamProxyResultVO;
+        }
 
         // 校验流是否准备完成
         boolean streamReady = Optional.ofNullable(zlmMediaServerOpenAnyTenantService
@@ -268,71 +296,71 @@ public class VideoStreamProxyServiceImpl extends SuperServiceImpl<VideoStreamPro
             return videoStreamProxyResultVO;
         }
 
-        String dstUrl = Optional.of(videoStreamProxyResultVO)
-                .filter(vo -> VideoStreamProxyTypeEnum.FFMPEG.getValue().equals(vo.getProxyType()))
-                .map(vo -> {
-                    if (vo.getTimeoutMs() == null || vo.getTimeoutMs() == 0) {
-                        vo.setTimeoutMs(15);
-                    }
+        // ============== 字段填充总览 ==============
+        // url            ── 用户输入（default 模式）：ZLM addStreamProxy 的源 URL
+        // srcUrl         ── 用户输入（ffmpeg 模式）：ffmpeg 输入源
+        // dstUrl         ── 后端拼装（**两种模式都计算**）：流在 ZLM 落地后可拉流的 URL
+        //                   - default：rtsp://<streamHost>:<rtspPort>/<appId>/<streamIdentification>
+        //                   - ffmpeg：按 ffmpeg cmd 解析的 schema 决定（rtsp/rtmp 端口不同）
+        // ffmpegCmdKey   ── 后端从 ZLM 配置取（仅 ffmpeg 模式）
+        // streamKey      ── ZLM addStreamProxy / addFFmpegSource 的返回值
+        // ==========================================
+        boolean isFfmpeg = VideoStreamProxyTypeEnum.FFMPEG.getValue()
+                .equalsIgnoreCase(videoStreamProxyResultVO.getProxyType());
+        String streamPath = videoStreamProxyResultVO.getAppId() + "/" + videoStreamProxyResultVO.getStreamIdentification();
 
-                    String ffmpegCmd = Optional.ofNullable(zlmMediaServerOpenAnyTenantService.getFfmpegCmd(videoMediaServerResultDTO))
-                            .filter(StringUtils::isNotBlank)
-                            .orElseThrow(() -> BizException.wrap("ffmpeg拉流代理无法获取ffmpeg cmd"));
+        String dstUrl;
+        String streamKey;
+        if (isFfmpeg) {
+            // === FFmpeg 模式：dstUrl 按 ffmpeg cmd 输出 schema 计算 + 取 ffmpegCmdKey + 调 addFFmpegSource ===
+            if (videoStreamProxyResultVO.getTimeoutMs() == null || videoStreamProxyResultVO.getTimeoutMs() == 0) {
+                videoStreamProxyResultVO.setTimeoutMs(15);
+            }
+            String ffmpegCmd = Optional.ofNullable(
+                            zlmMediaServerOpenAnyTenantService.getFfmpegCmd(videoMediaServerResultDTO))
+                    .filter(StringUtils::isNotBlank)
+                    .orElseThrow(() -> BizException.wrap("ffmpeg 拉流代理无法获取 ffmpeg cmd"));
+            videoStreamProxyResultVO.setFfmpegCmdKey(ffmpegCmd);
 
-                    vo.setFfmpegCmdKey(ffmpegCmd);
+            String schema = Optional.ofNullable(getSchemaFromFFmpegCmd(ffmpegCmd))
+                    .filter(StringUtils::isNotBlank)
+                    .orElseThrow(() -> BizException.wrap("ffmpeg 拉流代理无法从 ffmpeg cmd 中解析输出格式"));
+            int port = "rtsp".equalsIgnoreCase(schema)
+                    ? Optional.ofNullable(videoMediaServerResultDTO.getRtspPort()).orElse(0)
+                    : Optional.ofNullable(videoMediaServerResultDTO.getRtmpPort()).orElse(0);
+            dstUrl = MediaUrlUtils.buildStreamUrl(schema, videoMediaServerResultDTO.getStreamHost(), port, streamPath);
 
-                    String schema = Optional.ofNullable(getSchemaFromFFmpegCmd(ffmpegCmd))
-                            .filter(StringUtils::isNotBlank)
-                            .orElseThrow(() -> BizException.wrap("ffmpeg拉流代理无法从ffmpeg cmd中获取到输出格式"));
+            streamKey = zlmMediaServerOpenAnyTenantService.addFFmpegSource(
+                    videoMediaServerResultDTO,
+                    videoStreamProxyResultVO.getSrcUrl() != null ? videoStreamProxyResultVO.getSrcUrl().trim() : null,
+                    dstUrl,
+                    videoStreamProxyResultVO.getTimeoutMs(),
+                    videoStreamProxyResultVO.getEnableAudio(),
+                    videoStreamProxyResultVO.getEnableMp4(),
+                    ffmpegCmd);
+        } else {
+            // === default 模式：dstUrl 是 ZLM 落地后的 RTSP 拉流地址（流的稳定输出 URL，便于运维使用）===
+            videoStreamProxyResultVO.setFfmpegCmdKey(null);
+            int rtspPort = Optional.ofNullable(videoMediaServerResultDTO.getRtspPort()).orElse(0);
+            dstUrl = MediaUrlUtils.buildStreamUrl("rtsp", videoMediaServerResultDTO.getStreamHost(), rtspPort, streamPath);
 
-                    Integer port;
-                    String schemaForUri;
-
-                    switch (schema.toLowerCase()) {
-                        case "rtsp":
-                            port = videoMediaServerResultDTO.getRtspPort();
-                            schemaForUri = schema;
-                            break;
-                        case "flv":
-                            port = videoMediaServerResultDTO.getRtmpPort();
-                            schemaForUri = schema;
-                            break;
-                        default:
-                            port = videoMediaServerResultDTO.getRtmpPort();
-                            schemaForUri = schema;
-                            break;
-                    }
-
-                    return String.format("%s://%s:%s/%s/%s", schemaForUri, videoMediaServerResultDTO.getStreamIp(), port, vo.getAppId(), vo.getStreamIdentification());
-                })
-                .orElseGet(() -> String.format("rtsp://%s:%s/%s/%s", videoMediaServerResultDTO.getStreamIp(), videoMediaServerResultDTO.getRtspPort(), videoStreamProxyResultVO.getAppId(), videoStreamProxyResultVO.getStreamIdentification()));
-
-        log.info("[拉流代理] 输出地址为：{}", dstUrl);
+            streamKey = zlmMediaServerOpenAnyTenantService.addStreamProxy(
+                    videoMediaServerResultDTO,
+                    videoStreamProxyResultVO.getAppId(),
+                    videoStreamProxyResultVO.getStreamIdentification(),
+                    videoStreamProxyResultVO.getUrl() != null ? videoStreamProxyResultVO.getUrl().trim() : null,
+                    videoStreamProxyResultVO.getEnableAudio(),
+                    videoStreamProxyResultVO.getEnableMp4(),
+                    videoStreamProxyResultVO.getRtpType());
+        }
         videoStreamProxyResultVO.setDstUrl(dstUrl);
 
-        // Add the stream proxy
-        /*String result;
-        if (VideoStreamProxyTypeEnum.FFMPEG.getValue().equalsIgnoreCase(videoStreamProxyResultVO.getProxyType())) {
-            result = zlmMediaServerOpenAnyTenantService.addFFmpegSource(videoMediaServerResultVO, videoStreamProxyResultVO.getSrcUrl().trim(), dstUrl,
-                    videoStreamProxyResultVO.getTimeoutMs(), videoStreamProxyResultVO.getEnableAudio(), videoStreamProxyResultVO.getEnableMp4(),
-                    videoStreamProxyResultVO.getFfmpegCmdKey());
-        } else {
-            result = zlmMediaServerOpenAnyTenantService.addStreamProxy(videoMediaServerResultVO, videoStreamProxyResultVO.getAppId(), videoStreamProxyResultVO.getStreamIdentification(), videoStreamProxyResultVO.getUrl().trim(),
-                    videoStreamProxyResultVO.getEnableAudio(), videoStreamProxyResultVO.getEnableMp4(), videoStreamProxyResultVO.getRtpType());
+        if (StringUtils.isBlank(streamKey)) {
+            throw BizException.wrap("拉流代理添加到 ZLM 失败，请检查源地址与媒体服务器状态");
         }
-
-        Optional.ofNullable(result)
-                .filter(res -> !res.isEmpty())
-                .ifPresentOrElse(
-                        key -> {
-                            log.info("[拉流代理] 添加流成功: {}", key);
-                            videoStreamProxyResultVO.setStreamKey(key);
-                        },
-                        () -> {
-                            log.error("[拉流代理] 添加流失败: {}", result);
-                            throw new BizException("拉流代理操作添加流失败");
-                        }
-                );*/
+        videoStreamProxyResultVO.setStreamKey(streamKey);
+        log.info("[拉流代理] 添加流成功: proxyType={}, dstUrl={}, streamKey={}",
+                videoStreamProxyResultVO.getProxyType(), dstUrl, streamKey);
 
         return videoStreamProxyResultVO;
     }
@@ -347,6 +375,10 @@ public class VideoStreamProxyServiceImpl extends SuperServiceImpl<VideoStreamPro
     private Boolean removeStreamProxyToZlm(VideoStreamProxyResultVO videoStreamProxyResultVO) {
         VideoMediaServerResultDTO videoMediaServerResultDTO = videoMediaServerService
                 .getVideoMediaServerResultDTO(videoStreamProxyResultVO.getMediaIdentification());
+        if (videoMediaServerResultDTO == null) {
+            log.warn("[拉流代理] 移除流时未找到流媒体服务器, mediaIdentification={}", videoStreamProxyResultVO.getMediaIdentification());
+            return false;
+        }
 
         // 校验流是否准备完成并关闭流
         boolean streamReady = Optional.ofNullable(zlmMediaServerOpenAnyTenantService

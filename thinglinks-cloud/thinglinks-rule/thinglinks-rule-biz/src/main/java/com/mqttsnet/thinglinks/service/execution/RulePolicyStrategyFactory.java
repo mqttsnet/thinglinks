@@ -55,7 +55,12 @@ public class RulePolicyStrategyFactory {
             return Collections.emptyList();
         }
 
+        // 事件路径按触发类型过滤:只评估与事件匹配的条件组,混搭规则的定时条件仍归定时任务触发
+        Integer triggerConditionType = context.getTriggerConditionType();
+
         return context.getRulePolicyDTO().getRuleConditionPolicyDTOS().stream()
+                .filter(dto -> triggerConditionType == null
+                        || Objects.equals(dto.getConditionType(), triggerConditionType))
                 .map(conditionPolicyDTO -> {
                     ConditionTypeEnum conditionType = ConditionTypeEnum.fromValue(conditionPolicyDTO.getConditionType());
                     RulePolicyStrategyService policyService = switch (Objects.requireNonNull(conditionType)) {

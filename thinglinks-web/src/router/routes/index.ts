@@ -163,6 +163,28 @@ export const BeforeRoutes: AppRouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/video',
+    name: 'VideoAppHome',
+    component: LAYOUT,
+    redirect: '/video/home',
+    meta: {
+      title: t('video.home.title'),
+      hideMenu: true,
+    },
+    children: [
+      {
+        path: 'home',
+        name: 'VideoHome',
+        component: () => import('/@/views/video/home/index.vue'),
+        meta: {
+          title: t('video.home.title'),
+          hideMenu: true,
+          icon: 'ant-design:video-camera-outlined',
+        },
+      },
+    ],
+  },
 ];
 
 /**

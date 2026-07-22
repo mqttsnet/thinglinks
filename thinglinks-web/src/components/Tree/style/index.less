@@ -3,17 +3,22 @@
 .@{tree-prefix-cls} {
   background-color: @component-background;
 
+  // 关键修复 1:antd-vue 默认把内置 .ant-tree-title 设为 absolute + width:100%,
+  // 会让长名字 + 多 action 时彼此重叠。强制改为静态布局,让自己的 flex 行接管。
   .ant-tree-node-content-wrapper {
-    position: relative;
+    overflow: hidden;
 
     .ant-tree-title {
-      position: absolute;
-      left: 0;
-      width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      position: static;
+      display: block;
+      width: auto;
     }
+  }
+
+  // 关键修复 2:行容器允许水平滚动,深层级菜单不会撑破布局
+  .ant-tree-list-holder-inner {
+    min-width: 100%;
+    width: max-content;
   }
 
   &__title {
@@ -21,7 +26,9 @@
     display: flex;
     align-items: center;
     width: 100%;
+    min-width: 0;
     padding-right: 10px;
+    gap: 4px;
 
     &:hover {
       .@{tree-prefix-cls}__action {
@@ -30,19 +37,40 @@
     }
   }
 
+  // 名称区:占满剩余宽度,过长省略号(避免名字把 actions 推出可视区)
+  &__label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   &__content {
     overflow: hidden;
   }
 
+  // 关键修复 3:actions 改为静态 flex 子元素,带白色背景 + padding-left
+  // 不再 absolute right:10px,避免遮挡过长名称
   &__actions {
-    position: absolute;
-    right: 10px;
-    display: flex;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding-left: 6px;
+    background-color: inherit;
   }
 
   &__action {
     margin-left: 4px;
     visibility: hidden;
+  }
+
+  // 选中行 actions 背景与高亮色保持一致(不会突兀)
+  .ant-tree-node-selected {
+    .@{tree-prefix-cls}__actions {
+      background-color: transparent;
+    }
   }
 
   &-header {

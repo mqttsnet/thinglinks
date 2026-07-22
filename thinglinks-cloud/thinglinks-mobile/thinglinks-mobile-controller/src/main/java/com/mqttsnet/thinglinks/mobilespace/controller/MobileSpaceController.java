@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.mobilespace.controller;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.base.controller.SuperController;
@@ -79,7 +79,7 @@ public class MobileSpaceController extends SuperController<MobileSpaceService, L
     @PostMapping("/saveMobileSpace")
     @WebLog(value = "新增空间", request = false)
     public R<MobileSpaceSaveVO> saveMobileSpace(@RequestBody MobileSpaceSaveVO saveVO) {
-        log.info("saveMobileSpace param:{}", JSONUtil.toJsonStr(saveVO));
+        log.info("saveMobileSpace param:{}", JSON.toJSONString(saveVO));
         return R.success(superService.saveMobileSpace(saveVO));
     }
 
@@ -90,7 +90,7 @@ public class MobileSpaceController extends SuperController<MobileSpaceService, L
     @PutMapping("/updateMobileSpace")
     @WebLog(value = "更新空间", request = false)
     public R<MobileSpaceUpdateVO> updateMobileSpace(@RequestBody MobileSpaceUpdateVO updateVO) {
-        log.info("updateMobileSpace param:{}", JSONUtil.toJsonStr(updateVO));
+        log.info("updateMobileSpace param:{}", JSON.toJSONString(updateVO));
         return R.success(superService.updateMobileSpace(updateVO));
     }
 
@@ -112,7 +112,9 @@ public class MobileSpaceController extends SuperController<MobileSpaceService, L
     @WebLog(value = "获取空间详情信息", request = false)
     @Parameters({@Parameter(name = "id", description = "空间ID", required = true)})
     public R<MobileSpaceDetailsResultVO> getMobileSpaceById(@PathVariable("id") Long id) {
-        return R.success(superService.getMobileSpaceById(id));
+        MobileSpaceDetailsResultVO result = superService.getMobileSpaceById(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
     @Operation(summary = "获取我的空间列表", description = "获取我的空间列表")
@@ -120,7 +122,9 @@ public class MobileSpaceController extends SuperController<MobileSpaceService, L
     @WebLog(value = "获取我的空间列表", request = false)
     public R<List<MobileSpaceResultVO>> getMobileSpaceListForMine() {
         MobileSpacePageQuery query = MobileSpacePageQuery.builder().createdUserId(ContextUtil.getUserId()).build();
-        return R.success(superService.getMobileSpaceResultVOList(query));
+        List<MobileSpaceResultVO> result = superService.getMobileSpaceResultVOList(query);
+        echoService.action(result);
+        return R.success(result);
     }
 
     /**

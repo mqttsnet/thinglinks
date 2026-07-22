@@ -17,7 +17,7 @@
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
-    <description>thinglinks-cloud</description>
+    <description>ThingLinks Cloud</description>
     <url>https://github.com/mqttsnet/thinglinks</url>
     <developers>
         <developer>
@@ -62,5 +62,34 @@
         <module>thinglinks-openapi</module>
         <module>thinglinks-sop-admin</module>
     </modules>
+
+    <build>
+        <plugins>
+            <!-- 根聚合工程在 validate 阶段执行产品清单校验，inherited=false 表示该执行不传递到子模块。 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>thinglinks-product-config-check</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target name="校验根目录产品配置">
+                                <exec executable="bash" dir="${project.basedir}" failonerror="true">
+                                    <arg value="${project.basedir}/scripts/product-config.sh"/>
+                                    <arg value="check"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -1,4 +1,5 @@
-import { defineConfig } from 'vite'
+import type { ConfigEnv, UserConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 import { OUTPUT_DIR, brotliSize, chunkSizeWarningLimit, terserOptions, rollupOptions } from './build/constant'
@@ -6,8 +7,8 @@ import viteCompression from 'vite-plugin-compression'
 import { viteMockServe } from 'vite-plugin-mock'
 import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 import { createProxy } from './build/vite/proxy';
-import { loadEnv } from 'vite';
 import { wrapperEnv } from './build/utils';
+import { loadProductConfig, toPublicProductInfo, toViteProductEnv } from './build/productConfig';
 
 function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir)
@@ -16,11 +17,21 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
 
   const root = process.cwd();
 
-  const env = loadEnv(mode, root);
+  const productConfig = loadProductConfig(root);
+  const productEnv = toViteProductEnv(productConfig);
+  const env = { ...loadEnv(mode, root), ...productEnv };
 
   const viteEnv = wrapperEnv(env);
 
   const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY, VITE_DROP_CONSOLE } = viteEnv;
+  console.log(
+    'mode=%s, root=%s, product=%s@%s, edition=%s',
+    mode,
+    root,
+    productConfig.componentCode,
+    productConfig.componentVersion,
+    productConfig.editionCode
+  );
   return {
     base: process.env.NODE_ENV === 'production' ? './' : '/',
     // 路径重定向
@@ -58,6 +69,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         }
       }
     },
+    define: {
+      __THINGLINKS_PRODUCT_INFO__: JSON.stringify(toPublicProductInfo(productConfig)),
+      'import.meta.env.VITE_GLOB_CLIENT_ID': JSON.stringify(productEnv.VITE_GLOB_CLIENT_ID)
+    },
     plugins: [
       vue(),
       monacoEditorPlugin({
@@ -66,9 +81,9 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       viteMockServe({
         mockPath: '/src/api/mock',
         // 开发打包开关
-        localEnabled: true,
+        localEnabled: command === 'serve',
         // 生产打包开关
-        prodEnabled: true,
+        prodEnabled: false,
         // 打开后，可以读取 ts 文件模块。 请注意，打开后将无法监视.js 文件
         supportTs: true,
         // 监视文件更改

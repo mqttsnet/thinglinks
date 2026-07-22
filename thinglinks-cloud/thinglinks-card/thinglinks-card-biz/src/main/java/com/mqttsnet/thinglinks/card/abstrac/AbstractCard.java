@@ -215,17 +215,16 @@ public abstract class AbstractCard implements OfficialProvider {
             }
 
         } catch (Exception e) {
-            log.error("请求失败, 卡号:{} 请求结果:{}", iotCardToken.getCardNum(), res, e);
+            log.error("卡源请求失败，卡源={}，请求类型={}，exceptionType={}",
+                    iotCardToken.getChannelName(), iotCardToken.getRequestType(), e.getClass().getSimpleName());
         }
 
-        log.info("卡源: {} 请求接口:{} 请求方法:{} 请求卡号:{} 请求iccid:{} 接口耗时:{}ms 接口响应结果:{}",
+        log.info("卡源请求完成，卡源={}，请求类型={}，请求方法={}，耗时={}ms，是否收到响应={}",
                 iotCardToken.getChannelName(),
-                iotCardToken.getUrl(),
+                iotCardToken.getRequestType(),
                 iotCardToken.getRequestMethod(),
-                iotCardToken.getCardNum(),
-                iotCardToken.getIccid(),
                 (System.currentTimeMillis() - startTime),
-                res);
+                StringUtils.isNotEmpty(res));
 
         return res;
     }

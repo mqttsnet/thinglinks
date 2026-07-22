@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.video.mapper.device.VideoDeviceAlarmMapper">
+
+    <!-- 按告警级别统计 -->
+    <select id="countByPriority" resultType="com.mqttsnet.thinglinks.video.vo.result.device.AlarmStatisticsResultVO$CountItem">
+        SELECT CAST(alarm_priority AS CHAR) AS name, COUNT(*) AS count
+        FROM video_device_alarm
+        WHERE deleted = 0
+        <if test="startTime != null">AND alarm_time &gt;= #{startTime}</if>
+        <if test="endTime != null">AND alarm_time &lt;= #{endTime}</if>
+        GROUP BY alarm_priority
+        ORDER BY alarm_priority
+    </select>
+
+    <!-- 按设备统计 TOP10 -->
+    <select id="countByDevice" resultType="com.mqttsnet.thinglinks.video.vo.result.device.AlarmStatisticsResultVO$CountItem">
+        SELECT device_identification AS name, COUNT(*) AS count
+        FROM video_device_alarm
+        WHERE deleted = 0
+        <if test="startTime != null">AND alarm_time &gt;= #{startTime}</if>
+        <if test="endTime != null">AND alarm_time &lt;= #{endTime}</if>
+        GROUP BY device_identification
+        ORDER BY count DESC
+        LIMIT 10
+    </select>
+
+    <!-- 按天统计 -->
+    <select id="countByDay" resultType="com.mqttsnet.thinglinks.video.vo.result.device.AlarmStatisticsResultVO$CountItem">
+        SELECT DATE_FORMAT(alarm_time, '%Y-%m-%d') AS name, COUNT(*) AS count
+        FROM video_device_alarm
+        WHERE deleted = 0
+        <if test="startTime != null">AND alarm_time &gt;= #{startTime}</if>
+        <if test="endTime != null">AND alarm_time &lt;= #{endTime}</if>
+        GROUP BY DATE_FORMAT(alarm_time, '%Y-%m-%d')
+        ORDER BY name
+    </select>
+
+    <!-- 未处理告警计数 -->
+    <select id="countUnhandled" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM video_device_alarm
+        WHERE deleted = 0 AND handle_status = 0
+    </select>
+
+</mapper>

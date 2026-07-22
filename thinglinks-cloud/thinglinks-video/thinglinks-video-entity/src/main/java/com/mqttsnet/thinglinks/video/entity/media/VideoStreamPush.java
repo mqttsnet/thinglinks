@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.video.entity.media;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.mqttsnet.basic.base.entity.Entity;
 import lombok.AllArgsConstructor;
@@ -124,6 +125,13 @@ public class VideoStreamPush extends Entity<Long> {
      */
     @TableField(value = "created_org_id", condition = EQUAL)
     private Long createdOrgId;
+
+    /**
+     * 逻辑删除标识:0-未删除 1-已删除
+     */
+    @TableLogic
+    @TableField(value = "deleted", condition = EQUAL)
+    private Integer deleted;
 
 
 }

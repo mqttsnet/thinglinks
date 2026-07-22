@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -60,7 +61,7 @@ public class ProductCommandRequestController extends SuperController<ProductComm
     @Operation(summary = "保存产品模型设备下发服务命令属性")
     @PostMapping("/saveProductCommandRequest")
     @WebLog(value = "保存产品模型设备下发服务命令属性", request = false)
-    public R saveProductCommandRequest(@RequestBody ProductCommandRequestSaveVO saveVO) {
+    public R saveProductCommandRequest(@Valid @RequestBody ProductCommandRequestSaveVO saveVO) {
         return R.success(superService.saveProductCommandRequest(saveVO));
     }
 
@@ -74,7 +75,7 @@ public class ProductCommandRequestController extends SuperController<ProductComm
     @Operation(summary = "修改产品模型设备下发服务命令属性")
     @PutMapping("/updateProductCommandRequest")
     @WebLog(value = "修改产品模型设备下发服务命令属性", request = false)
-    public R updateProductCommandRequest(@RequestBody ProductCommandRequestUpdateVO updateVO) {
+    public R updateProductCommandRequest(@Valid @RequestBody ProductCommandRequestUpdateVO updateVO) {
         return R.success(superService.updateProductCommandRequest(updateVO));
     }
 

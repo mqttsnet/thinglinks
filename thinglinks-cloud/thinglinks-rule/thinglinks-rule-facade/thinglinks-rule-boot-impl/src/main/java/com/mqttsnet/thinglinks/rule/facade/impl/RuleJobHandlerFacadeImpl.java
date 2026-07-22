@@ -4,6 +4,7 @@ import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.ArgumentAssert;
+import com.mqttsnet.thinglinks.bridge.scheduler.BridgeMaintenanceScheduler;
 import com.mqttsnet.thinglinks.rule.facade.RuleJobHandlerFacade;
 import com.mqttsnet.thinglinks.service.linkage.RuleService;
 import com.mqttsnet.thinglinks.service.script.RuleGroovyScriptService;
@@ -25,6 +26,8 @@ public class RuleJobHandlerFacadeImpl implements RuleJobHandlerFacade {
     private final RuleService ruleService;
 
     private final RuleGroovyScriptService ruleGroovyScriptService;
+
+    private final BridgeMaintenanceScheduler bridgeMaintenanceScheduler;
 
     @Override
     public R<RuleDetailsResultVO> triggerRulePolicy(Long tenantId, String ruleIdentification) {
@@ -70,6 +73,28 @@ public class RuleJobHandlerFacadeImpl implements RuleJobHandlerFacade {
         } catch (Exception e) {
             log.error("Unexpected error while executing script: ", e);
             return R.fail("Unexpected error executing script: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public R<Boolean> runBridgeHealthCheck() {
+        try {
+            bridgeMaintenanceScheduler.runHealthCheck(true);
+            return R.success(true);
+        } catch (Exception e) {
+            log.error("Bridge health check failed", e);
+            return R.fail("Bridge health check failed: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public R<Boolean> runBridgeTraceCleanup(Integer retentionDays) {
+        try {
+            bridgeMaintenanceScheduler.cleanupOldTraces(retentionDays);
+            return R.success(true);
+        } catch (Exception e) {
+            log.error("Bridge trace cleanup failed", e);
+            return R.fail("Bridge trace cleanup failed: " + e.getMessage());
         }
     }
 }

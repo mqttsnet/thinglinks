@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.video.mapper.device.VideoNotifySubscriptionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.video.entity.device.VideoNotifySubscription">
+        <id column="id" property="id"/>
+        <result column="subscription_name" property="subscriptionName"/>
+        <result column="channel_type" property="channelType"/>
+        <result column="channel_config" property="channelConfig"
+                typeHandler="com.mqttsnet.basic.mybatis.typehandler.EncryptTypeHandler"/>
+        <result column="template_code" property="templateCode"/>
+        <result column="event_types" property="eventTypes"/>
+        <result column="priority_filter" property="priorityFilter"/>
+        <result column="recipient_scope" property="recipientScope"/>
+        <result column="recipient_ids" property="recipientIds"/>
+        <result column="at_all" property="atAll"/>
+        <result column="jump_url_template" property="jumpUrlTemplate"/>
+        <result column="msg_template" property="msgTemplate"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="created_org_id" property="createdOrgId"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, subscription_name, channel_type, channel_config, template_code, event_types,
+        priority_filter, recipient_scope, recipient_ids, at_all, jump_url_template, msg_template,
+        status, remark, deleted, created_time, created_by, updated_time, updated_by, created_org_id
+    </sql>
+
+</mapper>

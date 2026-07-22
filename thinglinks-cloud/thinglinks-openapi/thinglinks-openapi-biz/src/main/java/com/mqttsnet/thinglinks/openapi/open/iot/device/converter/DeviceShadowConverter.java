@@ -48,7 +48,7 @@ public class DeviceShadowConverter {
                 .deviceType(productResultVO.getDeviceType())
                 .protocolType(productResultVO.getProtocolType())
                 .productStatus(productResultVO.getProductStatus())
-                .productVersion(productResultVO.getProductVersion())
+                .activeVersionNo(productResultVO.getActiveVersionNo())
                 .icon(productResultVO.getIcon())
                 .remark(productResultVO.getRemark())
                 .createdOrgId(productResultVO.getCreatedOrgId())

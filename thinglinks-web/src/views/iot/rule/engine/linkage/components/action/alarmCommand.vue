@@ -4,37 +4,21 @@
       <div class="action-type">
         <div class="icon" @click="editModel"><PartitionOutlined /></div>
         <div class="content">
-          <!-- <a-tag color="red">
-            <ControlOutlined style="margin: 0 4px 0 0" />
-            {{
-              getName(
-                actionItem.productIdentification,
-                'productIdentification',
-                actionItem.product,
-                'productName',
-              )
-            }}
-            <ApiOutlined />
-            {{
-              getName(
-                actionItem.deviceIdentification,
-                'deviceIdentification',
-                actionItem.device,
-                'deviceName',
-              )
-            }}
-          </a-tag> -->
           {{ t('iot.link.engine.executionLog.action.triggerAlarmRule') }}
           <a-popover :title="t('iot.link.engine.alarmRecord.alarmRule')" trigger="click">
             <template #content>
               <p>
-                {{ currentAlarmRule.alarmName }}
-                <a-tag color="processing" @click="copyFn(currentAlarmRule.alarmIdentification)"
-                  >{ t('common.title.copy') }}</a-tag
-                >
+                {{
+                  currentAlarmRule.alarmName || currentActionItem?.actionContent?.alarmName || '-'
+                }}
+                <a-tag color="processing" @click="copyFn(currentAlarmRule.alarmIdentification)">{{
+                  t('common.title.copy')
+                }}</a-tag>
               </p>
             </template>
-            <a-tag color="orange">{{ currentAlarmRule.alarmName }}</a-tag>
+            <a-tag color="orange">{{
+              currentAlarmRule.alarmName || currentActionItem?.actionContent?.alarmName || '-'
+            }}</a-tag>
           </a-popover>
           {{ t('iot.link.engine.executionLog.action.to') }}
           <a-popover
@@ -42,29 +26,33 @@
             trigger="click"
           >
             <template #content>
-              <p>
-                {{ currentActionItem?.actionContent?.atPhone }}
-                <a-tag
-                  color="processing"
-                  @click="copyFn(currentActionItem?.actionContent?.atPhone)"
-                  >{{ t('common.title.copy') }}</a-tag
-                >
-              </p>
+              <div class="alarm-summary-pop">
+                <div v-for="item in recipientSummary" :key="`${item.type}:${item.value}`">
+                  {{ item.type }}: {{ item.label || item.value }}
+                </div>
+              </div>
             </template>
             <a-tag color="green">{{
-              t('iot.link.engine.executionLog.action.contactPerson') + `(${atPhoneArr?.length})`
+              t('iot.link.engine.executionLog.action.contactPerson') + `(${recipientCount})`
             }}</a-tag>
           </a-popover>
           {{ t('iot.link.engine.executionLog.action.send') }}
-          <a-popover :title="t('iot.link.engine.alarmRecord.alarmContent')" trigger="click">
+          <a-popover :title="t('iot.link.engine.linkage.channelTemplate')" trigger="click">
             <template #content>
-              <TinymceCustom
-                :value="currentActionItem?.actionContent?.contentData"
-                :options="{ readonly: true }"
-                :showImageUpload="false"
-              />
+              <div class="alarm-template-pop">
+                <div
+                  v-for="item in templateSummary"
+                  :key="item.channelType"
+                  class="template-pop-item"
+                >
+                  <div class="template-pop-title">{{ channelLabel(item.channelType) }}</div>
+                  <pre>{{ item.contentTemplate || '-' }}</pre>
+                </div>
+              </div>
             </template>
-            <a-tag color="cyan">{{ t('iot.link.engine.alarmRecord.alarmContent') }}</a-tag>
+            <a-tag color="cyan">{{
+              t('iot.link.engine.linkage.channelTemplate') + `(${channelCount})`
+            }}</a-tag>
           </a-popover>
         </div>
       </div>
@@ -78,17 +66,12 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { page } from '../../../../../../../api/iot/rule/alarm/alarm';
   import type { AlarmPageQuery } from '../../../../../../../api/iot/rule/alarm/model/alarmModel';
-  import { TinymceCustom } from '/@/components/Tinymce/index';
-  import { CloseSquareOutlined, PartitionOutlined } from '@ant-design/icons-vue';
-  import { useDict } from '/@/components/Dict';
-  const { getDictList } = useDict();
+  import { PartitionOutlined } from '@ant-design/icons-vue';
 
   export default defineComponent({
     name: '执行动作',
     components: {
-      CloseSquareOutlined,
       PartitionOutlined,
-      TinymceCustom,
     },
     props: {
       actionChildrenIndex: {
@@ -110,115 +93,133 @@
     },
     emits: ['editModel'],
     setup(props, { emit }) {
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
       const { t } = useI18n();
       const currentActionItem = reactive<any>({});
       const currentAlarmRule = reactive<AlarmPageQuery>({});
       watchEffect(async () => {
-        const { records } = await page({
+        Object.assign(currentActionItem, props.actionItem || {});
+        const alarmIdentification = props.actionItem?.actionContent?.alarmIdentification;
+        Object.assign(currentAlarmRule, {
+          alarmIdentification,
+          alarmName: props.actionItem?.actionContent?.alarmName,
+        });
+        if (!alarmIdentification) {
+          return;
+        }
+        const result = await page({
           model: { alarmIdentification: props.actionItem?.actionContent?.alarmIdentification },
           size: 10,
           current: 1,
           extra: {},
-        });
-        Object.assign(currentAlarmRule, records[0]);
-        Object.assign(currentActionItem, props.actionItem);
+        }).catch(() => null);
+        const record = result?.records?.[0];
+        if (record) {
+          Object.assign(currentAlarmRule, record);
+        }
       });
-      const atPhoneArr = computed(() => {
-        return props.actionItem?.actionContent?.atPhone?.split(',');
+      const recipientSummary = computed(() => {
+        const actionContent = props.actionItem?.actionContent || {};
+        if (Array.isArray(actionContent.recipients)) {
+          return actionContent.recipients;
+        }
+        return String(actionContent.atPhone || '')
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .map((phone) => ({ type: 'PHONE', value: phone, label: phone }));
       });
+      const templateSummary = computed(() => {
+        const actionContent = props.actionItem?.actionContent || {};
+        if (
+          Array.isArray(actionContent.channelTemplates) &&
+          actionContent.channelTemplates.length
+        ) {
+          return actionContent.channelTemplates;
+        }
+        return [
+          {
+            channelType: 0,
+            contentTemplate: actionContent.contentData,
+          },
+        ];
+      });
+      const recipientCount = computed(() => recipientSummary.value.length);
+      const channelCount = computed(() => templateSummary.value.length);
+      const channelLabel = (channelType: number | string) => {
+        const labels: Record<number, string> = {
+          0: t('iot.link.engine.linkage.dingTalk'),
+          1: t('iot.link.engine.linkage.enterpriseWechat'),
+          2: t('iot.link.engine.linkage.feishu'),
+          3: t('iot.link.engine.linkage.siteMessage'),
+        };
+        return labels[Number(channelType)] || t('iot.link.engine.linkage.unknownChannel');
+      };
 
       const editModel = () => {
         emit('editModel', props.actionIndex, props.actionItem);
       };
 
-      const getKeyLabel = (obj) => {
-        return Object.keys(obj)[0];
-      };
       const copyFn = (text) => {
         let result = copyTextToClipboard(text);
-        console.log(result, 'result');
-        console.log(text, 'text');
         if (result) {
-          notification.success({
-            message: t('common.tips.copySuccess'),
-          });
+          createMessage.success(t('common.tips.copySuccess'));
         } else {
-          notification.warn({
-            message: t('common.tips.copyFail'),
-          });
+          createMessage.warning(t('common.tips.copyFail'));
         }
       };
-      const getCmdRequestName = (idx) => {
-        const actionItem = props.actionItem;
-        let obj = {
-          params: actionItem.params,
-        };
-        if (actionItem?.product) {
-          actionItem.product.services.forEach((item) => {
-            if (item.serviceCode == actionItem.serviceCode) {
-              // 从大json里获取服务
-              obj.serviceName = item.serviceName; // 服务name
-              obj.serviceCode = item.serviceCode; // 服务code
-              item.commands.forEach((ite) => {
-                if (ite.commandCode == actionItem.cmd) {
-                  // 从大json里获取命令
-                  obj.commandName = ite.commandName; // 命令name
-                  obj.commandCode = ite.commandCode; // 命令code
-                  if (idx >= 0) {
-                    // 从大json里获取属性name
-                    ite.requests.forEach((it) => {
-                      if (it.parameterCode == obj.params[idx].key) {
-                        obj.params[idx].keyName = it.parameterName; // 命令属性name
-                      }
-                    });
-                  }
-                }
-              });
-            }
-          });
-        }
-        // console.log(obj)
-        return obj;
-      };
-      const getName = (value, valueKey, obj, nameKey) => {
-        if (value === 'all') {
-          return '全部设备';
-        } else {
-          if (obj) {
-            // console.log(value,valueKey,obj,nameKey)
-            if (obj[valueKey] == value) {
-              return obj[nameKey];
-            }
-            return '';
-          } else {
-            return '';
-          }
-        }
-      };
-
       return {
         t,
-        getDictList,
-        getKeyLabel,
-        getName,
         editModel,
         copyFn,
-        getCmdRequestName,
         currentAlarmRule,
-        atPhoneArr,
+        recipientSummary,
+        templateSummary,
+        recipientCount,
+        channelCount,
+        channelLabel,
         currentActionItem,
       };
     },
   });
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
   .mr8 {
     margin-right: 8px;
   }
 
   .mt20 {
     margin-top: 12px;
+  }
+
+  .alarm-summary-pop {
+    min-width: 220px;
+    max-width: 360px;
+  }
+
+  .alarm-template-pop {
+    width: 420px;
+    max-height: 360px;
+    overflow: auto;
+
+    .template-pop-item + .template-pop-item {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed @border-color-base;
+    }
+
+    .template-pop-title {
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: inherit;
+      color: @text-color-secondary;
+    }
   }
 
   .action-list {

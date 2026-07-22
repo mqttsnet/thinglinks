@@ -123,7 +123,7 @@ pnpm run dev
 
 ```bash
 # 一键部署
-docker-compose up -d
+docker compose -f thinglinks-cloud/docker/docker-compose.yml up -d
 ```
 
 > 详细部署指南请访问 [mqttsnet.com](https://mqttsnet.com)。
@@ -147,12 +147,12 @@ thinglinks/
 │   ├── thinglinks-openapi/          # Open API Service
 │   ├── thinglinks-public/           # Public Service
 │   ├── thinglinks-base/             # Base Platform Service
-│   └── thinglinks-sdk/              # SDK
+│   ├── thinglinks-sdk/              # SDK
+│   └── docker/                      # Cloud Docker Compose Deployment
 ├── thinglinks-web/                  # Admin Console (Vue 3 + Vben)
 ├── thinglinks-web-visualize/        # Visualization Dashboard (Vue 3 + ECharts)
 ├── thinglinks-job/                  # Scheduled Task Service (XXL-JOB)
 ├── bifromq-plugin/                  # Apache BifroMQ Plugin
-├── docker/                          # Docker Compose Deployment
 ├── docs/                            # Documentation & Screenshots
 └── scripts/                         # Build & Utility Scripts
 ```
@@ -162,6 +162,19 @@ thinglinks/
 完整文档包括快速入门指南、开发指南、API 参考和部署说明，请访问官方网站：
 
 [![Docs](https://img.shields.io/badge/Documentation-mqttsnet.com-blue?style=for-the-badge)](https://mqttsnet.com)
+
+## 🤖 Agent Skills(AI 辅助开发)
+
+官方 **Agent Skills** 把本项目的真实代码结论整理成 AI 代理(Claude Code · Codex · Cursor)按需加载的技能包,按子项目拆分,来自 **[ThingLinks Skills](https://github.com/mqttsnet/thinglinks-skills)** 集合:
+
+```bash
+# global (-g); drop -g to install into the current project only
+npx skills add mqttsnet/thinglinks-skills@thinglinks-cloud -g    # backend microservices
+npx skills add mqttsnet/thinglinks-skills@thinglinks-web -g      # admin console (Vue3)
+npx skills add mqttsnet/thinglinks-skills@bifromq-plugin -g      # BifroMQ broker plugins
+```
+
+当你编写规则脚本、协议报文、上行/下行链路、物模型、ACL、控制台页面或 BifroMQ 鉴权/事件插件时自动触发。全部技能(含 `thinglinks-util`)见 **[mqttsnet/thinglinks-skills](https://github.com/mqttsnet/thinglinks-skills)**。
 
 ## 产品截图
 

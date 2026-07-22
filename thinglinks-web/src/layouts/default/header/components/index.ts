@@ -8,16 +8,13 @@ export const UserDropDown = createAsyncComponent(() => import('./user-dropdown/i
 
 export const LayoutBreadcrumb = createAsyncComponent(() => import('./Breadcrumb.vue'));
 
-// export const TenantList = createAsyncComponent(() => import('./TenantList.vue'));
-export const TenantCompanyList = createAsyncComponent(() => import('./tenant/index.vue'));
-
-export const CompanyList = createAsyncComponent(() => import('./company/index.vue'));
-
 // export const Notify = createAsyncComponent(
 //   isDevMode() ? () => import('./notify/index.vue') : () => import('./notifyWs/index.vue'),
 // );
 export const Notify = createAsyncComponent(() => import('./notifyWs/index.vue'));
 
 export const ErrorAction = createAsyncComponent(() => import('./ErrorAction.vue'));
+
+export const AppSwitchDropdown = createAsyncComponent(() => import('./AppSwitchDropdown.vue'));
 
 export { FullScreen };

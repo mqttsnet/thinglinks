@@ -23,6 +23,12 @@ export default {
     reload: '并重新加载其资源吗？',
     allActivat: '您真棒，所有应用均已开通。',
     contactOpen: '快联系公司管理员开通我吧~',
+    statsOwned: '已开通应用',
+    statsAvailable: '可申请应用',
+    statsExpiringSoon: '7 天内到期',
+    licenseGrantedAt: '开通时间',
+    licenseExpireAt: '到期时间',
+    licensePermanent: '长期有效',
   },
   indicator: {
     applicationIndicators: '应用指标',

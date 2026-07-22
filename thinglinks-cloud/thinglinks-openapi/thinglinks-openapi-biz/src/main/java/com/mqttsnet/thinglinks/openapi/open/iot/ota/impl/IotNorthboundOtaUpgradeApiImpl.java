@@ -9,7 +9,7 @@ import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
-import com.mqttsnet.thinglinks.link.facade.OtaOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.OtaOpenInnerFacade;
 import com.mqttsnet.thinglinks.openapi.enumeration.ErrorStoryMessageEnum;
 import com.mqttsnet.thinglinks.openapi.open.iot.ota.IotNorthboundOtaUpgradeApi;
 import com.mqttsnet.thinglinks.openapi.open.iot.ota.converter.OtaResponseConverter;
@@ -53,14 +53,14 @@ import org.apache.dubbo.config.annotation.DubboService;
 public class IotNorthboundOtaUpgradeApiImpl implements IotNorthboundOtaUpgradeApi {
 
     @Resource
-    private OtaOpenAnyUserFacade otaOpenAnyUserFacade;
+    private OtaOpenInnerFacade otaOpenInnerFacade;
 
     @Override
     public IotNorthboundOtaConfirmTaskResponse confirmOtaTask(IotNorthboundOtaConfirmTaskRequest request, OpenContext context) throws OpenException {
         log.info("confirmOtaTask...params: appId={}, tenantId={}, taskId={}, deviceList={}", context.getAppId(), context.getTenantId(), request.getTaskId(), request.getDeviceIdentificationList());
         ArgumentAssert.notNull(context.getTenantId(), "请传递租户ID");
         ContextUtil.setTenantId(context.getTenantId());
-        R<DeviceOtaUpgradeAppConfirmationResultVO> confirmResult = otaOpenAnyUserFacade.otaUpgradeAppConfirmation(DeviceOtaUpgradeAppConfirmationParam.builder()
+        R<DeviceOtaUpgradeAppConfirmationResultVO> confirmResult = otaOpenInnerFacade.otaUpgradeAppConfirmation(DeviceOtaUpgradeAppConfirmationParam.builder()
                 .tenantId(context.getTenantId())
                 .taskId(request.getTaskId())
                 .deviceIdentificationList(request.getDeviceIdentificationList())
@@ -78,7 +78,7 @@ public class IotNorthboundOtaUpgradeApiImpl implements IotNorthboundOtaUpgradeAp
         log.info("rejectOtaTask...params: appId={}, tenantId={}, taskId={}, deviceList={}", context.getAppId(), context.getTenantId(), request.getTaskId(), request.getDeviceIdentificationList());
         ArgumentAssert.notNull(context.getTenantId(), "请传递租户ID");
         ContextUtil.setTenantId(context.getTenantId());
-        R<DeviceOtaUpgradeAppConfirmationResultVO> rejectResult = otaOpenAnyUserFacade.otaUpgradeAppConfirmation(DeviceOtaUpgradeAppConfirmationParam.builder()
+        R<DeviceOtaUpgradeAppConfirmationResultVO> rejectResult = otaOpenInnerFacade.otaUpgradeAppConfirmation(DeviceOtaUpgradeAppConfirmationParam.builder()
                 .tenantId(context.getTenantId())
                 .taskId(request.getTaskId())
                 .deviceIdentificationList(request.getDeviceIdentificationList())
@@ -112,7 +112,7 @@ public class IotNorthboundOtaUpgradeApiImpl implements IotNorthboundOtaUpgradeAp
         param.setFailureDetails(request.getFailureDetails());
         param.setLogDetails(request.getLogDetails());
 
-        R<TopoOtaCommandResponseParam> result = otaOpenAnyUserFacade.saveOtaUpgradeRecordByNorthbound(param);
+        R<TopoOtaCommandResponseParam> result = otaOpenInnerFacade.saveOtaUpgradeRecordByNorthbound(param);
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.OTA_SAVE_UPGRADE_RECORD_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.OTA_SAVE_UPGRADE_RECORD_FAILED.getSubMsg() + result.getMsg(),
@@ -137,7 +137,7 @@ public class IotNorthboundOtaUpgradeApiImpl implements IotNorthboundOtaUpgradeAp
                 .requestVersion(request.getRequestVersion())
                 .build();
 
-        R<TopoOtaPullResponseParam> result = otaOpenAnyUserFacade.otaPullByNorthbound(param);
+        R<TopoOtaPullResponseParam> result = otaOpenInnerFacade.otaPullByNorthbound(param);
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.OTA_PULL_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.OTA_PULL_FAILED.getSubMsg() + result.getMsg(),
@@ -161,7 +161,7 @@ public class IotNorthboundOtaUpgradeApiImpl implements IotNorthboundOtaUpgradeAp
                 .currentVersion(request.getCurrentVersion())
                 .build();
 
-        R<TopoOtaReportResponseParam> result = otaOpenAnyUserFacade.otaReportByNorthbound(param);
+        R<TopoOtaReportResponseParam> result = otaOpenInnerFacade.otaReportByNorthbound(param);
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.OTA_REPORT_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.OTA_REPORT_FAILED.getSubMsg() + result.getMsg(),
@@ -185,7 +185,7 @@ public class IotNorthboundOtaUpgradeApiImpl implements IotNorthboundOtaUpgradeAp
                 .currentVersion(request.getCurrentVersion())
                 .build();
 
-        R<?> result = otaOpenAnyUserFacade.otaReadResponseByNorthbound(param);
+        R<?> result = otaOpenInnerFacade.otaReadResponseByNorthbound(param);
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.OTA_READ_RESPONSE_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.OTA_READ_RESPONSE_FAILED.getSubMsg() + result.getMsg(),
@@ -202,7 +202,7 @@ public class IotNorthboundOtaUpgradeApiImpl implements IotNorthboundOtaUpgradeAp
         ArgumentAssert.notNull(context.getTenantId(), "请传递租户ID");
         ContextUtil.setTenantId(context.getTenantId());
 
-        R<TopoOtaListUpgradeableVersionsResponseParam> result = otaOpenAnyUserFacade.getAvailableUpgradeVersionsByNorthbound(
+        R<TopoOtaListUpgradeableVersionsResponseParam> result = otaOpenInnerFacade.getAvailableUpgradeVersionsByNorthbound(
                 request.getDeviceIdentification(),
                 request.getPackageType()
         );

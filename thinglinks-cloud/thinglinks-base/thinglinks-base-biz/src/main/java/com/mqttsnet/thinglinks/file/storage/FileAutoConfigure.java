@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.file.storage;
 
+import cn.hutool.core.util.StrUtil;
 import com.mqttsnet.thinglinks.file.properties.FileServerProperties;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Region;
@@ -37,10 +38,16 @@ public class FileAutoConfigure {
      */
     @Bean
     public MinioClient minioClient(FileServerProperties properties) {
-        return new MinioClient.Builder()
-                .endpoint(properties.getMinIo().getEndpoint())
-                .credentials(properties.getMinIo().getAccessKey(), properties.getMinIo().getSecretKey())
-                .build();
+        FileServerProperties.MinIo minIo = properties.getMinIo();
+        MinioClient.Builder builder = new MinioClient.Builder()
+                .endpoint(minIo.getEndpoint());
+        // 未配置凭证时构建匿名客户端，保证未使用 MIN_IO 存储的服务可正常启动
+        if (StrUtil.isAllNotBlank(minIo.getAccessKey(), minIo.getSecretKey())) {
+            builder.credentials(minIo.getAccessKey(), minIo.getSecretKey());
+        } else {
+            log.warn("MinIO accessKey/secretKey 未配置，MIN_IO 存储策略不可用，如需使用请配置 thinglinks.file.minIo");
+        }
+        return builder.build();
     }
 
     /**
@@ -74,6 +81,11 @@ public class FileAutoConfigure {
     @Bean
     public Auth getQiniuAuth() {
         FileServerProperties.QiNiu qiNiu = fileServerProperties.getQiNiu();
+        // Auth.create 对空 key 直接抛异常，未配置凭证时用占位值兜底，保证未使用 QINIU_OSS 存储的服务可正常启动
+        if (!StrUtil.isAllNotBlank(qiNiu.getAccessKey(), qiNiu.getSecretKey())) {
+            log.warn("七牛云 accessKey/secretKey 未配置，QINIU_OSS 存储策略不可用，如需使用请配置 thinglinks.file.qiNiu");
+            return Auth.create("unconfigured", "unconfigured");
+        }
         return Auth.create(qiNiu.getAccessKey(), qiNiu.getSecretKey());
     }
 

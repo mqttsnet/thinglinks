@@ -1,11 +1,9 @@
 package com.mqttsnet.thinglinks.producttopic.vo.result;
 
-import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.annotation.echo.Echo;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
 import com.mqttsnet.thinglinks.model.constant.EchoApi;
 import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,8 +14,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Map;
 
 /**
  * <p>
@@ -36,12 +32,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "ProductTopicResultVO", description = "产品Topic信息表")
-public class ProductTopicResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class ProductTopicResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    @Builder.Default
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -87,11 +81,6 @@ public class ProductTopicResultVO extends Entity<Long> implements Serializable, 
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
 
 }

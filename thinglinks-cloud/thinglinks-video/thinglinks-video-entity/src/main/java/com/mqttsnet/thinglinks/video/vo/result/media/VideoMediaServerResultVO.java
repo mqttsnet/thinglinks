@@ -1,8 +1,9 @@
 package com.mqttsnet.thinglinks.video.vo.result.media;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.basic.annotation.echo.Echo;
+import com.mqttsnet.thinglinks.model.constant.EchoApi;
+import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +14,8 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 /**
  * <p>
@@ -34,12 +34,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(description = "流媒体服务器信息表")
-public class VideoMediaServerResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class VideoMediaServerResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "唯一标识符")
     private Long id;
@@ -57,25 +55,25 @@ public class VideoMediaServerResultVO extends Entity<Long> implements Serializab
     private String mediaIdentification;
 
     /**
-     * 服务器IP地址
+     * 服务器地址(IP/域名)
      */
-    @Schema(description = "服务器IP地址")
-    private String ip;
+    @Schema(description = "服务器地址(IP/域名)")
+    private String host;
     /**
-     * hook使用的IP（zlm访问客户端使用的IP）
+     * Hook回调地址(IP/域名)
      */
-    @Schema(description = "hook使用的IP（zlm访问客户端使用的IP）")
-    private String hookIp;
+    @Schema(description = "Hook回调地址(IP/域名)")
+    private String hookHost;
     /**
-     * SDP IP地址
+     * SDP地址(IP/域名)
      */
-    @Schema(description = "SDP IP地址")
-    private String sdpIp;
+    @Schema(description = "SDP地址(IP/域名)")
+    private String sdpHost;
     /**
-     * 流IP地址
+     * 流播放地址(IP/域名)
      */
-    @Schema(description = "流IP地址")
-    private String streamIp;
+    @Schema(description = "流播放地址(IP/域名)")
+    private String streamHost;
     /**
      * HTTP端口
      */
@@ -144,6 +142,7 @@ public class VideoMediaServerResultVO extends Entity<Long> implements Serializab
     /**
      * 类型（zlm/abl）
      */
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Video.VIDEO_MEDIA_SERVER_TYPE)
     @Schema(description = "类型（zlm/abl）")
     private String type;
     /**
@@ -203,11 +202,6 @@ public class VideoMediaServerResultVO extends Entity<Long> implements Serializab
     @Schema(description = "备注")
     private String remark;
     /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
-    /**
      * 在线状态
      */
     @Schema(description = "在线状态")
@@ -222,6 +216,46 @@ public class VideoMediaServerResultVO extends Entity<Long> implements Serializab
      */
     @Schema(description = "多媒体名称")
     private String name;
+    /**
+     * 服务器版本号
+     */
+    @Schema(description = "服务器版本号")
+    private String version;
+    /**
+     * 服务器能力集(JSON，标记支持哪些API)
+     */
+    @Schema(description = "服务器能力集(JSON，标记支持哪些API)")
+    private String capabilities;
+    /**
+     * 最大承载流数量(用于负载均衡)
+     */
+    @Schema(description = "最大承载流数量(用于负载均衡)")
+    private Integer maxStreams;
+    /**
+     * 当前流数量
+     */
+    @Schema(description = "当前流数量")
+    private Integer currentStreams;
+    /**
+     * CPU使用率(心跳上报)
+     */
+    @Schema(description = "CPU使用率(心跳上报)")
+    private BigDecimal cpuUsage;
+    /**
+     * 内存使用率(心跳上报)
+     */
+    @Schema(description = "内存使用率(心跳上报)")
+    private BigDecimal memoryUsage;
+    /**
+     * 入网速率bytes/s(心跳上报)
+     */
+    @Schema(description = "入网速率bytes/s(心跳上报)")
+    private Long networkInSpeed;
+    /**
+     * 出网速率bytes/s(心跳上报)
+     */
+    @Schema(description = "出网速率bytes/s(心跳上报)")
+    private Long networkOutSpeed;
 
 
 }

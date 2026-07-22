@@ -24,4 +24,6 @@ export default {
   description7: '执行动作参数类型错误',
   commmandIssuedSuccess: '命令下发成功',
   commmandIssuedError: '命令下发失败',
+  draftHint:
+    '命令参数来自产品「草稿(未发布)」版本,仅用于调试当前草稿配置;调已发布版本或自定义/hex 灵活下发,请前往「运维管理 → 调试中心 → MQTT 调试」',
 };

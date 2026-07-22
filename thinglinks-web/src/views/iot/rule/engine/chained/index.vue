@@ -99,7 +99,7 @@
     },
     setup() {
       const { t } = useI18n();
-      const { createMessage, createConfirm, notification } = useMessage();
+      const { createMessage, createConfirm } = useMessage();
       const [registerModal, { openModal }] = useModal();
       const { replace } = useRouter();
 
@@ -175,13 +175,13 @@
 
       async function batchDelete(ids: string[]) {
         // await remove(ids);
-        notification.success({ message: '提示', description: t('common.tips.deleteSuccess') });
+        createMessage.success(t('common.tips.deleteSuccess'));
         handleSuccess();
       }
 
       const handleDeleteSingle = async (id: string) => {
         await deleteSingle(id);
-        notification.success({ message: '提示', description: t('common.tips.deleteSuccess') });
+        createMessage.success(t('common.tips.deleteSuccess'));
         handleSuccess();
       };
 
@@ -197,10 +197,7 @@
       function handleBatchDelete() {
         const ids = getSelectRowKeys();
         if (!ids || ids.length <= 0) {
-          notification.warning({
-            message: '提示',
-            description: t('common.tips.pleaseSelectTheData'),
-          });
+          createMessage.warning(t('common.tips.pleaseSelectTheData'));
           return;
         }
         createConfirm({
@@ -218,7 +215,7 @@
         let { id, status } = record;
         status = record.status ? 1 : 0;
         await changeStatus(id, status);
-        notification.success({ message: '提示', description: t('common.tips.editSuccess') });
+        createMessage.success(t('common.tips.editSuccess'));
         handleSuccess();
       }
       // 切换视图 卡片&&列表

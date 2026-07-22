@@ -7,7 +7,7 @@ export const FunnelConfig: ConfigType = {
   conKey: 'VCFunnel',
   title: 'project.component_funnel',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'funnel.png'

@@ -26,7 +26,9 @@ public enum AlarmChannelTypeEnum {
 
     ENTERPRISE_WECHAT(1, "企业微信", "WECHAT_ALARM"),
 
-    FS(2, "飞书", "FS_ALARM");
+    FS(2, "飞书", "FS_ALARM"),
+
+    SITE_MESSAGE(3, "站内信", "SITE_ALARM");
 
     private Integer value;
     private String desc;

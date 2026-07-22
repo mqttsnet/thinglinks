@@ -8,6 +8,7 @@ import com.mqttsnet.thinglinks.cache.helper.RuleCacheDataHelper;
 import com.mqttsnet.thinglinks.config.groovy.helper.ManualRegisterScriptHelper;
 import com.mqttsnet.thinglinks.config.groovy.loader.RedisScriptLoader;
 import com.mqttsnet.thinglinks.config.groovy.properties.GroovyRedisLoaderProperties;
+import com.mqttsnet.thinglinks.manager.script.RuleGroovyScriptManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -32,9 +33,10 @@ public class GroovyRedisLoaderAutoConfiguration {
      */
     @Bean
     public ScriptLoader redisScriptLoader(RuleCacheDataHelper ruleCacheDataHelper,
-                                          DynamicCodeCompiler dynamicCodeCompiler) {
+                                          DynamicCodeCompiler dynamicCodeCompiler,
+                                          RuleGroovyScriptManager ruleGroovyScriptManager) {
         log.info("loading ScriptLoader type is [{}]", RedisScriptLoader.class);
-        return new RedisScriptLoader(ruleCacheDataHelper, dynamicCodeCompiler);
+        return new RedisScriptLoader(ruleCacheDataHelper, dynamicCodeCompiler, ruleGroovyScriptManager);
     }
 
     /**

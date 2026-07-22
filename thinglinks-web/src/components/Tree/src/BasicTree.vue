@@ -411,7 +411,10 @@
                 <>
                   {icon && <TreeIcon icon={icon} />}
                   {item?.slots?.titleBefore && getSlot(slots, item?.slots?.titleBefore, item)}
-                  {titleDom}
+                  {/* 名称区独立 flex:1 + 省略号,避免和 actions 重叠 */}
+                  <span class={bem('label')} title={typeof title === 'string' ? title : ''}>
+                    {titleDom}
+                  </span>
                   {item?.slots?.titleAfter && getSlot(slots, item?.slots?.titleAfter, item)}
                   <span class={bem('actions')}>{renderAction(item)}</span>
                 </>

@@ -5,7 +5,7 @@ import com.gitee.sop.support.exception.OpenException;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
-import com.mqttsnet.thinglinks.link.facade.ProductOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.ProductOpenInnerFacade;
 import com.mqttsnet.thinglinks.openapi.enumeration.ErrorStoryMessageEnum;
 import com.mqttsnet.thinglinks.openapi.open.iot.product.IotNorthboundProductManagerApi;
 import com.mqttsnet.thinglinks.openapi.open.iot.product.converter.ProductThingModelConverter;
@@ -31,7 +31,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 @Slf4j
 public class IotNorthboundProductManagerApiImpl implements IotNorthboundProductManagerApi {
     @Resource
-    private ProductOpenAnyUserFacade productOpenAnyUserFacade;
+    private ProductOpenInnerFacade productOpenInnerFacade;
 
     @Override
     public IotNorthboundProductGetDetailResponse getProductDetail(IotNorthboundProductGetDetailRequest request, OpenContext context) {
@@ -41,7 +41,7 @@ public class IotNorthboundProductManagerApiImpl implements IotNorthboundProductM
         ContextUtil.setTenantId(context.getTenantId());
 
         // 调用 Facade 查询产品详情
-        var result = productOpenAnyUserFacade.getProductDetailByNorthbound(request.getProductIdentification());
+        var result = productOpenInnerFacade.getProductDetailByNorthbound(request.getProductIdentification());
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.PRODUCT_QUERY_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.PRODUCT_QUERY_FAILED.getSubMsg() + result.getMsg(),
@@ -61,7 +61,7 @@ public class IotNorthboundProductManagerApiImpl implements IotNorthboundProductM
         ContextUtil.setTenantId(context.getTenantId());
 
         // 调用 Facade 查询产品物模型
-        var result = productOpenAnyUserFacade.getProductThingModelByNorthbound(request.getProductIdentification());
+        var result = productOpenInnerFacade.getProductThingModelByNorthbound(request.getProductIdentification());
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.PRODUCT_THING_MODEL_QUERY_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.PRODUCT_THING_MODEL_QUERY_FAILED.getSubMsg() + result.getMsg(),

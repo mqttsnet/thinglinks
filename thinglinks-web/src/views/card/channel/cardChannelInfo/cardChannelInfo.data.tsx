@@ -5,6 +5,7 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
+import { echoMapText } from '/@/utils/echo';
 // import { useDict } from '/@/components/Dict';
 
 const { t } = useI18n();
@@ -83,6 +84,7 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('card.channel.cardChannelInfo.createdOrgId'),
       dataIndex: 'createdOrgId',
+      customRender: ({ record }) => echoMapText(record, 'createdOrgId'),
     },
     {
       title: t('thinglinks.common.createdTime'),

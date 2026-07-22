@@ -52,8 +52,8 @@ public enum DeviceAclRuleActionTypeEnum {
      */
     public static Optional<DeviceAclRuleActionTypeEnum> fromValue(Integer value) {
         return Stream.of(DeviceAclRuleActionTypeEnum.values())
-                .filter(status -> status.getValue().equals(value))
-                .findFirst();
+            .filter(status -> status.getValue().equals(value))
+            .findFirst();
     }
 
 
@@ -71,7 +71,6 @@ public enum DeviceAclRuleActionTypeEnum {
                 return Optional.empty();
         }
     }
-
 
 
 }

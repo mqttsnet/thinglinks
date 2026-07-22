@@ -7,7 +7,7 @@ export const GraphConfig: ConfigType = {
   conKey: 'VCGraph',
   title: 'project.component_graph',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'graph.png'

@@ -1,19 +1,21 @@
-import { http } from '@/api/http'
+import { post } from '@/api/http'
 import { httpErrorHandle } from '@/utils'
-import { ContentTypeEnum, RequestHttpEnum, ModuleTypeEnum } from '@/enums/httpEnum'
-import { ProjectItem, ProjectDetail } from './project'
+import { ContentTypeEnum, ModuleTypeEnum } from '@/enums/httpEnum'
+
+interface UploadedFile {
+  fileName: string
+  fileurl: string
+  id: string
+}
 
 // * 上传文件
 export const uploadFile = async (data: object) => {
   try {
-    const res = await http(RequestHttpEnum.POST)<{
-      /**
-       * 文件地址
-       */
-      fileName: string,
-      fileurl: string,
-      id: string,
-    }>(`${ModuleTypeEnum.BASEfILE}/file/upload`, data, ContentTypeEnum.FORM_DATA)
+    const res = await post<UploadedFile>(
+      `${ModuleTypeEnum.BASEfILE}/file/upload`,
+      data,
+      ContentTypeEnum.FORM_DATA
+    )
     return res
   } catch {
     httpErrorHandle()
@@ -24,9 +26,12 @@ export const uploadFile = async (data: object) => {
  * /findUrlFormTenantByIdUsingPOST
  * 通过id查询文件地址
 */
-export const getIndexImage = async (data: object) => {
+export const getIndexImage = async (data: string[]) => {
   try {
-    const res = await http(RequestHttpEnum.POST)(`${ModuleTypeEnum.BASEfILE}/file/findUrlById`, data)
+    const res = await post<Record<string, string>>(
+      `${ModuleTypeEnum.BASEfILE}/file/findUrlById`,
+      data
+    )
     return res
   } catch {
     httpErrorHandle()

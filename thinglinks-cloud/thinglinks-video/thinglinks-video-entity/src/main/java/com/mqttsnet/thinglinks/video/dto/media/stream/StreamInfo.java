@@ -17,12 +17,12 @@ public class StreamInfo implements Serializable, Cloneable {
     @Schema(description = "流ID")
     private String stream;
     @Schema(description = "设备编号")
-    private String deviceId;
+    private String deviceIdentification;
     @Schema(description = "通道ID")
-    private Integer channelId;
+    private String channelIdentification;
 
-    @Schema(description = "IP")
-    private String ip;
+    @Schema(description = "地址(IP/域名)")
+    private String host;
 
     @Schema(description = "HTTP-FLV流地址")
     private StreamURL flv;

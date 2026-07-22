@@ -1,11 +1,9 @@
 export interface RuleGroovyScriptPageQuery {
   appId?: string; // 应用ID
-  namespace?: string; // 命名空间
-  platformCode?: string; // 平台编码
-  productCode?: string; // 产品编码
+  scriptType?: string; // 脚本类型
   channelCode?: string; // 渠道编码
-  businessCode?: string; // 业务编码
-  businessIdentification?: string; // 业务标识
+  productIdentification?: string; // 产品标识
+  topicPattern?: string; // 主题模式
   enable?: boolean; // 是否启用
   scriptContent?: string; // 脚本内容
   extendParams?: string; // 扩展信息
@@ -16,12 +14,10 @@ export interface RuleGroovyScriptPageQuery {
 
 export interface RuleGroovyScriptSaveVO {
   appId?: string; // 应用ID
-  namespace?: string; // 命名空间
-  platformCode?: string; // 平台编码
-  productCode?: string; // 产品编码
+  scriptType?: string; // 脚本类型
   channelCode?: string; // 渠道编码
-  businessCode?: string; // 业务编码
-  businessIdentification?: string; // 业务标识
+  productIdentification?: string; // 产品标识
+  topicPattern?: string; // 主题模式
   enable?: boolean; // 是否启用
   scriptContent?: string; // 脚本内容
   extendParams?: string; // 扩展信息
@@ -33,12 +29,10 @@ export interface RuleGroovyScriptSaveVO {
 export interface RuleGroovyScriptUpdateVO {
   id: string;
   appId?: string; // 应用ID
-  namespace?: string; // 命名空间
-  platformCode?: string; // 平台编码
-  productCode?: string; // 产品编码
+  scriptType?: string; // 脚本类型
   channelCode?: string; // 渠道编码
-  businessCode?: string; // 业务编码
-  businessIdentification?: string; // 业务标识
+  productIdentification?: string; // 产品标识
+  topicPattern?: string; // 主题模式
   enable?: boolean; // 是否启用
   scriptContent?: string; // 脚本内容
   extendParams?: string; // 扩展信息
@@ -55,12 +49,10 @@ export interface RuleGroovyScriptResultVO {
   updatedTime?: string; // 最后修改时间
   updatedBy?: string; // 最后修改人
   appId?: string; // 应用ID
-  namespace?: string; // 命名空间
-  platformCode?: string; // 平台编码
-  productCode?: string; // 产品编码
+  scriptType?: string; // 脚本类型
   channelCode?: string; // 渠道编码
-  businessCode?: string; // 业务编码
-  businessIdentification?: string; // 业务标识
+  productIdentification?: string; // 产品标识
+  topicPattern?: string; // 主题模式
   enable?: boolean; // 是否启用
   scriptContent?: string; // 脚本内容
   extendParams?: string; // 扩展信息

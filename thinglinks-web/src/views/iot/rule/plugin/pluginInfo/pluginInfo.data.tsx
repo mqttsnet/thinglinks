@@ -5,6 +5,7 @@ import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
 import { ActionEnum, DictEnum, FileBizTypeEnum } from '/@/enums/commonEnum';
 import { useDict } from '/@/components/Dict';
+import { echoMapText } from '/@/utils/echo';
 
 const { t } = useI18n();
 // 列表页字段
@@ -110,6 +111,7 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.rule.plugin.pluginInfo.createdOrgId'),
       dataIndex: 'createdOrgId',
+      customRender: ({ record }) => echoMapText(record, 'createdOrgId'),
     },
     {
       title: t('thinglinks.common.createdTime'),

@@ -7,7 +7,7 @@ export const TimeCommonConfig: ConfigType = {
   conKey: 'VCTimeCommon',
   title: 'project.component_time_common',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName.MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.DECORATES,
   chartFrame: ChartFrameEnum.STATIC,
   image: 'time.png'

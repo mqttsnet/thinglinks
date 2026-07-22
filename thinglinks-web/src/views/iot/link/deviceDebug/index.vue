@@ -19,7 +19,7 @@
   import SelectedDevice from '/@/views/iot/rule/engine/linkage/components/modal/SelectedDevice.vue';
   import actionsList from '/@/views/iot/rule/engine/linkage/components/action/actionsList.vue';
   import actionSelect from '/@/views/iot/rule/engine/linkage/components/action/actionSelect.vue';
-  import CardList from '/@/components/Table/src/types/components/iot/link/device/CardList.vue';
+  import CardList from '/@/components/iot/link/device/CardList.vue';
   import { issueCommands } from '/@/api/iot/link/deviceCommand/deviceCommand';
   import { convertToType } from '/@/utils/index';
   import {
@@ -66,7 +66,7 @@
     emits: ['success', 'register'],
     setup(props, { emit }) {
       const { proxy } = getCurrentInstance();
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
       const { t } = useI18n();
       const state = reactive({
         productIdentification: props.productIdentification,
@@ -84,10 +84,7 @@
       };
       const selectDeviceCard = (column) => {
         if (state.selectedDevice.deviceIdentification == column.deviceIdentification) {
-          notification.warn({
-            message: t('common.tips.tips'),
-            description: t('iot.link.productCommand.productCommand.description1'),
-          });
+          createMessage.warn(t('iot.link.productCommand.productCommand.description1'));
           return false;
         }
         state.selectedDevice = column;
@@ -104,10 +101,7 @@
           if (state.selectedDevice?.deviceIdentification) {
             state.debugStep = step;
           } else {
-            notification.warn({
-              message: t('common.tips.tips'),
-              description: t('iot.link.productCommand.productCommand.description2'),
-            });
+            createMessage.warn(t('iot.link.productCommand.productCommand.description2'));
             return false;
           }
         }
@@ -150,23 +144,14 @@
           }),
         };
         if (!commandWrapper.serial.length && !commandWrapper.parallel.length) {
-          notification.error({
-            message: t('common.tips.tips'),
-            description: t('iot.link.productCommand.productCommand.description3'),
-          });
+          createMessage.error(t('iot.link.productCommand.productCommand.description3'));
           return;
         }
         const res = await issueCommands(commandWrapper);
         if (res) {
-          notification.success({
-            message: t('common.tips.tips'),
-            description: t('iot.link.productCommand.productCommand.commmandIssuedSuccess'),
-          });
+          createMessage.success(t('iot.link.productCommand.productCommand.commmandIssuedSuccess'));
         } else {
-          notification.error({
-            message: t('common.tips.tips'),
-            description: t('iot.link.productCommand.productCommand.commmandIssuedError'),
-          });
+          createMessage.error(t('iot.link.productCommand.productCommand.commmandIssuedError'));
         }
       };
 

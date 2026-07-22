@@ -100,7 +100,7 @@
   const props = defineProps({ value: String });
   const { t } = useI18n();
   const { getDictLabel } = useDict();
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   const [registerModal, { closeModal }] = useModalInner();
   const emits = defineEmits(['success', 'updateSelectNode']);
   const selectNode = reactive({});
@@ -121,10 +121,7 @@
 
   const handleSubmit = () => {
     if (Object.keys(selectNode).length === 0) {
-      notification.warn({
-        message: t('common.tips.tips'),
-        description: t('video.media.videoStreamProxy.pleaseSelectNode'),
-      });
+      createMessage.warning(t('video.media.proxy.pleaseSelectNode'));
       return;
     }
     emits('success', selectNode);
@@ -179,7 +176,7 @@
         align-items: center;
         justify-content: space-between;
         position: relative;
-        // background-image: url('../../../../../../assets/images/link/blue-bg.png');
+        // background-image: url('/@/assets/images/iot/link/blue-bg.png');
         border: 1px solid #e8e8e8;
         padding: 8px 12px 8px;
         border-radius: 8px;

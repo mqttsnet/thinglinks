@@ -14,7 +14,10 @@ import com.mqttsnet.thinglinks.msg.entity.ExtendNotice;
 import com.mqttsnet.thinglinks.msg.enumeration.NoticeRemindModeEnum;
 import com.mqttsnet.thinglinks.msg.service.ExtendNoticeService;
 import com.mqttsnet.thinglinks.msg.vo.MyMsgResult;
+import com.mqttsnet.thinglinks.common.ws.WebSocketAuthGuard;
+import com.mqttsnet.thinglinks.common.ws.WebSocketAuthHeaderCaptor;
 import com.mqttsnet.thinglinks.msg.vo.result.ExtendNoticeResultVO;
+import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -32,25 +35,27 @@ import java.util.Map;
  * @author mqttsnet
  * @date 2021/8/4 23:47
  */
-@ServerEndpoint("/myMsg/{tenantId}/{principal}")
+@ServerEndpoint(
+        value = "/anyone/myMsg/{tenantId}/{principal}",
+        configurator = WebSocketAuthHeaderCaptor.class
+)
 @Component
 @Slf4j
 public class MsgEndpoint {
 
 
-    /**
-     * 连接成功
-     *
-     * @param session
-     */
+    /** onOpen 校验 path tenantId == 登录 tenantId,防跨租户拿他人消息推送 */
     @OnOpen
-    public void onOpen(@PathParam("principal") String principal, Session session) {
-        log.info("连接成功");
-        WebSocketObserver observer = new WebSocketObserver(session);
-        // get subject
+    public void onOpen(Session session, EndpointConfig config,
+                       @PathParam("tenantId") String tenantId,
+                       @PathParam("principal") String principal) {
+        if (!WebSocketAuthGuard.requireSameTenant(session, config, tenantId)) {
+            return;
+        }
+        log.info("WebSocket【MsgEndpoint】连接成功, sessionId={}, tenantId={}, principal={}",
+                session.getId(), tenantId, principal);
         WebSocketSubject subject = WebSocketSubject.Holder.getSubject(principal);
-        // register observer into subject
-        subject.addObserver(observer);
+        subject.registerSession(session);
     }
 
     /**
@@ -61,13 +66,8 @@ public class MsgEndpoint {
     @OnClose
     public void onClose(@PathParam("principal") String principal, Session session) {
         log.info("连接关闭");
-        // get subject
         WebSocketSubject subject = WebSocketSubject.Holder.getSubject(principal);
-
-        // get observer
-        WebSocketObserver observer = new WebSocketObserver(session);
-        // delete observer from subject
-        subject.deleteObserver(observer);
+        subject.unregisterSession(session);
 
         // close session and close Web Socket connection
         try {

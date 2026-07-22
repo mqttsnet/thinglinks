@@ -14,11 +14,10 @@ import org.slf4j.LoggerFactory;
 
 @Slf4j
 public final class BifromqEventCollectorContext extends BifroMQPluginContext {
+    private static final String LOGBACK_CONFIG_FILE = "conf/logback.xml";
     private final BifroMQPluginDescriptor bifroMQPluginDescriptor;
     private final PluginConfig pluginConfig;
     private LoggerContext pluginLoggerContext;
-
-    private static final String LOGBACK_CONFIG_FILE = "conf/logback.xml";
 
     public BifromqEventCollectorContext(BifroMQPluginDescriptor descriptor) {
         super(descriptor);

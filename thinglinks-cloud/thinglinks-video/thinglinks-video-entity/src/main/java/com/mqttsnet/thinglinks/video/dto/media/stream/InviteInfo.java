@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.video.dto.media.stream;
 
-import com.mqttsnet.thinglinks.video.empowerment.stream.InviteSessionStatusEnum;
-import com.mqttsnet.thinglinks.video.empowerment.stream.InviteSessionTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.stream.InviteSessionStatusEnum;
+import com.mqttsnet.thinglinks.video.enumeration.stream.InviteSessionTypeEnum;
 import lombok.Data;
 
 /**
@@ -11,9 +11,9 @@ import lombok.Data;
 @Data
 public class InviteInfo {
 
-    private String deviceId;
+    private String deviceIdentification;
 
-    private Integer channelId;
+    private String channelIdentification;
 
     private String stream;
 
@@ -31,7 +31,7 @@ public class InviteInfo {
 
     private StreamInfo streamInfo;
 
-    private String mediaServerId;
+    private String mediaIdentification;
 
     private Long expirationTime;
 
@@ -44,12 +44,12 @@ public class InviteInfo {
     private String endTime;
 
 
-    public static InviteInfo getInviteInfo(String deviceId, Integer channelId, String stream, SSRCInfo ssrcInfo, String mediaServerId,
+    public static InviteInfo getInviteInfo(String deviceIdentification, String channelIdentification, String stream, SSRCInfo ssrcInfo, String mediaIdentification,
                                            String receiveIp, Integer receivePort, String streamMode,
                                            InviteSessionTypeEnum type, InviteSessionStatusEnum status, Boolean record) {
         InviteInfo inviteInfo = new InviteInfo();
-        inviteInfo.setDeviceId(deviceId);
-        inviteInfo.setChannelId(channelId);
+        inviteInfo.setDeviceIdentification(deviceIdentification);
+        inviteInfo.setChannelIdentification(channelIdentification);
         inviteInfo.setStream(stream);
         inviteInfo.setSsrcInfo(ssrcInfo);
         inviteInfo.setReceiveIp(receiveIp);
@@ -57,7 +57,7 @@ public class InviteInfo {
         inviteInfo.setStreamMode(streamMode);
         inviteInfo.setType(type);
         inviteInfo.setStatus(status);
-        inviteInfo.setMediaServerId(mediaServerId);
+        inviteInfo.setMediaIdentification(mediaIdentification);
         inviteInfo.setRecord(record);
         return inviteInfo;
     }

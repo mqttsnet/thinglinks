@@ -93,8 +93,8 @@ const btnHandle = async (key: string) => {
     const res = await createProjectApi({
       // 项目名称
       projectName: getUUID(),
-      // remarks
-      remarks: null,
+      // 备注
+      remark: null,
       // 图片地址
       indexImageId: null,
       // 项目初始化状态 [1-发布,-1-未发布]

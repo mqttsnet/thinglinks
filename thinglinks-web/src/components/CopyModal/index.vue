@@ -5,6 +5,7 @@
     :title="title"
     @ok="cancelHandler"
     @cancel="cancelHandler"
+    :maskClosable="false"
   >
     <div class="code-editor">
       <codemirror
@@ -18,7 +19,7 @@
       />
     </div>
     <template #footer>
-      <div style="display: flex; justify-content: flex-end; gap: 12px;">
+      <div style="display: flex; justify-content: flex-end; gap: 12px">
         <a-button @click="cancelHandler"> {{ t('common.closeText') }} </a-button>
         <a-button type="primary" @click="copyCode">
           <template #icon><CopyOutlined /></template>
@@ -37,11 +38,9 @@
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { handleCopyTextV2 } from '/@/utils/thinglinks/common';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useMessage } from '/@/hooks/web/useMessage';
   import { CopyOutlined } from '@ant-design/icons-vue';
 
   const { t } = useI18n();
-  const { createMessage } = useMessage();
 
   const title = ref('');
   const code = ref('');

@@ -1,2 +1,24 @@
-# 启用或禁用调试模式
+# ============================================================
+# BifroMQ Setting Provider 插件配置文件
+# ============================================================
+# 本文件定义了 Setting Provider 插件的可配置参数，
+# 对应 com.mqttsnet.thinglinks.config.PluginConfig 类中的字段。
+#
+# 运行时可通过 ./conf/standalone.yml 覆盖以下配置，
+# standalone.yml 中的非空值将优先于本文件中的值。
+#
+# 完整 Setting 列表参见:
+# https://bifromq.apache.org/docs/3.3.x/plugin/setting_provider/tenantsetting/
+# ============================================================
+
+# 是否启用调试模式（Enables or disables debug mode）
+# 对应 Setting.DebugModeEnabled（Boolean），BifroMQ 默认值: false
 debugModeEnabled: true
+
+# 单次 SUBSCRIBE 报文允许的最大 topic filter 数量（Maximum topic filters per subscription）
+# 对应 Setting.MaxTopicFiltersPerSub（Integer），BifroMQ 默认值: 10
+maxTopicFiltersPerSub: 100
+
+# 单个客户端 inbox 允许的 topic filter 总数（Maximum topic filters per inbox）
+# 对应 Setting.MaxTopicFiltersPerInbox（Integer），BifroMQ 默认值: 100
+maxTopicFiltersPerInbox: 500

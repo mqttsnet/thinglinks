@@ -3,7 +3,7 @@
   import { PageWrapper } from '/@/components/Page';
 
   import { BasicTree } from '/@/components/Tree';
-  import MarkdownEditor from '/@/components/markdown-editor';
+  import MarkdownEditor from '/@/components/open/markdown-editor';
 
   import { findHelpTree } from '/@/api/open/doc/openApi';
   import { SopDocInfoResultVO } from '/@/api/devOperation/sop/model/sopDocInfoModel';

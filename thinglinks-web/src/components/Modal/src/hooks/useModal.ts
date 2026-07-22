@@ -39,7 +39,6 @@ export function useModal(): UseModalReturnType {
       throw new Error('useModal() can only be used inside setup() or functional components!');
     }
     uid.value = uuid;
-    console.log('Registering modal instance with uid:', uuid);
     isProdMode() &&
       onUnmounted(() => {
         modal.value = null;

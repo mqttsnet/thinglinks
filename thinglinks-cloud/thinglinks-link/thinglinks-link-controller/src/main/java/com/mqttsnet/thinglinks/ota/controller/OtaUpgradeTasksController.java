@@ -10,7 +10,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mqttsnet.basic.annotation.log.WebLog;
@@ -307,7 +306,7 @@ public class OtaUpgradeTasksController extends SuperController<OtaUpgradeTasksSe
     @PostMapping("/sendDeviceOtaUpgradeCommand")
     public R<?> sendDeviceOtaUpgradeCommand(@RequestBody SendDeviceOtaUpgradeCommandRequestParam param) {
         try {
-            log.info("sending OTA upgrade command to device . param: {}", JSONUtil.toJsonStr(param));
+            log.info("sending OTA upgrade command to device . param: {}", JSON.toJSONString(param));
             otaUpgradeTaskExecutionService.sendDeviceOtaUpgradeCommand(param);
             return R.success("OTA upgrade command sent successfully.");
         } catch (Exception e) {

@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { h, ref } from 'vue'
+import { computed, h, ref } from 'vue'
 import { NAvatar, NText } from 'naive-ui'
 import { renderIcon, getLocalStorage } from '@/utils'
 import { SystemStoreEnum, SystemStoreUserInfoEnum } from '@/store/modules/systemStore/systemStore.d'
@@ -58,7 +58,7 @@ const switchTenantModelShow = ref(false)
 const modelShowInfo = ref(false)
 const modelShow = ref(false)
 const userStore = useUserStore()
-const userName = userStore?.getUserInfo.data.nickName
+const userName = computed(() => userStore.getUserInfo?.nickName)
 
 // 是否失败
 const fallback = ref(false)
@@ -85,7 +85,7 @@ const renderUserInfo = () => {
                         return info[SystemStoreEnum.USER_INFO][SystemStoreUserInfoEnum.USER_NAME];
                     }
                     else {
-                        return userName ?? 'admin';
+                        return userName.value ?? 'admin';
                     }
                 }
             })

@@ -2,8 +2,10 @@ package com.mqttsnet.thinglinks.productproperty.vo.update;
 
 import com.mqttsnet.basic.base.entity.SuperEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
+import com.mqttsnet.thinglinks.product.constant.ThingModelCodeRule;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,11 +49,11 @@ public class ProductPropertyUpdateVO implements Serializable {
     @NotNull(message = "请填写服务ID")
     private Long serviceId;
     /**
-     * 指示属性编码
+     * 指示属性编码(用作底层数据列标识)。
      */
-    @Schema(description = "指示属性编码")
-    @NotEmpty(message = "请填写指示属性编码")
-    @Size(max = 255, message = "指示属性编码长度不能超过{max}")
+    @Schema(description = "属性编码(用作数据列标识):小写字母开头,仅含小写字母、数字、下划线,长度2-50")
+    @NotEmpty(message = "请填写属性编码")
+    @Pattern(regexp = ThingModelCodeRule.PATTERN, message = ThingModelCodeRule.PATTERN_MSG)
     private String propertyCode;
     /**
      * 指示属性名称

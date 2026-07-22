@@ -58,7 +58,7 @@ export default {
     licenseType: 'License types (such as GPL, MIT, commercial, etc.',
   },
   selectRunPlugin: 'Select run plugin',
-  portLabel: 'Port {ind}',
+  portLabel: 'Port [ind]',
   portPlaceholder: 'Please enter port number',
   portValidation: 'Please enter a valid port number (1-65535)',
   portDuplicateError: 'Port number cannot be duplicated',

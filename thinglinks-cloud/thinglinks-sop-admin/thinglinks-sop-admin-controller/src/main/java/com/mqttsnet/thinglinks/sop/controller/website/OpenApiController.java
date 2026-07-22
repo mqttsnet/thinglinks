@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.database.mybatis.conditions.Wraps;
 import com.mqttsnet.basic.database.mybatis.conditions.query.LbQueryWrap;
+import com.mqttsnet.basic.interfaces.echo.EchoService;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.basic.utils.TreeUtil;
 import com.mqttsnet.thinglinks.model.enumeration.BooleanEnum;
@@ -47,6 +48,7 @@ public class OpenApiController {
     private final SopDocAppService sopDocAppService;
     private final SopDocInfoService sopDocInfoService;
     private final SopHelpDocService sopHelpDocService;
+    private final EchoService echoService;
 
 
     /**
@@ -55,7 +57,9 @@ public class OpenApiController {
     @GetMapping(value = "/app/list")
     public R<List<SopDocAppResultVO>> findAppList() {
         List<SopDocApp> list = sopDocAppService.list(Wrappers.emptyWrapper());
-        return R.success(BeanUtil.copyToList(list, SopDocAppResultVO.class));
+        List<SopDocAppResultVO> result = BeanUtil.copyToList(list, SopDocAppResultVO.class);
+        echoService.action(result);
+        return R.success(result);
     }
 
     /**

@@ -1,29 +1,43 @@
 package com.mqttsnet.thinglinks.product.event.publisher;
 
-import cn.hutool.json.JSONUtil;
-import com.mqttsnet.thinglinks.product.event.ProductInfoUpdatedEvent;
-import com.mqttsnet.thinglinks.product.event.source.ProductInfoUpdatedEventSource;
+import com.mqttsnet.thinglinks.product.event.ProductCacheEvictEvent;
+import com.mqttsnet.thinglinks.product.event.ProductModelChangedEvent;
+import com.mqttsnet.thinglinks.product.event.source.ProductCacheEvictSource;
+import com.mqttsnet.thinglinks.product.event.source.ProductModelChangedSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
- * Description:
- * 产品事件发布器
+ * 产品事件发布器。
  *
  * @author mqttsnet
- * @version 1.0.0
- * @since 2026/1/19
  */
 @Component
 @Slf4j
 public class ProductEventPublisher {
+
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
-    public void publishProductInfoUpdatedEvent(ProductInfoUpdatedEventSource source) {
-        log.info("Publishing Product Info Updated event:{}", JSONUtil.toJsonStr(source));
-        eventPublisher.publishEvent(new ProductInfoUpdatedEvent(source));
+    /**
+     * 发布产品物模型变更事件。
+     *
+     * @param source 物模型变更事件源
+     */
+    public void publishProductModelChangedEvent(ProductModelChangedSource source) {
+        log.info("Publishing ProductModelChanged event: productIdentification={} changeType={} targetType={}",
+                source.getProductIdentification(), source.getChangeType(), source.getTargetType());
+        eventPublisher.publishEvent(new ProductModelChangedEvent(source));
+    }
+
+    /**
+     * 发布产品基础信息缓存失效事件(发布切版本 / 回滚后用,只失效缓存)。
+     *
+     * @param source 缓存失效事件源
+     */
+    public void publishProductCacheEvictEvent(ProductCacheEvictSource source) {
+        eventPublisher.publishEvent(new ProductCacheEvictEvent(source));
     }
 }

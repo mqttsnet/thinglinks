@@ -13,22 +13,9 @@
       <div class="isSelect">
         <div class="device-item isSelected">
           <div class="device-info">
-            <img
-              v-if="selectedDevice?.nodeType === 2"
-              src="../../../../../../../assets/images/iot/link/deviceAndProduct/childrenDevice.png"
-            />
-            <img
-              v-else-if="selectedDevice?.nodeType === 0"
-              src="../../../../../../../assets/images/iot/link/deviceAndProduct/gatwayDevice.png"
-            />
-            <img
-              v-else-if="selectedDevice?.nodeType === 1"
-              src="../../../../../../../assets/images/iot/link/deviceAndProduct/commonDevice.png"
-            />
-            <img
-              v-else
-              src="../../../../../../../assets/images/iot/link/device/deviceManagement.gif"
-            />
+            <div class="device-art">
+              <component :is="getDeviceNodeTypeSvg(selectedDevice?.nodeType)" />
+            </div>
             <div class="info">
               <a-tooltip placement="topLeft" :title="selectedDevice?.deviceName">
                 <div class="device-name">{{ selectedDevice?.deviceName }}</div>
@@ -54,7 +41,10 @@
             </div>
           </div>
           <div class="device-status">
-            <img :src="selectedDevice?.connectStatus == 1 ? Icon4 : Icon5" alt="" class="img" />
+            <span
+              class="status-dot"
+              :class="getConnectStatusClass(selectedDevice?.connectStatus)"
+            ></span>
             <span class="red" v-if="selectedDevice?.connectStatus == 1">{{
               getDictLabel('LINK_DEVICE_CONNECT_STATUS', selectedDevice?.connectStatus, '')
             }}</span>
@@ -78,7 +68,7 @@
           <div class="device-btns" @click="deleteDevice()" v-if="deleteBtn">
             <!-- <div class="btn danger" @click="handleDelete(record)">删除</div> -->
             <div class="btn">
-              <img src="../../../../../../../assets/images/iot/link/device/delete-y.png" alt="" />
+              <Icon icon="ant-design:delete-outlined" class="action-icon" />
             </div>
           </div>
         </div>
@@ -94,14 +84,15 @@
   import { ApartmentOutlined } from '@ant-design/icons-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDict } from '/@/components/Dict';
-  import Icon4 from '/@/assets/images/iot/link/device/Icon4.png';
-  import Icon5 from '/@/assets/images/iot/link/device/Icon5.png';
+  import { getDeviceNodeTypeSvg } from '/@/components/iot/svg';
+  import { Icon } from '/@/components/Icon';
   const { getDictLabel } = useDict();
 
   export default defineComponent({
     name: 'SelectedDevice',
     components: {
       ApartmentOutlined,
+      Icon,
     },
     props: {
       // 多选数组
@@ -141,13 +132,21 @@
       const deleteDevice = () => {
         emit('deleteDevice', 1);
       };
+      const getConnectStatusClass = (status?: number | string | null) => {
+        const value = Number(status);
+        return {
+          'status-dot--online': value === 1,
+          'status-dot--inactive': value === 0,
+          'status-dot--offline': value !== 0 && value !== 1,
+        };
+      };
 
       return {
         t,
         deleteDevice,
         getDictLabel,
-        Icon4,
-        Icon5,
+        getDeviceNodeTypeSvg,
+        getConnectStatusClass,
         ...toRefs(state),
       };
     },
@@ -159,7 +158,7 @@
     overflow-y: auto;
 
     .select-title {
-      color: #1966ff;
+      color: @primary-color;
       font-size: 16px;
       margin-bottom: 8px;
       display: flex;
@@ -207,9 +206,13 @@
         flex-direction: row;
         padding-top: 40px;
 
-        img {
+        .device-art {
           width: 30%;
-          height: 30%;
+
+          :deep(svg) {
+            width: 100%;
+            height: auto;
+          }
         }
 
         .info {
@@ -247,7 +250,7 @@
 
     &.isSelected {
       box-shadow: 0px 0px 8px 0px rgba(34, 78, 166, 0.25);
-      border: 2px solid #1a66ff;
+      border: 2px solid @primary-color;
     }
 
     .device-info {
@@ -257,9 +260,13 @@
       align-items: center;
       max-width: calc(100% - 158px);
 
-      img {
+      .device-art {
         width: 60%;
-        height: 60%;
+
+        :deep(svg) {
+          width: 100%;
+          height: auto;
+        }
       }
 
       .device-name {
@@ -314,10 +321,24 @@
       top: 6px;
       left: 10px;
 
-      .img {
-        width: 18px;
-        height: 18px;
-        margin-right: 2px;
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        margin-right: 6px;
+        border-radius: 50%;
+        background: @text-color-secondary;
+
+        &--online {
+          background: @button-success-color;
+        }
+
+        &--inactive {
+          background: @text-color-secondary;
+        }
+
+        &--offline {
+          background: @button-error-color;
+        }
       }
 
       span {
@@ -338,7 +359,7 @@
       width: 98px;
       height: 28px;
       border-radius: 45px 45px 45px 45px;
-      border: 2px solid #1a66ff;
+      border: 2px solid @primary-color;
       justify-content: center;
       align-items: center;
       position: absolute;
@@ -361,11 +382,10 @@
           top: 5px;
         }
 
-        img {
-          width: 15px;
-          height: 15px;
-          margin: 0 auto;
+        .action-icon {
+          color: @button-error-color;
           cursor: pointer;
+          font-size: 15px;
         }
       }
     }

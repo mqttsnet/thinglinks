@@ -20,6 +20,12 @@
             <artifactId>thinglinks-common</artifactId>
             <version>${revision}</version>
         </dependency>
+        <!-- link 域 DTO/VO 依赖。协议事件类型 DeviceActionTypeEnum 已收敛到 thinglinks-common。 -->
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-link-entity</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -7,7 +7,7 @@ export const LineCommonConfig: ConfigType = {
   conKey: 'VCLineCommon',
   title: 'project.component_line_common',
   category: ChatCategoryEnum.LINE,
-  categoryName: getChatCategoryEnumName().LINE,
+  get categoryName() { return getChatCategoryEnumName().LINE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'line.png'

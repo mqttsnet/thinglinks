@@ -4,7 +4,7 @@ package com.mqttsnet.thinglinks.common.mq;
  * @Description: Kafka 消费者主题常量（队列）
  * @Author: ShiHuan SUN
  * @E-mail: 13733918655@163.com
- * @Website: https://mqttsnet.com
+ * @Website: <a href="https://mqttsnet.com">Official website</a>
  * @CreateDate: 2022/4/15$ 15:53$
  * @UpdateUser: ShiHuan SUN
  * @UpdateDate: 2022/4/15$ 15:53$
@@ -19,11 +19,6 @@ public interface KafkaConsumerTopicConstant {
          * MQS MQTT Broker 监听主题
          */
         interface MqsMqtt {
-            /**
-             * MQTT设备消息监听主题——》MQTT消息——》MQS
-             */
-            String THINGLINKS_MQS_MQTT_MSG = "thinglinks-pro-mqs-mqttMsg";
-
             /**
              * 设备上线
              */
@@ -55,12 +50,17 @@ public interface KafkaConsumerTopicConstant {
             String THINGLINKS_MQTT_UNSUBSCRIPTION_ACKED_TOPIC = "mqtt.unsubscription.acked.topic";
 
             /**
-             * 消息分发错误
+             * 消息分发失败 (BifroMQ DIST_ERROR) ── 下行命令送达失败,
+             * 走 {@code DispatchGroupEnum.DISTRIBUTION_ACK} 由 DistributionResultStage 记失败 stats.
              */
             String THINGLINKS_MQTT_DISTRIBUTION_ERROR_TOPIC = "mqtt.distribution.error.topic";
 
             /**
-             * 消息分发
+             * 消息分发 (BifroMQ DISTED) ── BifroMQ Standalone 部署下作为<b>设备 PUBLISH 上行</b>主流程:
+             * plugin DISTED body 带完整 PUBLISH 报文(topic/qos/payload/publisher),
+             * mqs {@code MqttDeviceDataEdgeAdapter} 把本 topic 路由到 {@code DispatchGroupEnum.DEVICE_DATA} →
+             * PRE→CORE→POST 全套管道 → DevicePayloadDecodeStage → DeviceDatasHandler(物模型 + TDS 入库).
+             * <p>下行命令(backend publisher)同样触发,在 DeviceCacheEnricher cache miss 后自然 skip,无需额外过滤.
              */
             String THINGLINKS_MQTT_DISTRIBUTION_COMPLETED_TOPIC = "mqtt.distribution.completed.topic";
 
@@ -70,17 +70,27 @@ public interface KafkaConsumerTopicConstant {
              */
             String THINGLINKS_MQTT_PING_REQ_TOPIC = "mqtt.ping.req.topic";
 
+            /**
+             * MQTT 客户端认证失败 (BifroMQ NotAuthorizedClient) ── audit 用,mqs 侧仅 log 消费.
+             */
+            String THINGLINKS_MQTT_CLIENT_UNAUTHORIZED_TOPIC = "mqtt.client.unauthorized";
+
+            /**
+             * MQTT session 创建审计 (BifroMQ MQTT_SESSION_START) ── audit 用,mqs 侧仅 log 消费.
+             */
+            String THINGLINKS_MQTT_SESSION_START_TOPIC = "mqtt.session.start";
+
+            /**
+             * MQTT session 销毁审计 (BifroMQ MQTT_SESSION_STOP) ── audit 用,mqs 侧仅 log 消费.
+             */
+            String THINGLINKS_MQTT_SESSION_STOP_TOPIC = "mqtt.session.stop";
+
         }
 
         /**
          * MQS WebSocket Topics
          */
         interface MqsWebSocket {
-            /**
-             * WebSocket device message listening topic - WebSocket messages - MQS
-             */
-            String THINGLINKS_MQS_WEBSOCKET_MSG = "thinglinks-pro-mqs-websocketMsg";
-
             /**
              * Device online
              */
@@ -102,16 +112,6 @@ public interface KafkaConsumerTopicConstant {
             String THINGLINKS_WEBSOCKET_DEVICE_KICKED_TOPIC = "websocket.device.kicked.topic";
 
             /**
-             * Message subscription acknowledgment
-             */
-            String THINGLINKS_WEBSOCKET_SUBSCRIPTION_ACKED_TOPIC = "websocket.subscription.acked.topic";
-
-            /**
-             * Unsubscription acknowledgment
-             */
-            String THINGLINKS_WEBSOCKET_UNSUBSCRIPTION_ACKED_TOPIC = "websocket.unsubscription.acked.topic";
-
-            /**
              * Message distribution error
              */
             String THINGLINKS_WEBSOCKET_DISTRIBUTION_ERROR_TOPIC = "websocket.distribution.error.topic";
@@ -131,11 +131,6 @@ public interface KafkaConsumerTopicConstant {
          * MQS Tcp Topics
          */
         interface MqsTcp {
-            /**
-             * Tcp device message listening topic - Tcp messages - MQS
-             */
-            String THINGLINKS_MQS_TCP_MSG = "thinglinks-pro-mqs-tcpMsg";
-
             /**
              * Device online
              */
@@ -182,18 +177,4 @@ public interface KafkaConsumerTopicConstant {
             String THINGLINKS_TCP_PING_REQ_TOPIC = "tcp.ping.req.topic";
         }
     }
-
-    interface Link {
-
-        /**
-         * 产品服务
-         */
-        String THINGLINKS_PRO_PRODUCT_SERVICE_MSG = "thinglinks-pro-product-service-msg";
-
-        /**
-         * 产品服务属性
-         */
-        String THINGLINKS_PRO_PRODUCT_PROPERTY_MSG = "thinglinks-pro-product-property-msg";
-    }
-
 }

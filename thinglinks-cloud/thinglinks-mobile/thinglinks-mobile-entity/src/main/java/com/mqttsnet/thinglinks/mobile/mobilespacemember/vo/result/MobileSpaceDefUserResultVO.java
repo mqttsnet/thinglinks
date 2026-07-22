@@ -1,9 +1,7 @@
 package com.mqttsnet.thinglinks.mobile.mobilespacemember.vo.result;
 
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,9 +12,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 
 /**
@@ -36,11 +32,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 @Builder
 @Schema(title = "MobileSpaceDefUserResultVO", description = "空间用户信息")
-public class MobileSpaceDefUserResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class MobileSpaceDefUserResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "主键")
     private Long id;

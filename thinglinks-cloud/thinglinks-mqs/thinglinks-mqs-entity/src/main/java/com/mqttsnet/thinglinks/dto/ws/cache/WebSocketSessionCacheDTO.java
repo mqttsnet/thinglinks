@@ -1,9 +1,9 @@
 package com.mqttsnet.thinglinks.dto.ws.cache;
 
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 /**
  * ============================================================================

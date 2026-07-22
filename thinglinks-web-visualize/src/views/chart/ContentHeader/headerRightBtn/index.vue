@@ -100,7 +100,10 @@ const previewHandle = () => {
   if (!path) return
   const { identification } = routerParamsInfo.query
   // id 标识
-  const previewId = typeof identification === 'string' ? identification : identification[0]
+  const previewId = Array.isArray(identification)
+    ? identification.find((value): value is string => typeof value === 'string')
+    : identification
+  if (!previewId) return
   const storageInfo = chartEditStore.getStorageInfo
   const sessionStorageInfo = getLocalStorage(StorageEnum.GO_CHART_STORAGE_LIST) || []
 
@@ -128,7 +131,7 @@ const previewHandle = () => {
   routerTurnByNameWithQuery(
     PreviewEnum.CHART_PREVIEW_NAME,
     {
-      identification,
+      identification: previewId,
       isMyProject: isMyProject.value
     },
     {}, // 路由参数

@@ -31,7 +31,7 @@ spring:
       - nacos:common.yml?group=${thinglinks.nacos.group}&refresh=true
       - nacos:redis.yml?group=${thinglinks.nacos.group}&refresh=true
       - nacos:database.yml?group=${thinglinks.nacos.group}&refresh=true
-      - nacos:rabbitmq.yml?group=${thinglinks.nacos.group}&refresh=true
+      - nacos:dynamictp.yml?group=${thinglinks.nacos.group}&refresh=true
       - nacos:${spring.application.name}.yml?refresh=true
   cloud:
     sentinel:

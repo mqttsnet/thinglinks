@@ -5,12 +5,12 @@ import com.xxl.job.admin.controller.interceptor.PermissionInterceptor;
 import com.xxl.job.admin.core.model.XxlJobGroup;
 import com.xxl.job.admin.core.model.XxlJobUser;
 import com.xxl.job.admin.core.util.I18nUtil;
+import com.xxl.job.admin.core.util.PasswordUtil;
 import com.xxl.job.admin.dao.XxlJobGroupDao;
 import com.xxl.job.admin.dao.XxlJobUserDao;
 import com.xxl.job.core.biz.model.ReturnT;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -93,7 +93,7 @@ public class JobUserController {
             return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_lengh_limit")+"[4-20]" );
         }
         // md5 password
-        xxlJobUser.setPassword(DigestUtils.md5DigestAsHex(xxlJobUser.getPassword().getBytes()));
+        xxlJobUser.setPassword(PasswordUtil.md5(xxlJobUser.getPassword()));
 
         // check repeat
         XxlJobUser existUser = xxlJobUserDao.loadByUserName(xxlJobUser.getUsername());
@@ -124,7 +124,7 @@ public class JobUserController {
                 return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("system_lengh_limit")+"[4-20]" );
             }
             // md5 password
-            xxlJobUser.setPassword(DigestUtils.md5DigestAsHex(xxlJobUser.getPassword().getBytes()));
+            xxlJobUser.setPassword(PasswordUtil.md5(xxlJobUser.getPassword()));
         } else {
             xxlJobUser.setPassword(null);
         }
@@ -166,8 +166,8 @@ public class JobUserController {
         }
 
         // md5 password
-        String md5OldPassword = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
-        String md5Password = DigestUtils.md5DigestAsHex(password.getBytes());
+        String md5OldPassword = PasswordUtil.md5(oldPassword);
+        String md5Password = PasswordUtil.md5(password);
 
         // valid old pwd
         XxlJobUser loginUser = PermissionInterceptor.getLoginUser(request);

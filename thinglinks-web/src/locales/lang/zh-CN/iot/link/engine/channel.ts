@@ -20,9 +20,22 @@ export default {
   port: '端口号',
   token: '认证token',
   secret: '签名',
+  remindMode: '提醒等级',
+  target: '打开方式',
+  autoRead: '自动已读',
+  defaultUrl: '默认跳转',
+  recipientList: '员工接收人',
+  recipientListRequired: '请选择员工接收人',
   status: '状态',
+  channelTypeOption: {
+    dingTalk: '钉钉',
+    enterpriseWechat: '企业微信',
+    feishu: '飞书',
+    siteMessage: '站内信',
+  },
   placeholder: {
     sendPeople: '用于发送邮件时“发件人”信息显示',
     userName: '发送邮件的账号',
+    recipientList: '请选择员工，可多选',
   },
 };

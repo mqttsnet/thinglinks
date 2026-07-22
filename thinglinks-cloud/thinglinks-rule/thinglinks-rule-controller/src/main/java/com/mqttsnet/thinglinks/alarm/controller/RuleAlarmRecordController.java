@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks.alarm.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.base.controller.SuperController;
@@ -67,6 +68,14 @@ public class RuleAlarmRecordController extends SuperController<RuleAlarmRecordSe
         return queryWrap;
     }
 
+    @Override
+    public void handlerResult(IPage<RuleAlarmRecordResultVO> page) {
+        superService.fillAlarmRuleDetails(page.getRecords());
+        if (echoService != null) {
+            echoService.action(page);
+        }
+    }
+
 
     /**
      * 保存告警记录
@@ -122,7 +131,9 @@ public class RuleAlarmRecordController extends SuperController<RuleAlarmRecordSe
     })
     @GetMapping("/getAlarmRecordDetails/{id}")
     public R<RuleAlarmRecordDetailsResultVO> getAlarmRecordDetails(@PathVariable("id") Long id) {
-        return R.success(superService.getAlarmRecordDetails(id));
+        RuleAlarmRecordDetailsResultVO result = superService.getAlarmRecordDetails(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
     @Operation(summary = "处理或解决告警记录", description = "处理或解决告警记录")
@@ -161,5 +172,3 @@ public class RuleAlarmRecordController extends SuperController<RuleAlarmRecordSe
     }
 
 }
-
-

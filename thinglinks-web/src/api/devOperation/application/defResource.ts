@@ -60,6 +60,11 @@ export const Api = {
     url: `${ServicePrefixEnum.TENANT}/${MODULAR}/checkName`,
     method: RequestEnum.GET,
   } as AxiosRequestConfig,
+  ClearCache: {
+    url: `${ServicePrefixEnum.TENANT}/${MODULAR}/clearCache`,
+    method: RequestEnum.POST,
+    headers: { 'Content-Type': ContentTypeEnum.FORM_URLENCODED },
+  } as AxiosRequestConfig,
 };
 
 export const tree = (params?: DefResourcePageQuery) =>
@@ -91,3 +96,6 @@ export const checkPath = (path: string, applicationId: string, id?: string) =>
   defHttp.request<boolean>({ ...Api.CheckPath, params: { id, applicationId, path } });
 export const checkName = (name: string, applicationId: string, id?: string) =>
   defHttp.request<boolean>({ ...Api.CheckName, params: { id, applicationId, name } });
+
+export const clearCache = (applicationId: string) =>
+  defHttp.request<boolean>({ ...Api.ClearCache, params: { applicationId } });

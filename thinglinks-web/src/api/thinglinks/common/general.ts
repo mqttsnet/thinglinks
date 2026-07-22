@@ -146,3 +146,23 @@ const enumTimeDelayReq = new TimeDelayReq({
 export async function asyncFindEnumList(code: Recordable): Promise<AsyncResult> {
   return await enumTimeDelayReq.loadByParam(code);
 }
+
+/**
+ * 清空前端字典内存缓存(TimeDelayReq 单例 + Pinia useDictStore).
+ *
+ * <p>字典/字典项 CRUD(新增 / 编辑 / 启停 / 删除 / 导入)成功后调用,
+ * 让所有走 {@code dictComponentProps(...)} 的下拉框、@Echo 回显等
+ * 立即拉取最新值,无需 30 分钟 TTL 过期或 F5 刷新.
+ *
+ * <p>用法:
+ * <pre>
+ *   import { clearDictCache } from '/@/api/thinglinks/common/general';
+ *   function handleSuccess() {
+ *     clearDictCache();
+ *     reload();
+ *   }
+ * </pre>
+ */
+export function clearDictCache(): void {
+  codeTimeDelayReq.clear();
+}

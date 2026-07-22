@@ -71,7 +71,9 @@ public class SopIsvInfoController extends SuperController<SopIsvInfoService, Lon
      */
     @GetMapping("/getKeys")
     public R<SopIsvKeysResultVO> getKeys(@RequestParam Long isvId) {
-        return R.success(superService.getKeys(isvId));
+        SopIsvKeysResultVO result = superService.getKeys(isvId);
+        echoService.action(result);
+        return R.success(result);
     }
 
     /**

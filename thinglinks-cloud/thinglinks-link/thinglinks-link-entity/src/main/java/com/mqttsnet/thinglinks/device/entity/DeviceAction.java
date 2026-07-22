@@ -42,12 +42,12 @@ public class DeviceAction extends Entity<Long> {
     /**
      * 设备标识
      */
-    @TableField(value = "device_identification", condition = LIKE)
+    @TableField(value = "device_identification", condition = EQUAL)
     private String deviceIdentification;
     /**
      * 动作类型
      */
-    @TableField(value = "action_type", condition = LIKE)
+    @TableField(value = "action_type", condition = EQUAL)
     private String actionType;
     /**
      * 内容信息

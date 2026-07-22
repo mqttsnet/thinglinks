@@ -50,8 +50,8 @@ public enum ClientAclActionTypeEnum {
      */
     public static Optional<ClientAclActionTypeEnum> fromValue(Integer value) {
         return Optional.of(Stream.of(ClientAclActionTypeEnum.values())
-                .filter(status -> status.getValue().equals(value))
-                .findFirst().orElse(ClientAclActionTypeEnum.UNKNOWN));
+            .filter(status -> status.getValue().equals(value))
+            .findFirst().orElse(ClientAclActionTypeEnum.UNKNOWN));
     }
 
 

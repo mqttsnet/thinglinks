@@ -19,10 +19,7 @@ import static com.mqttsnet.thinglinks.model.constant.Condition.LIKE;
 
 
 /**
- * <p>
- * 实体类
- * 产品模型
- * </p>
+ * 产品模型实体。
  *
  * @author mqttsnet
  * @date 2023-03-14 19:39:59
@@ -100,10 +97,15 @@ public class Product extends Entity<Long> {
     @TableField(value = "product_status", condition = EQUAL)
     private Integer productStatus;
     /**
-     * 产品版本
+     * 产品当前激活的版本序号(系统发布时生成的快照标识,16 位短雪花字符串)。
      */
-    @TableField(value = "product_version", condition = LIKE)
-    private String productVersion;
+    @TableField(value = "active_version_no", condition = EQUAL)
+    private String activeVersionNo;
+    /**
+     * 灰度期稳定版本序号(仅灰度态有值,晋升 / 回滚后清空),用于灰度回退定位。
+     */
+    @TableField(value = "previous_full_version_no", condition = EQUAL)
+    private String previousFullVersionNo;
     /**
      * 图标
      */

@@ -109,7 +109,11 @@ const { modalData, modalShow, closeModal, previewHandle, resizeHandle, editHandl
 const projectType: ProjectType = props.isMyProject ? 'myProject' : 'projectTemplate'
 
 // 筛选参数
-const filterParams = reactive({
+const filterParams = reactive<{
+  projectName: string
+  projectIdentification: string
+  status: number | null | undefined
+}>({
   projectName: '',
   projectIdentification: '',
   status: !props.isMyProject ? -1 : undefined

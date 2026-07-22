@@ -7,6 +7,7 @@ import { useUserStore } from './user';
 import { useAppStoreWithOut } from './app';
 import { computed, toRaw, unref } from 'vue';
 import { flatMultiLevelRoutes, transformObjToRoute } from '/@/router/helper/routeHelper';
+import { diagnoseRouteList } from '/@/router/helper/routeDiagnostics';
 import { transformRouteToMenu } from '/@/router/helper/menuHelper';
 
 import projectSetting from '/@/settings/projectSetting';
@@ -133,6 +134,8 @@ export const usePermissionStore = defineStore({
       }
 
       this.setVisibleResource(visibleResource);
+      // 把后端下发的角色码同步到 userStore.roleList，供首页/权限判断使用
+      useUserStore().setRoleList((visibleResource.roleList as any) || []);
       return visibleResource.routerList;
     },
 
@@ -256,6 +259,9 @@ export const usePermissionStore = defineStore({
           } catch (error) {
             console.error(error);
           }
+
+          // 0. 健康检查：把"缺 name / 缺 title / 缺 code / 重复"等配置异常打到控制台
+          diagnoseRouteList(routeList);
 
           // 1. 动态引入组件
           routeList = transformObjToRoute(routeList);

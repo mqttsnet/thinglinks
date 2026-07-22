@@ -1,5 +1,5 @@
 <template>
-  <div class="go-sketch-rule">
+  <div ref="ruleRootRef" class="go-sketch-rule" @pointerdown.capture="handlePanPointerDown">
     <sketch-rule
       v-if="sketchRuleReDraw"
       ref="sketchRuleRef"
@@ -13,10 +13,12 @@
       :palette="paletteStyle"
       :isShowReferLine="true"
       :shadow="shadow"
+      :panzoomOption="panzoomOption"
+      :selfHandle="true"
       @zoomchange="handleZoomChange"
     >
       <template #default>
-        <div ref="refSketchRuleBox" class="canvas" :style="canvasStyle" @mousedown="dragCanvas">
+        <div class="canvas" :style="canvasStyle">
           <slot></slot>
         </div>
       </template>
@@ -31,6 +33,7 @@ import { listen } from 'dom-helpers'
 import { useDesignStore } from '@/store/modules/designStore/designStore'
 import { useChartEditStore } from '@/store/modules/chartEditStore/chartEditStore'
 import { CreateComponentGroupType } from '@/packages/index.d'
+import { isEditableKeyboardTarget, shouldStartCanvasPan } from '@/utils'
 import throttle from 'lodash/throttle'
 
 const chartEditStore = useChartEditStore()
@@ -38,27 +41,37 @@ const designStore = useDesignStore()
 
 const thick = 20
 
+const ruleRootRef = ref<HTMLElement>()
 const sketchRuleRef = ref()
 const sketchRuleReDraw = ref(false)
-const isPressSpace = ref(false)
+const isSpaceHeld = ref(false)
+const isPointerPanning = ref(false)
+const isPressSpace = computed(() => isSpaceHeld.value || isPointerPanning.value)
 const cursorStyle = ref('auto')
 const { width, height } = toRefs(chartEditStore.getEditCanvasConfig)
 const lines = reactive({ h: [], v: [] })
 
 const scale = computed(() => chartEditStore.getEditCanvas.scale)
+const panzoomOption = {
+  disableZoom: chartEditStore.getEditCanvas.lockScale,
+  minScale: 0.1,
+  maxScale: 2
+}
 
-// 防止 panzoom 与 store 互相触发造成循环
-let isUpdatingFromPanzoom = false
+watch(
+  () => chartEditStore.getEditCanvas.lockScale,
+  locked => {
+    sketchRuleRef.value?.panzoomInstance?.setOptions({ disableZoom: locked })
+  },
+  { flush: 'post' }
+)
+
 watch(
   () => chartEditStore.getEditCanvas.scale,
   newScale => {
-    if (isUpdatingFromPanzoom) {
-      isUpdatingFromPanzoom = false
-      return
-    }
     const panzoom = sketchRuleRef.value?.panzoomInstance
     if (panzoom && Math.abs(panzoom.getScale() - newScale) > 0.001) {
-      panzoom.zoom(newScale)
+      panzoom.zoom(newScale, { force: true })
     }
   }
 )
@@ -137,20 +150,93 @@ const shadow = computed(() => {
   }
 })
 
-// 拖拽处理
-const dragCanvas = (e: any) => {
-  e.preventDefault()
-  e.stopPropagation()
+interface PanzoomController {
+  bind: () => void
+  destroy: () => void
+  handleDown: (event: PointerEvent) => void
+  handleUp: (event: PointerEvent) => void
+}
 
-  if (e.which == 2) isPressSpace.value = true
-  else if (!window.$KeyboardActive?.space) return
-  // @ts-ignore
-  document.activeElement?.blur()
+let boundPanzoom: PanzoomController | undefined
+let activePointerId: number | null = null
+let stopPointerUp: (() => void) | undefined
+let stopPointerCancel: (() => void) | undefined
+let stopWindowBlur: (() => void) | undefined
 
-  const listenMouseup = listen(window, 'mouseup', () => {
-    listenMouseup()
-    isPressSpace.value = false
-  })
+const syncPanzoomBinding = () => {
+  const panzoom = sketchRuleRef.value?.panzoomInstance
+  const shouldBind = isSpaceHeld.value || isPointerPanning.value
+
+  if (boundPanzoom && boundPanzoom !== panzoom) {
+    boundPanzoom.destroy()
+    boundPanzoom = undefined
+  }
+  if (shouldBind && panzoom && boundPanzoom !== panzoom) {
+    panzoom.bind()
+    boundPanzoom = panzoom
+  } else if (!shouldBind && boundPanzoom) {
+    boundPanzoom.destroy()
+    boundPanzoom = undefined
+  }
+}
+
+const clearPanListeners = () => {
+  stopPointerUp?.()
+  stopPointerCancel?.()
+  stopWindowBlur?.()
+  stopPointerUp = undefined
+  stopPointerCancel = undefined
+  stopWindowBlur = undefined
+}
+
+const finishPointerPan = (event?: PointerEvent) => {
+  if (activePointerId === null) return
+  if (event && event.pointerId !== activePointerId) return
+
+  const pointerId = activePointerId
+  activePointerId = null
+  boundPanzoom?.handleUp(event || ({ pointerId } as PointerEvent))
+  isPointerPanning.value = false
+  clearPanListeners()
+  syncPanzoomBinding()
+}
+
+const handlePanPointerDown = (event: PointerEvent) => {
+  const target = event.target
+  if (!(target instanceof Element) || !target.closest('.canvasedit-parent')) return
+
+  if (
+    !shouldStartCanvasPan(
+      event.button,
+      isSpaceHeld.value,
+      event.isPrimary,
+      isEditableKeyboardTarget(target)
+    )
+  ) {
+    return
+  }
+  if (activePointerId !== null) return
+
+  event.preventDefault()
+  event.stopPropagation()
+  if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+
+  activePointerId = event.pointerId
+  isPointerPanning.value = true
+  syncPanzoomBinding()
+  boundPanzoom?.handleDown(event)
+
+  stopPointerUp = listen(window, 'pointerup', (event: Event) => finishPointerPan(event as PointerEvent))
+  stopPointerCancel = listen(window, 'pointercancel', (event: Event) =>
+    finishPointerPan(event as PointerEvent)
+  )
+  stopWindowBlur = listen(window, 'blur', () => finishPointerPan())
+}
+
+const handleWheel = (event: WheelEvent) => {
+  if (!event.ctrlKey && !event.metaKey) return
+  event.preventDefault()
+  sketchRuleRef.value?.panzoomInstance?.zoomWithWheel(event)
 }
 
 // 计算画布大小
@@ -194,20 +280,35 @@ watch(
   }
 )
 
-const handleZoomChange = (detail: any) => {
-  isUpdatingFromPanzoom = true
-  chartEditStore.setScale(detail.scale)
+const handleZoomChange = (detail: { scale: number }) => {
+  const storeScale = chartEditStore.getEditCanvas.scale
+  if (chartEditStore.getEditCanvas.lockScale) {
+    if (Math.abs(detail.scale - storeScale) > 0.001) {
+      sketchRuleRef.value?.panzoomInstance?.zoom(storeScale, { force: true })
+    }
+    return
+  }
+  if (Math.abs(detail.scale - storeScale) > 0.001) {
+    chartEditStore.setScale(detail.scale)
+  }
 }
 
 onMounted(() => {
   // 防止 canvasBox() 拿不准尺寸
   sketchRuleReDraw.value = true
+  ruleRootRef.value?.addEventListener('wheel', handleWheel, { passive: false })
   window.onKeySpacePressHold = (isHold: boolean) => {
-    isPressSpace.value = isHold
+    isSpaceHeld.value = isHold
+    syncPanzoomBinding()
   }
 })
 
 onUnmounted(() => {
+  finishPointerPan()
+  isSpaceHeld.value = false
+  syncPanzoomBinding()
+  clearPanListeners()
+  ruleRootRef.value?.removeEventListener('wheel', handleWheel)
   window.onKeySpacePressHold = undefined
 })
 

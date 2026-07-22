@@ -7,7 +7,7 @@ export const BarCommonConfig: ConfigType = {
   conKey: 'VCBarCommon',
   title: 'project.component_bar_common',
   category: ChatCategoryEnum.BAR,
-  categoryName: getChatCategoryEnumName().BAR,
+  get categoryName() { return getChatCategoryEnumName().BAR },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'bar_x.png'

@@ -5,11 +5,14 @@ import lombok.Data;
 
 @Data
 public class RemoteAddressInfo {
-    private String ip;
+    /**
+     * 地址(IP/域名)
+     */
+    private String host;
     private int port;
 
-    public RemoteAddressInfo(String ip, int port) {
-        this.ip = ip;
+    public RemoteAddressInfo(String host, int port) {
+        this.host = host;
         this.port = port;
     }
 

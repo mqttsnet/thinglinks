@@ -1,11 +1,11 @@
 package com.mqttsnet.thinglinks.video.media.zlm.event.listener;
 
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
-import com.mqttsnet.thinglinks.video.empowerment.media.VideoMediaServerTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.media.VideoMediaServerTypeEnum;
 import com.mqttsnet.thinglinks.video.media.zlm.event.HookZlmServerStartEvent;
 import com.mqttsnet.thinglinks.video.service.media.VideoMediaServerService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -19,13 +19,12 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class HookZlmServerStartEventListener {
 
     private final String mediaServerType = VideoMediaServerTypeEnum.ZLM.getValue();
 
-
-    @Autowired
-    private VideoMediaServerService videoMediaServerService;
+    private final VideoMediaServerService videoMediaServerService;
 
 
     @EventListener

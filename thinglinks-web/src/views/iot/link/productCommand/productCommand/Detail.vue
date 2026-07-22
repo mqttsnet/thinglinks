@@ -44,25 +44,18 @@
     },
     setup(_) {
       const { t } = useI18n();
-      let currentKey = ref('0');
+      const currentKey = ref('0');
       const serviceId = ref('');
       const commandId = ref('');
       const [registerModel, { setDrawerProps: setProps }] = useDrawerInner(async (data) => {
-        console.log(data?.record?.serviceId, 'serviceId');
-        console.log(data?.record?.id, 'commandId');
         serviceId.value = '';
+        setProps({ confirmLoading: false, getContainer: data?.getContainer });
         setTimeout(() => {
           serviceId.value = data?.record?.serviceId;
           commandId.value = data?.record?.id;
           currentKey.value = '1';
-          setProps({ confirmLoading: false, width: '80%' });
+          setProps({ width: '80%' });
         }, 10);
-        // if (unref(type) !== ActionEnum.VIEW) {
-        //   let validateApi = Api[VALIDATE_API[unref(type)]];
-        //   await getValidateRules(validateApi, customFormSchemaRules(type)).then(async (rules) => {
-        //     rules && rules.length > 0 && (await updateSchema(rules));
-        //   });
-        // }
       });
 
       return { t, registerModel, currentKey, serviceId, commandId };

@@ -6,6 +6,8 @@
     :maskClosable="false"
     @ok="handleSubmit"
     :keyboard="true"
+    width="720px"
+    wrapClassName="md-edit-wrap"
   >
     <BasicForm @register="registerForm" />
   </BasicModal>
@@ -38,15 +40,16 @@
       const [registerForm, { setFieldsValue, resetFields, updateSchema, validate, resetSchema }] =
         useForm({
           name: 'ProductServiceEdit',
-          labelWidth: 120,
+          // 标签宽度 100 + 双列(span 12)布局,中文 4 字标签不会被压缩成竖排
+          labelWidth: 100,
           schemas: editFormSchema(type),
           showActionButtonGroup: false,
           disabled: (_) => {
             return unref(type) === ActionEnum.VIEW;
           },
-          baseColProps: { span: 11 },
+          baseColProps: { span: 12 },
           actionColOptions: {
-            span: 22,
+            span: 24,
           },
         });
 

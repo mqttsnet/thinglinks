@@ -119,15 +119,6 @@
                     </div>
                   </n-form-item>
                 <n-form-item>
-                  <div class="flex justify-between">
-                    <div class="flex-initial">
-                      <n-checkbox v-model:checked="autoLogin">{{
-                        $t('login.form_auto')
-                      }}</n-checkbox>
-                    </div>
-                  </div>
-                </n-form-item>
-                <n-form-item>
                   <n-button
                     type="primary"
                     @click="handleSubmit"
@@ -152,20 +143,17 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import shuffle from 'lodash/shuffle'
 import { carouselInterval } from '@/settings/designSetting'
-import { useDesignStore } from '@/store/modules/designStore/designStore'
 import { GoThemeSelect } from '@/components/GoThemeSelect'
 import { GoLangSelect } from '@/components/GoLangSelect'
 import { LayoutHeader } from '@/layout/components/LayoutHeader'
 import { LayoutFooter } from '@/layout/components/LayoutFooter'
-import { PageEnum } from '@/enums/pageEnum'
 import { icon } from '@/plugins'
-import { StorageEnum } from '@/enums/storageEnum'
-import { routerTurnByName, cryptoEncode, setLocalStorage } from '@/utils'
 // api
-import { loadCaptcha, loginApi } from '@/api/thinglinks/common/oauth'
+import { loadCaptcha } from '@/api/thinglinks/common/oauth'
+import type { LoginParamVO } from '@/api/thinglinks/common/model/userModel'
 // utils
 import { randomNum } from '@/utils'
 // hooks
@@ -173,21 +161,12 @@ import { useGlobSetting } from '@/hooks/setting'
 // store
 import { useUserStore } from '@/store/modules/user/user'
 
-const { GO_LOGIN_INFO_STORE } = StorageEnum
-
 const { PersonOutlineIcon, LockClosedOutlineIcon } = icon.ionicons5
-
-interface FormState {
-  username: string
-  password: string
-}
 
 const formRef = ref()
 const loading = ref(false)
-const autoLogin = ref(true)
 const show = ref(false)
 const showBg = ref(false)
-const designStore = useDesignStore()
 const userStore = useUserStore()
 const globSetting = useGlobSetting()
 
@@ -195,12 +174,14 @@ const t = window['$t']
 
 const authCodeSrc = ref('') // 验证码
 const authCodekey = randomNum(24, 16)
+let showTimer: ReturnType<typeof setTimeout> | undefined
+let showBackgroundTimer: ReturnType<typeof setTimeout> | undefined
 onMounted(() => {
   buildCaptcha()
-  setTimeout(() => {
+  showTimer = setTimeout(() => {
     show.value = true
   }, 300)
-  setTimeout(() => {
+  showBackgroundTimer = setTimeout(() => {
     showBg.value = true
   }, 100)
 })
@@ -210,14 +191,18 @@ const buildCaptcha = async () => {
   try {
     authCodeSrc.value = ''
 
-    const res = await loadCaptcha(authCodekey).catch(e => {
-      if (e.toString().indexOf('429') !== -1) {
+    let res: ArrayBuffer
+    try {
+      res = await loadCaptcha(authCodekey)
+    } catch (error) {
+      if (String(error).includes('429')) {
         window['$message'].error('获取验证码过于频繁，请1分钟后再试')
       } else {
         window['$message'].error('加载验证码失败')
       }
       authCodeSrc.value = ''
-    })
+      return ''
+    }
     if (res.byteLength <= 100) {
       window['$message'].error('系统维护中，请稍微再试~')
       return ''
@@ -231,7 +216,7 @@ const buildCaptcha = async () => {
   }
 }
 
-const formInline = reactive({
+const formInline = reactive<LoginParamVO>({
   username: '',
   password: '',
   code: '',
@@ -264,7 +249,7 @@ const rules = {
 }
 
 // 定时器
-const shuffleTimiing = ref()
+let shuffleTiming: ReturnType<typeof setInterval> | undefined
 
 // 轮播图
 const carouselImgList = ['one', 'two', 'three']
@@ -279,7 +264,8 @@ const getImageUrl = (name: string, folder: string) => {
 
 // 打乱
 const shuffleHandle = () => {
-  shuffleTimiing.value = setInterval(() => {
+  if (shuffleTiming) clearInterval(shuffleTiming)
+  shuffleTiming = setInterval(() => {
     bgList.value = shuffle(bgList.value)
   }, carouselInterval)
 }
@@ -304,6 +290,12 @@ const handleSubmit = (e: Event) => {
 
 onMounted(() => {
   shuffleHandle()
+})
+
+onUnmounted(() => {
+  if (shuffleTiming) clearInterval(shuffleTiming)
+  if (showTimer) clearTimeout(showTimer)
+  if (showBackgroundTimer) clearTimeout(showBackgroundTimer)
 })
 </script>
 

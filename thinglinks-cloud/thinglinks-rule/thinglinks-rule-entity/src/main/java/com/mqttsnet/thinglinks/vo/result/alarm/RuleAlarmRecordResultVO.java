@@ -1,8 +1,6 @@
 package com.mqttsnet.thinglinks.vo.result.alarm;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +11,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 /**
  * <p>
@@ -34,12 +30,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "RuleAlarmRecordResultVO", description = "告警记录表")
-public class RuleAlarmRecordResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class RuleAlarmRecordResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "主键")
     private Long id;
@@ -94,11 +88,9 @@ public class RuleAlarmRecordResultVO extends Entity<Long> implements Serializabl
      */
     @Schema(description = "描述")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
+
+    @Schema(description = "告警规则详情")
+    private RuleAlarmDetailsResultVO ruleAlarmDetailsResultVO;
 
 
 }

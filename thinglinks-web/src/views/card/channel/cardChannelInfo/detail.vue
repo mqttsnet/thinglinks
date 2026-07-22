@@ -96,7 +96,7 @@
             :contentStyle="contentStyle"
             :label="t('card.channel.cardChannelInfo.createdBy')"
           >
-            {{ cardInfoDetail.createdBy }}
+            {{ echoMapText(cardInfoDetail, 'createdBy') }}
           </a-descriptions-item>
           <a-descriptions-item
             :labelStyle="labelStyle"
@@ -110,7 +110,7 @@
             :contentStyle="contentStyle"
             :label="t('card.channel.cardChannelInfo.updatedBy')"
           >
-            {{ cardInfoDetail.updatedBy }}
+            {{ echoMapText(cardInfoDetail, 'updatedBy') }}
           </a-descriptions-item>
           <a-descriptions-item
             :labelStyle="labelStyle"
@@ -124,7 +124,7 @@
             :contentStyle="contentStyle"
             :label="t('card.channel.cardChannelInfo.createdOrgId')"
           >
-            {{ cardInfoDetail.createdOrgId }}
+            {{ echoMapText(cardInfoDetail, 'createdOrgId') }}
           </a-descriptions-item>
         </a-descriptions>
       </a-card>
@@ -215,6 +215,7 @@ import EditModal from '../cardChannelInfoConfig/ConfigEdit.vue';
 import type { CardChannelInfoResultVO } from '/@/api/card/channel/model/cardChannelInfoModel';
 import type { DevicePageQuery } from '/@/api/iot/link/device/model/deviceModel';
 import { useDict } from '/@/components/Dict';
+import { echoMapText } from '/@/utils/echo';
 const { getDictLabel } = useDict();
 export default defineComponent({
   // 若需要开启页面缓存，请将此参数跟菜单名保持一致
@@ -376,6 +377,7 @@ export default defineComponent({
       cardInfoDetail,
       deviceDetail,
       getDictLabel,
+      echoMapText,
       labelStyle: {
         width: '140px',
         'font-weight': '600',

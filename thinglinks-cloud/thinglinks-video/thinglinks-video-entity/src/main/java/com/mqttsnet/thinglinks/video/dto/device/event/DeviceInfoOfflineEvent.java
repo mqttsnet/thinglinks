@@ -1,6 +1,6 @@
 package com.mqttsnet.thinglinks.video.dto.device.event;
 
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import lombok.Getter;
 
 /**
@@ -12,10 +12,10 @@ import lombok.Getter;
  * @since 2025/5/22
  */
 @Getter
-public class DeviceInfoOfflineEvent extends DeviceInfoBaseEventAbstract<VideoDeviceInfoResultDTO> {
+public class DeviceInfoOfflineEvent extends DeviceInfoBaseEventAbstract<VideoDeviceResultVO> {
 
 
-    public DeviceInfoOfflineEvent(VideoDeviceInfoResultDTO source) {
+    public DeviceInfoOfflineEvent(VideoDeviceResultVO source) {
         super(source);
     }
 }

@@ -11,20 +11,22 @@ import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.base.controller.SuperController;
 import com.mqttsnet.basic.base.request.PageParams;
 import com.mqttsnet.basic.database.mybatis.conditions.query.QueryWrap;
-import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.interfaces.echo.EchoService;
+import com.mqttsnet.thinglinks.cacert.entity.audit.CaCertAuditLog;
 import com.mqttsnet.thinglinks.cacert.entity.license.CaCertLicense;
+import com.mqttsnet.thinglinks.cacert.service.audit.CaCertAuditLogService;
 import com.mqttsnet.thinglinks.cacert.service.license.CaCertLicenseService;
 import com.mqttsnet.thinglinks.cacert.vo.query.license.CaCertLicensePageQuery;
+import com.mqttsnet.thinglinks.cacert.vo.result.license.CaCertLicenseImpactResultVO;
 import com.mqttsnet.thinglinks.cacert.vo.result.license.CaCertLicenseResultVO;
 import com.mqttsnet.thinglinks.cacert.vo.save.license.CaCertLicenseSaveVO;
 import com.mqttsnet.thinglinks.cacert.vo.save.license.CaCertPemImportSaveVO;
 import com.mqttsnet.thinglinks.cacert.vo.update.license.CaCertLicenseUpdateVO;
+
+import java.util.List;
 import com.mqttsnet.thinglinks.datascope.DataScopeHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
@@ -35,6 +37,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -45,13 +48,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 /**
- * <p>
- * 前端控制器
- * CA许可证证书表
- * </p>
+ * CA 许可证证书 控制器 ── 导入 / 影响面 / 吊销 / 客户端证书签发 + 基础 CRUD.
  *
  * @author mqttsnet
- * @since 2025-06-27 15:48:10
+ * @since 2025-06-27
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -62,6 +62,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 public class CaCertLicenseController extends SuperController<CaCertLicenseService, Long, CaCertLicense
         , CaCertLicenseSaveVO, CaCertLicenseUpdateVO, CaCertLicensePageQuery, CaCertLicenseResultVO> {
     private final EchoService echoService;
+    private final CaCertAuditLogService auditLogService;
 
     @Override
     public EchoService getEchoService() {
@@ -90,104 +91,73 @@ public class CaCertLicenseController extends SuperController<CaCertLicenseServic
             @Valid @RequestBody CaCertPemImportSaveVO caCertPemImportSaveVO) {
 
         CaCertLicenseResultVO result = superService.importPemCertificate(caCertPemImportSaveVO);
+        echoService.action(result);
         return R.success(result);
     }
 
-//    /**
-//     * 颁发CA证书
-//     * <p>
-//     * 根据RFC 5280和CA/Browser Forum规范生成X.509证书：
-//     * 1. 生成符合规范的随机序列号（至少8字节熵）
-//     * 2. 设置证书有效期（需满足最小/最大有效期要求）
-//     * 3. 使用指定签名算法（RSA/ECC）签发证书
-//     * </p>
-//     *
-//     * @param id       CA证书ID
-//     * @param notAfter 证书过期时间（必须晚于当前时间且不超过最大有效期）
-//     * @return 证书颁发结果
-//     * @throws BizException 当参数无效或证书颁发失败时抛出业务异常
-//     * @see <a href="https://tools.ietf.org/html/rfc5280">RFC 5280</a>
-//     * @see <a href="https://cabforum.org/baseline-requirements/">CA/Browser Forum BR</a>
-//     */
-//    @Deprecated
-//    @Operation(summary = "颁发CA证书", description = "根据证书请求ID颁发符合X.509规范的CA证书")
-//    @PutMapping("/issue/{id}")
-//    @WebLog(value = "颁发CA证书", request = false)
-//    @Parameters({
-//            @Parameter(name = "id", description = "CA证书ID", required = true),
-//            @Parameter(name = "notAfter", description = "证书过期时间（格式：yyyy-MM-dd HH:mm:ss）", example = "2025-12-31 23:59:59", required = true)
-//    })
-//    public R<CaCertLicenseResultVO> issueCertificate(
-//            @PathVariable("id") @NotNull Long id,
-//            @RequestParam @Future LocalDateTime notAfter) {
-//        log.info("颁发CA证书请求 - ID: {}, 过期时间: {}", id, notAfter);
-//        CaCertLicenseResultVO result = superService.issueCertificate(id, notAfter);
-//        return R.success(result);
-//    }
-//
-//    /**
-//     * 撤销CA证书
-//     * <p>
-//     * 将证书状态标记为已撤销并记录撤销时间，符合RFC 5280 CRL规范
-//     * </p>
-//     *
-//     * @param id               证书ID
-//     * @param revocationReason 撤销原因（可选）
-//     * @return 撤销操作结果
-//     * @throws BizException 当证书不存在或已撤销时抛出业务异常
-//     * @see <a href="https://tools.ietf.org/html/rfc5280#section-5.3.1">RFC 5280 CRL</a>
-//     */
-//    @Deprecated
-//    @Operation(summary = "撤销CA证书", description = "根据证书ID撤销已颁发的CA证书")
-//    @PutMapping("/revoke/{id}")
-//    @WebLog(value = "撤销CA证书", request = false)
-//    @Parameters({
-//            @Parameter(name = "id", description = "证书ID", required = true),
-//            @Parameter(name = "revocationReason", description = "撤销原因(可选)",
-//                    schema = @Schema(allowableValues = {
-//                            "unspecified", "keyCompromise", "cACompromise",
-//                            "affiliationChanged", "superseded", "cessationOfOperation"
-//                    }))
-//    })
-//    public R<Boolean> revokeCertificate(
-//            @PathVariable("id") @NotNull Long id,
-//            @RequestParam(required = false) String revocationReason) {
-//        log.info("撤销CA证书请求 - ID: {}, 原因: {}", id, revocationReason);
-//        return R.success(superService.revokeCertificate(id, revocationReason));
-//    }
-//
-//    /**
-//     * 签发客户端证书
-//     *
-//     * @param id       客户端唯一标识
-//     * @param notAfter 证书过期时间（必须晚于当前时间且不超过最大有效期）
-//     * @return 包含证书文件的ZIP包
-//     */
-//    @Operation(summary = "签发客户端证书", description = "根据根CA证书签发客户端证书")
-//    @Parameters({
-//            @Parameter(name = "id", description = "CA证书ID", required = true),
-//            @Parameter(name = "notAfter", description = "证书过期时间（格式：yyyy-MM-dd HH:mm:ss）", example = "2025-12-31 23:59:59", required = true)
-//    })
-//    @Deprecated
-//    @PostMapping("/issueClientCert")
-//    public ResponseEntity<StreamingResponseBody> issueClientCert(
-//            @RequestParam @NotNull Long id,
-//            @RequestParam @Future LocalDateTime notAfter) throws Exception {
-//        log.info("签发客户端证书 - ID: {}, 过期时间: {}", id, notAfter);
-//        File zipFile = superService.generateClientCertPackage(id, notAfter);
-//        return ResponseEntity.ok()
-//                .header("Content-Disposition", "attachment; filename=client_cert_" + id + ".zip")
-//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .body((StreamingResponseBody) outputStream -> {
-//                    try (InputStream in = Files.newInputStream(zipFile.toPath())) {
-//                        IOUtils.copy(in, outputStream);
-//                    } finally {
-//                        FileUtil.del(zipFile);
-//                    }
-//                });
-//    }
+    /**
+     * CA 证书影响面 ── 返回绑定此 CA 的设备总数 / 在线数 / 前 50 条设备简要。
+     * 用于运维吊销前评估。
+     */
+    @Operation(summary = "CA 证书影响面", description = "返回绑定此 CA 的设备总数、在线数与前 50 条设备")
+    @GetMapping("/impact/{id}")
+    public R<CaCertLicenseImpactResultVO> getImpact(@PathVariable("id") @NotNull Long id) {
+        CaCertLicenseImpactResultVO result = superService.getImpact(id);
+        echoService.action(result);
+        return R.success(result);
+    }
 
+    /**
+     * 吊销 CA 证书。
+     * 将证书 state 改为 REVOKED + 发布 {@link com.mqttsnet.thinglinks.cacert.event.CaRevokedEvent} 触发绑定设备 cache 失效。
+     *
+     * @param id               证书 ID
+     * @param revocationReason 吊销原因(可选, 用于审计追溯)
+     */
+    @Operation(summary = "吊销 CA 证书", description = "吊销证书 + 失效绑定设备 cache")
+    @PutMapping("/revoke/{id}")
+    @WebLog(value = "吊销 CA 证书", request = false)
+    public R<Boolean> revokeCertificate(
+            @PathVariable("id") @NotNull Long id,
+            @RequestParam(required = false) String revocationReason) {
+        return R.success(superService.revokeCertificate(id, revocationReason));
+    }
 
+    /**
+     * 签发并下载客户端证书 ZIP 包。
+     * 由 {@link CaCertLicenseService#generateClientCertPackage} 生成 ZIP 后流式回写, 完成后清理临时文件.
+     *
+     * @param id       CA 证书 ID
+     * @param notAfter 客户端证书过期时间
+     */
+    @Operation(summary = "签发客户端证书包", description = "根 CA 签发客户端证书并打包 ZIP 下载")
+    @PostMapping("/issueClientCert")
+    public ResponseEntity<StreamingResponseBody> issueClientCert(
+            @RequestParam @NotNull Long id,
+            @RequestParam @Future LocalDateTime notAfter) throws Exception {
+        File zipFile = superService.generateClientCertPackage(id, notAfter);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=client_cert_" + id + ".zip")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(outputStream -> {
+                    try (InputStream in = Files.newInputStream(zipFile.toPath())) {
+                        IOUtils.copy(in, outputStream);
+                    } finally {
+                        FileUtil.del(zipFile);
+                    }
+                });
+    }
+
+    /**
+     * 查询指定 CA 的审计日志(按时间倒序, 上限 200 条, 详情页时间线展示用).
+     *
+     * @param id CA 证书 ID
+     */
+    @Operation(summary = "CA 证书审计日志", description = "按 CA 维度返回审计时间线(上限 200 条)")
+    @GetMapping("/audit/{id}")
+    public R<List<CaCertAuditLog>> listAudit(@PathVariable("id") @NotNull Long id) {
+        return R.success(auditLogService.listByCaId(id));
+    }
 }
 
 

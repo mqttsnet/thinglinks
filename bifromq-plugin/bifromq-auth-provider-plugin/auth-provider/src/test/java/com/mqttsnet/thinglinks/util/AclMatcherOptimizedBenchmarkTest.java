@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.mqttsnet.basic.utils.topic.MqttTopicMatcher;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -40,17 +41,36 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Fork(3)
 public class AclMatcherOptimizedBenchmarkTest {
 
-    // 数据结构优化
-    private List<PatternTopicPair> patternTopicPairs;
-    private Random random;
-
     // 匹配统计
     private static final AtomicLong totalRequests = new AtomicLong();
     private static final AtomicLong matchedCount = new AtomicLong();
     private static final AtomicLong cacheHits = new AtomicLong();
-
+    // 延迟统计桶（优化版）
+    private static final long[] latencyBuckets = new long[8];
+    private static final long[] latencyThresholds = {
+        1000,    // 1ms
+        5000,    // 5ms
+        10000,   // 10ms
+        50000,   // 50ms
+        100000,  // 100ms
+        500000,  // 500ms
+        1000000, // 1000ms
+        Long.MAX_VALUE
+    };
     // 线程池管理
     private static ExecutorService executor;
+    // 数据结构优化
+    private List<PatternTopicPair> patternTopicPairs;
+    private Random random;
+
+    public static void main(String[] args) throws RunnerException {
+        Options opt = new OptionsBuilder()
+            .include(AclMatcherOptimizedBenchmarkTest.class.getSimpleName())
+            .jvmArgs("-Xmx16g", "-Xms16g", "-XX:+UseZGC", "-XX:MaxGCPauseMillis=10")
+            .build();
+
+        new Runner(opt).run();
+    }
 
     @Setup(Level.Trial)
     public void initTestData() {
@@ -59,15 +79,15 @@ public class AclMatcherOptimizedBenchmarkTest {
         int corePoolSize = Runtime.getRuntime().availableProcessors();
         int maxPoolSize = corePoolSize * 2;
         executor = new ThreadPoolExecutor(
-                corePoolSize,
-                maxPoolSize,
-                60L, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(1000),
-                new ThreadFactoryBuilder()
-                        .setNameFormat("acl-matcher-pool-%d")
-                        .setDaemon(true)
-                        .build(),
-                new ThreadPoolExecutor.CallerRunsPolicy()
+            corePoolSize,
+            maxPoolSize,
+            60L, TimeUnit.SECONDS,
+            new ArrayBlockingQueue<>(1000),
+            new ThreadFactoryBuilder()
+                .setNameFormat("acl-matcher-pool-%d")
+                .setDaemon(true)
+                .build(),
+            new ThreadPoolExecutor.CallerRunsPolicy()
         );
         patternTopicPairs = generatePatternTopicPairs(10_000);
         System.out.println("Test data initialized: " + patternTopicPairs.size() + " pattern-topic pairs");
@@ -92,7 +112,7 @@ public class AclMatcherOptimizedBenchmarkTest {
         PatternTopicPair pair = patternTopicPairs.get(random.nextInt(patternTopicPairs.size()));
 
         long start = System.nanoTime();
-        boolean result = AclMatcherUtil.isTopicMatch(pair.pattern, pair.topic);
+        boolean result = MqttTopicMatcher.match(pair.pattern, pair.topic);
         long duration = System.nanoTime() - start;
 
         // 统计
@@ -101,8 +121,8 @@ public class AclMatcherOptimizedBenchmarkTest {
             matchedCount.incrementAndGet();
         }
 
-        // 模拟缓存命中统计（实际需要修改AclMatcherUtil添加统计接口）
-        if (duration < 100_000) { // <0.1ms 视为缓存命中
+        // 用耗时下限近似估算"快路径"占比（算法已下沉到 Util MqttTopicMatcher，无 Pattern 编译缓存）
+        if (duration < 100_000) { // <0.1ms 视为快路径
             cacheHits.incrementAndGet();
         }
 
@@ -145,30 +165,6 @@ public class AclMatcherOptimizedBenchmarkTest {
         return pattern; // 精确匹配
     }
 
-    // 数据结构优化
-    private static class PatternTopicPair {
-        final String pattern;
-        final String topic;
-
-        PatternTopicPair(String pattern, String topic) {
-            this.pattern = pattern;
-            this.topic = topic;
-        }
-    }
-
-    // 延迟统计桶（优化版）
-    private static final long[] latencyBuckets = new long[8];
-    private static final long[] latencyThresholds = {
-            1000,    // 1ms
-            5000,    // 5ms
-            10000,   // 10ms
-            50000,   // 50ms
-            100000,  // 100ms
-            500000,  // 500ms
-            1000000, // 1000ms
-            Long.MAX_VALUE
-    };
-
     private void recordLatency(long nanos) {
         long micros = nanos / 1000;
         for (int i = 0; i < latencyThresholds.length; i++) {
@@ -193,24 +189,24 @@ public class AclMatcherOptimizedBenchmarkTest {
         String[] labels = {"<1ms", "<5ms", "<10ms", "<50ms", "<100ms", "<500ms", "<1000ms", ">1000ms"};
         for (int i = 0; i < labels.length; i++) {
             System.out.printf("  %-8s: %,d (%.2f%%)\n",
-                    labels[i],
-                    latencyBuckets[i],
-                    (latencyBuckets[i] * 100.0) / total);
+                labels[i],
+                latencyBuckets[i],
+                (latencyBuckets[i] * 100.0) / total);
         }
 
-        // 缓存状态监控
-        System.out.println("\n缓存状态:");
-        System.out.println("  Estimated size: " + AclMatcherUtil.getCacheEstimatedSize());
-        System.out.println("  Hit rate: " + AclMatcherUtil.getCacheStats().hitRate());
+        // v1.1 起算法已下沉到 Util MqttTopicMatcher，无 Pattern 编译缓存 ──
+        // 改为分段字符串比较,Pattern 编译不再发生,原 caffeine 缓存指标已移除。
         System.out.println("=========================================");
     }
 
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-                .include(AclMatcherOptimizedBenchmarkTest.class.getSimpleName())
-                .jvmArgs("-Xmx16g", "-Xms16g", "-XX:+UseZGC", "-XX:MaxGCPauseMillis=10")
-                .build();
+    // 数据结构优化
+    private static class PatternTopicPair {
+        final String pattern;
+        final String topic;
 
-        new Runner(opt).run();
+        PatternTopicPair(String pattern, String topic) {
+            this.pattern = pattern;
+            this.topic = topic;
+        }
     }
 }

@@ -4,10 +4,12 @@ import com.mqttsnet.basic.base.service.SuperService;
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
 import com.mqttsnet.thinglinks.video.entity.media.VideoMediaServer;
 import com.mqttsnet.thinglinks.video.vo.query.media.VideoMediaServerPageQuery;
+import com.mqttsnet.thinglinks.video.vo.result.media.VideoMediaServerMetricsResultVO;
 import com.mqttsnet.thinglinks.video.vo.result.media.VideoMediaServerResultVO;
 import com.mqttsnet.thinglinks.video.vo.save.media.VideoMediaServerSaveVO;
 import com.mqttsnet.thinglinks.video.vo.update.media.VideoMediaServerUpdateVO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -97,6 +99,39 @@ public interface VideoMediaServerService extends SuperService<Long, VideoMediaSe
      * @param mediaServer 流媒体服务器信息
      */
     void serverOffline(VideoMediaServerResultDTO mediaServer);
+
+    /**
+     * 更新流媒体服务器性能指标（心跳上报时调用）
+     *
+     * @param mediaIdentification 媒体唯一标识
+     * @param cpuUsage            CPU使用率
+     * @param memoryUsage         内存使用率
+     * @param currentStreams       当前流数量
+     * @param networkInSpeed      入网速率bytes/s
+     * @param networkOutSpeed     出网速率bytes/s
+     */
+    void updateServerMetrics(String mediaIdentification,
+                             BigDecimal cpuUsage,
+                             BigDecimal memoryUsage,
+                             Integer currentStreams,
+                             Long networkInSpeed,
+                             Long networkOutSpeed);
+
+    /**
+     * 实时查询流媒体服务器性能指标（直接调用 ZLM HTTP API）
+     *
+     * @param id 流媒体服务器 ID
+     * @return {@link VideoMediaServerMetricsResultVO} 实时性能指标
+     */
+    VideoMediaServerMetricsResultVO getRealTimeMetrics(Long id);
+
+    /**
+     * 测试流媒体服务器连接
+     *
+     * @param host     服务器地址
+     * @param httpPort HTTP端口
+     * @param secret   鉴权密钥
+     * @return 连接是否成功
+     */
+    boolean testConnection(String host, Integer httpPort, String secret);
 }
-
-

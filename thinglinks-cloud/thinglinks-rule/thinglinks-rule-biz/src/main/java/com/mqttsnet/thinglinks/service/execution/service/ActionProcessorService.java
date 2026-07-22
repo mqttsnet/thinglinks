@@ -1,8 +1,10 @@
 package com.mqttsnet.thinglinks.service.execution.service;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.thinglinks.dto.linkage.RuleConditionActionPolicyDTO;
 import com.mqttsnet.thinglinks.dto.linkage.RuleConditionPolicyDTO;
+import com.mqttsnet.thinglinks.dto.linkage.execution.RuleActionExecutionExtendParamsDTO;
 import com.mqttsnet.thinglinks.dto.linkage.execution.PolicyContext;
 import com.mqttsnet.thinglinks.enumeration.linkage.RuleActionTypeEnum;
 import com.mqttsnet.thinglinks.service.execution.event.action.publisher.RuleConditionActionEventPublisher;
@@ -99,13 +101,18 @@ public class ActionProcessorService {
      */
     private String buildExtendParams(RuleConditionActionPolicyDTO actionPolicyDTO, LocalDateTime actionStartTime,
                                      LocalDateTime actionEndTime, boolean actionSuccess) {
-        return new StringBuilder()
-                .append("Rule Condition ID: ").append(actionPolicyDTO.getRuleConditionId()).append("; ")
-                .append("Action Type: ").append(actionPolicyDTO.getActionType()).append("; ")
-                .append("Execution Result: ").append(actionSuccess ? "Success" : "Failure").append("; ")
-                .append("Remark: ").append(actionPolicyDTO.getRemark()).append("; ")
-                .append("Execution Time: ").append(ChronoUnit.MILLIS.between(actionStartTime, actionEndTime)).append(" ms")
-                .toString();
+        long latencyMs = Math.max(ChronoUnit.MILLIS.between(actionStartTime, actionEndTime), 0L);
+        RuleActionExecutionExtendParamsDTO extendParams = RuleActionExecutionExtendParamsDTO.builder()
+                .ruleConditionId(actionPolicyDTO.getRuleConditionId())
+                .actionType(actionPolicyDTO.getActionType())
+                .actionName(RuleActionTypeEnum.fromValue(actionPolicyDTO.getActionType())
+                        .map(RuleActionTypeEnum::getDesc)
+                        .orElse("未知动作"))
+                .result(actionSuccess)
+                .latencyMs(latencyMs)
+                .remark(actionPolicyDTO.getRemark())
+                .build();
+        return JSON.toJSONString(extendParams);
     }
 
     /**
@@ -122,7 +129,7 @@ public class ActionProcessorService {
                 actionStartTime,
                 actionEndTime,
                 extendParams,
-                "Action executed successfully"
+                actionSuccess ? "Action executed successfully" : "Action executed failed"
         );
         log.info("Published action execution log for action: {}", actionPolicyDTO.getActionContent());
     }

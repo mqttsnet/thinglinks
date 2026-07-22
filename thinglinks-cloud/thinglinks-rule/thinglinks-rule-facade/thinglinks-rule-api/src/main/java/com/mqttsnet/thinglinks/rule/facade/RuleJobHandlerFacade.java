@@ -44,4 +44,21 @@ public interface RuleJobHandlerFacade {
      */
     R<GroovyScriptEngineExecutorResultVO> executeScript(RuleGroovyScriptExecuteScriptParam param);
 
+    /**
+     * 触发桥接数据源健康检查。
+     * <p>对所有 enable=true 的数据源调 testConnection，更新 health_status 字段。
+     *
+     * @return {@code R<Boolean>} 执行成功返回 true
+     */
+    R<Boolean> runBridgeHealthCheck();
+
+    /**
+     * 触发桥接 trace 历史数据清理。
+     * <p>删除超过保留期的 bridge_execution_trace + bridge_execution_step 记录。
+     *
+     * @param retentionDays 保留天数；null 时使用默认 90 天
+     * @return {@code R<Boolean>} 执行成功返回 true
+     */
+    R<Boolean> runBridgeTraceCleanup(Integer retentionDays);
+
 }

@@ -1,0 +1,16 @@
+export default {
+  table: { title: '平台通道' },
+  deviceIdentification: '设备标识',
+  channelIdentification: '通道标识',
+  customName: '自定义名称',
+  customGbId: '自定义国标编号',
+  catalogId: '所属目录',
+  deviceChannelId: '设备通道ID',
+  bindChannel: '绑定通道',
+  unbindChannel: '解绑通道',
+  confirmUnbind: '确定要解绑选中的通道吗？',
+  bindSuccess: '通道绑定成功',
+  unbindSuccess: '通道解绑成功',
+  selectChannels: '请选择要绑定的通道',
+  noChannelsSelected: '请至少选择一个通道',
+};

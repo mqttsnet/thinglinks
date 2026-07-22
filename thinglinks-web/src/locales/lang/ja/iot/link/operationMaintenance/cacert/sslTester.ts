@@ -1,0 +1,31 @@
+export default {
+  title: 'SSL 証明書認証テスト',
+  subtitle: 'デバイス SSL 双方向認証をエンドツーエンドでシミュレーションし、PKI 経路を診断',
+  inputTitle: 'テスト入力',
+  clientId: 'クライアント ID',
+  clientIdPh: '任意。デバイス紐付け CA の逆引き + 監査用',
+  targetCa: '対象 CA',
+  targetCaPh: '発行済み CA を選択。未選択時は clientId で逆引き',
+  targetCaHint: '未選択の場合、clientId からデバイス紐付け CA を自動取得',
+  clientCert: 'クライアント証明書',
+  clientCertPh: 'PEM 文字列 (BEGIN/END CERTIFICATE) または Base64 を貼り付け',
+  uploadFile: 'ファイルアップロード',
+  uploadHint: '.pem / .crt / .cer / .txt 対応',
+  startTest: 'テスト開始',
+  reset: 'リセット',
+  needClientCert: 'クライアント証明書が必要です',
+  testException: 'テスト実行に失敗しました',
+
+  resultTitle: '検証ステップ',
+  emptyHint: '左側を入力して「テスト開始」をクリック',
+  testing: 'テスト中...',
+  testPass: 'テスト合格',
+  testFail: 'テスト失敗',
+  totalCost: '合計 {ms} ms',
+
+  step: {
+    pass: '合格',
+    fail: '失敗',
+    skip: 'スキップ',
+  },
+};

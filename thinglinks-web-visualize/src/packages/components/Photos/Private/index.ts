@@ -17,7 +17,11 @@ type UploadCompletedEventType = {
   url: string
 }
 
-const userPhotosList: ConfigType[] = getLocalStorage(StoreKey) || []
+const storedUserPhotos: ConfigType[] = getLocalStorage(StoreKey) || []
+const userPhotosList: ConfigType[] = storedUserPhotos.map(photo => ({
+  ...photo,
+  get categoryName() { return getChatCategoryEnumName().PRIVATE }
+}))
 
 const uploadFile = (callback: Function | null = null) => {
   const input = document.createElement('input')
@@ -48,7 +52,7 @@ const uploadFile = (callback: Function | null = null) => {
 const addConfig = {
   ...ImageConfig,
   category: ChatCategoryEnum.PRIVATE,
-  categoryName: getChatCategoryEnumName().PRIVATE,
+  get categoryName() { return getChatCategoryEnumName().PRIVATE },
   package: PackagesCategoryEnum.PHOTOS,
   chartFrame: ChartFrameEnum.STATIC,
   title: '点击上传图片', // 此字段在组件注册时使用，多语在显示时处理
@@ -68,7 +72,7 @@ const addConfig = {
             const newPhoto = {
               ...ImageConfig,
               category: ChatCategoryEnum.PRIVATE,
-              categoryName: getChatCategoryEnumName().PRIVATE,
+              get categoryName() { return getChatCategoryEnumName().PRIVATE },
               package: PackagesCategoryEnum.PHOTOS,
               chartFrame: ChartFrameEnum.STATIC,
               title: e.fileName,

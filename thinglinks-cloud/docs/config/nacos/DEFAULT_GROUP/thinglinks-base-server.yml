@@ -1,0 +1,103 @@
+thinglinks:
+  database:
+    # 是否启用分布式事务. 为了大家上手简单默认关闭，但关闭后存在分布式事务不一致可能！！！生产一定设置为true，并启动seata
+    # isSeata: true
+    # initDatabasePrefix:
+    #   - thinglinks_local_ds_c_base
+  file:
+    storageType: ${THINGLINKS_FILE_STORAGE_TYPE:LOCAL}  # FAST_DFS LOCAL MIN_IO ALI_OSS HUAWEI_OSS QINIU_OSS
+    delFile: false
+    # 单个上传文件的容量上限
+    maxUploadSize: ${THINGLINKS_FILE_MAX_UPLOAD_SIZE:64MB}
+    suffix: doc,docx,gif,jpeg,jpg,pdf,png,rar,zip,gzip,tar,gz,xz,xls,xlsx,txt,file,bin,dav,pack,deb,egp,egpx,apk,xml,rpx,rpg,html,htm,wps,xbid,db,jar,cer
+    publicBucket:
+      - public
+    local:
+      storagePath: ${THINGLINKS_FILE_LOCAL_STORAGE_PATH:./data/files/}
+      urlPrefix: ${THINGLINKS_FILE_LOCAL_URL_PREFIX:http://127.0.0.1:18764/file/}
+      innerUrlPrefix: ${THINGLINKS_FILE_LOCAL_INNER_URL_PREFIX:}
+    fastDfs:
+      urlPrefix: ${THINGLINKS_FASTDFS_URL_PREFIX:http://127.0.0.1:10000/}
+    ali:
+      urlPrefix: ${ALI_OSS_URL_PREFIX:}
+      bucket: ${ALI_OSS_BUCKET:}
+      endpoint: ${ALI_OSS_ENDPOINT:}
+      accessKeyId: ${ALI_OSS_ACCESS_KEY_ID:}
+      accessKeySecret: ${ALI_OSS_ACCESS_KEY_SECRET:}
+    minIo:
+      endpoint: ${MINIO_ENDPOINT:http://127.0.0.1:9000}
+      accessKey: ${MINIO_ACCESS_KEY:}
+      secretKey: ${MINIO_SECRET_KEY:}
+      bucket: ${MINIO_BUCKET:thinglinks}
+    huawei:
+      urlPrefix: ${HUAWEI_OSS_URL_PREFIX:}
+      endpoint: ${HUAWEI_OSS_ENDPOINT:}
+      accessKey: ${HUAWEI_ACCESS_KEY:}
+      secretKey: ${HUAWEI_SECRET_KEY:}
+      location: ${HUAWEI_OSS_LOCATION:}
+      bucket: ${HUAWEI_OSS_BUCKET:}
+
+    qiNiu:
+      domain: ${QINIU_DOMAIN:}
+      useHttps: ${QINIU_USE_HTTPS:true}
+      zone: ${QINIU_ZONE:z0}
+      accessKey: ${QINIU_ACCESS_KEY:}
+      secretKey: ${QINIU_SECRET_KEY:}
+      bucket: ${QINIU_BUCKET:}
+
+#FAST_DFS配置
+fdfs:
+  soTimeout: 1500
+  connectTimeout: 600
+  thumb-image:
+    width: 150
+    height: 150
+  tracker-list:
+    - 127.0.0.1:22122
+  pool:
+    #从池中借出的对象的最大数目
+    max-total: 153
+    max-wait-millis: 102
+    jmx-name-base: 1
+    jmx-name-prefix: 1
+
+
+server:
+  port: 18764
+
+spring:
+  servlet:
+    multipart:
+      # Base 服务单个上传文件的解析上限
+      max-file-size: ${THINGLINKS_FILE_MAX_UPLOAD_SIZE:64MB}
+      # Base 服务单次上传请求的解析上限
+      max-request-size: ${THINGLINKS_FILE_MAX_UPLOAD_SIZE:64MB}
+
+springdoc:
+  group-configs:
+    - group: 'base_common'
+      displayName: '基础服务-公共模块'
+      paths-to-match: '/**'
+      packages-to-scan: com.mqttsnet.thinglinks.base.controller.common
+    - group: 'base_user'
+      paths-to-match: '/**'
+      displayName: '基础服务-用户模块'
+      packages-to-scan: com.mqttsnet.thinglinks.base.controller.user
+    - group: 'base_system'
+      paths-to-match: '/**'
+      displayName: '基础服务-系统模块'
+      packages-to-scan: com.mqttsnet.thinglinks.base.controller.system
+    - group: 'base_file'
+      paths-to-match: '/**'
+      displayName: '基础服务-文件模块'
+      packages-to-scan: com.mqttsnet.thinglinks.file.controller
+    - group: 'base_msg'
+      paths-to-match: '/**'
+      displayName: '基础服务-消息模块'
+      packages-to-scan:
+        - com.mqttsnet.thinglinks.msg.controller
+        - com.mqttsnet.thinglinks.sms.controller
+    - group: 'base_nacos'
+      paths-to-match: '/**'
+      displayName: '基础服务-Nacos模块'
+      packages-to-scan: com.mqttsnet.thinglinks.nacos.controller

@@ -3,6 +3,8 @@ export enum StorageEnum {
   GO_SETTING_STORE = 'GO_SETTING',
   // 登录信息
   GO_SYSTEM_STORE = 'GO_SYSTEM',
+  // 旧版登录表单存储键，仅用于升级时清理历史数据
+  GO_LOGIN_INFO_STORE = 'GO_LOGIN_INFO',
   // 语言
   GO_LANG_STORE = 'GO_LANG',
   // 当前选择的主题

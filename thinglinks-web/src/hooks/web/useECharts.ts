@@ -13,6 +13,7 @@ import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
 export function useECharts(
   elRef: Ref<HTMLDivElement>,
   theme: 'light' | 'dark' | 'default' = 'default',
+  initOptions?: Parameters<typeof echarts.init>[2],
 ) {
   const { getDarkMode: getSysDarkMode } = useRootSetting();
   const { getCollapsed } = useMenuSetting();
@@ -43,7 +44,7 @@ export function useECharts(
       return;
     }
 
-    chartInstance = echarts.init(el, t);
+    chartInstance = echarts.init(el, t, initOptions);
     const { removeEvent } = useEventListener({
       el: window,
       name: 'resize',

@@ -32,7 +32,7 @@ export type ProjectItem = {
   /**
    * 项目备注
    */
-  remarks: string
+  remark: string
 }
 
 export interface ProjectDetail extends ProjectItem {

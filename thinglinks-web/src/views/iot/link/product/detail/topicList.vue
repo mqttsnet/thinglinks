@@ -67,10 +67,15 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+/* 父级 panel-card 已固定高度,这里 100% 撑满 + 独立滚动(内部 a-table 内容会很长) */
 .operate {
-  margin-bottom: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   .tabs {
+    flex-shrink: 0;
     display: flex;
 
     .tab {
@@ -94,6 +99,14 @@ export default defineComponent({
         margin-left: 12px;
       }
     }
+  }
+
+  /* 表格容器:占满 tabs 之后的剩余空间,内部独立滚 */
+  .table-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin-top: 16px;
   }
 }
 </style>

@@ -15,13 +15,14 @@ export default {
   parent: '基础包',
   moduleName: '模块名',
   version: '版本号',
+  versionGuide: '填写目标工程采用的语义化版本，例如 x.y.z；应与目标工程根 POM 中的版本保持一致。',
   serverPort: '端口号',
   seata: '是否使用Seata',
   utilParent: 'util基础包',
   helpMessage: {
     outputDir: ['请确保thinglinks-generator服务在本地启动', '项目生成到指定的绝对路径'],
     description: '服务的中文名称',
-    projectPrefix: '如：thinglinks-cloud中的thinglinks',
+    projectPrefix: '如：thinglinks-cloud 中的 thinglinks',
     serviceName: ['如： thinglinks-base-server 中的link', '如： thinglinks-system-server system'],
     parent: [
       'thinglinks-cloud 项目的基础包',
@@ -32,9 +33,9 @@ export default {
       '如： com.mqttsnet.thinglinks.base.dao.common 包中的 base',
       'com.mqttsnet.thinglinks.file.dao.xxx 包中的 file',
     ],
-    groupId: 'thinglinks-cloud项目 pom文件的groupId',
+    groupId: 'thinglinks-cloud 项目 pom 文件的 groupId',
     version: 'thinglinks-cloud pom文件中的版本号',
-    serverPort: 'thinglinks-cloud项目 新建服务的端口号',
+    serverPort: 'thinglinks-cloud 项目新建服务的端口号',
     seata: '开启后，必须启动seata-server',
     utilParent: [
       'thinglinks-util项目的基础包',
@@ -43,10 +44,10 @@ export default {
     utilGroupId: 'thinglinks-util项目 pom文件的groupId',
   },
   measures: [
-    `1. {'{基础包}'}.{'{模块名}'}需要和【代码生成】-【修改代码配置】中{'{父包名}'}.{'{模块名}'}一致{'，'}否则生成的服务swagger文档可能无法显示（需要手动调整）`,
-    `2. 若需要修改 groupId{'，'}需要和项目代码中的groupId中保持一致`,
-    `3. {'{基础包}'} 需要与启动类所在的基础包一致{'，'}否则需要修改项目中{'@'}ComponentScan和{'@'}MapperScan中的配置`,
-    `4. {'{本地生成}'} 适用于开发者本机启动项目后{'，'}直接将"代码"生成在开发者所在电脑{'，'}部署在测试环境上的系统{'，'}无法将代码生成在开发者电脑。`,
-    `5. {'{立即下载}'} 适用于测试环境启动项目后{'，'}开发者将生成的代码下载到开发者的电脑。`,
+    `1. [基础包].[模块名]需要和【代码生成】-【修改代码配置】中[父包名].[模块名]一致，否则生成的服务swagger文档可能无法显示（需要手动调整）`,
+    `2. 若需要修改 groupId，需要和项目代码中的groupId中保持一致`,
+    `3. [基础包] 需要与启动类所在的基础包一致，否则需要修改项目中＠ComponentScan和＠MapperScan中的配置`,
+    `4. [本地生成] 适用于开发者本机启动项目后，直接将"代码"生成在开发者所在电脑，部署在测试环境上的系统，无法将代码生成在开发者电脑。`,
+    `5. [立即下载] 适用于测试环境启动项目后，开发者将生成的代码下载到开发者的电脑。`,
   ],
 };

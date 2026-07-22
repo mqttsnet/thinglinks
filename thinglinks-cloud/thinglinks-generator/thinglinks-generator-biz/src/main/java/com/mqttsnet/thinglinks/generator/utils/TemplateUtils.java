@@ -55,34 +55,34 @@ public class TemplateUtils {
             templates.add(GenCodeConstant.TEMPLATE_PAGE_QUERY);
             templates.add(GenCodeConstant.TEMPLATE_SQL);
         } else if (TemplateEnum.WEB_PLUS.eq(template)) {
-            templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_API);
-            templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_MODEL);
-            templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_LANG_EN);
-            templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_LANG_ZH);
-            templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_DATA);
+            templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_API);
+            templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_MODEL);
+            templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_LANG_EN);
+            templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_LANG_ZH);
+            templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_DATA);
 
             if (TplEnum.TREE.eq(tplType)) {
-                templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_TREE_INDEX);
-                templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_TREE_EDIT);
-                templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_TREE_TREE);
+                templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_TREE_INDEX);
+                templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_TREE_EDIT);
+                templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_TREE_TREE);
             } else if (TplEnum.MAIN_SUB.eq(tplType)) {
                 if (PopupTypeEnum.JUMP.eq(popupType)) {
-                    templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_MAIN_JUMP_EDIT);
+                    templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_MAIN_JUMP_EDIT);
                 } else {
-                    templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_MAIN_EDIT);
+                    templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_MAIN_EDIT);
                 }
-                templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_MAIN_INDEX);
+                templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_MAIN_INDEX);
                 // 从表
-                templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_MAIN_SUB_INDEX);
-                templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_MAIN_SUB_DATA);
+                templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_MAIN_SUB_INDEX);
+                templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_MAIN_SUB_DATA);
 
             } else {
                 if (PopupTypeEnum.JUMP.eq(popupType)) {
-                    templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_JUMP_EDIT);
+                    templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_JUMP_EDIT);
                 } else {
-                    templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_EDIT);
+                    templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_EDIT);
                 }
-                templates.add(GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_INDEX);
+                templates.add(GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_INDEX);
             }
         } else if (TemplateEnum.WEB_SOYBEAN.eq(template)) {
             templates.add(GenCodeConstant.TEMPLATE_WEB_SOYBEAN_SIMPLE_API);

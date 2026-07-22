@@ -1,5 +1,6 @@
 package com.mqttsnet.thinglinks;
 
+import com.mqttsnet.basic.rocketmq.EnableRocketmqStarter;
 import com.mqttsnet.basic.validator.annotation.EnableFormValidator;
 import com.mqttsnet.thinglinks.common.ServerApplication;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ import static com.mqttsnet.thinglinks.common.constant.BizConstant.UTIL_PACKAGE;
 @EnableFormValidator
 @EnableAsync
 @EnableDynamicTp
+@EnableRocketmqStarter
 public class RuleServerApplication extends ServerApplication {
     public static void main(String[] args) throws UnknownHostException {
         start(RuleServerApplication.class, args);

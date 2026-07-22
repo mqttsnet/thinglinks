@@ -1,11 +1,26 @@
 <template>
   <PageWrapper dense contentFullHeight>
-    <BasicTable
-      @register="registerTable"
-      @switch-change="getSwitchChange"
-      :switchFlag="switchFlag"
-      :isAlarmRecord="true"
-    >
+    <BasicTable @register="registerTable" @switch-change="getSwitchChange" :switchFlag="switchFlag">
+      <template #cardView="{ searchData, title }">
+        <BusinessCardList
+          ref="cardListRef"
+          :pageApi="alarmRecordPage"
+          :title="title"
+          :searchData="searchData"
+          nameField="alarmRecordTitle"
+          :nameFallback="t('iot.link.engine.alarmRecord.table.title')"
+          :fields="cardFields"
+          statusField="handledStatus"
+          :statusResolver="resolveRecordStatus"
+          :extraActions="cardExtraActions"
+          @input="getSwitchChange"
+          @extra-action="handleCardExtraAction"
+        >
+          <template #cardImage>
+            <AlarmRecordSvg />
+          </template>
+        </BusinessCardList>
+      </template>
       <template #toolbar>
         <a-button
           type="primary"
@@ -30,7 +45,7 @@
                 onClick: handleView.bind(null, record),
               },
               // {
-              //   tooltip: t(record.handledStatus == 0 ? 'common.title.handle' : (record.handledStatus == 1 ? 'common.title.goResolved' : 'common.title.resolved')),
+              //   tooltip: t(record.handledStatus == 0 ? 'common.title.handle' : 'common.title.goResolved'),
               //   icon: 'ant-design:edit-outlined',
               //   disabled: record.handledStatus == 2 ? true : false,
               //   onClick: handleEdit.bind(null, record),
@@ -50,7 +65,6 @@
         </template>
       </template>
     </BasicTable>
-    <EditModal @register="registerModal" @success="handleSuccess" />
   </PageWrapper>
 </template>
 <script lang="ts">
@@ -59,14 +73,19 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
-  import { useModal } from '/@/components/Modal';
+  import { BusinessCardList } from '/@/components/BusinessCardList';
+  import type { CardAction } from '/@/components/BusinessCardList';
   import { useRouter } from 'vue-router';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
-  import { ActionEnum } from '/@/enums/commonEnum';
-  import { page, remove } from '../../../../../api/iot/rule/alarm/record';
-  import { columns, searchFormSchema } from './alarmRecord.data';
-  import EditModal from './Edit.vue';
+  import { page, remove, deleteSingle } from '../../../../../api/iot/rule/alarm/record';
+  import {
+    columns,
+    searchFormSchema,
+    cardFields as buildCardFields,
+    decorateAlarmRecordPageResult,
+  } from './alarmRecord.data';
   import { useDict } from '/@/components/Dict';
+  import { AlarmRecordSvg } from '/@/components/iot/svg';
   const { getDictLabel } = useDict();
 
   export default defineComponent({
@@ -76,14 +95,32 @@
       BasicTable,
       PageWrapper,
       TableAction,
-      EditModal,
+      BusinessCardList,
+      AlarmRecordSvg,
     },
     setup() {
       const { t } = useI18n();
-      const { push } = useRouter();
-      const { createMessage, createConfirm, notification } = useMessage();
-      const [registerModal, { openModal }] = useModal();
+      const { createMessage, createConfirm } = useMessage();
       const { replace } = useRouter();
+      const cardListRef = ref<any>(null);
+      const cardFields = buildCardFields();
+      const alarmRecordPage = async (...args: Parameters<typeof page>) => {
+        const res = await page(...args);
+        return decorateAlarmRecordPageResult(res);
+      };
+      const cardExtraActions: CardAction[] = [
+        {
+          tooltip: t('common.title.view'),
+          icon: 'ant-design:search-outlined',
+          event: 'view',
+        },
+        {
+          tooltip: t('common.title.delete'),
+          icon: 'ant-design:delete-outlined',
+          color: 'error',
+          event: 'delete',
+        },
+      ];
 
       // 表格
       const [registerTable, { reload, getSelectRowKeys }] = useTable({
@@ -93,8 +130,9 @@
         columns: columns(),
         formConfig: {
           name: 'AlarmRecordSearch',
-          labelWidth: 120,
+          labelWidth: 96,
           schemas: searchFormSchema(),
+          compact: true,
           autoSubmitOnEnter: true,
           resetButtonOptions: {
             preIcon: 'ant-design:rest-outlined',
@@ -119,54 +157,30 @@
         },
       });
 
-      // 弹出复制页面
-      function handleCopy(record: Recordable, e: Event) {
-        e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.COPY,
-        });
-      }
-      // 弹出新增页面
-      function handleAdd() {
-        openModal(true, {
-          type: ActionEnum.ADD,
-        });
-      }
-
       // 弹出查看页面
       function handleView(record: Recordable, e: Event) {
         e?.stopPropagation();
-        // openModal(true, {
-        //   record,
-        //   type: ActionEnum.VIEW,
-        // });
         replace({
           name: '告警记录详情',
           params: { id: record.id },
         });
       }
 
-      // 弹出编辑页面
-      function handleEdit(record: Recordable, e: Event) {
-        e?.stopPropagation();
-        openModal(true, {
-          record,
-          type: ActionEnum.EDIT,
-        });
-      }
-
       // 新增或编辑成功回调
       function handleSuccess() {
         reload();
+        cardListRef.value?.reload();
       }
+
+      const handleDeleteSingle = async (id: string) => {
+        await deleteSingle(id);
+        createMessage.success(t('common.tips.deleteSuccess'));
+        handleSuccess();
+      };
 
       async function batchDelete(ids: string[]) {
         await remove(ids);
-        notification.success({
-          message: t('common.tips.tips'),
-          description: t('common.tips.deleteSuccess'),
-        });
+        createMessage.success(t('common.tips.deleteSuccess'));
         handleSuccess();
       }
 
@@ -174,18 +188,47 @@
       function handleDelete(record: Recordable, e: Event) {
         e?.stopPropagation();
         if (record?.id) {
-          batchDelete([record.id]);
+          handleDeleteSingle(record.id);
         }
+      }
+
+      function handleCardDelete(record: Recordable) {
+        if (!record?.id) return;
+        createConfirm({
+          iconType: 'warning',
+          content: t('common.tips.confirmDelete'),
+          onOk: () => handleDeleteSingle(record.id),
+        });
+      }
+
+      function handleCardExtraAction(payload: { event: string; record: Recordable }) {
+        const event = new Event('synthetic');
+        if (payload.event === 'view') {
+          handleView(payload.record, event);
+          return;
+        }
+        if (payload.event === 'delete') {
+          handleCardDelete(payload.record);
+        }
+      }
+
+      function resolveRecordStatus(record: Recordable) {
+        const status = Number(record?.handledStatus);
+        const label = getDictLabel('RULE_ALARM_RECORD_HANDLED_STATUE', record?.handledStatus, '-');
+        if (status === 2) {
+          return { label, cls: 'online' };
+        }
+        if (status === 1) {
+          return { label, cls: 'offline' };
+        }
+        return { label, cls: 'danger' };
       }
 
       // 点击批量删除
       function handleBatchDelete() {
         const ids = getSelectRowKeys();
         if (!ids || ids.length <= 0) {
-          notification.warning({
-            message: t('common.tips.tips'),
-            description: t('common.tips.pleaseSelectTheData'),
-          });
+          createMessage.warning(t('common.tips.pleaseSelectTheData'));
           return;
         }
         createConfirm({
@@ -216,19 +259,20 @@
       return {
         t,
         registerTable,
-        registerModal,
         handleView,
-        handleAdd,
-        handleCopy,
-        handleEdit,
         handleDelete,
         handleBatchDelete,
         handleSuccess,
         switchView,
         getSwitchChange,
         switchFlag,
+        cardFields,
+        cardExtraActions,
+        cardListRef,
+        handleCardExtraAction,
+        resolveRecordStatus,
+        alarmRecordPage,
       };
     },
   });
 </script>
-../../../../../api/iot/link/alarmRecord/record

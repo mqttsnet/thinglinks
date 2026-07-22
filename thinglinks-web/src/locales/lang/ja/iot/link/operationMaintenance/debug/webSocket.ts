@@ -1,6 +1,62 @@
 export default {
   title: 'WebSocket デバッグ',
-  send: '发送',
+  subtitle:
+    'デバイス接続エンドポイント(ゲートウェイ経由)で WS の上り下りをデバッグ ── デバイス報告のシミュレーション、プラットフォームからの命令受信',
+
+  // 接続設定
+  connectConfig: '接続設定',
+  tenantId: 'テナント ID',
+  clientId: 'クライアント ID(clientId)',
+  username: 'ユーザー名',
+  password: 'パスワード',
+  wsUrl: 'WS アドレス(ゲートウェイ経由、手動変更可)',
+  wsUrlHint:
+    'デフォルトでデバイス接続エンドポイントに接続;上記項目を変更すると自動で再生成、直接編集も可',
+  resetDefault: 'デフォルトに戻す',
+  connect: '接続',
+  disconnect: '切断',
+  connected: '接続済み',
+  disconnected: '未接続',
+  modeManual: '手動入力',
+  modeDevice: 'デバイス指定',
+  device: 'デバイス選択',
+  devicePh: 'デバイス名で検索…',
+  deviceHint:
+    '先に製品を選び、その配下のデバイスを選択。clientId / ユーザー名 / パスワード / テナントを自動入力(編集可)',
+
+  // 送信
+  sendFrame: 'メッセージ送信',
+  frameDatas: 'データ報告(datas)',
+  framePing: 'ハートビート(PING)',
+  frameCmdRsp: 'コマンド応答(deviceRsp)',
+  messageHint:
+    '業務フレームは topic・payload フィールド、ハートビートは type が PING。デフォルトはデバイスデータ報告(変更可)',
+  cmdRspHint:
+    'プラットフォームからの命令にデバイスとして応答:serviceCode / cmd を「メッセージウィンドウ」で受信した命令に合わせる。errCode 0=成功 / 1=失敗',
+  sendBtn: '送信',
+
+  // メッセージウィンドウ
+  receiveWindow: 'メッセージウィンドウ',
+  deviceFilterPrefix: 'デバイス',
+  deviceFilterPh: 'デバイス識別子で絞り込み',
+  topicFilterPrefix: 'Topic',
+  topicFilterPh: 'topic で絞り込み',
+  search: '検索',
+  clear: 'クリア',
+  empty: 'メッセージなし',
+  emptyFiltered: '一致するメッセージがありません',
+  dirSent: '送信',
+  dirRecv: '受信',
+  dirSys: 'システム',
+  sysConnecting: '接続中…',
+  sysOpen: '接続が確立しました',
+  sysClose: '接続が閉じました',
+  sysError: '接続エラー',
+  prettyJson: '整形',
+  copy: 'コピー',
+
+  // 旧キー(mqtt デバッグページで使用中、保持)
+  send: '送信',
   connectionStatus: '接続ステータス',
   closeConnection: '閉じる接続',
   openConnection: '开启接続',

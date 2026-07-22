@@ -36,6 +36,12 @@ public class VueRouter extends TreeEntity<VueRouter, Long> implements EchoVO {
     private String link;
     @Schema(description = "菜单名称")
     private String name;
+    /**
+     * 菜单资源编码（全局唯一）。
+     * <p>用于前端 keep-alive cache key、权限校验、菜单同步等需要唯一标识的场景。
+     */
+    @Schema(description = "菜单资源编码")
+    private String code;
     @Schema(description = "组件")
     private String component;
     @Schema(description = "重定向")

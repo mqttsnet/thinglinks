@@ -12,7 +12,7 @@ export interface LinkagePageQuery {
   deviceType?: string; // 设备类型:支持英文大小写、数字、下划线和中划线
   protocolType?: string; // 设备接入平台的协议类型，默认为MQTT无需修改。
   productStatus?: number; // 状态(字典值：0启用  1停用)
-  productVersion?: string; // 产品版本
+  activeVersionNo?: string; // 产品版本
   remark?: string; // 产品描述
   createdOrgId?: string; // 创建人组织
 }

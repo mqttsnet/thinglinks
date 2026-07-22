@@ -157,6 +157,11 @@ public class VideoStreamProxySaveVO implements Serializable {
      */
     @Schema(description = "创建人组织")
     private Long createdOrgId;
+    /**
+     * 最大重试次数
+     */
+    @Schema(description = "最大重试次数")
+    private Integer maxRetryCount;
 
 
 }

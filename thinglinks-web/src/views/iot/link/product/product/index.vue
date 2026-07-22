@@ -1,11 +1,63 @@
 <template>
   <PageWrapper dense contentFullHeight>
-    <BasicTable
-      @register="registerTable"
-      @switch-change="getSwitchChange"
-      :switchFlag="switchFlag"
-      :is-product="true"
-    >
+    <BasicTable @register="registerTable" @switch-change="getSwitchChange" :switchFlag="switchFlag">
+      <!-- 卡片视图(flexy 风格) ── 通过 BasicTable 的 cardView slot 注入,默认开启 -->
+      <template #cardView="{ searchData, title }">
+        <BusinessCardList
+          ref="cardListRef"
+          :pageApi="page"
+          :deleteApi="deleteSingle"
+          :title="title"
+          :searchData="searchData"
+          nameField="productName"
+          :nameFallback="t('iot.link.product.product.table.title')"
+          :fields="cardFields"
+          statusField="productStatus"
+          :statusOnlineValue="0"
+          :statusOnlineLabel="t('iot.link.product.product.statusEnabled')"
+          :statusOfflineLabel="t('iot.link.product.product.statusDisabled')"
+          badgeField="productType"
+          :badgeDictType="DictEnum.LINK_PRODUCT_TYPE"
+          :permissions="cardPermissions"
+          :extraActions="cardExtraActions"
+          @input="getSwitchChange"
+          @add="handleAdd"
+          @view="handleView"
+          @edit="handleEdit"
+          @delete="handleDelete"
+          @extraAction="handleCardExtraAction"
+        >
+          <!-- 卡片视图工具栏补充产品特有顶层动作:快捷生成 / 导入(批量删除依赖行选择,卡片视图用每卡删除) -->
+          <template #headerExtra>
+            <a-button
+              v-hasPermission="['link:product:product:quick']"
+              type="primary"
+              preIcon="ant-design:plus-outlined"
+              @click="onQuick"
+            >
+              {{ t('iot.link.device.device.quick') }}
+            </a-button>
+            <a-button
+              v-hasPermission="['link:product:product:import']"
+              type="primary"
+              preIcon="ant-design:download-outlined"
+              @click="handleImport"
+            >
+              {{ t('common.title.import') }}
+            </a-button>
+          </template>
+          <template #cardImage="{ record }">
+            <!-- 优先用产品自定义 icon;没有就按 productType 回退到内联 SVG(flexy 风格,与桥接规则同款) -->
+            <ThumbUrl
+              v-if="record?.icon"
+              :fileId="record.icon"
+              :imageStyle="{ 'max-width': '90px', 'max-height': '90px' }"
+            />
+            <component v-else :is="getProductTypeSvg(record?.productType)" />
+          </template>
+        </BusinessCardList>
+      </template>
+
       <template #toolbar>
         <a-button
           v-hasPermission="['link:product:product:delete']"
@@ -37,7 +89,8 @@
           type="primary"
           preIcon="ant-design:download-outlined"
           @click="handleImport"
-        >{{ t('common.title.import') }}</a-button>
+          >{{ t('common.title.import') }}</a-button
+        >
         <a-button preIcon="ant-design:swap-outlined" @click="switchView"
           >{{ t('iot.link.device.device.switchView') }}
         </a-button>
@@ -66,6 +119,13 @@
                 icon: 'ant-design:edit-outlined',
                 auth: 'link:product:product:edit',
                 onClick: handleEdit.bind(null, record),
+              },
+              {
+                tooltip: t('iot.link.product.product.action.publish'),
+                icon: 'ant-design:rocket-outlined',
+                color: 'success',
+                auth: 'link:product:product:publish',
+                onClick: handlePublish.bind(null, record),
               },
               {
                 tooltip: t('common.title.copy'),
@@ -97,6 +157,7 @@
     </BasicTable>
     <EditModal @register="registerModal" @success="handleSuccess" />
     <ImportModal @register="importModal" @reload="reload" />
+    <PublishModal @register="registerPublishModal" @success="handleSuccess" />
   </PageWrapper>
 </template>
 <script lang="ts">
@@ -106,14 +167,18 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
   import { useModal } from '/@/components/Modal';
+  import { BusinessCardList } from '/@/components/BusinessCardList';
+  import type { CardAction, CardPermissions } from '/@/components/BusinessCardList';
+  import { getProductTypeSvg } from '/@/components/iot/svg';
   import ThumbUrl from '/@/components/Upload/src/ThumbUrl.vue';
   import { handleFetchParams } from '/@/utils/thinglinks/common';
   import { downloadFile } from '/@/utils/file/download.ts';
-  import { ActionEnum } from '/@/enums/commonEnum';
+  import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
   import { page, remove, exportJson, deleteSingle } from '/@/api/iot/link/product/product';
-  import { columns, searchFormSchema } from './product.data';
+  import { columns, searchFormSchema, cardFields as buildCardFields } from './product.data';
   import EditModal from './Edit.vue';
   import ImportModal from './ImportModal.vue';
+  import PublishModal from '../detail/PublishModal.vue';
   import { useRouter } from 'vue-router';
   import { Button } from 'ant-design-vue';
   import { useDict } from '/@/components/Dict';
@@ -127,18 +192,52 @@
       BasicTable,
       PageWrapper,
       TableAction,
+      BusinessCardList,
       EditModal,
       ImportModal,
+      PublishModal,
       AButton: Button,
       ThumbUrl,
     },
     setup() {
       const { t } = useI18n();
-      const { createConfirm, notification } = useMessage();
+      const { createConfirm, createMessage } = useMessage();
       const { hasPermission } = usePermission();
       const [registerModal, { openModal }] = useModal();
       const [importModal, { openModal: openImportModal }] = useModal();
+      const [registerPublishModal, { openModal: openPublishModal }] = useModal();
       const { replace } = useRouter();
+      const cardListRef = ref<any>(null);
+
+      // 卡片视图配置 ── 与桥接规则同款 flexy 风格
+      const cardFields = buildCardFields();
+      const cardPermissions: CardPermissions = {
+        add: 'link:product:product:add',
+        edit: 'link:product:product:edit',
+        delete: 'link:product:product:delete',
+        view: 'link:product:product:view',
+      };
+      /** 卡片视图额外操作:发布版本 / 复制 / 导出(详情/编辑/删除已内置在 BusinessCardList) */
+      const cardExtraActions: CardAction[] = [
+        {
+          tooltip: t('iot.link.product.product.action.publish'),
+          icon: 'ant-design:rocket-outlined',
+          permission: 'link:product:product:publish',
+          event: 'publish',
+        },
+        {
+          tooltip: t('common.title.copy'),
+          icon: 'ant-design:copy-outlined',
+          permission: 'link:product:product:copy',
+          event: 'copy',
+        },
+        {
+          tooltip: t('common.title.export'),
+          icon: 'ant-design:export-outlined',
+          permission: 'link:product:product:export',
+          event: 'export',
+        },
+      ];
 
       // 表格
       const [registerTable, { reload, getSelectRowKeys }] = useTable({
@@ -147,15 +246,16 @@
         columns: columns(),
         formConfig: {
           name: 'ProductSearch',
-          labelWidth: 120,
+          labelWidth: 90,
+          // 第一行 4 个 span 6 字段先展示;超出由"展开"按钮控制(flexy 风格)
+          autoAdvancedLine: 1,
+          showAdvancedButton: true,
           schemas: searchFormSchema(),
           autoSubmitOnEnter: true,
-          resetButtonOptions: {
-            preIcon: 'ant-design:rest-outlined',
-          },
-          submitButtonOptions: {
-            preIcon: 'ant-design:search-outlined',
-          },
+          baseColProps: { span: 6 },
+          compact: true,
+          resetButtonOptions: { preIcon: 'ant-design:rest-outlined' },
+          submitButtonOptions: { preIcon: 'ant-design:search-outlined' },
         },
         beforeFetch: handleFetchParams,
         useSearchForm: true,
@@ -178,10 +278,10 @@
         try {
           const response = await exportJson(record.productIdentification);
           downloadFile(response);
-          notification.success({ message: t('common.tips.exportSuccess') });
+          createMessage.success(t('common.tips.exportSuccess'));
         } catch (error) {
           console.error('导出失败:', error);
-          notification.error({ message: t('common.tips.exportFail') });
+          createMessage.error(t('common.tips.exportFail'));
         }
       }
       // 弹出复制页面
@@ -203,10 +303,7 @@
       function handleView(record: Recordable, e: Event) {
         e?.stopPropagation();
         if (!hasPermission('link:product:product:view')) {
-          notification.warning({
-            message: t('common.tips.tips'),
-            description: t('sys.api.operationFailed')
-          });
+          createMessage.warning(t('sys.api.operationFailed'));
           return;
         }
         replace({
@@ -231,21 +328,48 @@
         });
       }
 
+      /** 打开发布弹窗,把当前产品基础信息塞进去。 */
+      function handlePublish(record: Recordable, e: Event) {
+        e?.stopPropagation();
+        openPublishModal(true, {
+          productIdentification: record.productIdentification,
+          productName: record.productName,
+          currentVersion: record.activeVersionNo,
+        });
+      }
+
       // 新增或编辑成功回调
       function handleSuccess() {
         reload();
+        cardListRef.value?.reload();
+      }
+
+      /** 卡片视图额外操作派发(BusinessCardList @extraAction 回调) */
+      function handleCardExtraAction(payload: { event: string; record: Recordable }) {
+        const e = new Event('synthetic');
+        switch (payload.event) {
+          case 'publish':
+            handlePublish(payload.record, e);
+            break;
+          case 'copy':
+            handleCopy(payload.record, e);
+            break;
+          case 'export':
+            handleExport(payload.record, e);
+            break;
+        }
       }
 
       async function batchDelete(ids: string[]) {
         await remove(ids);
-        notification.success({ message: t('common.tips.deleteSuccess') });
+        createMessage.success(t('common.tips.deleteSuccess'));
         handleSuccess();
       }
 
       // 删除单个
       const handleDeleteSingle = async (id: string) => {
         await deleteSingle(id);
-        notification.success({ message: t('common.tips.deleteSuccess') });
+        createMessage.success(t('common.tips.deleteSuccess'));
         handleSuccess();
       };
 
@@ -261,7 +385,7 @@
       function handleBatchDelete() {
         const ids = getSelectRowKeys();
         if (!ids || ids.length <= 0) {
-          notification.warn({ message: t('common.tips.pleaseSelectTheData') });
+          createMessage.warning(t('common.tips.pleaseSelectTheData'));
           return;
         }
         createConfirm({
@@ -275,7 +399,7 @@
         });
       }
 
-      // 切换视图 卡片&&列表
+      // 切换视图 卡片(true=显示卡片) <-> 表格(false)。默认卡片(flexy 风格)
       const switchFlag = ref<boolean>(true);
       function switchView() {
         console.log('switchView');
@@ -293,10 +417,12 @@
         t,
         registerTable,
         registerModal,
+        registerPublishModal,
         handleView,
         handleAdd,
         handleCopy,
         handleEdit,
+        handlePublish,
         handleDelete,
         handleBatchDelete,
         handleSuccess,
@@ -309,6 +435,17 @@
         importModal,
         handleImport,
         reload,
+        // 卡片视图相关
+        page,
+        deleteSingle,
+        DictEnum,
+        EditModal,
+        cardFields,
+        cardPermissions,
+        cardExtraActions,
+        cardListRef,
+        handleCardExtraAction,
+        getProductTypeSvg,
       };
     },
   });

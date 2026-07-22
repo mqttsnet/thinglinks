@@ -124,10 +124,15 @@ public class DefResourceServiceImpl extends SuperCacheServiceImpl<DefResourceMan
         long count = superManager.count(Wraps.<DefResource>lbQ().in(DefResource::getParentId, ids));
         ArgumentAssert.isFalse(count > 0, "您要删除的资源存在子资源，请先删除子资源！");
 
+        // 删除前获取 applicationId 用于清理缓存
+        List<DefResource> resources = superManager.listByIds(ids);
+        List<Long> applicationIds = resources.stream().map(DefResource::getApplicationId).distinct().toList();
+
         boolean result = this.removeByIds(ids);
         defResourceApiManager.removeByResourceId(ids);
 
-        cacheOps.del(AllResourceApiCacheKeyBuilder.builder());
+        // 淘汰资源及相关缓存
+        applicationIds.forEach(this::clearCache);
         // TODO 删除租户下的 角色资源关系表 员工资源关系表
         // deleteRoleResourceRelByResourceId(ids);
         return result;
@@ -214,10 +219,11 @@ public class DefResourceServiceImpl extends SuperCacheServiceImpl<DefResourceMan
         }
         superManager.updateById(current);
 
-        // 只修改了 父ID、path等字段，清理资源缓存，无需清理 资源API的缓存
+        // 清理资源缓存及租户资源缓存
         List<Long> allIdList = childrenList.stream().map(DefResource::getId).collect(Collectors.toList());
         allIdList.add(current.getId());
         superManager.delCache(allIdList);
+        clearCache(current.getApplicationId());
     }
 
     private void recursiveFill(List<DefResource> tree, DefResource parent) {
@@ -267,8 +273,8 @@ public class DefResourceServiceImpl extends SuperCacheServiceImpl<DefResourceMan
         superManager.save(resource);
         saveResourceApi(resource.getId(), data.getResourceApiList());
 
-        // 淘汰资源下绑定的接口
-        cacheOps.del(AllResourceApiCacheKeyBuilder.builder());
+        // 淘汰资源及相关缓存
+        clearCache(data.getApplicationId());
         return resource;
     }
 
@@ -305,8 +311,8 @@ public class DefResourceServiceImpl extends SuperCacheServiceImpl<DefResourceMan
         defResourceApiManager.removeByResourceId(Collections.singletonList(resource.getId()));
         saveResourceApi(resource.getId(), data.getResourceApiList());
 
-        // 淘汰资源下绑定的接口
-        cacheOps.del(AllResourceApiCacheKeyBuilder.builder());
+        // 淘汰资源及相关缓存
+        clearCache(data.getApplicationId());
         return resource;
     }
 

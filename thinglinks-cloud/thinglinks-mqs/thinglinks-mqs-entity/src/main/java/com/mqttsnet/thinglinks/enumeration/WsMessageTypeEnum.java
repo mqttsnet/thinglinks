@@ -1,10 +1,10 @@
 package com.mqttsnet.thinglinks.enumeration;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-
 import java.util.Arrays;
 import java.util.Optional;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 
 /**
  * WebSocket消息类型枚举
@@ -30,13 +30,6 @@ public enum WsMessageTypeEnum {
     @Schema(description = "连接数同步指令（集群状态更新）")
     CONNECTION_SYNC(2002, "连接同步"),
 
-    //-----------------------  实例事件类别------------------
-    @Schema(description = "服务节点上线通知（集群感知）")
-    INSTANCE_UP(3001, "节点上线"),
-
-    @Schema(description = "服务节点下线通知（优雅关闭）")
-    INSTANCE_DOWN(3002, "节点下线"),
-
     //-------------------状态管理类别---------------
     @Schema(description = "强制断开连接指令（紧急情况）")
     FORCE_DISCONNECT(4001, "强制断线");
@@ -59,8 +52,8 @@ public enum WsMessageTypeEnum {
             return Optional.empty();
         }
         return Arrays.stream(values())
-                .filter(e -> e.value.equals(value))
-                .findFirst();
+            .filter(e -> e.value.equals(value))
+            .findFirst();
     }
 }
 

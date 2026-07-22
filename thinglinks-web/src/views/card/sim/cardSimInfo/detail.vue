@@ -178,7 +178,7 @@
               </a-descriptions-item>
               <a-descriptions-item :labelStyle="labelStyle" :contentStyle="contentStyle"
                 :label="t('card.sim.cardSimInfo.createdBy')">
-                {{ cardSimInfoDetail.createdBy }}
+                {{ echoMapText(cardSimInfoDetail, 'createdBy') }}
               </a-descriptions-item>
               <a-descriptions-item :labelStyle="labelStyle" :contentStyle="contentStyle"
                 :label="t('card.sim.cardSimInfo.updatedTime')">
@@ -186,7 +186,7 @@
               </a-descriptions-item>
               <a-descriptions-item :labelStyle="labelStyle" :contentStyle="contentStyle"
                 :label="t('card.sim.cardSimInfo.updatedBy')">
-                {{ cardSimInfoDetail.updatedBy }}
+                {{ echoMapText(cardSimInfoDetail, 'updatedBy') }}
               </a-descriptions-item>
               <a-descriptions-item :labelStyle="labelStyle" :contentStyle="contentStyle"
                 :label="t('card.sim.cardSimInfo.remark')">
@@ -272,7 +272,7 @@
               </a-descriptions-item>
               <a-descriptions-item :labelStyle="labelStyle" :contentStyle="contentStyle"
                 :label="t('card.channel.cardChannelInfo.createdBy')">
-                {{ cardSimInfoDetail.cardChannelInfoResultVO?.createdBy }}
+                {{ echoMapText(cardSimInfoDetail.cardChannelInfoResultVO, 'createdBy') }}
               </a-descriptions-item>
               <a-descriptions-item :labelStyle="labelStyle" :contentStyle="contentStyle"
                 :label="t('card.channel.cardChannelInfo.updatedTime')">
@@ -280,11 +280,11 @@
               </a-descriptions-item>
               <a-descriptions-item :labelStyle="labelStyle" :contentStyle="contentStyle"
                 :label="t('card.channel.cardChannelInfo.updatedBy')">
-                {{ cardSimInfoDetail.cardChannelInfoResultVO?.updatedBy }}
+                {{ echoMapText(cardSimInfoDetail.cardChannelInfoResultVO, 'updatedBy') }}
               </a-descriptions-item>
               <a-descriptions-item :labelStyle="labelStyle" :contentStyle="contentStyle"
                 :label="t('card.channel.cardChannelInfo.createdOrgId')">
-                {{ cardSimInfoDetail.cardChannelInfoResultVO?.createdOrgId }}
+                {{ echoMapText(cardSimInfoDetail.cardChannelInfoResultVO, 'createdOrgId') }}
               </a-descriptions-item>
               <a-descriptions-item :labelStyle="labelStyle" :contentStyle="contentStyle"
                 :label="t('card.channel.cardChannelInfo.remark')">
@@ -312,6 +312,7 @@ import { useDict } from '/@/components/Dict';
 import EditModal from './Edit.vue';
 import { useModal } from '/@/components/Modal';
 const { getDictLabel } = useDict();
+import { echoMapText } from '/@/utils/echo';
 import { ActionEnum } from '/@/enums/commonEnum';
 import SvgIcon from '/@/components/Icon/src/SvgIcon.vue';
 // import { dictAllComponentProps } from '../../../../../utils/thinglinks/common';
@@ -344,7 +345,7 @@ export default defineComponent({
     const isShow = ref(false);
     const textToCopy = ref(null);
     const { t } = useI18n();
-    const { createMessage, createConfirm, notification } = useMessage();
+    const { createMessage, createConfirm } = useMessage();
     const { currentRoute } = useRouter();
     let cardSimInfoDetail = reactive<CardChannelInfoResultVO>({})
     const [registerModal, { openModal }] = useModal();
@@ -365,9 +366,9 @@ export default defineComponent({
       let result = copyTextToClipboard(text)
       console.log(result, 'result')
       if (result) {
-        notification.success({ message: t('common.tips.tips'), description: t('common.tips.copySuccess') });
+        createMessage.success(t('common.tips.copySuccess'));
       } else {
-        notification.warning({ message: t('common.tips.tips'), description: t('common.tips.copyFail') });
+        createMessage.warning(t('common.tips.copyFail'));
       }
     }
 
@@ -420,6 +421,7 @@ export default defineComponent({
       textToCopy,
       changeShow,
       getDictLabel,
+      echoMapText,
       registerModal,
       handleEdit,
       handleCopy,

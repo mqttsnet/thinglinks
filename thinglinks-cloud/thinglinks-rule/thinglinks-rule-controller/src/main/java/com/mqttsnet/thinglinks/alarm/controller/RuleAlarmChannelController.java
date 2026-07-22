@@ -118,7 +118,9 @@ public class RuleAlarmChannelController extends SuperController<RuleAlarmChannel
     })
     @GetMapping("/getAlarmChannelDetails/{id}")
     public R<RuleAlarmChannelDetailsResultVO> getAlarmChannelDetails(@PathVariable("id") Long id) {
-        return R.success(superService.getAlarmChannelDetails(id));
+        RuleAlarmChannelDetailsResultVO result = superService.getAlarmChannelDetails(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
 }

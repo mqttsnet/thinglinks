@@ -11,7 +11,7 @@ const imageList = [
 const photoConfigList = imageList.map(i => ({
   ...ImageConfig,
   category: ChatCategoryEnum.SHARE,
-  categoryName: getChatCategoryEnumName().SHARE,
+  get categoryName() { return getChatCategoryEnumName().SHARE },
   package: PackagesCategoryEnum.PHOTOS,
   chartFrame: ChartFrameEnum.STATIC,
   image: i.imageUrl,

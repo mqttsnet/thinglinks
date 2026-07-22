@@ -118,9 +118,12 @@ export const downloadTextFile = (
 /**
  * @description: base64 to blob
  */
-export const dataURLToBlob = (dataURL) => {
+export const dataURLToBlob = (dataURL: string) => {
   const parts = dataURL.split(',');
-  const mime = parts[0].match(/:(.*?);/)[1];
+  const mime = parts[0]?.match(/:(.*?);/)?.[1];
+  if (!mime || !parts[1]) {
+    throw new Error('Invalid data URL')
+  }
   const bstr = atob(parts[1]);
   let n = bstr.length;
   const u8arr = new Uint8Array(n);

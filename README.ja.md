@@ -123,7 +123,7 @@ pnpm run dev
 
 ```bash
 # ワンクリックデプロイ
-docker-compose up -d
+docker compose -f thinglinks-cloud/docker/docker-compose.yml up -d
 ```
 
 > 詳細なデプロイガイドは [mqttsnet.com](https://mqttsnet.com) をご覧ください。
@@ -147,12 +147,12 @@ thinglinks/
 │   ├── thinglinks-openapi/          # Open API Service
 │   ├── thinglinks-public/           # Public Service
 │   ├── thinglinks-base/             # Base Platform Service
-│   └── thinglinks-sdk/              # SDK
+│   ├── thinglinks-sdk/              # SDK
+│   └── docker/                      # Cloud Docker Compose Deployment
 ├── thinglinks-web/                  # Admin Console (Vue 3 + Vben)
 ├── thinglinks-web-visualize/        # Visualization Dashboard (Vue 3 + ECharts)
 ├── thinglinks-job/                  # Scheduled Task Service (XXL-JOB)
 ├── bifromq-plugin/                  # Apache BifroMQ Plugin
-├── docker/                          # Docker Compose Deployment
 ├── docs/                            # Documentation & Screenshots
 └── scripts/                         # Build & Utility Scripts
 ```
@@ -162,6 +162,19 @@ thinglinks/
 クイックスタートガイド、開発ガイド、API リファレンス、デプロイ手順を含む完全なドキュメントは、公式ウェブサイトをご覧ください：
 
 [![Docs](https://img.shields.io/badge/Documentation-mqttsnet.com-blue?style=for-the-badge)](https://mqttsnet.com)
+
+## 🤖 Agent Skills(AI 支援開発)
+
+公式 **Agent Skills** は、本プロジェクトの実コードに基づく知見を AI エージェント(Claude Code · Codex · Cursor)がオンデマンドで読み込めるスキルとして提供します。サブプロジェクトごとに 1 スキル、**[ThingLinks Skills](https://github.com/mqttsnet/thinglinks-skills)** コレクションより:
+
+```bash
+# global (-g); drop -g to install into the current project only
+npx skills add mqttsnet/thinglinks-skills@thinglinks-cloud -g    # backend microservices
+npx skills add mqttsnet/thinglinks-skills@thinglinks-web -g      # admin console (Vue3)
+npx skills add mqttsnet/thinglinks-skills@bifromq-plugin -g      # BifroMQ broker plugins
+```
+
+ルールスクリプト、プロトコルエンベロープ、上り/下りリンク、モノモデル、ACL、コンソール画面、BifroMQ 認証/イベントプラグインの作業時に自動トリガーされます。全スキル(`thinglinks-util` 含む)は **[mqttsnet/thinglinks-skills](https://github.com/mqttsnet/thinglinks-skills)** へ。
 
 ## スクリーンショット
 

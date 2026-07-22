@@ -84,15 +84,12 @@ public interface EchoDictType {
         String GrantType = "GrantType";
         String MsgTemplateCodeEnum = "MsgTemplateCodeEnum";
         String OrgTypeEnum = "OrgTypeEnum";
-        String ProductType = "ProductType";
         String TaskStatus = "TaskStatus";
         String DateType = "DateType";
-        String DefGenTestSimpleType2Enum = "DefGenTestSimpleType2Enum";
         String InterfaceExecModeEnum = "InterfaceExecModeEnum";
         String RoleCategoryEnum = "RoleCategoryEnum";
         String UserStatusEnum = "UserStatusEnum";
         String DataTypeEnum = "DataTypeEnum";
-        String DefGenTestTreeType2Enum = "DefGenTestTreeType2Enum";
         String LoginStatusEnum = "LoginStatusEnum";
         String PopupTypeEnum = "PopupTypeEnum";
         String TplEnum = "TplEnum";
@@ -342,6 +339,21 @@ public interface EchoDictType {
          */
         String LINK_DEVICE_ACTION_TYPE = "LINK_DEVICE_ACTION_TYPE";
 
+        /**
+         * 设备动作状态 ── 0 成功 / 1 失败,前端列展示 Tag 颜色
+         */
+        String LINK_DEVICE_ACTION_STATUS = "LINK_DEVICE_ACTION_STATUS";
+
+        /**
+         * 设备指令类型 ── 0 命令下发 / 1 命令响应
+         */
+        String LINK_DEVICE_COMMAND_TYPE = "LINK_DEVICE_COMMAND_TYPE";
+
+        /**
+         * 设备指令执行状态 ── 0 待处理 / 1 已处理 / 2 失败 等(详见字典表)
+         */
+        String LINK_DEVICE_COMMAND_STATUS = "LINK_DEVICE_COMMAND_STATUS";
+
 
         /**
          * 产品服务属性数据类型
@@ -405,19 +417,113 @@ public interface EchoDictType {
          */
         String LINK_OTA_TASK_RECORD_COMMAND_SEND_STATUS = "LINK_OTA_TASK_RECORD_COMMAND_SEND_STATUS";
 
+        /** 产品物模型版本状态(0-草稿,1-已发布,2-灰度中,3-影子,4-已回滚,5-已归档) */
+        String PRODUCT_VERSION_STATUS = "PRODUCT_VERSION_STATUS";
+
+        /** 产品发布策略(0-全量,1-灰度,2-影子) */
+        String PRODUCT_PUBLISH_STRATEGY = "PRODUCT_PUBLISH_STRATEGY";
+
+        /** 产品发布记录操作意图(0-发布,1-回滚,2-历史清理) */
+        String PRODUCT_PUBLISH_RECORD_INTENT = "PRODUCT_PUBLISH_RECORD_INTENT";
+
+        /** 产品发布记录执行状态(0-执行中,1-成功,2-失败) */
+        String PRODUCT_PUBLISH_RECORD_STATUS = "PRODUCT_PUBLISH_RECORD_STATUS";
+
+        /** 产品物模型版本变更类型(0-新增,1-编辑,2-删除) */
+        String PRODUCT_VERSION_CHANGE_TYPE = "PRODUCT_VERSION_CHANGE_TYPE";
+
+    }
+
+    /**
+     * 视频服务
+     */
+    interface Video {
+        // @thinglinks.generator auto insert Video
+
+        /** 流媒体服务类型 (zlm/abl) */
+        String VIDEO_MEDIA_SERVER_TYPE = "VIDEO_MEDIA_SERVER_TYPE";
+        /** 流媒体代理类型 */
+        String VIDEO_MEDIA_STREAM_PROXY_TYPE = "VIDEO_MEDIA_STREAM_PROXY_TYPE";
+        /** 流媒体代理RTSP拉流类型 (TCP/UDP/组播) */
+        String VIDEO_MEDIA_STREAM_PROXY_RTP_TYPE = "VIDEO_MEDIA_STREAM_PROXY_RTP_TYPE";
+        /** 流媒体代理状态 */
+        String VIDEO_MEDIA_STREAM_PROXY_STATUS = "VIDEO_MEDIA_STREAM_PROXY_STATUS";
+        /** 流媒体产生源类型 */
+        String VIDEO_MEDIA_ORIGIN_TYPE = "VIDEO_MEDIA_ORIGIN_TYPE";
+        /** 设备传输协议 (UDP/TCP) */
+        String VIDEO_DEVICE_TRANSPORT = "VIDEO_DEVICE_TRANSPORT";
+        /** 设备数据流传输模式 */
+        String VIDEO_DEVICE_STREAM_MODE = "VIDEO_DEVICE_STREAM_MODE";
+        /** GB28181信令注册方式 */
+        String VIDEO_GB28181_SIP_REGISTER_WAY = "VIDEO_GB28181_SIP_REGISTER_WAY";
+        /** 设备保密属性 */
+        String VIDEO_DEVICE_SECRECY = "VIDEO_DEVICE_SECRECY";
+        /** 告警级别 (1-一级/2-二级/3-三级/4-四级) */
+        String VIDEO_DEVICE_ALARM_PRIORITY = "VIDEO_DEVICE_ALARM_PRIORITY";
+        /** 告警方式 (1-电话/2-设备/3-短信/4-GPS/5-视频/6-故障/7-其他) */
+        String VIDEO_DEVICE_ALARM_METHOD = "VIDEO_DEVICE_ALARM_METHOD";
+        /** 告警处理状态 (0-未处理/1-已处理/2-已忽略) */
+        String VIDEO_DEVICE_ALARM_HANDLE_STATUS = "VIDEO_DEVICE_ALARM_HANDLE_STATUS";
+        /** 录像计划类型 (0-设备录像/1-云端录像) */
+        String VIDEO_RECORD_PLAN_TYPE = "VIDEO_RECORD_PLAN_TYPE";
+        /** 录像计划状态 (0-停用/1-启用) */
+        String VIDEO_RECORD_PLAN_STATUS = "VIDEO_RECORD_PLAN_STATUS";
+        /** 录像文件状态 (0-录制中/1-已完成/2-已过期/3-已删除) */
+        String VIDEO_RECORD_FILE_STATUS = "VIDEO_RECORD_FILE_STATUS";
+        /** 录像文件格式 (mp4/flv/ts/mkv/avi/hls) */
+        String VIDEO_RECORD_FILE_FORMAT = "VIDEO_RECORD_FILE_FORMAT";
+        /** 设备分组类型 (0-自定义/1-行政区划/2-业务分组) */
+        String VIDEO_DEVICE_GROUP_TYPE = "VIDEO_DEVICE_GROUP_TYPE";
+        /** 级联类型 (0-下级上报/1-上级接收) */
+        String VIDEO_PLATFORM_CASCADE_TYPE = "VIDEO_PLATFORM_CASCADE_TYPE";
+        /** 级联协议版本 */
+        String VIDEO_PLATFORM_GB_VERSION = "VIDEO_PLATFORM_GB_VERSION";
+        /** 目录类型 */
+        String VIDEO_PLATFORM_CATALOG_TYPE = "VIDEO_PLATFORM_CATALOG_TYPE";
+        /** 地理坐标系 */
+        String VIDEO_GEO_COORD_SYS = "VIDEO_GEO_COORD_SYS";
+        /** 通道类型 */
+        String VIDEO_DEVICE_CHANNEL_TYPE = "VIDEO_DEVICE_CHANNEL_TYPE";
+        /** PTZ类型 */
+        String VIDEO_DEVICE_CHANNEL_PTZ_TYPE = "VIDEO_DEVICE_CHANNEL_PTZ_TYPE";
+        /** 定位能力 */
+        String VIDEO_DEVICE_POSITION_CAPABILITY = "VIDEO_DEVICE_POSITION_CAPABILITY";
+        /** 码流类型 */
+        String VIDEO_DEVICE_STREAM_TYPE = "VIDEO_DEVICE_STREAM_TYPE";
+    }
+
+    /**
+     * 北向集成 / 数据桥接字典类型
+     * <p>
+     * 与 thinglinks-databridge-starter ConnectorType / Serializer.name() 等枚举对齐
+     * </p>
+     */
+    interface Bridge {
 
         /**
-         * 赋能记录类型
+         * 桥接数据源协议类型
+         * [KAFKA / REDIS / ROCKETMQ / RABBITMQ / MYSQL / HTTP / WEBHOOK / MQTT]
+         * 与 com.mqttsnet.basic.databridge.model.ConnectorType 1:1 对齐
          */
-        String LINK_EMPOWERMENT_TYPE = "LINK_EMPOWERMENT_TYPE";
+        String DATA_SOURCE_TYPE = "BRIDGE_DATA_SOURCE_TYPE";
 
+        /** 桥接方向 [10-出站 / 20-入站 / 30-双向] */
+        String DIRECTION = "BRIDGE_DIRECTION";
 
-        /**
-         * 赋能记录状态
-         */
-        String LINK_EMPOWERMENT_STATUS = "LINK_EMPOWERMENT_STATUS";
+        /** 桥接执行整体状态 [00-成功 / 01-失败 / 02-部分成功 / 03-死信] */
+        String MESSAGE_STATUS = "BRIDGE_MESSAGE_STATUS";
 
+        /** 数据源健康状态 [HEALTHY / DEGRADED / DOWN / UNKNOWN] */
+        String HEALTH_STATUS = "BRIDGE_HEALTH_STATUS";
 
+        /** 入站处理方式 [MQTT_FORWARD-伪装设备publish / RAW_INSERT-直接写DeviceAction / RULE_TRIGGER-触发场景联动] */
+        String TARGET_HANDLER = "BRIDGE_TARGET_HANDLER";
+
+        /** 序列化策略 [JSON / AVRO / STRING / BINARY] 与 Serializer.name() 1:1 对齐 */
+        String SERIALIZATION = "BRIDGE_SERIALIZATION";
+
+        /** trace 触发来源 [DEVICE_DATA / SUBSCRIPTION / TEST_SINK / REPLAY] */
+        String TRIGGER_SOURCE = "BRIDGE_TRIGGER_SOURCE";
     }
 
     // 新增内部 Xxx 接口后，请在PackageUtils的static代码块中新增 putDictType(EchoDictType.Xxx.class)， 否则代码生成器会重复生成

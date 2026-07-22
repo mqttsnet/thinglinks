@@ -51,6 +51,12 @@ export const detail = (id: string) =>
     params: {},
   });
 
+export const getRuleAlarmDetails = (id: string) =>
+  defHttp.request<AlarmResultVO>({
+    ...Api.Detail(id),
+    params: {},
+  });
+
 export const save = (params: AlarmSaveVO) =>
   defHttp.request<AlarmResultVO>({ ...Api.Save, params });
 

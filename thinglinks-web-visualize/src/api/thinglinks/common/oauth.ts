@@ -1,14 +1,11 @@
-import { MockMethod } from 'vite-plugin-mock'
 import { RequestHttpEnum, ContentTypeEnum } from '@/enums/httpEnum'
 import { ServicePrefixEnum } from '@/enums/commonEnum';
 import {
   LoginParamVO,
   LoginResultVO,
   LogoutParams,
-  RegisterByEmailVO,
-  RegisterByMobileVO,
 } from './model/userModel';
-import { get, post, put } from '@/api/http';
+import { get, getRaw, post, put } from '@/api/http';
 import type { DefUserInfoResultVO } from '/#/store';
 import { ErrorMessageMode } from '/#/axios';
 // 单个X数据
@@ -54,15 +51,15 @@ const Api = {
 /**
  * @description: 加载验证码
  */
-export function loadCaptcha(key: String) {
-  return get(Api.LoadCaptcha.url, { key: key }, 'arraybuffer')
+export function loadCaptcha(key: string) {
+  return getRaw(Api.LoadCaptcha.url, { key }, 'arraybuffer')
 }
 
 /**
  * @description: user login api
  */
-export function loginApi(params: LoginParamVO, mode = 'modal') {
-  return post(Api.Login.url, params);
+export function loginApi(params: LoginParamVO, _mode: ErrorMessageMode = 'modal') {
+  return post<LoginResultVO>(Api.Login.url, params);
 }
 /**
  * @description: user logout api
@@ -74,7 +71,7 @@ export function logout(params: LogoutParams) {
  * @description: userinfo
  */
 export function getUserInfoById() {
-  return get(Api.UserInfo.url);
+  return get<DefUserInfoResultVO>(Api.UserInfo.url);
 }
 
 export function findCompanyDept(tenantId?: string) {

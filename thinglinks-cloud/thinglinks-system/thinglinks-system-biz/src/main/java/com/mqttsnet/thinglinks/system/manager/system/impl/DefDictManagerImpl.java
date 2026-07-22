@@ -162,7 +162,11 @@ public class DefDictManagerImpl extends SuperManagerImpl<DefDictMapper, DefDict>
         if (CollUtil.isEmpty(dictKeys)) {
             return Collections.emptyMap();
         }
-        LbQueryWrap<DefDict> query = Wraps.<DefDict>lbQ().in(DefDict::getParentKey, dictKeys).orderByAsc(DefDict::getSortValue);
+        // 仅返回启用项 ── 业务下拉框消费方,禁用项不应再可选;字典管理后台走分页 API 不受影响
+        LbQueryWrap<DefDict> query = Wraps.<DefDict>lbQ()
+                .in(DefDict::getParentKey, dictKeys)
+                .eq(DefDict::getState, Boolean.TRUE)
+                .orderByAsc(DefDict::getSortValue);
         List<DefDict> list = super.list(query);
         List<DefDictItemResultVO> voList = BeanUtil.copyToList(list, DefDictItemResultVO.class);
 

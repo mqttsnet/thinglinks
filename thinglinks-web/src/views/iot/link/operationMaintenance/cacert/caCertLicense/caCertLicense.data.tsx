@@ -1,378 +1,172 @@
 import { Ref } from 'vue';
-import { dateUtil } from '/@/utils/dateUtil';
 import { BasicColumn, FormSchema } from '/@/components/Table';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
+import type { CardField } from '/@/components/BusinessCardList';
 
 const { t } = useI18n();
-// 列表页字段
-export const columns = (): BasicColumn[] => {
-  return [
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.certName'),
-      dataIndex: 'certName',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.serialNumber'),
-      dataIndex: 'serialNumber',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.commonName'),
-      dataIndex: 'commonName',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.organization'),
-      dataIndex: 'organization',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.organizationalUnit'),
-      dataIndex: 'organizationalUnit',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.countryName'),
-      dataIndex: 'countryName',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.provinceName'),
-      dataIndex: 'provinceName',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.localityName'),
-      dataIndex: 'localityName',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.email'),
-      dataIndex: 'email',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.licenseBase64'),
-      dataIndex: 'licenseBase64',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.businessLicenseFileid'),
-      dataIndex: 'businessLicenseFileid',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.authorizationCertFileid'),
-      dataIndex: 'authorizationCertFileid',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.algorithm'),
-      dataIndex: 'algorithm',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.param1'),
-      dataIndex: 'param1',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.param2'),
-      dataIndex: 'param2',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.extendParams'),
-      dataIndex: 'extendParams',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.notBefore'),
-      dataIndex: 'notBefore',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.notAfter'),
-      dataIndex: 'notAfter',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.revokeTime'),
-      dataIndex: 'revokeTime',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.state'),
-      dataIndex: 'state',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.remark'),
-      dataIndex: 'remark',
-    },
-    {
-      title: t('iot.link.operationMaintenance.cacert.caCertLicense.createdOrgId'),
-      dataIndex: 'createdOrgId',
-    },
-    {
-      title: t('thinglinks.common.createdTime'),
-      dataIndex: 'createdTime',
-      sorter: true,
-      width: 180,
-    },
-  ];
-};
 
-export const searchFormSchema = (): FormSchema[] => {
-  return [
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.certName'),
-      field: 'certName',
-      component: 'Input',
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.serialNumber'),
-      field: 'serialNumber',
-      component: 'Input',
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.commonName'),
-      field: 'commonName',
-      component: 'Input',
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.organization'),
-      field: 'organization',
-      component: 'Input',
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.organizationalUnit'),
-      field: 'organizationalUnit',
-      component: 'Input',
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.countryName'),
-      field: 'countryName',
-      component: 'Input',
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.provinceName'),
-      field: 'provinceName',
-      component: 'Input',
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.localityName'),
-      field: 'localityName',
-      component: 'Input',
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.notBefore'),
-      field: 'notBefore',
-      component: 'DatePicker',
-      componentProps: {
-        format: 'YYYY-MM-DD HH:mm:ss',
-        valueFormat: 'YYYY-MM-DD HH:mm:ss',
-        showTime: { defaultValue: dateUtil('00:00:00', 'HH:mm:ss') },
-      },
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.notAfter'),
-      field: 'notAfter',
-      component: 'DatePicker',
-      componentProps: {
-        format: 'YYYY-MM-DD HH:mm:ss',
-        valueFormat: 'YYYY-MM-DD HH:mm:ss',
-        showTime: { defaultValue: dateUtil('00:00:00', 'HH:mm:ss') },
-      },
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.revokeTime'),
-      field: 'revokeTime',
-      component: 'DatePicker',
-      componentProps: {
-        format: 'YYYY-MM-DD HH:mm:ss',
-        valueFormat: 'YYYY-MM-DD HH:mm:ss',
-        showTime: { defaultValue: dateUtil('00:00:00', 'HH:mm:ss') },
-      },
-      colProps: { span: 6 },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.state'),
-      field: 'state',
-      component: 'ApiSelect',
-      colProps: { span: 6 },
-      componentProps: {
-        ...dictComponentProps(DictEnum.LINK_CA_LICENSE_STATUS),
-      },
-    },
-    {
-      field: 'createTimeRange',
-      label: t('thinglinks.common.createdTime'),
-      component: 'RangePicker',
-      colProps: { span: 6 },
-    },
-  ];
-};
+const tNs = 'iot.link.operationMaintenance.cacert.caCertLicense';
 
-// 编辑页字段
-export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
-  return [
-    {
-      field: 'id',
-      label: 'ID',
-      component: 'Input',
-      show: false,
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.certName'),
-      field: 'certName',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.serialNumber'),
-      field: 'serialNumber',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.commonName'),
-      field: 'commonName',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.organization'),
-      field: 'organization',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.organizationalUnit'),
-      field: 'organizationalUnit',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.countryName'),
-      field: 'countryName',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.provinceName'),
-      field: 'provinceName',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.localityName'),
-      field: 'localityName',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.email'),
-      field: 'email',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.licenseBase64'),
-      field: 'licenseBase64',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.businessLicenseFileid'),
-      field: 'businessLicenseFileid',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.authorizationCertFileid'),
-      field: 'authorizationCertFileid',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.algorithm'),
-      field: 'algorithm',
-      component: 'Input',
-      defaultValue: '0',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.param1'),
-      field: 'param1',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.param2'),
-      field: 'param2',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.extendParams'),
-      field: 'extendParams',
-      component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.notBefore'),
-      field: 'notBefore',
-      component: 'DatePicker',
-      componentProps: {
-        format: 'YYYY-MM-DD HH:mm:ss',
-        valueFormat: 'YYYY-MM-DD HH:mm:ss',
-        showTime: { defaultValue: dateUtil('00:00:00', 'HH:mm:ss') },
-      },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.notAfter'),
-      field: 'notAfter',
-      component: 'DatePicker',
-      componentProps: {
-        format: 'YYYY-MM-DD HH:mm:ss',
-        valueFormat: 'YYYY-MM-DD HH:mm:ss',
-        showTime: { defaultValue: dateUtil('00:00:00', 'HH:mm:ss') },
-      },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.revokeTime'),
-      field: 'revokeTime',
-      component: 'DatePicker',
-      componentProps: {
-        format: 'YYYY-MM-DD HH:mm:ss',
-        valueFormat: 'YYYY-MM-DD HH:mm:ss',
-        showTime: { defaultValue: dateUtil('00:00:00', 'HH:mm:ss') },
-      },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.state'),
-      field: 'state',
-      component: 'Input',
-      defaultValue: '0',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.remark'),
-      field: 'remark',
-      component: 'InputTextArea',
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.createdOrgId'),
-      field: 'createdOrgId',
-      component: 'Input',
-    },
-  ];
-};
-// 导入页字段
-export const importSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
-  return [
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.certName'),
-      field: 'certName',
-      component: 'Input',
-      required: true,
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.caCertPem'),
-      field: 'caCertPem',
-      component: 'InputTextArea',
-      required: true,
-      componentProps: {
-        'auto-size': { minRows: 4, maxRows: 6 },
-      },
-    },
-    {
-      label: t('iot.link.operationMaintenance.cacert.caCertLicense.remark'),
-      field: 'remark',
-      component: 'InputTextArea',
-    },
-  ];
-};
+/**
+ * 卡片视图字段配置 ── 仅展示用户关心的高频字段:
+ * 序列号 / 算法 / 通用名 / 组织 / 有效期 / 创建时间.
+ */
+export const cardFields = (): CardField[] => [
+  { label: t(`${tNs}.serialNumber`), field: 'serialNumber', span: 24 },
+  {
+    label: t(`${tNs}.algorithm`),
+    field: 'algorithm',
+    dictType: DictEnum.LINK_CA_CERT_ALGORITHM,
+    span: 12,
+  },
+  { label: t(`${tNs}.commonName`), field: 'commonName', span: 12 },
+  { label: t(`${tNs}.organization`), field: 'organization', span: 12 },
+  { label: t(`${tNs}.notAfter`), field: 'notAfter', span: 12 },
+  { label: t('thinglinks.common.createdTime'), field: 'createdTime', span: 24 },
+];
 
-// 前端自定义表单验证规则
-export const customFormSchemaRules = (_): Partial<FormSchemaExt>[] => {
-  return [];
-};
+/** 列表页字段(精简版,仅核心字段;详情页查看完整信息) */
+export const columns = (): BasicColumn[] => [
+  {
+    title: t(`${tNs}.certName`),
+    dataIndex: 'certName',
+    slots: { customRender: 'certName' },
+  },
+  { title: t(`${tNs}.serialNumber`), dataIndex: 'serialNumber' },
+  { title: t(`${tNs}.commonName`), dataIndex: 'commonName' },
+  { title: t(`${tNs}.organization`), dataIndex: 'organization' },
+  {
+    title: t(`${tNs}.algorithm`),
+    dataIndex: 'algorithm',
+    slots: { customRender: 'algorithm' },
+    width: 100,
+  },
+  {
+    title: t(`${tNs}.state`),
+    dataIndex: 'state',
+    slots: { customRender: 'state' },
+    width: 100,
+  },
+  { title: t(`${tNs}.notAfter`), dataIndex: 'notAfter', width: 170 },
+  {
+    title: t('thinglinks.common.createdTime'),
+    dataIndex: 'createdTime',
+    sorter: true,
+    width: 170,
+  },
+];
+
+/** 搜索表单 */
+export const searchFormSchema = (): FormSchema[] => [
+  {
+    label: t(`${tNs}.certName`),
+    field: 'certName',
+    component: 'Input',
+    colProps: { span: 6 },
+  },
+  {
+    label: t(`${tNs}.serialNumber`),
+    field: 'serialNumber',
+    component: 'Input',
+    colProps: { span: 6 },
+  },
+  {
+    label: t(`${tNs}.commonName`),
+    field: 'commonName',
+    component: 'Input',
+    colProps: { span: 6 },
+  },
+  {
+    label: t(`${tNs}.algorithm`),
+    field: 'algorithm',
+    component: 'ApiSelect',
+    colProps: { span: 6 },
+    componentProps: { ...dictComponentProps(DictEnum.LINK_CA_CERT_ALGORITHM) },
+  },
+  {
+    label: t(`${tNs}.state`),
+    field: 'state',
+    component: 'ApiSelect',
+    colProps: { span: 6 },
+    componentProps: { ...dictComponentProps(DictEnum.LINK_CA_CERT_STATUS) },
+  },
+  {
+    field: 'createTimeRange',
+    label: t('thinglinks.common.createdTime'),
+    component: 'RangePicker',
+    colProps: { span: 6 },
+  },
+];
+
+/**
+ * 元信息编辑表单 ── CA 证书 PEM 解析的字段 (serialNumber / commonName / algorithm /
+ * notBefore / notAfter 等) 全部不可改; 用户可改的仅 certName 显示名 + remark 备注.
+ *
+ * <p>backend {@code CaCertLicenseUpdateVO} 把 algorithm/state 标了 @NotNull,
+ * 所以表单也透传(hidden), 避免后端校验报"必填"红.
+ */
+export const editMetadataSchema = (): FormSchema[] => [
+  { field: 'id', label: 'ID', component: 'Input', show: false },
+  // 后端 @NotNull 字段, 透传不展示
+  { field: 'algorithm', label: 'algorithm', component: 'Input', show: false },
+  { field: 'state', label: 'state', component: 'Input', show: false },
+  // ===== 用户可改 =====
+  {
+    label: t(`${tNs}.certName`),
+    field: 'certName',
+    component: 'Input',
+    required: true,
+    componentProps: { maxlength: 50, showCount: true },
+  },
+  {
+    label: t(`${tNs}.remark`),
+    field: 'remark',
+    component: 'InputTextArea',
+    componentProps: {
+      rows: 3,
+      maxlength: 500,
+      showCount: true,
+      placeholder: t(`${tNs}.placeholder.remark`),
+    },
+  },
+];
+
+/** 导入证书表单 (PEM 导入) */
+export const importSchema = (_type?: Ref<ActionEnum>): FormSchema[] => [
+  {
+    label: t(`${tNs}.certName`),
+    field: 'certName',
+    component: 'Input',
+    required: true,
+    componentProps: {
+      maxlength: 100,
+      placeholder: t(`${tNs}.placeholder.certName`),
+    },
+  },
+  {
+    label: t(`${tNs}.caCertPem`),
+    field: 'caCertPem',
+    component: 'InputTextArea',
+    required: true,
+    componentProps: {
+      'auto-size': { minRows: 6, maxRows: 12 },
+      placeholder: t(`${tNs}.placeholder.caCertPem`),
+    },
+  },
+  {
+    label: t(`${tNs}.remark`),
+    field: 'remark',
+    component: 'InputTextArea',
+    componentProps: {
+      rows: 2,
+      maxlength: 500,
+      showCount: true,
+      placeholder: t(`${tNs}.placeholder.remark`),
+    },
+  },
+];
+
+export const customFormSchemaRules = (_): Partial<FormSchemaExt>[] => [];

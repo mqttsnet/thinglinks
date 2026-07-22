@@ -1,0 +1,129 @@
+export interface VideoDeviceChannelPageQuery {
+  deviceIdentification?: string; // 所属设备标识
+  channelIdentification?: string; // 通道标识
+  channelNo?: number; // 逻辑通道号
+  channelType?: number; // 通道类型
+  channelName?: string; // 通道名称
+  streamIdentification?: string; // 流标识
+  streamType?: string; // 流类型
+  manufacturer?: string; // 厂商
+  model?: string; // 型号
+  onlineStatus?: boolean; // 在线状态
+  host?: string; // 通道地址(IP/域名)
+  port?: number; // 端口
+  longitude?: number; // 经度
+  latitude?: number; // 纬度
+  fullAddress?: string; // 安装地址
+  provinceCode?: string; // 省级编码
+  cityCode?: string; // 市级编码
+  regionCode?: string; // 行政区划编码
+  hasAudio?: boolean; // 支持音频
+  ptzType?: number; // 云台类型
+  ptzCapability?: boolean; // 支持云台控制
+  talkCapability?: boolean; // 支持对讲
+  secrecy?: number; // 保密属性
+  extendParams?: string; // 扩展参数
+  remark?: string; // 备注
+  createdOrgId?: string; // 创建人组织
+}
+
+export interface VideoDeviceChannelSaveVO {
+  deviceIdentification?: string; // 所属设备标识
+  channelIdentification?: string; // 通道标识
+  channelNo?: number; // 逻辑通道号
+  channelType?: number; // 通道类型
+  channelName?: string; // 通道名称
+  streamIdentification?: string; // 流标识
+  streamType?: string; // 流类型
+  manufacturer?: string; // 厂商
+  model?: string; // 型号
+  onlineStatus?: boolean; // 在线状态
+  host?: string; // 通道地址(IP/域名)
+  port?: number; // 端口
+  password?: string; // 设备口令
+  longitude?: number; // 经度
+  latitude?: number; // 纬度
+  fullAddress?: string; // 安装地址
+  provinceCode?: string; // 省级编码
+  cityCode?: string; // 市级编码
+  regionCode?: string; // 行政区划编码
+  hasAudio?: boolean; // 支持音频
+  ptzType?: number; // 云台类型
+  ptzCapability?: boolean; // 支持云台控制
+  talkCapability?: boolean; // 支持对讲
+  secrecy?: number; // 保密属性
+  channelConfig?: any; // 通道专属配置(JSON)
+  extendParams?: string; // 扩展参数
+  remark?: string; // 备注
+  createdOrgId?: string; // 创建人组织
+}
+
+export interface VideoDeviceChannelUpdateVO {
+  id: string;
+  deviceIdentification?: string; // 所属设备标识
+  channelIdentification?: string; // 通道标识
+  channelNo?: number; // 逻辑通道号
+  channelType?: number; // 通道类型
+  channelName?: string; // 通道名称
+  streamIdentification?: string; // 流标识
+  streamType?: string; // 流类型
+  manufacturer?: string; // 厂商
+  model?: string; // 型号
+  onlineStatus?: boolean; // 在线状态
+  host?: string; // 通道地址(IP/域名)
+  port?: number; // 端口
+  password?: string; // 设备口令
+  longitude?: number; // 经度
+  latitude?: number; // 纬度
+  fullAddress?: string; // 安装地址
+  provinceCode?: string; // 省级编码
+  cityCode?: string; // 市级编码
+  regionCode?: string; // 行政区划编码
+  hasAudio?: boolean; // 支持音频
+  ptzType?: number; // 云台类型
+  ptzCapability?: boolean; // 支持云台控制
+  talkCapability?: boolean; // 支持对讲
+  secrecy?: number; // 保密属性
+  channelConfig?: any; // 通道专属配置(JSON)
+  extendParams?: string; // 扩展参数
+  remark?: string; // 备注
+  createdOrgId?: string; // 创建人组织
+}
+
+export interface VideoDeviceChannelResultVO {
+  echoMap?: any;
+  id?: string; // 唯一标识符
+  createdTime?: string; // 创建时间
+  createdBy?: string; // 创建人
+  updatedTime?: string; // 最后修改时间
+  updatedBy?: string; // 最后修改人
+  deviceIdentification?: string; // 所属设备标识
+  channelIdentification?: string; // 通道标识
+  channelNo?: number; // 逻辑通道号
+  channelType?: number; // 通道类型
+  channelName?: string; // 通道名称
+  streamIdentification?: string; // 流标识
+  streamType?: string; // 流类型
+  manufacturer?: string; // 厂商
+  model?: string; // 型号
+  onlineStatus?: boolean; // 在线状态
+  host?: string; // 通道地址(IP/域名)
+  port?: number; // 端口
+  password?: string; // 设备口令
+  longitude?: number; // 经度
+  latitude?: number; // 纬度
+  fullAddress?: string; // 安装地址
+  provinceCode?: string; // 省级编码
+  cityCode?: string; // 市级编码
+  regionCode?: string; // 行政区划编码
+  hasAudio?: boolean; // 支持音频
+  ptzType?: number; // 云台类型
+  ptzCapability?: boolean; // 支持云台控制
+  talkCapability?: boolean; // 支持对讲
+  secrecy?: number; // 保密属性
+  channelConfig?: any; // 通道专属配置(JSON)
+  extendParams?: string; // 扩展参数
+  remark?: string; // 备注
+  createdOrgId?: string; // 创建人组织
+  deleted?: number; // 逻辑删除
+}

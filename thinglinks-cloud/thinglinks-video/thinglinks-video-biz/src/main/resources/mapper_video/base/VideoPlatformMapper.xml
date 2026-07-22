@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.video.mapper.platform.VideoPlatformMapper">
+    <!--
+        代码生成器 by 2026-03-31
+        自定义sql建议在base文件夹同级新建ext文件夹，并新建同名且同namespace的xml进行编写。方便修改字段时，重新生成此文件。
+    -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.video.entity.platform.VideoPlatform">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="enable" property="enable"/>
+        <result column="server_gb_id" property="serverGbId"/>
+        <result column="server_gb_domain" property="serverGbDomain"/>
+        <result column="server_ip" property="serverIp"/>
+        <result column="server_port" property="serverPort"/>
+        <result column="device_gb_id" property="deviceGbId"/>
+        <result column="device_ip" property="deviceIp"/>
+        <result column="device_port" property="devicePort"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"
+                typeHandler="com.mqttsnet.basic.mybatis.typehandler.EncryptTypeHandler"/>
+        <result column="expires" property="expires"/>
+        <result column="keep_timeout" property="keepTimeout"/>
+        <result column="transport" property="transport"/>
+        <result column="character_set" property="characterSet"/>
+        <result column="ptz" property="ptz"/>
+        <result column="rtcp" property="rtcp"/>
+        <result column="status" property="status"/>
+        <result column="catalog_subscribe" property="catalogSubscribe"/>
+        <result column="alarm_subscribe" property="alarmSubscribe"/>
+        <result column="mobile_position_subscribe" property="mobilePositionSubscribe"/>
+        <result column="catalog_group" property="catalogGroup"/>
+        <result column="as_message_channel" property="asMessageChannel"/>
+        <result column="send_stream_ip" property="sendStreamIp"/>
+        <result column="auto_push_channel" property="autoPushChannel"/>
+        <result column="catalog_with_platform" property="catalogWithPlatform"/>
+        <result column="catalog_with_group" property="catalogWithGroup"/>
+        <result column="catalog_with_region" property="catalogWithRegion"/>
+        <result column="civil_code" property="civilCode"/>
+        <result column="manufacturer" property="manufacturer"/>
+        <result column="model" property="model"/>
+        <result column="address" property="address"/>
+        <result column="register_way" property="registerWay"/>
+        <result column="secrecy" property="secrecy"/>
+        <result column="server_id" property="serverId"/>
+        <result column="cascade_type" property="cascadeType"/>
+        <result column="gb_version" property="gbVersion"/>
+        <result column="online_status" property="onlineStatus"/>
+        <result column="register_expires" property="registerExpires"/>
+        <result column="keepalive_interval" property="keepaliveInterval"/>
+        <result column="keepalive_timeout_count" property="keepaliveTimeoutCount"/>
+        <result column="last_register_time" property="lastRegisterTime"/>
+        <result column="last_keepalive_time" property="lastKeepaliveTime"/>
+        <result column="start_offline_push" property="startOfflinePush"/>
+        <result column="sip_ip" property="sipIp"/>
+        <result column="sip_port" property="sipPort"/>
+        <result column="hook_url_prefix" property="hookUrlPrefix"/>
+        <result column="service_instance_id" property="serviceInstanceId"/>
+        <result column="cascade_sdp_ip" property="cascadeSdpIp"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="created_org_id" property="createdOrgId"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, enable, server_gb_id, server_gb_domain, server_ip,
+        server_port, device_gb_id, device_ip, device_port, username, password,
+        expires, keep_timeout, transport, character_set, ptz, rtcp,
+        status, catalog_subscribe, alarm_subscribe, mobile_position_subscribe, catalog_group, as_message_channel,
+        send_stream_ip, auto_push_channel, catalog_with_platform, catalog_with_group, catalog_with_region, civil_code,
+        manufacturer, model, address, register_way, secrecy, server_id,
+        cascade_type, gb_version, online_status, register_expires, keepalive_interval, keepalive_timeout_count,
+        last_register_time, last_keepalive_time, start_offline_push, sip_ip, sip_port, hook_url_prefix,
+        service_instance_id, cascade_sdp_ip,
+        deleted, created_time, created_by, updated_time, updated_by, created_org_id
+    </sql>
+
+</mapper>

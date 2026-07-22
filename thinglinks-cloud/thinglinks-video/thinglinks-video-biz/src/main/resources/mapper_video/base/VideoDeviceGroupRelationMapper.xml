@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.video.mapper.group.VideoDeviceGroupRelationMapper">
+    <!--
+        代码生成器 by 2026-03-31
+        自定义sql建议在base文件夹同级新建ext文件夹，并新建同名且同namespace的xml进行编写。方便修改字段时，重新生成此文件。
+    -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.video.entity.group.VideoDeviceGroupRelation">
+        <id column="id" property="id"/>
+        <result column="group_id" property="groupId"/>
+        <result column="device_identification" property="deviceIdentification"/>
+        <result column="channel_identification" property="channelIdentification"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="extend_params" property="extendParams"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="created_org_id" property="createdOrgId"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, group_id, device_identification, channel_identification, sort_order, extend_params,
+        deleted, created_time, created_by, updated_time, updated_by, created_org_id
+    </sql>
+
+</mapper>

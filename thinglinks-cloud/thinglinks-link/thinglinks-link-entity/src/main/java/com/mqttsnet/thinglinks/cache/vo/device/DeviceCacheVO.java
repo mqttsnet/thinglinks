@@ -7,7 +7,6 @@ import java.util.Map;
 import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.base.entity.Entity;
 import com.mqttsnet.basic.interfaces.echo.EchoVO;
-import com.mqttsnet.thinglinks.cache.vo.product.ProductCacheVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -174,9 +173,9 @@ public class DeviceCacheVO extends Entity<Long> implements Serializable, EchoVO 
     private Long createdOrgId;
 
     /**
-     * 设备产品基础信息
+     * 绑定的产品版本号(对应 product_version.version_no)。
      */
-    @Schema(description = "设备产品基础信息")
-    private ProductCacheVO productCacheVO;
+    @Schema(description = "绑定的产品版本号")
+    private String boundProductVersionNo;
 
 }

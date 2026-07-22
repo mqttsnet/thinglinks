@@ -12,17 +12,13 @@ export interface EncryptionParams {
 }
 
 export class AesEncryption {
-  private key;
-  private iv;
+  private readonly key: ReturnType<typeof parse>;
+  private readonly iv: ReturnType<typeof parse>;
 
-  constructor(opt: Partial<EncryptionParams> = {}) {
+  constructor(opt: EncryptionParams) {
     const { key, iv } = opt;
-    if (key) {
-      this.key = parse(key);
-    }
-    if (iv) {
-      this.iv = parse(iv);
-    }
+    this.key = parse(key);
+    this.iv = parse(iv);
   }
 
   get getOptions() {

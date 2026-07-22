@@ -82,6 +82,9 @@ public class PublishMqttMessageRequestParam implements Serializable {
     @Schema(description = "Additional metadata associated with the message.")
     private Map<String, String> metadata;
 
+    @Schema(description = "Device identification to attribute this downlink to (optional, for command history).")
+    private String deviceIdentification;
+
     /**
      * 获取智能编码的负载字符串
      * - 字节数组：Base64编码

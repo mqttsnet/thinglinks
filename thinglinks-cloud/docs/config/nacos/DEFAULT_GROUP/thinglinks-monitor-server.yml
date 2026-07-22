@@ -1,0 +1,23 @@
+server:
+  port: 18762
+  servlet:
+    context-path: /${spring.application.name}   # 监控系统项目名
+
+spring:
+  security:
+    user:
+      name: ${MONITOR_USERNAME:}
+      password: ${MONITOR_PASSWORD:}
+      roles: ACTUATOR_ADMIN
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: '*'
+  endpoint:
+    shutdown:
+      access: unrestricted
+    health:
+      show-details: ALWAYS

@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://mqttsnet.com"><img src="../docs/images/logo.png" alt="ThingLinks" width="160"></a>
+<a href="https://mqttsnet.com"><img src="./docs/images/logo.png" alt="ThingLinks" width="160"></a>
 
 # thinglinks-web
 
@@ -8,76 +8,47 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
 
+[![Vue 3](https://img.shields.io/badge/Vue-3.3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)](https://vuejs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-4.6-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![Vite](https://img.shields.io/badge/Vite-4.3-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+
 </div>
 
 ---
 
 ## About
 
-`thinglinks-web` is the main admin console for the [ThingLinks](https://github.com/mqttsnet/thinglinks) multi-tenant SaaS cloud IoT platform, built with Vue 3 + TypeScript + Vite.
+`thinglinks-web` is the admin console frontend for the [ThingLinks](https://mqttsnet.com) multi-tenant SaaS cloud IoT platform. Built with Vue 3 + TypeScript + Vite.
 
-## Tech Stack
-
-![Vue 3](https://img.shields.io/badge/Vue-3.3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-4.6-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-4.3-646CFF?style=flat-square&logo=vite&logoColor=white)
-![Pinia](https://img.shields.io/badge/Pinia-2.0-FFD859?style=flat-square)
-![Ant Design Vue](https://img.shields.io/badge/Ant%20Design%20Vue-3.x-1890FF?style=flat-square&logo=antdesign&logoColor=white)
-![ECharts](https://img.shields.io/badge/ECharts-5.x-AA344D?style=flat-square&logo=apacheecharts&logoColor=white)
-
-## Features
-
-- Multi-tenant SaaS architecture (NONE / COLUMN / DATASOURCE_COLUMN)
-- Dynamic route-based permission management
-- Configurable themes and internationalization (i18n)
-- Rich component library based on Ant Design Vue
-- Data visualization with ECharts
-- Mock data scheme for development
+Product edition and component version metadata are available in [`.thinglinks-product.env`](.thinglinks-product.env).
 
 ## Quick Start
 
-### Requirements
-
-- **Node.js** >= 18.0.0
-- **pnpm** (install: `npm install -g pnpm`)
-
-### Install & Run
-
 ```bash
-# Install dependencies
 pnpm install
-
-# Start dev server (default: http://localhost:3100)
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Build for test environment
-pnpm build:test
+pnpm dev            # Dev server (http://localhost:3100)
+pnpm build          # Production build
+pnpm build:test     # Test environment build
 ```
 
-### Environment Configuration
+## 🤖 Agent Skills (AI-assisted development)
 
-| File | Environment |
-|------|-------------|
-| `.env` | Base config |
-| `.env.development` | Development |
-| `.env.test` | Test |
-| `.env.production` | Production |
-
-### Other Commands
+An official **Agent Skill** documents this console for AI agents (Claude Code · Codex · Cursor) — answers grounded in real code, loaded on demand. It's part of the **[ThingLinks Skills](https://github.com/mqttsnet/thinglinks-skills)** collection (one skill per repo).
 
 ```bash
-pnpm preview         # Preview production build locally
-pnpm build:no-cache  # Build after clearing cache
-pnpm clean:cache     # Clear Vite cache
-pnpm clean:lib       # Remove node_modules
-pnpm lint:prettier   # Format code
+# global (-g); drop -g to install into the current project only
+npx skills add mqttsnet/thinglinks-skills@thinglinks-web -g
 ```
+
+Auto-triggers when you build IoT pages, define API calls, use shared components / the rule-script debug panel, or follow the file-placement & **Flexy** design conventions. Browse all skills — `thinglinks-cloud` · `thinglinks-util` · `thinglinks-web` · `bifromq-plugin` — at **[mqttsnet/thinglinks-skills](https://github.com/mqttsnet/thinglinks-skills)**.
+
+## Contact
+
+- Business: [mqttsnet@163.com](mailto:mqttsnet@163.com)
+- Issues: [GitHub Issues](https://github.com/mqttsnet/thinglinks/issues)
+
+> **Note:** Issues should only be submitted via [GitHub Issues](https://github.com/mqttsnet/thinglinks/issues).
 
 ## License
 
-This project is part of [ThingLinks](https://github.com/mqttsnet/thinglinks). Community edition is licensed under [Apache License 2.0](../LICENSE) with additional terms — see [LICENSE-COMMERCIAL](../LICENSE-COMMERCIAL).
+See [LICENSE](LICENSE) and the additional terms referenced by the product metadata manifest.
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

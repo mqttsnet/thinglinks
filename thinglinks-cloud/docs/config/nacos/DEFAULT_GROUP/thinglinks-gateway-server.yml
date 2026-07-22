@@ -1,0 +1,176 @@
+thinglinks:
+  echo:
+    enabled: false
+    aop-enabled: false
+  system:
+    enumPackage: ''
+  log:
+    enabled: false
+  webmvc:
+    undertow: false
+    header: false
+  database:
+    initDatabasePrefix:
+      - thinglinks_base
+
+spring:
+  autoconfigure:
+    exclude: io.seata.integration.http.HttpAutoConfiguration,org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  cloud:
+    gateway:
+      x-forwarded:
+        prefixEnabled: false
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
+      routes:
+        # 新建服务配置复制到中间
+        # 新建服务配置复制到中间
+        - id: oauth
+          uri: lb://thinglinks-oauth-server
+          predicates:
+            - Path=/oauth/**
+          filters:
+            - StripPrefix=1
+        - id: system
+          uri: lb://thinglinks-system-server
+          predicates:
+            - Path=/system/**
+          filters:
+            - StripPrefix=1
+        - id: base
+          uri: lb://thinglinks-base-server
+          predicates:
+            - Path=/base/**
+          filters:
+            - StripPrefix=1
+        # websocket-Base (基础服务)
+        - id: wsMsg
+          uri: lb:ws://thinglinks-base-server
+          predicates:
+            - Path=/wsMsg/**
+          filters:
+            - StripPrefix=1
+        - id: generator
+          uri: lb://thinglinks-generator-server
+          predicates:
+            - Path=/generator/**
+          filters:
+            - StripPrefix=1
+        - id: card
+          uri: lb://thinglinks-card-server
+          predicates:
+            - Path=/card/**
+          filters:
+            - StripPrefix=1
+        - id: link
+          uri: lb://thinglinks-link-server
+          predicates:
+            - Path=/link/**
+          filters:
+            - StripPrefix=1
+        # websocket-Link (设备集成服务)
+        - id: wsLink
+          uri: lb:ws://thinglinks-link-server
+          predicates:
+            - Path=/wsLink/**
+          filters:
+            - StripPrefix=1
+        - id: mobile
+          uri: lb://thinglinks-mobile-server
+          predicates:
+            - Path=/mobile/**
+          filters:
+            - StripPrefix=1
+        - id: mqs
+          uri: lb://thinglinks-mqs-server
+          predicates:
+            - Path=/mqs/**
+          filters:
+            - StripPrefix=1
+        # websocket-Mqs (消息治理服务)
+        - id: wsMqs
+          uri: lb:ws://thinglinks-mqs-server
+          predicates:
+            - Path=/wsMqs/**
+          filters:
+            - StripPrefix=1
+        - id: rule
+          uri: lb://thinglinks-rule-server
+          predicates:
+            - Path=/rule/**
+          filters:
+            - StripPrefix=1
+        - id: tds
+          uri: lb://thinglinks-tds-server
+          predicates:
+            - Path=/tds/**
+          filters:
+            - StripPrefix=1
+        - id: video
+          uri: lb://thinglinks-video-server
+          predicates:
+            - Path=/video/**
+          filters:
+            - StripPrefix=1
+        # websocket-Video (流媒体服务)
+        - id: wsVideo
+          uri: lb:ws://thinglinks-video-server
+          predicates:
+            - Path=/wsVideo/**
+          filters:
+            - StripPrefix=1
+        - id: broker
+          uri: lb://thinglinks-broker-server
+          predicates:
+            - Path=/broker/**
+          filters:
+            - StripPrefix=1
+        # websocket-Broker (Broker服务)
+        - id: wsBroker
+          uri: lb:ws://thinglinks-broker-server
+          predicates:
+            - Path=/wsBroker/**
+          filters:
+            - StripPrefix=1
+        - id: view
+          uri: lb://thinglinks-view-server
+          predicates:
+            - Path=/view/**
+          filters:
+            - StripPrefix=1
+        - id: monitor
+          uri: lb://thinglinks-monitor-server
+          predicates:
+            - Path=/monitor/**
+          filters:
+            - StripPrefix=1
+        - id: base-executor
+          uri: lb://thinglinks-base-executor
+          predicates:
+            - Path=/base-executor/**
+          filters:
+            - StripPrefix=1
+        - id: iot-executor
+          uri: lb://thinglinks-iot-executor
+          predicates:
+            - Path=/iot-executor/**
+          filters:
+            - StripPrefix=1
+        - id: sopadmin
+          uri: lb://thinglinks-sop-admin-server
+          predicates:
+            - Path=/sopadmin/**
+          filters:
+            - StripPrefix=1       
+
+
+server:
+  port: 18760
+  servlet:
+    context-path: /api
+    #排除在线服务（排除的后的服务不会检测业务状态）
+    excludedOnline:
+      services:
+        - thinglinks-monitor-server

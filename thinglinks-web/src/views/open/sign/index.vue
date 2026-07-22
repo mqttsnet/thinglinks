@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { onMounted, ref } from 'vue';
   import Axios from 'axios';
-  import MarkdownEditor from '/@/components/markdown-editor';
+  import MarkdownEditor from '/@/components/open/markdown-editor';
 
   const value = ref('');
   onMounted(() => {

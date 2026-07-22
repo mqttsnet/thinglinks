@@ -7,7 +7,7 @@ export const IconConfig: ConfigType = {
   conKey: 'VCIcon',
   title: 'project.component_icon',
   category: ChatCategoryEnum.DEFAULT,
-  categoryName: getChatCategoryEnumName.DEFAULT,
+  get categoryName() { return getChatCategoryEnumName().DEFAULT },
   package: PackagesCategoryEnum.ICONS,
   chartFrame: ChartFrameEnum.STATIC,
   image: 'icon.png'

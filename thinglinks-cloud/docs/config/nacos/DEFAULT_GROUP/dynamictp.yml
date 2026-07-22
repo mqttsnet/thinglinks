@@ -1,0 +1,247 @@
+#线程池配置
+dynamictp:
+  enabled: true                               # 是否启用 dynamictp，默认true
+  enabledCollect: true                        # 是否开启监控指标采集，默认true
+  collectorTypes: micrometer          # 监控数据采集器类型（logging | micrometer | internal_logging | JMX），默认micrometer
+  # logPath: ${user.home}/logs/dynamictp/  # 监控日志数据路径，采集类型非 logging 时使用
+  monitorInterval: 30                          # 监控时间间隔（报警检测、指标采集），默认5s
+
+  # 告警渠道
+  platforms:                                  # 通知报警平台配置
+    - platform: ding
+      platformId: 1                            # 平台id，自定义
+      urlKey: ${DTP_DINGTALK_URL_KEY:}        # webhook 中的 access_token
+      secret: ${DTP_DINGTALK_SECRET:}         # 安全设置在验签模式下才的秘钥，非验签模式没有此值
+      receivers: 13733918655                   # 钉钉账号手机号
+
+  # 全局配置
+  globalExecutorProps:                        # 线程池配置 > 全局配置 > 字段默认值
+    rejectedHandlerType: CallerRunsPolicy
+    queueType: VariableLinkedBlockingQueue
+    waitForTasksToCompleteOnShutdown: true
+    awaitTerminationSeconds: 5
+    taskWrapperNames: ["swTrace", "ttl", "mdc"]
+    queueTimeout: 500
+    runTimeout: 5000
+    notifyItems:                     # 报警项，不配置自动会按默认值配置（变更通知、容量报警、活性报警、拒绝报警、任务超时报警）
+      - type: change                 # 线程池核心参数变更通知
+        silencePeriod: 120           # 通知静默时间（单位：s），默认值1，0表示不静默
+
+      - type: capacity               # 队列容量使用率，报警项类型，查看源码 NotifyTypeEnum枚举类
+        threshold: 80                # 报警阈值，意思是队列使用率达到70%告警；默认值=70
+        count: 5                     # 在一个统计周期内，如果触发阈值的数量达到 count，则触发报警；默认值=1
+        period: 60                   # 报警统计周期（单位：s），默认值=120
+        silencePeriod: 60             # 报警静默时间（单位：s），0表示不静默，默认值=120
+
+      - type: liveness               # 线程池活性
+        threshold: 80                # 报警阈值，意思是活性达到70%告警；默认值=70
+        count: 5                     # 在一个统计周期内，如果触发阈值的数量达到 count，则触发报警；默认值=1
+        period: 60                   # 报警统计周期（单位：s），默认值=120
+        silencePeriod: 60             # 报警静默时间（单位：s），0表示不静默；默认值=120
+
+      - type: reject                 # 触发任务拒绝告警
+        count: 5                     # 在一个统计周期内，如果触发拒绝策略次数达到 count，则触发报警；默认值=1
+        period: 60                   # 报警统计周期（单位：s），默认值=120
+        silencePeriod: 60             # 报警静默时间（单位：s），0表示不静默；默认值=120
+
+      - type: run_timeout            # 任务执行超时告警
+        count: 20                    # 在一个统计周期内，如果执行超时次数达到 count，则触发报警；默认值=10
+        period: 60                   # 报警统计周期（单位：s），默认值=120
+        silencePeriod: 60            # 报警静默时间（单位：s），0表示不静默；默认值=120
+
+      - type: queue_timeout          # 任务排队超时告警
+        count: 20                     # 在一个统计周期内，如果排队超时次数达到 count，则触发报警；默认值=10
+        period: 60                   # 报警统计周期（单位：s），默认值=120
+        silencePeriod: 60             # 报警静默时间（单位：s），0表示不静默；默认值=120
+
+  # 线程池配置
+  executors:                               # 动态线程池配置，都有默认值，采用默认值的可以不配置该项，减少配置量
+      # 系统默认线程池
+    - threadPoolName: systemDefaultExecutor          # 线程池名称，必填
+      threadPoolAliasName: 系统默认线程池              # 线程池别名，可选
+      executorType: common                           # 线程池类型 common、eager、ordered、scheduled、priority，默认 common
+      corePoolSize: 16                               # 核心线程数，默认1
+      maximumPoolSize: 32                            # 最大线程数，默认cpu核数
+      queueCapacity: 5000                            # 队列容量，默认1024
+      queueType: VariableLinkedBlockingQueue         # 任务队列，查看源码QueueTypeEnum枚举类，默认VariableLinkedBlockingQueue
+      rejectedHandlerType: CallerRunsPolicy          # 拒绝策略，查看RejectedTypeEnum枚举类，默认AbortPolicy
+      keepAliveTime: 60                              # 空闲线程等待超时时间，默认60
+      threadNamePrefix: system-default               # 线程名前缀，默认dtp
+      allowCoreThreadTimeOut: false                  # 是否允许核心线程池超时，默认false
+      waitForTasksToCompleteOnShutdown: true         # 参考spring线程池设计，优雅关闭线程池，默认true
+      awaitTerminationSeconds: 10                    # 优雅关闭线程池时，阻塞等待线程池中任务执行时间，默认3，单位（s）
+      preStartAllCoreThreads: false                  # 是否预热所有核心线程，默认false
+      runTimeout: 5000                               # 任务执行超时阈值，单位（ms），默认0（不统计）
+      queueTimeout: 30000                            # 任务在队列等待超时阈值，单位（ms），默认0（不统计）
+      tryInterrupt: false                            # 执行超时后是否中断线程，默认false
+      taskWrapperNames: ["ttl", "mdc"]               # 任务包装器名称，继承TaskWrapper接口
+      notifyEnabled: false                           # 是否开启报警，默认true
+      platformIds: [1]                               # 报警平台id，不配置默认拿上层platforms配置的所有平台
+
+    - threadPoolName: linkDefaultExecutor            # 线程池名称，必填
+      threadPoolAliasName: link默认线程池              # 线程池别名，可选
+      executorType: common                           # 线程池类型 common、eager、ordered、scheduled、priority，默认 common
+      corePoolSize: 16                               # 核心线程数，默认1
+      maximumPoolSize: 32                            # 最大线程数，默认cpu核数
+      queueCapacity: 10000                           # 队列容量，默认1024
+      queueType: VariableLinkedBlockingQueue         # 任务队列，查看源码QueueTypeEnum枚举类，默认VariableLinkedBlockingQueue
+      rejectedHandlerType: CallerRunsPolicy          # 拒绝策略，查看RejectedTypeEnum枚举类，默认AbortPolicy
+      keepAliveTime: 60                              # 空闲线程等待超时时间，默认60
+      threadNamePrefix: test                         # 线程名前缀，默认dtp
+      allowCoreThreadTimeOut: false                  # 是否允许核心线程池超时，默认false
+      waitForTasksToCompleteOnShutdown: true         # 参考spring线程池设计，优雅关闭线程池，默认true
+      awaitTerminationSeconds: 5                     # 优雅关闭线程池时，阻塞等待线程池中任务执行时间，默认3，单位（s）
+      preStartAllCoreThreads: false                  # 是否预热所有核心线程，默认false
+      runTimeout: 5000                               # 任务执行超时阈值，单位（ms），默认0（不统计）
+      queueTimeout: 30000                            # 任务在队列等待超时阈值，单位（ms），默认0（不统计）
+      tryInterrupt: false                            # 执行超时后是否中断线程，默认false
+      taskWrapperNames: ["ttl", "mdc"]               # 任务包装器名称，继承TaskWrapper接口
+      notifyEnabled: false                           # 是否开启报警，默认true
+      platformIds: [1]                             # 报警平台id，不配置默认拿上层platforms配置的所有平台
+
+    - threadPoolName: linkOtaUpgradeTaskExecutor                # 线程池名称，必填
+      threadPoolAliasName: linkOTA升级任务线程池           # 线程池别名，可选
+      executorType: common                           # 线程池类型 common、eager、ordered、scheduled、priority，默认 common
+      corePoolSize: 16                               # 核心线程数，默认1
+      maximumPoolSize: 32                            # 最大线程数，默认cpu核数
+      queueCapacity: 10000                           # 队列容量，默认1024
+      queueType: VariableLinkedBlockingQueue         # 任务队列，查看源码QueueTypeEnum枚举类，默认VariableLinkedBlockingQueue
+      rejectedHandlerType: CallerRunsPolicy          # 拒绝策略，查看RejectedTypeEnum枚举类，默认AbortPolicy
+      keepAliveTime: 60                              # 空闲线程等待超时时间，默认60
+      threadNamePrefix: test                         # 线程名前缀，默认dtp
+      allowCoreThreadTimeOut: false                  # 是否允许核心线程池超时，默认false
+      waitForTasksToCompleteOnShutdown: true         # 参考spring线程池设计，优雅关闭线程池，默认true
+      awaitTerminationSeconds: 5                     # 优雅关闭线程池时，阻塞等待线程池中任务执行时间，默认3，单位（s）
+      preStartAllCoreThreads: false                  # 是否预热所有核心线程，默认false
+      runTimeout: 5000                               # 任务执行超时阈值，单位（ms），默认0（不统计）
+      queueTimeout: 30000                            # 任务在队列等待超时阈值，单位（ms），默认0（不统计）
+      tryInterrupt: false                            # 执行超时后是否中断线程，默认false
+      taskWrapperNames: ["ttl", "mdc"]               # 任务包装器名称，继承TaskWrapper接口
+      notifyEnabled: false                           # 是否开启报警，默认true
+      platformIds: [1]                             # 报警平台id，不配置默认拿上层platforms配置的所有平台
+
+    - threadPoolName: mqsMqttExecutor                 # 线程池名称，必填
+      threadPoolAliasName: mqs-mqtt线程池             # 线程池别名，可选
+      executorType: common                           # 线程池类型 common、eager、ordered、scheduled、priority，默认 common
+      corePoolSize: 16                               # 核心线程数，默认1
+      maximumPoolSize: 32                            # 最大线程数，默认cpu核数
+      queueCapacity: 10000                           # 队列容量，默认1024
+      queueType: VariableLinkedBlockingQueue         # 任务队列，查看源码QueueTypeEnum枚举类，默认VariableLinkedBlockingQueue
+      rejectedHandlerType: CallerRunsPolicy          # 拒绝策略，查看RejectedTypeEnum枚举类，默认AbortPolicy
+      keepAliveTime: 60                              # 空闲线程等待超时时间，默认60
+      threadNamePrefix: test                         # 线程名前缀，默认dtp
+      allowCoreThreadTimeOut: false                  # 是否允许核心线程池超时，默认false
+      waitForTasksToCompleteOnShutdown: true         # 参考spring线程池设计，优雅关闭线程池，默认true
+      awaitTerminationSeconds: 5                     # 优雅关闭线程池时，阻塞等待线程池中任务执行时间，默认3，单位（s）
+      preStartAllCoreThreads: false                  # 是否预热所有核心线程，默认false
+      runTimeout: 5000                               # 任务执行超时阈值，单位（ms），默认0（不统计）
+      queueTimeout: 30000                            # 任务在队列等待超时阈值，单位（ms），默认0（不统计）
+      tryInterrupt: false                            # 执行超时后是否中断线程，默认false
+      taskWrapperNames: ["ttl", "mdc"]               # 任务包装器名称，继承TaskWrapper接口
+      notifyEnabled: false                           # 是否开启报警，默认true
+      platformIds: [1]                             # 报警平台id，不配置默认拿上层platforms配置的所有平台
+
+    - threadPoolName: mqsWebSocketExecutor           # 线程池名称，必填
+      threadPoolAliasName: mqs-websocket线程池        # 线程池别名，可选
+      executorType: common                           # 线程池类型 common、eager、ordered、scheduled、priority，默认 common
+      corePoolSize: 16                               # 核心线程数，默认1
+      maximumPoolSize: 32                            # 最大线程数，默认cpu核数
+      queueCapacity: 10000                           # 队列容量，默认1024
+      queueType: VariableLinkedBlockingQueue         # 任务队列，查看源码QueueTypeEnum枚举类，默认VariableLinkedBlockingQueue
+      rejectedHandlerType: CallerRunsPolicy          # 拒绝策略，查看RejectedTypeEnum枚举类，默认AbortPolicy
+      keepAliveTime: 60                              # 空闲线程等待超时时间，默认60
+      threadNamePrefix: test                         # 线程名前缀，默认dtp
+      allowCoreThreadTimeOut: false                  # 是否允许核心线程池超时，默认false
+      waitForTasksToCompleteOnShutdown: true         # 参考spring线程池设计，优雅关闭线程池，默认true
+      awaitTerminationSeconds: 5                     # 优雅关闭线程池时，阻塞等待线程池中任务执行时间，默认3，单位（s）
+      preStartAllCoreThreads: false                  # 是否预热所有核心线程，默认false
+      runTimeout: 5000                               # 任务执行超时阈值，单位（ms），默认0（不统计）
+      queueTimeout: 30000                            # 任务在队列等待超时阈值，单位（ms），默认0（不统计）
+      tryInterrupt: false                            # 执行超时后是否中断线程，默认false
+      taskWrapperNames: ["ttl", "mdc"]               # 任务包装器名称，继承TaskWrapper接口
+      notifyEnabled: false                           # 是否开启报警，默认true
+      platformIds: [1]                             # 报警平台id，不配置默认拿上层platforms配置的所有平台
+
+    - threadPoolName: mqsBusDefaultExecutor          # 线程池名称，必填(mqs-bus 协议总线 POST 阶段默认池)
+      threadPoolAliasName: mqs总线默认池               # 线程池别名,所有 POST stage 共用;后续按需加 mqsBus<StageName>Executor 隔离
+      executorType: common                           # 线程池类型 common、eager、ordered、scheduled、priority，默认 common
+      corePoolSize: 4                                # 核心线程数(POST 阶段任务多但单条短)
+      maximumPoolSize: 16                            # 最大线程数
+      queueCapacity: 50000                           # 队列容量大,吸收 dispatch 突发流量
+      queueType: VariableLinkedBlockingQueue         # 任务队列
+      rejectedHandlerType: CallerRunsPolicy          # 拒绝策略：队列满走调用方线程,背压保护
+      keepAliveTime: 60                              # 空闲线程等待超时时间，默认60
+      threadNamePrefix: mqs-bus                      # 线程名前缀
+      allowCoreThreadTimeOut: false                  # 是否允许核心线程池超时，默认false
+      waitForTasksToCompleteOnShutdown: true         # 参考spring线程池设计，优雅关闭线程池，默认true
+      awaitTerminationSeconds: 5                     # 优雅关闭线程池时，阻塞等待线程池中任务执行时间，默认3，单位（s）
+      preStartAllCoreThreads: false                  # 是否预热所有核心线程，默认false
+      runTimeout: 5000                               # 任务执行超时阈值，单位（ms），默认0（不统计）
+      queueTimeout: 30000                            # 任务在队列等待超时阈值，单位（ms），默认0（不统计）
+      tryInterrupt: false                            # 执行超时后是否中断线程，默认false
+      taskWrapperNames: ["ttl", "mdc"]               # 任务包装器：必须有 ttl 透传 ContextUtil.LocalMap(traceId/tenantId/@DS 切库依赖此项);mdc 透传日志 traceId
+      notifyEnabled: false                           # 是否开启报警，默认true
+      platformIds: [1]                               # 报警平台id
+
+    - threadPoolName: videoDefaultExecutor           # 线程池名称，必填
+      threadPoolAliasName: video默认线程池            # 线程池别名，可选
+      executorType: common                           # 线程池类型 common、eager、ordered、scheduled、priority，默认 common
+      corePoolSize: 16                               # 核心线程数，默认1
+      maximumPoolSize: 32                            # 最大线程数，默认cpu核数
+      queueCapacity: 10000                           # 队列容量，默认1024
+      queueType: VariableLinkedBlockingQueue         # 任务队列，查看源码QueueTypeEnum枚举类，默认VariableLinkedBlockingQueue
+      rejectedHandlerType: CallerRunsPolicy          # 拒绝策略，查看RejectedTypeEnum枚举类，默认AbortPolicy
+      keepAliveTime: 60                              # 空闲线程等待超时时间，默认60
+      threadNamePrefix: test                         # 线程名前缀，默认dtp
+      allowCoreThreadTimeOut: false                  # 是否允许核心线程池超时，默认false
+      waitForTasksToCompleteOnShutdown: true         # 参考spring线程池设计，优雅关闭线程池，默认true
+      awaitTerminationSeconds: 5                     # 优雅关闭线程池时，阻塞等待线程池中任务执行时间，默认3，单位（s）
+      preStartAllCoreThreads: false                  # 是否预热所有核心线程，默认false
+      runTimeout: 5000                               # 任务执行超时阈值，单位（ms），默认0（不统计）
+      queueTimeout: 30000                            # 任务在队列等待超时阈值，单位（ms），默认0（不统计）
+      tryInterrupt: false                            # 执行超时后是否中断线程，默认false
+      taskWrapperNames: ["ttl", "mdc"]               # 任务包装器名称，继承TaskWrapper接口
+      notifyEnabled: false                           # 是否开启报警，默认true
+      platformIds: [1]                             # 报警平台id，不配置默认拿上层platforms配置的所有平台
+
+    - threadPoolName: ruleDefaultExecutor            # 线程池名称，必填
+      threadPoolAliasName: rule默认线程池             # 线程池别名，可选
+      executorType: common                           # 线程池类型 common、eager、ordered、scheduled、priority，默认 common
+      corePoolSize: 16                               # 核心线程数，默认1
+      maximumPoolSize: 64                            # 最大线程数（桥接并发场景大于普通业务，给 64）
+      queueCapacity: 10000                           # 队列容量，默认1024
+      queueType: VariableLinkedBlockingQueue         # 任务队列，查看源码QueueTypeEnum枚举类，默认VariableLinkedBlockingQueue
+      rejectedHandlerType: CallerRunsPolicy          # 拒绝策略：队列满走调用方线程，背压保护
+      keepAliveTime: 60                              # 空闲线程等待超时时间，默认60
+      threadNamePrefix: rule-default                 # 线程名前缀，默认dtp
+      allowCoreThreadTimeOut: false                  # 是否允许核心线程池超时，默认false
+      waitForTasksToCompleteOnShutdown: true         # 参考spring线程池设计，优雅关闭线程池，默认true
+      awaitTerminationSeconds: 5                     # 优雅关闭线程池时，阻塞等待线程池中任务执行时间，默认3，单位（s）
+      preStartAllCoreThreads: false                  # 是否预热所有核心线程，默认false
+      runTimeout: 5000                               # 任务执行超时阈值，单位（ms），默认0（不统计）
+      queueTimeout: 30000                            # 任务在队列等待超时阈值，单位（ms），默认0（不统计）
+      tryInterrupt: false                            # 执行超时后是否中断线程，默认false
+      taskWrapperNames: ["ttl", "mdc"]               # 任务包装器：ttl 透传 ContextUtil.LocalMap（@DS 切库依赖此项）；mdc 透传日志 traceId
+      notifyEnabled: false                           # 是否开启报警，默认true
+      platformIds: [1]                               # 报警平台id，不配置默认拿上层platforms配置的所有平台
+
+    - threadPoolName: ruleBridgeLogExecutor          # 线程池名称，必填
+      threadPoolAliasName: rule桥接日志入库池          # 线程池别名，可选
+      executorType: common                           # 线程池类型 common、eager、ordered、scheduled、priority，默认 common
+      corePoolSize: 4                                # 核心线程数（log 写库为 I/O 任务，4 线程足够）
+      maximumPoolSize: 8                             # 最大线程数
+      queueCapacity: 50000                           # 队列容量大，吸收 dispatch 突发流量
+      queueType: VariableLinkedBlockingQueue         # 任务队列
+      rejectedHandlerType: DiscardOldestPolicy       # 拒绝策略：队列满丢最老 log（log 不能阻塞主链路；丢日志可接受）
+      keepAliveTime: 60                              # 空闲线程等待超时时间，默认60
+      threadNamePrefix: rule-bridge-log              # 线程名前缀
+      allowCoreThreadTimeOut: false                  # 是否允许核心线程池超时，默认false
+      waitForTasksToCompleteOnShutdown: true         # 优雅关闭线程池
+      awaitTerminationSeconds: 10                    # 优雅关闭等待 10s（让排队中的 trace 尽量落库）
+      preStartAllCoreThreads: false                  # 是否预热所有核心线程，默认false
+      runTimeout: 3000                               # 单条 trace 写库超时阈值，单位（ms）
+      queueTimeout: 0                                # 不统计排队超时（log 队列允许深排）
+      tryInterrupt: false                            # 执行超时后是否中断线程，默认false
+      taskWrapperNames: ["ttl", "mdc"]               # 任务包装器：必须有 ttl 透传 LocalMap，否则 traceManager.save 切库失败
+      notifyEnabled: false                           # 是否开启报警，默认true
+      platformIds: [1]                               # 报警平台id

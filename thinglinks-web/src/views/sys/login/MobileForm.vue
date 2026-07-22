@@ -75,7 +75,7 @@
   const { t } = useI18n();
   const userStore = useUserStore();
   const { handleBackLogin, getLoginState } = useLoginState();
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   const { getFormRules } = useFormRules();
 
   const formRef = ref();
@@ -164,11 +164,7 @@
       loading.value = true;
       const userInfo = await userStore.login(toRaw(data));
       if (userInfo) {
-        notification.success({
-          message: t('sys.login.loginSuccessTitle'),
-          description: `${t('sys.login.loginSuccessDesc')}`,
-          duration: 3,
-        });
+        createMessage.success(t('sys.login.loginSuccessDesc'));
       } else {
         // 登录失败时重置滑块验证
         formData.sliderVerified = false;

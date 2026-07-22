@@ -25,14 +25,11 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * <p>
- * 通用业务实现类
- * 组织
- * </p>
+ * 组织 Manager 实现。
  *
  * @author mqttsnet
  * @date 2021-10-18
- * @create [2021-10-18] [mqttsnet] 
+ * @create [2021-10-18] [mqttsnet]
  */
 @Slf4j
 @Service
@@ -44,6 +41,13 @@ public class BaseOrgManagerImpl extends SuperCacheManagerImpl<BaseOrgMapper, Bas
         return new OrgCacheKeyBuilder();
     }
 
+    /**
+     * Echo 字典回显批量接口 ── 由 {@code basic-echo-starter} 框架的 {@code @EchoLoader} 反射调用,
+     * Manager 层必须直接暴露(by design,框架契约,不能下沉 Service).
+     *
+     * <p>{@code @DS(BASE_TENANT)} 显式标 ── Echo 回显走租户库;
+     * {@code @Transactional(readOnly = true)} 纯读优化,非业务事务.</p>
+     */
     @Override
     @Transactional(readOnly = true)
     @DS(DsConstant.BASE_TENANT)
@@ -51,18 +55,26 @@ public class BaseOrgManagerImpl extends SuperCacheManagerImpl<BaseOrgMapper, Bas
         if (CollUtil.isEmpty(params)) {
             return Collections.emptyMap();
         }
-        Set<Serializable> ids = new HashSet<>();
-        params.forEach(item -> {
-            if (item instanceof Collection tempItem) {
-                ids.addAll(tempItem);
-            } else {
-                ids.add(item);
+        try {
+            Set<Serializable> ids = new HashSet<>();
+            params.forEach(item -> {
+                if (item instanceof Collection tempItem) {
+                    ids.addAll(tempItem);
+                } else if (item != null) {
+                    ids.add(item);
+                }
+            });
+            if (ids.isEmpty()) {
+                return Collections.emptyMap();
             }
-        });
-
-        List<BaseOrg> list = findByIds(ids, null);
-
-        return CollHelper.uniqueIndex(list.stream().filter(Objects::nonNull).toList(), BaseOrg::getId, BaseOrg::getName);
+            List<BaseOrg> list = findByIds(ids, null);
+            return CollHelper.uniqueIndex(
+                    list.stream().filter(Objects::nonNull).toList(),
+                    BaseOrg::getId, BaseOrg::getName);
+        } catch (Exception e) {
+            log.warn("[Echo] BaseOrg findByIds failed, params={}, cause={}", params, e.getMessage());
+            return Collections.emptyMap();
+        }
     }
 
 }

@@ -43,21 +43,19 @@ import com.mqttsnet.thinglinks.vo.save.plugin.PluginInstanceMappingSaveVO;
 import com.mqttsnet.thinglinks.vo.update.plugin.PluginInfoUpdateVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
+import com.mqttsnet.thinglinks.common.utils.FileUploadUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
@@ -109,14 +107,7 @@ public class PluginInfoServiceImpl extends SuperServiceImpl<PluginInfoManager, L
      * @throws IOException 如果文件读取失败
      */
     public static MultipartFile convertToMultipartFile(File file) throws IOException {
-        try (InputStream input = new FileInputStream(file)) {
-            // 使用 Apache Commons IO 的 IOUtils 将 InputStream 转换为字节数组
-            byte[] fileContent = IOUtils.toByteArray(input);
-
-            // 使用 MockMultipartFile 创建 MultipartFile
-            return new MockMultipartFile(file.getName(), file.getName(), "application/octet-stream", fileContent
-            );
-        }
+        return FileUploadUtils.toMultipartFile(file);
     }
 
     @Override
@@ -488,7 +479,7 @@ public class PluginInfoServiceImpl extends SuperServiceImpl<PluginInfoManager, L
         }
         try {
             // 构建目标实例的 URL，例如：http://<instanceIp>:<port>/installPlugin
-            String url = instance.toInetAddrWithHttp() + "/anyUser/ruleOpen/installPlugin";
+            String url = instance.toInetAddrWithHttp() + "/inner/ruleOpen/installPlugin";
 
             // 创建请求参数，tenantId 和 pluginId 应该作为查询参数传递
             UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)
@@ -548,7 +539,7 @@ public class PluginInfoServiceImpl extends SuperServiceImpl<PluginInfoManager, L
         log.info("Attempting to uninstall plugin {} from instance {}", pluginId, instance.getInstanceIdentification());
         try {
             // 构建目标实例的 URL，例如： http://<instanceIp>:<port>/uninstallPlugin
-            String url = instance.toInetAddrWithHttp() + "/anyUser/ruleOpen/uninstallPlugin";
+            String url = instance.toInetAddrWithHttp() + "/inner/ruleOpen/uninstallPlugin";
 
             // 创建请求参数，tenantId 和 pluginId 应该作为查询参数传递
             UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)

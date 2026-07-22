@@ -14,6 +14,7 @@ import lombok.experimental.SuperBuilder;
  * Description:
  * 客户端被系统踢下线事件
  * ============================================================================
+ *
  * @date 2025/3/9 14:59
  */
 @Data
@@ -29,7 +30,7 @@ public class KickedEvent extends BaseEvent {
     private String address;
 
     @Schema(description = "触发踢下线的原因",
-            allowableValues = {"DUPLICATE_CONN", "ADMIN_OPERATION"})
+        allowableValues = {"DUPLICATE_CONN", "ADMIN_OPERATION"})
     private String kickReason;
 }
 

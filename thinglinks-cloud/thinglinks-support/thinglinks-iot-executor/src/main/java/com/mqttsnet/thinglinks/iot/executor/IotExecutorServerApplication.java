@@ -18,9 +18,18 @@ import static com.mqttsnet.thinglinks.common.constant.BizConstant.BUSINESS_PACKA
 import static com.mqttsnet.thinglinks.common.constant.BizConstant.UTIL_PACKAGE;
 
 /**
- * 物联网业务系统执行器
+ * 物联网业务系统执行器（XXL-Job）
+ * <p>
+ * 通过各业务模块的 boot-impl 本地调用 Facade 接口，
+ * 依赖链：executor → boot-impl → biz（核心业务层）。
+ * <p>
+ * 各业务模块的协议层已独立为单独的 Maven 模块（如 video-biz-protocol），
+ * executor 不引入协议模块，协议相关的 Bean 不会出现在 classpath 中，
+ * 无需额外的 ComponentScan 排除配置。
  *
- * @author xiaonannet
+ * @author mqttsnet
+ * @see com.mqttsnet.thinglinks.iot.executor.service.jobhandler.VideoJob
+ * @see com.mqttsnet.thinglinks.iot.executor.service.jobhandler.LinkJob
  */
 @SpringBootApplication
 @EnableDiscoveryClient

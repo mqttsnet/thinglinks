@@ -15,7 +15,6 @@ export enum ChartLayoutStoreEnum {
   Chart_TYPE = 'chartType',
   LAYER_TYPE = 'layerType',
   PERCENTAGE = 'percentage',
-
 }
 
 export interface ChartLayoutType {
@@ -31,5 +30,4 @@ export interface ChartLayoutType {
   [ChartLayoutStoreEnum.LAYER_TYPE]: LayerModeEnum
   // 当前正在加载的数量
   [ChartLayoutStoreEnum.PERCENTAGE]: number
-
 }

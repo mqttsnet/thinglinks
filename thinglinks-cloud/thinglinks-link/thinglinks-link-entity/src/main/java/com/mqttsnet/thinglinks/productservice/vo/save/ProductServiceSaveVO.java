@@ -1,8 +1,10 @@
 package com.mqttsnet.thinglinks.productservice.vo.save;
 
+import com.mqttsnet.thinglinks.product.constant.ThingModelCodeRule;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,11 +43,11 @@ public class ProductServiceSaveVO implements Serializable {
     @Schema(description = "产品ID")
     private Long productId;
     /**
-     * 服务编码:支持英文大小写、数字、下划线和中划线
+     * 服务编码(用作底层数据表标识)。
      */
-    @Schema(description = "服务编码:支持英文大小写、数字、下划线和中划线")
-    @NotEmpty(message = "请填写服务编码:支持英文大小写、数字、下划线和中划线")
-    @Size(max = 255, message = "服务编码:支持英文大小写、数字、下划线和中划线长度不能超过{max}")
+    @Schema(description = "服务编码(用作数据表标识):小写字母开头,仅含小写字母、数字、下划线,长度2-50")
+    @NotEmpty(message = "请填写服务编码")
+    @Pattern(regexp = ThingModelCodeRule.PATTERN, message = ThingModelCodeRule.PATTERN_MSG)
     private String serviceCode;
     /**
      * 服务名称

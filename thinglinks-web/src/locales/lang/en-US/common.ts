@@ -7,6 +7,7 @@ export default {
   saveText: 'Save',
   delText: 'Delete',
   resetText: 'Reset',
+  cleanText: 'Clear',
   searchText: 'Search',
   queryText: 'Search',
   renewal: 'Renewal',
@@ -25,8 +26,10 @@ export default {
   expiresInDays: '{s} Expires In Days',
 
   redo: 'Refresh',
+  refresh: 'Refresh',
   back: 'Back',
   switchView: 'SwitchView',
+  optional: 'Optional',
 
   light: 'Light',
   dark: 'Dark',
@@ -61,6 +64,12 @@ export default {
     device: 'The affiliated equipment',
     review: 'Review',
     confirm: 'Confirm',
+    save: 'Save',
+    refresh: 'Refresh',
+    close: 'Close',
+    loading: 'Loading',
+    show: 'Show',
+    hide: 'Hide',
   },
   tips: {
     tips: 'Tips',

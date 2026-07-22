@@ -91,9 +91,9 @@ protected RequestMethod getRequestMethod() {
 ### 使用方式
 
 ```java
-String url = "http://localhost:8081/api";
-String appId = "2019032617262200001";
-String privateKey = "你的私钥";
+String url = System.getenv("THINGLINKS_OPENAPI_URL");
+String appId = System.getenv("THINGLINKS_OPENAPI_APP_ID");
+String privateKey = System.getenv("THINGLINKS_OPENAPI_PRIVATE_KEY");
 
 // 声明一个就行
 OpenClient client = new OpenClient(url, appId, privateKey);
@@ -120,3 +120,13 @@ public void testGet() {
     }
 }
 ```
+
+运行联调程序前，通过环境变量提供开放平台配置：
+
+| 环境变量 | 用途 |
+| --- | --- |
+| `THINGLINKS_OPENAPI_URL` | 开放平台 API 入口地址 |
+| `THINGLINKS_OPENAPI_APP_ID` | 开放平台应用 ID |
+| `THINGLINKS_OPENAPI_PRIVATE_KEY` | 应用签名私钥 |
+
+联调配置仅存放在本机环境或密钥管理系统中，不写入源码、配置文件和日志。

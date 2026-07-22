@@ -3,6 +3,7 @@ package com.mqttsnet.thinglinks.dashboard.controller;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.thinglinks.datascope.DataScopeHelper;
 import com.mqttsnet.thinglinks.service.dashboard.RuleDashboardStatsService;
+import com.mqttsnet.thinglinks.vo.result.dashboard.RuleBridgeSummaryResultVO;
 import com.mqttsnet.thinglinks.vo.result.dashboard.RuleDashboardSummaryResultVO;
 import com.mqttsnet.thinglinks.vo.result.server.ServerResultVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,6 +57,19 @@ public class RuleDashboardStatsController {
         DataScopeHelper.startDataScope("rule_alarm");
         DataScopeHelper.startDataScope("rule_alarm_record");
         RuleDashboardSummaryResultVO summary = ruleDashboardStatsService.getDashboardAssetSummary();
+        return R.success(summary);
+    }
+
+
+    @Operation(summary = "获取数据桥接统计信息", description = "返回数据源/桥接规则/订阅源总量与启用数 + 今日执行成功失败分布")
+    @GetMapping("/bridgeSummary")
+    public R<RuleBridgeSummaryResultVO> getBridgeSummary() {
+        log.info("Fetching dashboard bridgeSummary statistics");
+        DataScopeHelper.startDataScope("rule_data_source");
+        DataScopeHelper.startDataScope("rule_data_bridge");
+        DataScopeHelper.startDataScope("rule_subscription_source");
+        DataScopeHelper.startDataScope("rule_bridge_execution_trace");
+        RuleBridgeSummaryResultVO summary = ruleDashboardStatsService.getBridgeSummary();
         return R.success(summary);
     }
 

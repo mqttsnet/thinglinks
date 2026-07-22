@@ -7,7 +7,7 @@ export const InputsSelectConfig: ConfigType = {
   conKey: 'VCInputsSelect',
   title: 'project.component_inputs_select',
   category: ChatCategoryEnum.INPUTS,
-  categoryName: getChatCategoryEnumName().INPUTS,
+  get categoryName() { return getChatCategoryEnumName().INPUTS },
   package: PackagesCategoryEnum.INFORMATIONS,
   chartFrame: ChartFrameEnum.STATIC,
   image: 'inputs_select.png'

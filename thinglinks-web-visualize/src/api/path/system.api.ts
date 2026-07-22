@@ -32,8 +32,7 @@ export const ossUrlApi = async (data: object) => {
        */
       bucketURL?: string
     }>(`${ModuleTypeEnum.SYSTEM}/getOssInfo`, data)
-    // return res
-    return true
+    return res
   } catch (err) {
     httpErrorHandle()
   }

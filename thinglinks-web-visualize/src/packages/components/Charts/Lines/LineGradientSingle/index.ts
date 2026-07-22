@@ -7,7 +7,7 @@ export const LineGradientSingleConfig: ConfigType = {
   conKey: 'VCLineGradientSingle',
   title: 'project.component_line_gradient_single',
   category: ChatCategoryEnum.LINE,
-  categoryName: getChatCategoryEnumName().LINE,
+  get categoryName() { return getChatCategoryEnumName().LINE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'line_gradient_single.png'

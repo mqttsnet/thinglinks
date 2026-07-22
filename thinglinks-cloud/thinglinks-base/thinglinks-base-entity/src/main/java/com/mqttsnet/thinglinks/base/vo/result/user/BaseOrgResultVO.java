@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import java.util.Map;
 @Schema(title = "BaseOrgResultVO", description = "组织")
 public class BaseOrgResultVO extends TreeEntity<BaseOrgResultVO, Long> implements Serializable, EchoVO {
 
+    @Serial
     private static final long serialVersionUID = 1L;
     @Builder.Default
     private final Map<String, Object> echoMap = MapUtil.newHashMap();
@@ -100,4 +102,19 @@ public class BaseOrgResultVO extends TreeEntity<BaseOrgResultVO, Long> implement
     @Schema(description = "备注")
 
     private String remarks;
+
+    /** shadow SuperEntity<Long>.createdBy,挂 @Echo 让 echoService 回填用户昵称到 echoMap.createdBy。 */
+    @Schema(description = "创建人")
+    @Echo(api = EchoApi.DEF_USER_ID_CLASS)
+    private Long createdBy;
+
+    /** shadow Entity<Long>.updatedBy,挂 @Echo 让 echoService 回填用户昵称到 echoMap.updatedBy。 */
+    @Schema(description = "最后修改人")
+    @Echo(api = EchoApi.DEF_USER_ID_CLASS)
+    private Long updatedBy;
+
+    /** 创建人组织,挂 @Echo 让 echoService 回填组织名到 echoMap.createdOrgId。 */
+    @Schema(description = "创建人组织")
+    @Echo(api = EchoApi.ORG_ID_CLASS)
+    private Long createdOrgId;
 }

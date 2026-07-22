@@ -1,35 +1,14 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project are documented per release under [`changelogs/`](changelogs/).
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.0] - 2026-03-23
-
-### Added
-- Multi-language README support (English, Chinese, Japanese, Korean)
-- Unified version management script (`scripts/bump-version.sh`)
-- LICENSE-COMMERCIAL for dual-licensing model (Apache 2.0 + Commercial)
-- GitHub Issue templates (Bug Report, Feature Request, Question)
-- Pull Request template
-- Security policy (SECURITY.md)
-- Developer operations guide (`docs/README.md`)
-- Frontend sub-project READMEs with 4-language support
-
-### Changed
-- Upgraded project version from 1.0.8 to 1.3.0 (unified across all modules)
-- README redesigned with professional badges, collapsible screenshots, edition comparison
-- LICENSE updated to standard Apache 2.0 (commercial terms moved to LICENSE-COMMERCIAL)
-- Jenkinsfile simplified (removed MODE parameter, build by environment only)
-- Docker Compose consolidated (merged thinglinks-job into main docker-compose.yml)
-- Sensitive credentials in docs/config replaced with placeholders
-
-### Fixed
-- Broken image paths in README (`doc/imgs/` -> `docs/images/`)
-- CONTRIBUTING.md logo path and git clone URL syntax
-- thinglinks-web-visualize/package.json malformed version field
-- prettier syntax error in thinglinks-web/package.json
+| Version | Date | Highlights |
+| ------- | ---- | ---------- |
+| [1.4.0](changelogs/v1.4.0.md) | 2026-07-22 | Version-aware uplink pipeline, product/OTA rollout, data-bridge rules, GB28181 video, Critical security fixes and configuration hardening |
+| [1.3.0](changelogs/v1.3.0.md) | 2026-03-23 | Multi-language README, dual licensing (Apache 2.0 + Commercial), governance & security baseline |
 
 ---
 

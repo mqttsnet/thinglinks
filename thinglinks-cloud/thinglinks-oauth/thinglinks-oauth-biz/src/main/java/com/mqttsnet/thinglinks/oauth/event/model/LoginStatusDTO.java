@@ -2,7 +2,6 @@ package com.mqttsnet.thinglinks.oauth.event.model;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
-import com.mqttsnet.basic.log.util.AddressUtil;
 import com.mqttsnet.thinglinks.system.enumeration.system.LoginStatusEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -72,11 +71,6 @@ public class LoginStatusDTO implements Serializable {
      */
     private String ua;
     /**
-     * 登录地点
-     */
-    private String location;
-
-    /**
      * '登录状态;[01-登录成功 02-验证码错误 03-密码错误 04-账号锁定 05-切换租户 06-短信验证码错误]
      *
      * @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Tenant.LOGIN_STATUS)
@@ -130,11 +124,9 @@ public class LoginStatusDTO implements Serializable {
         String tempUa = StrUtil.sub(request.getHeader("user-agent"), 0, 500);
         String tempIp = JakartaServletUtil.getClientIP(request);
         log.info("tempIp={}, ua={}", tempIp, tempUa);
-        String tempLocation = isLocalHostIp(tempIp) ? "localhost" : AddressUtil.getRegion(tempIp);
 
         this.ua = tempUa;
         this.requestIp = tempIp;
-        this.location = tempLocation;
         return this;
     }
 
@@ -146,7 +138,8 @@ public class LoginStatusDTO implements Serializable {
             InetAddress inetAddress = InetAddress.getByName(ipAddress);
             return inetAddress.isLoopbackAddress();
         } catch (UnknownHostException e) {
-            // 处理异常情况，如果无法解析IP地址，则不视为本地地址
+            // 处理异常情况:如果无法解析IP地址,则不视为本地地址(可能是非法格式 / DNS 不可达)
+            log.warn("[login-status] isLocalHostIp parse failed ipAddress={} err={}", ipAddress, e.getMessage());
             return false;
         }
     }

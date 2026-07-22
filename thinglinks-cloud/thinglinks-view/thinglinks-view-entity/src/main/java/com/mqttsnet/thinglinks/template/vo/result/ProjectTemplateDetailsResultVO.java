@@ -1,12 +1,8 @@
 package com.mqttsnet.thinglinks.template.vo.result;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Map;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,12 +29,10 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "ProjectTemplateDetailsResultVO", description = "可视化项目模板表")
-public class ProjectTemplateDetailsResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class ProjectTemplateDetailsResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -73,11 +67,6 @@ public class ProjectTemplateDetailsResultVO extends Entity<Long> implements Seri
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
 
 }

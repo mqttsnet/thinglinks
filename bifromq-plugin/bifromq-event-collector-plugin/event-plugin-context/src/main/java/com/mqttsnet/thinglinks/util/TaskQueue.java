@@ -1,12 +1,12 @@
 package com.mqttsnet.thinglinks.util;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TaskQueue {
@@ -25,19 +25,19 @@ public class TaskQueue {
     public TaskQueue(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit) {
         log.info("Initializing TaskQueue...");
         this.executorService = new ThreadPoolExecutor(
-                corePoolSize,
-                maximumPoolSize,
-                keepAliveTime,
-                unit,
-                new LinkedBlockingQueue<>(),
-                new ThreadFactory() {
-                    private final AtomicInteger counter = new AtomicInteger(0);
+            corePoolSize,
+            maximumPoolSize,
+            keepAliveTime,
+            unit,
+            new LinkedBlockingQueue<>(),
+            new ThreadFactory() {
+                private final AtomicInteger counter = new AtomicInteger(0);
 
-                    @Override
-                    public Thread newThread(Runnable r) {
-                        return new Thread(r, "TaskQueueThread-" + counter.incrementAndGet());
-                    }
-                });
+                @Override
+                public Thread newThread(Runnable r) {
+                    return new Thread(r, "TaskQueueThread-" + counter.incrementAndGet());
+                }
+            });
 
         for (int i = 0; i < corePoolSize; i++) {
             executorService.submit(() -> {

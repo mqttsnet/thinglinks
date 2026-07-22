@@ -1,5 +1,7 @@
 package com.mqttsnet.thinglinks.video.service.anytenant.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
+import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
 import com.mqttsnet.thinglinks.video.dto.media.zlm.ZlmMediaServerStreamInfo;
 import com.mqttsnet.thinglinks.video.service.anytenant.ZlmMediaServerOpenAnyTenantService;
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@DS(DsConstant.BASE_TENANT)
 public class ZlmMediaServerOpenAnyTenantServiceImpl implements ZlmMediaServerOpenAnyTenantService {
 
     private final MediaNodeServerService mediaNodeServerService;
@@ -144,5 +147,33 @@ public class ZlmMediaServerOpenAnyTenantServiceImpl implements ZlmMediaServerOpe
         return mediaNodeServerService.addStreamProxy(videoMediaServerResultDTO, appId, streamIdentification, url, enableAudio, enableMp4, rtpType);
     }
 
+    @Override
+    public Boolean startRecord(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification, String fileFormat, int maxSecond) {
+        try {
+            return mediaNodeServerService.startRecord(videoMediaServerResultDTO, appId, streamIdentification, fileFormat, maxSecond);
+        } catch (Exception e) {
+            log.error("开始录制异常: appId={}, stream={}", appId, streamIdentification, e);
+            return false;
+        }
+    }
 
+    @Override
+    public Boolean stopRecord(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification) {
+        try {
+            return mediaNodeServerService.stopRecord(videoMediaServerResultDTO, appId, streamIdentification);
+        } catch (Exception e) {
+            log.error("停止录制异常: appId={}, stream={}", appId, streamIdentification, e);
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean isRecording(VideoMediaServerResultDTO videoMediaServerResultDTO, String appId, String streamIdentification) {
+        try {
+            return mediaNodeServerService.isRecording(videoMediaServerResultDTO, appId, streamIdentification);
+        } catch (Exception e) {
+            log.error("查询录制状态异常: appId={}, stream={}", appId, streamIdentification, e);
+            return false;
+        }
+    }
 }

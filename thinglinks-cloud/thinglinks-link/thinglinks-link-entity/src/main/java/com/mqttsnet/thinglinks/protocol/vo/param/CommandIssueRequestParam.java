@@ -66,4 +66,7 @@ public class CommandIssueRequestParam implements Serializable {
     @Schema(description = "Parameters for the command.")
     @NotNull(message = "Parameters cannot be null")
     private Map<String, Object> params;
+
+    @Schema(description = "Product version no. the structured command is built against (optional, for record/trace).")
+    private String versionNo;
 }

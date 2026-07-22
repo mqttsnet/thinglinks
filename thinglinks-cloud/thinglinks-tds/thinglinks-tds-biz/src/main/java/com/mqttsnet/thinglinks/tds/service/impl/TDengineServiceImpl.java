@@ -32,48 +32,63 @@ public class TDengineServiceImpl implements TdsService {
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void createDatabase(String dataBaseName) {
+        TdsSqlGuard.checkIdentifier(dataBaseName, "dataBaseName");
         tdengineMapper.createDatabase(dataBaseName);
     }
 
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void createSuperTable(String dataBaseName, String superTableName) {
+        TdsSqlGuard.checkIdentifier(dataBaseName, "dataBaseName");
+        TdsSqlGuard.checkIdentifier(superTableName, "superTableName");
         tdengineMapper.createSuperTable(dataBaseName, superTableName);
     }
 
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void createSuperTableAndColumn(SuperTableDTO superTableDTO) {
+        TdsSqlGuard.checkSuperTable(superTableDTO);
         tdengineMapper.createSuperTableAndColumn(superTableDTO);
     }
 
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void createSubTable(TableDTO tableDTO) {
+        TdsSqlGuard.checkTable(tableDTO);
         tdengineMapper.createSubTable(tableDTO);
     }
 
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void dropSuperTable(String dataBaseName, String superTableName) {
+        TdsSqlGuard.checkIdentifier(dataBaseName, "dataBaseName");
+        TdsSqlGuard.checkIdentifier(superTableName, "superTableName");
         tdengineMapper.dropSuperTable(dataBaseName, superTableName);
     }
 
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void alterSuperTableColumn(String dataBaseName, String superTableName, Fields fields) {
+        TdsSqlGuard.checkIdentifier(dataBaseName, "dataBaseName");
+        TdsSqlGuard.checkIdentifier(superTableName, "superTableName");
+        TdsSqlGuard.checkField(fields, "fields");
         tdengineMapper.alterSuperTableColumn(dataBaseName, superTableName, fields);
     }
 
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void dropSuperTableColumn(String dataBaseName, String superTableName, Fields fields) {
+        TdsSqlGuard.checkIdentifier(dataBaseName, "dataBaseName");
+        TdsSqlGuard.checkIdentifier(superTableName, "superTableName");
+        TdsSqlGuard.checkField(fields, "fields");
         tdengineMapper.dropSuperTableColumn(dataBaseName, superTableName, fields);
     }
 
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public List<SuperTableDescribeVO> describeSuperOrSubTable(String dataBaseName, String tableName) {
+        TdsSqlGuard.checkIdentifier(dataBaseName, "dataBaseName");
+        TdsSqlGuard.checkIdentifier(tableName, "tableName");
         List<SuperTableDescribeVO> superTableDescribeVOS = new ArrayList<>();
         try {
             superTableDescribeVOS = tdengineMapper.describeSuperOrSubTable(dataBaseName, tableName);
@@ -86,24 +101,35 @@ public class TDengineServiceImpl implements TdsService {
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void alterSuperTableTag(String dataBaseName, String superTableName, Fields fields) {
+        TdsSqlGuard.checkIdentifier(dataBaseName, "dataBaseName");
+        TdsSqlGuard.checkIdentifier(superTableName, "superTableName");
+        TdsSqlGuard.checkField(fields, "fields");
         tdengineMapper.alterSuperTableTag(dataBaseName, superTableName, fields);
     }
 
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void dropSuperTableTag(String dataBaseName, String superTableName, Fields fields) {
+        TdsSqlGuard.checkIdentifier(dataBaseName, "dataBaseName");
+        TdsSqlGuard.checkIdentifier(superTableName, "superTableName");
+        TdsSqlGuard.checkField(fields, "fields");
         tdengineMapper.dropSuperTableTag(dataBaseName, superTableName, fields);
     }
 
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void alterSuperTableTagRename(String dataBaseName, String superTableName, String oldName, String newName) {
+        TdsSqlGuard.checkIdentifier(dataBaseName, "dataBaseName");
+        TdsSqlGuard.checkIdentifier(superTableName, "superTableName");
+        TdsSqlGuard.checkIdentifier(oldName, "oldName");
+        TdsSqlGuard.checkIdentifier(newName, "newName");
         tdengineMapper.alterSuperTableTagRename(dataBaseName, superTableName, oldName, newName);
     }
 
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public void insertTableData(TableDTO tableDTO) {
+        TdsSqlGuard.checkTable(tableDTO);
         tdengineMapper.insertTableData(tableDTO);
     }
 
@@ -125,6 +151,8 @@ public class TDengineServiceImpl implements TdsService {
     @Override
     @DS(DsConstant.EXTEND_TENANT)
     public CompletableFuture<List<Map<String, Object>>> getDataInRangeOrLastRecord(String dataBaseName, String tableName, Long startTime, Long endTime) {
+        TdsSqlGuard.checkIdentifier(dataBaseName, "dataBaseName");
+        TdsSqlGuard.checkIdentifier(tableName, "tableName");
         return CompletableFuture.completedFuture(tdengineMapper.getDataInRangeOrLastRecord(dataBaseName, tableName, startTime, endTime));
     }
 }

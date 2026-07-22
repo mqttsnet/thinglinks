@@ -33,4 +33,15 @@ public class PolicyContext implements Serializable {
 
     // 规则对象DTO
     private RulePolicyDTO rulePolicyDTO;
+
+    /**
+     * 事件路径要评估的条件类型(ConditionTypeEnum.value)。
+     * <p>非空时策略工厂只分发匹配类型的条件组(混搭规则的定时条件仍归定时任务触发);null=全量评估(定时/API 路径)。
+     */
+    private Integer triggerConditionType;
+
+    /**
+     * 触发事件上下文(消息内值)。null=定时/API 触发路径。
+     */
+    private TriggerEventDTO triggerEvent;
 }

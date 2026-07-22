@@ -1,13 +1,9 @@
 package com.mqttsnet.thinglinks.cacert.vo.result.license;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Map;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,11 +30,9 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(description = "CA许可证证书")
-public class CaCertLicenseResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class CaCertLicenseResultVO extends AuditableResultVO {
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private final Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -181,11 +175,6 @@ public class CaCertLicenseResultVO extends Entity<Long> implements Serializable,
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
 
 }

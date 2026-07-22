@@ -24,16 +24,34 @@ public class CommonConstants {
     public static final String EVENT_TYPE = "eventType";
 
     /**
-     * 事件时间字段名，用于JSON消息中标识事件发生的时间戳
-     * 通常是毫秒级别的时间戳，用于事件的时间排序和查询
+     * 事件时间字段名 ── broker plugin 调度 {@code enrichEventData} 瞬间的
+     * {@link System#currentTimeMillis()}.
+     * <p><b>语义</b>:plugin 处理事件的时间(64 worker 取值瞬间);多 worker 池下与
+     * broker 内核事件发生时刻可能有几 ms 误差.
+     * <b>仅人读 / debug</b> 用,与 {@link #EVENT_TIME_STR} 配套展示;
+     * <b>禁止用于因果排序 / 状态机单调写</b>(因果排序请用 {@link #EVENT_HLC}).
      */
     public static final String EVENT_TIME = "eventTime";
 
     /**
-     * 事件时间字符串字段名，用于JSON消息中标识事件发生的时间字符串
-     * 通常是格式化后的时间字符串，用于人类可读的时间显示
+     * 事件时间字符串字段名,与 {@link #EVENT_TIME} 同源 millis 的人类可读格式化版本.
      */
     public static final String EVENT_TIME_STR = "eventTimeStr";
+
+    /**
+     * 事件发生时刻的物理 UTC ms ── 来自 {@code Event.utc()}.
+     * <p><b>语义</b>:跨节点物理时间锚点,反映事件真实发生瞬间(节点内单调,跨节点受 NTP 影响).
+     * 业务展示推荐用此字段而非 {@link #EVENT_TIME}.
+     */
+    public static final String EVENT_UTC = "eventUtc";
+
+    /**
+     * 事件因果时钟 ── 来自 {@code Event.hlc()},64-bit Hybrid Logical Clock.
+     * <p><b>语义</b>:跨节点 <b>严格因果保序</b> 的单调时钟 ──
+     * 高 48 位 utc,低 16 位 logical counter.
+     * <b>下游状态机单调写(connect_status 等)的唯一权威排序键</b>.
+     */
+    public static final String EVENT_HLC = "eventHlc";
 
     /**
      * 租户ID字段名，用于JSON消息中标识数据所属租户

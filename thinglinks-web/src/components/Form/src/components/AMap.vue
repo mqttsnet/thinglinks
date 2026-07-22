@@ -42,7 +42,7 @@
     },
     emits: ['change', 'addressClick', 'update:value', 'updateMap'],
     setup(props, { emit }) {
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
       const loading = ref(false);
       const mapReady = ref(false); // 地图是否加载完成
       const attrs = useAttrs();
@@ -155,7 +155,7 @@
               }
             } else {
               console.error('Search failed: ', result);
-              notification.error({ message: t('component.map.searchFailed'), description: result });
+              createMessage.error(result);
             }
           });
         }
@@ -293,11 +293,18 @@
       }
 
       function destroyMap() {
-        mapObj.map && mapObj.map.destroy();
+        // 高德地图 destroy() 在 SDK 内部状态异常时可能抛错。若抛错会打断 Vue 卸载补丁,
+        // 导致使用 destroyOnClose 的弹窗「提交成功却关不掉」。这里吞掉异常并清引用,保证卸载完成。
+        try {
+          mapObj.map && mapObj.map.destroy();
+        } catch (e) {
+          console.warn('[AMap] 地图销毁失败(已忽略)', e);
+        } finally {
+          mapObj.map = null;
+        }
       }
 
       onBeforeUnmount(() => {
-        console.log('地图销毁');
         destroyMap();
       });
 

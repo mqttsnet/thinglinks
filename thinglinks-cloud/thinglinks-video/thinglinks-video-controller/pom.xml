@@ -17,7 +17,18 @@
     <dependencies>
         <dependency>
             <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-data-scope-sdk</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
             <artifactId>thinglinks-video-biz</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!-- 控制器层引用了协议层的播放/PTZ/设备控制服务 -->
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-video-biz-protocol</artifactId>
             <version>${revision}</version>
         </dependency>
 

@@ -1,17 +1,90 @@
 @import (reference) '../color.less';
 
+// 统一圆角变量
+@input-border-radius: 7px;
+@input-border-color: #dfe5ef;
+@input-focus-color: @primary-color;
+@input-focus-shadow: none;
+
 // input
 .ant-input {
+  border-radius: @input-border-radius !important;
+  border-color: @input-border-color;
+  font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: @input-focus-color;
+  }
+
+  &:focus,
+  &-focused {
+    border-color: @input-focus-color;
+    box-shadow: @input-focus-shadow;
+  }
+
   &-number,
   &-number-group-wrapper {
     min-width: 110px;
     width: 100% !important;
     max-width: 100%;
   }
+
+  &-number {
+    border-radius: @input-border-radius !important;
+    border-color: @input-border-color;
+
+    &:hover {
+      border-color: @input-focus-color;
+    }
+
+    &.ant-input-number-focused {
+      border-color: @input-focus-color;
+      box-shadow: @input-focus-shadow;
+    }
+  }
 }
 
-.ant-input-affix-wrapper .ant-input-suffix {
-  right: 9px;
+.ant-input-affix-wrapper {
+  border-radius: @input-border-radius !important;
+  border-color: @input-border-color;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: @input-focus-color;
+  }
+
+  &.ant-input-affix-wrapper-focused {
+    border-color: @input-focus-color;
+    box-shadow: @input-focus-shadow;
+  }
+}
+
+// input-group（搜索框等组合输入框）
+.ant-input-group {
+  .ant-input {
+    border-radius: @input-border-radius 0 0 @input-border-radius !important;
+  }
+
+  .ant-input-group-addon:last-child {
+    border-radius: 0 @input-border-radius @input-border-radius 0 !important;
+
+    .ant-btn {
+      border-radius: 0 @input-border-radius @input-border-radius 0 !important;
+    }
+  }
+}
+
+// textarea
+textarea.ant-input {
+  border-radius: @input-border-radius !important;
+}
+
+// cascader
+.ant-cascader-picker {
+  .ant-cascader-input {
+    border-radius: @input-border-radius !important;
+  }
 }
 
 .ant-input-clear-icon {
@@ -23,5 +96,84 @@
 
   textarea.ant-input {
     padding: 4px;
+  }
+}
+
+// select
+.ant-select {
+  &:not(.ant-select-customize-input) .ant-select-selector {
+    border-radius: 7px !important;
+    border-color: #dfe5ef !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:not(.ant-select-disabled):hover .ant-select-selector {
+    border-color: @input-focus-color !important;
+  }
+
+  &.ant-select-focused:not(.ant-select-disabled) .ant-select-selector {
+    border-color: @input-focus-color !important;
+    box-shadow: @input-focus-shadow !important;
+  }
+}
+
+// date picker / range picker
+.ant-picker {
+  border-radius: @input-border-radius !important;
+  border-color: @input-border-color;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: @input-focus-color;
+  }
+
+  &.ant-picker-focused {
+    border-color: @input-focus-color;
+    box-shadow: @input-focus-shadow;
+  }
+}
+
+// tree-select
+.ant-tree-select {
+  .ant-select-selector {
+    border-radius: @input-border-radius !important;
+  }
+}
+
+// form label
+.ant-form-item-label > label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #2a3547;
+}
+
+// modal
+.ant-modal {
+  .ant-modal-content {
+    border-radius: 7px;
+    overflow: hidden;
+  }
+
+  .ant-modal-header {
+    border-bottom: 1px solid #e5eaef;
+    padding: 16px 24px;
+  }
+
+  .ant-modal-title {
+    font-weight: 600;
+    color: #2a3547;
+  }
+
+  .ant-modal-body {
+    padding: 24px;
+  }
+
+  .ant-modal-footer {
+    border-top: 1px solid #e5eaef;
+    padding: 12px 24px;
+
+    .ant-btn {
+      border-radius: 7px;
+    }
   }
 }

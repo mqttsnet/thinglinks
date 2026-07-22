@@ -160,7 +160,7 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
         DefUser defUser = BeanUtil.toBean(saveVO, DefUser.class);
         defUser.setSalt(RandomUtil.randomString(20));
         if (StrUtil.isEmpty(defUser.getPassword())) {
-            defUser.setPassword(systemProperties.getDefPwd());
+            defUser.setPassword(getConfiguredDefaultPassword());
         }
         defUser.setPassword(SecureUtil.sha256(defUser.getPassword() + defUser.getSalt()));
         defUser.setPasswordErrorNum(0);
@@ -232,7 +232,7 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
     @Transactional(rollbackFor = Exception.class)
     public Boolean resetPassword(DefUserPasswordResetVO data) {
         if (data.getIsUseSystemPassword()) {
-            data.setPassword(systemProperties.getDefPwd());
+            data.setPassword(getConfiguredDefaultPassword());
         } else {
             ArgumentAssert.notEmpty(data.getConfirmPassword(), "请输入确认密码");
             ArgumentAssert.notEmpty(data.getPassword(), "请输入密码");
@@ -242,6 +242,11 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
         ArgumentAssert.notNull(user, "您要重置密码的用户不存在");
 
         return updateUserPassword(user.getId(), data.getPassword(), user.getSalt());
+    }
+
+    private String getConfiguredDefaultPassword() {
+        ArgumentAssert.notEmpty(systemProperties.getDefPwd(), "系统默认密码未配置");
+        return systemProperties.getDefPwd();
     }
 
     @Override
@@ -387,6 +392,7 @@ public class DefUserServiceImpl extends SuperCacheServiceImpl<DefUserManager, Lo
         if (StrUtil.isAllEmpty(params.getEmail(), params.getUsername(), params.getIdCard(), params.getMobile())) {
             throw BizException.wrap("请至少传递一个参数");
         }
+        encryptSearchParams(params);
         wrap.eq(DefUser::getEmail, params.getEmail())
                 .eq(DefUser::getUsername, params.getUsername())
                 .eq(DefUser::getIdCard, params.getIdCard())

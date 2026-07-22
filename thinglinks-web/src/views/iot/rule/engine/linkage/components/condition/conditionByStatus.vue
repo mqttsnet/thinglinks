@@ -52,7 +52,7 @@
                     type="primary"
                     @click="handleSelectRule(index, childrenIndex)"
                   >
-                    <span v-if="!childrenItem.leftParam.deviceIdentification">{{
+                    <span v-if="!childrenItem.leftParam.productIdentification">{{
                       t('iot.link.engine.executionLog.triggerTips')
                     }}</span>
                     <span v-else>
@@ -66,17 +66,10 @@
                         )
                       }}
                       <ApiOutlined />
-                      {{
-                        getName(
-                          childrenItem.leftParam.deviceIdentification,
-                          'deviceIdentification',
-                          childrenItem.device,
-                          'deviceName',
-                        )
-                      }}
+                      {{ getDeviceScopeName(childrenItem) }}
                     </span>
                   </a-button>
-                  <template v-if="childrenItem.leftParam.deviceIdentification">
+                  <template v-if="childrenItem.leftParam.productIdentification">
                     <a-dropdown placement="bottomLeft" class="mr8" :trigger="['click']">
                       <a-button>
                         {{ childrenItem.operator.desc ? childrenItem.operator.desc : '操作符' }}
@@ -101,9 +94,12 @@
                             findRemarkFromStatusList(childrenItem.rightParams[0]?.value)
                           }}</template>
                           <ExclamationCircleOutlined
-                            v-if="childrenItem.rightParams[0].desc"
+                            v-if="findRemarkFromStatusList(childrenItem.rightParams[0]?.value)"
                           /> </a-tooltip
-                        >{{ childrenItem.rightParams[0].desc || '设备状态' }}
+                        >{{
+                          childrenItem.rightParams[0].desc ||
+                          t('iot.link.engine.linkage.deviceActionStatus')
+                        }}
                       </a-button>
                       <template #overlay>
                         <a-menu @click="selectDeviceStatus($event, index, childrenIndex)">
@@ -111,14 +107,16 @@
                             v-for="statusItem in statusList"
                             :key="statusItem.value"
                             :value="statusItem.value"
-                            :title="statusItem.text"
+                            :title="statusItem.label"
                             :desc="statusItem.remark"
                           >
-                            <a-tooltip>
-                              <template #title>{{ statusItem.remark }}</template>
-                              <ExclamationCircleOutlined />
-                            </a-tooltip>
-                            {{ statusItem.text }}
+                            <span class="status-menu-item">
+                              <a-tooltip v-if="statusItem.remark">
+                                <template #title>{{ statusItem.remark }}</template>
+                                <ExclamationCircleOutlined class="status-menu-icon" />
+                              </a-tooltip>
+                              <span>{{ statusItem.label }}</span>
+                            </span>
                           </a-menu-item>
                         </a-menu>
                       </template>
@@ -174,13 +172,13 @@
       :triggerType="1"
       @register="registerModal"
       @success="handleSuccess"
-      @saveTriggerRule="saveTriggerRule"
+      @save-trigger-rule="saveTriggerRule"
     />
   </div>
 </template>
 
 <script lang="ts">
-  import { defineComponent, ref, reactive, onMounted, watch, toRefs } from 'vue';
+  import { defineComponent, reactive, onMounted, watch, toRefs } from 'vue';
   import { useModal } from '/@/components/Modal';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { ActionEnum } from '/@/enums/commonEnum';
@@ -190,6 +188,7 @@
   import triggerRule from '../modal/triggerRule.vue';
   import { getLabelFilter } from '/@/utils/thinglinks/common';
   import { DictEnum } from '/@/enums/commonEnum';
+  import { i18n } from '/@/locales/setupI18n';
 
   import {
     ControlOutlined,
@@ -201,6 +200,9 @@
   } from '@ant-design/icons-vue';
 
   import { useDict } from '/@/components/Dict';
+
+  const ALL_DEVICE_VALUE = 'all';
+  const OFFLINE_ACTION_VALUE = 'OFFLINE';
 
   export default defineComponent({
     name: 'LinkageCondition',
@@ -232,7 +234,7 @@
       },
     },
     emits: ['success', 'register'],
-    setup(props, { emit }) {
+    setup(props) {
       const { t } = useI18n();
       const { getDicListUpgrade } = useDict();
       const [registerModal, { openModal }] = useModal();
@@ -310,7 +312,7 @@
 
       watch(
         () => props.conditionType,
-        (newVal: number) => {
+        () => {
           initData();
         },
         { immediate: true },
@@ -324,7 +326,52 @@
         const resStatusList = await getDicListUpgrade(
           DictEnum.RULE_CONDITION_DEVICE_ACTION_TIRGGER_TYPE,
         );
-        state.statusList = resStatusList;
+        state.statusList = normalizeStatusOptions(resStatusList);
+      };
+
+      const normalizeStatusOptions = (list: any[] = []) => {
+        const normalized = list.map(normalizeStatusOption).filter(Boolean);
+        const exists = normalized.some((item) => item.value === OFFLINE_ACTION_VALUE);
+        const offlineOption = normalizeStatusOption({
+          value: OFFLINE_ACTION_VALUE,
+          label: t('iot.link.engine.linkage.deviceOffline'),
+          name: t('iot.link.engine.linkage.deviceOffline'),
+          remark: t('iot.link.engine.linkage.deviceOfflineRemark'),
+        });
+        return exists ? normalized : [offlineOption, ...normalized].filter(Boolean);
+      };
+
+      const normalizeStatusOption = (item) => {
+        const value = item?.value ?? item?.key;
+        if (!value) {
+          return null;
+        }
+        const label = item?.label || item?.text || getI18nLabel(item) || item?.name || item?.desc;
+        if (!label) {
+          return null;
+        }
+        return {
+          ...item,
+          value: String(value),
+          label,
+          text: label,
+          name: label,
+          remark: item?.remark || item?.desc || '',
+        };
+      };
+
+      const getI18nLabel = (item) => {
+        if (!item?.i18nJson) {
+          return '';
+        }
+        try {
+          const rawLocale = i18n.global.locale as any;
+          const locale = rawLocale?.value || rawLocale;
+          const parsed = JSON.parse(item.i18nJson);
+          return parsed[locale] || parsed['zh-CN'] || '';
+        } catch {
+          return '';
+        }
       };
 
       const getOperateList = (datatype) => {
@@ -444,30 +491,23 @@
       };
 
       const cancel = (e) => {
-        console.log(e);
+        return e;
       };
 
       const saveTriggerRule = (res) => {
-        if (
-          res.selectedProduct.deviceIdentification ===
-          state.conditions[res.index].conditions[res.childrenIndex].leftParam.deviceIdentification
-        ) {
-          return false;
-        } else {
-          state.conditions[res.index].conditions[res.childrenIndex].leftParam.deviceIdentification =
-            res.selectedDevice.deviceIdentification;
-          getDeviceInfoList(res.selectedDevice.deviceIdentification, res.index, res.childrenIndex);
+        const conditionItem = state.conditions[res.index].conditions[res.childrenIndex];
+        const nextDeviceIdentification = normalizeAllDevice(
+          res.selectedDevice?.deviceIdentification,
+        );
+        const nextProductIdentification = res.selectedProduct?.productIdentification || '';
+
+        if (nextDeviceIdentification !== conditionItem.leftParam.deviceIdentification) {
+          conditionItem.leftParam.deviceIdentification = nextDeviceIdentification;
+          getDeviceInfoList(nextDeviceIdentification, res.index, res.childrenIndex);
         }
 
-        if (
-          res.selectedProduct.productIdentification ===
-          state.conditions[res.index].conditions[res.childrenIndex].leftParam.productIdentification
-        ) {
-          return false;
-        } else {
-          state.conditions[res.index].conditions[
-            res.childrenIndex
-          ].leftParam.productIdentification = res.selectedProduct.productIdentification;
+        if (nextProductIdentification !== conditionItem.leftParam.productIdentification) {
+          conditionItem.leftParam.productIdentification = nextProductIdentification;
           state.conditions[res.index].conditions[res.childrenIndex].operator = {
             desc: '',
             value: '',
@@ -480,11 +520,7 @@
             },
           ];
 
-          getProductInfoList(
-            res.selectedProduct.productIdentification,
-            res.index,
-            res.childrenIndex,
-          );
+          getProductInfoList(nextProductIdentification, res.index, res.childrenIndex);
         }
       };
 
@@ -497,7 +533,12 @@
       };
 
       const getDeviceInfoList = async (deviceIdentification, index, childrenIndex) => {
-        if (!deviceIdentification || deviceIdentification === 'all') {
+        if (!deviceIdentification) {
+          state.conditions[index].conditions[childrenIndex].device = {};
+          return false;
+        }
+        if (isAllDevice(deviceIdentification)) {
+          state.conditions[index].conditions[childrenIndex].device = {};
           return false;
         }
         const res = await detailBydeviceIdentification(deviceIdentification);
@@ -539,6 +580,25 @@
         }
       };
 
+      const isAllDevice = (value) => value === ALL_DEVICE_VALUE;
+
+      const normalizeAllDevice = (value) => (isAllDevice(value) ? ALL_DEVICE_VALUE : value || '');
+
+      const getDeviceScopeName = (conditionItem) => {
+        const deviceIdentification = conditionItem?.leftParam?.deviceIdentification;
+        if (isAllDevice(deviceIdentification)) {
+          return t('iot.link.engine.linkage.allDeviceScope');
+        }
+        return deviceIdentification
+          ? getName(
+              deviceIdentification,
+              'deviceIdentification',
+              conditionItem.device,
+              'deviceName',
+            ) || deviceIdentification
+          : '';
+      };
+
       return {
         t,
         registerModal,
@@ -565,6 +625,7 @@
         handleSelectRule,
         handleSuccess,
         getName,
+        getDeviceScopeName,
       };
     },
   });
@@ -626,7 +687,7 @@
         left: 0;
         width: 4px;
         height: 20px;
-        background-color: #009688;
+        background-color: @primary-color;
         border-radius: 0 3px 3px 0;
         content: ' ';
       }
@@ -645,7 +706,7 @@
       color: #fff;
       font-weight: 800;
       font-size: 14px;
-      background-color: #009688;
+      background-color: @primary-color;
       border-radius: 20px;
     }
 
@@ -713,6 +774,16 @@
           overflow: auto;
         }
       }
+
+      .status-menu-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .status-menu-icon {
+        color: @text-color-secondary;
+      }
     }
 
     .else-box {
@@ -742,4 +813,3 @@
     width: 100%;
   }
 </style>
-../../../../../../../api/iot/link/product/product../../../../../../../api/iot/link/device/device../../../../../../../api/iot/link/operator/operator

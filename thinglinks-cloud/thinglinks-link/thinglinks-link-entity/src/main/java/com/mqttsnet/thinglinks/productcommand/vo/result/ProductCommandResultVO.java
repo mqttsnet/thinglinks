@@ -1,8 +1,7 @@
 package com.mqttsnet.thinglinks.productcommand.vo.result;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.productversionchangelog.vo.DiffIgnore;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import com.mqttsnet.thinglinks.productcommandrequest.vo.result.ProductCommandRequestResultVO;
 import com.mqttsnet.thinglinks.productcommandresponse.vo.result.ProductCommandResponseResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,9 +14,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -36,20 +33,19 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "ProductCommandResultVO", description = "产品模型设备服务命令表")
-public class ProductCommandResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class ProductCommandResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "命令id")
     private Long id;
 
     /**
-     * 服务ID
+     * 服务ID(结构外键,不参与变更记录 diff)
      */
     @Schema(description = "服务ID")
+    @DiffIgnore
     private Long serviceId;
     /**
      * 指示命令的编码，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。
@@ -71,11 +67,6 @@ public class ProductCommandResultVO extends Entity<Long> implements Serializable
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
     @Schema(description = "产品请求服务命令属性")
     private List<ProductCommandRequestResultVO> requests;

@@ -13,16 +13,16 @@
 
 package com.mqttsnet.thinglinks;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import com.baidu.bifromq.plugin.BifroMQPlugin;
 import com.baidu.bifromq.plugin.BifroMQPluginDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class BifromqAuthProviderPlugin extends BifroMQPlugin<BifromqAuthProviderContext> {
     private static final Logger log = LoggerFactory.getLogger(BifromqAuthProviderPlugin.class);

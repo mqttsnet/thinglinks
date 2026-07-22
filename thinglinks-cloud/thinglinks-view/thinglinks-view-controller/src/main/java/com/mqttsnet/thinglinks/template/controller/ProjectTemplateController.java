@@ -142,7 +142,9 @@ public class ProjectTemplateController extends SuperController<ProjectTemplateSe
     @WebLog(value = "根据模版标识获取项目模版详情", request = false)
     public R<ProjectTemplateDetailsResultVO> getProjectTemplateDetails(@PathVariable("templateIdentification") String templateIdentification) {
         log.info("getProjectTemplateDetails templateIdentification: {}", templateIdentification);
-        return R.success(superService.getProjectTemplateDetailsByTemplateIdentification(templateIdentification));
+        ProjectTemplateDetailsResultVO result = superService.getProjectTemplateDetailsByTemplateIdentification(templateIdentification);
+        echoService.action(result);
+        return R.success(result);
     }
 
 }

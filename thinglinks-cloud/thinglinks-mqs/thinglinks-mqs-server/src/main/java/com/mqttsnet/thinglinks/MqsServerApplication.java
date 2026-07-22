@@ -1,5 +1,12 @@
 package com.mqttsnet.thinglinks;
 
+import static com.mqttsnet.thinglinks.common.constant.BizConstant.BUSINESS_PACKAGE;
+import static com.mqttsnet.thinglinks.common.constant.BizConstant.UTIL_PACKAGE;
+
+import java.net.UnknownHostException;
+
+import com.mqttsnet.basic.kafka.EnableKafkaStarter;
+import com.mqttsnet.basic.rocketmq.EnableRocketmqStarter;
 import com.mqttsnet.basic.validator.annotation.EnableFormValidator;
 import com.mqttsnet.thinglinks.common.ServerApplication;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +18,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableAsync;
-
-import java.net.UnknownHostException;
-
-import static com.mqttsnet.thinglinks.common.constant.BizConstant.BUSINESS_PACKAGE;
-import static com.mqttsnet.thinglinks.common.constant.BizConstant.UTIL_PACKAGE;
 
 /**
  * 消息治理服务启动类
@@ -33,6 +35,8 @@ import static com.mqttsnet.thinglinks.common.constant.BizConstant.UTIL_PACKAGE;
 @EnableFormValidator
 @EnableAsync
 @EnableDynamicTp
+@EnableKafkaStarter
+@EnableRocketmqStarter
 public class MqsServerApplication extends ServerApplication {
     public static void main(String[] args) throws UnknownHostException {
         start(MqsServerApplication.class, args);

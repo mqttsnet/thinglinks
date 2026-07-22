@@ -51,8 +51,8 @@ spring:
           sba: ignore
           meta-v: 1.0.0
       instance-auth:
-        default-user-name: actuator-admin
-        default-password: Secure@2025
+        default-user-name: ${ACTUATOR_USERNAME:${actuator.security.username:}}
+        default-password: ${ACTUATOR_PASSWORD:${actuator.security.password:}}
 
 # 用于/actuator/info
 info:

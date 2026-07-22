@@ -31,7 +31,12 @@ function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
       if (layoutFound) {
         item.component = layoutFound;
       } else {
-        item.component = dynamicImport(dynamicViewsModules, component as string);
+        // keep-alive cache key 取菜单资源编码（meta.code 或顶层 code），缺失时回退到 name
+        const cacheKey =
+          ((item.meta as any)?.code as string | undefined) ||
+          ((item as any).code as string | undefined) ||
+          (item.name as string);
+        item.component = dynamicImport(dynamicViewsModules, component as string, cacheKey);
       }
     } else if (name) {
       item.component = getParentLayout();
@@ -43,6 +48,7 @@ function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
 function dynamicImport(
   dynamicViewsModules: Record<string, () => Promise<Recordable>>,
   component: string,
+  cacheKey?: string,
 ) {
   const keys = Object.keys(dynamicViewsModules);
   const matchKeys = keys.filter((key) => {
@@ -55,7 +61,15 @@ function dynamicImport(
   });
   if (matchKeys?.length === 1) {
     const matchKey = matchKeys[0];
-    return dynamicViewsModules[matchKey];
+    const importer = dynamicViewsModules[matchKey];
+    // 把组件 name 覆盖为 cacheKey（菜单资源编码），让 <keep-alive :include> 按编码匹配组件实例
+    return async () => {
+      const mod: any = await importer();
+      if (cacheKey && mod?.default) {
+        mod.default.name = cacheKey;
+      }
+      return mod;
+    };
   } else if (matchKeys?.length > 1) {
     warn(
       'Please do not create `.vue` and `.TSX` files with the same file name in the same hierarchical directory under the views folder. This will cause dynamic introduction failure',

@@ -183,7 +183,7 @@
   import { getLabelFilter, getLabelAlertInfoFilter } from '/@/utils/thinglinks/common';
   import { isEqualIgnoreCase } from '/@/utils/thinglinks/common.tsx';
   import { useModal } from '/@/components/Modal';
-  import codeEditorDefine from './codeEditorDefine.vue';
+  import codeEditorDefine from '/@/views/iot/link/ota/otaUpgrades/modal/codeEditorDefine.vue';
   import BasicHelp from '/@/components/Basic/src/BasicHelp.vue';
   import { canConvertType, isWithinScope, isExceedMaxLength } from '/@/utils/index';
   import { useMessage } from '/@/hooks/web/useMessage';
@@ -233,7 +233,6 @@
       });
 
       onMounted(async () => {
-        console.log(props);
         await initData();
       });
       const initData = async () => {
@@ -265,7 +264,6 @@
         if (!$event.key) {
           return false;
         }
-        console.log($event.key);
         state.command.service = {
           serviceCode: $event.key,
         };
@@ -280,14 +278,11 @@
             value: '',
           },
         ];
-
-        console.log(state.productCommandList);
       };
       const selectComand = ($event) => {
         if (!$event.key) {
           return false;
         }
-        console.log($event);
         state.command.commands = {
           commandCode: $event.key,
         };
@@ -310,13 +305,11 @@
             return state.command.params.map((ite) => ite.key).indexOf(item.parameterCode) == -1;
           },
         );
-        console.log(state.filterProductCommandRequestListOptions);
       };
       const selectComandRequest = ($event, index) => {
         if (!$event.key) {
           return false;
         }
-        console.log($event, $event?.item?.params.dataType);
         // state.command.commandRequest = {
         //   commandRequestCode: $event.key,
         // };
@@ -342,7 +335,6 @@
       async function getProductInfoList(productIdentification) {
         const res = await getFullProductInfo(productIdentification);
         state.productServiceList = res.services;
-        console.log(state.productServiceList);
       }
 
       const getcmdList = (serviceCode, services) => {
@@ -382,19 +374,14 @@
             }
           });
         } catch (err) {
-          console.log(err);
+          return;
         }
       };
-      const { notification } = useMessage();
+      const { createMessage } = useMessage();
 
       const confirmValue = (item) => {
         if (!canConvertType(item?.datatype, item?.val)) {
-          console.log(typeof '123');
-
-          notification.warn({
-            message: t('common.tips.tips'),
-            description: '参数值类型错误',
-          });
+          createMessage.warning('参数值类型错误');
           return;
         }
         const list = state.productCommandRequestList.filter((val) => {
@@ -404,17 +391,11 @@
           // 需要从这个里面拿min跟max item里没有
           const newItem = list[0];
           if (!isWithinScope(item?.datatype, item?.val, newItem.min, newItem.max)) {
-            notification.warn({
-              message: t('common.tips.tips'),
-              description: `参数值超出范围，取值范围为${newItem.min}到${newItem.max}`,
-            });
+            createMessage.warning(`参数值超出范围，取值范围为${newItem.min}到${newItem.max}`);
             return;
           }
           if (!isExceedMaxLength(item?.datatype, item?.val, newItem.maxlength)) {
-            notification.warn({
-              message: t('common.tips.tips'),
-              description: `参数值超过最大长度，最大长度为${newItem.maxlength}`,
-            });
+            createMessage.warning(`参数值超过最大长度，最大长度为${newItem.maxlength}`);
             return;
           }
         }
@@ -473,7 +454,7 @@
         left: 0;
         top: 50%;
         margin-top: -7px;
-        background-color: #009688;
+        background-color: @primary-color;
       }
     }
 

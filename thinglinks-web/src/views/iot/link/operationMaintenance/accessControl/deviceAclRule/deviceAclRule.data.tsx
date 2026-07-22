@@ -1,4 +1,5 @@
-import { Ref } from 'vue';
+import { Ref, h } from 'vue';
+import { Tag } from 'ant-design-vue';
 import { BasicColumn, FormSchema } from '/@/components/Table';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum, DictEnum } from '/@/enums/commonEnum';
@@ -8,61 +9,106 @@ import {
   dictComponentProps2,
   yesNoComponentProps,
 } from '/@/utils/thinglinks/common';
+import type { CardField } from '/@/components/BusinessCardList';
 
 const { t } = useI18n();
-// 列表页字段
+const tk = (k: string) => t(`iot.link.operationMaintenance.accessControl.deviceAclRule.${k}`);
+
+/**
+ * 卡片视图字段配置(BusinessCardList)。
+ *
+ * <p>右上 badge = ruleLevel(产品级/设备级);右下圆点 = enabled。
+ * 卡片体展示产品 + 动作 + 优先级 + 时间;decision/deviceIdentification 在详情页看
+ * (decision 是 boolean,无字典翻译;deviceIdentification 产品级时为空,放卡片体丑)。
+ */
+export const cardFields = (): CardField[] => [
+  {
+    label: tk('productIdentification'),
+    field: 'productIdentification',
+    span: 24,
+  },
+  {
+    label: tk('actionType'),
+    field: 'actionType',
+    dictType: DictEnum.LINK_ACL_RULE_ACTION_TYPE,
+    span: 12,
+  },
+  {
+    label: tk('priority'),
+    field: 'priority',
+    span: 12,
+  },
+  {
+    label: t('thinglinks.common.updatedTime'),
+    field: 'updatedTime',
+    span: 24,
+  },
+];
+
+/** 列表页字段 */
 export const columns = (): BasicColumn[] => {
   return [
     {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.ruleName'),
+      title: tk('ruleName'),
       dataIndex: 'ruleName',
+      width: 200,
+      ellipsis: true,
     },
     {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.ruleLevel'),
+      title: tk('ruleLevel'),
       dataIndex: 'ruleLevel',
       slots: { customRender: 'ruleLevel' },
+      width: 110,
     },
     {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.productIdentification'),
+      title: tk('productIdentification'),
       dataIndex: 'productIdentification',
+      width: 160,
+      ellipsis: true,
     },
     {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.deviceIdentification'),
+      title: tk('deviceIdentification'),
       dataIndex: 'deviceIdentification',
+      width: 160,
+      ellipsis: true,
+      customRender: ({ value }) => value || '-',
     },
     {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.priority'),
-      dataIndex: 'priority',
-      sorter: true,
-    },
-    {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.actionType'),
+      title: tk('actionType'),
       dataIndex: 'actionType',
       slots: { customRender: 'actionType' },
+      width: 110,
     },
     {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.topicPattern'),
-      dataIndex: 'topicPattern',
-    },
-    {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.ipWhitelist'),
-      dataIndex: 'ipWhitelist',
-    },
-    {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.decision'),
+      title: tk('decision'),
       dataIndex: 'decision',
+      slots: { customRender: 'decision' },
+      width: 90,
     },
     {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.enabled'),
+      title: tk('priority'),
+      dataIndex: 'priority',
+      sorter: true,
+      width: 100,
+    },
+    {
+      title: tk('topicPattern'),
+      dataIndex: 'topicPattern',
+      ellipsis: true,
+      customRender: ({ value }) =>
+        value ? h('code', { class: 'mono-code' }, value) : '-',
+    },
+    {
+      title: tk('ipWhitelist'),
+      dataIndex: 'ipWhitelist',
+      ellipsis: true,
+      customRender: ({ value }) => value || '-',
+    },
+    {
+      title: tk('enabled'),
       dataIndex: 'enabled',
-    },
-    {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.remark'),
-      dataIndex: 'remark',
-    },
-    {
-      title: t('iot.link.operationMaintenance.accessControl.deviceAclRule.createdOrgId'),
-      dataIndex: 'createdOrgId',
+      slots: { customRender: 'enabled' },
+      width: 90,
     },
     {
       title: t('thinglinks.common.createdTime'),
@@ -76,13 +122,14 @@ export const columns = (): BasicColumn[] => {
 export const searchFormSchema = (): FormSchema[] => {
   return [
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.ruleName'),
+      label: tk('ruleName'),
       field: 'ruleName',
       component: 'Input',
       colProps: { span: 6 },
+      componentProps: { placeholder: t('common.inputText') },
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.ruleLevel'),
+      label: tk('ruleLevel'),
       field: 'ruleLevel',
       component: 'ApiSelect',
       colProps: { span: 6 },
@@ -91,19 +138,21 @@ export const searchFormSchema = (): FormSchema[] => {
       },
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.productIdentification'),
+      label: tk('productIdentification'),
       field: 'productIdentification',
       component: 'Input',
       colProps: { span: 6 },
+      componentProps: { placeholder: t('common.inputText') },
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.deviceIdentification'),
+      label: tk('deviceIdentification'),
       field: 'deviceIdentification',
       component: 'Input',
       colProps: { span: 6 },
+      componentProps: { placeholder: t('common.inputText') },
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.actionType'),
+      label: tk('actionType'),
       field: 'actionType',
       component: 'ApiSelect',
       colProps: { span: 6 },
@@ -112,7 +161,7 @@ export const searchFormSchema = (): FormSchema[] => {
       },
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.decision'),
+      label: tk('decision'),
       field: 'decision',
       component: 'RadioButtonGroup',
       componentProps: {
@@ -129,7 +178,12 @@ export const searchFormSchema = (): FormSchema[] => {
   ];
 };
 
-// 编辑页字段
+/**
+ * 编辑页字段(参照桥接规则 Edit.vue 风格 ── Divider 作为分组标题)。
+ *
+ * <p>三段:① 基础信息 ── ② 范围匹配 ── ③ 权限决策。
+ * Divider 字段的 label 即为该组标题(BasicForm 内置组件,自动渲染 a-divider orientation="left")。
+ */
 export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
   return [
     {
@@ -138,21 +192,75 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       component: 'Input',
       show: false,
     },
+
+    // ============================== ① 基础信息 ==============================
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.ruleName'),
+      field: 'divider-basic',
+      component: 'Divider',
+      label: tk('section.base'),
+      colProps: { span: 24 },
+    },
+    {
+      label: tk('ruleName'),
       field: 'ruleName',
       component: 'Input',
       required: true,
+      componentProps: {
+        placeholder: tk('placeholder.ruleName'),
+        maxlength: 100,
+        showCount: true,
+      },
       helpMessage: [
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ruleName[0]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ruleName[1]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ruleName[2]'),
+        tk('helpMessage.ruleName[0]'),
+        tk('helpMessage.ruleName[1]'),
+        tk('helpMessage.ruleName[2]'),
       ],
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.ruleLevel'),
+      label: tk('priority'),
+      field: 'priority',
+      component: 'InputNumber',
+      required: true,
+      defaultValue: 500,
+      componentProps: {
+        min: 0,
+        max: 1000,
+        style: { width: '100%' },
+        placeholder: tk('placeholder.priority'),
+      },
+      helpMessage: [
+        tk('helpMessage.priority[0]'),
+        tk('helpMessage.priority[1]'),
+        tk('helpMessage.priority[2]'),
+        tk('helpMessage.priority[3]'),
+        tk('helpMessage.priority[4]'),
+        tk('helpMessage.priority[5]'),
+      ],
+    },
+    {
+      label: tk('enabled'),
+      field: 'enabled',
+      component: 'RadioButtonGroup',
+      required: true,
+      defaultValue: '1',
+      componentProps: {
+        ...yesNoComponentProps(),
+      },
+    },
+
+    // ============================== ② 范围匹配 ==============================
+    {
+      field: 'divider-scope',
+      component: 'Divider',
+      label: tk('section.scope'),
+      colProps: { span: 24 },
+    },
+    {
+      label: tk('ruleLevel'),
       field: 'ruleLevel',
-      component: 'ApiSelect',
+      // ApiRadioGroup 才能正确接 dictComponentProps2 的 api + params 加载字典选项;
+      // RadioButtonGroup 期望静态 options,会导致选项不显示。
+      component: 'ApiRadioGroup',
       required: true,
       defaultValue: 0,
       componentProps: {
@@ -161,58 +269,47 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
           extendFirst: true,
           stringToNumber: true,
         }),
+        isBtn: true,   // 渲染成 RadioButton 风格
       },
       helpMessage: [
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ruleLevel[0]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ruleLevel[1]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ruleLevel[2]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ruleLevel[3]'),
+        tk('helpMessage.ruleLevel[0]'),
+        tk('helpMessage.ruleLevel[1]'),
+        tk('helpMessage.ruleLevel[2]'),
+        tk('helpMessage.ruleLevel[3]'),
       ],
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.productIdentification'),
+      label: tk('productIdentification'),
       field: 'productIdentification',
       required: true,
       component: 'Input',
+      // AllOrCustomPicker 触发器较宽,单独占整行(span 22),否则 trigger 文案易截断
+      colProps: { span: 22 },
+      slot: 'productIdentification',
       helpMessage: [
-        t(
-          'iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.productIdentification[0]',
-        ),
-        t(
-          'iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.productIdentification[1]',
-        ),
-        t(
-          'iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.productIdentification[2]',
-        ),
+        tk('helpMessage.productIdentification[0]'),
+        tk('helpMessage.productIdentification[1]'),
+        tk('helpMessage.productIdentification[2]'),
       ],
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.deviceIdentification'),
-      show: ({ values }) => {
-        return values.ruleLevel == 1;
-      },
+      label: tk('deviceIdentification'),
       field: 'deviceIdentification',
       component: 'Input',
-    },
-    {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.priority'),
-      field: 'priority',
-      component: 'InputNumber',
-      required: true,
-      defaultValue: 500,
+      ifShow: ({ values }) => Number(values.ruleLevel) === 1,
+      required: ({ values }) => Number(values.ruleLevel) === 1,
+      colProps: { span: 22 },
+      slot: 'deviceIdentification',
       helpMessage: [
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.priority[0]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.priority[1]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.priority[2]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.priority[3]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.priority[4]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.priority[5]'),
+        tk('helpMessage.deviceIdentification[0]'),
+        tk('helpMessage.deviceIdentification[1]'),
+        tk('helpMessage.deviceIdentification[2]'),
       ],
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.actionType'),
+      label: tk('actionType'),
       field: 'actionType',
-      component: 'ApiSelect',
+      component: 'ApiRadioGroup',
       defaultValue: 0,
       required: true,
       componentProps: {
@@ -221,105 +318,144 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
           extendFirst: true,
           stringToNumber: true,
         }),
+        isBtn: true,
       },
       helpMessage: [
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.actionType[0]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.actionType[1]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.actionType[2]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.actionType[3]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.actionType[4]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.actionType[5]'),
+        tk('helpMessage.actionType[0]'),
+        tk('helpMessage.actionType[1]'),
+        tk('helpMessage.actionType[2]'),
+        tk('helpMessage.actionType[3]'),
+        tk('helpMessage.actionType[4]'),
+        tk('helpMessage.actionType[5]'),
+      ],
+    },
+    {
+      label: tk('topicPattern'),
+      field: 'topicPattern',
+      component: 'Input',
+      required: true,
+      colProps: { span: 22 },
+      slot: 'topicPattern',
+      helpMessage: [
+        tk('helpMessage.topicPattern[0]'),
+        tk('helpMessage.topicPattern[1]'),
+        tk('helpMessage.topicPattern[2]'),
+        tk('helpMessage.topicPattern[3]'),
+        tk('helpMessage.topicPattern[4]'),
       ],
     },
 
+    // ============================== ③ 权限决策 ==============================
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.ipWhitelist'),
-      field: 'ipWhitelist',
-      component: 'Input',
-      required: true,
-      helpMessage: [
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ipWhitelist[0]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ipWhitelist[1]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ipWhitelist[2]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.ipWhitelist[3]'),
-      ],
+      field: 'divider-decision',
+      component: 'Divider',
+      label: tk('section.decision'),
+      colProps: { span: 24 },
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.decision'),
+      label: tk('decision'),
       field: 'decision',
-      component: 'RadioGroup',
+      component: 'RadioButtonGroup',
       required: true,
       defaultValue: '1',
       componentProps: {
         ...yesNoComponentProps(),
       },
       helpMessage: [
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.decision[0]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.decision[1]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.decision[2]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.decision[3]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.decision[4]'),
+        tk('helpMessage.decision[0]'),
+        tk('helpMessage.decision[1]'),
+        tk('helpMessage.decision[2]'),
+        tk('helpMessage.decision[3]'),
+        tk('helpMessage.decision[4]'),
       ],
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.enabled'),
-      field: 'enabled',
-      component: 'RadioGroup',
-      required: true,
-      defaultValue: '0',
-      componentProps: {
-        ...yesNoComponentProps(),
-      },
-    },
-    {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.topicPattern'),
-      field: 'topicPattern',
+      label: tk('ipWhitelist'),
+      field: 'ipWhitelist',
       component: 'Input',
       required: true,
       colProps: { span: 22 },
+      slot: 'ipWhitelist',
       helpMessage: [
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.topicPattern[0]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.topicPattern[1]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.topicPattern[2]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.topicPattern[3]'),
-        t('iot.link.operationMaintenance.accessControl.deviceAclRule.helpMessage.topicPattern[4]'),
+        tk('helpMessage.ipWhitelist[0]'),
+        tk('helpMessage.ipWhitelist[1]'),
+        tk('helpMessage.ipWhitelist[2]'),
+        tk('helpMessage.ipWhitelist[3]'),
       ],
-      colSlot: 'topicPattern',
     },
     {
-      label: t('iot.link.operationMaintenance.accessControl.deviceAclRule.remark'),
+      label: tk('remark'),
       field: 'remark',
       component: 'InputTextArea',
       colProps: { span: 22 },
+      componentProps: {
+        rows: 3,
+        maxlength: 500,
+        showCount: true,
+        placeholder: t('common.inputText'),
+      },
     },
   ];
 };
 
+/** 列表页 + 详情页 ProductTopic 选择弹窗的列定义 */
 export const topicColumns = (): BasicColumn[] => {
   return [
     {
       title: t('iot.link.productTopic.productTopic.functionType'),
       dataIndex: ['echoMap', 'functionType'],
+      width: 120,
     },
     {
       title: t('iot.link.productTopic.productTopic.topic'),
       dataIndex: 'topic',
+      ellipsis: true,
     },
     {
       title: t('iot.link.productTopic.productTopic.publisher'),
       dataIndex: ['echoMap', 'publisher'],
+      width: 120,
     },
     {
       title: t('iot.link.productTopic.productTopic.subscriber'),
       dataIndex: ['echoMap', 'subscriber'],
+      width: 120,
     },
     {
       title: t('iot.link.productTopic.productTopic.remark'),
       dataIndex: 'remark',
+      ellipsis: true,
     },
   ];
 };
+
 // 前端自定义表单验证规则
 export const customFormSchemaRules = (_): Partial<FormSchemaExt>[] => {
   return [];
 };
+
+// ============================== 渲染辅助 ==============================
+
+/**
+ * 决策值 Tag 渲染:1 = 允许(绿) / 0 = 拒绝(红)。
+ */
+export function renderDecisionTag(value: any) {
+  const isAllow = value === '1' || value === 1 || value === true;
+  return h(
+    Tag,
+    { color: isAllow ? 'success' : 'error', class: 'acl-decision-tag' },
+    () => (isAllow ? tk('allow') : tk('deny')),
+  );
+}
+
+/**
+ * 启用状态 Tag 渲染。
+ */
+export function renderEnabledTag(value: any) {
+  const isEnabled = value === '1' || value === 1 || value === true;
+  return h(
+    Tag,
+    { color: isEnabled ? 'processing' : 'default' },
+    () => (isEnabled ? tk('status.enabled') : tk('status.disabled')),
+  );
+}

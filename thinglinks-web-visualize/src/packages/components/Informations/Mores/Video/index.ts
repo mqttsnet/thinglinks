@@ -7,7 +7,7 @@ export const VideoConfig: ConfigType = {
   conKey: 'VCVideo',
   title: 'project.component_video',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.INFORMATIONS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'video.png'

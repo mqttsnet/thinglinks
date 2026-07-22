@@ -1,6 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+import { loadProductConfig, toViteProductEnv } from './productConfig';
+import safeConfigLog from './safeConfigLog.cjs';
+
+const { formatConfigOverrideSummary } = safeConfigLog;
 
 export function isDevFn(mode: string): boolean {
   return mode === 'development';
@@ -104,7 +108,10 @@ export function getEnvConfig(match = 'VITE_GLOB_', confFiles = getConfFiles()) {
   // 命令行中的配置
   const scriptConfig = getConfByScript();
   envConfig = { ...envConfig, ...scriptConfig };
-  console.log('命令行中的参数已经覆盖配置文件中的参数 %o', scriptConfig);
+  console.log(formatConfigOverrideSummary(scriptConfig));
+
+  // 产品清单提供构建所需的产品身份与运行标识。
+  envConfig = { ...envConfig, ...toViteProductEnv(loadProductConfig()) };
 
   const reg = new RegExp(`^(${match})`);
   Object.keys(envConfig).forEach((key) => {

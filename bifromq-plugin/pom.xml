@@ -15,6 +15,14 @@
     <url>https://mqttsnet.com</url>
     <description>The Bifromq plugin library, which is used to handle the plugin mechanism of Bifromq, enables users to integrate custom business with the ThingLinks IoT business system at runtime.</description>
 
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <modules>
         <module>bifromq-auth-provider-plugin</module>
         <module>bifromq-event-collector-plugin</module>
@@ -34,7 +42,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <revision>1.3.0</revision>
+        <revision>1.4.0</revision>
     </properties>
 
     <repositories>
@@ -67,6 +75,34 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+
+    <build>
+        <plugins>
+            <!-- 产品配置只读门禁，绑定根聚合工程的 validate 阶段。 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>thinglinks-product-check</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <exec executable="${project.basedir}/scripts/product-config.sh" failonerror="true">
+                                    <arg value="check"/>
+                                </exec>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 
 

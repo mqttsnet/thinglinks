@@ -1,0 +1,16 @@
+export default {
+  table: { title: '平台目录' },
+  name: '目录名称',
+  gbId: '国标编号',
+  parentId: '上级目录',
+  catalogType: '目录类型',
+  civilCode: '行政区划',
+  sortOrder: '排序',
+  rootCatalog: '根目录',
+  addCatalog: '新增目录',
+  editCatalog: '编辑目录',
+  deleteCatalog: '删除目录',
+  confirmDelete: '确定要删除该目录吗？删除后其下级目录和通道绑定将被解除。',
+  deleteSuccess: '目录删除成功',
+  saveCatalogSuccess: '目录保存成功',
+};

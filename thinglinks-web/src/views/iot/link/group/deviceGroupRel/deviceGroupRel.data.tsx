@@ -4,6 +4,7 @@ import { BasicColumn, FormSchema } from '/@/components/Table';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { ActionEnum } from '/@/enums/commonEnum';
 import { FormSchemaExt } from '/@/api/thinglinks/common/formValidateService';
+import { echoMapText } from '/@/utils/echo';
 
 const { t } = useI18n();
 // 列表页字段
@@ -28,10 +29,12 @@ export const columns = (): BasicColumn[] => {
     {
       title: t('iot.link.group.deviceGroupRel.updatedBy'),
       dataIndex: 'updatedBy',
+      customRender: ({ record }) => echoMapText(record, 'updatedBy'),
     },
     {
       title: t('iot.link.group.deviceGroupRel.createdOrgId'),
       dataIndex: 'createdOrgId',
+      customRender: ({ record }) => echoMapText(record, 'createdOrgId'),
     },
     {
       title: t('thinglinks.common.createdTime'),

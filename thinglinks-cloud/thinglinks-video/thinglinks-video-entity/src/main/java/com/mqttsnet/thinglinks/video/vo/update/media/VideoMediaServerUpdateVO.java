@@ -57,29 +57,29 @@ public class VideoMediaServerUpdateVO implements Serializable {
     private String mediaIdentification;
 
     /**
-     * 服务器IP地址
+     * 服务器地址(IP/域名)
      */
-    @Schema(description = "服务器IP地址")
-    @Size(max = 50, message = "服务器IP地址长度不能超过{max}")
-    private String ip;
+    @Schema(description = "服务器地址(IP/域名)")
+    @Size(max = 50, message = "服务器地址长度不能超过{max}")
+    private String host;
     /**
-     * hook使用的IP（zlm访问客户端使用的IP）
+     * Hook回调地址(IP/域名)
      */
-    @Schema(description = "hook使用的IP（zlm访问客户端使用的IP）")
-    @Size(max = 50, message = "hook使用的IP（zlm访问客户端使用的IP）长度不能超过{max}")
-    private String hookIp;
+    @Schema(description = "Hook回调地址(IP/域名)")
+    @Size(max = 50, message = "Hook回调地址长度不能超过{max}")
+    private String hookHost;
     /**
-     * SDP IP地址
+     * SDP地址(IP/域名)
      */
-    @Schema(description = "SDP IP地址")
-    @Size(max = 50, message = "SDP IP地址长度不能超过{max}")
-    private String sdpIp;
+    @Schema(description = "SDP地址(IP/域名)")
+    @Size(max = 50, message = "SDP地址长度不能超过{max}")
+    private String sdpHost;
     /**
-     * 流IP地址
+     * 流播放地址(IP/域名)
      */
-    @Schema(description = "流IP地址")
-    @Size(max = 50, message = "流IP地址长度不能超过{max}")
-    private String streamIp;
+    @Schema(description = "流播放地址(IP/域名)")
+    @Size(max = 50, message = "流播放地址长度不能超过{max}")
+    private String streamHost;
     /**
      * HTTP端口
      */
@@ -229,6 +229,22 @@ public class VideoMediaServerUpdateVO implements Serializable {
     @Schema(description = "多媒体名称")
     @Size(max = 255, message = "名称长度不能超过{max}")
     private String name;
+    /**
+     * 服务器版本号
+     */
+    @Schema(description = "服务器版本号")
+    @Size(max = 50, message = "服务器版本号长度不能超过{max}")
+    private String version;
+    /**
+     * 服务器能力集(JSON，标记支持哪些API)
+     */
+    @Schema(description = "服务器能力集(JSON，标记支持哪些API)")
+    private String capabilities;
+    /**
+     * 最大承载流数量(用于负载均衡)
+     */
+    @Schema(description = "最大承载流数量(用于负载均衡)")
+    private Integer maxStreams;
 
 
 }

@@ -1,5 +1,57 @@
 export default {
   title: 'WebSocket 调试',
+  subtitle: '直连设备接入端点(经网关)调试 WS 上下行 —— 模拟设备上报、接收平台下发命令',
+
+  // 连接配置
+  connectConfig: '连接配置',
+  tenantId: '租户 ID',
+  clientId: '客户端 ID(clientId)',
+  username: '用户名',
+  password: '密码',
+  wsUrl: 'WS 地址(经网关,可手动改)',
+  wsUrlHint: '默认连设备接入端点;改上面字段会自动重建地址,也可直接编辑',
+  resetDefault: '重置默认',
+  connect: '连接',
+  disconnect: '断开',
+  connected: '已连接',
+  disconnected: '未连接',
+  modeManual: '手动填写',
+  modeDevice: '按设备',
+  device: '选择设备',
+  devicePh: '搜索设备名称…',
+  deviceHint: '先选产品,再选该产品下的设备;选中后自动回填 clientId / 用户名 / 密码 / 租户,可再改',
+
+  // 发送报文
+  sendFrame: '发送报文',
+  frameDatas: '业务上报(datas)',
+  framePing: '心跳(PING)',
+  frameCmdRsp: '命令响应(deviceRsp)',
+  messageHint: '业务帧含 topic、payload 字段;心跳帧 type 为 PING。默认为设备数据上报报文,可改',
+  cmdRspHint:
+    '模拟设备应答平台下发的命令:把 serviceCode / cmd 改成与「接收窗口」收到的命令一致,errCode 0成功 / 1失败',
+  sendBtn: '发送',
+
+  // 消息窗口
+  receiveWindow: '消息窗口',
+  deviceFilterPrefix: '设备',
+  deviceFilterPh: '按设备标识过滤',
+  topicFilterPrefix: 'Topic',
+  topicFilterPh: '按 topic 过滤',
+  search: '查询',
+  clear: '清空',
+  empty: '暂无消息',
+  emptyFiltered: '暂无匹配消息',
+  dirSent: '发送',
+  dirRecv: '接收',
+  dirSys: '系统',
+  sysConnecting: '正在连接…',
+  sysOpen: '连接已建立',
+  sysClose: '连接已关闭',
+  sysError: '连接出错',
+  prettyJson: '美化',
+  copy: '复制',
+
+  // 旧键(mqtt 调试页仍在用,保留)
   send: '发送',
   connectionStatus: '连接状态',
   closeConnection: '关闭连接',

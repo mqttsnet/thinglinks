@@ -66,6 +66,18 @@ public class FileServiceImpl extends SuperServiceImpl<FileManager, Long, File> i
         if (file.isEmpty()) {
             throw new BizException("请上传有效文件");
         }
+        if (fileServerProperties.getMaxUploadSize() == null
+                || fileServerProperties.getMaxUploadSize().toBytes() <= 0) {
+            throw new BizException("请配置有效的文件上传容量上限");
+        }
+        if (file.getSize() > fileServerProperties.getMaxUploadSize().toBytes()) {
+            throw new BizException("文件大小超过上传容量上限");
+        }
+        if (fileUploadVO == null
+                || StrUtil.isBlank(fileUploadVO.getBizType())
+                || !fileUploadVO.getBizType().matches(FileUploadVO.BIZ_TYPE_PATTERN)) {
+            throw new BizException("业务类型格式不正确");
+        }
 
         if (!fileServerProperties.validSuffix(file.getOriginalFilename())) {
             throw new BizException("文件后缀不支持");

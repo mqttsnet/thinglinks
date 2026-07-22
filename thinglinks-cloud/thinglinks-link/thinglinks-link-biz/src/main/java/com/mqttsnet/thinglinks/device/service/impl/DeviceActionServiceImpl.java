@@ -9,14 +9,14 @@ import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
-import com.mqttsnet.thinglinks.broker.MqttBrokerOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.broker.MqttBrokerOpenInnerFacade;
 import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceActionCacheVO;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import com.mqttsnet.thinglinks.device.entity.DeviceAction;
 import com.mqttsnet.thinglinks.device.enumeration.DeviceActionStatusEnum;
-import com.mqttsnet.thinglinks.device.enumeration.DeviceActionTypeEnum;
+import com.mqttsnet.thinglinks.common.enums.DeviceActionTypeEnum;
 import com.mqttsnet.thinglinks.device.manager.DeviceActionManager;
 import com.mqttsnet.thinglinks.device.service.DeviceActionService;
 import com.mqttsnet.thinglinks.device.vo.query.DeviceActionPageQuery;
@@ -46,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeviceActionServiceImpl extends SuperServiceImpl<DeviceActionManager, Long, DeviceAction> implements DeviceActionService {
 
     private final LinkCacheDataHelper linkCacheDataHelper;
-    private final MqttBrokerOpenAnyUserFacade mqttBrokerOpenAnyUserFacade;
+    private final MqttBrokerOpenInnerFacade mqttBrokerOpenInnerFacade;
 
 
     /**
@@ -100,16 +100,16 @@ public class DeviceActionServiceImpl extends SuperServiceImpl<DeviceActionManage
                 .tenantId(deviceCacheVO.getTenantId().toString())
                 .clientType("web")
                 .build();
-        R<?> r = mqttBrokerOpenAnyUserFacade.closeConnection(killClientRequestVO);
+        R<?> r = mqttBrokerOpenInnerFacade.closeConnection(killClientRequestVO);
         if (r.getIsSuccess()) {
             // 记录设备动作
             DeviceActionTypeEnum deviceActionTypeEnum = DeviceActionTypeEnum.DISCONNECT;
             DeviceActionSaveVO deviceActionSaveVO = new DeviceActionSaveVO();
             deviceActionSaveVO.setDeviceIdentification(deviceCacheVO.getDeviceIdentification());
-            deviceActionSaveVO.setActionType(deviceActionTypeEnum.getAction());
+            deviceActionSaveVO.setActionType(deviceActionTypeEnum.getValue());
             deviceActionSaveVO.setMessage(JSON.toJSONString(killClientRequestVO));
             deviceActionSaveVO.setStatus(DeviceActionStatusEnum.SUCCESSFUL.getValue());
-            deviceActionSaveVO.setRemark("Manual Operation..." + deviceActionTypeEnum.getDescription());
+            deviceActionSaveVO.setRemark("Manual Operation..." + deviceActionTypeEnum.getDesc());
             saveDeviceAction(deviceActionSaveVO);
         }
         return r.getIsSuccess();

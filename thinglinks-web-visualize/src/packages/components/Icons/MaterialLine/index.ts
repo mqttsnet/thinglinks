@@ -33,7 +33,7 @@ const iconNames = [
 const iconList = iconNames.map(name => ({
   ...IconConfig,
   category: ChatCategoryEnum.ML,
-  categoryName: getChatCategoryEnumName.ML,
+  get categoryName() { return getChatCategoryEnumName().ML },
   package: PackagesCategoryEnum.ICONS,
   image: name,
   icon: name,

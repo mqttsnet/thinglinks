@@ -7,7 +7,7 @@ export const TextCommonConfig: ConfigType = {
   conKey: 'VCTextCommon',
   title: 'project.component_text_common',
   category: ChatCategoryEnum.TEXT,
-  categoryName: getChatCategoryEnumName().TEXT,
+  get categoryName() { return getChatCategoryEnumName().TEXT },
   package: PackagesCategoryEnum.INFORMATIONS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'text_static.png'

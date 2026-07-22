@@ -127,6 +127,7 @@ public class PluginInfoController extends SuperController<PluginInfoService, Lon
         log.info("Initiating scan for pluginIdentification: {}", pluginIdentification);
         try {
             PluginInfoResultVO pluginInfoResultVO = superService.scanAndSavePluginResult(pluginIdentification);
+            echoService.action(pluginInfoResultVO);
             return R.success(pluginInfoResultVO);
         } catch (BizException be) {
             return R.fail(be);
@@ -170,7 +171,9 @@ public class PluginInfoController extends SuperController<PluginInfoService, Lon
     public R<PluginInfoDetailsResultVO> getPluginInfoDetails(@PathVariable("id") Long id) {
         log.info("getPluginDetails id:{}", id);
         try {
-            return R.success(superService.getPluginInfoDetails(id));
+            PluginInfoDetailsResultVO result = superService.getPluginInfoDetails(id);
+            echoService.action(result);
+            return R.success(result);
         } catch (BizException be) {
             return R.fail(be);
         } catch (Exception e) {

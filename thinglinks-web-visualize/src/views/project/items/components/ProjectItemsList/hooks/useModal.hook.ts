@@ -23,6 +23,7 @@ export const useModalDataInit = () => {
   const editHandle = (cardData: Chartype) => {
     if (!cardData) return
     const identification = cardData.projectIdentification || cardData.templateIdentification
+    if (!identification) return
     routerTurnByNameWithQuery(
       ChartEnum.CHART_HOME_NAME,
       {
@@ -39,6 +40,7 @@ export const useModalDataInit = () => {
   const previewHandle = (cardData: Chartype) => {
     if (!cardData) return
     const identification = cardData.projectIdentification || cardData.templateIdentification
+    if (!identification) return
     routerTurnByNameWithQuery(
       PreviewEnum.CHART_PREVIEW_NAME,
       {

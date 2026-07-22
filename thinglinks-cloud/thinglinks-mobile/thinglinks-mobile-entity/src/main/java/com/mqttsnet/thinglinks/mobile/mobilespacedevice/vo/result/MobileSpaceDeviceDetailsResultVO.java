@@ -1,8 +1,6 @@
 package com.mqttsnet.thinglinks.mobile.mobilespacedevice.vo.result;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +11,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Map;
 
 /**
  * @program: thinglinks-cloud
@@ -32,12 +28,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "MobileSpaceDeviceDetailsResultVO", description = "移动端-空间设备详情结果VO")
-public class MobileSpaceDeviceDetailsResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class MobileSpaceDeviceDetailsResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -157,9 +151,4 @@ public class MobileSpaceDeviceDetailsResultVO extends Entity<Long> implements Se
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 }

@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.request.PageParams;
@@ -58,6 +57,8 @@ import com.mqttsnet.thinglinks.ota.vo.query.OtaUpgradeTasksPageQuery;
 import com.mqttsnet.thinglinks.ota.vo.query.OtaUpgradesPageQuery;
 import com.mqttsnet.thinglinks.ota.vo.result.OtaUpgradeRecordsResultVO;
 import com.mqttsnet.thinglinks.ota.vo.result.OtaUpgradeTasksResultVO;
+import com.mqttsnet.thinglinks.ota.enumeration.OtaUpgradeRecordStatusEnum;
+import com.mqttsnet.thinglinks.ota.service.support.OtaModelVersionSwitcher;
 import com.mqttsnet.thinglinks.ota.vo.result.OtaUpgradesResultVO;
 import com.mqttsnet.thinglinks.ota.vo.save.OtaUpgradeTargetsSaveVO;
 import com.mqttsnet.thinglinks.ota.vo.save.OtaUpgradeTasksSaveVO;
@@ -99,6 +100,8 @@ public class OtaUpgradeTasksServiceImpl extends SuperServiceImpl<OtaUpgradeTasks
     private final OtaUpgradeTargetsService otaUpgradeTargetsService;
 
     private final OtaUpgradeFileUtils otaUpgradeFileUtils;
+
+    private final OtaModelVersionSwitcher otaModelVersionSwitcher;
 
 
     /**
@@ -332,6 +335,13 @@ public class OtaUpgradeTasksServiceImpl extends SuperServiceImpl<OtaUpgradeTasks
         }
         deviceService.updateById(deviceUpdateVO);
 
+        // hook B:设备上报固件 / 软件版本 → 反查对应升级包的目标产品版本(影子版本)并自动切换绑定版本
+        otaModelVersionSwitcher.syncByReportedVersion(
+                deviceDetailsResultVO.getProductIdentification(),
+                deviceDetailsResultVO.getDeviceIdentification(),
+                topoOtaReportParam.getCurrentVersion(),
+                topoOtaReportParam.getPackageType());
+
         // Build OTA report response parameters
         return new TopoOtaReportResponseParam()
                 .setDeviceIdentification(deviceDetailsResultVO.getDeviceIdentification())
@@ -365,6 +375,13 @@ public class OtaUpgradeTasksServiceImpl extends SuperServiceImpl<OtaUpgradeTasks
             deviceUpdateVO.setSwVersion(topoOtaReadResponseParam.getCurrentVersion());
         }
         deviceService.updateById(deviceUpdateVO);
+
+        // hook B:设备上报固件 / 软件版本 → 反查对应升级包的目标产品版本(影子版本)并自动切换绑定版本
+        otaModelVersionSwitcher.syncByReportedVersion(
+                deviceDetailsResultVO.getProductIdentification(),
+                deviceDetailsResultVO.getDeviceIdentification(),
+                topoOtaReadResponseParam.getCurrentVersion(),
+                topoOtaReadResponseParam.getPackageType());
     }
 
 
@@ -376,7 +393,7 @@ public class OtaUpgradeTasksServiceImpl extends SuperServiceImpl<OtaUpgradeTasks
      * @return {@link TopoOtaPullResponseParam} OTA upgrade task
      */
     private TopoOtaPullResponseParam handleOtaPull(TopoOtaPullParam topoOtaPullParam) {
-        log.info("OTA pull request: {}", JSONUtil.toJsonStr(topoOtaPullParam));
+        log.info("OTA pull request: {}", JSON.toJSONString(topoOtaPullParam));
         OtaPackageTypeEnum.fromValue(topoOtaPullParam.getPackageType()).orElseThrow(() -> BizException.wrap("Invalid package type"));
         // Check if the device exists
         DeviceDetailsResultVO deviceDetailsResultVO = deviceService.findOneByDeviceIdentification(topoOtaPullParam.getDeviceIdentification());
@@ -463,6 +480,16 @@ public class OtaUpgradeTasksServiceImpl extends SuperServiceImpl<OtaUpgradeTasks
         // Update device information if necessary
         updateDeviceInfo(deviceDetailsResultVO, otaTask, topoOtaCommandResponseParam);
 
+        // hook A:该设备本次升级成功 → 用升级包配置的目标产品版本(影子版本)切换其绑定的产品版本序号
+        if (OtaUpgradeRecordStatusEnum.SUCCESS.getValue().equals(topoOtaCommandResponseParam.getUpgradeStatus())) {
+            OtaUpgradesResultVO upgradePackage = otaTask.getOtaUpgradesResult();
+            if (upgradePackage != null) {
+                otaModelVersionSwitcher.switchOnUpgradeSuccess(
+                        deviceDetailsResultVO.getProductIdentification(),
+                        deviceDetailsResultVO.getDeviceIdentification(),
+                        upgradePackage.getProductVersionNo());
+            }
+        }
 
         LocalDateTime startTime = Optional.ofNullable(topoOtaCommandResponseParam.getStartTime())
                 .map(time -> Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime())

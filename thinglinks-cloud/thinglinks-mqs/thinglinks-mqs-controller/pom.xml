@@ -20,6 +20,11 @@
             <artifactId>thinglinks-mqs-biz</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-mqs-biz-bus</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.mqttsnet.thinglinks</groupId>

@@ -104,7 +104,7 @@
 import { ref, computed, watch, toRef, toRefs, toRaw, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTargetData } from '../../../hooks/useTargetData.hook'
-import { MonacoEditor } from '@/components/Pages/MonacoEditor'
+import MonacoEditor from '@/components/Pages/MonacoEditor/index.vue'
 import { icon } from '@/plugins'
 import { goDialog, toString } from '@/utils'
 import { customizeHttp } from '@/api/http'

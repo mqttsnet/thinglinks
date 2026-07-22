@@ -7,7 +7,7 @@ export const ImageConfig: ConfigType = {
   conKey: 'VCImage',
   title: 'project.component_image',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.INFORMATIONS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'photo.png'

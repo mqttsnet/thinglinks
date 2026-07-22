@@ -3,7 +3,10 @@ package com.mqttsnet.thinglinks.video.controller.media;
 import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.base.controller.SuperController;
+import com.mqttsnet.basic.base.request.PageParams;
+import com.mqttsnet.basic.database.mybatis.conditions.query.QueryWrap;
 import com.mqttsnet.basic.interfaces.echo.EchoService;
+import com.mqttsnet.thinglinks.datascope.DataScopeHelper;
 import com.mqttsnet.thinglinks.video.entity.media.VideoStreamPush;
 import com.mqttsnet.thinglinks.video.service.media.VideoStreamPushService;
 import com.mqttsnet.thinglinks.video.vo.query.media.VideoStreamPushPageQuery;
@@ -51,6 +54,13 @@ public class VideoStreamPushController extends SuperController<VideoStreamPushSe
     @Override
     public EchoService getEchoService() {
         return echoService;
+    }
+
+    @Override
+    public QueryWrap<VideoStreamPush> handlerWrapper(VideoStreamPush model, PageParams<VideoStreamPushPageQuery> params) {
+        QueryWrap<VideoStreamPush> queryWrap = super.handlerWrapper(model, params);
+        DataScopeHelper.startDataScope("video_stream_push");
+        return queryWrap;
     }
 
 
@@ -124,9 +134,26 @@ public class VideoStreamPushController extends SuperController<VideoStreamPushSe
     @Parameters({@Parameter(name = "id", description = "视频推流ID", required = true),})
     public R<VideoStreamPushResultVO> getStreamPushDetails(@PathVariable("id") Long id) {
         log.info("getStreamPushDetails id:{}", id);
-        return R.success(superService.getStreamPushDetails(id));
+        VideoStreamPushResultVO result = superService.getStreamPushDetails(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
+    /**
+     * 获取视频推流播放地址
+     *
+     * @param id 视频推流ID
+     * @return 包含播放地址信息的视频推流详情
+     */
+    @Operation(summary = "获取视频推流播放地址", description = "根据视频推流ID获取播放地址")
+    @GetMapping("/getPlayUrl/{id}")
+    @Parameters({@Parameter(name = "id", description = "视频推流ID", required = true),})
+    public R<VideoStreamPushResultVO> getPlayUrl(@PathVariable("id") Long id) {
+        log.info("getPlayUrl id:{}", id);
+        VideoStreamPushResultVO result = superService.getPlayUrl(id);
+        echoService.action(result);
+        return R.success(result);
+    }
 
 }
 

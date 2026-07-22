@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.video.dto.device.event;
 
-import com.mqttsnet.thinglinks.video.dto.device.VideoDeviceInfoResultDTO;
 import com.mqttsnet.thinglinks.video.dto.gb28181.SipTransactionInfo;
+import com.mqttsnet.thinglinks.video.vo.result.device.VideoDeviceResultVO;
 import lombok.Getter;
 
 /**
@@ -12,11 +12,11 @@ import lombok.Getter;
  * @since 2025/5/22
  */
 @Getter
-public class DeviceInfoOnlineEvent extends DeviceInfoBaseEventAbstract<VideoDeviceInfoResultDTO> {
+public class DeviceInfoOnlineEvent extends DeviceInfoBaseEventAbstract<VideoDeviceResultVO> {
 
     private final SipTransactionInfo sipTransactionInfo;
 
-    public DeviceInfoOnlineEvent(VideoDeviceInfoResultDTO source, SipTransactionInfo sipTransactionInfo) {
+    public DeviceInfoOnlineEvent(VideoDeviceResultVO source, SipTransactionInfo sipTransactionInfo) {
         super(source);
         this.sipTransactionInfo = sipTransactionInfo;
     }

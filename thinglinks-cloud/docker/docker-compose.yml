@@ -1,0 +1,409 @@
+# 网络配置
+networks:
+  backend:
+    driver: bridge
+
+# 共享环境配置
+x-env-config: &env-config
+  TZ: Asia/Shanghai
+  # 设置 Spring 运行环境为 test (打包构建时也需要指定)
+  SPRING_PROFILES_ACTIVE: test
+  # Nacos 服务器 IP
+  NACOS_IP: 127.0.0.1
+  # Nacos 服务器端口
+  NACOS_PORT: 18848
+  # Nacos 命名空间，值来自部署环境变量 NACOS_NAMESPACE
+  NACOS_NAMESPACE: ${NACOS_NAMESPACE:?NACOS_NAMESPACE must be set}
+  # Seata 命名空间，值来自部署环境变量 SEATA_NAMESPACE
+  SEATA_NAMESPACE: ${SEATA_NAMESPACE:?SEATA_NAMESPACE must be set}
+  # Nacos 用户名
+  NACOS_USERNAME: ${NACOS_USERNAME:?NACOS_USERNAME must be set}
+  # Nacos 密码
+  NACOS_PASSWORD: ${NACOS_PASSWORD:?NACOS_PASSWORD must be set}
+  # AES 密钥，用于数据库敏感字段加密
+  THINGLINKS_SECURITY_AES_KEY: ${THINGLINKS_SECURITY_AES_KEY:?THINGLINKS_SECURITY_AES_KEY must be set}
+  # AES 初始化向量，用于 CBC 模式加解密
+  THINGLINKS_SECURITY_AES_IV: ${THINGLINKS_SECURITY_AES_IV:?THINGLINKS_SECURITY_AES_IV must be set}
+  # 单个上传文件的容量上限
+  THINGLINKS_FILE_MAX_UPLOAD_SIZE: ${THINGLINKS_FILE_MAX_UPLOAD_SIZE:-64MB}
+  # 指定服务注册 IP
+  NACOS_DISCOVERY_IP: 127.0.0.1
+  # JVM 内存参数配置（适配Dockerfile中的配置）
+  # 初始堆内存大小
+  JVM_XMS: 512m
+  # 最大堆内存大小
+  JVM_XMX: 1024M
+  # 最大元空间大小
+  JVM_MAX_METASPACE: 1024M
+  # 保留代码缓存大小
+  JVM_RESERVED_CODE_CACHE: 512m
+  # 初始代码缓存大小
+  JVM_INITIAL_CODE_CACHE: 128m
+  # 健康检查用户名
+  ACTUATOR_USERNAME: ${ACTUATOR_USERNAME:?ACTUATOR_USERNAME must be set}
+  # 健康检查密码
+  ACTUATOR_PASSWORD: ${ACTUATOR_PASSWORD:?ACTUATOR_PASSWORD must be set}
+
+# 共享卷和网络配置
+x-shared-config: &shared-config
+  environment:
+    - TZ=Asia/Shanghai
+  volumes:
+    - /data01/mqttsnet/thinglinks:/data01/mqttsnet/thinglinks
+    - /etc/localtime:/etc/localtime
+  restart: always
+  networks:
+    - backend
+  logging:
+    driver: json-file
+    options:
+      max-size: "100m"
+      max-file: "50"
+
+# 服务定义
+services:
+  thinglinks-base:
+    container_name: thinglinks-base-server
+    build:
+      context: ../thinglinks-base/thinglinks-base-server
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:18764:18764" # Base 服务本机调试端口
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18764
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-broker:
+    container_name: thinglinks-broker-server
+    build:
+      context: ../thinglinks-broker/thinglinks-broker-server
+      dockerfile: Dockerfile
+    ports:
+      - "18790:18790"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18790
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-card:
+    container_name: thinglinks-card-server
+    build:
+      context: ../thinglinks-card/thinglinks-card-server
+      dockerfile: Dockerfile
+    ports:
+      - "18794:18794"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18794
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-gateway:
+    container_name: thinglinks-gateway-server
+    build:
+      context: ../thinglinks-gateway/thinglinks-gateway-server
+      dockerfile: Dockerfile
+    ports:
+      - "18760:18760"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18760
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-sop-gateway:
+    container_name: thinglinks-sop-gateway-server
+    build:
+      context: ../thinglinks-gateway/thinglinks-sop-gateway-server
+      dockerfile: Dockerfile
+    ports:
+      - "18750:18750"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18750
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-generator:
+    container_name: thinglinks-generator-server
+    build:
+      context: ../thinglinks-generator/thinglinks-generator-server
+      dockerfile: Dockerfile
+    ports:
+      - "18780:18780"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18780
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-link:
+    container_name: thinglinks-link-server
+    build:
+      context: ../thinglinks-link/thinglinks-link-server
+      dockerfile: Dockerfile
+    ports:
+      - "18782:18782"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18782
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-mobile:
+    container_name: thinglinks-mobile-server
+    build:
+      context: ../thinglinks-mobile/thinglinks-mobile-server
+      dockerfile: Dockerfile
+    ports:
+      - "18798:18798"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18798
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-mqs:
+    container_name: thinglinks-mqs-server
+    build:
+      context: ../thinglinks-mqs/thinglinks-mqs-server
+      dockerfile: Dockerfile
+    ports:
+      - "18784:18784"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18784
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-oauth:
+    container_name: thinglinks-oauth-server
+    build:
+      context: ../thinglinks-oauth/thinglinks-oauth-server
+      dockerfile: Dockerfile
+    ports:
+      - "18773:18773"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18773
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-openapi:
+    container_name: thinglinks-openapi-server
+    build:
+      context: ../thinglinks-openapi/thinglinks-openapi-server
+      dockerfile: Dockerfile
+    ports:
+      - "18766:18766"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18766
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-rule:
+    container_name: thinglinks-rule-server
+    build:
+      context: ../thinglinks-rule/thinglinks-rule-server
+      dockerfile: Dockerfile
+    ports:
+      - "18786:18786"
+      - "50000-51000:50000-51000"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18786
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-sop-admin:
+    container_name: thinglinks-sop-admin-server
+    build:
+      context: ../thinglinks-sop-admin/thinglinks-sop-admin-server
+      dockerfile: Dockerfile
+    ports:
+      - "18765:18765"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18765
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-monitor:
+    container_name: thinglinks-monitor-server
+    build:
+      context: ../thinglinks-support/thinglinks-monitor-server
+      dockerfile: Dockerfile
+    ports:
+      - "18762:18762"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18762
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/thinglinks-monitor-server/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-base-executor:
+    container_name: thinglinks-base-executor
+    build:
+      context: ../thinglinks-support/thinglinks-base-executor
+      dockerfile: Dockerfile
+    ports:
+      - "18900:18900"
+      - "18901:18901"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18900
+      EXECUTOR_PORT: 18901
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-iot-executor:
+    container_name: thinglinks-iot-executor
+    build:
+      context: ../thinglinks-support/thinglinks-iot-executor
+      dockerfile: Dockerfile
+    ports:
+      - "18910:18910"
+      - "18911:18911"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18910
+      EXECUTOR_PORT: 18911
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-system:
+    container_name: thinglinks-system-server
+    build:
+      context: ../thinglinks-system/thinglinks-system-server
+      dockerfile: Dockerfile
+    ports:
+      - "18778:18778"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18778
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-tds:
+    container_name: thinglinks-tds-server
+    build:
+      context: ../thinglinks-tds/thinglinks-tds-server
+      dockerfile: Dockerfile
+    ports:
+      - "18788:18788"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18788
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-video:
+    container_name: thinglinks-video-server
+    build:
+      context: ../thinglinks-video/thinglinks-video-server
+      dockerfile: Dockerfile
+    ports:
+      - "18796:18796"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18796
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config
+  thinglinks-view:
+    container_name: thinglinks-view-server
+    build:
+      context: ../thinglinks-view/thinglinks-view-server
+      dockerfile: Dockerfile
+    ports:
+      - "18792:18792"
+    environment:
+      <<: *env-config
+      SERVICE_PORT: 18792
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f -u ${ACTUATOR_USERNAME}:${ACTUATOR_PASSWORD} http://localhost:$${SERVICE_PORT}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    <<: *shared-config

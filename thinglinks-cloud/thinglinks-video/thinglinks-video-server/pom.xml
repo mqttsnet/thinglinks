@@ -20,6 +20,12 @@
             <artifactId>thinglinks-video-controller</artifactId>
             <version>${revision}</version>
         </dependency>
+        <!-- 协议层：GB28181/JT1078/ISUP 协议栈及依赖协议的播放/控制服务 -->
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-video-biz-protocol</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <dependency>
             <groupId>com.mqttsnet.thinglinks</groupId>
             <artifactId>thinglinks-oauth-api</artifactId>
@@ -59,12 +65,22 @@
 
         <dependency>
             <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-base-cloud-impl</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
             <artifactId>thinglinks-data-scope-sdk</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.mqttsnet.basic</groupId>
             <artifactId>thinglinks-all-cloud</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mqttsnet.basic</groupId>
+            <artifactId>thinglinks-dynamic-tp-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

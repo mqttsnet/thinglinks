@@ -1,8 +1,9 @@
 package com.mqttsnet.thinglinks.video.vo.result.media;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.basic.annotation.echo.Echo;
+import com.mqttsnet.thinglinks.model.constant.EchoApi;
+import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import com.mqttsnet.thinglinks.video.vo.result.media.zlm.ZlmMediaServerStreamInfoResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -14,9 +15,8 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -35,12 +35,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(description = "视频拉流代理信息表")
-public class VideoStreamProxyResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class VideoStreamProxyResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "唯一标识符")
     private Long id;
@@ -53,6 +51,7 @@ public class VideoStreamProxyResultVO extends Entity<Long> implements Serializab
     /**
      * 代理类型
      */
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Video.VIDEO_MEDIA_STREAM_PROXY_TYPE)
     @Schema(description = "代理类型")
     private String proxyType;
     /**
@@ -93,6 +92,7 @@ public class VideoStreamProxyResultVO extends Entity<Long> implements Serializab
     /**
      * RTSP拉流时的拉流方式（0：TCP，1：UDP，2：组播）
      */
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Video.VIDEO_MEDIA_STREAM_PROXY_RTP_TYPE)
     @Schema(description = "RTSP拉流时的拉流方式（0：TCP，1：UDP，2：组播）")
     private String rtpType;
     /**
@@ -146,11 +146,25 @@ public class VideoStreamProxyResultVO extends Entity<Long> implements Serializab
     @Schema(description = "备注")
     private String remark;
     /**
-     * 创建人组织
+     * 拉流重试次数
      */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
-
+    @Schema(description = "拉流重试次数")
+    private Integer pullRetryCount;
+    /**
+     * 最大重试次数
+     */
+    @Schema(description = "最大重试次数")
+    private Integer maxRetryCount;
+    /**
+     * 最近拉流时间
+     */
+    @Schema(description = "最近拉流时间")
+    private LocalDateTime lastPullTime;
+    /**
+     * 最近错误信息
+     */
+    @Schema(description = "最近错误信息")
+    private String lastError;
 
     /**
      * ZLM流媒体信息集合

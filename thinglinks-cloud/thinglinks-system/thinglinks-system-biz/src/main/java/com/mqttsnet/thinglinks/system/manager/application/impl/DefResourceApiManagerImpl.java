@@ -15,7 +15,6 @@ import com.mqttsnet.thinglinks.system.mapper.application.DefResourceApiMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,8 +41,19 @@ public class DefResourceApiManagerImpl extends SuperCacheManagerImpl<DefResource
         return baseMapper.findAllApi();
     }
 
+    /**
+     * 按资源 ID 列表批量删除 API 关联 + 失效对应缓存.
+     *
+     * <p><b>事务边界由调用方 Service 控制</b> ── 不在 Manager 层再开事务:
+     * 当前所有调用方 {@code DefResourceServiceImpl.deleteByResourceId / saveOrUpdateResourceApi}
+     * 已用 {@code @Transactional(rollbackFor = Exception.class)} 包住外层,
+     * Spring 默认 PROPAGATION.REQUIRED 自动加入外层事务.若 Manager 再标 @Transactional 是冗余嵌套.</p>
+     *
+     * <p>切库走 Service 层 {@code @DS} 注解(本类无 @DS,继承上下文).</p>
+     *
+     * @param resourceIdList 资源 ID 列表
+     */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void removeByResourceId(List<Long> resourceIdList) {
         LbQueryWrap<DefResourceApi> wrap = Wraps.<DefResourceApi>lbQ().select(DefResourceApi::getId).in(DefResourceApi::getResourceId, resourceIdList);
         List<Long> apiIds = listObjs(wrap, Convert::toLong);

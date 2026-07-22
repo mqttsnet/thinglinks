@@ -24,6 +24,7 @@ import com.mqttsnet.thinglinks.enumeration.linkage.RuleStatusEnum;
 import com.mqttsnet.thinglinks.manager.linkage.RuleConditionManager;
 import com.mqttsnet.thinglinks.service.linkage.RuleConditionActionService;
 import com.mqttsnet.thinglinks.service.linkage.RuleConditionService;
+import com.mqttsnet.thinglinks.service.linkage.support.RuleTimingJobSynchronizer;
 import com.mqttsnet.thinglinks.vo.query.linkage.RuleConditionActionPageQuery;
 import com.mqttsnet.thinglinks.vo.query.linkage.RuleConditionPageQuery;
 import com.mqttsnet.thinglinks.vo.result.linkage.RuleConditionActionResultVO;
@@ -62,6 +63,8 @@ public class RuleConditionServiceImpl extends SuperServiceImpl<RuleConditionMana
 
     private final RuleConditionActionService ruleConditionActionService;
 
+    private final RuleTimingJobSynchronizer ruleTimingJobSynchronizer;
+
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -80,6 +83,8 @@ public class RuleConditionServiceImpl extends SuperServiceImpl<RuleConditionMana
         RuleCondition ruleCondition = builderRuleConditionSaveVO(saveVO);
         //更新
         superManager.save(ruleCondition);
+        // 条件集变化后对账定时任务(只有定时触发条件的规则才挂 XXL-Job)
+        ruleTimingJobSynchronizer.syncByRuleId(ruleCondition.getRuleId());
         return ruleCondition;
     }
 
@@ -108,6 +113,9 @@ public class RuleConditionServiceImpl extends SuperServiceImpl<RuleConditionMana
         // 更新对象
         superManager.updateById(originalRuleCondition);
 
+        // 条件类型/启停可能变化,对账定时任务
+        ruleTimingJobSynchronizer.syncByRuleId(originalRuleCondition.getRuleId());
+
         return originalRuleCondition;
     }
 
@@ -125,7 +133,10 @@ public class RuleConditionServiceImpl extends SuperServiceImpl<RuleConditionMana
         if (null == ruleCondition) {
             throw BizException.wrap("The RuleCondition does not exist");
         }
-        return superManager.removeById(id);
+        Boolean removed = superManager.removeById(id);
+        // 删除定时条件后规则可能不再需要调度任务
+        ruleTimingJobSynchronizer.syncByRuleId(ruleCondition.getRuleId());
+        return removed;
     }
 
     /**

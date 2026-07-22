@@ -46,7 +46,7 @@ export const useChartEditStore = defineStore({
   state: (): ChartEditStoreType => ({
     // 项目数据
     projectInfo: {
-      projectId: '',
+      id: '',
       projectName: '',
       templateName: '',
       projectIdentification: '',

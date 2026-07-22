@@ -43,4 +43,11 @@ public class RuleGroovyScriptDirectCompileParam {
     @Size(max = 2147483647, message = "脚本内容长度不能超过{max}")
     private String scriptContent;
 
+    /**
+     * 脚本唯一键(scriptType:channelCode:productIdentification:topicPattern)── 可选,执行统计按脚本维度计数用。
+     * 运行时由 mqs 转换器拼好传入;纯调试可不传(不计统计)。
+     */
+    @Schema(description = "脚本唯一键(执行统计用,可选)")
+    private String scriptUniqueKey;
+
 }

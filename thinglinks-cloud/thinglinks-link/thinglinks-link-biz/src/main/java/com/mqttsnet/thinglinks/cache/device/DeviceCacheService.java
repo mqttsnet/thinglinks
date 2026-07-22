@@ -2,14 +2,12 @@ package com.mqttsnet.thinglinks.cache.device;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.mqttsnet.basic.base.request.PageParams;
@@ -20,39 +18,21 @@ import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.thinglinks.cache.CacheSuperAbstract;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.cache.vo.product.ProductCacheVO;
 import com.mqttsnet.thinglinks.common.cache.link.device.DeviceCacheKeyBuilder;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import com.mqttsnet.thinglinks.context.ContextAwareExecutor;
-import com.mqttsnet.thinglinks.device.service.DeviceService;
+import com.mqttsnet.thinglinks.device.service.DeviceQueryService;
 import com.mqttsnet.thinglinks.device.vo.query.DevicePageQuery;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceResultVO;
-import com.mqttsnet.thinglinks.product.service.ProductService;
-import com.mqttsnet.thinglinks.product.vo.query.ProductPageQuery;
-import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * -----------------------------------------------------------------------------
- * File Name: DeviceCacheService.java
- * -----------------------------------------------------------------------------
- * Description:
- * Service layer for Device cache management.
- * Equipment information + Product information
- * -----------------------------------------------------------------------------
+ * 设备缓存管理服务(设备信息)。
  *
  * @author ShiHuan Sun
  * @version 1.1
- * -----------------------------------------------------------------------------
- * Revision History:
- * Date         Author          Version     Description
- * --------      --------     -------   --------------------
- * 2023-10-21    ShiHuan Sun     1.0         Initial version.
- * 2025-07-31    ShiHuan Sun     1.1         优化日志记录和性能优化。
- * <p>
- * -----------------------------------------------------------------------------
  */
 @DS(DsConstant.BASE_TENANT)
 @Service
@@ -60,8 +40,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class DeviceCacheService extends CacheSuperAbstract {
     private final CachePlusOps cachePlusOps;
-    private final DeviceService deviceService;
-    private final ProductService productService;
+    /**
+     * 所有 DB 读取统一走 leaf {@link DeviceQueryService},不依赖 DeviceService:DeviceService 间接持有
+     * LinkCacheDataHelper,而本类又被 helper 的 read-through 回源调用,直接依赖 service 会成环;leaf
+     * QueryService 零下游 Service 依赖断环,自带 @DS(BASE_TENANT) 切租户库。
+     */
+    private final DeviceQueryService deviceQueryService;
     private final ContextAwareExecutor contextAwareExecutor;
 
 
@@ -78,13 +62,10 @@ public class DeviceCacheService extends CacheSuperAbstract {
             "[批次-设备] 租户ID={} | 设备标识={} | 状态={} | 耗时={}ms | 错误={}";
 
     /**
-     * 刷新指定租户的设备缓存（全量）
+     * 刷新指定租户的设备缓存(全量)。缓存只放设备字段,不内嵌 productCacheVO ──
+     * 消费方需要产品信息时走 linkCacheDataHelper.getProductCacheVO / resolveProductModelByVersionNo 取。
      *
-     * @param tenantId 租户ID，不能为null
-     * @throws IllegalArgumentException 如果tenantId为null
-     * @throws RuntimeException         当缓存刷新过程中出现异常时抛出
-     * @see #loadProductCacheMap(Long)
-     * @see #processDevicesBatch(Long, List, Map, AtomicInteger, AtomicInteger)
+     * @param tenantId 租户ID,不能为null
      */
     public void refreshDeviceCacheForTenant(Long tenantId) {
         long startTime = System.currentTimeMillis();
@@ -92,13 +73,10 @@ public class DeviceCacheService extends CacheSuperAbstract {
         AtomicInteger totalFail = new AtomicInteger();
 
         // 批次元数据
-        int totalDevices = deviceService.findDeviceTotal().intValue();
+        int totalDevices = deviceQueryService.findDeviceTotal().intValue();
         int totalPages = (int) Math.ceil((double) totalDevices / PAGE_SIZE);
 
         log.info(BATCH_LOG_FORMAT, tenantId, "设备缓存全量刷新", totalDevices, PAGE_SIZE, totalPages);
-
-        // 预加载所有产品数据
-        Map<String, ProductCacheVO> productCacheMap = loadProductCacheMap(tenantId);
 
         // 按页顺序处理
         IntStream.rangeClosed(1, totalPages)
@@ -109,7 +87,7 @@ public class DeviceCacheService extends CacheSuperAbstract {
                     // 查询当前页设备
                     List<DeviceResultVO> devices = fetchDevicePage(currentPage);
                     // 处理当前页设备（内部并行处理）
-                    processDevicesBatch(tenantId, devices, productCacheMap, totalSuccess, totalFail);
+                    processDevicesBatch(tenantId, devices, totalSuccess, totalFail);
                     log.info(BATCH_ITEM_LOG, tenantId, currentPage, totalPages, devices.size(), totalSuccess.get(), totalFail.get(), System.currentTimeMillis() - pageStartTime);
                 });
 
@@ -118,61 +96,25 @@ public class DeviceCacheService extends CacheSuperAbstract {
     }
 
     /**
-     * 获取分页设备数据
+     * 获取分页设备数据,查询失败返回空列表。
      *
      * @param currentPage 当前页码(从1开始)
-     * @return 当前页的设备列表，如果查询失败返回空列表
-     * @throws IllegalArgumentException 如果currentPage小于1
-     * @see DeviceService#getPage(PageParams)
+     * @see DeviceQueryService#getPage(PageParams)
      */
     private List<DeviceResultVO> fetchDevicePage(int currentPage) {
         ArgumentAssert.isTrue(currentPage >= 1, "currentPage must be greater than or equal to 1");
         PageParams<DevicePageQuery> params = new PageParams<>(currentPage, PAGE_SIZE);
         params.setModel(DevicePageQuery.builder().build());
-        return Optional.ofNullable(deviceService.getPage(params))
+        return Optional.ofNullable(deviceQueryService.getPage(params))
                 .map(IPage::getRecords)
                 .orElse(Collections.emptyList());
     }
 
     /**
-     * 加载产品缓存映射Map
-     *
-     * @param tenantId 租户ID，不能为null
-     * @return 产品缓存映射Map，key为产品标识，value为产品缓存VO
-     * @throws IllegalArgumentException 如果tenantId为null
-     * @see ProductService#getProductResultVOList(ProductPageQuery)
-     */
-    private Map<String, ProductCacheVO> loadProductCacheMap(Long tenantId) {
-        return productService.getProductResultVOList(new ProductPageQuery()).stream()
-                .filter(p -> p != null && p.getProductIdentification() != null)
-                .collect(Collectors.toMap(
-                        ProductResultVO::getProductIdentification,
-                        p -> {
-                            ProductCacheVO vo = new ProductCacheVO();
-                            BeanUtil.copyProperties(p, vo);
-                            vo.setTenantId(tenantId);
-                            return vo;
-                        },
-                        (existing, replacement) -> existing
-                ));
-    }
-
-
-    /**
-     * 处理设备批次数据
-     *
-     * @param tenantId        租户ID，不能为null
-     * @param devices         当前批次的设备列表，不能为null
-     * @param productCacheMap 产品缓存映射Map，不能为null
-     * @param totalSuccess    成功计数器(累计)，不能为null
-     * @param totalFail       失败计数器(累计)，不能为null
-     * @throws IllegalArgumentException 如果任何参数为null
-     * @see this#cacheDeviceBasedOnIdentification(DeviceCacheVO)
-     * @see this#cacheDeviceBasedOnClientId(DeviceCacheVO)
+     * 处理设备批次数据,只缓存设备本身字段;产品 / 物模型走各自独立缓存,消费方按需读取。
      */
     private void processDevicesBatch(Long tenantId,
                                      List<DeviceResultVO> devices,
-                                     Map<String, ProductCacheVO> productCacheMap,
                                      AtomicInteger totalSuccess,
                                      AtomicInteger totalFail) {
         AtomicInteger pageSuccess = new AtomicInteger();
@@ -184,10 +126,6 @@ public class DeviceCacheService extends CacheSuperAbstract {
                     try {
                         DeviceCacheVO cacheVO = BeanPlusUtil.toBeanIgnoreError(device, DeviceCacheVO.class);
                         cacheVO.setTenantId(tenantId);
-                        // 关联产品信息
-                        Optional.ofNullable(device.getProductIdentification())
-                                .map(productCacheMap::get)
-                                .ifPresent(cacheVO::setProductCacheVO);
 
                         // 更新缓存
                         this.cacheDeviceBasedOnIdentification(cacheVO);
@@ -215,21 +153,18 @@ public class DeviceCacheService extends CacheSuperAbstract {
 
 
     /**
-     * 刷新单个设备的缓存
+     * 刷新单个设备的缓存。
      *
-     * @param deviceIdentification 设备标识，不能为空
+     * @param deviceIdentification 设备标识,不能为空
      * @return 刷新是否成功
-     * @throws IllegalArgumentException 如果deviceIdentification为空
-     * @see DeviceService#findByDeviceIdentification(String)
-     * @see this#cacheDeviceBasedOnIdentification(DeviceCacheVO)
-     * @see this#cacheDeviceBasedOnClientId(DeviceCacheVO)
+     * @see DeviceQueryService#findDeviceCacheVO(String)
      */
     public boolean refreshDeviceCache(String deviceIdentification) {
         try {
             log.info("开始刷新{}设备缓存: {}", ContextUtil.getTenantId(), deviceIdentification);
             ArgumentAssert.notBlank(deviceIdentification, "deviceIdentification is null");
-            // 获取设备信息
-            Optional<DeviceCacheVO> deviceCacheVOOptional = deviceService.findDeviceCacheVO(ContextUtil.getTenantId(), deviceIdentification);
+            // 获取设备信息 ── DeviceService.findDeviceCacheVO 已下线,统一走 DeviceQueryService (leaf 服务)
+            Optional<DeviceCacheVO> deviceCacheVOOptional = deviceQueryService.findDeviceCacheVO(deviceIdentification);
             if (deviceCacheVOOptional.isEmpty()) {
                 log.warn("未找到设备信息: {}", deviceIdentification);
                 return false;
@@ -245,11 +180,39 @@ public class DeviceCacheService extends CacheSuperAbstract {
         }
     }
 
+    /**
+     * 仅从 DB 加载设备 VO,不写缓存 ── 供 LinkCacheDataHelper#getDeviceCacheVO 的 read-through 回源使用,
+     * 写缓存由 CachePlusUtil 的 loader 链统一负责避免双写竞态。参数空 / DB 不存在 / 转换异常返 null
+     * (由调用方决定是否缓存 null sentinel 防穿透)。上层 helper 不允许越级直接调 {@link DeviceQueryService},
+     * 缓存策略集中在 CacheService 一层。
+     *
+     * @param deviceIdOrClientId 设备标识或客户端标识
+     * @return 设备缓存 VO;失败返 null
+     */
+    public DeviceCacheVO loadDeviceCacheFromDb(String deviceIdOrClientId) {
+        if (StrUtil.isBlank(deviceIdOrClientId)) {
+            return null;
+        }
+        try {
+            DeviceCacheVO vo = deviceQueryService.findDeviceCacheVO(deviceIdOrClientId).orElse(null);
+            if (vo == null) {
+                log.warn("[device-fallback] DB miss deviceIdOrClientId={} tenantId={}",
+                        deviceIdOrClientId, ContextUtil.getTenantId());
+                return null;
+            }
+            log.info("[device-fallback] resolved deviceIdOrClientId={} tenantId={} productIdentification={} boundVersionNo={}",
+                    deviceIdOrClientId, ContextUtil.getTenantId(),
+                    vo.getProductIdentification(), vo.getBoundProductVersionNo());
+            return vo;
+        } catch (Exception e) {
+            log.error("[device-fallback] load failed deviceIdOrClientId={}", deviceIdOrClientId, e);
+            return null;
+        }
+    }
+
 
     /**
-     * Cache the DeviceCacheVO object based on its identification.
-     *
-     * @param deviceCacheVO DeviceCacheVO object to be cached.
+     * 按 deviceIdentification 维度缓存 DeviceCacheVO。
      */
     public void cacheDeviceBasedOnIdentification(DeviceCacheVO deviceCacheVO) {
         CacheKey deviceIdentKey = DeviceCacheKeyBuilder.build(deviceCacheVO.getDeviceIdentification());
@@ -258,9 +221,7 @@ public class DeviceCacheService extends CacheSuperAbstract {
     }
 
     /**
-     * Cache the DeviceCacheVO object based on its client ID.
-     *
-     * @param deviceCacheVO DeviceCacheVO object to be cached.
+     * 按 clientId 维度缓存 DeviceCacheVO。
      */
     public void cacheDeviceBasedOnClientId(DeviceCacheVO deviceCacheVO) {
         CacheKey clientIdKey = DeviceCacheKeyBuilder.build(deviceCacheVO.getClientId());

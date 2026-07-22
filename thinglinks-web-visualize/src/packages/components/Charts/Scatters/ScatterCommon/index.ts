@@ -7,7 +7,7 @@ export const ScatterCommonConfig: ConfigType = {
   conKey: 'VCScatterCommon',
   title: 'project.component_scatter_common',
   category: ChatCategoryEnum.SCATTER,
-  categoryName: getChatCategoryEnumName().SCATTER,
+  get categoryName() { return getChatCategoryEnumName().SCATTER },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'scatter-multi.png'

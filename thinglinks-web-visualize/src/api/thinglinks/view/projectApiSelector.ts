@@ -9,7 +9,7 @@ import { saveProjectTemplate, updateProjectTemplate, detailsProjectTemplate, upd
 /**
  * 创建项目（新建）
  */
-export const createProjectApi = async (data: any, isMyProject: number = 0) => {
+export const createProjectApi = async (data: object, isMyProject: number = 0) => {
   if (isMyProject === 1) {
     return saveProject(data)
   } else {
@@ -31,7 +31,7 @@ export const fetchProjectApi = async (data: { identification: string }, isMyProj
 /**
  * 更新项目
  */
-export const updateProjectApi = async (data: any, isMyProject: number = 0) => {
+export const updateProjectApi = async (data: object, isMyProject: number = 0) => {
   if (isMyProject === 1) {
     return updateProject(data)
   } else {
@@ -42,12 +42,10 @@ export const updateProjectApi = async (data: any, isMyProject: number = 0) => {
 /**
  * 更新项目状态（发布/取消发布）
  */
-export const changeProjectReleaseApi = async (data: { id: number | string; status: number }, isMyProject: number = 0) => {
+export const changeProjectReleaseApi = async (data: { id: string; status: number }, isMyProject: number = 0) => {
   if (isMyProject === 1) {
     return updateProjectStatus(data)
   } else {
     return updateProjectStatusTemplate(data)
   }
 }
-
-

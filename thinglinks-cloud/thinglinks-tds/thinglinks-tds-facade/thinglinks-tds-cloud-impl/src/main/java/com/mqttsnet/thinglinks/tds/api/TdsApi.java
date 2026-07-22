@@ -1,6 +1,5 @@
 package com.mqttsnet.thinglinks.tds.api;
 
-import cn.hutool.json.JSONObject;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.constant.Constants;
 import com.mqttsnet.basic.tds.model.SuperTableDTO;
@@ -22,7 +21,7 @@ import java.util.Map;
  *
  * @author xiaonannet
  */
-@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-tds-server}", fallback = TdsApiFallback.class, path = "/anyUser/tds")
+@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.tenant-server:thinglinks-tds-server}", fallback = TdsApiFallback.class, path = "/inner/tds")
 public interface TdsApi {
 
     /**
@@ -53,13 +52,13 @@ public interface TdsApi {
     R createSuperTableAndColumn(@RequestBody SuperTableDTO superTableDTO);
 
     /**
-     * 创建超级表及字段-方式二
+     * 批量创建超级表及字段(单次请求可建多张)。
      *
-     * @param object 超级表json信息
+     * @param schema 超级表批量定义,key=超级表名
      * @return 执行结果
      */
-    @PostMapping("/createSuperTableAndColumnTwo")
-    R createSuperTableAndColumnTwo(@RequestBody JSONObject object);
+    @PostMapping("/batchCreateSuperTable")
+    R batchCreateSuperTable(@RequestBody Map<String, Object> schema);
 
     /**
      * 创建子表
@@ -71,13 +70,13 @@ public interface TdsApi {
     R createSubTable(@RequestBody TableDTO tableDTO);
 
     /**
-     * 创建子表-方式二
+     * 批量创建子表(单次请求可建多张)。
      *
-     * @param object 子表json信息
+     * @param schema 子表批量定义,key=子表名
      * @return 执行结果
      */
-    @PostMapping("/createSubTableTwo")
-    R createSubTableTwo(@RequestBody JSONObject object);
+    @PostMapping("/batchCreateSubTable")
+    R batchCreateSubTable(@RequestBody Map<String, Object> schema);
 
     /**
      * 删除超级表

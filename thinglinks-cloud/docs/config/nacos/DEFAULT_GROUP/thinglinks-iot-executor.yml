@@ -1,0 +1,47 @@
+### xxl-job email
+xxl.job:
+  #设置一：调度中心和执行器，均不设置AccessToken；关闭安全性校验；
+  #设置二：调度中心和执行器，设置了相同的AccessToken；
+  accessToken: ${XXL_JOB_ACCESS_TOKEN:}
+  # 以下是client 执行器端配置（注意：若不想配置调度器也是执行器，请自行参考xxl）
+  admin:
+    addresses: http://${JOBS_IP:127.0.0.1}:${JOBS_PORT:18767}/thinglinks-job-admin
+  executor:
+    # 执行器名
+    appname: ${spring.application.name}
+    address: ''
+    # 调度器通过XXL-RPC跟执行器通信的IP
+    ip: ${EXECUTOR_IP:127.0.0.1}
+    # 调度器通过XXL-RPC跟执行器通信的端口
+    port: ${EXECUTOR_PORT:18911}
+    # 日志路径
+    logpath: ${logging.file.path}/${spring.application.name}/jobhandler
+    # 日志保留天数
+    logretentiondays: 30
+
+server:
+  shutdown: GRACEFUL
+  servlet:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+  port: 18910
+  undertow:
+    threads:
+      io: 4 # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+      worker: 80  # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+    buffer-size: 2048  # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理 , 每块buffer的空间大小,越小的空间被利用越充分
+    direct-buffers: true  # 是否分配的直接内存
+    
+
+# knife4j 文档通用配置 详情看: Knife4jProperties
+knife4j:
+  enable: true
+  setting:
+    enableReloadCacheParameter: true
+    enableVersion: true
+    enableDynamicParameter: true
+    enableFooter: false
+    enableFooterCustom: true
+    footerCustomContent: Apache License 2.0 | Copyright  2026 [thinglinks](https://github.com/mqttsnet)

@@ -6,10 +6,11 @@ import com.alibaba.fastjson2.JSONObject;
 import com.mqttsnet.thinglinks.video.common.CommonCallback;
 import com.mqttsnet.thinglinks.video.dto.gb28181.SendRtpInfo;
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
-import com.mqttsnet.thinglinks.video.dto.media.zlm.ZlmRestfulResult;
-import com.mqttsnet.thinglinks.video.utils.zlm.ZlmRestfulUtils;
+import com.mqttsnet.thinglinks.video.entity.media.VideoMediaServer;
+import com.mqttsnet.thinglinks.video.media.common.MediaApiResult;
+import com.mqttsnet.thinglinks.video.media.zlm.ZlmRestClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -17,10 +18,23 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ZLMServerFactory {
-    @Autowired
-    private ZlmRestfulUtils zlmRestfulUtils;
+    private final ZlmRestClient zlmRestClient;
 
+    /**
+     * 将 DTO 转换为实体对象
+     */
+    /**
+     * 将 DTO 转换为 VideoMediaServer（仅设置 REST 客户端所需字段）
+     */
+    private VideoMediaServer toEntity(VideoMediaServerResultDTO dto) {
+        VideoMediaServer entity = new VideoMediaServer();
+        entity.setHost(dto.getHost());
+        entity.setHttpPort(dto.getHttpPort());
+        entity.setSecret(dto.getSecret());
+        return entity;
+    }
 
     /**
      * 开启rtpServer
@@ -36,7 +50,7 @@ public class ZLMServerFactory {
     public int createRTPServer(VideoMediaServerResultDTO mediaServerItem, String streamId, long ssrc, Integer port, Boolean onlyAuto, Boolean reUsePort, Integer tcpMode) {
         int result = -1;
         // 查询此rtp server 是否已经存在
-        ZlmRestfulResult<JSONObject> zlmRestfulResult = zlmRestfulUtils.getRtpInfo(mediaServerItem, streamId);
+        MediaApiResult zlmRestfulResult = zlmRestClient.postForm(toEntity(mediaServerItem), "getRtpInfo", Map.of("stream_id", streamId));
         if (zlmRestfulResult.isSuccess()) {
             JSONObject rtpInfo = zlmRestfulResult.getData();
             if (rtpInfo.getBoolean("exist")) {
@@ -46,7 +60,7 @@ public class ZLMServerFactory {
                     // 此时重新打开rtpServer
                     Map<String, Object> param = new HashMap<>();
                     param.put("stream_id", streamId);
-                    ZlmRestfulResult<JSONObject> closeRtpServerResult = zlmRestfulUtils.closeRtpServer(mediaServerItem, param);
+                    MediaApiResult closeRtpServerResult = zlmRestClient.postForm(toEntity(mediaServerItem), "closeRtpServer", param);
                     if (closeRtpServerResult.isSuccess()) {
                         JSONObject data = closeRtpServerResult.getData();
                         if (data.getInteger("code") == 0) {
@@ -85,7 +99,7 @@ public class ZLMServerFactory {
             param.put("ssrc", ssrc);
         }
 
-        ZlmRestfulResult<JSONObject> openRtpServerResultJson = zlmRestfulUtils.openRtpServer(mediaServerItem, param);
+        MediaApiResult openRtpServerResultJson = zlmRestClient.postForm(toEntity(mediaServerItem), "openRtpServer", param);
         if (openRtpServerResultJson.isSuccess()) {
             result = openRtpServerResultJson.getData().getInteger("port");
         } else {
@@ -100,10 +114,10 @@ public class ZLMServerFactory {
         if (serverItem != null) {
             Map<String, Object> param = new HashMap<>();
             param.put("stream_id", streamId);
-            ZlmRestfulResult<JSONObject> objectZlmRestfulResult = zlmRestfulUtils.closeRtpServer(serverItem, param);
+            MediaApiResult objectMediaApiResult = zlmRestClient.postForm(toEntity(serverItem), "closeRtpServer", param);
             log.info("关闭RTP Server {}", JSONObject.toJSONString(serverItem));
-            if (objectZlmRestfulResult.isSuccess()) {
-                JSONObject jsonObject = objectZlmRestfulResult.getData();
+            if (objectMediaApiResult.isSuccess()) {
+                JSONObject jsonObject = objectMediaApiResult.getData();
                 if (jsonObject.getInteger("code") == 0) {
                     result = jsonObject.getInteger("hit") >= 1;
                 } else {
@@ -118,59 +132,39 @@ public class ZLMServerFactory {
     }
 
     public void closeRtpServer(VideoMediaServerResultDTO serverItem, String streamId, CommonCallback<Boolean> callback) {
-        if (serverItem == null) {
-            callback.run(false);
-            return;
-        }
-        Map<String, Object> param = new HashMap<>();
-        param.put("stream_id", streamId);
-        zlmRestfulUtils.closeRtpServer(serverItem, param, result -> {
-            if (result.isSuccess()) {
-                JSONObject data = result.getData();
-                if (data.getInteger("code") == 0) {
-                    callback.run(data.getInteger("hit") == 1);
-                    return;
-                } else {
-                    log.error("关闭RTP Server 失败: " + data.getString("msg"));
-                }
-            } else {
-                //  检查ZLM状态
-                log.error("关闭RTP Server 失败: 请检查ZLM服务");
-            }
-            callback.run(false);
-        });
-
-
+        boolean result = closeRtpServer(serverItem, streamId);
+        callback.run(result);
     }
 
 
     /**
      * 调用zlm RESTFUL API —— startSendRtp
      */
-    public ZlmRestfulResult<JSONObject> startSendRtpStream(VideoMediaServerResultDTO mediaServerItem, Map<String, Object> param) {
-        return zlmRestfulUtils.startSendRtp(mediaServerItem, param);
+    public MediaApiResult startSendRtpStream(VideoMediaServerResultDTO mediaServerItem, Map<String, Object> param) {
+        return zlmRestClient.postForm(toEntity(mediaServerItem), "startSendRtp", param);
     }
 
     /**
      * 调用zlm RESTFUL API —— startSendRtpPassive
      */
-    public ZlmRestfulResult<JSONObject> startSendRtpPassive(VideoMediaServerResultDTO mediaServerItem, Map<String, Object> param) {
-        return zlmRestfulUtils.startSendRtpPassive(mediaServerItem, param);
-    }
-
-    public ZlmRestfulResult<JSONObject> startSendRtpPassive(VideoMediaServerResultDTO mediaServerItem, Map<String, Object> param, ZlmRestfulUtils.RequestCallback callback) {
-        return zlmRestfulUtils.startSendRtpPassive(mediaServerItem, param, callback);
+    public MediaApiResult startSendRtpPassive(VideoMediaServerResultDTO mediaServerItem, Map<String, Object> param) {
+        return zlmRestClient.postForm(toEntity(mediaServerItem), "startSendRtpPassive", param);
     }
 
     /**
      * 查询待转推的流是否就绪
      */
     public Boolean isStreamReady(VideoMediaServerResultDTO mediaServerItem, String app, String streamId) {
-        ZlmRestfulResult<JSONArray> mediaInfo = zlmRestfulUtils.getMediaList(mediaServerItem, app, streamId);
+        Map<String, Object> params = new HashMap<>();
+        params.put("app", app);
+        params.put("stream", streamId);
+        params.put("vhost", "__defaultVhost__");
+        MediaApiResult mediaInfo = zlmRestClient.postForm(toEntity(mediaServerItem), "getMediaList", params);
         if (!mediaInfo.isSuccess()) {
             return null;
         }
-        return (CollUtil.isNotEmpty(mediaInfo.getData()));
+        JSONArray dataArray = mediaInfo.getData().getJSONArray("data");
+        return CollUtil.isNotEmpty(dataArray);
     }
 
     /**
@@ -180,7 +174,12 @@ public class ZLMServerFactory {
      * @return
      */
     public int totalReaderCount(VideoMediaServerResultDTO mediaServerItem, String app, String streamId) {
-        ZlmRestfulResult<JSONObject> zlmRestfulResult = zlmRestfulUtils.getMediaInfo(mediaServerItem, app, "rtsp", streamId);
+        Map<String, Object> params = new HashMap<>();
+        params.put("app", app);
+        params.put("schema", "rtsp");
+        params.put("stream", streamId);
+        params.put("vhost", "__defaultVhost__");
+        MediaApiResult zlmRestfulResult = zlmRestClient.postForm(toEntity(mediaServerItem), "getMediaInfo", params);
         if (!zlmRestfulResult.isSuccess()) {
             return 0;
         }
@@ -197,9 +196,9 @@ public class ZLMServerFactory {
         return mediaInfo.getInteger("totalReaderCount");
     }
 
-    public ZlmRestfulResult<JSONObject> startSendRtp(VideoMediaServerResultDTO mediaInfo, SendRtpInfo sendRtpItem) {
+    public MediaApiResult startSendRtp(VideoMediaServerResultDTO mediaInfo, SendRtpInfo sendRtpItem) {
         String is_Udp = sendRtpItem.isTcp() ? "0" : "1";
-        log.info("rtp/{}开始推流, 目标={}:{}，SSRC={}", sendRtpItem.getStream(), sendRtpItem.getIp(), sendRtpItem.getPort(), sendRtpItem.getSsrc());
+        log.info("rtp/{}开始推流, 目标={}:{}，SSRC={}", sendRtpItem.getStream(), sendRtpItem.getHost(), sendRtpItem.getPort(), sendRtpItem.getSsrc());
         Map<String, Object> param = new HashMap<>(12);
         param.put("vhost", "__defaultVhost__");
         param.put("app", sendRtpItem.getApp());
@@ -218,13 +217,13 @@ public class ZLMServerFactory {
             return null;
         }
         // 如果是非严格模式，需要关闭端口占用
-        ZlmRestfulResult<JSONObject> startSendRtpStreamResult = null;
+        MediaApiResult startSendRtpStreamResult = null;
         if (sendRtpItem.getLocalPort() != 0) {
             if (sendRtpItem.isTcpActive()) {
                 startSendRtpStreamResult = startSendRtpPassive(mediaInfo, param);
             } else {
                 param.put("is_udp", is_Udp);
-                param.put("dst_url", sendRtpItem.getIp());
+                param.put("dst_url", sendRtpItem.getHost());
                 param.put("dst_port", sendRtpItem.getPort());
                 startSendRtpStreamResult = startSendRtpStream(mediaInfo, param);
             }
@@ -233,7 +232,7 @@ public class ZLMServerFactory {
                 startSendRtpStreamResult = startSendRtpPassive(mediaInfo, param);
             } else {
                 param.put("is_udp", is_Udp);
-                param.put("dst_url", sendRtpItem.getIp());
+                param.put("dst_url", sendRtpItem.getHost());
                 param.put("dst_port", sendRtpItem.getPort());
                 startSendRtpStreamResult = startSendRtpStream(mediaInfo, param);
             }
@@ -243,7 +242,10 @@ public class ZLMServerFactory {
 
     public Boolean updateRtpServerSSRC(VideoMediaServerResultDTO mediaServerItem, String streamId, String ssrc) {
         boolean result = false;
-        ZlmRestfulResult<JSONObject> zlmRestfulResult = zlmRestfulUtils.updateRtpServerSSRC(mediaServerItem, streamId, ssrc);
+        Map<String, Object> params = new HashMap<>();
+        params.put("stream_id", streamId);
+        params.put("ssrc", ssrc);
+        MediaApiResult zlmRestfulResult = zlmRestClient.postForm(toEntity(mediaServerItem), "updateRtpServerSSRC", params);
         if (zlmRestfulResult.isSuccess()) {
             log.info("[更新RTPServer] 成功");
             result = true;
@@ -254,12 +256,12 @@ public class ZLMServerFactory {
         return result;
     }
 
-    public ZlmRestfulResult<JSONObject> stopSendRtpStream(VideoMediaServerResultDTO mediaServerItem, SendRtpInfo sendRtpItem) {
+    public MediaApiResult stopSendRtpStream(VideoMediaServerResultDTO mediaServerItem, SendRtpInfo sendRtpItem) {
         Map<String, Object> param = new HashMap<>();
         param.put("vhost", "__defaultVhost__");
         param.put("app", sendRtpItem.getApp());
         param.put("stream", sendRtpItem.getStream());
         param.put("ssrc", sendRtpItem.getSsrc());
-        return zlmRestfulUtils.stopSendRtp(mediaServerItem, param);
+        return zlmRestClient.postForm(toEntity(mediaServerItem), "stopSendRtp", param);
     }
 }

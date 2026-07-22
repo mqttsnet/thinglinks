@@ -28,14 +28,12 @@ export default {
     bottom: '底部',
     enable: '开启',
     disable: '关闭',
-    show: '显示',
     hide: '隐藏',
     shadow: '阴影',
     showShadow: '展示阴影',
     blur: '模糊',
     border: '边框',
     borderWidth: '边框大小',
-    borderColor: '边框颜色',
     gap: '间隔',
     background: '背景',
     backgroundColor: '背景颜色',
@@ -43,7 +41,6 @@ export default {
     source: '源',
     customSource: '自定义源',
     control: '控制',
-    player: '播放器',
     indicator: '指示器',
     dotType: '样式',
     dotPlacement: '位置',
@@ -51,9 +48,7 @@ export default {
     effect: '效果',
     fit: '样式',
     sort: '排序',
-    range: '范围',
     block: '区块',
-    topDistance: '顶部距离',
     isShow: '是否显示',
     hoverSize: '悬停时大小',
     formatter: '展示类型',
@@ -80,7 +75,6 @@ export default {
     timeConfig: '时间配置',
     gradientParams: '渐变色参数',
     startValue: '起始值',
-    endValue: '结束值',
     offsetAngle: '偏移角度',
     colorRotation: '颜色旋转',
     info: '信息',
@@ -107,7 +101,6 @@ export default {
     dataName: '数据名',
     percentage: '百分比',
     namePercentage: '列名:百分比',
-    line: '线条',
     solidPoint: '实心点',
     graph: '图形',
     solidPointSize: '实心点大小',
@@ -272,4 +265,3 @@ export default {
     waitTimeSuffix: '轮播时间(s)'
   }
 }
-

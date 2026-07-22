@@ -1,71 +1,295 @@
 package com.mqttsnet.thinglinks.cache.helper;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.cache.redis2.CacheResult;
 import com.mqttsnet.basic.cache.repository.CachePlusOps;
+import com.mqttsnet.basic.cache.utils.CachePlusUtil;
+import com.mqttsnet.basic.model.cache.CacheHashKey;
 import com.mqttsnet.basic.model.cache.CacheKey;
+import com.mqttsnet.basic.utils.BeanPlusUtil;
+import com.mqttsnet.thinglinks.cache.vo.bridge.DataBridgeCacheVO;
+import com.mqttsnet.thinglinks.cache.vo.bridge.DataSourceCacheVO;
+import com.mqttsnet.thinglinks.common.cache.rule.bridge.BridgeRuleEnabledCacheKeyBuilder;
+import com.mqttsnet.thinglinks.common.cache.rule.bridge.DataSourceCacheKeyBuilder;
+import com.mqttsnet.thinglinks.common.cache.rule.groovy.GroovyScriptCacheKeyBuilder;
+import com.mqttsnet.thinglinks.common.cache.rule.groovy.TransformScriptEntry;
+import com.mqttsnet.thinglinks.vo.result.bridge.DataBridgeResultVO;
+import com.mqttsnet.thinglinks.vo.result.bridge.DataSourceResultVO;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 /**
- * ============================================================================
- * Description:
- * Rule 规则类 数据缓存操作助手
- * ============================================================================
+ * Rule 域缓存操作类(对齐 LinkCacheDataHelper)。
+ * 调用层级:Helper → caller 注入 dbLoader lambda → 域内 Service。用 cache-aside + 显式 loader 注入避免 helper 反向持有 Service 形成构造期环;caller 必须是 Component/Listener/Matcher 等非 Service 角色,不要在 Service 里直接调本 helper。
  *
- * @author Sun Shihuan
- * @version 1.0.0
- * -----------------------------------------------------------------------------
- * Revision History:
- * Date         Author          Version     Description
- * --------      --------     -------   --------------------
- * 2025/3/25      Sun Shihuan        1.0        Initial creation
- * -----------------------------------------------------------------------------
- * @email
- * @date 2025/3/25 11:08
+ * @author mqttsnet
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class RuleCacheDataHelper {
 
+    private static final int DEFAULT_PRIORITY = 100;
+
+    /**
+     * 桥接规则空桶占位 field ── Redis hash 不存在"零 field 的 key",DB 确认无启用规则时若不落任何标记,
+     * 每条桥接消息都会 HGETALL 未命中而穿透 DB。占位 field 的值走框架 NullVal 空值机制
+     * (cacheNullValues=true 时 null 自动转 NullVal),读侧 {@link CacheResult#getValue()} 归一为 null 被过滤。
+     */
+    private static final String BRIDGE_RULE_EMPTY_BUCKET_FIELD = "__empty__";
+
     private final CachePlusOps cachePlusOps;
+    /**
+     * read-through 统一入口 ── {@link CachePlusUtil#getOrLoad} 包装 cachePlusOps + 类型转换 + Optional 返值.
+     */
+    private final CachePlusUtil cachePlusOpsUtil;
 
-
-    public RuleCacheDataHelper(CachePlusOps cachePlusOps) {
-        this.cachePlusOps = cachePlusOps;
-    }
-
+    // ============================== Groovy 脚本内容 ==============================
 
     /**
-     * 获取脚本内容
+     * 仅查 Redis 不回源 ── 用于"存在性检查"场景。命中返脚本内容,缓存无返 {@link Optional#empty()}。
      *
      * @param cacheKey 缓存键
-     * @return {@link Object} 脚本内容
+     * @return 脚本内容;缓存无返 {@link Optional#empty()}
      */
-    public Object getScriptContent(CacheKey cacheKey) {
-        CacheResult<Object> objectCacheResult = cachePlusOps.get(cacheKey);
-        return objectCacheResult.getRawValue();
+    public Optional<Object> getScriptContent(CacheKey cacheKey) {
+        return Optional.ofNullable(cachePlusOps.get(cacheKey))
+                .map(CacheResult::getRawValue);
     }
 
     /**
-     * 设置脚本内容
+     * cache-aside 取脚本内容,miss 时回源 DB 并自动回填({@link CachePlusUtil#getOrLoad})。
+     * cacheNullValues=false:DB 也没时不缓存 null,下次重新查。命中或回源命中返脚本内容,DB 也无返 {@link Optional#empty()}。
      *
      * @param cacheKey 缓存键
-     * @param content  脚本内容
+     * @param dbLoader 回源函数
+     * @return 脚本内容;DB 也无返 {@link Optional#empty()}
      */
+    public Optional<Object> getScriptContent(CacheKey cacheKey, Function<CacheKey, Object> dbLoader) {
+        return cachePlusOpsUtil.getOrLoad(cacheKey, dbLoader, Object.class, false);
+    }
+
     public void setScriptContent(CacheKey cacheKey, String content) {
         cachePlusOps.del(cacheKey);
         cachePlusOps.set(cacheKey, content);
     }
 
-    /**
-     * 删除脚本内容
-     *
-     * @param cacheKey 缓存键
-     * @return 删除的脚本内容数量
-     */
     public Long delScriptContent(CacheKey cacheKey) {
         return cachePlusOps.del(cacheKey);
     }
 
+    // ============================== 设备上行前置转换脚本 HASH 桶 ==============================
 
+    /**
+     * 刷新某「产品 + 产品版本」的前置转换脚本 HASH 桶 ── del 旧桶 + hMSet(field=topic 模式,value=脚本内容)。
+     * <p>供脚本 CRUD 变更事件用:每次变更按 (channel, product, version) 重查启用脚本整桶刷新,
+     * 与桥接规则桶刷新同模式。topicToScript 为空则只删桶(该产品版本已无启用转换脚本)。
+     *
+     * @param channelCode           渠道编码(mqtt / webSocket)
+     * @param productIdentification 产品标识
+     * @param productVersionNo      产品发布版本号
+     * @param topicToEntry          topic 模式 → {脚本内容 + 扩展参数}(值以 JSON 存入 HASH)
+     */
+    public void setTransformScriptBucket(String channelCode, String productIdentification,
+                                         String productVersionNo, Map<String, TransformScriptEntry> topicToEntry) {
+        if (StrUtil.hasBlank(channelCode, productIdentification, productVersionNo)) {
+            return;
+        }
+        CacheKey bucketKey = GroovyScriptCacheKeyBuilder.transformHashKey(channelCode, productIdentification, productVersionNo);
+        cachePlusOps.del(bucketKey);
+        if (CollUtil.isEmpty(topicToEntry)) {
+            log.info("Refresh transform script bucket EMPTY channel={} product={} version={}", channelCode, productIdentification, productVersionNo);
+            return;
+        }
+        // 值序列化为 JSON 存入 HASH(field=topic 模式,value={content, extendParams})
+        Map<String, String> fieldValues = new HashMap<>(topicToEntry.size());
+        topicToEntry.forEach((topic, entry) -> fieldValues.put(topic, JSON.toJSONString(entry)));
+        cachePlusOps.hMSet(bucketKey, fieldValues);
+        log.info("Refresh transform script bucket channel={} product={} version={} count={}",
+            channelCode, productIdentification, productVersionNo, fieldValues.size());
+    }
+
+    /**
+     * 删除某「产品 + 产品版本」的前置转换脚本整桶。
+     *
+     * @param channelCode           渠道编码
+     * @param productIdentification 产品标识
+     * @param productVersionNo      产品发布版本号
+     */
+    public void delTransformScriptBucket(String channelCode, String productIdentification, String productVersionNo) {
+        if (StrUtil.hasBlank(channelCode, productIdentification, productVersionNo)) {
+            return;
+        }
+        cachePlusOps.del(GroovyScriptCacheKeyBuilder.transformHashKey(channelCode, productIdentification, productVersionNo));
+        log.info("Del transform script bucket channel={} product={} version={}", channelCode, productIdentification, productVersionNo);
+    }
+
+    // ============================== 桥接规则 hash 缓存 ==============================
+
+    /**
+     * 取启用中的桥接规则缓存(命中 0 DB IO;miss 穿透 DB 并回填整桶)。按 priority 升序,永不返 null。
+     * <p>DB 也无规则时回填 {@link #BRIDGE_RULE_EMPTY_BUCKET_FIELD} 占位("确认无规则"结论可缓存),
+     * 后续消息全部命中缓存,不再每条穿透 DB;规则变更事件 del 桶后重建,占位自然被覆盖/清除。
+     *
+     * @param appId     应用 ID
+     * @param direction 桥接方向
+     * @param dbLoader 回源函数返回 ResultVO 列表,Service 已 BeanPlusUtil 转 VO
+     * @return 启用中的桥接规则列表,按 priority 升序
+     */
+    public List<DataBridgeCacheVO> getBridgeEnabledRules(String appId, String direction,
+                                                        Function<Void, List<DataBridgeResultVO>> dbLoader) {
+        if (StrUtil.hasBlank(appId, direction)) {
+            return List.of();
+        }
+        CacheKey bucketKey = BridgeRuleEnabledCacheKeyBuilder.builder(appId, direction);
+        // cacheNullValues=true:占位 field 的 null 值由框架转 NullVal 落桶;真实规则 map 无 null 值,行为不变
+        Map<String, CacheResult<DataBridgeCacheVO>> result = cachePlusOps.hGetAll(bucketKey, k -> {
+            List<DataBridgeResultVO> rules = dbLoader.apply(null);
+            return CollUtil.isEmpty(rules)
+                    ? Collections.<String, DataBridgeCacheVO>singletonMap(BRIDGE_RULE_EMPTY_BUCKET_FIELD, null)
+                    : toCacheVoMap(rules);
+        }, true);
+        if (CollUtil.isEmpty(result)) {
+            return List.of();
+        }
+        return result.values().stream()
+                // getValue 把 NullVal / 空对象占位归一为 null,连同占位 field 一起被过滤
+                .map(CacheResult::getValue)
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparingInt(r -> Optional.ofNullable(r.getPriority()).orElse(DEFAULT_PRIORITY)))
+                .toList();
+    }
+
+    /**
+     * 刷新 hash 桶 ── Changed 事件用:del 旧桶 + hMSet 新值。
+     *
+     * @param appId     应用 ID
+     * @param direction 桥接方向
+     * @param rules     新规则列表
+     */
+    public void setBridgeEnabledRulesBucket(String appId, String direction, List<DataBridgeResultVO> rules) {
+        if (StrUtil.hasBlank(appId, direction)) {
+            return;
+        }
+        CacheKey bucketKey = BridgeRuleEnabledCacheKeyBuilder.builder(appId, direction);
+        cachePlusOps.del(bucketKey);
+        if (CollUtil.isEmpty(rules)) {
+            // 变更后已无启用规则:直接落空桶占位,消费侧后续读取零穿透(否则要等下一条消息 miss 回源一次)
+            cachePlusOps.hSet(BridgeRuleEnabledCacheKeyBuilder.buildHashFieldKey(appId, direction, BRIDGE_RULE_EMPTY_BUCKET_FIELD),
+                    null, true);
+            log.info("Refresh bridge rule bucket EMPTY appId={} direction={}", appId, direction);
+            return;
+        }
+        Map<String, DataBridgeCacheVO> fieldValues = toCacheVoMap(rules);
+        cachePlusOps.hMSet(bucketKey, fieldValues);
+        log.info("Refresh bridge rule bucket appId={} direction={} count={}",
+                appId, direction, fieldValues.size());
+    }
+
+    /**
+     * ResultVO → CacheVO 转换 + 以 ruleCode 为 key 去重。
+     *
+     * @param rules 规则列表
+     * @return 以 ruleCode 为 key 的缓存 VO 映射
+     */
+    private static Map<String, DataBridgeCacheVO> toCacheVoMap(List<DataBridgeResultVO> rules) {
+        return rules.stream()
+                .filter(r -> StrUtil.isNotBlank(r.getRuleCode()))
+                .collect(Collectors.toMap(
+                        DataBridgeResultVO::getRuleCode,
+                        r -> BeanPlusUtil.toBeanIgnoreError(r, DataBridgeCacheVO.class),
+                        (a, b) -> a));
+    }
+
+    /**
+     * 单条规则失效(hDel 一个 field)。
+     *
+     * @param appId     应用 ID
+     * @param direction 桥接方向
+     * @param ruleCode  规则编码
+     */
+    public void delBridgeEnabledRule(String appId, String direction, String ruleCode) {
+        if (StrUtil.hasBlank(appId, direction, ruleCode)) {
+            return;
+        }
+        CacheHashKey key = BridgeRuleEnabledCacheKeyBuilder.buildHashFieldKey(appId, direction, ruleCode);
+        cachePlusOps.hDel(key);
+        log.info("hDel bridge rule field appId={} direction={} ruleCode={}", appId, direction, ruleCode);
+    }
+
+    /**
+     * 桶级失效 ── 批量变更场景。
+     *
+     * @param appId     应用 ID
+     * @param direction 桥接方向
+     */
+    public void delBridgeEnabledRulesBucket(String appId, String direction) {
+        if (StrUtil.hasBlank(appId, direction)) {
+            return;
+        }
+        cachePlusOps.del(BridgeRuleEnabledCacheKeyBuilder.builder(appId, direction));
+        log.info("Del bridge rule bucket appId={} direction={}", appId, direction);
+    }
+
+    // ============================== 数据源缓存 ==============================
+
+    /**
+     * cache-aside 取数据源,miss 回源 DB(connectionJson/credentialJson 已是明文)。
+     * dataSourceId 为 null 或 DB 无返 {@link Optional#empty()}。
+     *
+     * @param dataSourceId 数据源 ID
+     * @param dbLoader     回源函数
+     * @return 数据源缓存;dataSourceId 为 null 或 DB 无返 {@link Optional#empty()}
+     */
+    public Optional<DataSourceCacheVO> getDataSource(Long dataSourceId, Function<Long, DataSourceResultVO> dbLoader) {
+        if (dataSourceId == null) {
+            return Optional.empty();
+        }
+        CacheKey key = DataSourceCacheKeyBuilder.builder(dataSourceId);
+        return cachePlusOpsUtil.getOrLoad(
+            key,
+            k -> {
+                DataSourceResultVO vo = dbLoader.apply(dataSourceId);
+                return vo == null ? null : BeanPlusUtil.toBeanIgnoreError(vo, DataSourceCacheVO.class);
+            },
+            DataSourceCacheVO.class,
+            false);
+    }
+
+    /**
+     * 刷新数据源条目 ── del + set。
+     *
+     * @param dataSourceId 数据源 ID
+     * @param dataSource   数据源数据
+     */
+    public void setDataSource(Long dataSourceId, DataSourceResultVO dataSource) {
+        if (dataSourceId == null || dataSource == null) {
+            return;
+        }
+        CacheKey key = DataSourceCacheKeyBuilder.builder(dataSourceId);
+        cachePlusOps.del(key);
+        cachePlusOps.set(key, BeanPlusUtil.toBeanIgnoreError(dataSource, DataSourceCacheVO.class));
+        log.info("Refresh data source cache dataSourceId={}", dataSourceId);
+    }
+
+    public void delDataSource(Long dataSourceId) {
+        if (dataSourceId == null) {
+            return;
+        }
+        cachePlusOps.del(DataSourceCacheKeyBuilder.builder(dataSourceId));
+        log.info("Del data source cache dataSourceId={}", dataSourceId);
+    }
 }

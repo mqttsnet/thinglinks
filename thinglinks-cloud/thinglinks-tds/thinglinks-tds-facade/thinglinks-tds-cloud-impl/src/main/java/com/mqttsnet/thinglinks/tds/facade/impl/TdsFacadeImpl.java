@@ -1,6 +1,5 @@
 package com.mqttsnet.thinglinks.tds.facade.impl;
 
-import cn.hutool.json.JSONObject;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.tds.model.SuperTableDTO;
 import com.mqttsnet.basic.tds.model.TableDTO;
@@ -43,8 +42,8 @@ public class TdsFacadeImpl implements TdsFacade {
     }
 
     @Override
-    public R createSuperTableAndColumnTwo(JSONObject object) {
-        return tdsApi.createSuperTableAndColumnTwo(object);
+    public R batchCreateSuperTable(Map<String, Object> schema) {
+        return tdsApi.batchCreateSuperTable(schema);
     }
 
     @Override
@@ -53,8 +52,8 @@ public class TdsFacadeImpl implements TdsFacade {
     }
 
     @Override
-    public R createSubTableTwo(JSONObject object) {
-        return tdsApi.createSubTableTwo(object);
+    public R batchCreateSubTable(Map<String, Object> schema) {
+        return tdsApi.batchCreateSubTable(schema);
     }
 
     @Override

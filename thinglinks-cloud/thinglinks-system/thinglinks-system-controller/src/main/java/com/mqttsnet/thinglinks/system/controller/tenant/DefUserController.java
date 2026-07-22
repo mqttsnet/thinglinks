@@ -167,7 +167,9 @@ public class DefUserController extends SuperExcelController<DefUserService, Long
     @PostMapping("/findNotUserByTenantId")
     @WebLog("查询未绑定到该企业的用户")
     public R<IPage<DefUserResultVO>> findNotUserByTenantId(@RequestBody @Validated PageParams<DefUserPageQuery> params) {
-        return success(superService.findNotUserByTenantId(params));
+        IPage<DefUserResultVO> page = superService.findNotUserByTenantId(params);
+        echoService.action(page.getRecords());
+        return success(page);
     }
 
     @Operation(summary = "查询所有的用户id", description = "查询所有的用户id")
@@ -190,7 +192,9 @@ public class DefUserController extends SuperExcelController<DefUserService, Long
     @PostMapping(value = "/queryUser")
     @WebLog("邀请员工进入企业前精确查询用户")
     public R<List<DefUserResultVO>> queryUser(@RequestBody DefUserPageQuery params) {
-        return R.success(superService.queryUser(params));
+        List<DefUserResultVO> result = superService.queryUser(params);
+        echoService.action(result);
+        return R.success(result);
     }
 
     @Override
@@ -302,6 +306,8 @@ public class DefUserController extends SuperExcelController<DefUserService, Long
     @PostMapping(value = "/getDefUserByIds")
     @Operation(summary = "根据ID集合获取默认用户详情列表")
     public R<List<DefUserDetailsResultVO>> getDefUserByIds(@RequestBody @NotEmpty(message = "ID集合不能为空") List<Long> ids) {
-        return R.success(superService.getDefUserByIds(ids));
+        List<DefUserDetailsResultVO> result = superService.getDefUserByIds(ids);
+        echoService.action(result);
+        return R.success(result);
     }
 }

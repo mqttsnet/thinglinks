@@ -153,6 +153,13 @@ public class DeviceUpdateVO implements Serializable {
     @NotEmpty(message = "请填写产品标识")
     private String productIdentification;
     /**
+     * 设备绑定的产品版本号(物模型版本)── 编辑时改它即切换设备绑定版本(含切到影子版本);留空表示不改。
+     * 显式传入须为该产品下 已发布/灰度/影子 状态;后端按改绑处理(校验 + 网关连带子设备 + 失效缓存)。
+     */
+    @Schema(description = "设备绑定的产品版本号(改它即切换绑定版本;可选影子版本;留空不改)")
+    @Size(max = 64, message = "绑定版本号长度不能超过{max}")
+    private String boundProductVersionNo;
+    /**
      * 软件版本
      */
     @Schema(description = "软件版本")
@@ -171,9 +178,10 @@ public class DeviceUpdateVO implements Serializable {
     @Size(max = 255, message = "sdk版本长度不能超过{max}")
     private String deviceSdkVersion;
     /**
-     * 网关设备id
+     * 子设备所属网关的 deviceIdentification（业务唯一标识，String；非主键 id）。
+     * 仅 nodeType=SUBDEVICE 时有意义。
      */
-    @Schema(description = "网关设备id")
+    @Schema(description = "网关设备的 deviceIdentification（业务唯一标识，String 类型；非主键 id）")
     private String gatewayId;
     /**
      * 设备类型:0普通设备 || 1网关设备 || 2子设备

@@ -7,7 +7,7 @@ export const Border01Config: ConfigType = {
   conKey: 'VCBorder01',
   title: 'project.component_border_01',
   category: ChatCategoryEnum.BORDER,
-  categoryName: getChatCategoryEnumName().BORDER,
+  get categoryName() { return getChatCategoryEnumName().BORDER },
   package: PackagesCategoryEnum.DECORATES,
   chartFrame: ChartFrameEnum.STATIC,
   image: 'border01.png'

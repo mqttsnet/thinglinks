@@ -8,7 +8,8 @@ import { createProxy } from './build/vite/proxy';
 import { wrapperEnv } from './build/utils';
 import { createVitePlugins } from './build/vite/plugin';
 import { OUTPUT_DIR } from './build/constant';
-import { include, exclude } from './build/vite/optimize'
+import { include, exclude } from './build/vite/optimize';
+import { loadProductConfig, toPublicProductInfo, toViteProductEnv } from './build/productConfig';
 
 function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir);
@@ -23,14 +24,24 @@ const __APP_INFO__ = {
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   const root = process.cwd();
 
-  const env = loadEnv(mode, root);
+  const productConfig = loadProductConfig(root);
+  const productEnv = toViteProductEnv(productConfig);
+  const env = { ...loadEnv(mode, root), ...productEnv };
 
   // The boolean type read by loadEnv is a string. This function can be converted to boolean type
   const viteEnv = wrapperEnv(env);
 
   const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY, VITE_DROP_CONSOLE } = viteEnv;
 
-  console.log('mode=%s, root=%s, env=%s', mode, root, env);
+  // 构建日志字段：模式、根目录、组件版本和发行编码。
+  console.log(
+    'mode=%s, root=%s, product=%s@%s, edition=%s',
+    mode,
+    root,
+    productConfig.componentCode,
+    productConfig.componentVersion,
+    productConfig.editionCode,
+  );
   const isBuild = command === 'build';
 
   return {
@@ -87,6 +98,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       // Suppress warning
       __INTLIFY_PROD_DEVTOOLS__: false,
       __APP_INFO__: JSON.stringify(__APP_INFO__),
+      __THINGLINKS_PRODUCT_INFO__: JSON.stringify(toPublicProductInfo(productConfig)),
+      'import.meta.env.VITE_GLOB_CLIENT_ID': JSON.stringify(productEnv.VITE_GLOB_CLIENT_ID),
       //新增以下变量
       __COLOR_PLUGIN_OUTPUT_FILE_NAME__: undefined,
       __PROD__: true,
@@ -98,6 +111,13 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         less: {
           modifyVars: generateModifyVars(),
           javascriptEnabled: true,
+        },
+        // vxe-table 4.3.5 的 scss 用了新版 Dart Sass 已弃用的 lighten()/darken()/@import,
+        // 静音第三方依赖(node_modules)的弃用告警,避免每次编译刷屏 225+ 条;
+        // 仅作用于依赖,本项目自有 scss 的告警照常提示。
+        scss: {
+          quietDeps: true,
+          silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'legacy-js-api'],
         },
       },
     },

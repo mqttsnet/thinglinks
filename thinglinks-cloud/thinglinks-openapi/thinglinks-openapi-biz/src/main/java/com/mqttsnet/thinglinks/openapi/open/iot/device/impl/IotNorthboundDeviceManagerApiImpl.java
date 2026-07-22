@@ -13,7 +13,7 @@ import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceDetailsResultVO;
 import com.mqttsnet.thinglinks.device.vo.save.DeviceSaveVO;
-import com.mqttsnet.thinglinks.link.facade.DeviceOpenAnyUserFacade;
+import com.mqttsnet.thinglinks.link.facade.DeviceOpenInnerFacade;
 import com.mqttsnet.thinglinks.openapi.enumeration.ErrorStoryMessageEnum;
 import com.mqttsnet.thinglinks.openapi.open.iot.device.IotNorthboundDeviceManagerApi;
 import com.mqttsnet.thinglinks.openapi.open.iot.device.converter.DeviceResponseConverter;
@@ -59,7 +59,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 @Slf4j
 public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceManagerApi {
     @Resource
-    private DeviceOpenAnyUserFacade deviceOpenAnyUserFacade;
+    private DeviceOpenInnerFacade deviceOpenInnerFacade;
     @Resource
     private NotifyFacade notifyFacade;
 
@@ -74,7 +74,7 @@ public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceMan
         // 转换请求参数
         DeviceSaveVO deviceSaveVO = BeanPlusUtil.toBean(request, DeviceSaveVO.class);
 
-        var result = deviceOpenAnyUserFacade.saveDeviceByNorthbound(deviceSaveVO);
+        var result = deviceOpenInnerFacade.saveDeviceByNorthbound(deviceSaveVO);
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.DEVICE_CREATE_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.DEVICE_CREATE_FAILED.getSubMsg() + result.getMsg(),
@@ -93,7 +93,7 @@ public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceMan
         ContextUtil.setTenantId(context.getTenantId());
 
         // 调用 Facade 查询设备详情
-        var result = deviceOpenAnyUserFacade.getDeviceDetailByNorthbound(request.getDeviceIdentification());
+        var result = deviceOpenInnerFacade.getDeviceDetailByNorthbound(request.getDeviceIdentification());
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.DEVICE_QUERY_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.DEVICE_QUERY_FAILED.getSubMsg() + result.getMsg(),
@@ -118,7 +118,7 @@ public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceMan
         DeviceCommandWrapperParam commandWrapper = BeanPlusUtil.toBean(request, DeviceCommandWrapperParam.class);
 
         // 调用 Facade 下发命令
-        var result = deviceOpenAnyUserFacade.issueCommands(commandWrapper);
+        var result = deviceOpenInnerFacade.issueCommands(commandWrapper);
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.DEVICE_COMMAND_ISSUE_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.DEVICE_COMMAND_ISSUE_FAILED.getSubMsg() + result.getMsg(),
@@ -138,7 +138,7 @@ public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceMan
         ContextUtil.setTenantId(context.getTenantId());
 
         // 调用 Facade 查询设备影子
-        var result = deviceOpenAnyUserFacade.queryDeviceShadowByNorthbound(
+        var result = deviceOpenInnerFacade.queryDeviceShadowByNorthbound(
                 request.getDeviceIdentification(),
                 request.getStartTime(),
                 request.getEndTime(),
@@ -163,7 +163,7 @@ public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceMan
         ContextUtil.setTenantId(context.getTenantId());
 
         // 1. 先获取设备详情（获取更新前的状态）
-        var detailResult = deviceOpenAnyUserFacade.getDeviceDetailByNorthbound(request.getDeviceIdentification());
+        var detailResult = deviceOpenInnerFacade.getDeviceDetailByNorthbound(request.getDeviceIdentification());
         if (!detailResult.getIsSuccess() || Objects.isNull(detailResult.getData())) {
             throw new OpenException(ErrorStoryMessageEnum.DEVICE_QUERY_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.DEVICE_QUERY_FAILED.getSubMsg() + "设备不存在",
@@ -174,7 +174,7 @@ public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceMan
         Integer previousStatus = deviceDetails.getDeviceStatus();
 
         // 2. 调用 Facade 修改设备状态
-        var result = deviceOpenAnyUserFacade.updateDeviceStatusByNorthbound(
+        var result = deviceOpenInnerFacade.updateDeviceStatusByNorthbound(
                 request.getDeviceIdentification(),
                 request.getStatus()
         );
@@ -209,7 +209,7 @@ public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceMan
             param.setDeviceStatuses(deviceStatuses);
         }
 
-        var result = deviceOpenAnyUserFacade.updateSubDeviceConnectStatusByNorthbound(param);
+        var result = deviceOpenInnerFacade.updateSubDeviceConnectStatusByNorthbound(param);
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.DEVICE_UPDATE_STATUS_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.DEVICE_UPDATE_STATUS_FAILED.getSubMsg() + result.getMsg(),
@@ -233,7 +233,7 @@ public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceMan
                 .deviceIds(request.getDeviceIds())
                 .build();
 
-        var result = deviceOpenAnyUserFacade.deleteSubDeviceByNorthbound(param);
+        var result = deviceOpenInnerFacade.deleteSubDeviceByNorthbound(param);
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.DEVICE_DELETE_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.DEVICE_DELETE_FAILED.getSubMsg() + result.getMsg(),
@@ -274,7 +274,7 @@ public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceMan
             param.setDevices(devices);
         }
 
-        var result = deviceOpenAnyUserFacade.deviceDataReportByNorthbound(param);
+        var result = deviceOpenInnerFacade.deviceDataReportByNorthbound(param);
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.DEVICE_DATA_REPORT_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.DEVICE_DATA_REPORT_FAILED.getSubMsg() + result.getMsg(),
@@ -297,7 +297,7 @@ public class IotNorthboundDeviceManagerApiImpl implements IotNorthboundDeviceMan
                 .deviceIds(request.getDeviceIds())
                 .build();
 
-        var result = deviceOpenAnyUserFacade.queryDeviceByNorthbound(param);
+        var result = deviceOpenInnerFacade.queryDeviceByNorthbound(param);
         if (!result.getIsSuccess()) {
             throw new OpenException(ErrorStoryMessageEnum.DEVICE_QUERY_FAILED.getSubCode(),
                     ErrorStoryMessageEnum.DEVICE_QUERY_FAILED.getSubMsg() + result.getMsg(),

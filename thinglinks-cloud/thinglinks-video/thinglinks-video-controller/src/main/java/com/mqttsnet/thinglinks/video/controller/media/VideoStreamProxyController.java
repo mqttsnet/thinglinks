@@ -3,7 +3,10 @@ package com.mqttsnet.thinglinks.video.controller.media;
 import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.base.controller.SuperController;
+import com.mqttsnet.basic.base.request.PageParams;
+import com.mqttsnet.basic.database.mybatis.conditions.query.QueryWrap;
 import com.mqttsnet.basic.interfaces.echo.EchoService;
+import com.mqttsnet.thinglinks.datascope.DataScopeHelper;
 import com.mqttsnet.thinglinks.video.entity.media.VideoStreamProxy;
 import com.mqttsnet.thinglinks.video.service.media.VideoStreamProxyService;
 import com.mqttsnet.thinglinks.video.vo.query.media.VideoStreamProxyPageQuery;
@@ -53,6 +56,12 @@ public class VideoStreamProxyController extends SuperController<VideoStreamProxy
         return echoService;
     }
 
+    @Override
+    public QueryWrap<VideoStreamProxy> handlerWrapper(VideoStreamProxy model, PageParams<VideoStreamProxyPageQuery> params) {
+        QueryWrap<VideoStreamProxy> queryWrap = super.handlerWrapper(model, params);
+        DataScopeHelper.startDataScope("video_stream_proxy");
+        return queryWrap;
+    }
 
     /**
      * 新增拉流代理信息
@@ -122,7 +131,9 @@ public class VideoStreamProxyController extends SuperController<VideoStreamProxy
     @Parameters({@Parameter(name = "id", description = "流代理ID", required = true),})
     public R<VideoStreamProxyResultVO> getStreamProxyDetails(@PathVariable("id") Long id) {
         log.info("getStreamProxyDetails id:{}", id);
-        return R.success(superService.getStreamProxyDetails(id));
+        VideoStreamProxyResultVO result = superService.getStreamProxyDetails(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
 
@@ -137,7 +148,9 @@ public class VideoStreamProxyController extends SuperController<VideoStreamProxy
     @Parameters({@Parameter(name = "id", description = "流代理ID", required = true),})
     public R<VideoStreamProxyResultVO> getPlayUrl(@PathVariable("id") Long id) {
         log.info("getPlayUrl id:{}", id);
-        return R.success(superService.getPlayUrl(id));
+        VideoStreamProxyResultVO result = superService.getPlayUrl(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
 

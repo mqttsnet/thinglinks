@@ -29,6 +29,10 @@ import java.util.List;
  * @date 2021-10-18
  * @create [2021-10-18] [mqttsnet] 
  */
+/**
+ * <b>关系表 Manager 编排注 ── by design</b>:员工-角色关系表 Manager 联动同 base 域的 BaseRole Manager,
+ * 是合理实现.改 Service 编排反而绕路.详见 system 域 {@code DefTenantApplicationRelManagerImpl} 的设计说明.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

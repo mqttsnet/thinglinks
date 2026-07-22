@@ -4,12 +4,44 @@ export default {
   ruleName: 'RuleName',
   ruleIdentification: 'RuleIdentification',
   status: 'Status',
-  startTime: 'StartTime',
+  startTime: 'Execution time',
   endTime: 'EndTime',
   remark: 'Remark',
   extendParams: 'ExtendParams',
   conditionLog: 'Rule condition execution log',
   actionLog: 'Rule action execution log',
+  detailTitle: 'Execution detail',
+  executionPath: 'Execution path',
+  conditionSteps: 'Condition steps',
+  actionSteps: 'Action steps',
+  rawInfo: 'Raw info',
+  conditionCount: 'Conditions',
+  actionCount: 'Actions',
+  duration: 'Duration',
+  to: 'To',
+  metricTotal: 'Total records',
+  metricCompleted: 'Completed',
+  metricExecuting: 'Executing',
+  metricNotExecuted: 'Not executed',
+  metricAvgDuration: 'Avg duration',
+  statsTitle: 'Statistics',
+  statsDistribution: 'Execution distribution',
+  statsTimeline: 'Execution trend',
+  statsCurrent: 'Current',
+  statsNoData: 'No statistics',
+  clearLogs: 'Clear logs',
+  clearLogsConfirm:
+    'Execution logs matching the current rule and filters will be cleared together with condition and action logs. Continue?',
+  clearLogsSuccess: 'Cleared {count} execution logs',
+  triggerSource: 'Trigger source',
+  stepCount: 'Steps',
+  input: 'Input',
+  output: 'Output',
+  success: 'Success',
+  failed: 'Failed',
+  skipped: 'Skipped',
+  noSteps: 'No execution steps',
+  noRawInfo: 'No raw info',
   established: 'Established',
   notEstablished: 'Not established',
   condition: {
@@ -40,9 +72,11 @@ export default {
     addPerformAnAction: 'Add an action',
     addAlarmAction: 'Add alarm action',
     header1:
-      'Serial execution of actions in sequence is suitable for scenarios where it is determined whether to execute subsequent actions based on the output parameters of the actions',
+      'Serial execution of actions in sequence is suitable for scenarios where it is determined ' +
+      'whether to execute subsequent actions based on the output parameters of the actions',
     header2:
-      'All actions are executed in parallel simultaneously, which is suitable for scenarios where there is no need to pay attention to the sequence of action execution and the results',
+      'All actions are executed in parallel simultaneously, which is suitable for scenarios where ' +
+      'there is no need to pay attention to the sequence of action execution and the results',
     selectService: 'Please select service',
     selectCommand: 'Please select command',
     selectCommandProperties: 'Please select command attribute',
@@ -74,12 +108,15 @@ export default {
     tip1: [
       '1.Please be sure to fill in',
       'Effective type',
-      'Select "Always in effect" or "Specified Time". If you choose "Specified Time", please make sure to select the appropriate start time and end time.',
+      'Select "Always in effect" or "Specified Time". If you choose "Specified Time", ' +
+        'please make sure to select the appropriate start time and end time.',
     ],
     tip2: [
       'Trigger frequency',
       'This is a required field. Make sure to enter a reasonable value indicating the time interval (in seconds) of the trigger frequency.',
     ],
-    tip3: '3.In the "Day of the Week" option, you can select the specific date when the rule takes effect. Please select at least one date.',
+    tip3:
+      '3.In the "Day of the Week" option, you can select the specific date when the rule takes ' +
+      'effect. Please select at least one date.',
   },
 };

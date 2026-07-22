@@ -59,7 +59,7 @@ export default {
     licenseType: '许可证タイプ（如GPL, MIT, 商业等',
   },
   selectRunPlugin: '選択実行プラグイン',
-  portLabel: 'ポート {ind}',
+  portLabel: 'ポート [ind]',
   portPlaceholder: 'ポート番号を入力してください',
   portValidation: '有効なポート番号を入力してください（1-65535）',
   portDuplicateError: 'ポート番号が重複しています',

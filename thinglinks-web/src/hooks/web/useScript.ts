@@ -12,6 +12,11 @@ export function useScript(opts: ScriptOptions) {
 
   const promise = new Promise((resolve, reject) => {
     onMounted(() => {
+      if (!opts.src) {
+        resolve('');
+        return;
+      }
+
       script = document.createElement('script');
       script.type = 'text/javascript';
       script.onload = function () {

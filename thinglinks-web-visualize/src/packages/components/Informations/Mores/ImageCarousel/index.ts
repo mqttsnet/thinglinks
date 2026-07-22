@@ -7,7 +7,7 @@ export const ImageCarouselConfig: ConfigType = {
   conKey: 'VCImageCarousel',
   title: 'project.component_image_carousel',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.INFORMATIONS,
   chartFrame: ChartFrameEnum.NAIVE_UI,
   image: 'photo_carousel.png'

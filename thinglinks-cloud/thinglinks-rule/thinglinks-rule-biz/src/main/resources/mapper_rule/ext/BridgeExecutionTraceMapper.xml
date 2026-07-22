@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.mapper.bridge.BridgeExecutionTraceMapper">
+
+    <sql id="BridgeExecutionTrace_Query_Where">
+        <where>
+            <if test="query != null">
+                <if test="query.traceId != null and query.traceId != ''">
+                    AND trace_id = #{query.traceId}
+                </if>
+                <if test="query.bridgeRuleId != null">
+                    AND bridge_rule_id = #{query.bridgeRuleId}
+                </if>
+                <if test="query.direction != null and query.direction != ''">
+                    AND direction = #{query.direction}
+                </if>
+                <if test="query.triggerSource != null and query.triggerSource != ''">
+                    AND trigger_source = #{query.triggerSource}
+                </if>
+                <if test="query.productIdentification != null and query.productIdentification != ''">
+                    AND product_identification = #{query.productIdentification}
+                </if>
+                <if test="query.deviceIdentification != null and query.deviceIdentification != ''">
+                    AND device_identification = #{query.deviceIdentification}
+                </if>
+                <if test="query.actionType != null and query.actionType != ''">
+                    AND action_type = #{query.actionType}
+                </if>
+                <if test="query.status != null and query.status != ''">
+                    AND status = #{query.status}
+                </if>
+                <if test="query.startTimeBegin != null">
+                    AND start_time &gt;= #{query.startTimeBegin}
+                </if>
+                <if test="query.startTimeEnd != null">
+                    AND start_time &lt;= #{query.startTimeEnd}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <sql id="BridgeExecutionTrace_Latency_Expression">
+        CASE
+            WHEN total_latency_ms IS NOT NULL THEN GREATEST(total_latency_ms, 0)
+            WHEN start_time IS NOT NULL AND end_time IS NOT NULL
+                THEN GREATEST(TIMESTAMPDIFF(MICROSECOND, start_time, end_time) / 1000, 0)
+            ELSE NULL
+        END
+    </sql>
+
+    <select id="selectStats" resultType="java.util.Map">
+        SELECT
+            COALESCE(COUNT(1), 0) AS total,
+            COALESCE(SUM(CASE WHEN status = '00' THEN 1 ELSE 0 END), 0) AS success,
+            COALESCE(SUM(CASE WHEN status = '01' THEN 1 ELSE 0 END), 0) AS failed,
+            COALESCE(SUM(CASE WHEN status = '02' THEN 1 ELSE 0 END), 0) AS partial,
+            COALESCE(SUM(CASE WHEN status = '03' THEN 1 ELSE 0 END), 0) AS dead_letter,
+            COALESCE(ROUND(AVG(<include refid="BridgeExecutionTrace_Latency_Expression"/>)), 0) AS avg_latency_ms
+        FROM rule_bridge_execution_trace
+        <include refid="BridgeExecutionTrace_Query_Where"/>
+    </select>
+
+    <select id="selectTimeBounds" resultType="java.util.Map">
+        SELECT
+            MIN(start_time) AS min_time,
+            MAX(start_time) AS max_time
+        FROM rule_bridge_execution_trace
+        <include refid="BridgeExecutionTrace_Query_Where"/>
+    </select>
+
+    <select id="selectTimelineStats" resultType="java.util.Map">
+        SELECT
+            <choose>
+                <when test="granularity == 'MONTH'">
+                    DATE_FORMAT(start_time, '%Y-%m')
+                </when>
+                <when test="granularity == 'DAY'">
+                    DATE_FORMAT(start_time, '%m-%d')
+                </when>
+                <otherwise>
+                    DATE_FORMAT(start_time, '%m-%d %H:00')
+                </otherwise>
+            </choose> AS time_label,
+            COALESCE(SUM(CASE WHEN status = '00' THEN 1 ELSE 0 END), 0) AS success,
+            COALESCE(SUM(CASE WHEN status = '01' THEN 1 ELSE 0 END), 0) AS failed,
+            COALESCE(SUM(CASE WHEN status = '02' THEN 1 ELSE 0 END), 0) AS partial,
+            COALESCE(SUM(CASE WHEN status = '03' THEN 1 ELSE 0 END), 0) AS dead_letter,
+            COALESCE(ROUND(AVG(<include refid="BridgeExecutionTrace_Latency_Expression"/>)), 0) AS avg_latency_ms
+        FROM rule_bridge_execution_trace
+        <where>
+            AND start_time IS NOT NULL
+            <if test="query != null">
+                <if test="query.traceId != null and query.traceId != ''">
+                    AND trace_id = #{query.traceId}
+                </if>
+                <if test="query.bridgeRuleId != null">
+                    AND bridge_rule_id = #{query.bridgeRuleId}
+                </if>
+                <if test="query.direction != null and query.direction != ''">
+                    AND direction = #{query.direction}
+                </if>
+                <if test="query.triggerSource != null and query.triggerSource != ''">
+                    AND trigger_source = #{query.triggerSource}
+                </if>
+                <if test="query.productIdentification != null and query.productIdentification != ''">
+                    AND product_identification = #{query.productIdentification}
+                </if>
+                <if test="query.deviceIdentification != null and query.deviceIdentification != ''">
+                    AND device_identification = #{query.deviceIdentification}
+                </if>
+                <if test="query.actionType != null and query.actionType != ''">
+                    AND action_type = #{query.actionType}
+                </if>
+                <if test="query.status != null and query.status != ''">
+                    AND status = #{query.status}
+                </if>
+                <if test="query.startTimeBegin != null">
+                    AND start_time &gt;= #{query.startTimeBegin}
+                </if>
+                <if test="query.startTimeEnd != null">
+                    AND start_time &lt;= #{query.startTimeEnd}
+                </if>
+            </if>
+        </where>
+        GROUP BY time_label
+        ORDER BY MIN(start_time)
+    </select>
+
+    <select id="selectTopRules" resultType="java.util.Map">
+        SELECT
+            bridge_rule_id AS bridge_rule_id,
+            COUNT(1) AS trigger_count,
+            COALESCE(SUM(CASE WHEN status = '00' THEN 1 ELSE 0 END), 0) AS success,
+            COALESCE(SUM(CASE WHEN status = '01' THEN 1 ELSE 0 END), 0) AS failed,
+            COALESCE(SUM(CASE WHEN status = '03' THEN 1 ELSE 0 END), 0) AS dead_letter
+        FROM rule_bridge_execution_trace
+        <where>
+            AND bridge_rule_id IS NOT NULL
+            <if test="query != null">
+                <if test="query.traceId != null and query.traceId != ''">
+                    AND trace_id = #{query.traceId}
+                </if>
+                <if test="query.bridgeRuleId != null">
+                    AND bridge_rule_id = #{query.bridgeRuleId}
+                </if>
+                <if test="query.direction != null and query.direction != ''">
+                    AND direction = #{query.direction}
+                </if>
+                <if test="query.triggerSource != null and query.triggerSource != ''">
+                    AND trigger_source = #{query.triggerSource}
+                </if>
+                <if test="query.productIdentification != null and query.productIdentification != ''">
+                    AND product_identification = #{query.productIdentification}
+                </if>
+                <if test="query.deviceIdentification != null and query.deviceIdentification != ''">
+                    AND device_identification = #{query.deviceIdentification}
+                </if>
+                <if test="query.actionType != null and query.actionType != ''">
+                    AND action_type = #{query.actionType}
+                </if>
+                <if test="query.status != null and query.status != ''">
+                    AND status = #{query.status}
+                </if>
+                <if test="query.startTimeBegin != null">
+                    AND start_time &gt;= #{query.startTimeBegin}
+                </if>
+                <if test="query.startTimeEnd != null">
+                    AND start_time &lt;= #{query.startTimeEnd}
+                </if>
+            </if>
+        </where>
+        GROUP BY bridge_rule_id
+        ORDER BY trigger_count DESC, bridge_rule_id DESC
+        LIMIT #{limit}
+    </select>
+</mapper>

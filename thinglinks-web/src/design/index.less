@@ -3,6 +3,7 @@
 @import 'public.less';
 @import 'ant/index.less';
 @import './theme.less';
+@import './iot/model-edit-modal.less';
 
 input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px white inset !important;
@@ -95,4 +96,38 @@ span {
 }
 .mr8 {
   margin-right: 8px;
+}
+
+/* ─── 全局通知层级 ─── */
+.ant-notification {
+  z-index: 10010 !important;
+}
+
+/* ─── Flexy Dashboard 风格通知 ─── */
+.styled-notify.ant-notification-notice {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  padding: 14px 20px;
+  border: 1px solid #f0f0f0;
+
+  .ant-notification-notice-message {
+    color: #2a3547;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 0;
+  }
+
+  .ant-notification-notice-description {
+    display: none;
+  }
+
+  .ant-notification-notice-close {
+    color: #c0c4cc;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #5a6a85;
+    }
+  }
 }

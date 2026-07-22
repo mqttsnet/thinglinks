@@ -4,6 +4,7 @@ import com.mqttsnet.basic.annotation.log.WebLog;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.exception.BizException;
+import com.mqttsnet.basic.interfaces.echo.EchoService;
 import com.mqttsnet.thinglinks.base.entity.user.BaseOrg;
 import com.mqttsnet.thinglinks.oauth.biz.OauthUserBiz;
 import com.mqttsnet.thinglinks.oauth.service.CaptchaService;
@@ -47,6 +48,7 @@ public class UserInfoController {
     private final UserInfoService userInfoService;
     private final DefUserService defUserService;
     private final CaptchaService captchaService;
+    private final EchoService echoService;
 
     /**
      * 获取当前登录的用户信息
@@ -57,7 +59,9 @@ public class UserInfoController {
         if (userId == null) {
             userId = ContextUtil.getUserId();
         }
-        return R.success(oauthUserBiz.getUserById(userId));
+        DefUserInfoResultVO result = oauthUserBiz.getUserById(userId);
+        echoService.action(result);
+        return R.success(result);
     }
 
     /**

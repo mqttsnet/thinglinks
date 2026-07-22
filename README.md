@@ -123,7 +123,7 @@ pnpm run dev
 
 ```bash
 # One-click deployment
-docker-compose up -d
+docker compose -f thinglinks-cloud/docker/docker-compose.yml up -d
 ```
 
 > For detailed deployment guide, visit [mqttsnet.com](https://mqttsnet.com).
@@ -147,12 +147,12 @@ thinglinks/
 │   ├── thinglinks-openapi/          # Open API Service
 │   ├── thinglinks-public/           # Public Service
 │   ├── thinglinks-base/             # Base Platform Service
-│   └── thinglinks-sdk/              # SDK
+│   ├── thinglinks-sdk/              # SDK
+│   └── docker/                      # Cloud Docker Compose Deployment
 ├── thinglinks-web/                  # Admin Console (Vue 3 + Vben)
 ├── thinglinks-web-visualize/        # Visualization Dashboard (Vue 3 + ECharts)
 ├── thinglinks-job/                  # Scheduled Task Service (XXL-JOB)
 ├── bifromq-plugin/                  # Apache BifroMQ Plugin
-├── docker/                          # Docker Compose Deployment
 ├── docs/                            # Documentation & Screenshots
 └── scripts/                         # Build & Utility Scripts
 ```
@@ -162,6 +162,19 @@ thinglinks/
 For complete documentation including quick start guides, development guides, API references, and deployment instructions, visit the official website:
 
 [![Docs](https://img.shields.io/badge/Documentation-mqttsnet.com-blue?style=for-the-badge)](https://mqttsnet.com)
+
+## 🤖 Agent Skills (AI-assisted development)
+
+Official **Agent Skills** document this project for AI agents (Claude Code · Codex · Cursor) — answers grounded in real code, loaded on demand. One skill per sub-project, from the **[ThingLinks Skills](https://github.com/mqttsnet/thinglinks-skills)** collection:
+
+```bash
+# global (-g); drop -g to install into the current project only
+npx skills add mqttsnet/thinglinks-skills@thinglinks-cloud -g    # backend microservices
+npx skills add mqttsnet/thinglinks-skills@thinglinks-web -g      # admin console (Vue3)
+npx skills add mqttsnet/thinglinks-skills@bifromq-plugin -g      # BifroMQ broker plugins
+```
+
+Auto-triggers when you work on rule scripts, the protocol envelope, uplink/downlink, thing-model, ACL, console pages, or BifroMQ auth/event plugins. Browse all skills (incl. `thinglinks-util`) at **[mqttsnet/thinglinks-skills](https://github.com/mqttsnet/thinglinks-skills)**.
 
 ## Screenshots
 

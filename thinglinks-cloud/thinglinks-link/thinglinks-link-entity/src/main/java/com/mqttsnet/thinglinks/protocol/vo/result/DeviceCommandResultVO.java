@@ -1,8 +1,9 @@
 package com.mqttsnet.thinglinks.protocol.vo.result;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.basic.annotation.echo.Echo;
+import com.mqttsnet.thinglinks.model.constant.EchoApi;
+import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +14,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Map;
 
 /**
  * <p>
@@ -33,12 +32,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "DeviceCommandResultVO", description = "设备命令下发及响应表")
-public class DeviceCommandResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class DeviceCommandResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -56,12 +53,14 @@ public class DeviceCommandResultVO extends Entity<Long> implements Serializable,
     /**
      * 命令类型(0:命名下发、1:命令响应)
      */
-    @Schema(description = "命令类型(0:命名下发、1:命令响应)")
+    @Schema(description = "命令类型(0:命令下发、1:命令响应)")
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Link.LINK_DEVICE_COMMAND_TYPE)
     private Integer commandType;
     /**
      * 状态
      */
-    @Schema(description = "状态")
+    @Schema(description = "状态(0:待处理 / 1:已处理 / 2:失败 等,见字典 LINK_DEVICE_COMMAND_STATUS)")
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Link.LINK_DEVICE_COMMAND_STATUS)
     private Integer status;
     /**
      * 内容
@@ -73,11 +72,6 @@ public class DeviceCommandResultVO extends Entity<Long> implements Serializable,
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
 
 }

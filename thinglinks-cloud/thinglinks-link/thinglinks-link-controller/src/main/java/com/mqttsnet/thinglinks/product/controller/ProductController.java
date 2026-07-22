@@ -73,6 +73,11 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "产品模型")
 public class ProductController extends SuperController<ProductService, Long, Product, ProductSaveVO,
         ProductUpdateVO, ProductPageQuery, ProductResultVO> {
+    /**
+     * Jackson 单例 ── 导出 JSON 用,ObjectMapper 初始化代价大必须 static final.
+     */
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private final EchoService echoService;
     private final DistributedLock distributedLock;
 
@@ -269,9 +274,8 @@ public class ProductController extends SuperController<ProductService, Long, Pro
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"; filename*=UTF-8''" + fileName);
-        // 直接序列化并写入响应流
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(response.getOutputStream(), productModelJsonResultVO);
+        // 直接序列化并写入响应流(复用类级单例 OBJECT_MAPPER)
+        OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue(response.getOutputStream(), productModelJsonResultVO);
         log.info("导出产品模型成功 - 产品标识: {}, 文件名: {}", productIdentification, fileName);
     }
 

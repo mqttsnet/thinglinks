@@ -6,7 +6,7 @@ import { asyncFindDictList, asyncFindEnumList } from '/@/api/thinglinks/common/g
 import { useI18n } from '/@/hooks/web/useI18n';
 import { Tag } from 'ant-design-vue';
 
-const { notification } = useMessage();
+const { createMessage } = useMessage();
 const { t } = useI18n();
 
 const PAGE_PARAMS = Object.values(componentSetting.table.fetchSetting);
@@ -333,25 +333,46 @@ export const getLabelFilter = (value, valueKey, labelKey, dictList) => {
   }
 };
 
-export const renderYesNoComponent = (text: boolean | null, withTag = false) => {
+/**
+ * 把任意类型的状态值标准化成 boolean / null。
+ * 后端可能返回 boolean / number(1|0) / string("true"|"false"|"1"|"0"|"yes"|"no")，
+ * 用严格相等比较容易在类型不一致时落到默认分支显示空值，先归一再分发。
+ */
+export const normalizeYesNo = (v: any): boolean | null => {
+  if (v === null || v === undefined) return null;
+  if (typeof v === 'boolean') return v;
+  if (typeof v === 'number') return v !== 0;
+  if (typeof v === 'string') {
+    const s = v.toLowerCase().trim();
+    if (s === '' || s === 'null' || s === 'undefined') return null;
+    if (s === 'true' || s === '1' || s === 'yes' || s === 'y' || s === 'online') return true;
+    if (s === 'false' || s === '0' || s === 'no' || s === 'n' || s === 'offline') return false;
+  }
+  return Boolean(v);
+};
+
+/**
+ * 在线 / 是否启用 等"是/否"语义字段的统一真值判断。
+ * 详情页 / 卡片 / 标签 直接用这个，不要写 `xxx.onlineStatus ? ...` 这种朴素 truthy，
+ * 后端偶发返回字符串 "false"（非空字符串 → JS 视为 truthy）时会反向渲染。
+ */
+export const isTruthyStatus = (v: any): boolean => {
+  return normalizeYesNo(v) === true;
+};
+
+export const renderYesNoComponent = (text: boolean | null | number | string, withTag = false) => {
+  const norm = normalizeYesNo(text);
   let _text = '';
   let color = '';
-  switch (text) {
-    case null:
-      _text = t('thinglinks.common.all');
-      color = 'processing';
-      break;
-    case true:
-      _text = t('thinglinks.common.yes');
-      color = 'success';
-      break;
-    case false:
-      _text = t('thinglinks.common.no');
-      color = 'error';
-      break;
-
-    default:
-      break;
+  if (norm === null) {
+    _text = t('thinglinks.common.all');
+    color = 'processing';
+  } else if (norm === true) {
+    _text = t('thinglinks.common.yes');
+    color = 'success';
+  } else {
+    _text = t('thinglinks.common.no');
+    color = 'error';
   }
   return withTag ? <Tag color={color}>{_text}</Tag> : _text;
 };
@@ -363,16 +384,10 @@ export const renderYesNoComponent = (text: boolean | null, withTag = false) => {
 export const handleCopyText = async (text: string) => {
   try {
     await window.navigator.clipboard.writeText(text);
-    notification.success({
-      message: t('common.tips.tips'),
-      description: t('common.tips.copySuccess'),
-    });
+    createMessage.success(t('common.tips.copySuccess'));
   } catch (err) {
     console.log(err);
-    notification.error({
-      message: t('common.tips.tips'),
-      description: t('common.tips.copyFail'),
-    });
+    createMessage.error(t('common.tips.copyFail'));
   }
 };
 
@@ -382,10 +397,7 @@ export const handleCopyText = async (text: string) => {
 export const handleCopyTextV2 = async (text: string) => {
   try {
     if (!text) {
-      notification.error({
-        message: t('common.tips.tips'),
-        description: t('common.tips.copyFail'),
-      });
+      createMessage.error(t('common.tips.copyFail'));
       return;
     }
 
@@ -402,16 +414,10 @@ export const handleCopyTextV2 = async (text: string) => {
       document.body.removeChild(input);
     }
 
-    notification.success({
-      message: t('common.tips.tips'),
-      description: t('common.tips.copySuccess'),
-    });
+    createMessage.success(t('common.tips.copySuccess'));
   } catch (err) {
     console.error(`handleCopyTextV2 error:`, err);
-    notification.error({
-      message: t('common.tips.tips'),
-      description: t('common.tips.copyFail'),
-    });
+    createMessage.error(t('common.tips.copyFail'));
   }
 };
 

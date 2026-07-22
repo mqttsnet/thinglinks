@@ -29,7 +29,7 @@ import { i18n } from '/@/locales/setupI18n';
 
 const globSetting = useGlobSetting();
 const urlPrefix = globSetting.urlPrefix;
-const { createMessage, createErrorModal, notification } = useMessage();
+const { createMessage, createErrorModal } = useMessage();
 
 /**
  * @description: 数据处理，方便区分多种处理方式
@@ -93,13 +93,8 @@ const transform: AxiosTransform = {
     // errorMessageMode='none' 一般是调用时明确表示不希望自动弹出错误提示
     if (options.errorMessageMode === 'modal') {
       createErrorModal({ title: t('sys.api.errorTip'), content: timeoutMsg });
-    } else if (options.errorMessageMode === 'message') {
+    } else if (options.errorMessageMode === 'message' || options.errorMessageMode === 'notification') {
       createMessage.error(timeoutMsg);
-    } else if (options.errorMessageMode === 'notification') {
-      notification.error({
-        message: t('common.tips.tips'),
-        description: timeoutMsg,
-      });
     }
 
     throw new Error(msg || t('sys.api.apiRequestFailed'));
@@ -259,13 +254,8 @@ const transform: AxiosTransform = {
       if (errMessage) {
         if (errorMessageMode === 'modal') {
           createErrorModal({ title: t('sys.api.errorTip'), content: errMessage });
-        } else if (errorMessageMode === 'message') {
+        } else if (errorMessageMode === 'message' || errorMessageMode === 'notification') {
           createMessage.error(errMessage);
-        } else if (errorMessageMode === 'notification') {
-          notification.error({
-            message: t('common.tips.tips'),
-            description: errMessage,
-          });
         }
         return Promise.reject(error);
       }

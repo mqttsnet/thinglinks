@@ -22,7 +22,12 @@ export function getTransitionName({
     return undefined;
   }
 
-  const isInCache = cacheTabs.includes(route.name as string);
+  // cache key 取值口径与 multipleTab.ts / routeHelper.ts 保持一致：meta.code → 顶层 code → name
+  const cacheKey =
+    ((route.meta as any)?.code as string | undefined) ||
+    ((route as any).code as string | undefined) ||
+    (route.name as string);
+  const isInCache = cacheTabs.includes(cacheKey);
   const transitionName = 'fade-slide';
   let name: string | undefined = transitionName;
 

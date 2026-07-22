@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.util.StringUtils;
 
 /**
  *
@@ -20,10 +21,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class ActuatorSecurityConfig {
 
-    @Value("${actuator.security.username:actuator-admin}")
+    @Value("${actuator.security.username:${ACTUATOR_USERNAME:}}")
     private String username;
 
-    @Value("${actuator.security.password:Secure@2025}")
+    @Value("${actuator.security.password:${ACTUATOR_PASSWORD:}}")
     private String password;
 
     @Value("${actuator.security.roles:ACTUATOR_ADMIN}")
@@ -39,6 +40,12 @@ public class ActuatorSecurityConfig {
     // 2. 配置用户（生产环境建议用数据库存储，此处已从配置文件读取）
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+        if (!StringUtils.hasText(username)) {
+            throw new IllegalStateException("actuator.security.username or ACTUATOR_USERNAME must be configured");
+        }
+        if (!StringUtils.hasText(password)) {
+            throw new IllegalStateException("actuator.security.password or ACTUATOR_PASSWORD must be configured");
+        }
         // 仅授予 "ACTUATOR_ADMIN" 角色访问 Actuator
         UserDetails actuatorUser = User.withUsername(username)
                 .password(passwordEncoder.encode(password))

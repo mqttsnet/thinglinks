@@ -11,4 +11,5 @@ export default {
   disable: 'Disable',
   read: 'read',
   unread: 'unread',
+  noData: 'No Data',
 };

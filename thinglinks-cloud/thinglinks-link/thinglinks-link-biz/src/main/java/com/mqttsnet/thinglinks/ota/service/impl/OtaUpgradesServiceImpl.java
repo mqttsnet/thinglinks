@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.base.request.PageParams;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
@@ -16,6 +17,7 @@ import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.basic.utils.VersionValidator;
+import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import com.mqttsnet.thinglinks.ota.dto.OtaUpgradesResultDTO;
 import com.mqttsnet.thinglinks.ota.entity.OtaUpgrades;
@@ -31,7 +33,7 @@ import com.mqttsnet.thinglinks.ota.vo.result.OtaUpgradesDetailsResultVO;
 import com.mqttsnet.thinglinks.ota.vo.result.OtaUpgradesResultVO;
 import com.mqttsnet.thinglinks.ota.vo.save.OtaUpgradesSaveVO;
 import com.mqttsnet.thinglinks.ota.vo.update.OtaUpgradesUpdateVO;
-import com.mqttsnet.thinglinks.product.service.ProductService;
+import com.mqttsnet.thinglinks.product.service.ProductQueryService;
 import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +56,14 @@ import org.springframework.stereotype.Service;
 public class OtaUpgradesServiceImpl extends SuperServiceImpl<OtaUpgradesManager, Long, OtaUpgrades> implements OtaUpgradesService {
 
     private final OtaUpgradeTasksManager otaUpgradeTasksManager;
-    private final ProductService productService;
+    /**
+     * 写前置校验保留直调 ── 升级包保存 / 更新校验产品存在,必须 DB-fresh。
+     */
+    private final ProductQueryService productQueryService;
+    /**
+     * 详情展示读路径走缓存,read-through DB 兜底。
+     */
+    private final LinkCacheDataHelper linkCacheDataHelper;
 
     /**
      * Save OTA Upgrade Package
@@ -179,7 +188,11 @@ public class OtaUpgradesServiceImpl extends SuperServiceImpl<OtaUpgradesManager,
         OtaUpgrades otaUpgrades = superManager.getById(id);
         ArgumentAssert.notNull(otaUpgrades, "OTA upgrade package does not exist");
         OtaUpgradesDetailsResultVO detailsVO = BeanPlusUtil.toBeanIgnoreError(otaUpgrades, OtaUpgradesDetailsResultVO.class);
-        ProductResultVO productResultVO = productService.findOneByProductIdentification(otaUpgrades.getProductIdentification());
+        // 详情读路径走缓存(read-through 兜底),避免每次详情请求都直查 product 表
+        ProductResultVO productResultVO = linkCacheDataHelper
+                .getProductCacheVO(otaUpgrades.getProductIdentification())
+                .map(p -> BeanPlusUtil.toBeanIgnoreError(p, ProductResultVO.class))
+                .orElse(null);
         detailsVO.setProductResult(productResultVO);
         return detailsVO;
     }
@@ -243,6 +256,7 @@ public class OtaUpgradesServiceImpl extends SuperServiceImpl<OtaUpgradesManager,
                 .with(OtaUpgrades::setPackageType, updateVO.getPackageType())
                 .with(OtaUpgrades::setProductIdentification, updateVO.getProductIdentification())
                 .with(OtaUpgrades::setVersion, updateVO.getVersion())
+                .with(OtaUpgrades::setProductVersionNo, updateVO.getProductVersionNo())
                 .with(OtaUpgrades::setFileLocation, updateVO.getFileLocation())
                 .with(OtaUpgrades::setSignMethod, updateVO.getSignMethod())
                 .with(OtaUpgrades::setStatus, updateVO.getStatus())
@@ -267,6 +281,26 @@ public class OtaUpgradesServiceImpl extends SuperServiceImpl<OtaUpgradesManager,
         return Optional.ofNullable(upgrades)
                 .map(upgradeList -> BeanPlusUtil.toBeanList(upgradeList, OtaUpgradesResultVO.class))
                 .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public String resolveProductVersionNo(String productIdentification, String version, Integer packageType) {
+        if (StrUtil.isBlank(productIdentification) || StrUtil.isBlank(version)) {
+            return null;
+        }
+        // 同一(产品 + 版本)理论上唯一(saveUpgradePackage 已按 packageType + version 去重),取最新一条兜底多匹配
+        return superManager.list(Wraps.<OtaUpgrades>lbQ()
+                        .eq(OtaUpgrades::getProductIdentification, productIdentification)
+                        .eq(OtaUpgrades::getVersion, version)
+                        .eq(packageType != null, OtaUpgrades::getPackageType, packageType)
+                        .isNotNull(OtaUpgrades::getProductVersionNo)
+                        .ne(OtaUpgrades::getProductVersionNo, StrUtil.EMPTY)
+                        .orderByDesc(OtaUpgrades::getId))
+                .stream()
+                .map(OtaUpgrades::getProductVersionNo)
+                .filter(StrUtil::isNotBlank)
+                .findFirst()
+                .orElse(null);
     }
 
 }

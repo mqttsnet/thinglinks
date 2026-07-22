@@ -1,8 +1,10 @@
 package com.mqttsnet.thinglinks.video.vo.result.media;
 
-import cn.hutool.core.map.MapUtil;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
+import com.mqttsnet.basic.annotation.echo.Echo;
+import com.mqttsnet.thinglinks.model.constant.EchoApi;
+import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
+import com.mqttsnet.thinglinks.video.vo.result.media.zlm.ZlmMediaServerStreamInfoResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +15,8 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 
 /**
  * <p>
@@ -34,12 +35,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(description = "视频推流信息表")
-public class VideoStreamPushResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class VideoStreamPushResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -62,6 +61,7 @@ public class VideoStreamPushResultVO extends Entity<Long> implements Serializabl
     /**
      * 产生源类型
      */
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Video.VIDEO_MEDIA_ORIGIN_TYPE)
     @Schema(description = "产生源类型", title = "unknown = 0,rtmp_push=1,rtsp_push=2,rtp_push=3,pull=4,ffmpeg_pull=5,mp4_vod=6,device_chn=7")
     private Integer originType;
     /**
@@ -124,11 +124,24 @@ public class VideoStreamPushResultVO extends Entity<Long> implements Serializabl
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
+    /**
+     * ZLM流媒体信息集合
+     */
+    @Schema(description = "ZLM流媒体信息集合")
+    private List<ZlmMediaServerStreamInfoResultVO> zlmMediaServerStreamInfoList;
+
+    /**
+     * 推流入口地址（RTMP）。运维/用户拿这个 URL 配置 OBS / FFmpeg 推流，是推流功能能跑通的关键。
+     * 后端按 rtmp://<streamHost>:<rtmpPort>/<appId>/<streamIdentification> 拼装。
+     */
+    @Schema(description = "推流入口地址（RTMP）")
+    private String pushUrl;
+
+    /**
+     * 推流入口地址（RTSP），适用于支持 RTSP ANNOUNCE 的设备。
+     */
+    @Schema(description = "推流入口地址（RTSP）")
+    private String pushUrlRtsp;
 
 }

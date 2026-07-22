@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.CentralProcessor.TickType;
@@ -33,6 +34,7 @@ import java.util.Properties;
  *
  * @author mqttsnet
  */
+@Slf4j
 @Getter
 @Data
 @NoArgsConstructor
@@ -69,6 +71,7 @@ public class ServerResultVO implements Serializable {
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
+            log.warn("[server-info] getHostAddress failed, fallback to 127.0.0.1: {}", e.getMessage());
         }
         return "127.0.0.1";
     }
@@ -78,6 +81,7 @@ public class ServerResultVO implements Serializable {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
+            log.warn("[server-info] getHostName failed, fallback to '未知': {}", e.getMessage());
         }
         return "未知";
     }

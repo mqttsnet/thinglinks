@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://mqttsnet.com"><img src="../docs/images/logo.png" alt="ThingLinks" width="160"></a>
+<a href="https://mqttsnet.com"><img src="https://avatars.githubusercontent.com/u/94173946?s=200&v=4" alt="ThingLinks" width="160"></a>
 
 # thinglinks-web-visualize
 
@@ -15,6 +15,8 @@
 ## About
 
 `thinglinks-web-visualize` is the data visualization and large-screen dashboard frontend for the [ThingLinks](https://github.com/mqttsnet/thinglinks) multi-tenant SaaS cloud IoT platform. Built with Vue 3 + TypeScript + Vite, it supports rich chart types, 3D visualization, and map displays for IoT monitoring scenarios.
+
+Product identity, edition and component version are maintained in [`.thinglinks-product.env`](.thinglinks-product.env). See [Product Configuration Quick Operations](docs/产品配置快捷操作.md) for update and verification commands.
 
 ## Tech Stack
 
@@ -96,6 +98,6 @@ pnpm lint:fix      # Lint and auto-fix
 
 ## License
 
-This project is a submodule of [ThingLinks](https://github.com/mqttsnet/thinglinks). Licensed under the main project's [LICENSE](../LICENSE) and [LICENSE-COMMERCIAL](../LICENSE-COMMERCIAL).
+Licensed under the [Apache License 2.0](LICENSE).
 
 Copyright &copy; 2019-present [MqttsNet](https://mqttsnet.com)

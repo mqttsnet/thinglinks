@@ -1,7 +1,7 @@
 <template>
   <div class="real-time-info">
     <div>
-      <div class="label">{{ t('video.media.videoStreamProxy.playUrl') }}：</div>
+      <div class="label">{{ t('video.media.proxy.playUrl') }}：</div>
       <a-input v-model:value="getSharedUrl.sharedUrl" disabled>
         <template #addonAfter
           ><SvgIcon name="copy" @click="handleCopyText(getSharedUrl.sharedUrl)" />
@@ -17,11 +17,11 @@
       </a-input>
     </div>
     <div>
-      <div class="label">{{ t('video.media.videoStreamProxy.resourceUrl') }}：</div>
+      <div class="label">{{ t('video.media.proxy.resourceUrl') }}：</div>
       <a-input v-model:value="getSharedUrl.sharedRtmp" disabled>
         <template #addonBefore>
           <a-select
-            :value="t('video.media.videoStreamProxy.moreUrl')"
+            :value="t('video.media.proxy.moreUrl')"
             :dropdownMatchSelectWidth="false"
           >
             <a-select-option
@@ -51,7 +51,7 @@
     urlMap: { type: Object, required: true },
   });
   const { t } = useI18n();
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   const videoUrl = ref(props.videoUrl);
   const urlMap = ref(props.urlMap);
   const getSharedUrl = computed(() => {

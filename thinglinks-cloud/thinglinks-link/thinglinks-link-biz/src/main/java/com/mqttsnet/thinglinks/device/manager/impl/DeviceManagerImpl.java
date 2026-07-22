@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
@@ -17,11 +16,9 @@ import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.database.mybatis.conditions.Wraps;
 import com.mqttsnet.basic.database.mybatis.conditions.query.LbQueryWrap;
 import com.mqttsnet.basic.database.mybatis.conditions.query.QueryWrap;
-import com.mqttsnet.basic.echo.properties.EchoProperties;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.basic.utils.StringUtils;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
-import com.mqttsnet.thinglinks.cache.vo.product.ProductCacheVO;
 import com.mqttsnet.thinglinks.device.dto.DeviceOverviewResultDTO;
 import com.mqttsnet.thinglinks.device.dto.DeviceVersionDTO;
 import com.mqttsnet.thinglinks.device.entity.Device;
@@ -29,8 +26,6 @@ import com.mqttsnet.thinglinks.device.manager.DeviceManager;
 import com.mqttsnet.thinglinks.device.mapper.DeviceMapper;
 import com.mqttsnet.thinglinks.device.vo.query.DeviceDetailsPageQuery;
 import com.mqttsnet.thinglinks.device.vo.query.DevicePageQuery;
-import com.mqttsnet.thinglinks.device.vo.result.DeviceResultVO;
-import com.mqttsnet.thinglinks.product.manager.ProductManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,10 +45,6 @@ import org.springframework.stereotype.Service;
 public class DeviceManagerImpl extends SuperManagerImpl<DeviceMapper, Device> implements DeviceManager {
 
     private final DeviceMapper deviceMapper;
-
-    private final ProductManager productManager;
-
-    private final EchoProperties ips;
 
 
     @Override
@@ -210,55 +201,27 @@ public class DeviceManagerImpl extends SuperManagerImpl<DeviceMapper, Device> im
 
 
     /**
-     * 根据租户ID和设备ID或客户端ID查询设备缓存信息实体
+     * 根据设备ID或客户端ID查询设备缓存信息实体(仅设备字段,不含 productCacheVO)。
      *
-     * @param tenantId           租户ID
+     * <p>productCacheVO 由 Service 层补全:Manager 严禁跨域调 {@code ProductManager}(无 @DS 会 fallback
+     * 默认库 + 违反禁止跨层级调用)。tenantId 信任上游上下文,本方法不接收 tenantId 参数也不主动 set,消除隐藏副作用。</p>
+     *
      * @param deviceIdOrClientId 设备ID或客户端ID
-     * @return {@link Optional<DeviceCacheVO>} 设备缓存信息实体
+     * @return 设备缓存信息实体(无 productCacheVO);未命中返 {@link Optional#empty()}
      */
     @Override
-    public Optional<DeviceCacheVO> findDeviceCacheVO(Long tenantId, String deviceIdOrClientId) {
-        ContextUtil.setTenantId(tenantId);
+    public Optional<DeviceCacheVO> findDeviceCacheVO(String deviceIdOrClientId) {
         Device device = this.findOneByIdOrClientId(deviceIdOrClientId);
         if (Objects.isNull(device)) {
             log.warn("设备档案信息不存在..deviceIdOrClientId:{}", deviceIdOrClientId);
             return Optional.empty();
         }
-        DeviceCacheVO deviceCacheVO = this.transformToDeviceCacheVO(tenantId, BeanPlusUtil.toBeanIgnoreError(device, DeviceResultVO.class));
+        DeviceCacheVO deviceCacheVO = BeanPlusUtil.toBeanIgnoreError(device, DeviceCacheVO.class);
+        deviceCacheVO.setTenantId(ContextUtil.getTenantId());
         return Optional.of(deviceCacheVO);
     }
 
-    /**
-     * 转换设备结果为设备缓存对象
-     *
-     * @param tenantId       租户ID，不能为null
-     * @param deviceResultVO 设备结果VO，不能为null
-     * @return 设备缓存VO，不会返回null
-     * @throws IllegalArgumentException 如果任何参数为null
-     * @throws RuntimeException         当转换失败时抛出
-     * @see BeanUtil#toBeanIgnoreError(Object, Class)
-     */
-    @Override
-    public DeviceCacheVO transformToDeviceCacheVO(Long tenantId, DeviceResultVO deviceResultVO) {
-        DeviceCacheVO deviceCacheVO = BeanUtil.toBeanIgnoreError(deviceResultVO, DeviceCacheVO.class);
-        deviceCacheVO.setTenantId(tenantId);
-        Optional.ofNullable(deviceCacheVO.getProductIdentification())
-                .map(productManager::findOneByProductIdentification)
-                .ifPresent(product -> {
-                    ProductCacheVO productCacheVO = BeanPlusUtil.toBeanIgnoreError(product, ProductCacheVO.class);
-                    productCacheVO.setTenantId(tenantId);
-                    deviceCacheVO.setProductCacheVO(productCacheVO);
-                });
-
-        return deviceCacheVO;
-    }
-
-    /**
-     * 根据产品标识查询设备版本信息
-     *
-     * @param productIdentification 产品标识
-     * @return {@link Optional<DeviceVersionDTO>} 设备版本信息
-     */
+    /** 根据产品标识查询设备版本信息 */
     @Override
     public Optional<DeviceVersionDTO> selectDeviceVersionsByProduct(String productIdentification) {
         if (StrUtil.isBlank(productIdentification)) {
@@ -266,6 +229,108 @@ public class DeviceManagerImpl extends SuperManagerImpl<DeviceMapper, Device> im
         }
         DeviceVersionDTO result = deviceMapper.selectDeviceVersionsByProduct(productIdentification);
         return Optional.ofNullable(result);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>对应 SQL:UPDATE device SET bound_product_version_no = ? WHERE product_identification = ? AND bound_product_version_no = ?</p>
+     */
+    @Override
+    public int bulkRebindByProductAndVersion(String productIdentification, String fromVersion, String toVersion) {
+        if (StrUtil.isBlank(productIdentification) || StrUtil.isBlank(toVersion)) {
+            return 0;
+        }
+        Device update = new Device();
+        update.setBoundProductVersionNo(toVersion);
+
+        LambdaQueryWrapper<Device> wrap = Wrappers.<Device>lambdaQuery()
+                .eq(Device::getProductIdentification, productIdentification)
+                .eq(StrUtil.isNotBlank(fromVersion), Device::getBoundProductVersionNo, fromVersion)
+                // 无 fromVersion → 匹配"未绑定版本"的设备;字段默认值为空串,历史行可能为 NULL,两者都算未绑定
+                .and(StrUtil.isBlank(fromVersion), w -> w
+                        .isNull(Device::getBoundProductVersionNo)
+                        .or().eq(Device::getBoundProductVersionNo, ""));
+        return deviceMapper.update(update, wrap);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>对应 SQL:SELECT id, device_identification, gateway_id FROM device
+     * WHERE product_identification = ? AND id &gt; ? ORDER BY id ASC LIMIT ?。
+     * 游标(id&gt;afterId)分页而非 OFFSET 分页,深翻页无性能塌陷,恒定内存遍历全产品。</p>
+     */
+    @Override
+    public List<Device> listRebindCursorPageByProduct(String productIdentification, Long afterId, int pageSize) {
+        if (StrUtil.isBlank(productIdentification) || pageSize <= 0) {
+            return java.util.Collections.emptyList();
+        }
+        LambdaQueryWrapper<Device> wrap = Wrappers.<Device>lambdaQuery()
+                .select(Device::getId, Device::getDeviceIdentification, Device::getGatewayId)
+                .eq(Device::getProductIdentification, productIdentification)
+                .gt(afterId != null && afterId > 0, Device::getId, afterId)
+                .orderByAsc(Device::getId)
+                .last("LIMIT " + pageSize);
+        return deviceMapper.selectList(wrap);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>对应 SQL:UPDATE device SET bound_product_version_no = ? WHERE id IN (...)。集合规模受单页约束,IN 有界。</p>
+     */
+    @Override
+    public int bulkRebindByIds(List<Long> ids, String toVersion) {
+        if (CollUtil.isEmpty(ids) || StrUtil.isBlank(toVersion)) {
+            return 0;
+        }
+        Device update = new Device();
+        update.setBoundProductVersionNo(toVersion);
+        return deviceMapper.update(update, Wrappers.<Device>lambdaQuery().in(Device::getId, ids));
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>对应 SQL:UPDATE device SET bound_product_version_no = ?
+     * WHERE product_identification = ? AND (device_identification IN (...) OR gateway_id IN (...))。
+     * gateway_id IN(集合) 把命中网关下的子设备一并改绑,保证子设备版本跟随网关。</p>
+     */
+    @Override
+    public int bulkRebindByIdentificationsIncludingSubDevices(List<String> rootIdentifications,
+                                                              String productIdentification, String toVersion) {
+        if (CollUtil.isEmpty(rootIdentifications) || StrUtil.isBlank(productIdentification) || StrUtil.isBlank(toVersion)) {
+            return 0;
+        }
+        Device update = new Device();
+        update.setBoundProductVersionNo(toVersion);
+
+        // 产品收口 + 嵌套 and 包住 OR:得到 product=? AND (id IN ... OR gateway_id IN ...)。
+        // 不嵌套会因 SQL 中 AND 优先级高于 OR 退化成 (product=? AND id IN ...) OR gateway_id IN ...,
+        // OR 分支冲破产品过滤 → 误改他产品挂在命中网关下的子设备。
+        LambdaQueryWrapper<Device> wrap = Wrappers.<Device>lambdaQuery()
+                .eq(Device::getProductIdentification, productIdentification)
+                .and(w -> w.in(Device::getDeviceIdentification, rootIdentifications)
+                        .or().in(Device::getGatewayId, rootIdentifications));
+        return deviceMapper.update(update, wrap);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>对应 SQL:UPDATE device SET bound_product_version_no = ? WHERE device_identification = ? AND (bound_product_version_no IS NULL OR bound_product_version_no = '')</p>
+     * <p>CAS 语义 ── 只在当前值为空(NULL 或空串)时写入,避免覆盖并发发布事件刚刚改绑的版本号。
+     * 字段默认值为空串,历史行可能为 NULL,两者都视为"未填充"。</p>
+     */
+    @Override
+    public int fillBoundProductVersionIfBlank(String deviceIdentification, String version) {
+        if (StrUtil.isBlank(deviceIdentification) || StrUtil.isBlank(version)) {
+            return 0;
+        }
+        Device update = new Device();
+        update.setBoundProductVersionNo(version);
+
+        LambdaQueryWrapper<Device> wrap = Wrappers.<Device>lambdaQuery()
+                .eq(Device::getDeviceIdentification, deviceIdentification)
+                .and(w -> w.isNull(Device::getBoundProductVersionNo)
+                        .or().eq(Device::getBoundProductVersionNo, ""));
+        return deviceMapper.update(update, wrap);
     }
 
 }

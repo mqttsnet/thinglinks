@@ -37,7 +37,7 @@
       const { t } = useI18n();
       const type = ref<ActionEnum>(ActionEnum.ADD);
       const dictItemRef = ref<any>(null);
-      const { createMessage, notification } = useMessage();
+      const { createMessage } = useMessage();
       const [registerForm, { setFieldsValue, resetFields, updateSchema, validate, resetSchema }] =
         useForm({
           labelWidth: 100,
@@ -93,13 +93,7 @@
                 });
               });
             });
-            notification.warn({
-              message: '校验失败',
-              description: () => {
-                return h('div', { innerHTML: msgStr }, []);
-              },
-              duration: 5,
-            });
+            createMessage.warning('校验失败');
             return;
           }
 

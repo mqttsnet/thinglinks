@@ -3,7 +3,6 @@ import type { NamePath } from 'ant-design-vue/lib/form/interface';
 import type { DynamicProps } from '/#/utils';
 import { ref, onUnmounted, unref, nextTick, watch } from 'vue';
 import { isProdMode } from '/@/utils/env';
-import { error } from '/@/utils/log';
 import { getDynamicProps } from '/@/utils';
 
 export declare type ValidateFields = (nameList?: NamePath[]) => Promise<Recordable>;
@@ -60,23 +59,22 @@ export function useForm(props?: Props): UseFormReturnType {
 
     updateSchema: async (data: Partial<FormSchema> | Partial<FormSchema>[]) => {
       const form = await getForm();
-      form.updateSchema(data);
+      form?.updateSchema(data);
     },
 
     resetSchema: async (data: Partial<FormSchema> | Partial<FormSchema>[]) => {
       const form = await getForm();
-      form.resetSchema(data);
+      form?.resetSchema(data);
     },
 
     clearValidate: async (name?: string | string[]) => {
       const form = await getForm();
-      form.clearValidate(name);
+      form?.clearValidate(name);
     },
 
     resetFields: async () => {
-      getForm().then(async (form) => {
-        await form.resetFields();
-      });
+      const form = await getForm();
+      await form?.resetFields();
     },
 
     removeSchemaByField: async (field: string | string[]) => {
@@ -90,8 +88,10 @@ export function useForm(props?: Props): UseFormReturnType {
     },
 
     setFieldsValue: async <T>(values: T) => {
+      // 表单可能在挂载/卸载切换间隙(如切 tab、关弹窗)还未注册或已销毁,
+      // 此时 formRef 为 null;与 resetFields / getFieldsValue 一样做空安全,避免未捕获报错。
       const form = await getForm();
-      form.setFieldsValue<T>(values);
+      form?.setFieldsValue<T>(values);
     },
 
     appendSchemaByField: async (

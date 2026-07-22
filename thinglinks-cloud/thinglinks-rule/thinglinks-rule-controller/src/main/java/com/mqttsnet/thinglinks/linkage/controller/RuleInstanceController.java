@@ -168,7 +168,9 @@ public class RuleInstanceController extends SuperController<RuleInstanceService,
     public R<RuleInstanceResultVO> getDetailsByFlowId(
             @PathVariable("flowId") String flowId) {
         log.info("Fetching details for flow ID: {}", flowId);
-        return R.success(superService.getDetailsByFlowId(flowId));
+        RuleInstanceResultVO result = superService.getDetailsByFlowId(flowId);
+        echoService.action(result);
+        return R.success(result);
     }
 
 }

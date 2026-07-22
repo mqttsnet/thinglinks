@@ -245,9 +245,9 @@ export const useUserStore = defineStore({
         if (!permissionStore.isDynamicAddedRoute) {
           const routes = await permissionStore.buildRoutesAction();
           routes.forEach((route) => {
+            if (route.name === PAGE_NOT_FOUND_ROUTE.name) return;
             router.addRoute(route as unknown as RouteRecordRaw);
           });
-          router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
           permissionStore.setDynamicAddedRoute(true);
         }
         goHome && (await router.replace(userInfo?.homePath || PageEnum.BASE_HOME));

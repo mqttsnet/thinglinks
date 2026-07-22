@@ -20,7 +20,7 @@ public enum ClientTypeEnum implements BaseEnum {
     /**
      * 登录成功
      */
-    THINGLINKS_WEB("01", "开源版"),
+    THINGLINKS_WEB("01", "ThingLinks Web 管理端"),
     THINGLINKS_WEB_VBEN("02", "基于vben的前端"),
     THINGLINKS_WEB_SOYBEAN("03", "基于soybean前端"),
     THINGLINKS_WEB_VBEN5("04", "基于vben5的前端");

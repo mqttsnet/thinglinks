@@ -18,7 +18,7 @@ import java.util.List;
  * @author mqttsnet
  * @date 2024/11/13
  */
-@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.base-server:thinglinks-base-server}", path = "/anyTenant/nacos")
+@FeignClient(name = "${" + Constants.PROJECT_PREFIX + ".feign.base-server:thinglinks-base-server}", path = "/inner/nacos")
 public interface NacosApi {
 
     @Operation(summary = "获取服务下的所有实例", description = "根据服务名称和分组名称查询指定分组下所有的服务实例信息。")

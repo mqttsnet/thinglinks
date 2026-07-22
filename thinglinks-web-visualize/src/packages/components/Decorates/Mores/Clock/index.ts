@@ -7,7 +7,7 @@ export const ClockConfig: ConfigType = {
   conKey: 'VCClock',
   title: 'project.component_clock',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName.MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.DECORATES,
   chartFrame: ChartFrameEnum.STATIC,
   image: 'clock.png'

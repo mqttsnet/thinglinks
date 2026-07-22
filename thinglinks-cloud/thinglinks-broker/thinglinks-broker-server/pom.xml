@@ -56,6 +56,11 @@
             <artifactId>thinglinks-tds-cloud-impl</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-link-cloud-impl</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.mqttsnet.thinglinks</groupId>

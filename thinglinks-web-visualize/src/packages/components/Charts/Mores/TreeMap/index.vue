@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, watch } from 'vue'
+import { shallowRef, computed, PropType, watch } from 'vue'
 import VChart from 'vue-echarts'
 import { useCanvasInitOptions } from '@/hooks/useCanvasInitOptions.hook'
 import dataJson from './data.json'
@@ -36,7 +36,7 @@ const initOptions = useCanvasInitOptions(props.chartConfig.option, props.themeSe
 
 use([CanvasRenderer, TreemapChart])
 
-const vChartRef = ref<typeof VChart>()
+const vChartRef = shallowRef<InstanceType<typeof VChart>>()
 
 const option = computed(() => {
   return mergeTheme(props.chartConfig.option, props.themeSetting, includes)

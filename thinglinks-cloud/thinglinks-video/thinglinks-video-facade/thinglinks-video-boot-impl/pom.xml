@@ -12,7 +12,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>thinglinks-video-boot-impl</artifactId>
     <name>${project.artifactId}</name>
-    <description>基础服务-单体版实现</description>
+    <description>视频流-门面单体版实现</description>
 
     <dependencies>
         <dependency>

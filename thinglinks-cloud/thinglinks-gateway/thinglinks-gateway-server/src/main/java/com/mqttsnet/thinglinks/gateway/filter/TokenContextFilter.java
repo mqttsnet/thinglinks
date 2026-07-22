@@ -156,7 +156,6 @@ public class TokenContextFilter implements WebFilter, Ordered {
         }
 
         SaSession tokenSession = StpUtil.getTokenSessionByToken(getHeader(saTokenConfig.getTokenName(), request));
-        log.info("{}", tokenSession);
 
         if (tokenSession != null) {
             Long userId = (Long) tokenSession.getLoginId();

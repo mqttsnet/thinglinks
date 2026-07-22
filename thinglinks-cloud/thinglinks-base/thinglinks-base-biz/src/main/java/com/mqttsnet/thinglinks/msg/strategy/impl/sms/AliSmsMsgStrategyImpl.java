@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.msg.strategy.impl.sms;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.aliyun.dysmsapi20170525.models.SendSmsRequest;
 import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
 import com.aliyun.dysmsapi20170525.models.SendSmsResponseBody;
@@ -106,11 +106,11 @@ public class AliSmsMsgStrategyImpl implements MsgStrategy {
         //可选:outId为提供给业务方扩展字段,最终在短信回执消息中将此值带回给调用者
         request.setOutId(String.valueOf(extendMsg.getId()));
 
-        log.info("阿里短信发送参数={}", JSONUtil.toJsonStr(request));
+        log.info("阿里短信发送参数={}", JSON.toJSONString(request));
         //hint 此处可能会抛出异常，注意catch
         SendSmsResponse sendSmsResponse = client.sendSms(request);
 
-        log.info("阿里短信发送结果={}", JSONUtil.toJsonStr(sendSmsResponse));
+        log.info("阿里短信发送结果={}", JSON.toJSONString(sendSmsResponse));
         return MsgResult.builder().result(sendSmsResponse).build();
     }
 

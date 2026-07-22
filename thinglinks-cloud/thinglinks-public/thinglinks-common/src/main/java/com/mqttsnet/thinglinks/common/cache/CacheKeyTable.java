@@ -205,9 +205,49 @@ public interface CacheKeyTable {
          */
         String PROTOCOL_WS_SESSION = "def_protocol_ws_session";
 
+        /**
+         * 协议总线指标计数器(集群级)。
+         * <p>Hash 桶按 (tenantId, date, dimension) 维度,field 按 label 组合,value 累计计数。
+         * <p>完整 key: mqs:{tenantId}:bus_stats_counter:bucket:obj:{date}:{dimension}
+         */
+        String BUS_STATS_COUNTER = "bus_stats_counter";
+
+        /**
+         * 协议总线时延 ZSet(P99 计算 / 滚动窗口分位查询)。
+         * <p>完整 key: mqs:{tenantId}:bus_stats_latency:zset:obj:{date}:{stage}
+         */
+        String BUS_STATS_LATENCY = "bus_stats_latency";
+
+        /**
+         * 设备心跳补偿节流标记(同设备 60s 内最多一次 status 修正写).
+         * <p>{@code DeviceHeartbeatStage} 用:PING 通过 ttl ≤ 0 判断未节流时,
+         * SET 节流 key + 调 facade 强制把 status 写为 ONLINE(无 hlc,不污染 lifecycle stream),
+         * 自愈 link 偶发写失败或被节流误判导致的 OFFLINE 假象.
+         * <p>完整 key: mqs:{tenantId}:heartbeat_reconcile:id:string:{clientId}
+         */
+        String HEARTBEAT_RECONCILE = "heartbeat_reconcile";
+
     }
 
     // Mqs物联网业务系统缓存 end
+
+    // Broker 协议接入层缓存 start
+    interface Broker {
+
+        /**
+         * WS 设备 session 全量信息:clientId → 设备连接渠道信息(JSON)。
+         * <p>存设备整条会话的渠道信息(clientId / 租户 / 设备&产品标识 / 协议 / 接入节点 /
+         * channelId / 接入时间 / 最近活跃时间),供<b>多节点共享读取</b>:任一 broker / 业务节点
+         * 都能据此判断设备是否在线、连在哪个节点、走什么渠道。
+         * <p><b>不用于下行路由</b> —— 下行命令走 RocketMQ 广播(各节点查本地 session 投递),
+         * 不再依赖此 key 里的节点地址做点对点转发(节点地址仅作诊断展示)。
+         * <p>TTL = 心跳超时(默认 90s);broker @OnOpen 写入,@OnClose 清除,心跳续期。
+         */
+        String WS_SESSION = "def_ws_session";
+
+    }
+
+    // Broker 协议接入层缓存 end
 
     // Link物联网业务系统缓存 start
     interface Link {
@@ -297,6 +337,40 @@ public interface CacheKeyTable {
          */
         String DEF_GROOVY_SCRIPT = "def_groovy_script";
 
+        /**
+         * 规则脚本执行统计  前缀(按脚本唯一键聚 HASH:total/success/fail)
+         */
+        String GROOVY_SCRIPT_EXEC_STAT = "groovy_script_exec_stat";
+
+        /**
+         * 桥接规则(启用列表) 前缀
+         * <p>完整 key 形如: rule:data_bridge_rule:app.dir:obj:{tenantId}:{appId}:{direction} -> List&lt;DataBridge&gt;
+         * <p>BridgeRuleCache 走 CachePlusOps(Redis),事件驱动 del 失效。
+         */
+        String DATA_BRIDGE_RULE = "data_bridge_rule";
+
+        /**
+         * 数据桥接-数据源 前缀
+         * <p>完整 key 形如: rule:data_source:id:obj:{tenantId}:{dataSourceId} -> DataSource
+         * <p>SinkDispatcher 热路径取数据源时走此 key;DataSourceService update/delete 时主动 del。
+         */
+        String DATA_SOURCE = "data_source";
+
+        /** 规则事件触发索引桶 */
+        String RULE_TRIGGER_INDEX = "rule_trigger_index";
+
+        /** 事件触发规则详情缓存 */
+        String RULE_TRIGGER_DETAILS = "rule_trigger_details";
+
+        /** 设备最新物模型快照 */
+        String RULE_LATEST_SNAPSHOT = "rule_latest_snapshot";
+
+        /** 规则事件防抖计数与首值快照 */
+        String RULE_ANTI_SHAKE = "rule_anti_shake";
+
+        /** 规则动作执行冷却闸 */
+        String RULE_ACTION_COOLDOWN = "rule_action_cooldown";
+
     }
     // Rule规则服务缓存 end
 
@@ -343,6 +417,80 @@ public interface CacheKeyTable {
          */
         String SIP_SESSION_CALL = "def_sip_session_call";
 
+        /**
+         * SSRC 池 前缀（Hash：已用/可用集合）
+         */
+        String SSRC_POOL = "def_ssrc_pool";
+
+        /**
+         * SSRC 事务 前缀（关联设备/通道/流）
+         */
+        String SSRC_TRANSACTION = "def_ssrc_transaction";
+
+        /**
+         * 流信息 前缀（多协议 URL 缓存）
+         */
+        String STREAM_INFO = "def_stream_info";
+
+        /**
+         * RTP 端口池 前缀
+         */
+        String RTP_PORT_POOL = "def_rtp_port_pool";
+
+        /**
+         * SIP 服务信息 前缀（集群实例注册）
+         */
+        String SIP_SERVER_INFO = "def_sip_server_info";
+
+        /**
+         * 租户 SIP 配置 前缀（全局 Hash，field=sipId）
+         */
+        String SIP_TENANT_CONFIG = "def_sip_tenant_config";
+
+        /**
+         * SIP 事务订阅 前缀（租户维度，等待设备 SIP 响应）
+         */
+        String SIP_SUBSCRIBE = "def_sip_subscribe";
+
+        /**
+         * MESSAGE 消息订阅 前缀（租户维度，等待设备消息应答）
+         */
+        String MSG_SUBSCRIBE = "def_msg_subscribe";
+
+        /**
+         * Hook 订阅 前缀（租户维度，ZLM Hook 回调匹配）
+         */
+        String HOOK_SUBSCRIBE = "def_hook_subscribe";
+
+        /**
+         * 异步请求结果 前缀（租户维度，前端等待 SIP 异步结果）
+         */
+        String DEFERRED_RESULT = "def_deferred_result";
+
+        /**
+         * 流恢复重试 前缀（租户维度，断流自动恢复计数）
+         */
+        String STREAM_RECOVERY = "def_stream_recovery";
+
+        /**
+         * 平台级联注册 前缀（租户维度，上联平台注册状态）
+         */
+        String PLATFORM_REGISTER = "def_platform_register";
+
+        /**
+         * 平台订阅 前缀（租户维度，上级平台 Catalog/Position 订阅）
+         */
+        String SUBSCRIBE_HOLDER = "def_subscribe_holder";
+
+        /**
+         * JT1078 连接 前缀（租户维度，车载终端连接池）
+         */
+        String JT1078_CONN = "def_jt1078_conn";
+
+        /**
+         * ISUP 连接 前缀（租户维度，海康设备连接池）
+         */
+        String ISUP_CONN = "def_isup_conn";
 
     }
     // Video视频流系统缓存 end

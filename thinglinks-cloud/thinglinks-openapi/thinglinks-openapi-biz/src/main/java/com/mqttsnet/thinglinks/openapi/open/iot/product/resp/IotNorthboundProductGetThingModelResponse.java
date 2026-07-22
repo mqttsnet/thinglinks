@@ -95,7 +95,7 @@ public class IotNorthboundProductGetThingModelResponse implements Serializable {
      * 产品版本
      * @mock 1.0.0
      */
-    private String productVersion;
+    private String activeVersionNo;
 
     /**
      * 产品描述/备注

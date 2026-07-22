@@ -124,7 +124,9 @@ public class CardChannelInfoController extends SuperController<CardChannelInfoSe
     @Parameters({@Parameter(name = "id", description = "渠道ID", required = true),})
     public R<CardChannelInfoResultVO> getChannelInfoDetails(@PathVariable("id") Long id) {
         log.info("获取渠道详情，id:{}", id);
-        return R.success(superService.getChannelInfoDetails(id));
+        CardChannelInfoResultVO result = superService.getChannelInfoDetails(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
 

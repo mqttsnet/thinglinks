@@ -7,7 +7,7 @@ export const WaterPoloConfig: ConfigType = {
   conKey: 'VCWaterPolo',
   title: 'project.component_water_polo',
   category: ChatCategoryEnum.MORE,
-  categoryName: getChatCategoryEnumName().MORE,
+  get categoryName() { return getChatCategoryEnumName().MORE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'water_WaterPolo.png'

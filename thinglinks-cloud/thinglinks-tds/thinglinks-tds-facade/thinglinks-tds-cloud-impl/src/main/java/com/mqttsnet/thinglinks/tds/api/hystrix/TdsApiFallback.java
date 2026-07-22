@@ -1,6 +1,5 @@
 package com.mqttsnet.thinglinks.tds.api.hystrix;
 
-import cn.hutool.json.JSONObject;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.tds.model.SuperTableDTO;
 import com.mqttsnet.basic.tds.model.TableDTO;
@@ -57,13 +56,13 @@ public class TdsApiFallback implements TdsApi {
     }
 
     /**
-     * 创建超级表及字段-方式二
+     * 批量创建超级表及字段
      *
-     * @param object 超级表json信息
+     * @param schema 超级表批量定义
      * @return 执行结果
      */
     @Override
-    public R createSuperTableAndColumnTwo(JSONObject object) {
+    public R batchCreateSuperTable(Map<String, Object> schema) {
         return R.timeout();
     }
 
@@ -79,13 +78,13 @@ public class TdsApiFallback implements TdsApi {
     }
 
     /**
-     * 创建子表-方式二
+     * 批量创建子表
      *
-     * @param object 子表json信息
+     * @param schema 子表批量定义
      * @return 执行结果
      */
     @Override
-    public R createSubTableTwo(JSONObject object) {
+    public R batchCreateSubTable(Map<String, Object> schema) {
         return R.timeout();
     }
 

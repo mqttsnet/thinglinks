@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, toRefs } from 'vue'
+import { ref, shallowRef, computed, watch, toRefs } from 'vue'
 import { useDesignStore } from '@/store/modules/designStore/designStore'
 import { AppThemeColorType } from '@/store/modules/designStore/designStore.d'
 import { icon } from '@/plugins'
@@ -63,7 +63,7 @@ let splitNumber = 50
 
 const designStore = useDesignStore()
 const modelShow = ref(false)
-const contentLeftRef = ref<HTMLElement | null>(null)
+const contentLeftRef = shallowRef<HTMLElement | null>(null)
 const designColorSplit = ref(designColor.slice(0, splitNumber))
 
 const { arrivedState } = useScroll(contentLeftRef, {

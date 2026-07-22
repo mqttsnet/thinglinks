@@ -1,0 +1,83 @@
+spring:
+  kafka:
+    # ==================== 通用配置 ====================
+    # Kafka服务器地址列表（如果开启了SASL,必须使用SASL端口）
+    bootstrap-servers: 127.0.0.1:19092,127.0.0.1:29092,127.0.0.1:39092
+
+    # ==================== # SASL认证配置（通用）（如未开启SASL认证，可不配置,将下列SASL配置项注释掉即可） ====================
+    #properties:
+      # 【核心】SASL认证配置
+      # 安全协议：SASL_PLAINTEXT 或 SASL_SSL
+      #security.protocol: SASL_PLAINTEXT
+      # SASL机制：PLAIN/SCRAM-SHA-256/SCRAM-SHA-512
+      #sasl.mechanism: PLAIN
+      #【重要】不同mechanism 使用的 org.apache.kafka.common.security 不同，请根据实际情况配置，JAAS配置必须以分号结尾
+      #sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${KAFKA_USERNAME:}" password="${KAFKA_PASSWORD:}";
+
+    # ==================== 生产者配置 ====================
+    # 性能调优说明:
+    # 1) 移除 transaction-id-prefix:全仓库无 executeInTransaction/@Transactional+send 调用,事务模式是死配置,会强制 acks=all + max.in.flight<=5 + 每次 send 走 transaction coordinator,严重拖累吞吐
+    # 2) acks=1:首领节点确认即返回,事件投递 at-least-once 足够;比 acks=all 吞吐高 3-5x
+    # 3) compression=lz4:事件 JSON 压缩比 60-80%,CPU 开销极小,网络流量降 3-5x
+    # 4) batch-size + buffer-memory 上调:支撑高 TPS 突发,避免 send() 因 buffer 满阻塞
+    producer:
+      retries: 5                                # 失败重试次数,事件投递场景足够
+      acks: 1                                   # 首领节点确认;事件投递 at-least-once 即可,不必 acks=all
+      batch-size: 65536                         # 64KB,从 16KB 上调,提升批量打包效率
+      buffer-memory: 134217728                  # 128MB,从 32MB 上调,高 TPS 下避免 send() 阻塞
+      linger-ms: 20                             # 从 50 降到 20,在批量度与延迟之间取平衡
+      compression-type: lz4                     # lz4 压缩,事件 JSON 体积大幅降低,CPU 几乎无负担
+      delivery-timeout-ms: 30000                # 从 120s 降到 30s,快速失败避免请求堆积
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        # 单连接最大未确认请求数,不开事务后可放大到 16,提升并发管道度
+        max.in.flight.requests.per.connection: 16
+        # 显式关闭幂等:幂等会强制 max.in.flight<=5,事件投递无需幂等
+        enable.idempotence: false
+        # buffer 满/集群不可用时 send() 最长阻塞 3s 快速失败(默认 60s 会拖死上行主链路),旁路失败不得阻断主路
+        max.block.ms: 3000
+        # producer 与 broker 的请求超时,小于 delivery-timeout-ms
+        request.timeout.ms: 15000
+
+    # ==================== 消费者配置 ====================
+    # 性能调优说明:
+    # 1) fetch-min-bytes + fetch-max-wait-ms 配合:单次 fetch 至少 64KB 或最多等 100ms,减少 fetch RPC 次数
+    # 2) max-poll-interval-ms 真正收紧到 2min:Kafka 默认 5min(原 yml 600s 是手动放大),
+    #    我们 batch 处理 1000 条平均 5s + 最坏 DLT 重试 60s = 65s,2min 给 ~85% 安全余量,
+    #    卡死消费者检测速度比 5min 快 60%
+    consumer:
+      group-id: thinglinks
+      auto-offset-reset: earliest
+      enable-auto-commit: false                 # 手动提交,保证可靠性
+      auto-commit-interval: 2s
+      max-poll-records: 1000                    # 单次最多拉 1000 条
+      max-poll-interval-ms: 120000              # 2min(原 600s/10min 过宽,Kafka 默认 5min 仍偏保守);batch 5s + 最坏 DLT 重试 60s,2min 给 ~85% 余量;触发 rebalance 时仅 1/16 分区短暂(秒级)无消费
+      session-timeout-ms: 15000                 # 15s,稳定性
+      heartbeat-interval-ms: 3000               # 3s
+      fetch-min-bytes: 65536                    # 新增:单次 fetch 至少 64KB,减少空轮询
+      fetch-max-wait-ms: 100                    # 新增:fetch-min-bytes 不满时最多等 100ms,平衡延迟与批量
+      properties:
+        # 配置消费者的 Json 反序列化的可信赖包,反序列化实体类需要
+        spring:
+          json:
+            trusted:
+              packages: "*"
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    # ==================== 监听器配置 ====================
+    # ★ concurrency 是消费侧并发天花板,等同于 OkHttp 的 maxRequestsPerHost
+    # 16 应 >= 主要 topic 的分区数(BifroMQ event topic 通常预设 16-32 分区)
+    # 超过分区数的额外 container 会闲置,不会出错;低于分区数则消费 lag 会持续增长
+    listener:
+      type: batch                               # 批量处理,与 AbstractProtocolKafkaInboundConsumer.handleBatch 配合
+      concurrency: 16                           # 从 4 提到 16,消费并发 4x
+      ack-mode: manual_immediate                # 手动 ack,与 BatchListenerFailedException 的 DLT 重试机制配合
+      missing-topics-fatal: false               # topic 不存在时不致命,避免启动失败
+      poll-timeout: 5s                          # Spring Kafka 官方默认值;
+
+    # ==================== 模板配置 ====================
+    template:
+      # 默认主题（可选）
+      default-topic: thinglinks-default-topic

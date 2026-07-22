@@ -105,17 +105,20 @@ public class TDengineController {
     }
 
     /**
-     * 创建超级表及字段-方式二
+     * 批量创建超级表及字段(单次请求可建多张)
      *
-     * @param object 超级表json信息
+     * @param schema 超级表批量定义,key=超级表名
      * @return 执行结果
      */
-    @Operation(summary = "创建超级表及字段-方式二", description = "创建超级表及字段-方式二")
-    @PostMapping("/createSuperTableAndColumnTwo")
-    @WebLog("创建超级表及字段-方式二")
-    public R createSuperTableAndColumnOne(@RequestBody JSONObject object) {
+    @Operation(summary = "批量创建超级表及字段", description = "单次请求可建多张超级表")
+    @PostMapping("/batchCreateSuperTable")
+    @WebLog("批量创建超级表及字段")
+    public R batchCreateSuperTable(@RequestBody Map<String, Object> schema) {
         try {
-            Map<String, SuperTableDTO> superTableDTOMap = TdsUtils.handleSuperTable(object);
+            // schema 是 HTTP 中性 Map;TdsUtils(外部库)签名固定接 hutool JSONObject,这里走 putAll 适配
+            JSONObject hutoolJson = new JSONObject();
+            hutoolJson.putAll(schema);
+            Map<String, SuperTableDTO> superTableDTOMap = TdsUtils.handleSuperTable(hutoolJson);
             for (Map.Entry<String, SuperTableDTO> entry : superTableDTOMap.entrySet()) {
                 SuperTableDTO value = entry.getValue();
                 value.setDataBaseName(ContextUtil.getDataBase());
@@ -152,17 +155,20 @@ public class TDengineController {
     }
 
     /**
-     * 创建子表-方式二
+     * 批量创建子表(单次请求可建多张)
      *
-     * @param object 子表json信息
+     * @param schema 子表批量定义,key=子表名
      * @return 执行结果
      */
-    @Operation(summary = "创建子表-方式二", description = "创建子表-方式二")
-    @PostMapping("/createSubTableTwo")
-    @WebLog("创建子表-方式二")
-    public R createSubTableTwo(@RequestBody JSONObject object) {
+    @Operation(summary = "批量创建子表", description = "单次请求可建多张子表")
+    @PostMapping("/batchCreateSubTable")
+    @WebLog("批量创建子表")
+    public R batchCreateSubTable(@RequestBody Map<String, Object> schema) {
         try {
-            Map<String, TableDTO> subTableMap = TdsUtils.handleSubTable(object);
+            // 同 batchCreateSuperTable:Map→hutool JSONObject 适配外部 TdsUtils 签名
+            JSONObject hutoolJson = new JSONObject();
+            hutoolJson.putAll(schema);
+            Map<String, TableDTO> subTableMap = TdsUtils.handleSubTable(hutoolJson);
             for (Map.Entry<String, TableDTO> entry : subTableMap.entrySet()) {
                 TableDTO value = entry.getValue();
                 value.setDataBaseName(ContextUtil.getDataBase());

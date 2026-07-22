@@ -1,11 +1,9 @@
 package com.mqttsnet.thinglinks.device.vo.result;
 
-import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.annotation.echo.Echo;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
 import com.mqttsnet.thinglinks.model.constant.EchoApi;
 import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -17,10 +15,8 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @program: thinglinks-cloud
@@ -38,12 +34,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "DeviceDetailsResultVO", description = "设备详情结果VO")
-public class DeviceDetailsResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class DeviceDetailsResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    @Builder.Default
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -151,6 +145,12 @@ public class DeviceDetailsResultVO extends Entity<Long> implements Serializable,
     @Schema(description = "产品标识")
     private String productIdentification;
     /**
+     * 绑定的产品版本序号(系统在设备注册 / 产品发布时写入,数据上报路径按此快照解析物模型,
+     * 不随产品发布新版本变化 ── 灰度发布的关键路由依据)。
+     */
+    @Schema(description = "绑定的产品版本序号(系统在注册 / 发布灰度时写入,数据上报按此快照解析物模型,灰度路由依据)")
+    private String boundProductVersionNo;
+    /**
      * 软件版本
      */
     @Schema(description = "软件版本")
@@ -166,9 +166,10 @@ public class DeviceDetailsResultVO extends Entity<Long> implements Serializable,
     @Schema(description = "sdk版本")
     private String deviceSdkVersion;
     /**
-     * 网关设备id
+     * 子设备所属网关的 deviceIdentification（业务唯一标识，String；非主键 id）。
+     * 仅 nodeType=SUBDEVICE 时有意义。前端按此值调 getDeviceDetailsByIdentification 拉网关详情。
      */
-    @Schema(description = "网关设备id")
+    @Schema(description = "网关设备的 deviceIdentification（业务唯一标识，String 类型；非主键 id）")
     private String gatewayId;
     /**
      * 设备类型
@@ -181,12 +182,6 @@ public class DeviceDetailsResultVO extends Entity<Long> implements Serializable,
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    @Echo(api = EchoApi.ORG_ID_CLASS)
-    private Long createdOrgId;
 
     @Schema(description = "产品详情结果VO")
     private ProductResultVO productResultVO;

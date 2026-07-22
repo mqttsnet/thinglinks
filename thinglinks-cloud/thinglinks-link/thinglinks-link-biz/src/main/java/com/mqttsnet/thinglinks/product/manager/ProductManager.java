@@ -31,8 +31,8 @@ public interface ProductManager extends SuperManager<Product> {
     /**
      * 根据产品模型ID查询信息
      *
-     * @param productId
-     * @return
+     * @param productId 产品模型 ID
+     * @return 产品模型信息;查不到返 null
      */
     Product findOneByProductId(Long productId);
 
@@ -76,6 +76,37 @@ public interface ProductManager extends SuperManager<Product> {
      * @return {@link Long} 产品模型数据总量
      */
     Long findProductTotal();
+
+    /**
+     * 统计已发布过的产品数(product_version 字段非空非空字符串)。
+     *
+     * <p>语义:产品至少经历过一次发布(publish 后会把 publishedVersion 回写到 product.active_version_no)。</p>
+     *
+     * @return 已发布过的产品数
+     */
+    Long countPublishedProducts();
+
+    /**
+     * 统计当前处于灰度切换中的产品数(previous_full_version_no 非空)。
+     *
+     * <p>语义:灰度发布把当前 activeVersionNo 切到新版本,同时把切换前的全量版本号记入 previous_full_version_no;
+     * 当 previous_full_version_no 非空就表示该产品当前生效版本是灰度版本。</p>
+     *
+     * @return 灰度切换中的产品数
+     */
+    Long countCanaryInProgressProducts();
+
+    /**
+     * 显式清空指定产品的 previous_full_version_no(置 NULL)。
+     *
+     * <p>必须用 {@code UpdateWrapper.set(col, null)} 而非 {@code updateById}:全局 update-strategy=NOT_NULL
+     * 会让 updateById 跳过 null 字段、清不掉。灰度晋升为全量 / 回滚后调用,标记产品已脱离灰度态
+     * (影响新设备绑版策略与"灰度中"统计)。</p>
+     *
+     * @param productIdentification 产品标识
+     * @return 影响行数
+     */
+    int clearPreviousFullVersion(String productIdentification);
 }
 
 

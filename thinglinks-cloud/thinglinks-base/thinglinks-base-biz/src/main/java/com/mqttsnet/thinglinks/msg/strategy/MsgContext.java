@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.msg.strategy;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.utils.ArgumentAssert;
 import com.mqttsnet.basic.utils.SpringUtils;
@@ -102,7 +102,7 @@ public class MsgContext {
                 extendInterfaceLogManager.incrFailCount(extendInterfaceLog.getId());
             }
 
-            logging.setResult(JSONUtil.toJsonStr(result));
+            logging.setResult(JSON.toJSONString(result));
 
             extendMsg.setTitle(result.getTitle());
             extendMsg.setContent(result.getContent());

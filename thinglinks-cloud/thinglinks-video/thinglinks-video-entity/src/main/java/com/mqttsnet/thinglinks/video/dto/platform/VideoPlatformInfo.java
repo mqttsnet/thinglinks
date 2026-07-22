@@ -26,7 +26,7 @@ public class VideoPlatformInfo {
     @Schema(description = "SIP服务国标域")
     private String serverGBDomain;
 
-    @Schema(description = "SIP服务IP")
+    @Schema(description = "SIP服务IP/域名")
     private String serverIp;
 
     @Schema(description = "SIP服务端口")
@@ -35,7 +35,7 @@ public class VideoPlatformInfo {
     @Schema(description = "设备国标编号")
     private String deviceGBId;
 
-    @Schema(description = "设备ip")
+    @Schema(description = "设备IP/域名")
     private String deviceIp;
 
     @Schema(description = "设备端口")
@@ -43,9 +43,6 @@ public class VideoPlatformInfo {
 
     @Schema(description = "SIP认证用户名(默认使用设备国标编号)")
     private String username;
-
-    @Schema(description = "SIP认证密码")
-    private String password;
 
     @Schema(description = "注册周期 (秒)")
     private int expires;
@@ -92,7 +89,7 @@ public class VideoPlatformInfo {
     @Schema(description = "是否作为消息通道")
     private boolean asMessageChannel;
 
-    @Schema(description = "点播回复200OK使用的IP")
+    @Schema(description = "推流IP/域名（点播回复200OK使用的地址）")
     private String sendStreamIp;
 
     @Schema(description = "是否自动推送通道变化")

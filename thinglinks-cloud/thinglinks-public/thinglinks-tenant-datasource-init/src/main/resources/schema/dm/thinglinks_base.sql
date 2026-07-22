@@ -343,7 +343,7 @@ COMMENT ON COLUMN "base_role"."name" IS '名称';
 COMMENT ON COLUMN "base_role"."readonly_" IS '内置角色';
 COMMENT ON COLUMN "base_role"."remarks" IS '备注';
 COMMENT ON COLUMN "base_role"."state" IS '状态';
-COMMENT ON COLUMN "base_role"."type_" IS '角色类型;[10-系统角色 20-自定义角色]; 
+COMMENT ON COLUMN "base_role"."type_" IS '角色类型;[10-系统角色 20-自定义角色];
 @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Global.DATA_TYPE)';
 COMMENT ON COLUMN "base_role"."updated_by" IS '更新人';
 COMMENT ON COLUMN "base_role"."updated_time" IS '更新时间';
@@ -453,51 +453,6 @@ COMMENT ON COLUMN "card_channel_info_config"."updated_by" IS '最后修改人';
 COMMENT ON COLUMN "card_channel_info_config"."updated_time" IS '最后修改时间';
 COMMENT ON COLUMN "card_channel_info_config"."url" IS '供应商接口地址';
 
-
-CREATE TABLE "card_pay"
-(
-    "id" DECIMAL NOT NULL,
-    "channel_id" BIGINT,
-    "card_id" BIGINT,
-    "msisdn" VARCHAR(50),
-    "iccid" VARCHAR(50),
-    "openid" VARCHAR(50),
-    "platform" SMALLINT,
-    "status" SMALLINT,
-    "order_no" VARCHAR(50),
-    "transaction_id" VARCHAR(100),
-    "sign" VARCHAR(200),
-    "remark" VARCHAR(200),
-    "mode_payment" SMALLINT DEFAULT 0,
-    "created_by" BIGINT,
-    "created_time" TIMESTAMP(0),
-    "updated_by" BIGINT,
-    "updated_time" TIMESTAMP(0),
-    "created_org_id" BIGINT,
-    CONSTRAINT "card_pay_PRIMARY" NOT CLUSTER PRIMARY KEY("id")) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
-
-COMMENT ON TABLE "card_pay" IS '物联网卡充值记录表';
-COMMENT ON COLUMN "card_pay"."card_id" IS '卡id';
-COMMENT ON COLUMN "card_pay"."channel_id" IS '渠道';
-COMMENT ON COLUMN "card_pay"."created_by" IS '创建人';
-COMMENT ON COLUMN "card_pay"."created_org_id" IS '创建人组织';
-COMMENT ON COLUMN "card_pay"."created_time" IS '创建时间';
-COMMENT ON COLUMN "card_pay"."iccid" IS 'iccid';
-COMMENT ON COLUMN "card_pay"."id" IS 'id主键';
-COMMENT ON COLUMN "card_pay"."mode_payment" IS '支付类型: 0微信 1支付宝';
-COMMENT ON COLUMN "card_pay"."msisdn" IS '卡号';
-COMMENT ON COLUMN "card_pay"."openid" IS 'openid';
-COMMENT ON COLUMN "card_pay"."order_no" IS '平台生成订单号';
-COMMENT ON COLUMN "card_pay"."platform" IS '平台:  0小程序(个人用户) 1 H5(平台用户)  2 平台充值';
-COMMENT ON COLUMN "card_pay"."remark" IS '备注';
-COMMENT ON COLUMN "card_pay"."sign" IS '加密';
-COMMENT ON COLUMN "card_pay"."status" IS '0 未支付 1已支付 2充值失败 3退款';
-COMMENT ON COLUMN "card_pay"."transaction_id" IS '微信交易订单号';
-COMMENT ON COLUMN "card_pay"."updated_by" IS '更新人';
-COMMENT ON COLUMN "card_pay"."updated_time" IS '更新时间';
-
-
-CREATE OR REPLACE  INDEX "card_pay_msisdn" ON "card_pay"("msisdn" ASC,"status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
 
 CREATE TABLE "card_sim_device"
 (
@@ -684,84 +639,6 @@ COMMENT ON COLUMN "card_warning"."warning_threshold" IS '预警阈值';
 COMMENT ON COLUMN "card_warning"."warning_type" IS '1 卡级 2流量池';
 
 
-CREATE TABLE "com_appendix"
-(
-    "id" BIGINT NOT NULL,
-    "biz_id" BIGINT,
-    "biz_type" VARCHAR(255),
-    "file_type" VARCHAR(10),
-    "bucket" VARCHAR(255),
-    "path" VARCHAR(255),
-    "original_file_name" VARCHAR(255),
-    "content_type" VARCHAR(255),
-    "size_" BIGINT DEFAULT 0,
-    "created_time" TIMESTAMP(0),
-    "created_by" BIGINT,
-    "updated_time" TIMESTAMP(0),
-    "updated_by" BIGINT,
-    "created_org_id" BIGINT,
-    CONSTRAINT "com_appendix_PRIMARY" NOT CLUSTER PRIMARY KEY("id")) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
-
-COMMENT ON TABLE "com_appendix" IS '业务附件';
-COMMENT ON COLUMN "com_appendix"."biz_id" IS '业务id';
-COMMENT ON COLUMN "com_appendix"."biz_type" IS '业务类型;同一个业务，不同的字段，需要分别设置不同的业务类型';
-COMMENT ON COLUMN "com_appendix"."bucket" IS '桶';
-COMMENT ON COLUMN "com_appendix"."content_type" IS '文件类型';
-COMMENT ON COLUMN "com_appendix"."created_by" IS '创建人';
-COMMENT ON COLUMN "com_appendix"."created_org_id" IS '创建人组织';
-COMMENT ON COLUMN "com_appendix"."created_time" IS '创建时间';
-COMMENT ON COLUMN "com_appendix"."file_type" IS '文件类型;#FileType{IMAGE:图片;VIDEO:视频;AUDIO:音频;DOC:文档;OTHER:其他;}';
-COMMENT ON COLUMN "com_appendix"."id" IS 'ID';
-COMMENT ON COLUMN "com_appendix"."original_file_name" IS '原始文件名';
-COMMENT ON COLUMN "com_appendix"."path" IS '文件相对地址';
-COMMENT ON COLUMN "com_appendix"."size_" IS '大小';
-COMMENT ON COLUMN "com_appendix"."updated_by" IS '最后修改人';
-COMMENT ON COLUMN "com_appendix"."updated_time" IS '最后修改时间';
-
-
-CREATE TABLE "com_file"
-(
-    "id" BIGINT NOT NULL,
-    "biz_type" VARCHAR(255),
-    "file_type" VARCHAR(10) DEFAULT 'OTHER',
-    "storage_type" VARCHAR(30) DEFAULT 'LOCAL',
-    "bucket" VARCHAR(255),
-    "path" VARCHAR(255),
-    "url" VARCHAR(255),
-    "unique_file_name" VARCHAR(255),
-    "file_md5" VARCHAR(255),
-    "original_file_name" VARCHAR(255),
-    "content_type" VARCHAR(255),
-    "suffix" VARCHAR(255),
-    "size_" BIGINT DEFAULT 0,
-    "created_time" TIMESTAMP(0),
-    "created_by" BIGINT,
-    "updated_time" TIMESTAMP(0),
-    "updated_by" BIGINT,
-    "created_org_id" BIGINT,
-    CONSTRAINT "com_file_PRIMARY" NOT CLUSTER PRIMARY KEY("id")) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
-
-COMMENT ON TABLE "com_file" IS '增量文件上传日志';
-COMMENT ON COLUMN "com_file"."biz_type" IS '业务类型;同一个业务，不同的字段，需要分别设置不同的业务类型';
-COMMENT ON COLUMN "com_file"."bucket" IS '桶';
-COMMENT ON COLUMN "com_file"."content_type" IS '文件类型';
-COMMENT ON COLUMN "com_file"."created_by" IS '创建人';
-COMMENT ON COLUMN "com_file"."created_org_id" IS '创建人组织';
-COMMENT ON COLUMN "com_file"."created_time" IS '创建时间';
-COMMENT ON COLUMN "com_file"."file_md5" IS '文件md5';
-COMMENT ON COLUMN "com_file"."file_type" IS '文件类型;#FileType{IMAGE:图片;VIDEO:视频;AUDIO:音频;DOC:文档;OTHER:其他;}';
-COMMENT ON COLUMN "com_file"."id" IS 'ID';
-COMMENT ON COLUMN "com_file"."original_file_name" IS '原始文件名';
-COMMENT ON COLUMN "com_file"."path" IS '文件相对地址';
-COMMENT ON COLUMN "com_file"."size_" IS '大小';
-COMMENT ON COLUMN "com_file"."storage_type" IS '存储类型;#FileStorageType{LOCAL:本地;FAST_DFS:FastDFS;MIN_IO:MinIO;ALI_OSS:阿里云OSS;QINIU_OSS:七牛云OSS;HUAWEI_OSS:华为云OSS;}';
-COMMENT ON COLUMN "com_file"."suffix" IS '后缀';
-COMMENT ON COLUMN "com_file"."unique_file_name" IS '唯一文件名';
-COMMENT ON COLUMN "com_file"."updated_by" IS '最后修改人';
-COMMENT ON COLUMN "com_file"."updated_time" IS '最后修改时间';
-COMMENT ON COLUMN "com_file"."url" IS '文件访问地址';
-
-
 CREATE TABLE "device"
 (
     "id" DECIMAL NOT NULL,
@@ -780,8 +657,10 @@ CREATE TABLE "device"
     "description" VARCHAR(255),
     "device_status" TINYINT DEFAULT 0,
     "connect_status" TINYINT DEFAULT 0,
+    "last_status_event_hlc" BIGINT NOT NULL DEFAULT 0,
     "device_tags" VARCHAR(255),
     "product_identification" VARCHAR(100),
+    "bound_product_version_no" VARCHAR(64) DEFAULT '',
     "sw_version" VARCHAR(255),
     "fw_version" VARCHAR(255),
     "device_sdk_version" VARCHAR(255) DEFAULT 'v1',
@@ -799,6 +678,7 @@ CREATE TABLE "device"
 
 COMMENT ON TABLE "device" IS '设备档案信息表';
 COMMENT ON COLUMN "device"."app_id" IS '应用ID';
+COMMENT ON COLUMN "device"."bound_product_version_no" IS '设备绑定的产品版本序号(快照标识,数据上报路径的物模型解析依据,灰度发布时可与产品当前版本不同)';
 COMMENT ON COLUMN "device"."auth_mode" IS '认证方式';
 COMMENT ON COLUMN "device"."client_id" IS '客户端标识';
 COMMENT ON COLUMN "device"."connect_status" IS '连接状态';
@@ -818,6 +698,7 @@ COMMENT ON COLUMN "device"."encrypt_vector" IS '加密向量';
 COMMENT ON COLUMN "device"."fw_version" IS '固件版本';
 COMMENT ON COLUMN "device"."gateway_id" IS '网关设备id';
 COMMENT ON COLUMN "device"."id" IS 'id';
+COMMENT ON COLUMN "device"."last_status_event_hlc" IS '最新状态事件因果时钟(HLC,64-bit)';
 COMMENT ON COLUMN "device"."node_type" IS '设备类型';
 COMMENT ON COLUMN "device"."password" IS '密码';
 COMMENT ON COLUMN "device"."product_identification" IS '产品标识';
@@ -922,47 +803,6 @@ COMMENT ON COLUMN "device_location"."region_code" IS '区县';
 COMMENT ON COLUMN "device_location"."remark" IS '备注';
 COMMENT ON COLUMN "device_location"."updated_by" IS '最后修改人';
 COMMENT ON COLUMN "device_location"."updated_time" IS '最后修改时间';
-
-
-CREATE TABLE "empowerment_record"
-(
-    "id" BIGINT NOT NULL,
-    "app_id" VARCHAR(64),
-    "empowerment_identification" VARCHAR(100),
-    "empowerment_type" TINYINT DEFAULT 0,
-    "startTime" TIMESTAMP(0),
-    "endTime" TIMESTAMP(0),
-    "outcome" CLOB,
-    "feedback" CLOB,
-    "status" TINYINT DEFAULT 0,
-    "version" VARCHAR(255),
-    "dependencies" VARCHAR(255),
-    "remark" VARCHAR(500),
-    "created_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
-    "created_by" BIGINT,
-    "updated_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
-    "updated_by" BIGINT,
-    "created_org_id" BIGINT,
-    CONSTRAINT "empowerment_record_PRIMARY" NOT CLUSTER PRIMARY KEY("id")) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
-
-COMMENT ON TABLE "empowerment_record" IS '赋能记录表';
-COMMENT ON COLUMN "empowerment_record"."app_id" IS '应用ID';
-COMMENT ON COLUMN "empowerment_record"."created_by" IS '创建人';
-COMMENT ON COLUMN "empowerment_record"."created_org_id" IS '创建人组织';
-COMMENT ON COLUMN "empowerment_record"."created_time" IS '创建时间';
-COMMENT ON COLUMN "empowerment_record"."dependencies" IS '依赖关系';
-COMMENT ON COLUMN "empowerment_record"."empowerment_identification" IS '赋能标识';
-COMMENT ON COLUMN "empowerment_record"."empowerment_type" IS '赋能类型';
-COMMENT ON COLUMN "empowerment_record"."endTime" IS '结束时间';
-COMMENT ON COLUMN "empowerment_record"."feedback" IS '赋能反馈';
-COMMENT ON COLUMN "empowerment_record"."id" IS 'id';
-COMMENT ON COLUMN "empowerment_record"."outcome" IS '赋能结果';
-COMMENT ON COLUMN "empowerment_record"."remark" IS '描述';
-COMMENT ON COLUMN "empowerment_record"."startTime" IS '开始时间';
-COMMENT ON COLUMN "empowerment_record"."status" IS '状态';
-COMMENT ON COLUMN "empowerment_record"."updated_by" IS '最后修改人';
-COMMENT ON COLUMN "empowerment_record"."updated_time" IS '最后修改时间';
-COMMENT ON COLUMN "empowerment_record"."version" IS '版本';
 
 
 CREATE TABLE "extend_interface_log"
@@ -1286,8 +1126,10 @@ CREATE TABLE "ota_upgrades"
     "package_name" VARCHAR(100),
     "package_type" SMALLINT DEFAULT 0,
     "product_identification" VARCHAR(100),
+    "product_version_no" VARCHAR(64) DEFAULT '' NOT NULL,
     "version" VARCHAR(255),
     "file_location" VARCHAR(255),
+    "sign_method" SMALLINT NOT NULL DEFAULT 0,
     "status" SMALLINT DEFAULT 0,
     "description" VARCHAR(255),
     "custom_info" CLOB,
@@ -1307,6 +1149,7 @@ COMMENT ON COLUMN "ota_upgrades"."created_time" IS '创建时间';
 COMMENT ON COLUMN "ota_upgrades"."custom_info" IS '自定义信息';
 COMMENT ON COLUMN "ota_upgrades"."description" IS '升级包功能描述';
 COMMENT ON COLUMN "ota_upgrades"."file_location" IS '升级包的位置';
+COMMENT ON COLUMN "ota_upgrades"."sign_method" IS '签名方法(0-MD5、1-SHA256)';
 COMMENT ON COLUMN "ota_upgrades"."id" IS '主键';
 COMMENT ON COLUMN "ota_upgrades"."package_name" IS '包名称';
 COMMENT ON COLUMN "ota_upgrades"."package_type" IS '升级包类型(0:软件包、1:固件包)';
@@ -1316,6 +1159,7 @@ COMMENT ON COLUMN "ota_upgrades"."status" IS '状态';
 COMMENT ON COLUMN "ota_upgrades"."updated_by" IS '更新人';
 COMMENT ON COLUMN "ota_upgrades"."updated_time" IS '更新时间';
 COMMENT ON COLUMN "ota_upgrades"."version" IS '升级包版本号';
+COMMENT ON COLUMN "ota_upgrades"."product_version_no" IS '产品版本序号';
 
 
 CREATE OR REPLACE  INDEX "ota_upgrades_idx_version" ON "ota_upgrades"("version" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
@@ -1336,7 +1180,8 @@ CREATE TABLE "product"
     "device_type" VARCHAR(255),
     "protocol_type" VARCHAR(255),
     "product_status" TINYINT DEFAULT 0,
-    "product_version" VARCHAR(255),
+    "active_version_no" VARCHAR(64) DEFAULT '',
+    "previous_full_version_no" VARCHAR(64) DEFAULT '',
     "remark" VARCHAR(500),
     "created_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
     "created_by" BIGINT,
@@ -1361,7 +1206,8 @@ COMMENT ON COLUMN "product"."product_identification" IS '产品标识';
 COMMENT ON COLUMN "product"."product_name" IS '产品名称';
 COMMENT ON COLUMN "product"."product_status" IS '状态';
 COMMENT ON COLUMN "product"."product_type" IS '产品类型';
-COMMENT ON COLUMN "product"."product_version" IS '产品版本';
+COMMENT ON COLUMN "product"."active_version_no" IS '产品当前激活的版本序号(系统发布时生成的快照标识,16位短雪花字符串,非用户语义化版本号)';
+COMMENT ON COLUMN "product"."previous_full_version_no" IS '灰度切换前的全量版本序号(仅灰度态有值,灰度晋升/回滚后清空,供回滚定位与灰度路由用)';
 COMMENT ON COLUMN "product"."protocol_type" IS '接入协议';
 COMMENT ON COLUMN "product"."remark" IS '产品描述';
 COMMENT ON COLUMN "product"."template_id" IS '产品模板ID';
@@ -1615,6 +1461,131 @@ COMMENT ON COLUMN "product_topic"."topic" IS 'topic';
 COMMENT ON COLUMN "product_topic"."topic_type" IS '类型(0:基础Topic,1:自定义Topic)';
 COMMENT ON COLUMN "product_topic"."updated_by" IS '最后修改人';
 COMMENT ON COLUMN "product_topic"."updated_time" IS '最后修改时间';
+
+
+CREATE TABLE "product_version"
+(
+    "id" BIGINT NOT NULL,
+    "product_identification" VARCHAR(100) DEFAULT '',
+    "version_no" VARCHAR(64) DEFAULT '',
+    "version_status" TINYINT DEFAULT 0,
+    "product_snapshot_json" CLOB,
+    "publish_strategy" TINYINT,
+    "canary_config_json" CLOB,
+    "publish_time" TIMESTAMP(0),
+    "remark" VARCHAR(500) DEFAULT '',
+    "created_org_id" BIGINT,
+    "deleted" TINYINT DEFAULT 0,
+    "created_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT,
+    "updated_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT,
+    CONSTRAINT "product_version_PRIMARY" NOT CLUSTER PRIMARY KEY("id")) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "product_version" IS '产品物模型版本快照';
+COMMENT ON COLUMN "product_version"."id" IS 'id';
+COMMENT ON COLUMN "product_version"."product_identification" IS '产品标识';
+COMMENT ON COLUMN "product_version"."version_no" IS '版本序号(系统发布时生成的不可变快照标识,16位短雪花字符串)';
+COMMENT ON COLUMN "product_version"."version_status" IS '版本状态[0-草稿 1-已发布 2-灰度中 3-影子 4-已回滚 5-已归档]';
+COMMENT ON COLUMN "product_version"."product_snapshot_json" IS '产品快照JSON(冻结整棵产品树)';
+COMMENT ON COLUMN "product_version"."publish_strategy" IS '发布策略[0-全量 1-灰度 2-影子]';
+COMMENT ON COLUMN "product_version"."canary_config_json" IS '灰度配置JSON';
+COMMENT ON COLUMN "product_version"."publish_time" IS '发布时间';
+COMMENT ON COLUMN "product_version"."remark" IS '备注';
+COMMENT ON COLUMN "product_version"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "product_version"."deleted" IS '逻辑删除标识(0-未删除、1-已删除)';
+COMMENT ON COLUMN "product_version"."created_time" IS '创建时间';
+COMMENT ON COLUMN "product_version"."created_by" IS '创建人';
+COMMENT ON COLUMN "product_version"."updated_time" IS '最后修改时间';
+COMMENT ON COLUMN "product_version"."updated_by" IS '最后修改人';
+
+CREATE OR REPLACE  INDEX "product_version_idx_product_identification" ON "product_version"("product_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE  INDEX "product_version_idx_version_no" ON "product_version"("version_no" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE  INDEX "product_version_idx_version_status" ON "product_version"("version_status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+CREATE TABLE "product_publish_record"
+(
+    "id" BIGINT NOT NULL,
+    "product_identification" VARCHAR(100) DEFAULT '',
+    "source_version" VARCHAR(64) DEFAULT '',
+    "target_version" VARCHAR(64) DEFAULT '',
+    "intent" TINYINT DEFAULT 0,
+    "status" TINYINT DEFAULT 0,
+    "ddl_summary" CLOB,
+    "canary_result_json" CLOB,
+    "failed_reason" VARCHAR(2000) DEFAULT '',
+    "retry_count" INT DEFAULT 0,
+    "max_retry_count" INT DEFAULT 3,
+    "started_time" TIMESTAMP(0),
+    "finished_time" TIMESTAMP(0),
+    "remark" VARCHAR(500) DEFAULT '',
+    "created_org_id" BIGINT,
+    "deleted" TINYINT DEFAULT 0,
+    "created_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT,
+    "updated_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT,
+    CONSTRAINT "product_publish_record_PRIMARY" NOT CLUSTER PRIMARY KEY("id")) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "product_publish_record" IS '产品发布记录';
+COMMENT ON COLUMN "product_publish_record"."id" IS 'id';
+COMMENT ON COLUMN "product_publish_record"."product_identification" IS '产品标识';
+COMMENT ON COLUMN "product_publish_record"."source_version" IS '源版本号';
+COMMENT ON COLUMN "product_publish_record"."target_version" IS '目标版本号';
+COMMENT ON COLUMN "product_publish_record"."intent" IS '操作意图[0-发布 1-回滚 2-历史清理]';
+COMMENT ON COLUMN "product_publish_record"."status" IS '执行状态[0-执行中 1-成功 2-失败]';
+COMMENT ON COLUMN "product_publish_record"."ddl_summary" IS 'DDL列表JSON数组(已执行的DDL明细 + 重试元数据)';
+COMMENT ON COLUMN "product_publish_record"."canary_result_json" IS '策略执行结果快照JSON';
+COMMENT ON COLUMN "product_publish_record"."failed_reason" IS '失败原因(成功时为空)';
+COMMENT ON COLUMN "product_publish_record"."retry_count" IS '重试次数(达上限不再重跑)';
+COMMENT ON COLUMN "product_publish_record"."max_retry_count" IS '最大重试次数';
+COMMENT ON COLUMN "product_publish_record"."started_time" IS '开始时间';
+COMMENT ON COLUMN "product_publish_record"."finished_time" IS '结束时间';
+COMMENT ON COLUMN "product_publish_record"."remark" IS '备注';
+COMMENT ON COLUMN "product_publish_record"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "product_publish_record"."deleted" IS '逻辑删除标识(0-未删除、1-已删除)';
+COMMENT ON COLUMN "product_publish_record"."created_time" IS '创建时间';
+COMMENT ON COLUMN "product_publish_record"."created_by" IS '创建人';
+COMMENT ON COLUMN "product_publish_record"."updated_time" IS '最后修改时间';
+COMMENT ON COLUMN "product_publish_record"."updated_by" IS '最后修改人';
+
+CREATE OR REPLACE  INDEX "product_publish_record_idx_product_identification" ON "product_publish_record"("product_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE  INDEX "product_publish_record_idx_target_version" ON "product_publish_record"("target_version" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+CREATE TABLE "product_version_change_log"
+(
+    "id" BIGINT NOT NULL,
+    "product_identification" VARCHAR(100) DEFAULT '',
+    "version_no" VARCHAR(64) DEFAULT '',
+    "change_type" TINYINT DEFAULT 1,
+    "target_type" TINYINT,
+    "change_summary" VARCHAR(500) DEFAULT '',
+    "change_detail_json" CLOB,
+    "created_org_id" BIGINT,
+    "deleted" TINYINT DEFAULT 0,
+    "created_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT,
+    "updated_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT,
+    CONSTRAINT "product_version_change_log_PRIMARY" NOT CLUSTER PRIMARY KEY("id")) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "product_version_change_log" IS '产品物模型版本变更日志';
+COMMENT ON COLUMN "product_version_change_log"."id" IS 'id';
+COMMENT ON COLUMN "product_version_change_log"."product_identification" IS '产品标识';
+COMMENT ON COLUMN "product_version_change_log"."version_no" IS '版本序号:本批变更归属版本(草稿期累积,发布后固化,对应 product_version.version_no)';
+COMMENT ON COLUMN "product_version_change_log"."change_type" IS '变更类型[0-新增 1-编辑 2-删除]';
+COMMENT ON COLUMN "product_version_change_log"."target_type" IS '变更维度[0-产品信息 1-服务 2-属性 3-命令]';
+COMMENT ON COLUMN "product_version_change_log"."change_summary" IS '变更摘要';
+COMMENT ON COLUMN "product_version_change_log"."change_detail_json" IS '字段级变更明细JSON(覆盖产品所有字段)';
+COMMENT ON COLUMN "product_version_change_log"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "product_version_change_log"."deleted" IS '逻辑删除标识(0-未删除、1-已删除)';
+COMMENT ON COLUMN "product_version_change_log"."created_time" IS '创建时间';
+COMMENT ON COLUMN "product_version_change_log"."created_by" IS '创建人';
+COMMENT ON COLUMN "product_version_change_log"."updated_time" IS '最后修改时间';
+COMMENT ON COLUMN "product_version_change_log"."updated_by" IS '最后修改人';
+
+CREATE OR REPLACE  INDEX "product_version_change_log_idx_product_identification" ON "product_version_change_log"("product_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE  INDEX "product_version_change_log_idx_change_type" ON "product_version_change_log"("change_type" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
 
 
 CREATE TABLE "rule"
@@ -2140,3 +2111,1986 @@ COMMENT ON COLUMN "view_project_template"."updated_by" IS '最后修改人';
 COMMENT ON COLUMN "view_project_template"."updated_time" IS '最后修改时间';
 
 
+
+
+-- ============================================================
+-- 以下表为 MySQL 同步:补齐 37 张表 (CA 证书 / device 扩展 / mobile_space / OTA / plugin / rule / video)
+-- ============================================================
+-- ----------------------------
+-- Table structure for ca_cert_license
+-- ----------------------------
+DROP TABLE IF EXISTS "ca_cert_license";
+CREATE TABLE "ca_cert_license"
+(
+    "id" BIGINT NOT NULL,
+    "cert_name" VARCHAR(50) DEFAULT '',
+    "issuer_common_name" VARCHAR(255) DEFAULT '',
+    "serial_number" VARCHAR(100) DEFAULT '',
+    "common_name" VARCHAR(50) DEFAULT '',
+    "organization" VARCHAR(50) DEFAULT '',
+    "organizational_unit" VARCHAR(50) DEFAULT '',
+    "country_name" VARCHAR(50) DEFAULT '',
+    "province_name" VARCHAR(50) DEFAULT '',
+    "locality_name" VARCHAR(50) DEFAULT '',
+    "email" VARCHAR(50) DEFAULT '',
+    "license_base64" CLOB,
+    "business_license_fileid" VARCHAR(100) DEFAULT '',
+    "authorization_cert_fileid" VARCHAR(100) DEFAULT '',
+    "ca_cert_pem" CLOB,
+    "cert_fileid" VARCHAR(100) DEFAULT '',
+    "algorithm" TINYINT NOT NULL DEFAULT '0',
+    "sign_algorithm" TINYINT NOT NULL DEFAULT '0',
+    "param1" VARCHAR(2048) DEFAULT '',
+    "param2" VARCHAR(2048) DEFAULT '',
+    "extend_params" CLOB,
+    "not_before" TIMESTAMP(0) DEFAULT NULL,
+    "not_after" TIMESTAMP(0) DEFAULT NULL,
+    "revoke_time" TIMESTAMP(0) DEFAULT NULL,
+    "revoke_reason" VARCHAR(255) DEFAULT '',
+    "state" TINYINT NOT NULL DEFAULT '0',
+    "thumbprint" VARCHAR(255) DEFAULT '',
+    "remark" VARCHAR(500) DEFAULT '',
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "ca_cert_license_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "ca_cert_license" IS 'CA许可证证书表';
+COMMENT ON COLUMN "ca_cert_license"."algorithm" IS '算法(0-RSA、1-EC)';
+COMMENT ON COLUMN "ca_cert_license"."authorization_cert_fileid" IS '授权证书文件ID';
+COMMENT ON COLUMN "ca_cert_license"."business_license_fileid" IS '营业执照文件ID';
+COMMENT ON COLUMN "ca_cert_license"."ca_cert_pem" IS 'CA证书(PEM格式)';
+COMMENT ON COLUMN "ca_cert_license"."cert_fileid" IS '证书文件ID';
+COMMENT ON COLUMN "ca_cert_license"."cert_name" IS '证书名称';
+COMMENT ON COLUMN "ca_cert_license"."common_name" IS '通用名称';
+COMMENT ON COLUMN "ca_cert_license"."country_name" IS '国家';
+COMMENT ON COLUMN "ca_cert_license"."created_by" IS '创建人';
+COMMENT ON COLUMN "ca_cert_license"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "ca_cert_license"."created_time" IS '创建时间';
+COMMENT ON COLUMN "ca_cert_license"."deleted" IS '逻辑删除标识(0-未删除、1-已删除)';
+COMMENT ON COLUMN "ca_cert_license"."email" IS '邮箱';
+COMMENT ON COLUMN "ca_cert_license"."extend_params" IS '扩展信息';
+COMMENT ON COLUMN "ca_cert_license"."id" IS 'id';
+COMMENT ON COLUMN "ca_cert_license"."issuer_common_name" IS '颁发者通用名称';
+COMMENT ON COLUMN "ca_cert_license"."license_base64" IS 'License文件内容(Base64编码)';
+COMMENT ON COLUMN "ca_cert_license"."locality_name" IS '城市';
+COMMENT ON COLUMN "ca_cert_license"."not_after" IS '证书过期时间';
+COMMENT ON COLUMN "ca_cert_license"."not_before" IS '证书颁发时间';
+COMMENT ON COLUMN "ca_cert_license"."organization" IS '组织名称';
+COMMENT ON COLUMN "ca_cert_license"."organizational_unit" IS '组织单位名称';
+COMMENT ON COLUMN "ca_cert_license"."param1" IS 'RSA公钥n或ECC Point x';
+COMMENT ON COLUMN "ca_cert_license"."param2" IS 'RSA公钥e或ECC Point y';
+COMMENT ON COLUMN "ca_cert_license"."province_name" IS '省份/州';
+COMMENT ON COLUMN "ca_cert_license"."remark" IS '备注';
+COMMENT ON COLUMN "ca_cert_license"."revoke_reason" IS '撤销原因';
+COMMENT ON COLUMN "ca_cert_license"."revoke_time" IS '证书撤销时间';
+COMMENT ON COLUMN "ca_cert_license"."serial_number" IS '证书序列号';
+COMMENT ON COLUMN "ca_cert_license"."sign_algorithm" IS '签名算法(0-SHA256withRSA)';
+COMMENT ON COLUMN "ca_cert_license"."state" IS '证书状态(0-待完善、1-已颁发、2-已撤销)';
+COMMENT ON COLUMN "ca_cert_license"."thumbprint" IS '证书指纹(SHA-256)';
+COMMENT ON COLUMN "ca_cert_license"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "ca_cert_license"."updated_time" IS '最后修改时间';
+
+CREATE OR REPLACE INDEX "ca_cert_license_idx_serial_number" ON "ca_cert_license"("serial_number" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for ca_cert_audit_log
+-- ----------------------------
+DROP TABLE IF EXISTS "ca_cert_audit_log";
+CREATE TABLE "ca_cert_audit_log"
+(
+    "id" BIGINT NOT NULL,
+    "ca_id" BIGINT DEFAULT NULL,
+    "ca_serial_number" VARCHAR(100) DEFAULT NULL,
+    "type" VARCHAR(50) NOT NULL,
+    "detail" CLOB,
+    "created_org_id" BIGINT DEFAULT NULL,
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) DEFAULT NULL,
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) DEFAULT NULL,
+    "deleted" INT DEFAULT '0',
+    CONSTRAINT "ca_cert_audit_log_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "ca_cert_audit_log" IS 'CA 证书审计日志';
+COMMENT ON COLUMN "ca_cert_audit_log"."ca_id" IS '关联 CA 证书 ID';
+COMMENT ON COLUMN "ca_cert_audit_log"."ca_serial_number" IS 'CA 证书序列号';
+COMMENT ON COLUMN "ca_cert_audit_log"."created_by" IS '创建人';
+COMMENT ON COLUMN "ca_cert_audit_log"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "ca_cert_audit_log"."created_time" IS '创建时间';
+COMMENT ON COLUMN "ca_cert_audit_log"."deleted" IS '是否删除(0-未删除/1-已删除)';
+COMMENT ON COLUMN "ca_cert_audit_log"."detail" IS '详情(JSON 或自由文本)';
+COMMENT ON COLUMN "ca_cert_audit_log"."id" IS 'id';
+COMMENT ON COLUMN "ca_cert_audit_log"."type" IS '动作类型: IMPORT/ISSUE/REVOKE/DOWNLOAD_PACK/SSL_TEST';
+COMMENT ON COLUMN "ca_cert_audit_log"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "ca_cert_audit_log"."updated_time" IS '最后修改时间';
+
+CREATE OR REPLACE INDEX "ca_cert_audit_log_idx_ca_id" ON "ca_cert_audit_log"("ca_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "ca_cert_audit_log_idx_type_created" ON "ca_cert_audit_log"("type" ASC,"created_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for device_acl_rule
+-- ----------------------------
+DROP TABLE IF EXISTS "device_acl_rule";
+CREATE TABLE "device_acl_rule"
+(
+    "id" BIGINT NOT NULL,
+    "rule_name" VARCHAR(100) DEFAULT '',
+    "product_identification" VARCHAR(100) NOT NULL DEFAULT '',
+    "device_identification" VARCHAR(255) DEFAULT '',
+    "rule_level" TINYINT NOT NULL DEFAULT '0',
+    "action_type" TINYINT NOT NULL DEFAULT '0',
+    "priority" INT NOT NULL DEFAULT '500',
+    "topic_pattern" VARCHAR(255) DEFAULT '',
+    "ip_whitelist" VARCHAR(255) DEFAULT '',
+    "decision" TINYINT NOT NULL DEFAULT '1',
+    "enabled" TINYINT NOT NULL DEFAULT '0',
+    "remark" VARCHAR(500) DEFAULT '',
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "device_acl_rule_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "device_acl_rule" IS '设备访问控制(ACL)规则表';
+COMMENT ON COLUMN "device_acl_rule"."action_type" IS '动作类型(0:全部、1:发布、2:订阅、3:取消订阅)';
+COMMENT ON COLUMN "device_acl_rule"."created_by" IS '创建人';
+COMMENT ON COLUMN "device_acl_rule"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "device_acl_rule"."created_time" IS '创建时间';
+COMMENT ON COLUMN "device_acl_rule"."decision" IS '决策(0:拒绝、1:允许)';
+COMMENT ON COLUMN "device_acl_rule"."deleted" IS '逻辑删除标识(0-未删除、1-已删除)';
+COMMENT ON COLUMN "device_acl_rule"."device_identification" IS '设备标识';
+COMMENT ON COLUMN "device_acl_rule"."enabled" IS '是否启用';
+COMMENT ON COLUMN "device_acl_rule"."id" IS 'id';
+COMMENT ON COLUMN "device_acl_rule"."ip_whitelist" IS 'IP白名单地址(多个用逗号分隔)';
+COMMENT ON COLUMN "device_acl_rule"."priority" IS '规则优先级(0-1000,值越小优先级越高)';
+COMMENT ON COLUMN "device_acl_rule"."product_identification" IS '产品标识';
+COMMENT ON COLUMN "device_acl_rule"."remark" IS '备注';
+COMMENT ON COLUMN "device_acl_rule"."rule_level" IS '规则级别(0:产品级、1:设备级)';
+COMMENT ON COLUMN "device_acl_rule"."rule_name" IS '规则名称';
+COMMENT ON COLUMN "device_acl_rule"."topic_pattern" IS 'MQTT主题模式(支持通配符)';
+COMMENT ON COLUMN "device_acl_rule"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "device_acl_rule"."updated_time" IS '最后修改时间';
+
+CREATE OR REPLACE INDEX "device_acl_rule_idx_device_identification" ON "device_acl_rule"("device_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "device_acl_rule_idx_product_identification" ON "device_acl_rule"("product_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for device_group
+-- ----------------------------
+DROP TABLE IF EXISTS "device_group";
+CREATE TABLE "device_group"
+(
+    "id" BIGINT NOT NULL,
+    "parent_id" BIGINT NOT NULL,
+    "sort_value" INT DEFAULT '1',
+    "app_id" VARCHAR(64) NOT NULL DEFAULT '',
+    "group_name" VARCHAR(255) DEFAULT '',
+    "type" TINYINT NOT NULL DEFAULT '0',
+    "state" TINYINT NOT NULL DEFAULT 1,
+    "description" VARCHAR(500) DEFAULT '',
+    "remark" VARCHAR(500) DEFAULT '',
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "device_group_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "device_group" IS '设备分组表';
+COMMENT ON COLUMN "device_group"."app_id" IS '应用ID';
+COMMENT ON COLUMN "device_group"."created_by" IS '创建人';
+COMMENT ON COLUMN "device_group"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "device_group"."created_time" IS '创建时间';
+COMMENT ON COLUMN "device_group"."deleted" IS '逻辑删除标识(0-未删除、1-已删除)';
+COMMENT ON COLUMN "device_group"."description" IS '分组描述';
+COMMENT ON COLUMN "device_group"."group_name" IS '分组名称';
+COMMENT ON COLUMN "device_group"."id" IS 'id';
+COMMENT ON COLUMN "device_group"."parent_id" IS '父级ID';
+COMMENT ON COLUMN "device_group"."remark" IS '备注';
+COMMENT ON COLUMN "device_group"."sort_value" IS '排序;默认升序';
+COMMENT ON COLUMN "device_group"."state" IS '状态;[0-禁用 1-启用]';
+COMMENT ON COLUMN "device_group"."type" IS '分组类型';
+COMMENT ON COLUMN "device_group"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "device_group"."updated_time" IS '最后修改时间';
+
+CREATE OR REPLACE INDEX "device_group_idx_parent_id" ON "device_group"("parent_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for device_group_rel
+-- ----------------------------
+DROP TABLE IF EXISTS "device_group_rel";
+CREATE TABLE "device_group_rel"
+(
+    "id" BIGINT NOT NULL,
+    "group_id" BIGINT NOT NULL,
+    "device_identification" VARCHAR(255) NOT NULL DEFAULT '',
+    "remark" VARCHAR(500) DEFAULT '',
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "device_group_rel_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "device_group_rel_uk_group_device" UNIQUE("group_id","device_identification")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "device_group_rel" IS '设备分组资源关系表';
+COMMENT ON COLUMN "device_group_rel"."created_by" IS '创建人';
+COMMENT ON COLUMN "device_group_rel"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "device_group_rel"."created_time" IS '创建时间';
+COMMENT ON COLUMN "device_group_rel"."deleted" IS '逻辑删除标识(0-未删除、1-已删除)';
+COMMENT ON COLUMN "device_group_rel"."device_identification" IS '设备标识';
+COMMENT ON COLUMN "device_group_rel"."group_id" IS '分组ID;#device_group';
+COMMENT ON COLUMN "device_group_rel"."id" IS 'id';
+COMMENT ON COLUMN "device_group_rel"."remark" IS '备注';
+COMMENT ON COLUMN "device_group_rel"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "device_group_rel"."updated_time" IS '最后修改时间';
+
+CREATE OR REPLACE INDEX "device_group_rel_idx_group_id" ON "device_group_rel"("group_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "device_group_rel_idx_device_identification" ON "device_group_rel"("device_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for mobile_space
+-- ----------------------------
+DROP TABLE IF EXISTS "mobile_space";
+CREATE TABLE "mobile_space"
+(
+    "id" BIGINT NOT NULL,
+    "space_name" VARCHAR(255) DEFAULT '',
+    "full_name" VARCHAR(500) NOT NULL DEFAULT '',
+    "latitude" DECIMAL(10,7) NOT NULL,
+    "longitude" DECIMAL(10,7) NOT NULL,
+    "province_code" VARCHAR(50) NOT NULL DEFAULT '',
+    "city_code" VARCHAR(50) NOT NULL DEFAULT '',
+    "region_code" VARCHAR(50) NOT NULL DEFAULT '',
+    "remark" VARCHAR(500) DEFAULT '',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "mobile_space_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "mobile_space" IS '移动端-空间表';
+COMMENT ON COLUMN "mobile_space"."city_code" IS '市编码';
+COMMENT ON COLUMN "mobile_space"."created_by" IS '创建人';
+COMMENT ON COLUMN "mobile_space"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "mobile_space"."created_time" IS '创建时间';
+COMMENT ON COLUMN "mobile_space"."full_name" IS '位置名称';
+COMMENT ON COLUMN "mobile_space"."id" IS 'id';
+COMMENT ON COLUMN "mobile_space"."latitude" IS '纬度';
+COMMENT ON COLUMN "mobile_space"."longitude" IS '经度';
+COMMENT ON COLUMN "mobile_space"."province_code" IS '省,直辖市编码';
+COMMENT ON COLUMN "mobile_space"."region_code" IS '区县';
+COMMENT ON COLUMN "mobile_space"."remark" IS '备注';
+COMMENT ON COLUMN "mobile_space"."space_name" IS '空间名称';
+COMMENT ON COLUMN "mobile_space"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "mobile_space"."updated_time" IS '最后修改时间';
+
+-- ----------------------------
+-- Table structure for mobile_space_device
+-- ----------------------------
+DROP TABLE IF EXISTS "mobile_space_device";
+CREATE TABLE "mobile_space_device"
+(
+    "id" BIGINT NOT NULL,
+    "space_id" BIGINT NOT NULL,
+    "product_identification" VARCHAR(100) NOT NULL DEFAULT '',
+    "device_identification" VARCHAR(255) NOT NULL DEFAULT '',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "mobile_space_device_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "mobile_space_device_uniq_space_product_device" UNIQUE("space_id","product_identification","device_identification")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "mobile_space_device" IS '空间设备绑定表';
+COMMENT ON COLUMN "mobile_space_device"."created_by" IS '创建人';
+COMMENT ON COLUMN "mobile_space_device"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "mobile_space_device"."created_time" IS '创建时间';
+COMMENT ON COLUMN "mobile_space_device"."device_identification" IS '设备标识';
+COMMENT ON COLUMN "mobile_space_device"."id" IS 'id';
+COMMENT ON COLUMN "mobile_space_device"."product_identification" IS '产品标识';
+COMMENT ON COLUMN "mobile_space_device"."space_id" IS '空间ID';
+COMMENT ON COLUMN "mobile_space_device"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "mobile_space_device"."updated_time" IS '最后修改时间';
+
+-- ----------------------------
+-- Table structure for mobile_space_member
+-- ----------------------------
+DROP TABLE IF EXISTS "mobile_space_member";
+CREATE TABLE "mobile_space_member"
+(
+    "id" BIGINT NOT NULL,
+    "space_id" BIGINT NOT NULL,
+    "member_id" BIGINT NOT NULL,
+    "member_type" TINYINT NOT NULL DEFAULT '0',
+    "remark" VARCHAR(500) DEFAULT '',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "mobile_space_member_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "mobile_space_member_idx_uniq_space_member" UNIQUE("space_id","member_id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON COLUMN "mobile_space_member"."created_by" IS '创建人';
+COMMENT ON COLUMN "mobile_space_member"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "mobile_space_member"."created_time" IS '创建时间';
+COMMENT ON COLUMN "mobile_space_member"."id" IS '主键';
+COMMENT ON COLUMN "mobile_space_member"."member_id" IS '人员ID';
+COMMENT ON COLUMN "mobile_space_member"."member_type" IS '人员类型:( 0:成员、1:管理员、 2:所有者)';
+COMMENT ON COLUMN "mobile_space_member"."remark" IS '备注';
+COMMENT ON COLUMN "mobile_space_member"."space_id" IS '空间ID';
+COMMENT ON COLUMN "mobile_space_member"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "mobile_space_member"."updated_time" IS '最后修改时间';
+
+-- ----------------------------
+-- Table structure for ota_upgrade_targets
+-- ----------------------------
+DROP TABLE IF EXISTS "ota_upgrade_targets";
+CREATE TABLE "ota_upgrade_targets"
+(
+    "id" BIGINT NOT NULL,
+    "task_id" BIGINT NOT NULL,
+    "target_value" VARCHAR(100) NOT NULL DEFAULT '',
+    "target_status" SMALLINT NOT NULL DEFAULT '0',
+    "remark" VARCHAR(255) DEFAULT '',
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "ota_upgrade_targets_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "ota_upgrade_targets" IS 'OTA升级目标表';
+COMMENT ON COLUMN "ota_upgrade_targets"."created_by" IS '创建人';
+COMMENT ON COLUMN "ota_upgrade_targets"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "ota_upgrade_targets"."created_time" IS '创建时间';
+COMMENT ON COLUMN "ota_upgrade_targets"."deleted" IS '逻辑删除标识(0-未删除、1-已删除)';
+COMMENT ON COLUMN "ota_upgrade_targets"."id" IS '主键';
+COMMENT ON COLUMN "ota_upgrade_targets"."remark" IS '描述';
+COMMENT ON COLUMN "ota_upgrade_targets"."target_status" IS '目标状态(0:待推送,1:推送中,2:推送成功,3:推送失败)';
+COMMENT ON COLUMN "ota_upgrade_targets"."target_value" IS '目标值(产品标识/设备标识/分组ID/省市区域编码)';
+COMMENT ON COLUMN "ota_upgrade_targets"."task_id" IS '任务ID';
+COMMENT ON COLUMN "ota_upgrade_targets"."updated_by" IS '更新人';
+COMMENT ON COLUMN "ota_upgrade_targets"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "ota_upgrade_targets_idx_task_id" ON "ota_upgrade_targets"("task_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "ota_upgrade_targets_idx_target_value" ON "ota_upgrade_targets"("target_value" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "ota_upgrade_targets_idx_target_status" ON "ota_upgrade_targets"("target_status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for plugin_info
+-- ----------------------------
+DROP TABLE IF EXISTS "plugin_info";
+CREATE TABLE "plugin_info"
+(
+    "id" BIGINT NOT NULL,
+    "app_id" VARCHAR(64) NOT NULL DEFAULT '',
+    "plugin_identification" VARCHAR(255) NOT NULL DEFAULT '',
+    "plugin_code" VARCHAR(255) NOT NULL DEFAULT '',
+    "plugin_name" VARCHAR(255) NOT NULL DEFAULT '',
+    "version" VARCHAR(50) NOT NULL DEFAULT '',
+    "description" CLOB,
+    "file_id" VARCHAR(255) NOT NULL DEFAULT '',
+    "file_size" DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+    "status" TINYINT NOT NULL DEFAULT '0',
+    "level" TINYINT NOT NULL DEFAULT '0',
+    "type" TINYINT NOT NULL DEFAULT '0',
+    "run_mode" TINYINT NOT NULL DEFAULT '0',
+    "license_type" VARCHAR(50) DEFAULT '',
+    "license_key" VARCHAR(255) DEFAULT '',
+    "valid_until" date DEFAULT NULL,
+    "file_hash" VARCHAR(255) DEFAULT '',
+    "scan_status" VARCHAR(50) DEFAULT 'PENDING',
+    "scan_report_file_id" VARCHAR(255) DEFAULT '',
+    "scan_date" TIMESTAMP(0) DEFAULT NULL,
+    "scan_summary" CLOB,
+    "extend_params" CLOB,
+    "remark" VARCHAR(500) DEFAULT '',
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "plugin_info_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "plugin_info" IS '插件信息表';
+COMMENT ON COLUMN "plugin_info"."app_id" IS '应用ID，所属应用场景';
+COMMENT ON COLUMN "plugin_info"."created_by" IS '创建人';
+COMMENT ON COLUMN "plugin_info"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "plugin_info"."created_time" IS '创建时间';
+COMMENT ON COLUMN "plugin_info"."description" IS '插件描述，取自 pluginMeta.properties';
+COMMENT ON COLUMN "plugin_info"."extend_params" IS '扩展参数（预留）';
+COMMENT ON COLUMN "plugin_info"."file_hash" IS '文件的哈希值，用于验证文件的完整性（如 SHA-256）';
+COMMENT ON COLUMN "plugin_info"."file_id" IS '文件在服务器上的唯一标识，用于查询文件临时路径';
+COMMENT ON COLUMN "plugin_info"."file_size" IS '文件大小（MB）';
+COMMENT ON COLUMN "plugin_info"."id" IS '主键';
+COMMENT ON COLUMN "plugin_info"."level" IS '插件级别：0-系统级，1-用户级';
+COMMENT ON COLUMN "plugin_info"."license_key" IS '许可证密钥或证书';
+COMMENT ON COLUMN "plugin_info"."license_type" IS '许可证类型（如GPL, MIT, 商业等）';
+COMMENT ON COLUMN "plugin_info"."plugin_code" IS '插件代码标识，取自 pluginMeta.properties';
+COMMENT ON COLUMN "plugin_info"."plugin_identification" IS '插件唯一标识，自动生成：plugin_code + version';
+COMMENT ON COLUMN "plugin_info"."plugin_name" IS '插件名称，文件名';
+COMMENT ON COLUMN "plugin_info"."remark" IS '备注';
+COMMENT ON COLUMN "plugin_info"."run_mode" IS '运行模式：0-单节点，1-集群';
+COMMENT ON COLUMN "plugin_info"."scan_date" IS '最后一次扫描的日期';
+COMMENT ON COLUMN "plugin_info"."scan_report_file_id" IS '扫描报告的文件ID';
+COMMENT ON COLUMN "plugin_info"."scan_status" IS '扫描状态：PENDING, SUCCESS, FAILED';
+COMMENT ON COLUMN "plugin_info"."scan_summary" IS '扫描摘要（如发现的漏洞数目等）';
+COMMENT ON COLUMN "plugin_info"."status" IS '状态';
+COMMENT ON COLUMN "plugin_info"."type" IS '插件类型：0-设备协议插件，1-业务插件';
+COMMENT ON COLUMN "plugin_info"."updated_by" IS '更新人';
+COMMENT ON COLUMN "plugin_info"."updated_time" IS '更新时间';
+COMMENT ON COLUMN "plugin_info"."valid_until" IS '许可证有效期';
+COMMENT ON COLUMN "plugin_info"."version" IS '插件版本，取自 pluginMeta.properties';
+
+-- ----------------------------
+-- Table structure for plugin_instance
+-- ----------------------------
+DROP TABLE IF EXISTS "plugin_instance";
+CREATE TABLE "plugin_instance"
+(
+    "id" BIGINT NOT NULL,
+    "instance_identification" VARCHAR(255) NOT NULL DEFAULT '',
+    "instance_name" VARCHAR(255) NOT NULL DEFAULT '',
+    "application_name" VARCHAR(255) NOT NULL DEFAULT '',
+    "weight" INT NOT NULL DEFAULT '0',
+    "healthy" TINYINT NOT NULL DEFAULT '0',
+    "enabled" TINYINT NOT NULL DEFAULT '0',
+    "ephemeral" TINYINT NOT NULL DEFAULT '0',
+    "cluster_name" VARCHAR(50) NOT NULL DEFAULT '',
+    "heart_beat_interval" BIGINT DEFAULT NULL,
+    "heart_beat_time_out" BIGINT DEFAULT NULL,
+    "ip_delete_time_out" BIGINT DEFAULT NULL,
+    "machine_ip" VARCHAR(50) NOT NULL DEFAULT '',
+    "machine_port" VARCHAR(20) NOT NULL DEFAULT '',
+    "port_range_start" INT NOT NULL,
+    "port_range_end" INT NOT NULL,
+    "extend_params" CLOB,
+    "remark" VARCHAR(500) DEFAULT '',
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "plugin_instance_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "plugin_instance_idx_instance_identification" UNIQUE("instance_identification")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "plugin_instance" IS '插件实例信息表';
+COMMENT ON COLUMN "plugin_instance"."application_name" IS '应用名称，SpringBoot应用名称';
+COMMENT ON COLUMN "plugin_instance"."cluster_name" IS '实例所在集群名称';
+COMMENT ON COLUMN "plugin_instance"."created_by" IS '创建人';
+COMMENT ON COLUMN "plugin_instance"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "plugin_instance"."created_time" IS '创建时间';
+COMMENT ON COLUMN "plugin_instance"."enabled" IS '实例是否启用';
+COMMENT ON COLUMN "plugin_instance"."ephemeral" IS '实例是否为临时实例';
+COMMENT ON COLUMN "plugin_instance"."extend_params" IS '扩展参数（预留）';
+COMMENT ON COLUMN "plugin_instance"."healthy" IS '实例的健康状态';
+COMMENT ON COLUMN "plugin_instance"."heart_beat_interval" IS '实例心跳间隔时间(毫秒)';
+COMMENT ON COLUMN "plugin_instance"."heart_beat_time_out" IS '实例心跳超时时间(毫秒)';
+COMMENT ON COLUMN "plugin_instance"."id" IS '主键';
+COMMENT ON COLUMN "plugin_instance"."instance_identification" IS '实例唯一标识';
+COMMENT ON COLUMN "plugin_instance"."instance_name" IS '实例名称';
+COMMENT ON COLUMN "plugin_instance"."ip_delete_time_out" IS '实例IP删除超时时间(毫秒)';
+COMMENT ON COLUMN "plugin_instance"."machine_ip" IS '实例机器IP地址';
+COMMENT ON COLUMN "plugin_instance"."machine_port" IS '实例机器端口';
+COMMENT ON COLUMN "plugin_instance"."port_range_end" IS '实例可用端口范围结束值';
+COMMENT ON COLUMN "plugin_instance"."port_range_start" IS '实例可用端口范围起始值';
+COMMENT ON COLUMN "plugin_instance"."remark" IS '备注';
+COMMENT ON COLUMN "plugin_instance"."updated_by" IS '更新人';
+COMMENT ON COLUMN "plugin_instance"."updated_time" IS '更新时间';
+COMMENT ON COLUMN "plugin_instance"."weight" IS '实例的权重';
+
+-- ----------------------------
+-- Table structure for plugin_instance_heartbeat
+-- ----------------------------
+DROP TABLE IF EXISTS "plugin_instance_heartbeat";
+CREATE TABLE "plugin_instance_heartbeat"
+(
+    "id" BIGINT NOT NULL,
+    "instance_identification" VARCHAR(255) NOT NULL DEFAULT '',
+    "machine_ip" VARCHAR(45) NOT NULL DEFAULT '',
+    "last_heartbeat_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "heartbeat_interval" INT NOT NULL DEFAULT '60',
+    "status" TINYINT NOT NULL DEFAULT '0',
+    "heartbeat_message" VARCHAR(500) DEFAULT '',
+    "extend_params" CLOB,
+    "remark" VARCHAR(500) DEFAULT '',
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "plugin_instance_heartbeat_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "plugin_instance_heartbeat" IS '插件实例心跳表';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."created_by" IS '创建人';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."created_time" IS '创建时间';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."extend_params" IS '扩展参数（预留）';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."heartbeat_interval" IS '心跳间隔时间（秒）';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."heartbeat_message" IS '心跳详细信息';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."id" IS '主键';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."instance_identification" IS '实例唯一标识，关联 plugin_instance 表的 instance_identification';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."last_heartbeat_time" IS '上次心跳时间';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."machine_ip" IS '插件运行所在的机器 IP 地址';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."remark" IS '备注';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."status" IS '心跳状态：0-正常，1-异常';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."updated_by" IS '更新人';
+COMMENT ON COLUMN "plugin_instance_heartbeat"."updated_time" IS '更新时间';
+
+-- ----------------------------
+-- Table structure for plugin_instance_mapping
+-- ----------------------------
+DROP TABLE IF EXISTS "plugin_instance_mapping";
+CREATE TABLE "plugin_instance_mapping"
+(
+    "id" BIGINT NOT NULL,
+    "plugin_identification" VARCHAR(255) NOT NULL DEFAULT '',
+    "instance_identification" VARCHAR(255) NOT NULL DEFAULT '',
+    "port" INT NOT NULL,
+    "port_type" VARCHAR(50) DEFAULT '',
+    "status" TINYINT NOT NULL DEFAULT '0',
+    "remark" VARCHAR(500) DEFAULT '',
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    CONSTRAINT "plugin_instance_mapping_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "plugin_instance_mapping_idx_plugin_instance_port" UNIQUE("plugin_identification","instance_identification","port")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "plugin_instance_mapping" IS '插件与实例及端口管理表';
+COMMENT ON COLUMN "plugin_instance_mapping"."created_by" IS '创建人';
+COMMENT ON COLUMN "plugin_instance_mapping"."created_time" IS '创建时间';
+COMMENT ON COLUMN "plugin_instance_mapping"."id" IS '主键';
+COMMENT ON COLUMN "plugin_instance_mapping"."instance_identification" IS '实例唯一标识，关联 plugin_instance 表的 instance_identification';
+COMMENT ON COLUMN "plugin_instance_mapping"."plugin_identification" IS '插件唯一标识，关联 plugin_info 表的 plugin_identification';
+COMMENT ON COLUMN "plugin_instance_mapping"."port" IS '插件在该实例上使用的端口号';
+COMMENT ON COLUMN "plugin_instance_mapping"."port_type" IS '端口类型或用途（如 HTTP, HTTPS, 管理端口等）';
+COMMENT ON COLUMN "plugin_instance_mapping"."remark" IS '备注';
+COMMENT ON COLUMN "plugin_instance_mapping"."status" IS '端口：0-正常，1-异常';
+COMMENT ON COLUMN "plugin_instance_mapping"."updated_by" IS '更新人';
+COMMENT ON COLUMN "plugin_instance_mapping"."updated_time" IS '更新时间';
+
+-- ----------------------------
+-- Table structure for plugin_log
+-- ----------------------------
+DROP TABLE IF EXISTS "plugin_log";
+CREATE TABLE "plugin_log"
+(
+    "id" BIGINT NOT NULL,
+    "plugin_identification" VARCHAR(255) NOT NULL DEFAULT '',
+    "instance_identification" VARCHAR(255) NOT NULL DEFAULT '',
+    "log_level" TINYINT NOT NULL DEFAULT '0',
+    "message" CLOB NOT NULL,
+    "log_timestamp" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "node_id" VARCHAR(255) DEFAULT '',
+    "thread_name" VARCHAR(255) DEFAULT '',
+    "exception_stacktrace" CLOB,
+    "context_info" CLOB,
+    "error_code" VARCHAR(100) DEFAULT '',
+    "execution_time" DECIMAL(10,2) DEFAULT NULL,
+    "remark" VARCHAR(500) DEFAULT '',
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "plugin_log_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "plugin_log" IS '插件运行日志表';
+COMMENT ON COLUMN "plugin_log"."context_info" IS '上下文信息，可能包括请求ID、用户ID等';
+COMMENT ON COLUMN "plugin_log"."created_by" IS '创建人';
+COMMENT ON COLUMN "plugin_log"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "plugin_log"."created_time" IS '创建时间';
+COMMENT ON COLUMN "plugin_log"."error_code" IS '错误代码（如果适用）';
+COMMENT ON COLUMN "plugin_log"."exception_stacktrace" IS '异常堆栈信息（如有异常）';
+COMMENT ON COLUMN "plugin_log"."execution_time" IS '执行时间（毫秒）';
+COMMENT ON COLUMN "plugin_log"."id" IS '主键';
+COMMENT ON COLUMN "plugin_log"."instance_identification" IS '实例唯一标识，关联 plugin_instance 表的 instance_identification';
+COMMENT ON COLUMN "plugin_log"."log_level" IS '日志级别：0-DEBUG，1-INFO，2-WARN，3-ERROR';
+COMMENT ON COLUMN "plugin_log"."log_timestamp" IS '日志记录时间';
+COMMENT ON COLUMN "plugin_log"."message" IS '日志消息内容';
+COMMENT ON COLUMN "plugin_log"."node_id" IS '运行节点标识（集群模式下用以区分具体节点）';
+COMMENT ON COLUMN "plugin_log"."plugin_identification" IS '插件唯一标识，关联 plugin_info 表的 plugin_identification';
+COMMENT ON COLUMN "plugin_log"."remark" IS '备注';
+COMMENT ON COLUMN "plugin_log"."thread_name" IS '运行时线程名称';
+COMMENT ON COLUMN "plugin_log"."updated_by" IS '更新人';
+COMMENT ON COLUMN "plugin_log"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "plugin_log_idx_plugin_identification" ON "plugin_log"("plugin_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "plugin_log_idx_instance_identification" ON "plugin_log"("instance_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "plugin_log_idx_node_id" ON "plugin_log"("node_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for rule_action_execution_log
+-- ----------------------------
+DROP TABLE IF EXISTS "rule_action_execution_log";
+CREATE TABLE "rule_action_execution_log"
+(
+    "id" BIGINT NOT NULL,
+    "rule_execution_id" BIGINT NOT NULL,
+    "action_type" SMALLINT NOT NULL,
+    "action_content" CLOB NOT NULL,
+    "result" TINYINT NOT NULL,
+    "start_time" TIMESTAMP(0) NOT NULL,
+    "end_time" TIMESTAMP(0) DEFAULT NULL,
+    "remark" VARCHAR(255) DEFAULT '',
+    "extend_params" CLOB,
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "rule_action_execution_log_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "rule_action_execution_log" IS '规则动作执行日志表';
+COMMENT ON COLUMN "rule_action_execution_log"."action_content" IS '动作内容';
+COMMENT ON COLUMN "rule_action_execution_log"."action_type" IS '动作类型：0-命令下发，1-触发告警，2-数据转发';
+COMMENT ON COLUMN "rule_action_execution_log"."created_by" IS '创建人';
+COMMENT ON COLUMN "rule_action_execution_log"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "rule_action_execution_log"."created_time" IS '创建时间';
+COMMENT ON COLUMN "rule_action_execution_log"."end_time" IS '动作结束执行时间';
+COMMENT ON COLUMN "rule_action_execution_log"."extend_params" IS '扩展参数（文本格式）';
+COMMENT ON COLUMN "rule_action_execution_log"."id" IS '主键';
+COMMENT ON COLUMN "rule_action_execution_log"."remark" IS '描述';
+COMMENT ON COLUMN "rule_action_execution_log"."result" IS '动作是否执行成功';
+COMMENT ON COLUMN "rule_action_execution_log"."rule_execution_id" IS '规则执行日志ID（外键）';
+COMMENT ON COLUMN "rule_action_execution_log"."start_time" IS '动作开始执行时间';
+COMMENT ON COLUMN "rule_action_execution_log"."updated_by" IS '更新人';
+COMMENT ON COLUMN "rule_action_execution_log"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "rule_action_execution_log_idx_rule_execution_id" ON "rule_action_execution_log"("rule_execution_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for rule_bridge_execution_step
+-- ----------------------------
+DROP TABLE IF EXISTS "rule_bridge_execution_step";
+CREATE TABLE "rule_bridge_execution_step"
+(
+    "id" BIGINT NOT NULL,
+    "trace_id" VARCHAR(64) NOT NULL DEFAULT '',
+    "bridge_rule_id" BIGINT DEFAULT NULL,
+    "step_no" INT NOT NULL DEFAULT '0',
+    "step_type" VARCHAR(30) NOT NULL DEFAULT '',
+    "step_name" VARCHAR(100) NOT NULL DEFAULT '',
+    "status" CHAR(2) NOT NULL DEFAULT '00',
+    "latency_ms" INT DEFAULT NULL,
+    "input_summary" CLOB,
+    "output_summary" CLOB,
+    "error_msg" VARCHAR(4000) DEFAULT NULL,
+    "started_at" TIMESTAMP(0) NOT NULL,
+    "extend_params" VARCHAR(2048) DEFAULT NULL,
+    "remark" VARCHAR(512) DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "rule_bridge_execution_step_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "rule_bridge_execution_step" IS '桥接执行步骤明细（链路回放展示用）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."bridge_rule_id" IS '关联桥接规则 ID（同 traceId 命中多条规则时区分 step 归属）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."created_by" IS '创建人';
+COMMENT ON COLUMN "rule_bridge_execution_step"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "rule_bridge_execution_step"."created_time" IS '创建时间';
+COMMENT ON COLUMN "rule_bridge_execution_step"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "rule_bridge_execution_step"."error_msg" IS '失败错误（status=01 时填；透传下游 raw 错误，对齐 ERROR_MSG_MAX_LENGTH=4000）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."extend_params" IS '扩展参数（步骤特异协议数据 JSON：SINK_SEND 含 sinkType/partition/messageId；RULE_MATCH 含命中条件细节；RATE_LIMIT 含阈值/当前 QPS；TRANSFORM 含 scriptId/scriptVersion 等）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."id" IS '主键';
+COMMENT ON COLUMN "rule_bridge_execution_step"."input_summary" IS '输入摘要 JSON（envelope payload 前 1KB / 命中条件 / 模板变量等）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."latency_ms" IS '本步骤耗时（毫秒）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."output_summary" IS '输出摘要 JSON（转换后 payload / sink 返回值 / 发送 messageId 等）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."remark" IS '备注';
+COMMENT ON COLUMN "rule_bridge_execution_step"."started_at" IS '步骤开始时间（毫秒精度）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."status" IS '00-成功 / 01-失败 / 02-跳过';
+COMMENT ON COLUMN "rule_bridge_execution_step"."step_name" IS '步骤可读名称（中文，前端卡片标题用）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."step_no" IS '步骤顺序号（从1起，前端按此排序）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."step_type" IS '类型枚举：INGEST-数据接入 / RULE_MATCH-规则匹配 / RATE_LIMIT-限流 / TRANSFORM-脚本转换 / SINK_SEND-投递 / DEAD_LETTER-死信 / INBOUND_FORWARD-入站还原';
+COMMENT ON COLUMN "rule_bridge_execution_step"."trace_id" IS '关联 trace（FK→rule_bridge_execution_trace.trace_id）';
+COMMENT ON COLUMN "rule_bridge_execution_step"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "rule_bridge_execution_step"."updated_time" IS '最后修改时间';
+
+CREATE OR REPLACE INDEX "rule_bridge_execution_step_idx_trace_rule_step" ON "rule_bridge_execution_step"("trace_id" ASC,"bridge_rule_id" ASC,"step_no" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_bridge_execution_step_idx_status_time" ON "rule_bridge_execution_step"("status" ASC,"started_at" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for rule_bridge_execution_trace
+-- ----------------------------
+DROP TABLE IF EXISTS "rule_bridge_execution_trace";
+CREATE TABLE "rule_bridge_execution_trace"
+(
+    "id" BIGINT NOT NULL,
+    "trace_id" VARCHAR(64) NOT NULL DEFAULT '',
+    "bridge_rule_id" BIGINT DEFAULT NULL,
+    "direction" CHAR(2) NOT NULL DEFAULT '10',
+    "trigger_source" VARCHAR(20) NOT NULL DEFAULT '',
+    "product_identification" VARCHAR(128) DEFAULT NULL,
+    "device_identification" VARCHAR(128) DEFAULT NULL,
+    "action_type" VARCHAR(50) DEFAULT NULL,
+    "topic" VARCHAR(255) DEFAULT NULL,
+    "data_source_id" BIGINT DEFAULT NULL,
+    "subscription_source_id" BIGINT DEFAULT NULL,
+    "status" CHAR(2) NOT NULL DEFAULT '00',
+    "step_count" INT NOT NULL DEFAULT '0',
+    "total_latency_ms" INT DEFAULT NULL,
+    "start_time" TIMESTAMP(0) NOT NULL,
+    "end_time" TIMESTAMP(0) DEFAULT NULL,
+    "source_payload_summary" TEXT DEFAULT NULL,
+    "result_summary" VARCHAR(2000) DEFAULT NULL,
+    "error_msg" VARCHAR(4000) DEFAULT NULL,
+    "extend_params" VARCHAR(2048) DEFAULT NULL,
+    "remark" VARCHAR(512) DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "rule_bridge_execution_trace_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "rule_bridge_execution_trace_uk_trace_rule" UNIQUE("trace_id","bridge_rule_id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "rule_bridge_execution_trace" IS '桥接执行trace主表（链路回放用）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."action_type" IS '事件类型（PUBLISH/CONNECT/CLOSE/...，复用 LINK_DEVICE_ACTION_TYPE 字典）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."bridge_rule_id" IS '关联桥接规则 ID（出站必填；入站为订阅源拉取时为空）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."created_by" IS '创建人';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."created_time" IS '创建时间';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."data_source_id" IS '关联数据源 ID（出站=目标 sink；入站=来源 source）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."device_identification" IS '设备标识（出站时来自设备事件）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."direction" IS '桥接方向：10-出站 / 20-入站';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."end_time" IS '执行结束时间（毫秒精度）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."error_msg" IS '失败时的错误信息（透传 RocketMQ/Kafka/HTTP 等下游 raw 错误，含堆栈描述；对齐 ERROR_MSG_MAX_LENGTH=4000）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."extend_params" IS '扩展参数';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."id" IS '主键';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."product_identification" IS '产品标识（出站时来自设备事件）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."remark" IS '备注';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."result_summary" IS '结果摘要（成功的 sink / 失败原因等一句话；对齐 RESULT_SUMMARY_MAX_LENGTH=2000）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."source_payload_summary" IS '源消息摘要（完整 envelope 报文；便于排查 + 死信回放）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."start_time" IS '执行开始时间（毫秒精度）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."status" IS '整体状态：00-成功 / 01-失败 / 02-部分成功 / 03-死信';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."step_count" IS '执行的步骤总数（关联 rule_bridge_execution_step 计数）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."subscription_source_id" IS '关联订阅源 ID（仅入站）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."topic" IS '设备事件 topic';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."total_latency_ms" IS '总耗时毫秒（开始到结束）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."trace_id" IS '全链路追踪ID（贯穿 mqs → RocketMQ → rule，可与设备 publish 日志串联）';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."trigger_source" IS '触发来源：DEVICE_DATA-设备数据 / SUBSCRIPTION-订阅源 / TEST_SINK-测试发送 / REPLAY-死信回放';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "rule_bridge_execution_trace"."updated_time" IS '最后修改时间';
+
+CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_rule_status_time" ON "rule_bridge_execution_trace"("bridge_rule_id" ASC,"status" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_rule_time" ON "rule_bridge_execution_trace"("bridge_rule_id" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_start_time" ON "rule_bridge_execution_trace"("start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_status_time" ON "rule_bridge_execution_trace"("status" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_device_time" ON "rule_bridge_execution_trace"("device_identification" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_bridge_execution_trace_idx_org_time" ON "rule_bridge_execution_trace"("created_org_id" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for rule_condition_execution_log
+-- ----------------------------
+DROP TABLE IF EXISTS "rule_condition_execution_log";
+CREATE TABLE "rule_condition_execution_log"
+(
+    "id" BIGINT NOT NULL,
+    "rule_execution_id" BIGINT NOT NULL,
+    "condition_uuid" VARCHAR(100) NOT NULL DEFAULT '',
+    "condition_type" SMALLINT NOT NULL,
+    "evaluation_result" TINYINT NOT NULL,
+    "start_time" TIMESTAMP(0) NOT NULL,
+    "end_time" TIMESTAMP(0) DEFAULT NULL,
+    "remark" VARCHAR(255) DEFAULT '',
+    "extend_params" CLOB,
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "rule_condition_execution_log_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "rule_condition_execution_log" IS '规则条件执行日志表';
+COMMENT ON COLUMN "rule_condition_execution_log"."condition_type" IS '条件类型：0-设备属性触发，1-定时触发，2-设备动作触发等';
+COMMENT ON COLUMN "rule_condition_execution_log"."condition_uuid" IS '条件唯一标识';
+COMMENT ON COLUMN "rule_condition_execution_log"."created_by" IS '创建人';
+COMMENT ON COLUMN "rule_condition_execution_log"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "rule_condition_execution_log"."created_time" IS '创建时间';
+COMMENT ON COLUMN "rule_condition_execution_log"."end_time" IS '条件评估结束时间';
+COMMENT ON COLUMN "rule_condition_execution_log"."evaluation_result" IS '条件是否成立';
+COMMENT ON COLUMN "rule_condition_execution_log"."extend_params" IS '扩展参数（文本格式）';
+COMMENT ON COLUMN "rule_condition_execution_log"."id" IS '主键';
+COMMENT ON COLUMN "rule_condition_execution_log"."remark" IS '描述';
+COMMENT ON COLUMN "rule_condition_execution_log"."rule_execution_id" IS '规则执行日志ID';
+COMMENT ON COLUMN "rule_condition_execution_log"."start_time" IS '条件评估开始时间';
+COMMENT ON COLUMN "rule_condition_execution_log"."updated_by" IS '更新人';
+COMMENT ON COLUMN "rule_condition_execution_log"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "rule_condition_execution_log_idx_condition_uuid" ON "rule_condition_execution_log"("condition_uuid" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_condition_execution_log_idx_rule_execution_id" ON "rule_condition_execution_log"("rule_execution_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for rule_data_bridge
+-- ----------------------------
+DROP TABLE IF EXISTS "rule_data_bridge";
+CREATE TABLE "rule_data_bridge"
+(
+    "id" BIGINT NOT NULL,
+    "app_id" VARCHAR(128) NOT NULL DEFAULT '',
+    "rule_name" VARCHAR(255) NOT NULL DEFAULT '',
+    "rule_code" VARCHAR(128) NOT NULL DEFAULT '',
+    "direction" CHAR(2) NOT NULL DEFAULT '10',
+    "data_source_id" BIGINT NOT NULL,
+    "match_config_json" CLOB NOT NULL,
+    "action_config_json" CLOB NOT NULL,
+    "qos" INT DEFAULT NULL,
+    "rate_limit_qps" INT DEFAULT NULL,
+    "retry_max_times" INT DEFAULT NULL,
+    "retry_backoff_ms" INT DEFAULT NULL,
+    "timeout_ms" INT DEFAULT NULL,
+    "dead_letter_data_source_id" BIGINT DEFAULT NULL,
+    "enable" TINYINT NOT NULL DEFAULT '0',
+    "priority" INT NOT NULL DEFAULT '100',
+    "extend_params" VARCHAR(2048) DEFAULT NULL,
+    "remark" VARCHAR(512) DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "rule_data_bridge_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "rule_data_bridge_uk_rule_code" UNIQUE("rule_code")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "rule_data_bridge" IS '数据桥接-规则';
+COMMENT ON COLUMN "rule_data_bridge"."action_config_json" IS '动作配置JSON（含 sink 特异参数；EncryptTypeHandler 整体加密落盘，防内联 Bearer token 等泄漏）。出站含payloadTemplate/transformScript/sourceType特异参数；入站含targetHandler/fieldMapping';
+COMMENT ON COLUMN "rule_data_bridge"."app_id" IS '应用ID';
+COMMENT ON COLUMN "rule_data_bridge"."created_by" IS '创建人';
+COMMENT ON COLUMN "rule_data_bridge"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "rule_data_bridge"."created_time" IS '创建时间';
+COMMENT ON COLUMN "rule_data_bridge"."data_source_id" IS '关联数据源 FK→rule_data_source.id';
+COMMENT ON COLUMN "rule_data_bridge"."dead_letter_data_source_id" IS '规则级死信数据源覆盖';
+COMMENT ON COLUMN "rule_data_bridge"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "rule_data_bridge"."direction" IS '桥接方向：10-出站(平台→第三方) / 20-入站(第三方→平台)';
+COMMENT ON COLUMN "rule_data_bridge"."enable" IS '是否启用：0-禁用 / 1-启用（必须测试发送成功后手动启用）';
+COMMENT ON COLUMN "rule_data_bridge"."extend_params" IS '扩展参数（兜底，未来加加密/流量分级/A-B 灰度等 0 改表）';
+COMMENT ON COLUMN "rule_data_bridge"."id" IS '主键';
+COMMENT ON COLUMN "rule_data_bridge"."match_config_json" IS '匹配条件JSON。出站含productIdentifications/actionTypes/topicFilter/deviceFilter/payloadFilter/timeWindow；入站含subscriptionSourceIds/messageFilter';
+COMMENT ON COLUMN "rule_data_bridge"."priority" IS '优先级（数字越小越先匹配；同事件命中多条时按此排序）';
+COMMENT ON COLUMN "rule_data_bridge"."qos" IS '规则级可靠性级别覆盖（NULL=用数据源默认）';
+COMMENT ON COLUMN "rule_data_bridge"."rate_limit_qps" IS '规则级 QPS 限流覆盖';
+COMMENT ON COLUMN "rule_data_bridge"."remark" IS '备注';
+COMMENT ON COLUMN "rule_data_bridge"."retry_backoff_ms" IS '规则级初始退避时长覆盖（毫秒）';
+COMMENT ON COLUMN "rule_data_bridge"."retry_max_times" IS '规则级最大重试次数覆盖';
+COMMENT ON COLUMN "rule_data_bridge"."rule_code" IS '规则业务唯一编码（snowflake）';
+COMMENT ON COLUMN "rule_data_bridge"."rule_name" IS '规则名称（列表页展示）';
+COMMENT ON COLUMN "rule_data_bridge"."timeout_ms" IS '规则级单次发送超时覆盖（毫秒）';
+COMMENT ON COLUMN "rule_data_bridge"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "rule_data_bridge"."updated_time" IS '最后修改时间';
+
+CREATE OR REPLACE INDEX "rule_data_bridge_idx_app_direction_enable" ON "rule_data_bridge"("app_id" ASC,"direction" ASC,"enable" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_data_bridge_idx_data_source_id" ON "rule_data_bridge"("data_source_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for rule_data_source
+-- ----------------------------
+DROP TABLE IF EXISTS "rule_data_source";
+CREATE TABLE "rule_data_source"
+(
+    "id" BIGINT NOT NULL,
+    "app_id" VARCHAR(128) NOT NULL DEFAULT '',
+    "data_source_name" VARCHAR(255) NOT NULL DEFAULT '',
+    "data_source_code" VARCHAR(128) NOT NULL DEFAULT '',
+    "direction" CHAR(2) NOT NULL DEFAULT '10',
+    "source_type" VARCHAR(32) NOT NULL DEFAULT '',
+    "connection_json" CLOB NOT NULL,
+    "credential_json" CLOB,
+    "serialization" VARCHAR(20) NOT NULL DEFAULT 'CLOB',
+    "default_qos" INT NOT NULL DEFAULT '1',
+    "default_rate_limit_qps" INT NOT NULL DEFAULT '0',
+    "default_retry_max_times" INT NOT NULL DEFAULT '3',
+    "default_retry_backoff_ms" INT NOT NULL DEFAULT '1000',
+    "default_timeout_ms" INT NOT NULL DEFAULT '5000',
+    "default_dead_letter_data_source_id" BIGINT DEFAULT NULL,
+    "enable" TINYINT NOT NULL DEFAULT '0',
+    "health_status" VARCHAR(20) NOT NULL DEFAULT 'UNKNOWN',
+    "last_health_check_time" TIMESTAMP(0) DEFAULT NULL,
+    "extend_params" VARCHAR(2048) DEFAULT NULL,
+    "remark" VARCHAR(512) DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "rule_data_source_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "rule_data_source_uk_data_source_code" UNIQUE("data_source_code")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "rule_data_source" IS '数据桥接-数据源（出/入站共用）';
+COMMENT ON COLUMN "rule_data_source"."app_id" IS '应用ID';
+COMMENT ON COLUMN "rule_data_source"."connection_json" IS '连接参数JSON（host/port/topic/database/mode 等；EncryptTypeHandler 整体加密落盘）';
+COMMENT ON COLUMN "rule_data_source"."created_by" IS '创建人';
+COMMENT ON COLUMN "rule_data_source"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "rule_data_source"."created_time" IS '创建时间';
+COMMENT ON COLUMN "rule_data_source"."credential_json" IS '凭证JSON（密码/密钥/token；EncryptTypeHandler 整体加密落盘）';
+COMMENT ON COLUMN "rule_data_source"."data_source_code" IS '业务唯一编码（snowflake，外部系统引用）';
+COMMENT ON COLUMN "rule_data_source"."data_source_name" IS '数据源名称（用户起的友好标识，列表页显示）';
+COMMENT ON COLUMN "rule_data_source"."default_dead_letter_data_source_id" IS '默认死信投递的数据源 FK（一般指向告警 Kafka）';
+COMMENT ON COLUMN "rule_data_source"."default_qos" IS '默认可靠性级别：0-fire-forget / 1-at-least-once / 2-exactly-once';
+COMMENT ON COLUMN "rule_data_source"."default_rate_limit_qps" IS '默认 QPS 限流（0=不限）';
+COMMENT ON COLUMN "rule_data_source"."default_retry_backoff_ms" IS '默认初始退避时长 ms（指数倍增 1s/2s/4s/...）';
+COMMENT ON COLUMN "rule_data_source"."default_retry_max_times" IS '默认最大重试次数（不含首次发送）';
+COMMENT ON COLUMN "rule_data_source"."default_timeout_ms" IS '默认单次发送超时 ms';
+COMMENT ON COLUMN "rule_data_source"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "rule_data_source"."direction" IS '方向：10-出站sink / 20-入站source / 30-双向';
+COMMENT ON COLUMN "rule_data_source"."enable" IS '是否启用：0-禁用 / 1-启用（必须测试连接成功后手动启用）';
+COMMENT ON COLUMN "rule_data_source"."extend_params" IS '扩展参数（协议特异调参 JSON：acks/compression/timeout/poolSize 等）';
+COMMENT ON COLUMN "rule_data_source"."health_status" IS '健康状态：HEALTHY/DEGRADED/DOWN/UNKNOWN（HealthCheckScheduler 5min 探活更新）';
+COMMENT ON COLUMN "rule_data_source"."id" IS '主键';
+COMMENT ON COLUMN "rule_data_source"."last_health_check_time" IS '上次健康检查时间';
+COMMENT ON COLUMN "rule_data_source"."remark" IS '备注';
+COMMENT ON COLUMN "rule_data_source"."serialization" IS '序列化策略：JSON/AVRO/STRING/BINARY（与 Serializer.name() 匹配）';
+COMMENT ON COLUMN "rule_data_source"."source_type" IS '协议类型：KAFKA/REDIS/ROCKETMQ/MYSQL/HTTP/WEBHOOK/MQTT；与 ConnectorType 1:1 对齐';
+COMMENT ON COLUMN "rule_data_source"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "rule_data_source"."updated_time" IS '最后修改时间';
+
+CREATE OR REPLACE INDEX "rule_data_source_idx_app_id_direction" ON "rule_data_source"("app_id" ASC,"direction" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_data_source_idx_enable" ON "rule_data_source"("enable" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for rule_execution_log
+-- ----------------------------
+DROP TABLE IF EXISTS "rule_execution_log";
+CREATE TABLE "rule_execution_log"
+(
+    "id" BIGINT NOT NULL,
+    "rule_identification" VARCHAR(100) NOT NULL DEFAULT '',
+    "rule_name" VARCHAR(255) NOT NULL DEFAULT '',
+    "status" SMALLINT NOT NULL DEFAULT '0',
+    "start_time" TIMESTAMP(0) NOT NULL,
+    "end_time" TIMESTAMP(0) DEFAULT NULL,
+    "remark" VARCHAR(255) DEFAULT '',
+    "extend_params" CLOB,
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "rule_execution_log_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "rule_execution_log" IS '规则执行日志表';
+COMMENT ON COLUMN "rule_execution_log"."created_by" IS '创建人';
+COMMENT ON COLUMN "rule_execution_log"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "rule_execution_log"."created_time" IS '创建时间';
+COMMENT ON COLUMN "rule_execution_log"."end_time" IS '规则执行结束时间';
+COMMENT ON COLUMN "rule_execution_log"."extend_params" IS '扩展参数（文本格式）';
+COMMENT ON COLUMN "rule_execution_log"."id" IS '主键';
+COMMENT ON COLUMN "rule_execution_log"."remark" IS '描述';
+COMMENT ON COLUMN "rule_execution_log"."rule_identification" IS '规则标识';
+COMMENT ON COLUMN "rule_execution_log"."rule_name" IS '规则名称';
+COMMENT ON COLUMN "rule_execution_log"."start_time" IS '规则执行开始时间';
+COMMENT ON COLUMN "rule_execution_log"."status" IS '规则执行状态：0-未执行，1-执行中，2-已完成';
+COMMENT ON COLUMN "rule_execution_log"."updated_by" IS '更新人';
+COMMENT ON COLUMN "rule_execution_log"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "rule_execution_log_idx_rule_identification" ON "rule_execution_log"("rule_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_execution_log_idx_start_time" ON "rule_execution_log"("start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_execution_log_idx_status_start_time" ON "rule_execution_log"("status" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_execution_log_idx_rule_start_time" ON "rule_execution_log"("rule_identification" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "rule_execution_log_idx_org_start_time" ON "rule_execution_log"("created_org_id" ASC,"start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for rule_groovy_script
+-- ----------------------------
+DROP TABLE IF EXISTS "rule_groovy_script";
+CREATE TABLE "rule_groovy_script"
+(
+    "id" BIGINT NOT NULL,
+    "name" VARCHAR(255) DEFAULT '',
+    "app_id" VARCHAR(128) NOT NULL DEFAULT '',
+    "script_type" VARCHAR(128) NOT NULL DEFAULT '',
+    "channel_code" VARCHAR(128) NOT NULL DEFAULT '',
+    "product_identification" VARCHAR(128) NOT NULL DEFAULT '',
+    "topic_pattern" VARCHAR(100) NOT NULL DEFAULT '',
+    "enable" TINYINT NOT NULL DEFAULT '0',
+    "script_content" CLOB NOT NULL,
+    "extend_params" CLOB,
+    "object_version" VARCHAR(100) NOT NULL DEFAULT 'v1.0.0',
+    "remark" VARCHAR(500) DEFAULT '',
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "rule_groovy_script_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "rule_groovy_script_idx_only_key" UNIQUE("script_type","channel_code","product_identification","topic_pattern","object_version")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "rule_groovy_script" IS '规则脚本表';
+COMMENT ON COLUMN "rule_groovy_script"."app_id" IS '应用ID';
+COMMENT ON COLUMN "rule_groovy_script"."product_identification" IS '产品标识';
+COMMENT ON COLUMN "rule_groovy_script"."topic_pattern" IS '主题模式';
+COMMENT ON COLUMN "rule_groovy_script"."channel_code" IS '渠道编码';
+COMMENT ON COLUMN "rule_groovy_script"."created_by" IS '创建人';
+COMMENT ON COLUMN "rule_groovy_script"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "rule_groovy_script"."created_time" IS '创建时间';
+COMMENT ON COLUMN "rule_groovy_script"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "rule_groovy_script"."enable" IS '是否启用';
+COMMENT ON COLUMN "rule_groovy_script"."extend_params" IS '扩展信息';
+COMMENT ON COLUMN "rule_groovy_script"."id" IS '主键';
+COMMENT ON COLUMN "rule_groovy_script"."name" IS '名称';
+COMMENT ON COLUMN "rule_groovy_script"."object_version" IS '版本号';
+COMMENT ON COLUMN "rule_groovy_script"."script_type" IS '脚本类型';
+COMMENT ON COLUMN "rule_groovy_script"."remark" IS '备注';
+COMMENT ON COLUMN "rule_groovy_script"."script_content" IS '脚本内容';
+COMMENT ON COLUMN "rule_groovy_script"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "rule_groovy_script"."updated_time" IS '最后修改时间';
+
+-- ----------------------------
+-- Table structure for rule_subscription_source
+-- ----------------------------
+DROP TABLE IF EXISTS "rule_subscription_source";
+CREATE TABLE "rule_subscription_source"
+(
+    "id" BIGINT NOT NULL,
+    "app_id" VARCHAR(128) NOT NULL DEFAULT '',
+    "source_name" VARCHAR(255) NOT NULL DEFAULT '',
+    "source_code" VARCHAR(128) NOT NULL DEFAULT '',
+    "data_source_id" BIGINT NOT NULL,
+    "target_handler" VARCHAR(50) NOT NULL DEFAULT 'MQTT_FORWARD',
+    "mapping_json" CLOB NOT NULL,
+    "target_product_identification" VARCHAR(128) DEFAULT NULL,
+    "target_topic_template" VARCHAR(500) DEFAULT NULL,
+    "enable" TINYINT NOT NULL DEFAULT '0',
+    "last_consume_offset" VARCHAR(200) DEFAULT NULL,
+    "extend_params" VARCHAR(2048) DEFAULT NULL,
+    "remark" VARCHAR(512) DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    CONSTRAINT "rule_subscription_source_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "rule_subscription_source_uk_source_code" UNIQUE("source_code")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "rule_subscription_source" IS '数据桥接-订阅源';
+COMMENT ON COLUMN "rule_subscription_source"."app_id" IS '应用ID';
+COMMENT ON COLUMN "rule_subscription_source"."created_by" IS '创建人';
+COMMENT ON COLUMN "rule_subscription_source"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "rule_subscription_source"."created_time" IS '创建时间';
+COMMENT ON COLUMN "rule_subscription_source"."data_source_id" IS '复用数据源 FK→rule_data_source.id（direction 须为 20-入站 或 30-双向）';
+COMMENT ON COLUMN "rule_subscription_source"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "rule_subscription_source"."enable" IS '是否启用：0-禁用 / 1-启用（必须测试连接成功后手动启用）';
+COMMENT ON COLUMN "rule_subscription_source"."extend_params" IS '扩展参数';
+COMMENT ON COLUMN "rule_subscription_source"."id" IS '主键';
+COMMENT ON COLUMN "rule_subscription_source"."last_consume_offset" IS '上次消费位点（Kafka offset / MQTT messageId / HTTP 时间戳；重启后接续消费）';
+COMMENT ON COLUMN "rule_subscription_source"."mapping_json" IS '字段映射 JSON（如 [{"sourceField":"device_id","targetField":"deviceIdentification"}]）';
+COMMENT ON COLUMN "rule_subscription_source"."remark" IS '备注';
+COMMENT ON COLUMN "rule_subscription_source"."source_code" IS '业务唯一编码（snowflake；HTTP 入站 endpoint URL 用此值）';
+COMMENT ON COLUMN "rule_subscription_source"."source_name" IS '订阅源名称（用户可读）';
+COMMENT ON COLUMN "rule_subscription_source"."target_handler" IS '入站后处理方式：MQTT_FORWARD-伪装设备 publish / RAW_INSERT-直接写 DeviceAction / RULE_TRIGGER-触发场景联动';
+COMMENT ON COLUMN "rule_subscription_source"."target_product_identification" IS 'target_handler=MQTT_FORWARD 时的目标产品标识';
+COMMENT ON COLUMN "rule_subscription_source"."target_topic_template" IS '目标 topic 模板（含 ${} 占位符，如 $thing/up/property/${productId}/${deviceId}）';
+COMMENT ON COLUMN "rule_subscription_source"."updated_by" IS '最后修改人';
+COMMENT ON COLUMN "rule_subscription_source"."updated_time" IS '最后修改时间';
+
+CREATE OR REPLACE INDEX "rule_subscription_source_idx_app_id_enable" ON "rule_subscription_source"("app_id" ASC,"enable" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_channel
+-- ----------------------------
+DROP TABLE IF EXISTS "video_channel";
+CREATE TABLE "video_channel"
+(
+    "id" BIGINT NOT NULL,
+    "device_identification" VARCHAR(64) NOT NULL,
+    "channel_identification" VARCHAR(64) NOT NULL,
+    "channel_no" INT DEFAULT NULL,
+    "channel_type" SMALLINT DEFAULT NULL,
+    "channel_name" VARCHAR(128) DEFAULT NULL,
+    "stream_identification" VARCHAR(64) DEFAULT NULL,
+    "stream_type" VARCHAR(32) DEFAULT NULL,
+    "manufacturer" VARCHAR(128) DEFAULT NULL,
+    "model" VARCHAR(128) DEFAULT NULL,
+    "online_status" TINYINT DEFAULT '0',
+    "host" VARCHAR(256) DEFAULT NULL,
+    "port" INT DEFAULT NULL,
+    "password" VARCHAR(128) DEFAULT NULL,
+    "longitude" DECIMAL(12,8) DEFAULT NULL,
+    "latitude" DECIMAL(12,8) DEFAULT NULL,
+    "full_address" VARCHAR(512) DEFAULT NULL,
+    "province_code" VARCHAR(16) DEFAULT NULL,
+    "city_code" VARCHAR(16) DEFAULT NULL,
+    "region_code" VARCHAR(16) DEFAULT NULL,
+    "has_audio" TINYINT DEFAULT '0',
+    "ptz_type" TINYINT DEFAULT NULL,
+    "ptz_capability" TINYINT DEFAULT '0',
+    "talk_capability" TINYINT DEFAULT '0',
+    "secrecy" TINYINT DEFAULT '0',
+    "channel_config" CLOB DEFAULT NULL,
+    "extend_params" VARCHAR(1024) DEFAULT NULL,
+    "remark" VARCHAR(512) DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    CONSTRAINT "video_channel_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "video_channel_uk_channel_identification" UNIQUE("channel_identification")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_channel" IS '统一通道表';
+COMMENT ON COLUMN "video_channel"."channel_config" IS '通道专属配置(JSON)';
+COMMENT ON COLUMN "video_channel"."channel_identification" IS '通道标识';
+COMMENT ON COLUMN "video_channel"."channel_name" IS '通道名称';
+COMMENT ON COLUMN "video_channel"."channel_no" IS '逻辑通道号';
+COMMENT ON COLUMN "video_channel"."channel_type" IS '通道类型(GB28181行业编码131~143)';
+COMMENT ON COLUMN "video_channel"."city_code" IS '市级编码';
+COMMENT ON COLUMN "video_channel"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_channel"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "video_channel"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_channel"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_channel"."device_identification" IS '所属设备标识';
+COMMENT ON COLUMN "video_channel"."extend_params" IS '扩展参数';
+COMMENT ON COLUMN "video_channel"."full_address" IS '安装地址';
+COMMENT ON COLUMN "video_channel"."has_audio" IS '支持音频(0=否/1=是)';
+COMMENT ON COLUMN "video_channel"."host" IS '通道地址(IP/域名)';
+COMMENT ON COLUMN "video_channel"."id" IS '主键';
+COMMENT ON COLUMN "video_channel"."latitude" IS '纬度';
+COMMENT ON COLUMN "video_channel"."longitude" IS '经度';
+COMMENT ON COLUMN "video_channel"."manufacturer" IS '厂商';
+COMMENT ON COLUMN "video_channel"."model" IS '型号';
+COMMENT ON COLUMN "video_channel"."online_status" IS '在线状态(0=离线/1=在线)';
+COMMENT ON COLUMN "video_channel"."password" IS '设备口令';
+COMMENT ON COLUMN "video_channel"."port" IS '端口';
+COMMENT ON COLUMN "video_channel"."province_code" IS '省级编码';
+COMMENT ON COLUMN "video_channel"."ptz_capability" IS '支持云台控制(0=否/1=是)';
+COMMENT ON COLUMN "video_channel"."ptz_type" IS '云台类型(0=未知/1=球机/2=半球/3=固定枪机/4=遥控枪机)';
+COMMENT ON COLUMN "video_channel"."region_code" IS '行政区划编码';
+COMMENT ON COLUMN "video_channel"."remark" IS '备注';
+COMMENT ON COLUMN "video_channel"."secrecy" IS '保密属性(0=不涉密/1=涉密)';
+COMMENT ON COLUMN "video_channel"."stream_identification" IS '流标识';
+COMMENT ON COLUMN "video_channel"."stream_type" IS '流类型';
+COMMENT ON COLUMN "video_channel"."talk_capability" IS '支持对讲(0=否/1=是)';
+COMMENT ON COLUMN "video_channel"."updated_by" IS '修改人';
+COMMENT ON COLUMN "video_channel"."updated_time" IS '修改时间';
+
+CREATE OR REPLACE INDEX "video_channel_idx_device_identification" ON "video_channel"("device_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_channel_idx_online_status" ON "video_channel"("online_status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_channel_idx_stream_identification" ON "video_channel"("stream_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_channel_idx_created_org_id" ON "video_channel"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_device
+-- ----------------------------
+DROP TABLE IF EXISTS "video_device";
+CREATE TABLE "video_device"
+(
+    "id" BIGINT NOT NULL,
+    "device_identification" VARCHAR(64) NOT NULL,
+    "access_protocol" VARCHAR(32) NOT NULL,
+    "device_name" VARCHAR(128) DEFAULT NULL,
+    "custom_name" VARCHAR(128) DEFAULT NULL,
+    "manufacturer" VARCHAR(128) DEFAULT NULL,
+    "model" VARCHAR(128) DEFAULT NULL,
+    "firmware" VARCHAR(128) DEFAULT NULL,
+    "host" VARCHAR(256) DEFAULT NULL,
+    "port" INT DEFAULT NULL,
+    "wan_host" VARCHAR(256) DEFAULT NULL,
+    "lan_host" VARCHAR(256) DEFAULT NULL,
+    "access_endpoint" VARCHAR(512) DEFAULT NULL,
+    "sdp_host" VARCHAR(256) DEFAULT NULL,
+    "local_host" VARCHAR(256) DEFAULT NULL,
+    "transport" VARCHAR(16) DEFAULT NULL,
+    "stream_mode" VARCHAR(16) DEFAULT NULL,
+    "online_status" TINYINT DEFAULT '0',
+    "register_time" VARCHAR(32) DEFAULT NULL,
+    "last_keepalive_time" VARCHAR(32) DEFAULT NULL,
+    "expires" INT DEFAULT NULL,
+    "keepalive_interval" INT DEFAULT NULL,
+    "keepalive_timeout_count" INT DEFAULT NULL,
+    "auth_type" VARCHAR(32) DEFAULT NULL,
+    "auth_secret" VARCHAR(512) DEFAULT NULL,
+    "media_identification" VARCHAR(64) DEFAULT NULL,
+    "channel_count" INT DEFAULT '0',
+    "ability" VARCHAR(512) DEFAULT NULL,
+    "protocol_config" CLOB DEFAULT NULL,
+    "extend_params" VARCHAR(1024) DEFAULT NULL,
+    "remark" VARCHAR(512) DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    CONSTRAINT "video_device_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "video_device_uk_device_identification" UNIQUE("device_identification")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_device" IS '统一设备表';
+COMMENT ON COLUMN "video_device"."ability" IS '设备能力集描述';
+COMMENT ON COLUMN "video_device"."access_endpoint" IS '完整访问端点(host:port)';
+COMMENT ON COLUMN "video_device"."access_protocol" IS '设备接入协议(GB28181/ONVIF/ISUP/JT1078/SIP/PELCO_D/PELCO_P)';
+COMMENT ON COLUMN "video_device"."auth_secret" IS '认证密钥(加密存储)';
+COMMENT ON COLUMN "video_device"."auth_type" IS '认证方式(PASSWORD/VALIDATE_CODE/AUTH_TOKEN/CERTIFICATE/DIGEST/NONE)';
+COMMENT ON COLUMN "video_device"."channel_count" IS '通道数量';
+COMMENT ON COLUMN "video_device"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_device"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "video_device"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_device"."custom_name" IS '自定义名称';
+COMMENT ON COLUMN "video_device"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_device"."device_identification" IS '设备标识';
+COMMENT ON COLUMN "video_device"."device_name" IS '设备名称';
+COMMENT ON COLUMN "video_device"."expires" IS '注册有效期(秒)';
+COMMENT ON COLUMN "video_device"."extend_params" IS '扩展参数';
+COMMENT ON COLUMN "video_device"."firmware" IS '固件版本';
+COMMENT ON COLUMN "video_device"."host" IS '设备地址(IP/域名)';
+COMMENT ON COLUMN "video_device"."id" IS '主键';
+COMMENT ON COLUMN "video_device"."keepalive_interval" IS '心跳间隔(秒)';
+COMMENT ON COLUMN "video_device"."keepalive_timeout_count" IS '心跳超时次数';
+COMMENT ON COLUMN "video_device"."lan_host" IS '局域网地址(IP/域名)';
+COMMENT ON COLUMN "video_device"."last_keepalive_time" IS '最后心跳时间';
+COMMENT ON COLUMN "video_device"."local_host" IS '本地SIP交互地址(IP/域名)';
+COMMENT ON COLUMN "video_device"."manufacturer" IS '厂商';
+COMMENT ON COLUMN "video_device"."media_identification" IS '媒体服务唯一标识';
+COMMENT ON COLUMN "video_device"."model" IS '型号';
+COMMENT ON COLUMN "video_device"."online_status" IS '是否在线(0=离线/1=在线)';
+COMMENT ON COLUMN "video_device"."port" IS '端口';
+COMMENT ON COLUMN "video_device"."protocol_config" IS '协议专属配置(JSON)';
+COMMENT ON COLUMN "video_device"."register_time" IS '注册时间';
+COMMENT ON COLUMN "video_device"."remark" IS '备注';
+COMMENT ON COLUMN "video_device"."sdp_host" IS '收流地址(IP/域名)';
+COMMENT ON COLUMN "video_device"."stream_mode" IS '数据流传输模式';
+COMMENT ON COLUMN "video_device"."transport" IS '传输协议(UDP/TCP)';
+COMMENT ON COLUMN "video_device"."updated_by" IS '修改人';
+COMMENT ON COLUMN "video_device"."updated_time" IS '修改时间';
+COMMENT ON COLUMN "video_device"."wan_host" IS '公网地址(IP/域名)';
+
+CREATE OR REPLACE INDEX "video_device_idx_access_protocol" ON "video_device"("access_protocol" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_idx_online_status" ON "video_device"("online_status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_idx_media_identification" ON "video_device"("media_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_idx_created_org_id" ON "video_device"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_device_alarm
+-- ----------------------------
+DROP TABLE IF EXISTS "video_device_alarm";
+CREATE TABLE "video_device_alarm"
+(
+    "id" BIGINT NOT NULL,
+    "device_identification" VARCHAR(50) NOT NULL,
+    "channel_identification" VARCHAR(50) DEFAULT NULL,
+    "alarm_priority" TINYINT DEFAULT NULL,
+    "alarm_method" TINYINT DEFAULT NULL,
+    "alarm_time" TIMESTAMP(0) DEFAULT NULL,
+    "alarm_description" VARCHAR(500) DEFAULT NULL,
+    "alarm_type" TINYINT DEFAULT NULL,
+    "alarm_type_param" VARCHAR(500) DEFAULT NULL,
+    "longitude" DOUBLE DEFAULT NULL,
+    "latitude" DOUBLE DEFAULT NULL,
+    "handle_status" TINYINT NOT NULL DEFAULT '0',
+    "handle_user_id" BIGINT DEFAULT NULL,
+    "handle_time" TIMESTAMP(0) DEFAULT NULL,
+    "handle_result" CLOB,
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    CONSTRAINT "video_device_alarm_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_device_alarm" IS '视频设备告警表';
+COMMENT ON COLUMN "video_device_alarm"."alarm_description" IS '告警描述';
+COMMENT ON COLUMN "video_device_alarm"."alarm_method" IS '告警方式';
+COMMENT ON COLUMN "video_device_alarm"."alarm_priority" IS '告警级别(1=一级警情/2=二级警情/3=三级警情/4=四级警情)';
+COMMENT ON COLUMN "video_device_alarm"."alarm_time" IS '告警时间（设备上报时间）';
+COMMENT ON COLUMN "video_device_alarm"."alarm_type" IS '告警类型';
+COMMENT ON COLUMN "video_device_alarm"."alarm_type_param" IS '告警类型参数(JSON)';
+COMMENT ON COLUMN "video_device_alarm"."channel_identification" IS '通道国标编号';
+COMMENT ON COLUMN "video_device_alarm"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_device_alarm"."created_org_id" IS '所属组织ID';
+COMMENT ON COLUMN "video_device_alarm"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_device_alarm"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_device_alarm"."device_identification" IS '设备国标编号';
+COMMENT ON COLUMN "video_device_alarm"."handle_result" IS '处理结果描述';
+COMMENT ON COLUMN "video_device_alarm"."handle_status" IS '处理状态(0=待处理/1=处理中/2=已处理/3=已忽略)';
+COMMENT ON COLUMN "video_device_alarm"."handle_time" IS '处理时间';
+COMMENT ON COLUMN "video_device_alarm"."handle_user_id" IS '处理人ID';
+COMMENT ON COLUMN "video_device_alarm"."id" IS '主键';
+COMMENT ON COLUMN "video_device_alarm"."latitude" IS '纬度';
+COMMENT ON COLUMN "video_device_alarm"."longitude" IS '经度';
+COMMENT ON COLUMN "video_device_alarm"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_device_alarm"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "video_device_alarm_idx_device_identification" ON "video_device_alarm"("device_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_alarm_idx_alarm_time" ON "video_device_alarm"("alarm_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_alarm_idx_handle_status" ON "video_device_alarm"("handle_status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_alarm_idx_alarm_priority" ON "video_device_alarm"("alarm_priority" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_alarm_idx_created_org_id" ON "video_device_alarm"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_device_group
+-- ----------------------------
+DROP TABLE IF EXISTS "video_device_group";
+CREATE TABLE "video_device_group"
+(
+    "id" BIGINT NOT NULL,
+    "group_name" VARCHAR(100) NOT NULL,
+    "parent_id" BIGINT DEFAULT NULL,
+    "group_type" TINYINT NOT NULL DEFAULT '0',
+    "sort_order" INT NOT NULL DEFAULT '0',
+    "group_path" VARCHAR(500) DEFAULT NULL,
+    "group_level" INT NOT NULL DEFAULT '1',
+    "icon" VARCHAR(100) DEFAULT NULL,
+    "enable" TINYINT NOT NULL DEFAULT '1',
+    "extend_params" CLOB,
+    "remark" VARCHAR(500) DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    CONSTRAINT "video_device_group_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_device_group" IS '视频设备分组表';
+COMMENT ON COLUMN "video_device_group"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_device_group"."created_org_id" IS '所属组织ID';
+COMMENT ON COLUMN "video_device_group"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_device_group"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_device_group"."enable" IS '启用状态(0=禁用/1=启用)';
+COMMENT ON COLUMN "video_device_group"."extend_params" IS '扩展参数(JSON)';
+COMMENT ON COLUMN "video_device_group"."group_level" IS '层级深度(从1开始)';
+COMMENT ON COLUMN "video_device_group"."group_name" IS '分组名称';
+COMMENT ON COLUMN "video_device_group"."group_path" IS '层级路径(如: /1/2/3，便于快速查子孙)';
+COMMENT ON COLUMN "video_device_group"."group_type" IS '分组类型(0=自定义分组/1=行政区划/2=业务分组)';
+COMMENT ON COLUMN "video_device_group"."icon" IS '图标标识';
+COMMENT ON COLUMN "video_device_group"."id" IS '主键';
+COMMENT ON COLUMN "video_device_group"."parent_id" IS '上级分组ID(顶层为空)';
+COMMENT ON COLUMN "video_device_group"."remark" IS '备注';
+COMMENT ON COLUMN "video_device_group"."sort_order" IS '排序序号';
+COMMENT ON COLUMN "video_device_group"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_device_group"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "video_device_group_idx_parent_id" ON "video_device_group"("parent_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_group_idx_group_path" ON "video_device_group"("group_path" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_group_idx_sort_order" ON "video_device_group"("sort_order" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_group_idx_enable" ON "video_device_group"("enable" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_group_idx_created_org_id" ON "video_device_group"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_device_group_relation
+-- ----------------------------
+DROP TABLE IF EXISTS "video_device_group_relation";
+CREATE TABLE "video_device_group_relation"
+(
+    "id" BIGINT NOT NULL,
+    "group_id" BIGINT NOT NULL,
+    "device_identification" VARCHAR(50) NOT NULL,
+    "channel_identification" VARCHAR(50) DEFAULT NULL,
+    "sort_order" INT NOT NULL DEFAULT '0',
+    "extend_params" CLOB,
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    CONSTRAINT "video_device_group_relation_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "video_device_group_relation_uk_group_device_channel" UNIQUE("group_id","device_identification","channel_identification")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_device_group_relation" IS '视频设备分组关联表';
+COMMENT ON COLUMN "video_device_group_relation"."channel_identification" IS '通道国标编号(空表示设备级别关联)';
+COMMENT ON COLUMN "video_device_group_relation"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_device_group_relation"."created_org_id" IS '所属组织ID';
+COMMENT ON COLUMN "video_device_group_relation"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_device_group_relation"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_device_group_relation"."device_identification" IS '设备国标编号';
+COMMENT ON COLUMN "video_device_group_relation"."extend_params" IS '扩展参数(JSON)';
+COMMENT ON COLUMN "video_device_group_relation"."group_id" IS '分组ID';
+COMMENT ON COLUMN "video_device_group_relation"."id" IS '主键';
+COMMENT ON COLUMN "video_device_group_relation"."sort_order" IS '分组内排序序号';
+COMMENT ON COLUMN "video_device_group_relation"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_device_group_relation"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "video_device_group_relation_idx_group_id" ON "video_device_group_relation"("group_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_group_relation_idx_device_identification" ON "video_device_group_relation"("device_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_group_relation_idx_created_org_id" ON "video_device_group_relation"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_device_mobile_position
+-- ----------------------------
+DROP TABLE IF EXISTS "video_device_mobile_position";
+CREATE TABLE "video_device_mobile_position"
+(
+    "id" BIGINT NOT NULL,
+    "device_identification" VARCHAR(50) NOT NULL,
+    "channel_identification" VARCHAR(50) DEFAULT NULL,
+    "longitude" DOUBLE DEFAULT NULL,
+    "latitude" DOUBLE DEFAULT NULL,
+    "altitude" DOUBLE DEFAULT NULL,
+    "speed" DOUBLE DEFAULT NULL,
+    "direction" DOUBLE DEFAULT NULL,
+    "report_time" TIMESTAMP(0) DEFAULT NULL,
+    "geo_coord_sys" VARCHAR(20) DEFAULT 'WGS84',
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    CONSTRAINT "video_device_mobile_position_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_device_mobile_position" IS '视频设备移动位置表';
+COMMENT ON COLUMN "video_device_mobile_position"."altitude" IS '海拔高度(米)';
+COMMENT ON COLUMN "video_device_mobile_position"."channel_identification" IS '通道国标编号';
+COMMENT ON COLUMN "video_device_mobile_position"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_device_mobile_position"."created_org_id" IS '所属组织ID';
+COMMENT ON COLUMN "video_device_mobile_position"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_device_mobile_position"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_device_mobile_position"."device_identification" IS '设备国标编号';
+COMMENT ON COLUMN "video_device_mobile_position"."direction" IS '方向角(度，正北为0，顺时针)';
+COMMENT ON COLUMN "video_device_mobile_position"."geo_coord_sys" IS '坐标系(WGS84/GCJ02/BD09)';
+COMMENT ON COLUMN "video_device_mobile_position"."id" IS '主键';
+COMMENT ON COLUMN "video_device_mobile_position"."latitude" IS '纬度';
+COMMENT ON COLUMN "video_device_mobile_position"."longitude" IS '经度';
+COMMENT ON COLUMN "video_device_mobile_position"."report_time" IS '位置上报时间';
+COMMENT ON COLUMN "video_device_mobile_position"."speed" IS '速度(km/h)';
+COMMENT ON COLUMN "video_device_mobile_position"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_device_mobile_position"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "video_device_mobile_position_idx_device_identification" ON "video_device_mobile_position"("device_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_mobile_position_idx_report_time" ON "video_device_mobile_position"("report_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_mobile_position_idx_device_time" ON "video_device_mobile_position"("device_identification" ASC,"report_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_device_mobile_position_idx_created_org_id" ON "video_device_mobile_position"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_gateway_mapping
+-- ----------------------------
+DROP TABLE IF EXISTS "video_gateway_mapping";
+CREATE TABLE "video_gateway_mapping"
+(
+    "id" BIGINT NOT NULL,
+    "src_protocol" VARCHAR(32) NOT NULL,
+    "src_device_identification" VARCHAR(64) NOT NULL,
+    "src_channel_identification" VARCHAR(64) DEFAULT NULL,
+    "gb_device_id" VARCHAR(64) NOT NULL,
+    "gb_channel_id" VARCHAR(64) DEFAULT NULL,
+    "gb_platform_id" BIGINT DEFAULT NULL,
+    "enable" TINYINT NOT NULL DEFAULT '1',
+    "auto_push" TINYINT NOT NULL DEFAULT '0',
+    "mapping_config" CLOB DEFAULT NULL,
+    "register_status" TINYINT DEFAULT '0',
+    "last_register_time" VARCHAR(32) DEFAULT NULL,
+    "remark" VARCHAR(512) DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP(),
+    CONSTRAINT "video_gateway_mapping_PRIMARY" NOT CLUSTER PRIMARY KEY("id"),
+    CONSTRAINT "video_gateway_mapping_uk_src_device_channel" UNIQUE("src_protocol","src_device_identification","src_channel_identification")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_gateway_mapping" IS '网关协议映射表';
+COMMENT ON COLUMN "video_gateway_mapping"."auto_push" IS '自动推流(0=否/1=是)';
+COMMENT ON COLUMN "video_gateway_mapping"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_gateway_mapping"."created_org_id" IS '创建人组织';
+COMMENT ON COLUMN "video_gateway_mapping"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_gateway_mapping"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_gateway_mapping"."enable" IS '是否启用(0=禁用/1=启用)';
+COMMENT ON COLUMN "video_gateway_mapping"."gb_channel_id" IS '映射GB28181通道编号';
+COMMENT ON COLUMN "video_gateway_mapping"."gb_device_id" IS '映射GB28181设备编号';
+COMMENT ON COLUMN "video_gateway_mapping"."gb_platform_id" IS '目标上级平台ID';
+COMMENT ON COLUMN "video_gateway_mapping"."id" IS '主键';
+COMMENT ON COLUMN "video_gateway_mapping"."last_register_time" IS '最后注册时间';
+COMMENT ON COLUMN "video_gateway_mapping"."mapping_config" IS '映射配置(JSON)';
+COMMENT ON COLUMN "video_gateway_mapping"."register_status" IS '注册状态(0=未注册/1=已注册)';
+COMMENT ON COLUMN "video_gateway_mapping"."remark" IS '备注';
+COMMENT ON COLUMN "video_gateway_mapping"."src_channel_identification" IS '源通道标识';
+COMMENT ON COLUMN "video_gateway_mapping"."src_device_identification" IS '源设备标识';
+COMMENT ON COLUMN "video_gateway_mapping"."src_protocol" IS '源协议(JT1078/ISUP等)';
+COMMENT ON COLUMN "video_gateway_mapping"."updated_by" IS '修改人';
+COMMENT ON COLUMN "video_gateway_mapping"."updated_time" IS '修改时间';
+
+CREATE OR REPLACE INDEX "video_gateway_mapping_idx_gb_device_id" ON "video_gateway_mapping"("gb_device_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_gateway_mapping_idx_gb_channel_id" ON "video_gateway_mapping"("gb_channel_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_gateway_mapping_idx_gb_platform_id" ON "video_gateway_mapping"("gb_platform_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_gateway_mapping_idx_created_org_id" ON "video_gateway_mapping"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_notify_subscription
+-- ----------------------------
+DROP TABLE IF EXISTS "video_notify_subscription";
+CREATE TABLE "video_notify_subscription"
+(
+    "id" BIGINT NOT NULL,
+    "subscription_name" VARCHAR(200) NOT NULL,
+    "channel_type" VARCHAR(30) NOT NULL,
+    "channel_config" CLOB,
+    "template_code" VARCHAR(100) NOT NULL,
+    "event_types" VARCHAR(500) NOT NULL,
+    "priority_filter" VARCHAR(100) DEFAULT NULL,
+    "recipient_scope" VARCHAR(20) NOT NULL DEFAULT 'SELF',
+    "recipient_ids" VARCHAR(2000) DEFAULT NULL,
+    "at_all" TINYINT NOT NULL DEFAULT '0',
+    "jump_url_template" VARCHAR(500) DEFAULT NULL,
+    "msg_template" CLOB,
+    "status" TINYINT NOT NULL DEFAULT '1',
+    "remark" VARCHAR(500) DEFAULT NULL,
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    CONSTRAINT "video_notify_subscription_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_notify_subscription" IS '视频事件通知订阅配置';
+COMMENT ON COLUMN "video_notify_subscription"."at_all" IS '@所有人(0=否/1=是)';
+COMMENT ON COLUMN "video_notify_subscription"."channel_config" IS '渠道凭证(JSON)';
+COMMENT ON COLUMN "video_notify_subscription"."channel_type" IS '渠道类型(字典 NOTIFY_CHANNEL_TYPE)';
+COMMENT ON COLUMN "video_notify_subscription"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_notify_subscription"."created_org_id" IS '创建组织ID';
+COMMENT ON COLUMN "video_notify_subscription"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_notify_subscription"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_notify_subscription"."event_types" IS '订阅事件类型(逗号分隔)';
+COMMENT ON COLUMN "video_notify_subscription"."id" IS '主键';
+COMMENT ON COLUMN "video_notify_subscription"."jump_url_template" IS '跳转链接模板';
+COMMENT ON COLUMN "video_notify_subscription"."msg_template" IS '消息内容模板(支持${变量})';
+COMMENT ON COLUMN "video_notify_subscription"."priority_filter" IS '告警级别过滤(逗号分隔,空=全部)';
+COMMENT ON COLUMN "video_notify_subscription"."recipient_ids" IS '接收人用户ID(逗号分隔)';
+COMMENT ON COLUMN "video_notify_subscription"."recipient_scope" IS '接收范围: SELF/ORG/CUSTOM';
+COMMENT ON COLUMN "video_notify_subscription"."remark" IS '备注';
+COMMENT ON COLUMN "video_notify_subscription"."status" IS '状态(0=禁用/1=启用)';
+COMMENT ON COLUMN "video_notify_subscription"."subscription_name" IS '订阅名称';
+COMMENT ON COLUMN "video_notify_subscription"."template_code" IS '消息模板编码(ExtendMsgTemplate.code)';
+COMMENT ON COLUMN "video_notify_subscription"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_notify_subscription"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "video_notify_subscription_idx_event_types" ON "video_notify_subscription"("event_types" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_notify_subscription_idx_channel_type" ON "video_notify_subscription"("channel_type" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_notify_subscription_idx_status" ON "video_notify_subscription"("status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_notify_subscription_idx_created_org_id" ON "video_notify_subscription"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_platform
+-- ----------------------------
+DROP TABLE IF EXISTS "video_platform";
+CREATE TABLE "video_platform"
+(
+    "id" BIGINT NOT NULL,
+    "name" VARCHAR(100) DEFAULT NULL,
+    "enable" TINYINT DEFAULT '1',
+    "server_gb_id" VARCHAR(50) DEFAULT NULL,
+    "server_gb_domain" VARCHAR(50) DEFAULT NULL,
+    "server_ip" VARCHAR(128) DEFAULT '',
+    "server_port" INT DEFAULT NULL,
+    "device_gb_id" VARCHAR(50) DEFAULT NULL,
+    "device_ip" VARCHAR(128) DEFAULT '',
+    "device_port" INT DEFAULT NULL,
+    "username" VARCHAR(100) DEFAULT NULL,
+    "password" VARCHAR(200) DEFAULT NULL,
+    "expires" INT DEFAULT '3600',
+    "keep_timeout" INT DEFAULT '60',
+    "transport" VARCHAR(10) DEFAULT 'UDP',
+    "character_set" VARCHAR(20) DEFAULT 'GB2312',
+    "ptz" TINYINT DEFAULT '0',
+    "rtcp" TINYINT DEFAULT '0',
+    "status" TINYINT DEFAULT '0',
+    "catalog_subscribe" TINYINT DEFAULT '0',
+    "alarm_subscribe" TINYINT DEFAULT '0',
+    "mobile_position_subscribe" TINYINT DEFAULT '0',
+    "catalog_group" INT DEFAULT '1',
+    "as_message_channel" TINYINT DEFAULT '0',
+    "send_stream_ip" VARCHAR(128) DEFAULT '',
+    "auto_push_channel" TINYINT DEFAULT '0',
+    "catalog_with_platform" INT DEFAULT '0',
+    "catalog_with_group" INT DEFAULT '0',
+    "catalog_with_region" INT DEFAULT '0',
+    "civil_code" VARCHAR(50) DEFAULT NULL,
+    "manufacturer" VARCHAR(100) DEFAULT NULL,
+    "model" VARCHAR(100) DEFAULT NULL,
+    "address" VARCHAR(200) DEFAULT NULL,
+    "register_way" TINYINT DEFAULT '1',
+    "secrecy" TINYINT DEFAULT '0',
+    "server_id" VARCHAR(50) DEFAULT NULL,
+    "cascade_type" TINYINT DEFAULT '0',
+    "gb_version" VARCHAR(20) DEFAULT NULL,
+    "online_status" TINYINT DEFAULT '0',
+    "register_expires" INT DEFAULT '3600',
+    "keepalive_interval" INT DEFAULT '60',
+    "keepalive_timeout_count" INT DEFAULT '3',
+    "last_register_time" VARCHAR(50) DEFAULT NULL,
+    "last_keepalive_time" VARCHAR(50) DEFAULT NULL,
+    "start_offline_push" TINYINT DEFAULT '0',
+    "sip_ip" VARCHAR(128) DEFAULT '',
+    "sip_port" INT DEFAULT NULL,
+    "hook_url_prefix" VARCHAR(200) DEFAULT NULL,
+    "service_instance_id" VARCHAR(100) DEFAULT NULL,
+    "cascade_sdp_ip" VARCHAR(128) DEFAULT '',
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    CONSTRAINT "video_platform_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_platform" IS '视频级联平台表';
+COMMENT ON COLUMN "video_platform"."address" IS '地址';
+COMMENT ON COLUMN "video_platform"."alarm_subscribe" IS '订阅告警';
+COMMENT ON COLUMN "video_platform"."as_message_channel" IS '作为消息通道';
+COMMENT ON COLUMN "video_platform"."auto_push_channel" IS '自动推送通道';
+COMMENT ON COLUMN "video_platform"."cascade_sdp_ip" IS '级联SDP IP/域名';
+COMMENT ON COLUMN "video_platform"."cascade_type" IS '级联类型(0=作为下级/1=作为上级)';
+COMMENT ON COLUMN "video_platform"."catalog_group" IS '目录分组大小';
+COMMENT ON COLUMN "video_platform"."catalog_subscribe" IS '订阅目录变化';
+COMMENT ON COLUMN "video_platform"."catalog_with_group" IS '目录包含分组';
+COMMENT ON COLUMN "video_platform"."catalog_with_platform" IS '目录包含平台';
+COMMENT ON COLUMN "video_platform"."catalog_with_region" IS '目录包含区域';
+COMMENT ON COLUMN "video_platform"."character_set" IS '字符集(GB2312/UTF-8)';
+COMMENT ON COLUMN "video_platform"."civil_code" IS '行政区划编码';
+COMMENT ON COLUMN "video_platform"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_platform"."created_org_id" IS '所属组织ID';
+COMMENT ON COLUMN "video_platform"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_platform"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_platform"."device_gb_id" IS '本平台在上级的设备编号';
+COMMENT ON COLUMN "video_platform"."device_ip" IS '本机设备IP/域名';
+COMMENT ON COLUMN "video_platform"."device_port" IS '本平台SIP端口';
+COMMENT ON COLUMN "video_platform"."enable" IS '启用状态(0=禁用/1=启用)';
+COMMENT ON COLUMN "video_platform"."expires" IS '注册有效期(秒)';
+COMMENT ON COLUMN "video_platform"."gb_version" IS 'GB28181协议版本';
+COMMENT ON COLUMN "video_platform"."hook_url_prefix" IS 'Hook URL前缀';
+COMMENT ON COLUMN "video_platform"."id" IS '主键';
+COMMENT ON COLUMN "video_platform"."keep_timeout" IS '心跳超时(秒)';
+COMMENT ON COLUMN "video_platform"."keepalive_interval" IS '心跳间隔(秒)';
+COMMENT ON COLUMN "video_platform"."keepalive_timeout_count" IS '心跳超时次数';
+COMMENT ON COLUMN "video_platform"."last_keepalive_time" IS '最近心跳时间';
+COMMENT ON COLUMN "video_platform"."last_register_time" IS '最近注册时间';
+COMMENT ON COLUMN "video_platform"."manufacturer" IS '厂商';
+COMMENT ON COLUMN "video_platform"."mobile_position_subscribe" IS '订阅位置';
+COMMENT ON COLUMN "video_platform"."model" IS '型号';
+COMMENT ON COLUMN "video_platform"."name" IS '平台名称';
+COMMENT ON COLUMN "video_platform"."online_status" IS '在线状态(0=离线/1=在线)';
+COMMENT ON COLUMN "video_platform"."password" IS '认证密码';
+COMMENT ON COLUMN "video_platform"."ptz" IS '是否支持PTZ';
+COMMENT ON COLUMN "video_platform"."register_expires" IS '注册有效期(秒)';
+COMMENT ON COLUMN "video_platform"."register_way" IS '注册方式(1=符合标准)';
+COMMENT ON COLUMN "video_platform"."rtcp" IS '是否支持RTCP';
+COMMENT ON COLUMN "video_platform"."secrecy" IS '保密属性(0=不涉密/1=涉密)';
+COMMENT ON COLUMN "video_platform"."send_stream_ip" IS '推流IP/域名';
+COMMENT ON COLUMN "video_platform"."server_gb_domain" IS '平台国标域';
+COMMENT ON COLUMN "video_platform"."server_gb_id" IS '平台国标编号';
+COMMENT ON COLUMN "video_platform"."server_id" IS '服务器ID';
+COMMENT ON COLUMN "video_platform"."server_ip" IS '上级SIP服务IP/域名';
+COMMENT ON COLUMN "video_platform"."server_port" IS '平台SIP端口';
+COMMENT ON COLUMN "video_platform"."service_instance_id" IS '服务实例ID';
+COMMENT ON COLUMN "video_platform"."sip_ip" IS 'SIP服务IP/域名';
+COMMENT ON COLUMN "video_platform"."sip_port" IS 'SIP监听端口';
+COMMENT ON COLUMN "video_platform"."start_offline_push" IS '推送离线通道';
+COMMENT ON COLUMN "video_platform"."status" IS '注册状态(0=未注册/1=已注册)';
+COMMENT ON COLUMN "video_platform"."transport" IS '传输协议(UDP/TCP)';
+COMMENT ON COLUMN "video_platform"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_platform"."updated_time" IS '更新时间';
+COMMENT ON COLUMN "video_platform"."username" IS '认证用户名';
+
+CREATE OR REPLACE INDEX "video_platform_idx_server_gb_id" ON "video_platform"("server_gb_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_platform_idx_online_status" ON "video_platform"("online_status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_platform_idx_enable" ON "video_platform"("enable" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_platform_idx_created_org_id" ON "video_platform"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_platform_catalog
+-- ----------------------------
+DROP TABLE IF EXISTS "video_platform_catalog";
+CREATE TABLE "video_platform_catalog"
+(
+    "id" BIGINT NOT NULL,
+    "platform_id" BIGINT NOT NULL,
+    "name" VARCHAR(100) DEFAULT NULL,
+    "gb_id" VARCHAR(50) DEFAULT NULL,
+    "parent_id" BIGINT DEFAULT NULL,
+    "catalog_type" TINYINT DEFAULT '0',
+    "civil_code" VARCHAR(50) DEFAULT NULL,
+    "sort_order" INT DEFAULT '0',
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    CONSTRAINT "video_platform_catalog_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_platform_catalog" IS '视频级联目录表';
+COMMENT ON COLUMN "video_platform_catalog"."catalog_type" IS '目录类型(0=行政区划/1=业务分组/2=虚拟组织)';
+COMMENT ON COLUMN "video_platform_catalog"."civil_code" IS '行政区划编码';
+COMMENT ON COLUMN "video_platform_catalog"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_platform_catalog"."created_org_id" IS '所属组织ID';
+COMMENT ON COLUMN "video_platform_catalog"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_platform_catalog"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_platform_catalog"."gb_id" IS '目录国标编号';
+COMMENT ON COLUMN "video_platform_catalog"."id" IS '主键';
+COMMENT ON COLUMN "video_platform_catalog"."name" IS '目录名称';
+COMMENT ON COLUMN "video_platform_catalog"."parent_id" IS '上级目录ID(顶层为空)';
+COMMENT ON COLUMN "video_platform_catalog"."platform_id" IS '级联平台ID';
+COMMENT ON COLUMN "video_platform_catalog"."sort_order" IS '排序序号';
+COMMENT ON COLUMN "video_platform_catalog"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_platform_catalog"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "video_platform_catalog_idx_platform_id" ON "video_platform_catalog"("platform_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_platform_catalog_idx_parent_id" ON "video_platform_catalog"("parent_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_platform_catalog_idx_created_org_id" ON "video_platform_catalog"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_platform_channel
+-- ----------------------------
+DROP TABLE IF EXISTS "video_platform_channel";
+CREATE TABLE "video_platform_channel"
+(
+    "id" BIGINT NOT NULL,
+    "platform_id" BIGINT NOT NULL,
+    "device_channel_id" BIGINT DEFAULT NULL,
+    "catalog_id" BIGINT DEFAULT NULL,
+    "device_identification" VARCHAR(50) DEFAULT NULL,
+    "channel_identification" VARCHAR(50) DEFAULT NULL,
+    "custom_name" VARCHAR(100) DEFAULT NULL,
+    "custom_gb_id" VARCHAR(50) DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    CONSTRAINT "video_platform_channel_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_platform_channel" IS '视频级联平台通道关联表';
+COMMENT ON COLUMN "video_platform_channel"."catalog_id" IS '所属目录ID';
+COMMENT ON COLUMN "video_platform_channel"."channel_identification" IS '通道国标编号';
+COMMENT ON COLUMN "video_platform_channel"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_platform_channel"."created_org_id" IS '所属组织ID';
+COMMENT ON COLUMN "video_platform_channel"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_platform_channel"."custom_gb_id" IS '自定义国标编号';
+COMMENT ON COLUMN "video_platform_channel"."custom_name" IS '自定义名称';
+COMMENT ON COLUMN "video_platform_channel"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_platform_channel"."device_channel_id" IS '设备通道表ID';
+COMMENT ON COLUMN "video_platform_channel"."device_identification" IS '设备国标编号';
+COMMENT ON COLUMN "video_platform_channel"."id" IS '主键';
+COMMENT ON COLUMN "video_platform_channel"."platform_id" IS '级联平台ID';
+COMMENT ON COLUMN "video_platform_channel"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_platform_channel"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "video_platform_channel_idx_platform_id" ON "video_platform_channel"("platform_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_platform_channel_idx_device_identification" ON "video_platform_channel"("device_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_platform_channel_idx_created_org_id" ON "video_platform_channel"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_record_file
+-- ----------------------------
+DROP TABLE IF EXISTS "video_record_file";
+CREATE TABLE "video_record_file"
+(
+    "id" BIGINT NOT NULL,
+    "plan_id" BIGINT DEFAULT NULL,
+    "device_identification" VARCHAR(50) DEFAULT NULL,
+    "channel_identification" VARCHAR(50) DEFAULT NULL,
+    "stream_identification" VARCHAR(100) DEFAULT NULL,
+    "app" VARCHAR(50) DEFAULT NULL,
+    "media_identification" VARCHAR(50) DEFAULT NULL,
+    "file_name" VARCHAR(200) DEFAULT NULL,
+    "file_id" BIGINT DEFAULT NULL,
+    "file_size" BIGINT NOT NULL DEFAULT '0',
+    "file_format" VARCHAR(20) NOT NULL DEFAULT 'mp4',
+    "duration" INT NOT NULL DEFAULT '0',
+    "start_time" TIMESTAMP(0) DEFAULT NULL,
+    "end_time" TIMESTAMP(0) DEFAULT NULL,
+    "thumbnail_file_id" BIGINT DEFAULT NULL,
+    "file_status" TINYINT NOT NULL DEFAULT '0',
+    "extend_params" CLOB,
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    CONSTRAINT "video_record_file_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_record_file" IS '视频录像文件表';
+COMMENT ON COLUMN "video_record_file"."app" IS '应用名';
+COMMENT ON COLUMN "video_record_file"."channel_identification" IS '通道国标编号';
+COMMENT ON COLUMN "video_record_file"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_record_file"."created_org_id" IS '所属组织ID';
+COMMENT ON COLUMN "video_record_file"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_record_file"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_record_file"."device_identification" IS '设备国标编号';
+COMMENT ON COLUMN "video_record_file"."duration" IS '时长(秒)';
+COMMENT ON COLUMN "video_record_file"."end_time" IS '录像结束时间';
+COMMENT ON COLUMN "video_record_file"."extend_params" IS '扩展参数(JSON)';
+COMMENT ON COLUMN "video_record_file"."file_format" IS '文件格式(mp4/flv/ts)';
+COMMENT ON COLUMN "video_record_file"."file_id" IS '文件ID(关联base服务File表)';
+COMMENT ON COLUMN "video_record_file"."file_name" IS '文件名';
+COMMENT ON COLUMN "video_record_file"."file_size" IS '文件大小(字节)';
+COMMENT ON COLUMN "video_record_file"."file_status" IS '文件状态(0=录制中/1=已完成/2=已过期/3=已删除)';
+COMMENT ON COLUMN "video_record_file"."id" IS '主键';
+COMMENT ON COLUMN "video_record_file"."media_identification" IS '流媒体服务器标识';
+COMMENT ON COLUMN "video_record_file"."plan_id" IS '关联录像计划ID(手动录制时为空)';
+COMMENT ON COLUMN "video_record_file"."start_time" IS '录像开始时间';
+COMMENT ON COLUMN "video_record_file"."stream_identification" IS '流标识';
+COMMENT ON COLUMN "video_record_file"."thumbnail_file_id" IS '缩略图文件ID(关联base服务File表)';
+COMMENT ON COLUMN "video_record_file"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_record_file"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "video_record_file_idx_plan_id" ON "video_record_file"("plan_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_record_file_idx_device_channel" ON "video_record_file"("device_identification" ASC,"channel_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_record_file_idx_start_time" ON "video_record_file"("start_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_record_file_idx_end_time" ON "video_record_file"("end_time" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_record_file_idx_file_id" ON "video_record_file"("file_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_record_file_idx_file_status" ON "video_record_file"("file_status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_record_file_idx_media_identification" ON "video_record_file"("media_identification" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_record_file_idx_created_org_id" ON "video_record_file"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_record_plan
+-- ----------------------------
+DROP TABLE IF EXISTS "video_record_plan";
+CREATE TABLE "video_record_plan"
+(
+    "id" BIGINT NOT NULL,
+    "plan_name" VARCHAR(100) NOT NULL,
+    "plan_type" TINYINT NOT NULL DEFAULT '0',
+    "media_identification" VARCHAR(50) DEFAULT NULL,
+    "record_format" VARCHAR(20) NOT NULL DEFAULT 'mp4',
+    "segment_duration" INT NOT NULL DEFAULT '3600',
+    "retention_days" INT NOT NULL DEFAULT '30',
+    "storage_path" VARCHAR(500) DEFAULT NULL,
+    "plan_status" TINYINT NOT NULL DEFAULT '0',
+    "schedule_rule" CLOB,
+    "extend_params" CLOB,
+    "remark" VARCHAR(500) DEFAULT NULL,
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    CONSTRAINT "video_record_plan_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_record_plan" IS '视频录像计划表';
+COMMENT ON COLUMN "video_record_plan"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_record_plan"."created_org_id" IS '所属组织ID';
+COMMENT ON COLUMN "video_record_plan"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_record_plan"."deleted" IS '逻辑删除(0=正常/1=删除)';
+COMMENT ON COLUMN "video_record_plan"."extend_params" IS '扩展参数(JSON)';
+COMMENT ON COLUMN "video_record_plan"."id" IS '主键';
+COMMENT ON COLUMN "video_record_plan"."media_identification" IS '指定流媒体服务器标识(空则自动分配)';
+COMMENT ON COLUMN "video_record_plan"."plan_name" IS '计划名称';
+COMMENT ON COLUMN "video_record_plan"."plan_status" IS '计划状态(0=停用/1=启用)';
+COMMENT ON COLUMN "video_record_plan"."plan_type" IS '计划类型(0=设备录像/1=云端录像)';
+COMMENT ON COLUMN "video_record_plan"."record_format" IS '录像格式(mp4/flv/ts)';
+COMMENT ON COLUMN "video_record_plan"."remark" IS '备注';
+COMMENT ON COLUMN "video_record_plan"."retention_days" IS '保留天数(超期自动清理)';
+COMMENT ON COLUMN "video_record_plan"."schedule_rule" IS '调度规则(JSON，支持周期/CRON/一次性)';
+COMMENT ON COLUMN "video_record_plan"."segment_duration" IS '分段时长(秒，默认1小时)';
+COMMENT ON COLUMN "video_record_plan"."storage_path" IS '存储路径(空则用默认路径)';
+COMMENT ON COLUMN "video_record_plan"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_record_plan"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "video_record_plan_idx_plan_status" ON "video_record_plan"("plan_status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_record_plan_idx_plan_type" ON "video_record_plan"("plan_type" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_record_plan_idx_created_org_id" ON "video_record_plan"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+-- ----------------------------
+-- Table structure for video_sip_config
+-- ----------------------------
+DROP TABLE IF EXISTS "video_sip_config";
+CREATE TABLE "video_sip_config"
+(
+    "id" BIGINT NOT NULL,
+    "config_name" VARCHAR(100) NOT NULL,
+    "sip_id" VARCHAR(50) NOT NULL,
+    "sip_domain" VARCHAR(50) NOT NULL,
+    "sip_password" VARCHAR(100) DEFAULT NULL,
+    "sip_server_address" VARCHAR(200) DEFAULT NULL,
+    "bind_ip" VARCHAR(500) DEFAULT NULL,
+    "is_default" TINYINT NOT NULL DEFAULT '0',
+    "register_interval" INT DEFAULT NULL,
+    "status" TINYINT NOT NULL DEFAULT '1',
+    "remark" VARCHAR(500) DEFAULT NULL,
+    "created_by" BIGINT DEFAULT NULL,
+    "created_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "updated_by" BIGINT DEFAULT NULL,
+    "updated_time" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    "created_org_id" BIGINT DEFAULT NULL,
+    "deleted" TINYINT NOT NULL DEFAULT '0',
+    CONSTRAINT "video_sip_config_PRIMARY" NOT CLUSTER PRIMARY KEY("id")
+) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+
+COMMENT ON TABLE "video_sip_config" IS '租户SIP服务配置';
+COMMENT ON COLUMN "video_sip_config"."bind_ip" IS '绑定IP(多网卡隔离场景下监听的网卡IP，逗号分隔，留空=不限制)';
+COMMENT ON COLUMN "video_sip_config"."config_name" IS '配置名称';
+COMMENT ON COLUMN "video_sip_config"."created_by" IS '创建人';
+COMMENT ON COLUMN "video_sip_config"."created_org_id" IS '创建组织ID';
+COMMENT ON COLUMN "video_sip_config"."created_time" IS '创建时间';
+COMMENT ON COLUMN "video_sip_config"."deleted" IS '逻辑删除';
+COMMENT ON COLUMN "video_sip_config"."id" IS '主键';
+COMMENT ON COLUMN "video_sip_config"."is_default" IS '是否默认(1=是)';
+COMMENT ON COLUMN "video_sip_config"."register_interval" IS '注册有效期(秒)';
+COMMENT ON COLUMN "video_sip_config"."remark" IS '备注';
+COMMENT ON COLUMN "video_sip_config"."sip_domain" IS 'SIP域(SIP服务器编号前10位，行政区划码)';
+COMMENT ON COLUMN "video_sip_config"."sip_id" IS 'SIP服务器编号(设备端GB28181配置中的"SIP服务器编号"，20位数字，不能填设备自己的国标编号)';
+COMMENT ON COLUMN "video_sip_config"."sip_password" IS 'SIP认证密码(AES加密，与设备端"SIP认证密码"一致)';
+COMMENT ON COLUMN "video_sip_config"."sip_server_address" IS 'SIP服务器地址(设备端"SIP服务器IP/地址"，域名或IP，集群可填Nginx VIP)';
+COMMENT ON COLUMN "video_sip_config"."status" IS '状态(0=禁用/1=启用)';
+COMMENT ON COLUMN "video_sip_config"."updated_by" IS '更新人';
+COMMENT ON COLUMN "video_sip_config"."updated_time" IS '更新时间';
+
+CREATE OR REPLACE INDEX "video_sip_config_idx_sip_id" ON "video_sip_config"("sip_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_sip_config_idx_status" ON "video_sip_config"("status" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;
+CREATE OR REPLACE INDEX "video_sip_config_idx_created_org_id" ON "video_sip_config"("created_org_id" ASC) STORAGE(ON "thinglinks_base_1", CLUSTERBTR) ;

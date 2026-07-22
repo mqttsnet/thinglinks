@@ -51,7 +51,9 @@ public class SopApiInfoController extends SuperController<SopApiInfoService, Lon
     @Operation(summary = "根据分组查询接口")
     @WebLog("根据分组查询接口")
     public R<IPage<SopApiInfoResultVO>> groupPage(@RequestBody @Validated(SopApiInfoPageQuery.GroupPage.class) PageParams<SopApiInfoPageQuery> params) {
-        return R.success(superService.groupPage(params));
+        IPage<SopApiInfoResultVO> page = superService.groupPage(params);
+        echoService.action(page.getRecords());
+        return R.success(page);
     }
 
     /**

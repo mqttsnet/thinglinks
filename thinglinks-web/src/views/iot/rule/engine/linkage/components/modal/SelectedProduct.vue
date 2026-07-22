@@ -26,26 +26,12 @@
         </div>
         <div class="btns">
           <div class="btn">
-            <img
-              src="../../../../../../../assets/images/iot/link/device/delete-y.png"
-              alt=""
-              @click="deleteProduct()"
-            />
+            <Icon icon="ant-design:delete-outlined" class="action-icon" @click="deleteProduct()" />
           </div>
         </div>
         <div class="product-img">
-          <img
-            v-if="selectedProduct?.productType === 2"
-            src="../../../../../../../assets/images/iot/link/deviceAndProduct/gatwatproduct.png"
-          />
-          <img
-            v-else-if="selectedProduct?.productType === 1"
-            src="../../../../../../../assets/images/iot/link/deviceAndProduct/commonproduct.png"
-          />
-          <img
-            v-else-if="selectedProduct?.productType === 0"
-            src="../../../../../../../assets/images/iot/link/device/deviceManagement.gif"
-          />
+          <!-- flexy 风格内联 SVG,按 productType 自动选择普通/网关图标 -->
+          <component :is="getProductTypeSvg(selectedProduct?.productType)" />
         </div>
       </div>
     </div>
@@ -59,27 +45,28 @@
   import { defineComponent, reactive, toRefs, watch } from 'vue';
   import { ApartmentOutlined } from '@ant-design/icons-vue';
   import { useDict } from '/@/components/Dict';
+  import { getProductTypeSvg } from '/@/components/iot/svg';
+  import { Icon } from '/@/components/Icon';
   const { getDictLabel } = useDict();
 
   export default defineComponent({
     name: 'SelectedProduct',
     components: {
       ApartmentOutlined,
+      Icon,
     },
     props: {
       selectedProduct: {
         type: Object,
-        default: {},
+        default: () => ({}),
       },
     },
     setup(props, { emit }) {
       const { t } = useI18n();
-      console.log(props);
       // 监听selectedProduct
       watch(
         () => props.selectedProduct,
-        (data: object) => {
-          console.log(data);
+        () => {
           state.selectedProduct = { ...props.selectedProduct };
         },
       );
@@ -94,6 +81,7 @@
         t,
         getDictLabel,
         deleteProduct,
+        getProductTypeSvg,
         ...toRefs(state),
       };
     },
@@ -105,7 +93,7 @@
     overflow-y: auto;
 
     .select-title {
-      color: #1966ff;
+      color: @primary-color;
       font-size: 16px;
       margin-bottom: 8px;
     }
@@ -129,7 +117,7 @@
 
     &.isSelected {
       box-shadow: 0px 0px 8px 0px rgba(34, 78, 166, 0.25);
-      border: 2px solid #1966ff;
+      border: 2px solid @primary-color;
 
       .select-icon {
         position: absolute;
@@ -138,7 +126,7 @@
         z-index: 2;
         width: 60px;
         height: 60px;
-        background: #1966ff;
+        background: @primary-color;
         color: #d9dffd;
         transform: rotate(-45deg);
 
@@ -151,11 +139,11 @@
     }
 
     &.normal {
-      background-image: url('../../../../../../../assets/images/iot/link/device/bg-normal.png');
+      background: linear-gradient(135deg, fade(@primary-color, 6%), #fff 52%);
 
       .status {
         background: #d9dffd;
-        color: #1966ff;
+        color: @primary-color;
       }
     }
 
@@ -226,7 +214,7 @@
         width: 138px;
         height: 28px;
         border-radius: 45px 45px 45px 45px;
-        border: 2px solid #1a66ff;
+        border: 2px solid @primary-color;
         justify-content: center;
         align-items: center;
 
@@ -246,11 +234,10 @@
             top: 5px;
           }
 
-          img {
-            width: 15px;
-            height: 15px;
-            margin: 0 auto;
+          .action-icon {
+            color: @button-error-color;
             cursor: pointer;
+            font-size: 15px;
           }
         }
       }
@@ -262,9 +249,9 @@
       top: 10px;
       width: 30%;
 
-      img {
-        cursor: pointer;
+      :deep(svg) {
         width: 100%;
+        height: auto;
       }
     }
 

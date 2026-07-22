@@ -48,6 +48,11 @@ public class LinkJobHandlerApiFallback implements LinkJobHandlerApi {
     }
 
     @Override
+    public R<?> retryProductVersionPublish(Long tenantId) {
+        return R.timeout();
+    }
+
+    @Override
     public R<?> otaUpgradeTasksExecute(Long tenantId) {
         return R.timeout();
     }

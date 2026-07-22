@@ -1,8 +1,10 @@
 package com.mqttsnet.thinglinks.productcommand.vo.save;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import com.mqttsnet.thinglinks.product.constant.ThingModelCodeRule;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,11 +44,11 @@ public class ProductCommandSaveVO implements Serializable {
     @NotNull(message = "请填写服务ID")
     private Long serviceId;
     /**
-     * 指示命令的编码，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。
+     * 指示命令的编码,如门磁的 lock 命令、摄像头的 video_record 命令,命令名与参数共同构成一个完整的命令。
      */
-    @Schema(description = "指示命令的编码，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。")
-    @NotEmpty(message = "请填写指示命令的编码，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。")
-    @Size(max = 255, message = "指示命令的编码，如门磁的LOCK命令、摄像头的VIDEO_RECORD命令，命令名与参数共同构成一个完整的命令。支持英文大小写、数字及下划线，长度[2,50]。长度不能超过{max}")
+    @Schema(description = "命令编码(如 lock、video_record):小写字母开头,仅含小写字母、数字、下划线,长度2-50")
+    @NotEmpty(message = "请填写命令编码")
+    @Pattern(regexp = ThingModelCodeRule.PATTERN, message = ThingModelCodeRule.PATTERN_MSG)
     private String commandCode;
     /**
      * 指示命令名称

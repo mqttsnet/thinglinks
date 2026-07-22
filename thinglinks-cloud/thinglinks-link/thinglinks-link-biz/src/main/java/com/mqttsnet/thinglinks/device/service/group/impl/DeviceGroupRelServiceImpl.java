@@ -83,6 +83,19 @@ public class DeviceGroupRelServiceImpl extends SuperServiceImpl<DeviceGroupRelMa
         Optional<List<DeviceGroupRel>> deviceGroupRelListOptional = superManager.getDeviceGroupRelListByGroupIds(groupIdList);
         return deviceGroupRelListOptional.map(deviceGroupRels -> deviceGroupRels.stream().map(DeviceGroupRel::getDeviceIdentification).distinct().toList()).orElseGet(List::of);
     }
+
+    @Override
+    public void removeByDeviceIdentification(String deviceIdentification) {
+        // 空值安全：deviceIdentification 缺失时直接跳过，避免空字符串条件匹配到全表数据
+        Optional.ofNullable(deviceIdentification)
+                .filter(StrUtil::isNotBlank)
+                .ifPresent(identification -> {
+                    boolean ok = superManager.remove(Wraps.<DeviceGroupRel>lbQ()
+                            .eq(DeviceGroupRel::getDeviceIdentification, identification));
+                    log.info("Clean device_group_rel for deleted device, deviceIdentification={}, ok={}",
+                        identification, ok);
+                });
+    }
 }
 
 

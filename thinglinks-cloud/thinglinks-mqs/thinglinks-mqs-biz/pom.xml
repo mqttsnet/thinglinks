@@ -25,14 +25,10 @@
             <artifactId>thinglinks-file-sdk</artifactId>
             <version>${revision}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.websocket</groupId>
-            <artifactId>jakarta.websocket-client-api</artifactId>
-        </dependency>
+        <!--
+            mqs 不再持有 ws session(已迁至 broker 协议接入层)。
+            ws 业务事件通过 Kafka 消费,纯 POJO 处理,不需要 jakarta.websocket / spring-boot-starter-websocket。
+        -->
         <dependency>
             <groupId>com.mqttsnet.basic</groupId>
             <artifactId>thinglinks-databases</artifactId>
@@ -56,10 +52,6 @@
         <dependency>
             <groupId>com.mqttsnet.basic</groupId>
             <artifactId>thinglinks-kafka-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.mqttsnet.basic</groupId>
-            <artifactId>thinglinks-rabbitmq-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.mqttsnet.basic</groupId>
@@ -120,5 +112,26 @@
             <artifactId>thinglinks-rule-api</artifactId>
             <version>${revision}</version>
         </dependency>
+
+        <!-- 测试 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.4</version>
+                <configuration>
+                    <skip>false</skip>
+                    <skipTests>false</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

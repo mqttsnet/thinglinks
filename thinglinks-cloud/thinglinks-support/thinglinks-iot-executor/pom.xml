@@ -64,6 +64,16 @@
             <artifactId>thinglinks-broker-boot-impl</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-video-boot-impl</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-video-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
         <!--  业务服务API Or Biz start      -->
         <dependency>

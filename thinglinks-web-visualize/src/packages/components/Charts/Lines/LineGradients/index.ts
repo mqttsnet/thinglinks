@@ -7,7 +7,7 @@ export const LineGradientsConfig: ConfigType = {
   conKey: 'VCLineGradients',
   title: 'project.component_line_gradients',
   category: ChatCategoryEnum.LINE,
-  categoryName: getChatCategoryEnumName().LINE,
+  get categoryName() { return getChatCategoryEnumName().LINE },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.ECHARTS,
   image: 'line_gradient.png'

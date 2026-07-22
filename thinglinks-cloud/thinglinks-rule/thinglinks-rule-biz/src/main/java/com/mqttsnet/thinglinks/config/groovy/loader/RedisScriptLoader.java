@@ -7,9 +7,13 @@ import com.mqttsnet.basic.groovy.entity.ScriptEntry;
 import com.mqttsnet.basic.groovy.entity.ScriptQuery;
 import com.mqttsnet.basic.groovy.loader.ScriptLoader;
 import com.mqttsnet.basic.model.cache.CacheKey;
+import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.basic.utils.SnowflakeIdUtil;
 import com.mqttsnet.thinglinks.cache.helper.RuleCacheDataHelper;
+import com.mqttsnet.thinglinks.entity.script.RuleGroovyScript;
+import com.mqttsnet.thinglinks.manager.script.RuleGroovyScriptManager;
 import com.mqttsnet.thinglinks.record.script.ScriptIdentifier;
+import com.mqttsnet.thinglinks.vo.query.script.RuleGroovyScriptPageQuery;
 import com.mqttsnet.thinglinks.vo.query.script.RuleGroovyScriptQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -17,10 +21,9 @@ import org.springframework.util.DigestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
- * 从Redis里加载脚本loader
+ * 从Redis里加载脚本loader(支持 cache-aside 溯源:cache miss → 查 DB → 自动回填缓存)
  *
  * @author mqttsnet 2022/09/25 13:09
  */
@@ -32,17 +35,24 @@ public class RedisScriptLoader implements ScriptLoader {
 
     private final DynamicCodeCompiler dynamicCodeCompiler;
 
+    /**
+     * DB 回源用 ── cache miss 时按 4 字段身份查脚本。
+     */
+    private final RuleGroovyScriptManager ruleGroovyScriptManager;
+
     public RedisScriptLoader(RuleCacheDataHelper ruleCacheDataHelper,
-                             DynamicCodeCompiler dynamicCodeCompiler) {
+                             DynamicCodeCompiler dynamicCodeCompiler,
+                             RuleGroovyScriptManager ruleGroovyScriptManager) {
         this.ruleCacheDataHelper = ruleCacheDataHelper;
         this.dynamicCodeCompiler = dynamicCodeCompiler;
+        this.ruleGroovyScriptManager = ruleGroovyScriptManager;
     }
 
 
     /**
-     * 从Redis中加载脚本
+     * 从Redis加载脚本(cache-aside ── miss 时回源 DB 并自动回填缓存)
      *
-     * @param query 查询对象
+     * @param query 查询对象(uniqueKey 解析为 4 字段身份)
      * @return {@link ScriptEntry} 脚本对象
      * @throws Exception
      */
@@ -53,12 +63,11 @@ public class RedisScriptLoader implements ScriptLoader {
         }
         RuleGroovyScriptQuery ruleGroovyScriptQuery = new RuleGroovyScriptQuery(query.getUniqueKey());
         CacheKey cacheKey = ScriptIdentifier.buildCacheKey(ruleGroovyScriptQuery);
-        // 从Redis中根据key查找脚本
-        Object scriptContent = ruleCacheDataHelper.getScriptContent(cacheKey);
-        if (Objects.isNull(scriptContent)) {
-            throw BizException.wrap("脚本不存在");
-        }
-        String script = scriptContent.toString();
+        // cache-aside:miss 时按 4 字段身份回源 DB(只取 enable=true 的脚本) + 自动回填缓存
+        String script = ruleCacheDataHelper.getScriptContent(cacheKey,
+                k -> loadScriptContentFromDb(ruleGroovyScriptQuery))
+                .map(Object::toString)
+                .orElseThrow(() -> BizException.wrap("脚本不存在"));
         // 获取脚本指纹
         String fingerprint = DigestUtils.md5DigestAsHex(script.getBytes());
         // 创建脚本对象
@@ -82,11 +91,9 @@ public class RedisScriptLoader implements ScriptLoader {
             throw BizException.wrap("脚本唯一键不能为空");
         }
         // 从Redis中根据key查找脚本
-        Object scriptContent = ruleCacheDataHelper.getScriptContent(cacheKey);
-        if (Objects.isNull(scriptContent)) {
-            throw BizException.wrap("脚本不存在");
-        }
-        String script = scriptContent.toString();
+        String script = ruleCacheDataHelper.getScriptContent(cacheKey)
+                .map(Object::toString)
+                .orElseThrow(() -> BizException.wrap("脚本不存在"));
         // 获取脚本指纹
         String fingerprint = DigestUtils.md5DigestAsHex(script.getBytes());
         // 创建脚本对象
@@ -99,41 +106,21 @@ public class RedisScriptLoader implements ScriptLoader {
 
 
     /**
-     * 从Redis中加载所有脚本
-     * // TODO 待实现
+     * 启动期批量预加载 ── 当前**未启用**(走 lazy load 模式,见 {@link #load(ScriptQuery)}).
      *
-     * @return List<ScriptEntry> 脚本列表
+     * <p>历史遗留批量预热实现已删除(40+ 行死代码 + 注释引用了已不存在的 {@code ruleCacheDataHelper.getScriptContentSet()}).
+     * 如未来要恢复"启动期扫 hash 全部 key 一次性编译"逻辑,实现要点:
+     * <ul>
+     *   <li>用 {@code cachePlusOps.scan(pattern)} 而不是 {@code keys}(线上 keys 全表扫易卡死)</li>
+     *   <li>预热失败的 entry 不抛异常,日志收口</li>
+     *   <li>考虑分租户分批,避免单 tenant 大量脚本压崩 JVM</li>
+     * </ul>
+     *
+     * @return 当前固定返空列表,触发 lazy load
      */
     @Override
     public List<ScriptEntry> load() {
-        List<ScriptEntry> resultList = new ArrayList<>();
-        /*String key = groovyRedisLoaderProperties.getNamespace();
-
-        // 获取到所有脚本的key
-        Set<Object> hashKeys = redisTemplate.opsForHash().keys(key);
-        ruleCacheDataHelper.getScriptContentSet()
-        // 没有脚本
-        if (CollectionUtils.isEmpty(hashKeys)) {
-            logger.error("can not found hashKeys by key [{}].", key);
-            return resultList;
-        }
-
-        // 获取所有脚本
-        for (Object hashKey : hashKeys) {
-            // groovy脚本内容
-            String script = (String) redisTemplate.opsForHash().get(key, hashKey);
-            if (!StringUtils.hasText(script)) {
-                logger.error("note can not found script content by key [{}] and hashKey [{}]", key, hashKey);
-                continue;
-            }
-            // 获取脚本指纹
-            String fingerprint = DigestUtils.md5DigestAsHex(script.getBytes());
-            // 创建脚本对象
-            ScriptEntry scriptEntry = new ScriptEntry(hashKey.toString(), script, fingerprint, System.currentTimeMillis());
-            resultList.add(scriptEntry);
-        }*/
-
-        return resultList;
+        return new ArrayList<>();
     }
 
 
@@ -158,5 +145,21 @@ public class RedisScriptLoader implements ScriptLoader {
         Class<?> clazz = dynamicCodeCompiler.compile(entry);
         entry.setClazz(clazz);
         return entry;
+    }
+
+    /**
+     * 按 4 字段身份从 DB 拉取 enable=true 的脚本内容(cache miss 回源用)。
+     *
+     * @param query 含 4 字段身份的查询体
+     * @return 脚本内容明文;DB 不存在或被禁用时返回 null
+     */
+    private String loadScriptContentFromDb(RuleGroovyScriptQuery query) {
+        RuleGroovyScriptPageQuery pageQuery = BeanPlusUtil.toBeanIgnoreError(query, RuleGroovyScriptPageQuery.class);
+        pageQuery.setEnable(true);
+        List<RuleGroovyScript> list = ruleGroovyScriptManager.getRuleGroovyScriptList(pageQuery);
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.get(0).getScriptContent();
     }
 }

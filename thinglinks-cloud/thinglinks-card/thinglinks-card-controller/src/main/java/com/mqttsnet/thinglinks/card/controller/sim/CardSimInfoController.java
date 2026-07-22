@@ -95,7 +95,9 @@ public class CardSimInfoController extends SuperController<CardSimInfoService, L
     @Parameters({@Parameter(name = "id", description = "ID", required = true),})
     public R<CardSimInfoResultVO> getCardSimInfoDetails(@PathVariable("id") Long id) {
         log.info("获取物联网卡详情，id:{}", id);
-        return R.success(superService.getCardSimInfoDetails(id));
+        CardSimInfoResultVO result = superService.getCardSimInfoDetails(id);
+        echoService.action(result);
+        return R.success(result);
     }
 
     /**

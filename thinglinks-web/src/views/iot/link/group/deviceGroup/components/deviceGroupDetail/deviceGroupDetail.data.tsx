@@ -1,6 +1,21 @@
+import { Tag, Tooltip } from 'ant-design-vue';
 import { useI18n } from '/@/hooks/web/useI18n';
 
 const { t } = useI18n();
+
+/**
+ * 判断关联记录里的设备是否已被删除（孤儿行）。
+ * 后端接口返回的关联表中，若设备已被删除会出现：deviceId 为空 且 deviceName 为空 的情况，
+ * 此时不能再让用户点"查看 / 编辑"跳转设备详情，否则会触发 "Missing required param 'id'"。
+ */
+export const isOrphanDeviceRow = (record: Recordable): boolean => {
+  if (!record) return true;
+  const noId = !record.deviceId;
+  const noName = !record.deviceName;
+  // deviceStatus 在已删除场景下后端不会返回 0/1/2，常见为 null/undefined
+  const noStatus = record.deviceStatus === null || record.deviceStatus === undefined;
+  return noId && noName && noStatus;
+};
 
 // 分组详情上方详细信息字段
 export const getGroupBaseInfoField = (): FormSchema[] => {
@@ -60,6 +75,14 @@ export const getGroupDeviceBaseTableColumn = (): FormSchema[] => {
       width: 150,
       dataIndex: 'deviceStatus',
       customRender: ({ record }) => {
+        // 孤儿行优先：设备已被删除，此关联是历史脏数据（新事件链路会自动清理，此处兼容存量）
+        if (isOrphanDeviceRow(record)) {
+          return (
+            <Tooltip title={t('iot.link.device.device.deletedOrphanTip')}>
+              <Tag color="error">{t('iot.link.device.device.deviceAllStatus.deleted')}</Tag>
+            </Tooltip>
+          );
+        }
         const text =
           record.deviceStatus === 0
             ? t('iot.link.device.device.deviceAllStatus.notActivat')

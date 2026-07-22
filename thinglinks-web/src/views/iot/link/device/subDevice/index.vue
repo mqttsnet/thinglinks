@@ -108,9 +108,10 @@
       // 弹出查看页面
       function handleView(record: Recordable, e: Event) {
         e?.stopPropagation();
+        // 路由 :id 段语义是 deviceIdentification（业务唯一标识，非主键 id）
         replace({
           name: '设备详情',
-          params: { id: record.id },
+          params: { id: record.deviceIdentification },
         });
       }
       return {

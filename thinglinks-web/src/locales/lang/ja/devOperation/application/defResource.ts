@@ -98,7 +98,7 @@ export default {
   customClass: '実装クラス',
   customClassHelpMsg: [
     '1. クラスを自動作成し、DataScopeProviderインターフェースを実装',
-    '2. 実装クラスにアノテーションをマーク：@Component("DATA_SCOPE_XXXX")',
+    "2. 実装クラスにアノテーションをマーク：＠Component(\"DATA_SCOPE_XXXX\")",
     '3. このパラメータに設定：DATA_SCOPE_XXXX',
   ],
   customClassPlaceHolder: '"DATA_SCOPE_"をプレフィックスとするカスタム実装クラス',
@@ -119,7 +119,7 @@ export default {
   cannotMoveToDescendant: '(子孫ノードに移動できません)',
   pleaseSelectNode: '移動するノードを選択してください',
   confirmMoveToRoot: '【{name}】を【ルートノード】に移動してもよろしいですか',
-  confirmMoveToNode: '【{name}】を【{targetName}】に移動してもよろしいですか',
+  confirmMoveToNode: '【{name}】を【[targetName]】に移動してもよろしいですか',
   rootNode: 'ルートノード',
   moveSuccess: '移動成功',
   keyHelpMsg:

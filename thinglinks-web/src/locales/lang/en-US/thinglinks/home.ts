@@ -25,6 +25,12 @@ export default {
     reload: 'And reload its resources?',
     allActivat: 'You are awesome, all applications have been opened',
     contactOpen: 'Please contact your company administrator to open me~',
+    statsOwned: 'Owned Apps',
+    statsAvailable: 'Available to Apply',
+    statsExpiringSoon: 'Expiring in 7 days',
+    licenseGrantedAt: 'Granted',
+    licenseExpireAt: 'Expires',
+    licensePermanent: 'Never expires',
   },
   indicator: {
     applicationIndicators: 'Application Indicators',

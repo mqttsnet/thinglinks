@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mqttsnet.thinglinks.video.mapper.device.VideoDeviceMapper">
+    <!--
+        代码生成器 by 2026-04-02
+        自定义sql建议在base文件夹同级新建ext文件夹，并新建同名且同namespace的xml进行编写。方便修改字段时，重新生成此文件。
+    -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.mqttsnet.thinglinks.video.entity.device.VideoDevice">
+        <id column="id" property="id"/>
+        <result column="device_identification" property="deviceIdentification"/>
+        <result column="access_protocol" property="accessProtocol"/>
+        <result column="device_name" property="deviceName"/>
+        <result column="custom_name" property="customName"/>
+        <result column="manufacturer" property="manufacturer"/>
+        <result column="model" property="model"/>
+        <result column="firmware" property="firmware"/>
+        <result column="host" property="host"/>
+        <result column="port" property="port"/>
+        <result column="wan_host" property="wanHost"/>
+        <result column="lan_host" property="lanHost"/>
+        <result column="access_endpoint" property="accessEndpoint"/>
+        <result column="sdp_host" property="sdpHost"/>
+        <result column="local_host" property="localHost"/>
+        <result column="transport" property="transport"/>
+        <result column="stream_mode" property="streamMode"/>
+        <result column="online_status" property="onlineStatus"/>
+        <result column="register_time" property="registerTime"/>
+        <result column="last_keepalive_time" property="lastKeepaliveTime"/>
+        <result column="expires" property="expires"/>
+        <result column="keepalive_interval" property="keepaliveInterval"/>
+        <result column="keepalive_timeout_count" property="keepaliveTimeoutCount"/>
+        <result column="auth_type" property="authType"/>
+        <result column="auth_secret" property="authSecret"/>
+        <result column="media_identification" property="mediaIdentification"/>
+        <result column="channel_count" property="channelCount"/>
+        <result column="ability" property="ability"/>
+        <result column="protocol_config" property="protocolConfig" typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler"/>
+        <result column="extend_params" property="extendParams"/>
+        <result column="remark" property="remark"/>
+        <result column="created_org_id" property="createdOrgId"/>
+        <result column="deleted" property="deleted"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_by" property="updatedBy"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, device_identification, access_protocol, device_name, custom_name, manufacturer,
+        model, firmware, host, port, wan_host, lan_host,
+        access_endpoint, sdp_host, local_host, transport, stream_mode, online_status,
+        register_time, last_keepalive_time, expires, keepalive_interval, keepalive_timeout_count,
+        auth_type, auth_secret, media_identification, channel_count, ability,
+        protocol_config, extend_params, remark, created_org_id,
+        deleted, created_by, created_time, updated_by, updated_time
+    </sql>
+
+</mapper>

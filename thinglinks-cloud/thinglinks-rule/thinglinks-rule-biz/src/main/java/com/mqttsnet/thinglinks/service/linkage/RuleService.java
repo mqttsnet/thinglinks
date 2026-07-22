@@ -78,6 +78,20 @@ public interface RuleService extends SuperService<Long, Rule> {
      * @return {@link RuleDetailsResultVO} 规则详情
      */
     RuleDetailsResultVO triggerRulePolicy(Long tenantId, String ruleIdentification);
+
+    /**
+     * 设备事件驱动触发规则策略(实时路径)。
+     * <p>与 {@link #triggerRulePolicy} 的差异:规则详情走缓存(事件高频,避免每条消息查 DB);
+     * 条件评估只针对与事件匹配的条件类型;左值优先取事件消息内值。
+     *
+     * @param tenantId             租户ID
+     * @param ruleIdentification   规则标识
+     * @param triggerConditionType 事件对应的条件类型(ConditionTypeEnum.value)
+     * @param triggerEvent         触发事件上下文(消息内值)
+     */
+    void triggerRulePolicyForEvent(Long tenantId, String ruleIdentification,
+                                   Integer triggerConditionType,
+                                   com.mqttsnet.thinglinks.dto.linkage.execution.TriggerEventDTO triggerEvent);
 }
 
 

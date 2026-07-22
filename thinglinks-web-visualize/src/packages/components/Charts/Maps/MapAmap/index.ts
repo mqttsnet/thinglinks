@@ -7,7 +7,7 @@ export const MapAmapConfig: ConfigType = {
   conKey: 'VCMapAmap',
   title: 'project.component_map_amap',
   category: ChatCategoryEnum.MAP,
-  categoryName: getChatCategoryEnumName().MAP,
+  get categoryName() { return getChatCategoryEnumName().MAP },
   package: PackagesCategoryEnum.CHARTS,
   chartFrame: ChartFrameEnum.COMMON,
   image: 'map_amap.png'

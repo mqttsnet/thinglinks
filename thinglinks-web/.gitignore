@@ -1,38 +1,48 @@
-node_modules
-.history/
-.DS_Store
-dist
-.npmrc
-.cache
+# 依赖与包管理器缓存
+node_modules/
+.pnpm-store/
+.cache/
+.vite/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
 
-tests/server/static
-tests/server/static/upload
+# 构建与测试产物
+dist/
+/dist.zip
+coverage/
+.nyc_output/
+/tests/server/static/
 
+# 本地环境与机器配置
 .local
-# local env files
 .env.local
 .env.*.local
-.eslintcache
+.npmrc
 
-# Log files
+# 调试日志
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Editor directories and files
-.idea
-# .vscode
+# 编辑器与 IDE
+.history/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*~
 
-# AI Tools
-.claude
+# 操作系统生成文件
+.DS_Store
+Thumbs.db
 
+# 本地 AI 工具状态
+.claude/
+
+# 非项目包管理器生成的锁文件
 package-lock.json
-pnpm-lock.yaml
-
-.history
+/yarn.lock

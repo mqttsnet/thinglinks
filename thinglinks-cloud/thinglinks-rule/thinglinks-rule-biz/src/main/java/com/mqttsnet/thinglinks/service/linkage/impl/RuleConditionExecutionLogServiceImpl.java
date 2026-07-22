@@ -1,6 +1,7 @@
 package com.mqttsnet.thinglinks.service.linkage.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.mqttsnet.basic.base.service.impl.SuperServiceImpl;
 import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -61,6 +63,14 @@ public class RuleConditionExecutionLogServiceImpl extends SuperServiceImpl<RuleC
         List<RuleConditionExecutionLog> logs = superManager.getRuleConditionExecutionLogList(query);
         return BeanPlusUtil.toBeanList(logs, RuleConditionExecutionLogResultVO.class);
     }
-}
 
+    @Override
+    public boolean removeByRuleExecutionIds(Collection<Long> ruleExecutionIds) {
+        if (ruleExecutionIds == null || ruleExecutionIds.isEmpty()) {
+            return false;
+        }
+        return superManager.remove(Wrappers.<RuleConditionExecutionLog>lambdaQuery()
+                .in(RuleConditionExecutionLog::getRuleExecutionId, ruleExecutionIds));
+    }
+}
 

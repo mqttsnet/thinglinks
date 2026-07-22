@@ -72,6 +72,13 @@ public class OtaUpgradesSaveVO implements Serializable {
     @Size(max = 255, message = "升级包版本号长度不能超过{max}")
     private String version;
     /**
+     * 产品版本序号
+     */
+    @Schema(description = "产品版本序号")
+    @NotEmpty(message = "请选择产品版本序号")
+    @Size(max = 64, message = "产品版本序号长度不能超过{max}")
+    private String productVersionNo;
+    /**
      * 升级包的位置
      */
     @Schema(description = "升级包的位置")

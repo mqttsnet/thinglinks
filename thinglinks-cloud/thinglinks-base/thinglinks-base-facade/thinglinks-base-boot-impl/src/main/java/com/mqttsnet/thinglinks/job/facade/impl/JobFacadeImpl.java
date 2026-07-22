@@ -1,7 +1,7 @@
 package com.mqttsnet.thinglinks.job.facade.impl;
 
 import cn.hutool.http.HttpRequest;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.mqttsnet.basic.base.R;
 import com.mqttsnet.basic.constant.Constants;
 import com.mqttsnet.thinglinks.job.dto.JobReturnT;
@@ -28,7 +28,7 @@ public class JobFacadeImpl implements JobFacade {
         String URL = "/thinglinks-job-admin/api/jobinfo/save";
         String result = HttpRequest.post(jobServerUrl + URL)
                 .header(JobFacade.HEADER_NAME, accessToken)
-                .body(JSONUtil.toJsonStr(xxlJobInfo))
+                .body(JSON.toJSONString(xxlJobInfo))
                 .timeout(20000)//超时，毫秒
                 .execute().body();
         return R.success(result);
@@ -39,7 +39,7 @@ public class JobFacadeImpl implements JobFacade {
         String URL = "/thinglinks-job-admin/api/jobinfo/update";
         String result = HttpRequest.post(jobServerUrl + URL)
                 .header(JobFacade.HEADER_NAME, accessToken)
-                .body(JSONUtil.toJsonStr(xxlJobInfo))
+                .body(JSON.toJSONString(xxlJobInfo))
                 .timeout(20000)//超时，毫秒
                 .execute().body();
         JobReturnT<String> success = JobReturnT.SUCCESS;
@@ -91,7 +91,7 @@ public class JobFacadeImpl implements JobFacade {
         String URL = "/thinglinks-job-admin/api/jobinfo/save";
         String result = HttpRequest.post(jobServerUrl + URL)
                 .header(JobFacade.HEADER_NAME, accessToken)
-                .body(JSONUtil.toJsonStr(xxlJobInfo))
+                .body(JSON.toJSONString(xxlJobInfo))
                 .timeout(20000)//超时，毫秒
                 .execute().body();
         JobReturnT<String> success = JobReturnT.SUCCESS;

@@ -67,9 +67,13 @@ public class TdsFacadeImpl implements TdsFacade {
     }
 
     @Override
-    public R createSuperTableAndColumnTwo(JSONObject object) {
+    public R batchCreateSuperTable(Map<String, Object> schema) {
         try {
-            Map<String, SuperTableDTO> superTableDTOMap = TdsUtils.handleSuperTable(object);
+            // schema 是 Feign 契约中性 Map;TdsUtils(thinglinks-util 外部库)签名固定接 hutool JSONObject,
+            // 这里走 Map.putAll 适配 ── 只用 Map 接口,不走 JSONUtil.toBean / parseObj 的 setFormatIfDate 风险 path
+            JSONObject hutoolJson = new JSONObject();
+            hutoolJson.putAll(schema);
+            Map<String, SuperTableDTO> superTableDTOMap = TdsUtils.handleSuperTable(hutoolJson);
             for (Map.Entry<String, SuperTableDTO> entry : superTableDTOMap.entrySet()) {
                 SuperTableDTO value = entry.getValue();
                 value.setDataBaseName(ContextUtil.getDataBase());
@@ -98,9 +102,12 @@ public class TdsFacadeImpl implements TdsFacade {
     }
 
     @Override
-    public R createSubTableTwo(JSONObject object) {
+    public R batchCreateSubTable(Map<String, Object> schema) {
         try {
-            Map<String, TableDTO> subTableMap = TdsUtils.handleSubTable(object);
+            // 同 batchCreateSuperTable:Map→hutool JSONObject 适配 TdsUtils 外部库签名,走 putAll 避开 JSONConverter
+            JSONObject hutoolJson = new JSONObject();
+            hutoolJson.putAll(schema);
+            Map<String, TableDTO> subTableMap = TdsUtils.handleSubTable(hutoolJson);
             for (Map.Entry<String, TableDTO> entry : subTableMap.entrySet()) {
                 TableDTO value = entry.getValue();
                 value.setDataBaseName(ContextUtil.getDataBase());

@@ -7,6 +7,7 @@
     @ok="handleSubmit"
     :keyboard="true"
     :getContainer="getContainer"
+    wrapClassName="md-edit-wrap"
   >
     <BasicForm @register="registerForm" />
   </BasicModal>
@@ -17,12 +18,11 @@
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { ActionEnum, VALIDATE_API } from '/@/enums/commonEnum';
+  import { ActionEnum } from '/@/enums/commonEnum';
   import { findTenantFileInfoByIds } from '/@/api/thinglinks/file/upload';
-  import { Api, save, update } from '/@/api/iot/link/productProperty/productProperty';
-  import { getValidateRules } from '/@/api/thinglinks/common/formValidateService';
-  import { customFormSchemaRules, editFormSchema } from './productProperty.data';
-  import { useUserStore } from '/@/store/modules/user'
+  import { save, update } from '/@/api/iot/link/productProperty/productProperty';
+  import { editFormSchema } from './productProperty.data';
+  import { useUserStore } from '/@/store/modules/user';
 
   export default defineComponent({
     name: '编辑产品服务属性',
@@ -32,30 +32,28 @@
       const { t } = useI18n();
       const type = ref<ActionEnum>(ActionEnum.ADD);
       const { createMessage } = useMessage();
-      const serviceId = ref('')
+      const serviceId = ref('');
       const userStore = useUserStore();
       const getUserInfo = computed(() => {
         return userStore.getUserInfo;
       });
       const getContainer = ref(null);
-      const [registerForm, { setFieldsValue, resetFields, updateSchema, validate, resetSchema }] =
-        useForm({
-          name: 'ProductPropertyEdit',
-          labelWidth: 120,
-          schemas: editFormSchema(type),
-          showActionButtonGroup: false,
-          disabled: (_) => {
-            return unref(type) === ActionEnum.VIEW;
-          },
-          baseColProps: { span: 11 },
-          actionColOptions: {
-            span: 22,
-          },
-        });
+      const [registerForm, { setFieldsValue, resetFields, validate, resetSchema }] = useForm({
+        name: 'ProductPropertyEdit',
+        labelWidth: 100,
+        schemas: editFormSchema(type),
+        showActionButtonGroup: false,
+        disabled: (_) => {
+          return unref(type) === ActionEnum.VIEW;
+        },
+        baseColProps: { span: 12 },
+        actionColOptions: {
+          span: 24,
+        },
+      });
 
       const [registerModel, { setModalProps: setProps, closeModal: close }] = useModalInner(
         async (data) => {
-          console.log(data,'data-pro')
           setProps({ confirmLoading: false, width: 1000 });
           await resetSchema(editFormSchema(type));
           await resetFields();
@@ -64,35 +62,26 @@
           if (unref(type) !== ActionEnum.ADD) {
             // 赋值
             const record = { ...data?.record };
-            record.icon = await findTenantFileInfoByIds(
-              record?.icon?.split(',') ?? [],
-            );
+            record.icon = await findTenantFileInfoByIds(record?.icon?.split(',') ?? []);
             await setFieldsValue(record);
           } else {
-            serviceId.value = data?.serviceId
+            serviceId.value = data?.serviceId;
             await setFieldsValue({
               serviceId: data?.serviceId,
-              createdOrgId:getUserInfo.value?.baseEmployee?.createdOrgId
+              createdOrgId: getUserInfo.value?.baseEmployee?.createdOrgId,
             });
           }
 
           if (data.getContainer) {
             getContainer.value = data.getContainer;
           }
-
-          // if (unref(type) !== ActionEnum.VIEW) {
-          //   let validateApi = Api[VALIDATE_API[unref(type)]];
-          //   await getValidateRules(validateApi, customFormSchemaRules(type)).then(async (rules) => {
-          //     rules && rules.length > 0 && (await updateSchema(rules));
-          //   });
-          // }
         },
       );
 
       async function handleSubmit() {
         try {
           const params = await validate();
-          params.icon = params?.icon?.map((item: any) => item?.id)?.join(',')??"";
+          params.icon = params?.icon?.map((item: any) => item?.id)?.join(',') ?? '';
           setProps({ confirmLoading: true });
 
           if (unref(type) !== ActionEnum.VIEW) {
@@ -115,4 +104,3 @@
     },
   });
 </script>
-../../../../../api/iot/link/productProperty/productProperty

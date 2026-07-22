@@ -1,12 +1,12 @@
 package com.mqttsnet.thinglinks.dto.ws;
 
-import com.mqttsnet.thinglinks.enumeration.WsMessageTypeEnum;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import com.mqttsnet.thinglinks.enumeration.WsMessageTypeEnum;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author mqttsnet

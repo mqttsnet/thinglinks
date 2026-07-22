@@ -10,6 +10,8 @@ export type Component<T = any> =
 // @ts-ignore
 export interface AppRouteRecordRaw extends Omit<RouteRecordRaw, 'meta'> {
   name: string;
+  /** 菜单资源编码（全局唯一），keep-alive cache key 取此字段 */
+  code?: string;
   meta: RouteMeta;
   component?: Component | string;
   components?: Component;

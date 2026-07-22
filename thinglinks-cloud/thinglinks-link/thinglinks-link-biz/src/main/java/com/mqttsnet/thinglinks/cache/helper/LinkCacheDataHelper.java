@@ -1,7 +1,5 @@
 package com.mqttsnet.thinglinks.cache.helper;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,30 +8,32 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.mqttsnet.basic.cache.redis2.CacheResult;
 import com.mqttsnet.basic.cache.repository.CachePlusOps;
-import com.mqttsnet.basic.context.ContextUtil;
+import com.mqttsnet.basic.cache.utils.CachePlusUtil;
+import com.mqttsnet.basic.jackson.JsonUtil;
 import com.mqttsnet.basic.model.cache.CacheHashKey;
 import com.mqttsnet.basic.model.cache.CacheKey;
-import com.mqttsnet.basic.utils.BeanPlusUtil;
 import com.mqttsnet.basic.utils.DateUtils;
+import com.mqttsnet.thinglinks.cache.device.DeviceAclRuleCacheService;
+import com.mqttsnet.thinglinks.cache.device.DeviceCacheService;
+import com.mqttsnet.thinglinks.cache.product.ProductCacheService;
+import com.mqttsnet.thinglinks.cache.product.ProductModelCacheService;
+import com.mqttsnet.thinglinks.cache.vo.device.DeviceAclRuleCacheVO;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceActionCacheVO;
 import com.mqttsnet.thinglinks.cache.vo.device.DeviceCacheVO;
+import com.mqttsnet.thinglinks.cache.vo.product.ProductCacheVO;
 import com.mqttsnet.thinglinks.cache.vo.product.ProductModelCacheVO;
 import com.mqttsnet.thinglinks.common.cache.link.collectionpool.DeviceActionCollectionPoolCacheKeyBuilder;
-import com.mqttsnet.thinglinks.common.cache.link.collectionpool.DeviceDataCollectionPoolCacheKeyBuilder;
-import com.mqttsnet.thinglinks.common.cache.link.counter.DownLinkDataCounterCacheKeyBuilder;
-import com.mqttsnet.thinglinks.common.cache.link.counter.UpLinkDataCounterCacheKeyBuilder;
+import com.mqttsnet.thinglinks.common.cache.link.device.DeviceAclRuleCacheKeyBuilder;
 import com.mqttsnet.thinglinks.common.cache.link.device.DeviceCacheKeyBuilder;
 import com.mqttsnet.thinglinks.common.cache.link.ota.OtaTaskExecutorOffsetCacheKeyBuilder;
+import com.mqttsnet.thinglinks.common.cache.link.product.ProductCacheKeyBuilder;
 import com.mqttsnet.thinglinks.common.cache.link.product.ProductModelCacheKeyBuilder;
 import com.mqttsnet.thinglinks.common.cache.link.product.ProductModelSuperTableCacheKeyBuilder;
 import com.mqttsnet.thinglinks.common.constant.DsConstant;
-import com.mqttsnet.thinglinks.device.manager.DeviceManager;
-import com.mqttsnet.thinglinks.product.entity.Product;
-import com.mqttsnet.thinglinks.product.manager.ProductManager;
-import com.mqttsnet.thinglinks.product.vo.result.ProductResultVO;
 import com.mqttsnet.thinglinks.tds.vo.result.SuperTableDescribeVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,26 +41,10 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 /**
- * -----------------------------------------------------------------------------
- * 文件名称: LinkCacheDataHelper.java
- * -----------------------------------------------------------------------------
- * 描述:
- * LinkCacheDataHelper
- * 设备集成基础数据缓存操作类
- * 1: 原则上此类只负责缓存数据的读取和写入操作，不涉及业务逻辑的处理。
- * 2: 如有需要数据查询构造处理的场景，建议在Manager层处理进行处理,注意切勿在Service层处理并调用,Service大概率会用到此类查询缓存数据，可能出现循环依赖问题。
- * -----------------------------------------------------------------------------
+ * 微服务级缓存聚合 / read-through 统一出口。调用层级:本类 → 各域 CacheService → 域内 Service / QueryService → Manager。
+ * 凡走缓存的查询都从本类入口,纯 DB 直查走 Service。
  *
  * @author ShiHuan Sun
- * @version 1.0
- * -----------------------------------------------------------------------------
- * 修改历史:
- * 日期           作者          版本        描述
- * --------      --------     -------   --------------------
- * 2023-10-12    ShiHuan Sun   1.0        初始创建
- * 2024-03-06    ShiHuan Sun   1.1        新增OTA升级任务执行器偏移量 KEY
- * <p>
- * -----------------------------------------------------------------------------
  */
 @Component
 @Slf4j
@@ -68,27 +52,53 @@ import org.springframework.stereotype.Component;
 public class LinkCacheDataHelper {
 
     private final CachePlusOps cachePlusOps;
-    private final DeviceManager deviceManager;
+    /**
+     * read-through 统一入口 ── {@link CachePlusUtil#getOrLoad} 包装 cachePlusOps + 类型转换 + Optional 返值,
+     * 所有需要回源 DB 的 get* 方法应使用此工具,而非手写 cachePlusOps.get(key, loader, ...).
+     */
+    private final CachePlusUtil cachePlusOpsUtil;
+
+    /**
+     * 设备缓存 DB 回源依赖,调 {@link DeviceCacheService#loadDeviceCacheFromDb(String)}.
+     */
+    private final DeviceCacheService deviceCacheService;
+    /**
+     * 物模型缓存 DB 回源依赖,调 {@link ProductModelCacheService#loadProductModelFromDbByVersionNo(String, String)}.
+     */
+    private final ProductModelCacheService productModelCacheService;
+
+    /**
+     * 产品(基础信息)缓存 DB 回源依赖,调 {@link ProductCacheService#loadProductFromDb(String)}.
+     */
+    private final ProductCacheService productCacheService;
+
+    /**
+     * ACL 规则缓存 DB 回源依赖,调 {@link DeviceAclRuleCacheService#loadEnabledAclRulesFromDb(String, String)}.
+     */
+    private final DeviceAclRuleCacheService deviceAclRuleCacheService;
 
 
     /**
-     * Retrieves a device cache value from Redis.
+     * 读设备缓存,cache miss 自动回源 DB(read-through,{@link CachePlusUtil#getOrLoad})。
+     * 回源走 {@link DeviceCacheService#loadDeviceCacheFromDb(String)},不直接调 QueryService,保持调用层级。
      *
-     * @param deviceIdOrClientId the deviceIdentification or clientId, must not be {@literal null}.
-     * @return a DeviceCacheVO object, or {@literal null} if not present.
+     * @param deviceIdOrClientId deviceIdentification 或 clientId,不能为空
+     * @return 设备缓存;DB 也查不到时返空
      */
     @DS(DsConstant.BASE_TENANT)
     public Optional<DeviceCacheVO> getDeviceCacheVO(String deviceIdOrClientId) {
-        Long tenantId = ContextUtil.getTenantId();
         CacheKey cacheKey = DeviceCacheKeyBuilder.build(deviceIdOrClientId);
-        CacheResult<DeviceCacheVO> cacheResult = cachePlusOps.get(cacheKey, (k) -> deviceManager.findDeviceCacheVO(tenantId, deviceIdOrClientId).get(), false);
-        return Optional.ofNullable(cacheResult.getRawValue());
+        return cachePlusOpsUtil.getOrLoad(
+            cacheKey,
+            (k) -> deviceCacheService.loadDeviceCacheFromDb(deviceIdOrClientId),
+            DeviceCacheVO.class,
+            false);
     }
 
     /**
-     * Deletes a device cache value from Redis.
+     * 从 Redis 删除设备缓存。
      *
-     * @param deviceIdOrClientId the deviceIdentification or clientId, must not be {@literal null}.
+     * @param deviceIdOrClientId deviceIdentification 或 clientId,不能为空
      */
     @DS(DsConstant.BASE_TENANT)
     public void deleteDeviceCacheVO(String deviceIdOrClientId) {
@@ -99,206 +109,216 @@ public class LinkCacheDataHelper {
 
 
     /**
-     * product model cache value from Redis.
+     * 读产品(基础信息)缓存,cache miss 自动回源 DB(read-through)。
+     * 取产品基础元数据(不含物模型结构);需要物模型快照走 resolveProductModelByVersionNo。
      *
-     * @param productIdentification the product identifier, must not be {@literal null}.
+     * @param productIdentification 产品标识,不能为空
+     * @return 产品基础信息缓存;DB 也查不到时返空
+     * @see ProductCacheService#loadProductFromDb(String)
      */
-    public ProductModelCacheVO getProductModelCacheVO(String productIdentification) {
-        String cacheProductModelKey = ProductModelCacheKeyBuilder.build(productIdentification).getKey();
-        CacheResult<Object> objectCacheResult = cachePlusOps.get(cacheProductModelKey);
-        if (objectCacheResult == null || objectCacheResult.getRawValue() == null) {
-            log.warn("The product model is not existence");
-            return null;
+    public Optional<ProductCacheVO> getProductCacheVO(String productIdentification) {
+        if (StrUtil.isBlank(productIdentification)) {
+            return Optional.empty();
         }
-        return BeanPlusUtil.toBeanIgnoreError(objectCacheResult.getRawValue(), ProductModelCacheVO.class);
+        CacheKey cacheKey = ProductCacheKeyBuilder.build(productIdentification);
+        return cachePlusOpsUtil.getOrLoad(
+            cacheKey,
+            (k) -> productCacheService.loadProductFromDb(productIdentification),
+            ProductCacheVO.class,
+            false);
     }
 
     /**
-     * Deletes a product model cache value from Redis.
+     * 失效产品(基础信息)缓存 ── 产品 CRUD 或发布事件后调用,确保下次读 read-through 回填新值。
      *
-     * @param productIdentification the product identifier, must not be {@literal null}.
+     * @param productIdentification 产品标识
      */
-    public void deleteProductModelCacheVO(String productIdentification) {
-        CacheKey cacheKey = ProductModelCacheKeyBuilder.build(productIdentification);
+    public void deleteProductCacheVO(String productIdentification) {
+        if (StrUtil.isBlank(productIdentification)) {
+            return;
+        }
+        CacheKey cacheKey = ProductCacheKeyBuilder.build(productIdentification);
         cachePlusOps.del(cacheKey);
-        log.info("Product model cache deleted for productIdentification: {}", productIdentification);
+        log.info("[product-cache] cache deleted productIdentification={}", productIdentification);
     }
 
 
     /**
-     * Retrieves a device cache value from Redis.
+     * 读指定设备生效的 ACL 规则 ── Hash 模式 read-through。
+     * 命中 → HGET 返;miss → DB 加载(产品级 + 设备级合并 + 排序)→ HSET 回填。
      *
-     * @param productIdentification the product identifier, must not be {@literal null}.
-     * @param serviceCode           the service code, must not be {@literal null}.
-     * @param deviceIdentification  the device identifier, must not be {@literal null}.
-     * @return {@link List<SuperTableDescribeVO>} the list of SuperTableDescribeVO objects.
+     * @param productIdentification 产品标识
+     * @param deviceIdentification  设备标识
+     * @return 生效的 ACL 规则列表;无规则返空列表
      */
-    public List<SuperTableDescribeVO> getProductModelSuperTableCacheVO(String productIdentification, String serviceCode, String deviceIdentification) {
-        String cacheProductModelSuperTableKey = ProductModelSuperTableCacheKeyBuilder.build(productIdentification, serviceCode, deviceIdentification).getKey();
-        CacheResult<Object> objectCacheResult;
-
-        try {
-            objectCacheResult = cachePlusOps.get(cacheProductModelSuperTableKey);
-        } catch (Exception e) {
-            log.error("Error fetching from cache for key: {}", cacheProductModelSuperTableKey, e);
+    @DS(DsConstant.BASE_TENANT)
+    public List<DeviceAclRuleCacheVO> getDeviceAclRules(String productIdentification, String deviceIdentification) {
+        if (StrUtil.hasBlank(productIdentification, deviceIdentification)) {
             return Collections.emptyList();
         }
-
-        if (objectCacheResult == null || objectCacheResult.getRawValue() == null) {
-            log.warn("The product model super table is not in the cache for key: {}", cacheProductModelSuperTableKey);
-            return Collections.emptyList();
-        }
-        Object rawValue = objectCacheResult.getRawValue();
-        // Check if rawValue is of the expected type before attempting conversion
-        if (rawValue instanceof List) {
-            List<?> rawList = (List<?>) rawValue;
-            if (rawList.isEmpty() || rawList.get(0) instanceof SuperTableDescribeVO) {
-                return (List<SuperTableDescribeVO>) rawValue;
-            } else {
-                log.error("Unexpected type in cached value for key: {}", cacheProductModelSuperTableKey);
-                return Collections.emptyList();
-            }
-        } else {
-            log.error("Cached value is not a list for key: {}", cacheProductModelSuperTableKey);
-            return Collections.emptyList();
-        }
+        CacheHashKey hashFieldKey = DeviceAclRuleCacheKeyBuilder.buildHashFieldKey(productIdentification, deviceIdentification);
+        return cachePlusOpsUtil.hGetOrLoadList(hashFieldKey,
+            k -> deviceAclRuleCacheService.loadEnabledAclRulesFromDb(productIdentification, deviceIdentification),
+            DeviceAclRuleCacheVO.class, false);
     }
 
     /**
-     * product model super table cache value from Redis.
+     * 按产品维度失效 ── DEL 整个 hash,O(1) 清掉该产品所有设备的 field。
      *
-     * @param productIdentification the product identifier, must not be {@literal null}.
-     * @param serviceCode           the service code, must not be {@literal null}.
-     * @param deviceIdentification  the device identifier, must not be {@literal null}.
-     * @param superTableDescribeOpt the data to set in the cache, must not be {@literal null}.
+     * @param productIdentification 产品标识
      */
-    public void setProductModelSuperTableCacheVO(String productIdentification, String serviceCode, String deviceIdentification,
+    @DS(DsConstant.BASE_TENANT)
+    public void evictAclCacheByProduct(String productIdentification) {
+        if (StrUtil.isBlank(productIdentification)) {
+            return;
+        }
+        CacheKey hashKey = DeviceAclRuleCacheKeyBuilder.buildHashKey(productIdentification);
+        cachePlusOps.del(hashKey);
+        log.info("[acl-cache] evict by product key={}", hashKey.getKey());
+    }
+
+    /**
+     * 按设备维度失效 ── HDEL 单 field,O(1) 只清该设备。
+     *
+     * @param productIdentification 产品标识
+     * @param deviceIdentification  设备标识
+     */
+    @DS(DsConstant.BASE_TENANT)
+    public void evictAclCacheByDevice(String productIdentification, String deviceIdentification) {
+        if (StrUtil.hasBlank(productIdentification, deviceIdentification)) {
+            return;
+        }
+        CacheHashKey hashFieldKey = DeviceAclRuleCacheKeyBuilder.buildHashFieldKey(productIdentification, deviceIdentification);
+        cachePlusOps.hDel(hashFieldKey);
+        log.info("[acl-cache] evict by device key={} field={}", hashFieldKey.getKey(), deviceIdentification);
+    }
+
+    /**
+     * 按 (productIdentification, versionNo) 解析物模型缓存 ── 取产品物模型的唯一入口。
+     * 版本快照不可变 + 长 TTL(7 天),旧版本设备永远读到旧版本快照,不存在"发布新版本后旧缓存脏";
+     * cache miss 走 read-through {@link ProductModelCacheService#loadProductModelFromDbByVersionNo} 从 product_version 表回源。
+     * versionNo 必须非空:传空值返 empty + warn,不做隐式 fallback ── 隐式 fallback 在灰度场景会让设备读到错误版本快照。
+     *
+     * @param productIdentification 产品标识,不能为空
+     * @param versionNo             版本序号(设备绑定的或产品当前激活的),不能为空
+     * @return 物模型缓存 VO;查不到时返空
+     * @see ProductModelCacheService#loadProductModelFromDbByVersionNo(String, String)
+     */
+    public Optional<ProductModelCacheVO> resolveProductModelByVersionNo(String productIdentification, String versionNo) {
+        if (StrUtil.isBlank(productIdentification)) {
+            return Optional.empty();
+        }
+        if (StrUtil.isBlank(versionNo)) {
+            log.warn("[product-model-version] versionNo is blank, return empty (caller should fallback by " +
+                    "device.boundProductVersionNo or product.activeVersionNo) productIdentification={}",
+                productIdentification);
+            return Optional.empty();
+        }
+        CacheKey cacheKey = ProductModelCacheKeyBuilder.build(productIdentification, versionNo);
+        return cachePlusOpsUtil.getOrLoad(
+            cacheKey,
+            (k) -> productModelCacheService.loadProductModelFromDbByVersionNo(productIdentification, versionNo),
+            ProductModelCacheVO.class,
+            false);
+    }
+
+    /**
+     * 解析设备所属产品的 protocolType ── 共享入口,避免各业务模块自己手写。
+     *
+     * @param productIdentification 产品标识(必填;空值直接返空)
+     * @param versionNo             设备绑定的版本序号(可空 ── 缺失时直接走基础元数据回退)
+     * @return protocolType 字符串;两步都拿不到返空
+     */
+    public Optional<String> resolveProtocolType(String productIdentification, String versionNo) {
+        if (StrUtil.isBlank(productIdentification)) {
+            return Optional.empty();
+        }
+        Optional<String> fromSnapshot = (StrUtil.isBlank(versionNo))
+            ? Optional.empty()
+            : resolveProductModelByVersionNo(productIdentification, versionNo)
+            .map(ProductModelCacheVO::getProtocolType);
+        return fromSnapshot.or(() -> getProductCacheVO(productIdentification)
+            .map(ProductCacheVO::getProtocolType));
+    }
+
+    /**
+     * 精确删除某一版本的物模型缓存。正常不需调用(版本快照不可变,缓存值天然有效),
+     * 仅在异常数据回滚(如手工改了 product_version.product_snapshot_json)或事件驱动主动刷新场景使用。
+     *
+     * @param productIdentification 产品标识
+     * @param versionNo             版本序号
+     */
+    public void deleteProductModelCacheVOByVersionNo(String productIdentification, String versionNo) {
+        if (StrUtil.hasBlank(productIdentification, versionNo)) {
+            return;
+        }
+        CacheKey cacheKey = ProductModelCacheKeyBuilder.build(productIdentification, versionNo);
+        cachePlusOps.del(cacheKey);
+        log.info("[product-model-version] cache deleted productIdentification={} versionNo={}",
+            productIdentification, versionNo);
+    }
+
+
+    /**
+     * 读取设备子表 TDengine 表结构缓存(超级表 describe 结果),按 (pi, versionNo, serviceCode, deviceIdentification) 维度。
+     * cache-only,故意不做 read-through 回源:数据真相在 TDengine 运行时表结构(非 RDBMS),回源需注入 TdsFacade,
+     * 会让本 helper 跨域引用 tds feign client 拉低边界纯净度。cache miss 时由调用方主动查 TDengine 表结构
+     * (不存在则触发子表初始化)再调 setProductModelSuperTableCacheVO 回填。
+     *
+     * @param productIdentification 产品标识
+     * @param versionNo             版本序号(取设备 boundProductVersionNo),不能为空
+     * @param serviceCode           服务码
+     * @param deviceIdentification  设备标识
+     * @return SuperTable 字段描述列表;cache miss 返空列表(由业务方触发 DDL + 回填)
+     */
+    public List<SuperTableDescribeVO> getProductModelSuperTableCacheVO(String productIdentification, String versionNo,
+                                                                       String serviceCode, String deviceIdentification) {
+        CacheKey cacheKey = ProductModelSuperTableCacheKeyBuilder
+            .build(productIdentification, versionNo, serviceCode, deviceIdentification);
+        return cachePlusOpsUtil.getOrLoadList(cacheKey, k -> Collections.emptyList(), SuperTableDescribeVO.class, false);
+    }
+
+    /**
+     * 设置设备子表 TDengine 表结构缓存(对应 getProductModelSuperTableCacheVO)。
+     *
+     * @param productIdentification 产品标识
+     * @param versionNo             版本序号(与 TD 表名拼接的版本一致)
+     * @param serviceCode           服务码
+     * @param deviceIdentification  设备标识
+     * @param superTableDescribeOpt SuperTable 字段描述列表
+     */
+    public void setProductModelSuperTableCacheVO(String productIdentification, String versionNo,
+                                                 String serviceCode, String deviceIdentification,
                                                  List<SuperTableDescribeVO> superTableDescribeOpt) {
-        CacheKey cacheProductModelSuperTableKey = ProductModelSuperTableCacheKeyBuilder.build(productIdentification, serviceCode, deviceIdentification);
+        CacheKey cacheProductModelSuperTableKey = ProductModelSuperTableCacheKeyBuilder
+            .build(productIdentification, versionNo, serviceCode, deviceIdentification);
         cachePlusOps.del(cacheProductModelSuperTableKey);
-        cachePlusOps.set(cacheProductModelSuperTableKey, superTableDescribeOpt);
+        cachePlusOps.set(cacheProductModelSuperTableKey, JsonUtil.toJson(superTableDescribeOpt));
     }
 
     /**
-     * Sets a device data collection pool cache value in a sorted set in Redis.
+     * 产品维度的超表结构缓存设置(预热场景:产品发布后,LinkJobHandler 调度任务刷所有版本的超表)。
      *
-     * @param productIdentification the product identifier, must not be {@literal null}.
-     * @param deviceIdentification  the device identifier, must not be {@literal null}.
-     * @param productResultVO       the data to set in the cache, must not be {@literal null}.
+     * @param productIdentification 产品标识
+     * @param versionNo             版本序号
+     * @param serviceCode           服务码
+     * @param superTableDescribeOpt SuperTable 字段描述列表
      */
-    public void setDeviceDataCollectionPoolCacheVO(String productIdentification, String deviceIdentification, ProductResultVO productResultVO) {
-        log.info("Setting device data collection pool cache - Product ID: {}, Device ID: {}, Data: {}",
-                productIdentification, deviceIdentification, productResultVO);
-
-        try {
-            CacheKey cacheKey = DeviceDataCollectionPoolCacheKeyBuilder.build(productIdentification, deviceIdentification);
-            log.info("Generated CacheKey: {}", cacheKey);
-
-            long timestamp = DateUtils.microsecondStampL();
-            log.info("Current timestamp: {}", timestamp);
-
-            // 获取最大缓存条数
-            Long maxCacheSize = new DeviceDataCollectionPoolCacheKeyBuilder().getMaxCacheSize();
-
-            cachePlusOps.zAdd(cacheKey, productResultVO, timestamp);
-            log.info("Data added to cache - CacheKey: {}, ProductResult: {}", cacheKey, productResultVO);
-
-            cachePlusOps.expire(cacheKey);
-            log.info("Set cache expiration for CacheKey: {}", cacheKey);
-
-            // 获取当前 Sorted Set 中的元素数量
-            long size = cachePlusOps.zCard(cacheKey);
-            log.info("Current cache size: {}", size);
-
-            // 如果 Sorted Set 中的元素超过了最大条数，则删除最旧的数据
-            if (size > maxCacheSize) {
-                // 删除最旧的 excessCount 条数据
-                long excessCount = size - maxCacheSize;
-                // 删除最旧的 excessCount 条数据
-                cachePlusOps.zRem(cacheKey, 0, excessCount - 1);
-                log.info("Removed {} oldest data to maintain size limit of {}", excessCount, maxCacheSize);
-            }
-
-        } catch (Exception e) {
-            log.error("Error setting device data collection pool cache - Product ID: {}, Device ID: {}, Data: {}",
-                    productIdentification, deviceIdentification, productResultVO, e);
-            throw e;
-        }
+    public void setProductModelSuperTableCacheVO(String productIdentification, String versionNo,
+                                                 String serviceCode,
+                                                 List<SuperTableDescribeVO> superTableDescribeOpt) {
+        CacheKey cacheKey = ProductModelSuperTableCacheKeyBuilder
+            .build(productIdentification, versionNo, serviceCode);
+        cachePlusOps.del(cacheKey);
+        cachePlusOps.set(cacheKey, JsonUtil.toJson(superTableDescribeOpt));
     }
 
     /**
-     * Retrieves device data collection pool cache values from a sorted set in Redis within the specified score range
-     * and optionally clears the retrieved scores from the cache.
+     * 往 Redis sorted set 写设备指令缓存。参数均不能为空。
      *
-     * @param productIdentification the product identifier, must not be {@literal null}.
-     * @param deviceIdentification  the device identifier, must not be {@literal null}.
-     * @param startScore            the start score of the range to retrieve.
-     * @param endScore              the end score of the range to retrieve.
-     * @param clear                 flag indicating whether to clear the retrieved data from cache.
-     * @return a HashMap containing the scores as keys and the corresponding ProductResultVO objects as values.
-     */
-    public Map<Long, ProductResultVO> getDeviceDataCollectionPoolCacheVO(String productIdentification, String deviceIdentification, double startScore, double endScore, boolean clear) {
-        if (startScore > endScore) {
-            log.error("Start score is greater than end score for product: {} and device: {}, range: {} - {}", productIdentification, deviceIdentification, startScore, endScore);
-            return Collections.emptyMap();
-        }
-        CacheKey cacheKey = DeviceDataCollectionPoolCacheKeyBuilder.build(productIdentification, deviceIdentification);
-        Set<ZSetOperations.TypedTuple<Object>> resultSet;
-        try {
-            resultSet = cachePlusOps.zReverseRangeByScoreWithScores(cacheKey, startScore, endScore);
-        } catch (Exception e) {
-            log.error("Error retrieving from cache for product: {} and device: {}, range: {} - {}", productIdentification, deviceIdentification, startScore, endScore, e);
-            return Collections.emptyMap();
-        }
-
-        if (resultSet.isEmpty()) {
-            return Collections.emptyMap();
-        }
-
-        Map<Long, ProductResultVO> resultMap;
-        try {
-            resultMap = resultSet.stream()
-                    .filter(typedTuple -> typedTuple.getValue() instanceof ProductResultVO)
-                    .collect(Collectors.toMap(
-                            // 将Double的二进制表示转换为Long
-                            tuple -> Objects.requireNonNull(tuple.getScore()).longValue(),
-                            tuple -> (ProductResultVO) tuple.getValue(),
-                            (existing, replacement) -> existing));
-        } catch (ClassCastException e) {
-            log.error("Cache contains non-ProductResultVO objects for product: {} and device: {}, range: {} - {}",
-                    productIdentification, deviceIdentification, startScore, endScore, e);
-            return Collections.emptyMap();
-        }
-
-
-        if (clear) {
-            deleteDeviceDataCollectionPoolCacheVO(productIdentification, deviceIdentification, startScore, endScore);
-        }
-
-        return resultMap;
-    }
-
-
-    /**
-     * Deletes device data collection pool cache values from a sorted set in Redis within a score range.
-     *
-     * @param productIdentification the product identifier, must not be {@literal null}.
-     * @param deviceIdentification  the device identifier, must not be {@literal null}.
-     * @param startScore            the start of the score range, inclusive.
-     * @param endScore              the end of the score range, inclusive.
-     */
-    public void deleteDeviceDataCollectionPoolCacheVO(String productIdentification, String deviceIdentification, double startScore, double endScore) {
-        CacheKey cacheKey = DeviceDataCollectionPoolCacheKeyBuilder.build(productIdentification, deviceIdentification);
-        cachePlusOps.zRemRangeByScore(cacheKey, startScore, endScore);
-    }
-
-
-    /**
-     * Sets a device action cache value in a sorted set in Redis.
-     *
-     * @param productIdentification the product identifier, must not be null.
-     * @param deviceIdentification  the device identifier, must not be null.
-     * @param deviceActionCacheVO   the data to set in the cache, must not be null.
+     * @param productIdentification 产品标识
+     * @param deviceIdentification  设备标识
+     * @param deviceActionCacheVO   待写入的设备指令
      */
     public void setDeviceActionCacheVO(String productIdentification, String deviceIdentification, DeviceActionCacheVO deviceActionCacheVO) {
         CacheKey cacheKey = DeviceActionCollectionPoolCacheKeyBuilder.build(productIdentification, deviceIdentification);
@@ -307,13 +327,12 @@ public class LinkCacheDataHelper {
     }
 
     /**
-     * Retrieves all device action cache values from a sorted set in Redis within the score range
-     * and optionally clears the retrieved scores from the cache.
+     * 读设备指令缓存全量,clear=true 时读后清空。返回 score → DeviceActionCacheVO 映射。
      *
-     * @param productIdentification the product identifier, must not be null.
-     * @param deviceIdentification  the device identifier, must not be null.
-     * @param clear                 flag indicating whether to clear the retrieved data from cache.
-     * @return a HashMap containing the scores as keys and the corresponding DeviceActionCacheVO objects as values.
+     * @param productIdentification 产品标识
+     * @param deviceIdentification  设备标识
+     * @param clear                 是否读后清除
+     * @return score → DeviceActionCacheVO 映射;无数据返空 map
      */
     public Map<Long, DeviceActionCacheVO> getDeviceActionCacheVO(String productIdentification, String deviceIdentification, boolean clear) {
         CacheKey cacheKey = DeviceActionCollectionPoolCacheKeyBuilder.build(productIdentification, deviceIdentification);
@@ -332,12 +351,12 @@ public class LinkCacheDataHelper {
         Map<Long, DeviceActionCacheVO> resultMap;
         try {
             resultMap = resultSet.stream()
-                    .filter(typedTuple -> typedTuple.getValue() instanceof DeviceActionCacheVO)
-                    .collect(Collectors.toMap(
-                            tuple -> Objects.requireNonNull(tuple.getScore()).longValue(),
-                            typedTuple -> (DeviceActionCacheVO) typedTuple.getValue(),
-                            (existing, replacement) -> existing
-                    ));
+                .filter(typedTuple -> typedTuple.getValue() instanceof DeviceActionCacheVO)
+                .collect(Collectors.toMap(
+                    tuple -> Objects.requireNonNull(tuple.getScore()).longValue(),
+                    typedTuple -> (DeviceActionCacheVO) typedTuple.getValue(),
+                    (existing, replacement) -> existing
+                ));
         } catch (ClassCastException e) {
             log.error("Cache contains non-DeviceActionCacheVO objects for product: {} and device: {}", productIdentification, deviceIdentification, e);
             return Collections.emptyMap();
@@ -346,62 +365,30 @@ public class LinkCacheDataHelper {
         if (clear) {
             double startScore = Collections.min(resultMap.keySet());
             double endScore = Collections.max(resultMap.keySet());
-            deleteDeviceActionCacheVO(productIdentification, deviceIdentification, startScore, endScore);
+            evictDeviceActionCacheVO(productIdentification, deviceIdentification, startScore, endScore);
         }
 
         return resultMap;
     }
 
     /**
-     * Deletes device action cache values from a sorted set in Redis within a score range.
+     * 删除指定 score 区间(闭区间)内的设备指令缓存。
      *
-     * @param productIdentification the product identifier, must not be null.
-     * @param deviceIdentification  the device identifier, must not be null.
-     * @param startScore            the start of the score range, inclusive.
-     * @param endScore              the end of the score range, inclusive.
+     * @param productIdentification 产品标识
+     * @param deviceIdentification  设备标识
+     * @param startScore            score 区间起值
+     * @param endScore              score 区间止值
      */
-    public void deleteDeviceActionCacheVO(String productIdentification, String deviceIdentification, double startScore, double endScore) {
+    public void evictDeviceActionCacheVO(String productIdentification, String deviceIdentification, double startScore, double endScore) {
         CacheKey cacheKey = DeviceActionCollectionPoolCacheKeyBuilder.build(productIdentification, deviceIdentification);
         cachePlusOps.zRemRangeByScore(cacheKey, startScore, endScore);
     }
 
 
     /**
-     * Increments the counter for a specific device's uplink data.
+     * 读 OTA 任务执行器的时间偏移量(格式 yyyy-MM-dd HH:mm:ss),缓存无值时返空。
      *
-     * @return The incremented count.
-     */
-    public Long incrementUpLinkCounter() {
-        LocalDateTime now = LocalDateTime.now();
-        String day = now.format(DateTimeFormatter.ofPattern(DateUtils.YYYYMMDD_FORMAT));
-        String hourMinute = now.format(DateTimeFormatter.ofPattern(DateUtils.HHMM_FORMAT));
-        CacheHashKey hashKey = UpLinkDataCounterCacheKeyBuilder.build(day, hourMinute);
-        return cachePlusOps.incrementHashCounter(hashKey);
-    }
-
-
-    /**
-     * Increments the counter for a specific device's downlink data.
-     *
-     * @return The incremented count.
-     */
-    public Long incrementDownLinkCounter() {
-        LocalDateTime now = LocalDateTime.now();
-        String day = now.format(DateTimeFormatter.ofPattern(DateUtils.YYYYMMDD_FORMAT));
-        String hourMinute = now.format(DateTimeFormatter.ofPattern(DateUtils.HHMM_FORMAT));
-        CacheHashKey hashKey = DownLinkDataCounterCacheKeyBuilder.build(day, hourMinute);
-        return cachePlusOps.incrementHashCounter(hashKey);
-    }
-
-
-    /**
-     * Retrieves the current time offset for OTA (Over-The-Air) task executor from the cache,
-     * stored as a Datetime(yyyy-MM-dd HH:mm:ss). This method facilitates managing the execution
-     * sequence of OTA tasks by providing the last known time offset. Using Optional
-     * emphasizes the possibility that the offset may not always be present.
-     *
-     * @return An Optional<String> containing the Datetime(yyyy-MM-dd HH:mm:ss) offset if present;
-     * otherwise, Optional.empty() if the offset is not found in the cache.
+     * @return 时间偏移量;缓存无值返空
      */
     public Optional<String> getOtaTaskExecutorOffset() {
         CacheKey key = OtaTaskExecutorOffsetCacheKeyBuilder.build();
@@ -418,11 +405,9 @@ public class LinkCacheDataHelper {
     }
 
     /**
-     * Sets the current time offset for OTA (Over-The-Air) task executor in the cache,
-     * stored as a Datetime(yyyy-MM-dd HH:mm:ss). This method facilitates managing the execution
-     * sequence of OTA tasks by providing the last known time offset.
+     * 写 OTA 任务执行器的时间偏移量(格式 yyyy-MM-dd HH:mm:ss)。
      *
-     * @param offset The Datetime(yyyy-MM-dd HH:mm:ss) offset to set in the cache.
+     * @param offset 时间偏移量(格式 yyyy-MM-dd HH:mm:ss)
      */
     public void setOtaTaskExecutorOffset(String offset) {
         CacheKey cacheKey = OtaTaskExecutorOffsetCacheKeyBuilder.build();

@@ -21,6 +21,7 @@
         <module>thinglinks-mqs-server</module>
         <module>thinglinks-mqs-entity</module>
         <module>thinglinks-mqs-biz</module>
+        <module>thinglinks-mqs-biz-bus</module>
         <module>thinglinks-mqs-controller</module>
     </modules>
 </project>

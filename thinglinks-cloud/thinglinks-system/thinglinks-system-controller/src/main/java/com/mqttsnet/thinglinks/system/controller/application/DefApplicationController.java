@@ -71,21 +71,27 @@ public class DefApplicationController extends SuperCacheController<DefApplicatio
     @GetMapping("/findApplicationResourceList")
     @WebLog(value = "查询所有的应用资源列表")
     public R<List<ApplicationResourceResultVO>> findApplicationResourceList() {
-        return success(superService.findApplicationResourceList());
+        List<ApplicationResourceResultVO> result = superService.findApplicationResourceList();
+        echoService.action(result);
+        return success(result);
     }
 
     @Operation(summary = "查询可用的应用资源列表")
     @GetMapping("/findAvailableApplicationResourceList")
     @WebLog(value = "查询可用的应用资源列表")
     public R<List<ApplicationResourceResultVO>> findAvailableApplicationResourceList() {
-        return success(superService.findAvailableApplicationResourceList());
+        List<ApplicationResourceResultVO> result = superService.findAvailableApplicationResourceList();
+        echoService.action(result);
+        return success(result);
     }
 
     @Operation(summary = "查询可用的应用数据权限列表")
     @GetMapping("/findAvailableApplicationDataScopeList")
     @WebLog(value = "查询可用的应用数据权限列表")
     public R<List<ApplicationResourceResultVO>> findAvailableApplicationDataScopeList() {
-        return success(superService.findAvailableApplicationDataScopeList());
+        List<ApplicationResourceResultVO> result = superService.findAvailableApplicationDataScopeList();
+        echoService.action(result);
+        return success(result);
     }
 
 }

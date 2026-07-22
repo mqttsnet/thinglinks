@@ -83,7 +83,7 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
         extendMsg.setType(MsgTemplateTypeEnum.NOTICE.getCode());
         extendMsg.setChannel(SourceType.APP);
 
-        extendMsg.setCreatedOrgId(sysUser.getEmployee() != null ? sysUser.getEmployee().getLastDeptId() : null);
+        extendMsg.setCreatedOrgId((sysUser != null && sysUser.getEmployee() != null) ? sysUser.getEmployee().getLastDeptId() : null);
         if (data != null && data.getDraft() != null && data.getDraft()) {
             extendMsg.setStatus(TaskStatus.DRAFT);
         } else {
@@ -114,7 +114,9 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
                 notice.setIsRead(false);
                 notice.setHandleTime(null);
                 notice.setReadTime(null);
-                notice.setAutoRead(true);
+                notice.setUrl(data.getUrl());
+                notice.setTarget(data.getTarget());
+                notice.setAutoRead(data.getAutoRead() == null ? true : data.getAutoRead());
                 return notice;
             }).toList();
             extendNoticeManager.saveBatch(noticeList);
@@ -122,13 +124,15 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
             data.getRecipientList().forEach(employeeId -> {
                 WebSocketSubject subject = WebSocketSubject.Holder.getSubject(employeeId);
                 // 通知客户端 接收消息
-                subject.notify("1", null);
+                if (subject != null) {
+                    subject.notify("1", null);
+                }
             });
 
             extendMsg.setStatus(TaskStatus.SUCCESS);
             superManager.updateById(extendMsg);
         } else {
-            // 务必启动 thinglinks-job-pro 项目，否则调用会失败！
+            // 延时消息任务由 thinglinks-base-executor 模块执行。
             Map<String, Long> param = MapUtil.builder(ContextConstants.TENANT_ID_HEADER, ContextUtil.getTenantId()).put("msgId", extendMsg.getId()).build();
 
             XxlJobInfoVO xxlJobInfoVO = XxlJobInfoVO.create(JobConstant.DEF_BASE_JOB_GROUP_NAME,
@@ -164,7 +168,9 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
         recipientList.forEach(employeeId -> {
             WebSocketSubject subject = WebSocketSubject.Holder.getSubject(employeeId);
             // 通知客户端 接收消息
-            subject.notify("1", null);
+            if (subject != null) {
+                subject.notify("1", null);
+            }
         });
 
         extendMsg.setStatus(TaskStatus.SUCCESS);
@@ -213,7 +219,7 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
             // 具体的发送逻辑请看： MsgSendListener
             SpringUtils.publishEvent(new MsgSendEvent(msgEventVO));
         } else {
-            // 务必启动 thinglinks-job-pro 项目，否则调用会失败！
+            // 延时消息任务由 thinglinks-base-executor 模块执行。
             Map<String, Long> param = MapUtil.builder(ContextConstants.TENANT_ID_HEADER, ContextUtil.getTenantId()).put("msgId", extendMsg.getId()).build();
 
             XxlJobInfoVO xxlJobInfoVO = XxlJobInfoVO.create(JobConstant.DEF_BASE_JOB_GROUP_NAME,
@@ -225,5 +231,3 @@ public class ExtendMsgServiceImpl extends SuperServiceImpl<ExtendMsgManager, Lon
 
 
 }
-
-

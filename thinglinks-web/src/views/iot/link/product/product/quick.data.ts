@@ -2,6 +2,7 @@ import { FormSchema } from '/@/components/Table';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { DictEnum, FileBizTypeEnum } from '/@/enums/commonEnum';
 import { dictComponentProps } from '/@/utils/thinglinks/common';
+import { thingModelCodeRules } from '/@/utils/iot/dataTypeValidator';
 
 const { t } = useI18n();
 
@@ -115,16 +116,6 @@ export const getProductFormSchema = (): FormSchema[] => {
       },
     },
     {
-      label: t('iot.link.product.product.productVersion'),
-      field: 'productVersion',
-      component: 'Input',
-      required: true,
-      colProps: { span: 8 },
-      componentProps: {
-        placeholder: t('common.inputText') + t('iot.link.product.product.productVersion'),
-      },
-    },
-    {
       label: t('iot.link.product.product.remark'),
       field: 'remark',
       component: 'InputTextArea',
@@ -145,7 +136,7 @@ export const getServiceFormSchema = (): FormSchema[] => {
       label: t('iot.link.productService.productService.serviceCode'),
       field: 'serviceCode',
       component: 'Input',
-      required: true,
+      rules: thingModelCodeRules(),
       colProps: { span: 8 },
       componentProps: {
         placeholder:
@@ -214,7 +205,7 @@ export const getPropertyFormSchema = (): FormSchema[] => {
       label: t('iot.link.productProperty.productProperty.propertyCode'),
       field: 'propertyCode',
       component: 'Input',
-      required: true,
+      rules: thingModelCodeRules(),
       colProps: { span: 8 },
       componentProps: {
         placeholder:
@@ -391,7 +382,7 @@ export const getCommandFormSchema = (): FormSchema[] => {
       label: t('iot.link.productCommand.productCommand.commandCode'),
       field: 'commandCode',
       component: 'Input',
-      required: true,
+      rules: thingModelCodeRules(),
       colProps: { span: 8 },
       componentProps: {
         placeholder:
@@ -439,7 +430,7 @@ export const getRequestFormSchema = (): FormSchema[] => {
       label: t('iot.link.productCommandRequest.productCommandRequest.parameterCode'),
       field: 'parameterCode',
       component: 'Input',
-      required: true,
+      rules: thingModelCodeRules(),
       colProps: { span: 8 },
       componentProps: {
         placeholder:
@@ -591,7 +582,7 @@ export const getResponseFormSchema = (): FormSchema[] => {
       label: t('iot.link.productCommandResponse.productCommandResponse.parameterCode'),
       field: 'parameterCode',
       component: 'Input',
-      required: true,
+      rules: thingModelCodeRules(),
       colProps: { span: 8 },
       componentProps: {
         placeholder:
@@ -827,7 +818,6 @@ export const createDefaultFormState = (createdOrgId?: string) => ({
   manufacturerName: '',
   model: '',
   productName: '',
-  productVersion: '',
   protocolType: '',
   remark: '',
   productStatus: '0',

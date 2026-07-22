@@ -1,5 +1,7 @@
 package com.mqttsnet.thinglinks.service.execution.policy;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,15 +11,16 @@ import com.mqttsnet.basic.condition.service.ConditionEvaluatorService;
 import com.mqttsnet.basic.context.ContextUtil;
 import com.mqttsnet.basic.exception.BizException;
 import com.mqttsnet.basic.tds.enumeration.TdDataTypeEnum;
-import com.mqttsnet.basic.utils.DateUtils;
-import com.mqttsnet.thinglinks.cache.helper.LinkCacheDataHelper;
+import com.mqttsnet.thinglinks.common.constant.BizConstant;
 import com.mqttsnet.thinglinks.dto.linkage.AntiShakeSchemePolicyDTO;
 import com.mqttsnet.thinglinks.dto.linkage.RuleConditionPolicyDTO;
 import com.mqttsnet.thinglinks.dto.linkage.condition.group.DevicePropertiesConditionDTO;
 import com.mqttsnet.thinglinks.dto.linkage.condition.group.DevicePropertiesConditionGroupDTO;
 import com.mqttsnet.thinglinks.dto.linkage.condition.group.DevicePropertiesLeftParamDTO;
 import com.mqttsnet.thinglinks.dto.linkage.condition.group.DevicePropertiesRightParamsDTO;
+import com.mqttsnet.thinglinks.common.cache.rule.trigger.RuleTriggerCacheKeys;
 import com.mqttsnet.thinglinks.dto.linkage.execution.PolicyContext;
+import com.mqttsnet.thinglinks.dto.linkage.execution.TriggerEventDTO;
 import com.mqttsnet.thinglinks.enumeration.linkage.AntiShakeStatusEnum;
 import com.mqttsnet.thinglinks.enumeration.linkage.ConditionStatusEnum;
 import com.mqttsnet.thinglinks.enumeration.linkage.ConditionTypeEnum;
@@ -26,8 +29,10 @@ import com.mqttsnet.thinglinks.productproperty.vo.result.ProductPropertyResultVO
 import com.mqttsnet.thinglinks.service.execution.FieldValueWithType;
 import com.mqttsnet.thinglinks.service.execution.event.executionlog.publisher.ExecutionLogEventPublisher;
 import com.mqttsnet.thinglinks.service.execution.service.ActionProcessorService;
-import com.mqttsnet.thinglinks.service.execution.service.AntiShakeSchemeEvaluatorService;
 import com.mqttsnet.thinglinks.service.execution.service.RulePolicyStrategyService;
+import com.mqttsnet.thinglinks.service.execution.trigger.ActionCooldownService;
+import com.mqttsnet.thinglinks.service.execution.trigger.AntiShakeCounterService;
+import com.mqttsnet.thinglinks.service.execution.trigger.DeviceLatestSnapshotService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +54,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class DevicePropertiesPolicy implements RulePolicyStrategyService {
-    private final LinkCacheDataHelper linkCacheDataHelper;
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -61,8 +65,16 @@ public class DevicePropertiesPolicy implements RulePolicyStrategyService {
     @Autowired
     private ActionProcessorService actionProcessorService;
 
-    public DevicePropertiesPolicy(LinkCacheDataHelper linkCacheDataHelper) {
-        this.linkCacheDataHelper = linkCacheDataHelper;
+    @Autowired
+    private AntiShakeCounterService antiShakeCounterService;
+
+    @Autowired
+    private ActionCooldownService actionCooldownService;
+
+    @Autowired
+    private DeviceLatestSnapshotService deviceLatestSnapshotService;
+
+    public DevicePropertiesPolicy() {
         this.objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
@@ -76,7 +88,7 @@ public class DevicePropertiesPolicy implements RulePolicyStrategyService {
     @Override
     public void applyPolicy(PolicyContext context, RuleConditionPolicyDTO conditionPolicyDTO) {
         log.info("Applying policy - Tenant ID: {}, Rule Identification: {}，Rule ExecutionId: {}", context.getTenantId(), context.getRuleIdentification(), context.getRuleExecutionId());
-        ContextUtil.setTenantId(context.getTenantId());
+        // tenantId 上下文由调用方 RuleExecutionService.executePolicy 统一设置,本 Policy 信任不重设
 
         // 记录开始时间
         LocalDateTime startTime = LocalDateTime.now();
@@ -154,8 +166,9 @@ public class DevicePropertiesPolicy implements RulePolicyStrategyService {
         }
 
         log.info("All condition groups evaluated. All conditions met: {}", allConditionsMet);
-        // 如果所有条件组都满足，则执行相应的动作
-        if (allConditionsMet) {
+        // 所有条件组满足且拿到动作冷却执行权才执行动作(事件驱动下条件持续满足时防动作风暴;
+        // 事件/定时双触发共用同一把冷却闸,存量定时任务未停用期间天然防重复动作)
+        if (allConditionsMet && actionCooldownService.tryAcquire(context, conditionPolicyDTO)) {
             actionProcessorService.processActions(context, conditionPolicyDTO);
         }
     }
@@ -292,17 +305,23 @@ public class DevicePropertiesPolicy implements RulePolicyStrategyService {
             String productIdentification = condition.getLeftParam().getProductIdentification();
             String deviceIdentification = condition.getLeftParam().getDeviceIdentification();
 
-            // 从缓存中获取设备数据（可以根据实际情况调整）
-            Map<Long, ProductResultVO> deviceDataCollectionPoolCacheVO = linkCacheDataHelper.getDeviceDataCollectionPoolCacheVO(productIdentification, deviceIdentification, -1, DateUtils.microsecondStampL(), false);
-
             // 记录评估开始时间
             LocalDateTime conditionStartTime = LocalDateTime.now();
 
-            log.info("Evaluating condition - Product ID: {}, Device ID: {}, Operator: {}, Data Collection Pool Cache Size: {}",
-                    productIdentification, deviceIdentification, condition.getOperator().getValue(), deviceDataCollectionPoolCacheVO.size());
+            // 选定参与评估的物模型数据:事件内值(实时路径,零缓存读)→ 最新快照(定时/跨设备)→ 数据收集池(过渡期兜底)
+            ProductResultVO selectedProductResult = resolveEvaluationSource(context, optionalAntiShakeSchemePolicyDTO, condition);
+            if (Objects.isNull(selectedProductResult)) {
+                log.info("No evaluation data selected (anti-shake gating or no snapshot) - Condition UUID: {}, Product ID: {}, Device ID: {}",
+                        condition.getUuid(), productIdentification, deviceIdentification);
+                recordConditionLog(context, condition, conditionStartTime, false, "No evaluation data selected");
+                return false;
+            }
+
+            log.info("Evaluating condition - Product ID: {}, Device ID: {}, Operator: {}",
+                    productIdentification, deviceIdentification, condition.getOperator().getValue());
 
             // 提取左侧值（需要根据具体的左侧参数定义来获取）
-            FieldValueWithType fieldValueWithType = extractLeftValue(optionalAntiShakeSchemePolicyDTO, condition.getLeftParam(), deviceDataCollectionPoolCacheVO);
+            FieldValueWithType fieldValueWithType = extractFieldValue(selectedProductResult, condition.getLeftParam());
 
             // 如果左侧值为 null，记录警告并返回 false
             if (Objects.isNull(fieldValueWithType)) {
@@ -373,24 +392,73 @@ public class DevicePropertiesPolicy implements RulePolicyStrategyService {
 
 
     /**
-     * Extracts the left value from device properties.
+     * 选定参与条件评估的物模型数据(三级数据源):
+     * <ol>
+     *   <li><b>事件内值</b>:事件触发路径且条件命中事件设备(含"全部设备"范围),左值直接取消息,
+     *       零缓存读;配了防抖走窗口计数器(达标按 first/last 取值,未达标返回 null 短路);</li>
+     *   <li><b>最新快照</b>:定时/API 触发或跨设备条件,读事件消费时维护的 latest 快照;</li>
+     *   <li><b>数据收集池</b>:快照 miss 时的过渡期兜底(升级初期快照尚未积累),池下线后删除此支。</li>
+     * </ol>
      *
-     * @param optionalAntiShakeSchemePolicyDTO The optional anti-shake policy to apply.
-     * @param leftParam                        Left parameter DTO.
-     * @param deviceDataCollectionPoolCacheVO  Device data collection.
-     * @return {@link FieldValueWithType} object containing the left value.
+     * @return 选中的物模型数据;防抖未达标/无数据返回 null
      */
-    private FieldValueWithType extractLeftValue(Optional<AntiShakeSchemePolicyDTO> optionalAntiShakeSchemePolicyDTO, DevicePropertiesLeftParamDTO leftParam, Map<Long, ProductResultVO> deviceDataCollectionPoolCacheVO) {
-        try {
-            AntiShakeSchemeEvaluatorService<ProductResultVO> evaluator = new AntiShakeSchemeEvaluatorService<>();
-            ProductResultVO selectedProductResult = evaluator.applyAntiShakePolicy(deviceDataCollectionPoolCacheVO, optionalAntiShakeSchemePolicyDTO);
+    private ProductResultVO resolveEvaluationSource(PolicyContext context,
+                                                    Optional<AntiShakeSchemePolicyDTO> optionalAntiShakeSchemePolicyDTO,
+                                                    DevicePropertiesConditionDTO condition) {
+        DevicePropertiesLeftParamDTO leftParam = condition.getLeftParam();
+        String productIdentification = leftParam.getProductIdentification();
+        String deviceIdentification = leftParam.getDeviceIdentification();
+        TriggerEventDTO evt = context.getTriggerEvent();
 
-            if (selectedProductResult == null) {
-                log.warn("No latest ProductResult found.");
-                return null;
+        boolean eventScoped = evt != null
+                && Objects.equals(evt.getProductIdentification(), productIdentification)
+                && (isAllDeviceScope(deviceIdentification)
+                || Objects.equals(evt.getDeviceIdentification(), deviceIdentification));
+        if (eventScoped && evt.getThingModel() instanceof ProductResultVO current) {
+            if (optionalAntiShakeSchemePolicyDTO.isEmpty()) {
+                return current;
             }
+            AntiShakeSchemePolicyDTO policy = optionalAntiShakeSchemePolicyDTO.get();
+            // 窗口下限 1 秒:配置缺失/0/负值兜底,防止 TTL=0 导致计数键即写即失效、门槛永远达不到
+            long windowSeconds = policy.getFrequency() == null || policy.getFrequency().getTimeValue() == null
+                    ? 1L : Math.max(1L, policy.getFrequency().getTimeValue().longValue());
+            // "全部设备"条件的防抖按事件设备维度隔离,各设备独立计数
+            String evalDevice = isAllDeviceScope(deviceIdentification)
+                    ? evt.getDeviceIdentification() : deviceIdentification;
+            return antiShakeCounterService.countAndSelect(
+                            RuleTriggerCacheKeys.antiShakeCounter(condition.getUuid(), evalDevice, windowSeconds),
+                            RuleTriggerCacheKeys.antiShakeFirst(condition.getUuid(), evalDevice, windowSeconds),
+                            policy, evt.getRawMessage())
+                    .map(payload -> JSON.parseObject(payload, ProductResultVO.class))
+                    .orElse(null);
+        }
 
-            // Extract the desired value from the selected ProductResult
+        // 定时/API 触发或跨设备条件:读最新快照(事件消费时维护);
+        // "全部设备"条件无具体设备可读、快照未积累时返回 null → 条件按 false 处理
+        if (StrUtil.isNotBlank(deviceIdentification) && !isAllDeviceScope(deviceIdentification)) {
+            Optional<String> latest = deviceLatestSnapshotService
+                    .getLatestPayload(productIdentification, deviceIdentification);
+            if (latest.isPresent()) {
+                return JSON.parseObject(latest.get(), ProductResultVO.class);
+            }
+        }
+        return null;
+    }
+
+    private boolean isAllDeviceScope(String deviceIdentification) {
+        return StrUtil.equals(BizConstant.ALL, deviceIdentification);
+    }
+
+    /**
+     * 从选定的物模型数据中按 (serviceCode, propertyCode) 抽取左值。
+     *
+     * @param selectedProductResult 选定的物模型数据
+     * @param leftParam             左参数定义
+     * @return {@link FieldValueWithType};未匹配返回 null
+     */
+    private FieldValueWithType extractFieldValue(ProductResultVO selectedProductResult,
+                                                 DevicePropertiesLeftParamDTO leftParam) {
+        try {
             return selectedProductResult.getServices().stream()
                     .filter(serviceResult -> Objects.equals(serviceResult.getServiceCode(), leftParam.getServiceCode()))
                     .flatMap(serviceResult -> serviceResult.getProperties().stream())
@@ -398,7 +466,6 @@ public class DevicePropertiesPolicy implements RulePolicyStrategyService {
                     .findFirst()
                     .map(this::safelyGetPropertyValue)
                     .orElse(null);
-
         } catch (Exception e) {
             log.error("Error extracting left value: {}", e.getMessage(), e);
             return null;

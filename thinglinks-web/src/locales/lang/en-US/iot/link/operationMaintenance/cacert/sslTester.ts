@@ -1,0 +1,31 @@
+export default {
+  title: 'SSL Certificate Authentication Test',
+  subtitle: 'End-to-end simulate the device SSL handshake to pinpoint PKI issues',
+  inputTitle: 'Test Input',
+  clientId: 'Client ID',
+  clientIdPh: 'Optional, used for device CA lookup + audit',
+  targetCa: 'Target CA',
+  targetCaPh: 'Select an issued CA; if blank, lookup by client ID',
+  targetCaHint: 'When blank, the system resolves the CA via the device binding',
+  clientCert: 'Client Certificate',
+  clientCertPh: 'Paste PEM (BEGIN/END CERTIFICATE) or Base64',
+  uploadFile: 'Upload',
+  uploadHint: 'Supports .pem / .crt / .cer / .txt',
+  startTest: 'Start Test',
+  reset: 'Reset',
+  needClientCert: 'Client certificate is required',
+  testException: 'Test failed, please retry',
+
+  resultTitle: 'Verification Steps',
+  emptyHint: 'Fill the form on the left and click Start Test',
+  testing: 'Testing...',
+  testPass: 'Test passed',
+  testFail: 'Test failed',
+  totalCost: 'Total {ms} ms',
+
+  step: {
+    pass: 'PASS',
+    fail: 'FAIL',
+    skip: 'SKIP',
+  },
+};

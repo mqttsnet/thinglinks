@@ -2,7 +2,7 @@
   <BasicModal
     v-bind="$attrs"
     @register="registerModal"
-    :title="t('video.media.videoMediaServer.selectNode')"
+    :title="t('video.media.server.selectNode')"
     :maskClosable="false"
     :destroyOnClose="true"
     :keyboard="true"
@@ -15,7 +15,7 @@
         <a-spin />
       </div>
       <div class="card-content">
-        <a-row v-if="dataList.length > 0" :gutter="[24, 12]">
+        <a-row v-if="dataList.length > 0" :gutter="[16, 16]">
           <a-col
             v-for="record in dataList"
             :key="record.id"
@@ -28,52 +28,38 @@
           >
             <div
               class="card_wrap"
-              :class="selectNode.mediaIdentification === record.mediaIdentification ? 'active' : ''"
+              :class="{ active: selectNode.mediaIdentification === record.mediaIdentification }"
               @click="handleSelectNode(record)"
             >
-              <div class="left_info">
-                <div class="item">
-                  <div class="name">{{ record.name || '未命名' }}</div>
+              <div class="card_header">
+                <span class="card_name">{{ record.name || '-' }}</span>
+                <span class="card_type">{{ record?.echoMap?.type || record?.type }}</span>
+              </div>
+              <div class="card_body">
+                <div class="info_row">
+                  <span class="info_label">{{ t('video.media.server.appId') }}</span>
+                  <span class="info_value" :title="record.appId">
+                    {{ record.appId }}
+                    <span v-if="getDictLabel(DictEnum.VIDEO_APPLICATION_SCENARIO, record.appId)" class="info_dict">
+                      ({{ getDictLabel(DictEnum.VIDEO_APPLICATION_SCENARIO, record.appId) }})
+                    </span>
+                  </span>
                 </div>
-                <a-row :gutter="[4, 0]">
-                  <a-col :span="12">
-                    <div class="item">
-                      <div class="label">{{ t('video.media.videoMediaServer.appId') }}</div>
-                      <div
-                        class="content"
-                        :title="getDictLabel(DictEnum.VIDEO_APPLICATION_SCENARIO, record.appId)"
-                        >{{ getDictLabel(DictEnum.VIDEO_APPLICATION_SCENARIO, record.appId) }}</div
-                      >
-                    </div>
-                  </a-col>
-                  <a-col :span="12">
-                    <div class="item">
-                      <div class="label">ip</div>
-                      <div class="content" :title="record.ip">{{ record.ip }}</div>
-                    </div>
-                  </a-col>
-                </a-row>
-                <div class="item">
-                  <div class="label">{{ t('video.media.videoMediaServer.createdTime') }}</div>
-                  <div class="content" :title="record.createdTime">{{ record.createdTime }}</div>
+                <div class="info_row">
+                  <span class="info_label">{{ t('video.media.server.host') }}</span>
+                  <span class="info_value" :title="record.host">{{ record.host || record.ip || '-' }}</span>
                 </div>
-                <div class="item">
-                  <div class="label">{{
-                    t('video.media.videoMediaServer.mediaIdentification')
-                  }}</div>
-                  <div class="content" :title="record.mediaIdentification">{{
-                    record.mediaIdentification ?? null
-                  }}</div>
+                <div class="info_row">
+                  <span class="info_label">{{ t('video.media.server.mediaIdentification') }}</span>
+                  <span class="info_value" :title="record.mediaIdentification">{{ record.mediaIdentification || '-' }}</span>
                 </div>
               </div>
-              <img
-                class="right_img"
-                src="../../../../../../assets/images/video/media/videoMediaServer/video-node.jpg"
-                alt=""
-              />
-              <div class="type">
-                {{ record?.type }}
+              <div class="card_footer">
+                <span class="info_time">{{ record.createdTime || '' }}</span>
+                <span v-if="record.onlineStatus" class="status_dot online"></span>
+                <span v-else class="status_dot offline"></span>
               </div>
+              <div v-if="selectNode.mediaIdentification === record.mediaIdentification" class="check_mark">✓</div>
             </div>
           </a-col>
         </a-row>
@@ -95,19 +81,21 @@
     </div>
   </BasicModal>
 </template>
+
 <script lang="ts" setup>
   import { ref, reactive, watch } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { DictEnum } from '/@/enums/commonEnum';
   import { useDict } from '/@/components/Dict';
-  import { page } from '/@/api/video/media/videoMediaServer';
-  import type { VideoMediaServerPageQuery } from '/@/api/video/media/model/videoMediaServerModel';
+  import { page } from '/@/api/video/media/server';
+  import type { VideoMediaServerPageQuery } from '/@/api/video/media/model/serverModel';
   import { useMessage } from '/@/hooks/web/useMessage';
+
   const props = defineProps({ value: String });
   const { t } = useI18n();
   const { getDictLabel } = useDict();
-  const { notification } = useMessage();
+  const { createMessage } = useMessage();
   const [registerModal, { closeModal }] = useModalInner();
   const emits = defineEmits(['success', 'updateSelectNode']);
   const selectNode = reactive<VideoMediaServerPageQuery>({});
@@ -118,18 +106,20 @@
   const loading = ref<boolean>(false);
   const pageSizeOptions = ref(['10', '20', '30', '40', '50']);
 
-  // 获取列表
   const getList = async (current: number, size: number, model = {}) => {
     loading.value = true;
-    const res = await page({
-      current,
-      size,
-      model,
-      extra: {},
-    });
-    total.value = res.total;
-    dataList.value = res.records;
-    loading.value = false;
+    try {
+      const res = await page({
+        current,
+        size,
+        model,
+        extra: {},
+      });
+      total.value = res.total;
+      dataList.value = res.records;
+    } finally {
+      loading.value = false;
+    }
   };
 
   const handleSelectNode = (record: VideoMediaServerPageQuery) => {
@@ -137,28 +127,26 @@
   };
 
   const handleSubmit = () => {
-    if (Object.keys(selectNode).length === 0) {
-      notification.warn({
-        message: t('common.tips.tips'),
-        description: t('video.media.videoStreamProxy.pleaseSelectNode'),
-      });
+    if (!selectNode.mediaIdentification) {
+      createMessage.warning(t('video.media.proxy.pleaseSelectNode'));
       return;
     }
     emits('success', selectNode);
     closeModal();
   };
+
   const handleCancel = () => {
     emits('success', {});
     emits('updateSelectNode', { name: '' });
     handleSelectNode({ mediaIdentification: '' });
     closeModal();
   };
+
   const handleChangePagination = (page: number, size: number) => {
     current.value = page;
     pageSize.value = size;
   };
 
-  // 监控分页参数变化，获取新数据
   watch(
     [current, pageSize],
     async ([newCurrent, newSize]) => {
@@ -167,7 +155,6 @@
     { immediate: true },
   );
 
-  // 监控 props.value 变化，设置 selectNode
   watch(
     () => props.value,
     async (newValue) => {
@@ -176,8 +163,9 @@
         handleSelectNode({ mediaIdentification: '' });
         return;
       }
+      // 等列表加载完后再回显选中状态，不传 mediaIdentification 作为查询条件
       if (dataList.value.length === 0) {
-        await getList(current.value, pageSize.value, { mediaIdentification: newValue });
+        await getList(current.value, pageSize.value);
       }
       const selected = dataList.value.find((item) => item.mediaIdentification === newValue);
       if (selected) {
@@ -188,87 +176,154 @@
     { immediate: true },
   );
 </script>
+
 <style lang="less" scoped>
   .node-card-list {
-    background-color: #fff;
-    padding: 22px;
+    padding: 16px;
+
     .loading {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
     }
+
     .card-content {
       display: flex;
       flex-direction: column;
+
       .card_wrap {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
         position: relative;
-        background-image: url('../../../../../../assets/images/iot/link/blue-bg.png');
-        height: 200px;
-        border: 1px solid #e8e8e8;
-        padding: 8px 12px 8px;
-        border-radius: 8px;
-        transition: all linear 0.2s;
-        background-color: #fff;
-        background-repeat: no-repeat;
-        background-position: center center;
-        background-size: 104% 104%;
-        transition: all 0.5s;
-        // min-height: 228px;
+        border: 2px solid #f0f0f0;
+        border-radius: 12px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        background: #fff;
         height: 100%;
+
         &:hover {
-          border-color: #1a66ff;
-          transform: scale(1.01);
-          box-shadow: 0px 4px 12px rgba(0, 26, 51, 0.08);
+          border-color: #91caff;
+          box-shadow: 0 4px 16px rgba(24, 144, 255, 0.1);
+          transform: translateY(-2px);
         }
-        .left_info {
-          flex: 1;
-          .item {
-            margin-bottom: 4px;
-            .label {
-              font-size: 12px;
-              color: #999;
+
+        &.active {
+          border-color: #1677ff;
+          background: #f0f7ff;
+          box-shadow: 0 4px 16px rgba(24, 144, 255, 0.15);
+        }
+
+        .card_header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 12px;
+
+          .card_name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            margin-right: 8px;
+          }
+
+          .card_type {
+            font-size: 12px;
+            color: #1677ff;
+            background: #e6f4ff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            flex-shrink: 0;
+          }
+        }
+
+        .card_body {
+          .info_row {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 6px;
+            font-size: 13px;
+            line-height: 1.6;
+
+            .info_label {
+              color: #8c8c8c;
+              min-width: 80px;
+              flex-shrink: 0;
+
+              &::after {
+                content: '：';
+              }
             }
-            .name {
-              font-weight: 500;
-            }
-            .content {
-              text-overflow: ellipsis;
+
+            .info_value {
+              color: #333;
               overflow: hidden;
+              text-overflow: ellipsis;
               white-space: nowrap;
+              flex: 1;
+
+              .info_dict {
+                color: #8c8c8c;
+                font-size: 12px;
+              }
             }
           }
         }
-        .right_img {
-          width: 180px;
-          height: 180px;
-          margin-top: 24px;
-          cursor: pointer;
+
+        .card_footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 10px;
+          padding-top: 8px;
+          border-top: 1px solid #f5f5f5;
+
+          .info_time {
+            font-size: 12px;
+            color: #bfbfbf;
+          }
+
+          .status_dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+
+            &.online {
+              background: #52c41a;
+              box-shadow: 0 0 4px rgba(82, 196, 26, 0.5);
+            }
+
+            &.offline {
+              background: #d9d9d9;
+            }
+          }
         }
-        .type {
+
+        .check_mark {
           position: absolute;
-          top: 0;
-          right: 0;
-          border-radius: 0 8px 0 4px;
-          background-color: #dce5f5;
-          color: #1a66ff;
-          padding: 2px 8px;
+          top: 8px;
+          right: 12px;
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          background: #1677ff;
+          color: #fff;
+          font-size: 14px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       }
-      .active {
-        border: 1px solid #1a66ff;
-      }
+
       .card_pagination {
+        margin-top: 16px;
         align-self: flex-end;
       }
-    }
-    .ellipsis {
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
     }
   }
 </style>

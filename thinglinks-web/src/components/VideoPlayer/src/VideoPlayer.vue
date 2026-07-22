@@ -34,38 +34,38 @@
             <template #content>
               <div class="popover-container">
                 <div class="popover-item">
-                  <div class="label">{{ t('video.media.videoStreamProxy.buffer') }}: </div>
+                  <div class="label">{{ t('video.media.proxy.buffer') }}: </div>
                   <a-input-number v-model:value="buffer" @change="changeBuffer" :step="0.1" />
                 </div>
                 <div class="popover-item">
                   <div class="label"
-                    >{{ t('video.media.videoStreamProxy.enable') }}MediaSource:
+                    >{{ t('video.media.proxy.enable') }}MediaSource:
                   </div>
                   <a-switch v-model:checked="useMSE" @change="restartPlay('mse')" />
                 </div>
                 <div class="popover-item">
                   <div class="label"
-                    >{{ t('video.media.videoStreamProxy.enable') }}开启Webcodecs:
+                    >{{ t('video.media.proxy.enable') }}开启Webcodecs:
                   </div>
                   <a-switch v-model:checked="useWCS" @change="restartPlay('wcs')" />
                 </div>
                 <div class="popover-item">
-                  <div class="label">{{ t('video.media.videoStreamProxy.zoomSetting') }}: </div>
+                  <div class="label">{{ t('video.media.proxy.zoomSetting') }}: </div>
                   <a-select v-model:value="scale" @change="scaleChange" size="small">
                     <a-select-option :value="0">{{
-                      t('video.media.videoStreamProxy.fullFill1')
+                      t('video.media.proxy.fullFill1')
                     }}</a-select-option>
                     <a-select-option :value="1">{{
-                      t('video.media.videoStreamProxy.proportionalScale')
+                      t('video.media.proxy.proportionalScale')
                     }}</a-select-option>
                     <a-select-option :value="2">{{
-                      t('video.media.videoStreamProxy.fullFill2')
+                      t('video.media.proxy.fullFill2')
                     }}</a-select-option>
                   </a-select>
                 </div>
                 <div class="popover-item">
                   <div class="label"
-                    >{{ t('video.media.videoStreamProxy.videoRecodingFormat') }}:
+                    >{{ t('video.media.proxy.videoRecodingFormat') }}:
                   </div>
                   <a-select v-model:value="recordType" size="small">
                     <a-select-option value="webm">webm</a-select-option>

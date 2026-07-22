@@ -93,17 +93,17 @@ import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_S
 import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_SERVICE_IMPL;
 import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_SQL;
 import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_UPDATE_VO;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_API;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_DATA;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_EDIT;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_INDEX;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_JUMP_EDIT;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_LANG_EN;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_LANG_ZH;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_SIMPLE_MODEL;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_TREE_EDIT;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_TREE_INDEX;
-import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_PRO_TREE_TREE;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_API;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_DATA;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_EDIT;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_INDEX;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_JUMP_EDIT;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_LANG_EN;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_LANG_ZH;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_SIMPLE_MODEL;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_TREE_EDIT;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_TREE_INDEX;
+import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_WEB_VBEN_TREE_TREE;
 import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.*;
 import static com.mqttsnet.thinglinks.generator.utils.GenCodeConstant.TEMPLATE_XML;
 
@@ -144,17 +144,17 @@ public class DefGenTableServiceImpl extends SuperServiceImpl<DefGenTableManager,
         TEMPLATE_FIELD_MAP.put("serviceImpl", TEMPLATE_SERVICE_IMPL);
         TEMPLATE_FIELD_MAP.put("controller", TEMPLATE_CONTROLLER);
 
-        TEMPLATE_VBEN_MAP.put("api", TEMPLATE_WEB_PRO_SIMPLE_API);
-        TEMPLATE_VBEN_MAP.put("model", TEMPLATE_WEB_PRO_SIMPLE_MODEL);
-        TEMPLATE_VBEN_MAP.put("langEn", TEMPLATE_WEB_PRO_SIMPLE_LANG_EN);
-        TEMPLATE_VBEN_MAP.put("langZh", TEMPLATE_WEB_PRO_SIMPLE_LANG_ZH);
-        TEMPLATE_VBEN_MAP.put("data", TEMPLATE_WEB_PRO_SIMPLE_DATA);
-        TEMPLATE_VBEN_MAP.put("index", TEMPLATE_WEB_PRO_SIMPLE_INDEX);
-        TEMPLATE_VBEN_MAP.put("edit", TEMPLATE_WEB_PRO_SIMPLE_EDIT);
-        TEMPLATE_VBEN_MAP.put("jumpEdit", TEMPLATE_WEB_PRO_SIMPLE_JUMP_EDIT);
-        TEMPLATE_VBEN_MAP.put("treeIndex", TEMPLATE_WEB_PRO_TREE_INDEX);
-        TEMPLATE_VBEN_MAP.put("treeEdit", TEMPLATE_WEB_PRO_TREE_EDIT);
-        TEMPLATE_VBEN_MAP.put("treeTree", TEMPLATE_WEB_PRO_TREE_TREE);
+        TEMPLATE_VBEN_MAP.put("api", TEMPLATE_WEB_VBEN_SIMPLE_API);
+        TEMPLATE_VBEN_MAP.put("model", TEMPLATE_WEB_VBEN_SIMPLE_MODEL);
+        TEMPLATE_VBEN_MAP.put("langEn", TEMPLATE_WEB_VBEN_SIMPLE_LANG_EN);
+        TEMPLATE_VBEN_MAP.put("langZh", TEMPLATE_WEB_VBEN_SIMPLE_LANG_ZH);
+        TEMPLATE_VBEN_MAP.put("data", TEMPLATE_WEB_VBEN_SIMPLE_DATA);
+        TEMPLATE_VBEN_MAP.put("index", TEMPLATE_WEB_VBEN_SIMPLE_INDEX);
+        TEMPLATE_VBEN_MAP.put("edit", TEMPLATE_WEB_VBEN_SIMPLE_EDIT);
+        TEMPLATE_VBEN_MAP.put("jumpEdit", TEMPLATE_WEB_VBEN_SIMPLE_JUMP_EDIT);
+        TEMPLATE_VBEN_MAP.put("treeIndex", TEMPLATE_WEB_VBEN_TREE_INDEX);
+        TEMPLATE_VBEN_MAP.put("treeEdit", TEMPLATE_WEB_VBEN_TREE_EDIT);
+        TEMPLATE_VBEN_MAP.put("treeTree", TEMPLATE_WEB_VBEN_TREE_TREE);
 
         TEMPLATE_VBEN5_MAP.put("api", TEMPLATE_WEB_VBEN5_SIMPLE_API);
         TEMPLATE_VBEN5_MAP.put("model", TEMPLATE_WEB_VBEN5_SIMPLE_MODEL);

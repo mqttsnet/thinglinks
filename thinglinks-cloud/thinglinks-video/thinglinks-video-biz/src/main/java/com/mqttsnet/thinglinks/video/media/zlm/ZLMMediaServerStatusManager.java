@@ -9,62 +9,69 @@ import java.util.Objects;
 import cn.hutool.core.collection.CollUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
-import com.mqttsnet.basic.cache.repository.CachePlusOps;
 import com.mqttsnet.basic.context.ContextUtil;
-import com.mqttsnet.basic.model.cache.CacheKey;
-import com.mqttsnet.thinglinks.common.cache.video.media.MediaServerHookCacheKeyBuilder;
 import com.mqttsnet.thinglinks.video.cache.CacheSuperAbstract;
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
 import com.mqttsnet.thinglinks.video.dto.media.zlm.ZLMServerConfig;
-import com.mqttsnet.thinglinks.video.dto.media.zlm.ZlmRestfulResult;
-import com.mqttsnet.thinglinks.video.empowerment.media.VideoMediaServerTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.media.VideoMediaServerTypeEnum;
+import com.mqttsnet.thinglinks.video.entity.media.VideoMediaServer;
+import com.mqttsnet.thinglinks.video.manager.media.VideoMediaServerManager;
+import com.mqttsnet.thinglinks.video.media.common.MediaApiResult;
+import com.mqttsnet.thinglinks.video.media.common.MediaNodeServiceFactory;
 import com.mqttsnet.thinglinks.video.media.server.event.publisher.MediaEventPublisher;
+import com.mqttsnet.thinglinks.video.vo.result.media.VideoMediaServerMetricsResultVO;
 import com.mqttsnet.thinglinks.video.service.media.VideoMediaServerService;
-import com.mqttsnet.thinglinks.video.utils.zlm.ZlmRestfulUtils;
 import com.mqttsnet.thinglinks.video.vo.query.media.VideoMediaServerPageQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.baomidou.dynamic.datasource.annotation.DS;
+import com.mqttsnet.thinglinks.common.constant.DsConstant;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 /**
- * 管理zlm流媒体节点的状态
+ * 管理 ZLM 流媒体节点的状态
+ * <p>
+ * 由 iot-executor 通过 XXL-Job 调度触发心跳检测。
+ * 该类是 executor → FacadeImpl 调用链中第一个业务入口 Bean，
+ * 必须标注 {@code @DS} 以确保多租户场景下数据源正确切换，
+ * 参照 link 模块 {@code DeviceCacheService} 的处理方式。
+ * </p>
  *
  * @author mqttsnet
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@DS(DsConstant.BASE_TENANT)
 public class ZLMMediaServerStatusManager extends CacheSuperAbstract {
 
-    private final CachePlusOps cachePlusOps;
     private final String mediaServerType = VideoMediaServerTypeEnum.ZLM.getValue();
-    @Autowired
-    private ZlmRestfulUtils zlmRestfulUtils;
-    @Autowired
-    private VideoMediaServerService videoMediaServerService;
-    @Autowired
-    private MediaEventPublisher eventPublisher;
+    private final ZlmRestClient zlmRestClient;
+    private final VideoMediaServerService videoMediaServerService;
+    private final VideoMediaServerManager videoMediaServerManager;
+    private final MediaEventPublisher eventPublisher;
+    private final MediaNodeServiceFactory mediaNodeServiceFactory;
     @Value("${media.hook-domain-prefix:http://127.0.0.1:18760/video/zlmHook/index/hook}")
     private String mediaHookDomainPrefix;
 
-    @Scheduled(fixedRate = 60 * 1000)
-    public void execute() {
-        loadTenant((tenant, param) -> {
-            final Long tenantId = tenant.getId();
-            try {
-                // ✅ 设置上下文
-                ContextUtil.setTenantId(tenantId);
-                // ✅ 触发执行缓存刷新
-                executeMediaServerCacheRefresh(ContextUtil.getTenantIdStr());
-            } catch (Exception e) {
-                log.warn("租户ID: {} ,执行缓存刷新异常", tenantId, e);
-            }
-        });
+    /**
+     * 供 VideoJobHandlerFacadeImpl 调用的入口方法（已设置租户上下文）。
+     * <p>
+     * 原 {@code @Scheduled(fixedRate = 60 * 1000)} 已移除，
+     * 改由 iot-executor 通过 XXL-Job 调度触发。
+     * </p>
+     *
+     * @param tenantId 租户ID
+     */
+    public void executeForTenant(Long tenantId) {
+        try {
+            ContextUtil.setTenantId(tenantId);
+            executeMediaServerCacheRefresh(String.valueOf(tenantId));
+        } catch (Exception e) {
+            log.warn("[ZLM-心跳检测] 租户ID: {} ,执行缓存刷新异常", tenantId, e);
+        }
     }
 
     private void executeMediaServerCacheRefresh(String tenantId) {
@@ -78,29 +85,70 @@ public class ZLMMediaServerStatusManager extends CacheSuperAbstract {
             return;
         }
 
-        mediaServerResultDTOList.forEach(mediaServerItem -> {
-            CacheKey cacheKey = MediaServerHookCacheKeyBuilder.build(mediaServerType, mediaServerItem.getMediaIdentification());
-            if (cachePlusOps.exists(cacheKey)) {
-                log.info("[ZLM-心跳检测成功] ID：{}, 地址： {}:{}", mediaServerItem.getMediaIdentification(), mediaServerItem.getIp(), mediaServerItem.getHttpPort());
-                return;
-            }
+        // 每次心跳都对每个节点做真实探测——cache 不再决定走不走业务，仅作为最近心跳的快照（业务侧可读）
+        mediaServerResultDTOList.forEach(this::heartbeatOne);
+    }
 
-            log.info("[ZLM-正在进行心跳检测] ID：{}, 地址： {}:{}", mediaServerItem.getMediaIdentification(), mediaServerItem.getIp(), mediaServerItem.getHttpPort());
-            ZlmRestfulResult<JSONArray> zlmRestfulResult = zlmRestfulUtils.getMediaServerConfig(mediaServerItem);
-            JSONArray data = zlmRestfulResult.getData();
-            if (!zlmRestfulResult.isSuccess() || data == null || data.isEmpty()) {
-                log.info("[ZLM-尝试连接]失败, ID：{}, 地址： {}:{}", mediaServerItem.getMediaIdentification(), mediaServerItem.getIp(), mediaServerItem.getHttpPort());
-                //离线处理
-                handleOffline(mediaServerItem);
-                return;
-            }
-            ZLMServerConfig zlmServerConfig = JSON.parseObject(JSON.toJSONString(data.get(0)), ZLMServerConfig.class);
-            initZLMMediaServerPort(mediaServerItem, zlmServerConfig);
-            handleOnline(mediaServerItem, zlmServerConfig);
-            // 心跳信息存储
-            cachePlusOps.set(cacheKey, mediaServerItem);
-        });
+    /**
+     * 单节点心跳：探测 → 落库（幂等）→ 状态翻转才发事件 → 顺手刷新 cache。
+     * <p>事件机制只用于"状态翻转通知"（避免狂发上线/离线事件给订阅者）。
+     * DB 一致性由 {@code service.serverOnline/serverOffline} 直接写保证，不依赖事件链是否能跑到。
+     */
+    private void heartbeatOne(VideoMediaServerResultDTO server) {
+        String mediaId = server.getMediaIdentification();
+        boolean wasOnline = Boolean.TRUE.equals(server.getOnlineStatus());
+        ZLMServerConfig config = probeServerConfig(server);
+        boolean reachable = config != null;
 
+        if (reachable) {
+            log.info("[ZLM-心跳成功] ID={}, 地址={}:{}", mediaId, server.getHost(), server.getHttpPort());
+            initZLMMediaServerPort(server, config);
+            server.setOnlineStatus(true);
+            // 直接落库（幂等）
+            videoMediaServerService.serverOnline(server);
+            if (!wasOnline) {
+                log.info("[ZLM-状态翻转] OFFLINE → ONLINE: ID={}", mediaId);
+                eventPublisher.mediaServerOnlineEventPublish(server);
+                // 首次上线时同步 hook 配置
+                if (Boolean.TRUE.equals(server.getAutoConfig())) {
+                    setZLMConfig(server, "0".equals(config.getHookEnable())
+                            || !Objects.equals(server.getHookAliveInterval(), config.getHookAliveInterval()));
+                }
+            }
+            collectAndUpdateMetrics(server);
+            // cache 仅作为最近心跳快照——给业务侧（video-server）快速读，不影响下一轮 Job 走向
+            videoMediaServerManager.putOnlineHookCache(mediaServerType, mediaId, server);
+        } else {
+            log.warn("[ZLM-心跳失败] ID={}, 地址={}:{}", mediaId, server.getHost(), server.getHttpPort());
+            server.setOnlineStatus(false);
+            videoMediaServerService.serverOffline(server);
+            if (wasOnline) {
+                log.warn("[ZLM-状态翻转] ONLINE → OFFLINE: ID={}", mediaId);
+                eventPublisher.mediaServerOfflineEventPublish(server);
+            }
+            // 离线时清掉心跳快照——业务侧读 cache 可作"最近不可达"判定
+            videoMediaServerManager.removeOnlineHookCache(mediaServerType, mediaId);
+        }
+    }
+
+    /**
+     * 探测 ZLM 服务器配置；不可达或返回异常都返回 null（由调用方判定离线）。
+     */
+    private ZLMServerConfig probeServerConfig(VideoMediaServerResultDTO server) {
+        try {
+            MediaApiResult result = zlmRestClient.get(toEntity(server), "getServerConfig", null);
+            if (!result.isSuccess() || result.getData() == null) {
+                return null;
+            }
+            JSONArray data = result.getData().getJSONArray("data");
+            if (data == null || data.isEmpty()) {
+                return null;
+            }
+            return JSON.parseObject(JSON.toJSONString(data.get(0)), ZLMServerConfig.class);
+        } catch (Exception e) {
+            log.warn("[ZLM-探测异常] ID={}, error={}", server.getMediaIdentification(), e.getMessage());
+            return null;
+        }
     }
 
 
@@ -113,10 +161,10 @@ public class ZLMMediaServerStatusManager extends CacheSuperAbstract {
     private void handleOnline(VideoMediaServerResultDTO mediaServerItem, ZLMServerConfig config) {
         //如果当前状态为离线、则进行连接
         if (mediaServerItem.getOnlineStatus()) {
-            log.info("[ZLM-心跳检测成功] ID：{}, 地址： {}:{}", mediaServerItem.getMediaIdentification(), mediaServerItem.getIp(), mediaServerItem.getHttpPort());
+            log.info("[ZLM-心跳检测成功] ID：{}, 地址： {}:{}", mediaServerItem.getMediaIdentification(), mediaServerItem.getHost(), mediaServerItem.getHttpPort());
             return;
         }
-        log.info("[ZLM-重新连接成功] ID：{}, 地址： {}:{}", mediaServerItem.getMediaIdentification(), mediaServerItem.getIp(), mediaServerItem.getHttpPort());
+        log.info("[ZLM-重新连接成功] ID：{}, 地址： {}:{}", mediaServerItem.getMediaIdentification(), mediaServerItem.getHost(), mediaServerItem.getHttpPort());
         mediaServerItem.setOnlineStatus(true);
         mediaServerItem.setHookAliveInterval(60);
         // 发送上线通知
@@ -124,13 +172,13 @@ public class ZLMMediaServerStatusManager extends CacheSuperAbstract {
         // 自动配置
         if (mediaServerItem.getAutoConfig()) {
             if (null == config) {
-                ZlmRestfulResult<JSONArray> zlmRestfulResult = zlmRestfulUtils.getMediaServerConfig(mediaServerItem);
-                if (!zlmRestfulResult.isSuccess()) {
-                    log.info("[ZLM-尝试连接]失败, ID：{}, 地址： {}:{}", mediaServerItem.getMediaIdentification(), mediaServerItem.getIp(), mediaServerItem.getHttpPort());
+                MediaApiResult configResult = zlmRestClient.get(toEntity(mediaServerItem), "getServerConfig", null);
+                if (!configResult.isSuccess()) {
+                    log.info("[ZLM-尝试连接]失败, ID：{}, 地址： {}:{}", mediaServerItem.getMediaIdentification(), mediaServerItem.getHost(), mediaServerItem.getHttpPort());
                     return;
                 }
-                JSONArray data = zlmRestfulResult.getData();
-                if (null != data && !data.isEmpty()) {
+                JSONArray data = configResult.getData().getJSONArray("data");
+                if (data != null && !data.isEmpty()) {
                     config = JSON.parseObject(JSON.toJSONString(data.get(0)), ZLMServerConfig.class);
                 }
             }
@@ -190,7 +238,27 @@ public class ZLMMediaServerStatusManager extends CacheSuperAbstract {
 
     public void setZLMConfig(VideoMediaServerResultDTO mediaServerItem, boolean restart) {
         log.info("[媒体服务节点] 正在设置 ：{} -> {}:{}",
-                mediaServerItem.getMediaIdentification(), mediaServerItem.getIp(), mediaServerItem.getHttpPort());
+                mediaServerItem.getMediaIdentification(), mediaServerItem.getHost(), mediaServerItem.getHttpPort());
+
+        // Hook 回调 URL 前缀：优先用 DB 里 per-ZLM 的 hookHost（必须是合法 http(s) URL），
+        // 否则用 Nacos 全局 media.hook-domain-prefix。集群场景下若某个 ZLM 需要回调到不同的平台 Gateway，
+        // 可以在"流媒体管理"页面给该 ZLM 单独填 hookHost，不填走全局。
+        String hookPrefix;
+        String hookHostFromDb = mediaServerItem.getHookHost();
+        if (cn.hutool.core.util.StrUtil.isNotBlank(hookHostFromDb)
+                && (hookHostFromDb.startsWith("http://") || hookHostFromDb.startsWith("https://"))) {
+            hookPrefix = hookHostFromDb;
+            log.info("[媒体服务节点] Hook 前缀使用 per-ZLM 配置: mediaIdentification={}, hookHost={}",
+                    mediaServerItem.getMediaIdentification(), hookPrefix);
+        } else {
+            hookPrefix = mediaHookDomainPrefix;
+            if (cn.hutool.core.util.StrUtil.isNotBlank(hookHostFromDb)) {
+                log.warn("[媒体服务节点] DB hookHost={} 不是合法 URL（必须 http:// 或 https:// 开头），" +
+                                "fallback 到 Nacos 全局 media.hook-domain-prefix={}",
+                        hookHostFromDb, hookPrefix);
+            }
+        }
+
         Map<String, Object> param = new HashMap<>();
         // -profile:v Baseline
         param.put("api.secret", mediaServerItem.getSecret());
@@ -199,21 +267,21 @@ public class ZLMMediaServerStatusManager extends CacheSuperAbstract {
         }
         param.put("hook.enable", "1");
         param.put("hook.on_flow_report", "");
-        param.put("hook.on_play", String.format("%s/on_play", mediaHookDomainPrefix));
+        param.put("hook.on_play", String.format("%s/on_play", hookPrefix));
         param.put("hook.on_http_access", "");
-        param.put("hook.on_publish", String.format("%s/on_publish", mediaHookDomainPrefix));
+        param.put("hook.on_publish", String.format("%s/on_publish", hookPrefix));
         param.put("hook.on_record_ts", "");
         param.put("hook.on_rtsp_auth", "");
         param.put("hook.on_rtsp_realm", "");
-        param.put("hook.on_server_started", String.format("%s/on_server_started", mediaHookDomainPrefix));
+        param.put("hook.on_server_started", String.format("%s/on_server_started", hookPrefix));
         param.put("hook.on_shell_login", "");
-        param.put("hook.on_stream_changed", String.format("%s/on_stream_changed", mediaHookDomainPrefix));
-        param.put("hook.on_stream_none_reader", String.format("%s/on_stream_none_reader", mediaHookDomainPrefix));
-        param.put("hook.on_stream_not_found", String.format("%s/on_stream_not_found", mediaHookDomainPrefix));
-        param.put("hook.on_server_keepalive", String.format("%s/on_server_keepalive", mediaHookDomainPrefix));
-        param.put("hook.on_send_rtp_stopped", String.format("%s/on_send_rtp_stopped", mediaHookDomainPrefix));
-        param.put("hook.on_rtp_server_timeout", String.format("%s/on_rtp_server_timeout", mediaHookDomainPrefix));
-        param.put("hook.on_record_mp4", String.format("%s/on_record_mp4", mediaHookDomainPrefix));
+        param.put("hook.on_stream_changed", String.format("%s/on_stream_changed", hookPrefix));
+        param.put("hook.on_stream_none_reader", String.format("%s/on_stream_none_reader", hookPrefix));
+        param.put("hook.on_stream_not_found", String.format("%s/on_stream_not_found", hookPrefix));
+        param.put("hook.on_server_keepalive", String.format("%s/on_server_keepalive", hookPrefix));
+        param.put("hook.on_send_rtp_stopped", String.format("%s/on_send_rtp_stopped", hookPrefix));
+        param.put("hook.on_rtp_server_timeout", String.format("%s/on_rtp_server_timeout", hookPrefix));
+        param.put("hook.on_record_mp4", String.format("%s/on_record_mp4", hookPrefix));
         param.put("hook.timeoutSec", "30");
         param.put("hook.alive_interval", mediaServerItem.getHookAliveInterval());
         // 推流断开后可以在超时时间内重新连接上继续推流，这样播放器会接着播放。
@@ -236,21 +304,65 @@ public class ZLMMediaServerStatusManager extends CacheSuperAbstract {
             param.put("record.appName", recordPathFile.getName());
         }
 
-        ZlmRestfulResult<JSONObject> zlmRestfulResult = zlmRestfulUtils.setServerConfig(mediaServerItem, param);
+        MediaApiResult setConfigResult = zlmRestClient.postForm(toEntity(mediaServerItem), "setServerConfig", param);
 
-        if (zlmRestfulResult.isSuccess()) {
+        if (setConfigResult.isSuccess()) {
             if (restart) {
                 log.info("[媒体服务节点] 设置成功,开始重启以保证配置生效 {} -> {}:{}",
-                        mediaServerItem.getMediaIdentification(), mediaServerItem.getIp(), mediaServerItem.getHttpPort());
-                zlmRestfulUtils.restartServer(mediaServerItem);
+                        mediaServerItem.getMediaIdentification(), mediaServerItem.getHost(), mediaServerItem.getHttpPort());
+                zlmRestClient.get(toEntity(mediaServerItem), "restartServer", null);
             } else {
                 log.info("[媒体服务节点] 设置成功 {} -> {}:{}",
-                        mediaServerItem.getMediaIdentification(), mediaServerItem.getIp(), mediaServerItem.getHttpPort());
+                        mediaServerItem.getMediaIdentification(), mediaServerItem.getHost(), mediaServerItem.getHttpPort());
             }
         } else {
             log.info("[媒体服务节点] 设置媒体服务节点失败 {} -> {}:{}",
-                    mediaServerItem.getMediaIdentification(), mediaServerItem.getIp(), mediaServerItem.getHttpPort());
+                    mediaServerItem.getMediaIdentification(), mediaServerItem.getHost(), mediaServerItem.getHttpPort());
         }
+    }
+
+    /**
+     * 采集流媒体性能指标并更新数据库。
+     *
+     * <p>通过 {@link MediaNodeServiceFactory} 自动路由到 ZLM/ABL 对应的实现。
+     *
+     * <p><b>失败时清缓存，让下一轮心跳 Job 走完整探测路径决定上下线</b>——避免节点已死但 cache TTL
+     * 还没过期、平台一直显示"在线"的悬挂窗口。两步降级（删 cache → 下轮完整探测 → 失败才 handleOffline）
+     * 也避免单次抖动误判离线，平衡敏感度和稳定性。
+     *
+     * @param mediaServerItem 流媒体服务器信息
+     */
+    private void collectAndUpdateMetrics(VideoMediaServerResultDTO mediaServerItem) {
+        try {
+            VideoMediaServer entity = toEntity(mediaServerItem);
+            VideoMediaServerMetricsResultVO metrics = mediaNodeServiceFactory
+                    .getService(entity)
+                    .getServerMetrics(entity);
+
+            videoMediaServerService.updateServerMetrics(
+                    mediaServerItem.getMediaIdentification(),
+                    metrics.getCpuUsage(),
+                    metrics.getMemoryUsage(),
+                    metrics.getCurrentStreams(),
+                    metrics.getNetworkInSpeed(),
+                    metrics.getNetworkOutSpeed());
+        } catch (Exception e) {
+            log.warn("[ZLM-指标采集] 采集失败，清除心跳缓存以触发下一轮完整探测: mediaId={}, error={}",
+                    mediaServerItem.getMediaIdentification(), e.getMessage());
+            videoMediaServerManager.removeOnlineHookCache(mediaServerType, mediaServerItem.getMediaIdentification());
+        }
+    }
+
+    /**
+     * 将 DTO 转换为 VideoMediaServer（仅设置 REST 客户端所需字段）
+     */
+    private VideoMediaServer toEntity(VideoMediaServerResultDTO dto) {
+        VideoMediaServer entity = new VideoMediaServer();
+        entity.setHost(dto.getHost());
+        entity.setHttpPort(dto.getHttpPort());
+        entity.setSecret(dto.getSecret());
+        entity.setType(dto.getType());
+        return entity;
     }
 
 }

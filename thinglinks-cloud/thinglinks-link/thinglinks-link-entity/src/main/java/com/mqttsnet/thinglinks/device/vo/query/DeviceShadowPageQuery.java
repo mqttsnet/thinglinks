@@ -14,10 +14,7 @@ import java.io.Serializable;
 
 
 /**
- * <p>
- * 表单查询条件VO
- * 设备影子信息分页参数
- * </p>
+ * 设备影子信息分页查询参数。
  *
  * @author mqttsnet
  * @date 2023-10-14 19:39:59
@@ -58,4 +55,11 @@ public class DeviceShadowPageQuery implements Serializable {
      */
     @Schema(title = "serviceCode", description = "选填参数，用于指定查询的服务编码。若不传，查询产品下所有服务。", example = "serviceCode1")
     private String serviceCode;
+
+    /**
+     * 产品版本序号(选填):不传按 device.boundProductVersionNo(设备当前版本)查;传值则按该版本快照解析物模型并拼 TD 子表名,支持回看历史版本影子。
+     * TD 子表按 (productIdentification, versionNo, deviceIdentification) 拼名,老版本须未被 purgeHistory 清理(versionStatus != ARCHIVED)才能查到。
+     */
+    @Schema(title = "versionNo", description = "选填参数,指定查询某版本的影子;不传默认按设备当前绑定版本", example = "1900512345678901")
+    private String versionNo;
 }

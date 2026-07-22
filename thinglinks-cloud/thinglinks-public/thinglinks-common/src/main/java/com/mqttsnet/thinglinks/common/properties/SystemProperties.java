@@ -37,7 +37,7 @@ public class SystemProperties {
     /**
      * 默认用户密码
      */
-    private String defPwd = "123456";
+    private String defPwd;
     /**
      * 密码错误锁定用户时间
      * <p>

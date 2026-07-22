@@ -38,12 +38,16 @@ import com.mqttsnet.thinglinks.device.entity.Device;
 import com.mqttsnet.thinglinks.device.service.DeviceService;
 import com.mqttsnet.thinglinks.device.vo.query.DeviceDetailsPageQuery;
 import com.mqttsnet.thinglinks.device.vo.query.DevicePageQuery;
+import com.mqttsnet.thinglinks.device.vo.query.DeviceSslTestQuery;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceDetailsResultVO;
+import com.mqttsnet.thinglinks.device.vo.result.DeviceSslTestResultVO;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceOverviewResultVO;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceResultVO;
 import com.mqttsnet.thinglinks.device.vo.result.DeviceVersionResultVO;
+import com.mqttsnet.thinglinks.device.vo.result.DeviceVersionDistributionVO;
 import com.mqttsnet.thinglinks.device.vo.save.DeviceSaveVO;
 import com.mqttsnet.thinglinks.device.vo.update.DeviceUpdateVO;
+import com.mqttsnet.thinglinks.device.vo.update.DeviceVersionSwitchVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -221,14 +225,15 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
      * @param ids List of device IDs to delete.
      * @return Deletion result.
      */
-    @Operation(summary = "批量删除设备", description = "根据设备ID列表删除多个设备")
+    @Operation(summary = "批量删除设备", description = "根据设备ID列表删除多个设备,整批事务:任一失败回滚全部")
     @DeleteMapping("/deleteDevices")
     @WebLog(value = "批量删除设备", request = false)
     public R<Boolean> deleteDevices(@RequestBody List<Long> ids) {
         log.info("deleteDevices ids:{}", ids);
         try {
-            boolean allDeleted = ids.stream().distinct().allMatch(id -> superService.deleteDevice(id));
-            return R.success(allDeleted);
+            // 走 service 层 deleteDevices ── 整批单事务,避免老 stream().allMatch
+            // "N 个独立事务串行,失败后前 K-1 条已提交"造成的孤儿设备 / 孤儿分组关系
+            return R.success(superService.deleteDevices(ids));
         } catch (BizException be) {
             return R.fail(be);
         } catch (Exception e) {
@@ -262,6 +267,30 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
     }
 
     /**
+     * 切换设备绑定版本(影子发布的"外部切流"入口):把指定设备绑定的产品版本切到目标版本,命中网关连带其子设备。
+     * 目标版本须为该产品下 已发布/灰度/影子 状态;改绑后下次上报即按新版本路由到对应超表。
+     *
+     * @param switchVO 切换请求(产品标识 + 设备识别码集合 + 目标版本号)
+     * @return 实际改绑设备数(含连带子设备)
+     */
+    @Operation(summary = "切换设备绑定版本", description = "把指定设备的绑定产品版本切到目标版本(命中网关连带子设备);影子发布的外部切流入口")
+    @PutMapping("/switchBoundProductVersion")
+    @WebLog(value = "切换设备绑定版本", request = true)
+    public R<Integer> switchBoundProductVersion(@Validated @RequestBody DeviceVersionSwitchVO switchVO) {
+        log.info("switchBoundProductVersion param:{}", switchVO);
+        try {
+            int affected = superService.switchBoundProductVersion(
+                    switchVO.getProductIdentification(), switchVO.getDeviceIdentifications(), switchVO.getTargetVersionNo());
+            return R.success(affected);
+        } catch (BizException be) {
+            return R.fail(be);
+        } catch (Exception e) {
+            log.error("切换设备绑定版本失败,系统异常: {}", e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    /**
      * 获取设备概况统计信息
      *
      * @return 设备概况统计信息
@@ -282,6 +311,27 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
     }
 
     /**
+     * 查询产品下设备按"绑定版本"的实时分布 ── 发布管理 / 版本列表展示各版本当前铺开了多少台、占比多少。
+     *
+     * @param productIdentification 产品标识
+     * @return {@link DeviceVersionDistributionVO} 总数 + 版本号→设备数
+     */
+    @Operation(summary = "查询设备按版本的实时分布", description = "按产品统计各绑定版本当前设备数 + 总数,用于发布策略执行进度展示")
+    @GetMapping("/versionDistribution/{productIdentification}")
+    @Parameters({@Parameter(name = "productIdentification", description = "产品标识", required = true),})
+    public R<DeviceVersionDistributionVO> getVersionDistribution(@PathVariable("productIdentification") String productIdentification) {
+        log.info("getVersionDistribution productIdentification:{}", productIdentification);
+        try {
+            return R.success(superService.countDeviceVersionDistribution(productIdentification));
+        } catch (BizException be) {
+            return R.fail(be);
+        } catch (Exception e) {
+            log.error("查询设备版本分布失败,系统异常: {}", e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    /**
      * 根据产品标识查询设备软固件版本信息
      *
      * @param productIdentification 产品标识
@@ -296,6 +346,7 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
             // 开启数据权限
             DataScopeHelper.startDataScope("device");
             DeviceVersionResultVO result = superService.getDeviceVersionByProduct(productIdentification);
+            echoService.action(result);
             return R.success(result);
         } catch (BizException be) {
             return R.fail(be);
@@ -340,7 +391,9 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
     public R<DeviceDetailsResultVO> getDeviceDetailsByIdentification(@PathVariable("deviceIdentification") String deviceIdentification) {
         log.info("getDeviceDetailsByIdentification deviceIdentification:{}", deviceIdentification);
         try {
-            return R.success(superService.findOneByDeviceIdentification(deviceIdentification));
+            DeviceDetailsResultVO result = superService.findOneByDeviceIdentification(deviceIdentification);
+            echoService.action(result);
+            return R.success(result);
         } catch (BizException be) {
             return R.fail(be);
         } catch (Exception e) {
@@ -371,6 +424,7 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
                 }
             }).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 
+            echoService.action(deviceDetailsList);
             return R.success(deviceDetailsList);
         } catch (BizException be) {
             return R.fail(be);
@@ -393,7 +447,9 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
     public R<IPage<DeviceDetailsResultVO>> getDeviceDetailsPage(@RequestBody PageParams<DeviceDetailsPageQuery> params) {
         log.info("getDeviceDetailsPage params:{}", params);
         try {
-            return R.success(superService.getDeviceDetailsPage(params));
+            IPage<DeviceDetailsResultVO> page = superService.getDeviceDetailsPage(params);
+            echoService.action(page.getRecords());
+            return R.success(page);
         } catch (BizException be) {
             return R.fail(be);
         } catch (Exception e) {
@@ -475,5 +531,14 @@ public class DeviceController extends SuperController<DeviceService, Long, Devic
         }
     }
 
+    /**
+     * SSL 证书认证测试器 ── 端到端模拟设备 SSL 认证流程,分步返回每步结果。
+     * 仅给运维端测试器页面使用,不参与设备主认证主流程。
+     */
+    @Operation(summary = "SSL 证书认证测试", description = "端到端模拟设备 SSL 认证,分步返回结果")
+    @PostMapping("/sslTest")
+    public R<DeviceSslTestResultVO> sslTest(@Validated @RequestBody DeviceSslTestQuery query) {
+        return R.success(superService.sslTest(query));
+    }
 
 }

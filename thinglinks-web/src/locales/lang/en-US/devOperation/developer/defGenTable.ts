@@ -110,8 +110,8 @@ export default {
       comment: 'It is reflected in the code comments',
       swaggerComment: 'It is reflected in the swagger documentation',
       BasicTitle: [
-        'The generated backend file is located at: [{Output path}/]{Global configuration. Project prefix}-{Service name}-{Global configuration. Service suffix} / SRC/main/Java/father {package} / {module name} [/ {global configuration. PackageInfoConfig}] / / son {package name}',
-        '[]: Indicates optional options; {}: Indicates a placeholder; Global configuration: It indicates configuration in the background yml or constant',
+        'The generated backend file is located at: [[Output path]/][Global configuration. Project prefix]-[Service name]-[Global configuration. Service suffix] / SRC/main/Java/father [package] / [module name] [/ [global configuration. PackageInfoConfig]] / / son [package name]',
+        '[]: Indicates optional options; <>: Indicates a placeholder; Global configuration: It indicates configuration in the background yml or constant',
         'Global configuration. Project prefix: Backend yml configuration:generator.projectPrefix',
         'Global configuration. Service suffix: Backend code constants：GenCodeConstant.XXX_SERVICE_SUFFIX',
         'Global configuration. PackageInfoConfig: the back-end yml configuration: generator. PackageInfoConfig. XXX',
@@ -127,7 +127,7 @@ export default {
         'Such as: "com.mqttsnet.thinglinks.base.dao.com mon" in the "com. Mqttsnet. ThingLinks" ',
       ],
       moduleName: [
-        'It is recommended to be consistent with {Service name consistency}',
+        'It is recommended to be consistent with [Service name consistency]',
         'Mon, such as: "com.mqttsnet.thinglinks.base.dao.com" in the "base" ',
         'Such as: ". Com. Mqttsnet thinglinks. File. The dao "in the" file" ',
       ],
@@ -140,16 +140,16 @@ export default {
         'Who does an entity class need to inherit from?',
       ],
       isDs: [
-        'Does the ServiceImpl class mark the @DS annotation? After adding this annotation, sql operations will automatically switch data sources',
+        'Does the ServiceImpl class mark the ＠DS annotation? After adding this annotation, sql operations will automatically switch data sources',
         'This parameter is only used in the datasource mode. Please ignore it in the column and none modes',
       ],
-      dsValue: ['The specific value of the @DS annotation of the ServiceImpl class tag'],
+      dsValue: ['The specific value of the ＠DS annotation of the ServiceImpl class tag'],
       isTenantLine: [
-        'Does the Mapper class mark the @TenantLine annotation? When this annotation is added, sql operations will not automatically concatenate tenant ids',
+        'Does the Mapper class mark the ＠TenantLine annotation? When this annotation is added, sql operations will not automatically concatenate tenant ids',
         'This parameter is only used in column mode. Please ignore it in datasource and none modes',
       ],
       isLombok: ['Whether the entity class uses the Lombok annotation'],
-      isChain: ['Whether the entity class uses the @Accessors(chain = true) annotation'],
+      isChain: ['Whether the entity class uses the ＠Accessors(chain = true) annotation'],
       isColumnConstant: ['Whether field constants are generated in the entity class'],
       genType: [
         'The way of generating code',
@@ -159,13 +159,13 @@ export default {
       plusApplicationName: [
         '1. basic or devOperation or others in the src/views/ directory',
         '2. basic or devOperation or others in the src/api/ directory ',
-        '3. basic or devOperation or others in the src/locales/lang/{language}/ directory ',
+        '3. basic or devOperation or others in the src/locales/lang/[language]/ directory ',
         '4. "Other" indicates other applications',
       ],
       plusModuleName: [
-        '1. The folder name under the src/api/{front-end application name} directory',
-        '2. The folder name under the src/views/{front-end application name} directory',
-        '3. The folder name under the src/locales/lang/{language}/{front-end application name} directory',
+        '1. The folder name under the src/api/[front-end application name] directory',
+        '2. The folder name under the src/views/[front-end application name] directory',
+        '3. The folder name under the src/locales/lang/[language]/[front-end application name] directory',
         'For example, directories such as application and developer under src/views/devOperation/',
         'For example, directories such as application and developer under src/api/devOperation/',
       ],
@@ -177,7 +177,7 @@ export default {
       ],
       auth: [
         'When the text box is empty, you can click the "Generate" button to generate the permission code according to the rules recommended by the system',
-        'System rules :{Front-end application name}:{Front-end module name}:{Entity Name}',
+        'System rules :[Front-end application name]:[Front-end module name]:[Entity Name]',
       ],
       menuApplicationId:
         'After the current function is generated, to which application does the menu belong?',

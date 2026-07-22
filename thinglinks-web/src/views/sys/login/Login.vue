@@ -13,8 +13,11 @@
       <div class="flex h-full login-content">
         <div class="flex w-full h-full py-5 xl:h-auto xl:py-0 xl:my-0 xl:w-6/12 login">
           <div
-            :class="`${prefixCls}-form`"
-            class="relative w-full px-5 py-8 mx-auto my-auto rounded-md xl:ml-16 xl:bg-transparent sm:px-8 xl:p-4 xl:shadow-none sm:w-3/4 lg:w-2/4 enter-x login-form-wrap"
+            :class="[
+              `${prefixCls}-form`,
+              'relative w-full px-5 py-8 mx-auto my-auto rounded-md xl:ml-16 xl:bg-transparent',
+              'sm:px-8 xl:p-4 xl:shadow-none sm:w-3/4 lg:w-2/4 enter-x login-form-wrap',
+            ]"
           >
             <div class="login-wrap">
               <LoginForm />
@@ -30,7 +33,7 @@
         <div style="padding: 20px 0">
           <a href="https://beian.miit.gov.cn" target="_blank">
             <img src="../../../assets/images/gongan.png" /><span
-              >Copyright 2021-2025 MqttsNet or ThingLinks All Rights Reserved.</span
+              >Copyright © 2019 至今 mqttsnet All Rights Reserved.</span
             >
           </a>
           |
@@ -57,15 +60,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { computed } from 'vue';
-  import { AppDarkModeToggle, AppLocalePicker, AppLogo } from '/@/components/Application';
+  import { AppDarkModeToggle, AppLocalePicker } from '/@/components/Application';
   import LoginForm from './LoginForm.vue';
   import ForgetPasswordForm from './ForgetPasswordForm.vue';
   import RegisterForm from './RegisterForm.vue';
   import MobileForm from './MobileForm.vue';
   import EmailRegisterForm from './EmailRegisterForm.vue';
-  import { useGlobSetting } from '/@/hooks/setting';
-  import { useI18n } from '/@/hooks/web/useI18n';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useLocaleStore } from '/@/store/modules/locale';
 
@@ -75,12 +75,9 @@
     },
   });
 
-  const globSetting = useGlobSetting();
   const { prefixCls } = useDesign('login');
-  const { t } = useI18n();
   const localeStore = useLocaleStore();
   const showLocale = localeStore.getShowPicker;
-  const title = computed(() => globSetting?.title ?? '');
 </script>
 <style lang="less">
   @prefix-cls: ~'@{namespace}-login';
@@ -120,7 +117,6 @@
       margin: 0;
 
       .ant-form {
-
         .ant-form-item {
           display: flex;
           align-items: center;
@@ -367,7 +363,6 @@
     margin: 0;
 
     .ant-form {
-
       .ant-form-item {
         display: flex;
         align-items: center;

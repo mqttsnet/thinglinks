@@ -226,7 +226,7 @@ public class DeviceGeneratorController {
                 .deviceSdkVersion("v1")
                 .fwVersion("v1.0.0")
                 .swVersion("v1.0.0")
-                .remark(productResultVO.getProductName() + "测试设备序号-{}" + deviceNumber)
+                .remark(productResultVO.getProductName() + "批量生成设备序号-" + deviceNumber)
                 .build();
     }
 

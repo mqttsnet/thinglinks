@@ -13,6 +13,13 @@ export const Api = {
     url: `${ServicePrefix}/${MODULAR}/assetSummary`,
     method: RequestEnum.GET,
   } as AxiosRequestConfig,
+  BridgeSummary: {
+    url: `${ServicePrefix}/${MODULAR}/bridgeSummary`,
+    method: RequestEnum.GET,
+  } as AxiosRequestConfig,
 };
 
 export const ruleAssetSummary = () => defHttp.request({ ...Api.AssetSummary });
+
+/** 北向集成 / 数据桥接统计(资产统计右栏看板用) */
+export const bridgeSummary = () => defHttp.request<any>({ ...Api.BridgeSummary });

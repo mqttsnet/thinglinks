@@ -78,6 +78,36 @@ Setting Provider 实例。
 settingProviderFQN: com.mqttsnet.thinglinks.BifromqSettingProviderPluginSettingProvider
 ```
 
+### 4. ⚠️ 让插件配置生效(必做,否则等于没装)
+
+**必须在 BifroMQ JVM 启动参数加 `-Dsetting_provide_init_value=true`。** 在 `bin/bifromq-start.sh`(约第 160 行,`EXTRA_JVM_OPTS` 定义之后)追加:
+
+```bash
+EXTRA_JVM_OPTS="$EXTRA_JVM_OPTS -Dsetting_provide_init_value=true"
+```
+
+#### 为什么必须加
+
+| `setting_provide_init_value` | cache miss 时的行为 | 本插件配置 |
+|------------------------------|--------------------|----------|
+| `false`(BifroMQ 默认) | 直接用内核**初值**,**不调** `provide()` | 全部被内核默认值覆盖(等于没配) |
+| `true` | 回调本插件 `provide()` 取值 | `debugModeEnabled / maxTopicFiltersPerSub / maxTopicFiltersPerInbox` 真正生效 |
+
+不加这个参数最典型的坑:`DebugModeEnabled` 实际为 `false` → BifroMQ 内核不采集 `PingReq` 高频事件 → **设备心跳链路断在源头**(event-collector 收不到 `PING_REQ`,下游 mqs 写不了 `last_heartbeat_time`)。
+
+#### 验证
+
+```bash
+# 设备连上并经过一个 keepalive 周期后,event-collector 日志应出现 PING_REQ
+grep "Received event type=PING_REQ" logs/bifromq-event-collector-plugin/info.log
+```
+
+> 注意:启动日志里 `Setting: DebugModeEnabled=false` 打印的是**内核初值**,开 `setting_provide_init_value` 后该行仍可能显示 false(它不是 cache 实际值)。判断成败请直接看有没有 `PING_REQ` 事件,别看这行。
+
+#### 单项硬覆盖(可选)
+
+只想覆盖个别 Setting、不走插件时,可用同名 JVM 参数直接覆盖其初值,如 `-DMaxTopicLength=128`、`-DDebugModeEnabled=true`(官方机制,见[文档](https://bifromq.apache.org/docs/plugin/setting_provider/tenantsetting/))。但这只改单项且绕过插件,推荐仍以 `setting_provide_init_value=true` 让整套插件配置统一生效。
+
 ## 使用说明
 
 ### 代码示例
@@ -108,6 +138,20 @@ public class BifromqSettingProviderContext {
 ### 如何启用详细日志？
 
 修改 `logback.xml` 中的 `<level>` 标签，将日志级别设置为 `DEBUG`，然后重启插件。
+
+### `provide` 方法里能查数据库 / 调远程吗？
+
+**绝对不行。** 开启 `setting_provide_init_value=true` 后,`provide` 由 BifroMQ 工作线程在 cache miss 时**同步调用**,必须只读内存配置后立即返回。放 DB / RPC / 缓存查询会阻塞工作线程、拖垮整个 broker(官方明确警告)。无法快速判定时 `return null`,让该 Setting 维持当前值,把决策逻辑异步化。
+
+## 4.0 升级备注
+
+| 变更 | 说明 |
+|------|------|
+| `-Dsetting_provide_init_value=true` 机制 | 4.0.0-incubating **仍适用**,无替代方案 |
+| `-D<SettingName>` 覆盖初值机制 | 4.0 **仍适用**(官方例:`-DMQTT3Enabled=false`) |
+| 包路径 | `com.baidu.bifromq` → `org.apache.bifromq`,全局 import 替换 |
+| Maven 依赖 | `groupId` 改 `org.apache.bifromq`,`version` → `4.0.0-incubating` |
+| 兼容性 | 4.0 不向后兼容,按 major 升级对待 |
 
 ## 贡献
 

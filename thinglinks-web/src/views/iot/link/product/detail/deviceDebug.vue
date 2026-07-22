@@ -1,5 +1,11 @@
 <template>
   <div class="device-debug">
+    <a-alert
+      type="info"
+      show-icon
+      :message="t('iot.link.productCommand.productCommand.draftHint')"
+      style="margin-bottom: 12px"
+    />
     <actionSelect
       ref="triggerAction"
       :type="3"
@@ -17,7 +23,7 @@
 import { defineComponent, reactive, toRefs, getCurrentInstance } from 'vue';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { useI18n } from '/@/hooks/web/useI18n';
-import { Button } from 'ant-design-vue';
+import { Button, Alert } from 'ant-design-vue';
 import actionSelect from '/@/views/iot/rule/engine/linkage/components/action/actionSelect.vue';
 import { issueCommands } from '/@/api/iot/link/deviceCommand/deviceCommand';
 import { convertToType } from '/@/utils/index';
@@ -27,6 +33,7 @@ export default defineComponent({
   name: 'DeviceDebug',
   components: {
     AButton: Button,
+    AAlert: Alert,
     PlusOutlined,
     actionSelect,
   },
@@ -38,7 +45,7 @@ export default defineComponent({
   },
   setup(props) {
     const { proxy } = getCurrentInstance();
-    const { notification } = useMessage();
+    const { createMessage } = useMessage();
     const { t } = useI18n();
 
     const state = reactive({
@@ -85,24 +92,15 @@ export default defineComponent({
       };
 
       if (!commandWrapper.serial.length && !commandWrapper.parallel.length) {
-        notification.error({
-          message: t('common.tips.tips'),
-          description: t('iot.link.productCommand.productCommand.description3'),
-        });
+        createMessage.error(t('iot.link.productCommand.productCommand.description3'));
         return;
       }
 
       const res = await issueCommands(commandWrapper);
       if (res) {
-        notification.success({
-          message: t('common.tips.tips'),
-          description: t('iot.link.productCommand.productCommand.commmandIssuedSuccess'),
-        });
+        createMessage.success(t('iot.link.productCommand.productCommand.commmandIssuedSuccess'));
       } else {
-        notification.error({
-          message: t('common.tips.tips'),
-          description: t('iot.link.productCommand.productCommand.commmandIssuedError'),
-        });
+        createMessage.error(t('iot.link.productCommand.productCommand.commmandIssuedError'));
       }
     };
 
@@ -116,7 +114,10 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+/* 父级 panel-card 已固定高度,这里 100% 撑满 + 自身滚动(命令调试可能很长) */
 .device-debug {
   width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 </style>

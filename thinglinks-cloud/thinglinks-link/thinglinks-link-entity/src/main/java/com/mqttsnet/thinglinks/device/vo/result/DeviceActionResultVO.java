@@ -1,11 +1,9 @@
 package com.mqttsnet.thinglinks.device.vo.result;
 
-import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.annotation.echo.Echo;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
 import com.mqttsnet.thinglinks.model.constant.EchoApi;
 import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,9 +12,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-
-import java.io.Serializable;
-import java.util.Map;
 
 /**
  * <p>
@@ -35,11 +30,9 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "DeviceActionResultVO", description = "设备动作数据")
-public class DeviceActionResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class DeviceActionResultVO extends AuditableResultVO {
 
     private static final long serialVersionUID = 1L;
-
-    private Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "id")
     private Long id;
@@ -61,20 +54,16 @@ public class DeviceActionResultVO extends Entity<Long> implements Serializable, 
     @Schema(description = "内容信息")
     private String message;
     /**
-     * 状态
+     * 状态:0=成功 / 1=失败
      */
-    @Schema(description = "状态", example = "0", allowableValues = "0,1")
+    @Schema(description = "状态:0=成功 / 1=失败", example = "0", allowableValues = "0,1")
+    @Echo(api = EchoApi.DICTIONARY_ITEM_FEIGN_CLASS, dictType = EchoDictType.Link.LINK_DEVICE_ACTION_STATUS)
     private Integer status;
     /**
      * 备注
      */
     @Schema(description = "备注")
     private String remark;
-    /**
-     * 创建人组织
-     */
-    @Schema(description = "创建人组织")
-    private Long createdOrgId;
 
 
 }

@@ -36,4 +36,7 @@ export default {
   syncTips: 'Are you sure you want to synchronize the remote interface?',
   deleteTips: 'Are you sure to delete {value}?',
   addDocApp: 'Add application',
+  pleaseCreateAppFirst: 'Please click "Add" in the top-right corner to create a document application first',
+  noAppEmpty: 'No document application yet. Click "Add" to create your first one and finish the Torna token setup to sync docs.',
+  loadAppFailed: 'Failed to load document application list',
 };

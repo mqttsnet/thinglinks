@@ -1,11 +1,9 @@
 package com.mqttsnet.thinglinks.msg.vo.result;
 
-import cn.hutool.core.map.MapUtil;
 import com.mqttsnet.basic.annotation.echo.Echo;
-import com.mqttsnet.basic.base.entity.Entity;
-import com.mqttsnet.basic.interfaces.echo.EchoVO;
 import com.mqttsnet.thinglinks.model.constant.EchoApi;
 import com.mqttsnet.thinglinks.model.constant.EchoDictType;
+import com.mqttsnet.thinglinks.model.vo.AuditableResultVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,9 +14,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 /**
  * <p>
@@ -37,13 +33,10 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Schema(title = "ExtendInterfaceLoggingResultVO", description = "接口执行日志记录")
-public class ExtendInterfaceLoggingResultVO extends Entity<Long> implements Serializable, EchoVO {
+public class ExtendInterfaceLoggingResultVO extends AuditableResultVO {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    @Builder.Default
-    private final Map<String, Object> echoMap = MapUtil.newHashMap();
 
     @Schema(description = "")
     private Long id;

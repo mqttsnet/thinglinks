@@ -64,9 +64,7 @@ public class QiNiuFileStrategyImpl extends AbstractFileStrategy {
      */
     private String getUploadToken(String bucket) {
         FileServerProperties.QiNiu qiNiu = fileProperties.getQiNiu();
-        String token = this.auth.uploadToken(bucket, null, qiNiu.getExpiry(), PUT_POLICY);
-        log.info("token={}", token);
-        return token;
+        return this.auth.uploadToken(bucket, null, qiNiu.getExpiry(), PUT_POLICY);
     }
 
     @Override
@@ -87,11 +85,10 @@ public class QiNiuFileStrategyImpl extends AbstractFileStrategy {
         Response response = this.uploadManager.put(multipartFile.getInputStream(), path, getUploadToken(bucket),
                 params, file.getContentType());
 
-        log.info("response={}", JsonUtil.toJson(response));
+        log.info("七牛云文件上传完成，statusCode={}，requestId={}", response.statusCode, response.reqId);
 
         if (response.statusCode == 200) {
             DefaultPutRet defaultPutRet = JsonUtil.parse(response.bodyString(), DefaultPutRet.class);
-            log.info("defaultPutRet={}", JsonUtil.toJson(defaultPutRet));
 
             file.setUniqueFileName(uniqueFileName);
             file.setBucket(bucket);
@@ -107,7 +104,7 @@ public class QiNiuFileStrategyImpl extends AbstractFileStrategy {
         FileServerProperties.QiNiu qiNiu = fileProperties.getQiNiu();
         String bucket = StrUtil.isEmpty(file.getBucket()) ? qiNiu.getBucket() : file.getBucket();
         Response response = bucketManager.delete(bucket, file.getPath());
-        log.info("response={}", JsonUtil.toJson(response));
+        log.info("七牛云文件删除完成，statusCode={}，requestId={}", response.statusCode, response.reqId);
         return true;
     }
 

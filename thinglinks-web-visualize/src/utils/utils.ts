@@ -11,6 +11,7 @@ import { WinKeyboard } from '@/enums/editPageEnum'
 import { RequestHttpIntervalEnum, RequestParamsObjType } from '@/enums/httpEnum'
 import { CreateComponentType, CreateComponentGroupType } from '@/packages/index.d'
 import { excludeParseEventKeyList, excludeParseEventValueList } from '@/enums/eventEnum'
+import type { KeyboardHoldState } from './keyboard'
 
 /**
  * * 判断是否是开发环境
@@ -103,29 +104,6 @@ export const setDomAttribute = <K extends keyof CSSStyleDeclaration, V extends C
 ) => {
   if (HTMLElement) {
     HTMLElement.style[key] = value
-  }
-}
-
-/**
- * * file转url
- */
-export const fileToUrl = (file: File): string => {
-  const Url = URL || window.URL || window.webkitURL
-  const ImageUrl = Url.createObjectURL(file)
-  return ImageUrl
-}
-
-/**
- * * file转base64
- */
-export const fileTobase64 = (file: File, callback: Function) => {
-  let reader = new FileReader()
-  reader.readAsDataURL(file)
-  reader.onload = function (e: ProgressEvent<FileReader>) {
-    if (e.target) {
-      let base64 = e.target.result
-      callback(base64)
-    }
   }
 }
 
@@ -270,26 +248,16 @@ export const objToCookie = (obj: RequestParamsObjType) => {
 
 /**
  * * 设置按下键盘按键的底部展示
- * @param keyCode
+ * @param state
  * @returns
  */
-export const setKeyboardDressShow = (keyCode?: number) => {
-  const code = new Map([
-    [17, WinKeyboard.CTRL],
-    [32, WinKeyboard.SPACE]
-  ])
-
+export const setKeyboardDressShow = (state: KeyboardHoldState) => {
   const dom = document.getElementById('keyboard-dress-show')
+  window.onKeySpacePressHold?.(state.space)
   if (!dom) return
-  if (!keyCode) {
-    window.onKeySpacePressHold?.(false)
-    dom.innerText = ''
-    return
-  }
-  if (keyCode && code.has(keyCode)) {
-    if (keyCode == 32) window.onKeySpacePressHold?.(true)
-    dom.innerText = `按下了「${code.get(keyCode)}」键`
-  }
+
+  const activeKeys = [state.ctrl ? WinKeyboard.CTRL : '', state.space ? WinKeyboard.SPACE : ''].filter(Boolean)
+  dom.innerText = activeKeys.length ? `按下了「${activeKeys.join(' + ')}」键` : ''
 }
 
 /**

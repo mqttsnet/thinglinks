@@ -60,6 +60,11 @@ public class OtaUpgrades extends Entity<Long> {
     @TableField(value = "product_identification", condition = LIKE)
     private String productIdentification;
     /**
+     * 产品版本序号
+     */
+    @TableField(value = "product_version_no", condition = EQUAL)
+    private String productVersionNo;
+    /**
      * 升级包版本号
      */
     @TableField(value = "version", condition = LIKE)

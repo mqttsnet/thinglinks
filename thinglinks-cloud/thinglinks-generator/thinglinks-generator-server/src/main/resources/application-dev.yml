@@ -1,8 +1,11 @@
 thinglinks:
   generator:
-    outputDir: /Users/mqttsnet/gitlab/thinglinks-cloud-pro-datasource-column
-    frontOutputDir: /Users/mqttsnet/gitlab/thinglinks-web-pro
-    frontVben5OutputDir: /Users/mqttsnet/gitlab/thinglinks-web-vben-max/apps/web-antd
+    # Cloud 代码输出目录，值来自 THINGLINKS_CLOUD_OUTPUT_DIR 环境变量
+    outputDir: ${THINGLINKS_CLOUD_OUTPUT_DIR:}
+    # Web 代码输出目录，值来自 THINGLINKS_WEB_OUTPUT_DIR 环境变量
+    frontOutputDir: ${THINGLINKS_WEB_OUTPUT_DIR:}
+    # Vben5 Web 代码输出目录，值来自 THINGLINKS_WEB_VBEN5_OUTPUT_DIR 环境变量
+    frontVben5OutputDir: ${THINGLINKS_WEB_VBEN5_OUTPUT_DIR:}
     # 作者
     author: mqttsnet
     # 默认项目
@@ -74,7 +77,7 @@ thinglinks:
     #  serviceConfig:
     #  managerConfig:
     #  controllerConfig:
-    #  webProConfig:
+    #  webVbenConfig:
     fileOverrideStrategy:
       entityFileOverride: OVERRIDE
       sqlFileOverride: OVERRIDE

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.util.unit.DataSize;
 
 import java.io.File;
 import java.util.HashSet;
@@ -51,6 +52,8 @@ public class FileServerProperties {
     private Set<String> publicBucket = new HashSet<>();
     /** 支持的文件后缀 */
     private String suffix;
+    /** 单个上传文件的容量上限 */
+    private DataSize maxUploadSize = DataSize.ofMegabytes(64);
 
     private Ali ali = new Ali();
     private QiNiu qiNiu = new QiNiu();
@@ -122,11 +125,12 @@ public class FileServerProperties {
          * 2. nginx代理：通常配置为nginx的访问地址， nginx需要单独配置
          *  - http://${nginx_ip}:${port}/${pathPatterns}                    # nginx_ip：nginx的ip   port：nginx的端口
          */
-        private String urlPrefix = "https://static.mqttsnet.com/file/";
+        private String urlPrefix = "http://127.0.0.1:18764/file/";
         /**
          * 文件存储路径
          */
-        private String storagePath = "/Users/mqttsnet/webs/projects/uploadfile/file/";
+        private String storagePath = System.getProperty("user.home") + File.separator
+                + ".thinglinks" + File.separator + "files" + File.separator;
         /**
          * 内网通道前缀 主要用于解决文件下载时， 文件服务无法通过urlPrefix访问文件时，通过此参数转换
          */
@@ -206,16 +210,16 @@ public class FileServerProperties {
         /**
          * 访问域名
          */
-        private String domain = "qiniu.mqttsnet.top";
+        private String domain = "";
         private Boolean useHttps = false;
 
         /**
          * 华东 z0 华北 z1 华南 z2 北美 na0 东南亚 as0
          */
         private Region zone = Region.z0;
-        private String accessKey = "1";
-        private String secretKey = "2";
-        private String bucket = "mqttsnet_admin_cloud";
+        private String accessKey = "";
+        private String secretKey = "";
+        private String bucket = "";
 
         /**
          * 默认 URL有效期 2小时, 单位秒
@@ -242,12 +246,12 @@ public class FileServerProperties {
         /**
          * minio用户名
          */
-        private String accessKey = "minioadmin";
+        private String accessKey = "";
 
         /**
          * minio密码
          */
-        private String secretKey = "minioadmin";
+        private String secretKey = "";
 
         /**
          * 文件桶的名称

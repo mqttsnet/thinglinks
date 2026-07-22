@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>thinglinks-video</artifactId>
+        <groupId>com.mqttsnet.thinglinks</groupId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>thinglinks-video-biz-protocol</artifactId>
+    <name>${project.artifactId}</name>
+    <description>视频流-协议层模块（GB28181/JT1078/ISUP），包含进程绑定的协议栈、流媒体播放服务和协议适配层</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.mqttsnet.thinglinks</groupId>
+            <artifactId>thinglinks-video-biz</artifactId>
+            <version>${revision}</version>
+        </dependency>
+    </dependencies>
+</project>

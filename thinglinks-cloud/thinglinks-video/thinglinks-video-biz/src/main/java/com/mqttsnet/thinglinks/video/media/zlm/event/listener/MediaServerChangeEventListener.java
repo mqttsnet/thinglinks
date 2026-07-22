@@ -2,7 +2,7 @@ package com.mqttsnet.thinglinks.video.media.zlm.event.listener;
 
 import com.mqttsnet.thinglinks.video.dto.media.VideoMediaServerResultDTO;
 import com.mqttsnet.thinglinks.video.dto.media.event.MediaServerChangeEvent;
-import com.mqttsnet.thinglinks.video.empowerment.media.VideoMediaServerTypeEnum;
+import com.mqttsnet.thinglinks.video.enumeration.media.VideoMediaServerTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;

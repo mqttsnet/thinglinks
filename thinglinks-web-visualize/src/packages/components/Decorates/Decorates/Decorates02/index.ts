@@ -7,7 +7,7 @@ export const Decorates02Config: ConfigType = {
   conKey: 'VCDecorates02',
   title: 'project.component_decorate_02',
   category: ChatCategoryEnum.DECORATE,
-  categoryName: getChatCategoryEnumName.DECORATE,
+  get categoryName() { return getChatCategoryEnumName().DECORATE },
   package: PackagesCategoryEnum.DECORATES,
   chartFrame: ChartFrameEnum.STATIC,
   image: 'decorates02.png'

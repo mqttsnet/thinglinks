@@ -2,6 +2,8 @@ package com.mqttsnet.thinglinks.device.vo.update;
 
 import com.mqttsnet.basic.base.entity.SuperEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -62,12 +64,16 @@ public class DeviceAclRuleUpdateVO implements Serializable {
      */
     @Schema(description = "动作类型((0:全部、1:发布、2:订阅、3:取消订阅))")
     @NotNull(message = "请填写动作类型((0:全部、1:发布、2:订阅、3:取消订阅))")
+    @Min(value = 0, message = "动作类型必须在 0-3 范围内")
+    @Max(value = 3, message = "动作类型必须在 0-3 范围内")
     private Integer actionType;
     /**
      * 规则优先级(0-1000,值越小优先级越高)
      */
     @Schema(description = "规则优先级(0-1000,值越小优先级越高)")
     @NotNull(message = "请填写规则优先级(0-1000,值越小优先级越高)")
+    @Min(value = 0, message = "优先级必须在 0-1000 范围内")
+    @Max(value = 1000, message = "优先级必须在 0-1000 范围内")
     private Integer priority;
     /**
      * MQTT主题模式(支持通配符)
@@ -116,6 +122,8 @@ public class DeviceAclRuleUpdateVO implements Serializable {
      */
     @Schema(description = "规则级别(0:产品级、1:设备级)")
     @NotNull(message = "请填写规则级别(0:产品级、1:设备级)")
+    @Min(value = 0, message = "规则级别必须为 0(产品级)或 1(设备级)")
+    @Max(value = 1, message = "规则级别必须为 0(产品级)或 1(设备级)")
     private Integer ruleLevel;
 
 

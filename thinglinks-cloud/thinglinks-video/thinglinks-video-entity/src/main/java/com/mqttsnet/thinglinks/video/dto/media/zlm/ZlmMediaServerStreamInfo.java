@@ -50,11 +50,11 @@ public class ZlmMediaServerStreamInfo implements Serializable {
     @Schema(description = "流标识")
     private String streamIdentification;
     @Schema(description = "设备编号")
-    private String deviceId;
+    private String deviceIdentification;
     @Schema(description = "通道编号")
-    private String channelId;
+    private String channelIdentification;
 
-    @Schema(description = "流IP")
+    @Schema(description = "流IP/域名")
     private String streamIp;
 
 

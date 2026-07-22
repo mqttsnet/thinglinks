@@ -3,7 +3,9 @@ package com.mqttsnet.thinglinks.service.linkage;
 import com.mqttsnet.basic.base.service.SuperService;
 import com.mqttsnet.thinglinks.entity.linkage.RuleExecutionLog;
 import com.mqttsnet.thinglinks.service.execution.event.executionlog.BaseExecutionLogEvent;
+import com.mqttsnet.thinglinks.vo.query.linkage.RuleExecutionLogPageQuery;
 import com.mqttsnet.thinglinks.vo.result.linkage.RuleExecutionLogDetailsResultVO;
+import com.mqttsnet.thinglinks.vo.result.linkage.RuleExecutionLogStatsResultVO;
 
 /**
  * <p>
@@ -32,6 +34,20 @@ public interface RuleExecutionLogService extends SuperService<Long, RuleExecutio
      * @return 规则执行日志详情
      */
     RuleExecutionLogDetailsResultVO getRuleExecutionLogDetails(Long id);
+
+    /**
+     * 统计当前筛选条件下的执行日志。
+     *
+     * @param query 查询条件
+     * @return 统计结果
+     */
+    RuleExecutionLogStatsResultVO getRuleExecutionLogStats(RuleExecutionLogPageQuery query);
+
+    /**
+     * 清理当前筛选条件下的执行日志。
+     *
+     * @param query 查询条件
+     * @return 清理的主日志条数
+     */
+    Long clearRuleExecutionLogs(RuleExecutionLogPageQuery query);
 }
-
-

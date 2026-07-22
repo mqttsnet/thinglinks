@@ -145,6 +145,8 @@
       watch(
         () => visibleRef.value,
         (visible) => {
+          // 打开前 blur 背景聚焦元素:避免 antd 给背景加 aria-hidden 时焦点仍在背景内,触发 a11y 告警
+          if (visible) (document.activeElement as HTMLElement | null)?.blur?.();
           nextTick(() => {
             emit('visible-change', visible);
             instance && drawerInstance.emitVisible?.(visible, instance.uid);

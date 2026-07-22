@@ -75,14 +75,11 @@ const global = {
   align_range_desc: 'ワークスペースでチャートを移動する際の吸着距離',
   // 私たちについて
   about_us: '私たちについて',
-  copyright: '著作権声明：',
-  copyright_desc: 'thinglinks 大画面可視化システムの著作権は MqttsNet コミュニティに帰属します',
-  license_note: 'ライセンス備考：',
-  license_note_desc: 'オープンソース Apache ライセンスを遵守してください。上記の声明',
-  license_note_required: '削除できません',
-  license_note_warning: '、そうでない場合は著作権侵害と見なされ、結果は自己責任となります！',
-  commercial_license: '商用ライセンス：',
-  commercial_license_desc: '著作権声明を保持したくない場合は、プロジェクトコミュニティに連絡してライセンスを取得してください',
+  product_name: '製品名：',
+  component_name: 'コンポーネント名：',
+  component_version: 'バージョン：',
+  product_edition: 'エディション：',
+  license_file: 'ライセンスファイル：',
   // 編集ツール
   import: 'インポート',
   export: 'エクスポート',
@@ -99,7 +96,9 @@ const global = {
   updating: '更新中...',
   source_window_closed: 'ソースウィンドウが閉じられています。ビューの同期に失敗しました！',
   overwrite_source_confirm: 'ソースビューの内容を上書きしますか？この操作は元に戻せません！',
-  syncing_content: 'コンテンツを同期中...',
+  source_save_success: 'コンテンツを保存し、ソースウィンドウに同期しました',
+  source_save_failed: 'コンテンツを保存できませんでした。しばらくしてから再試行してください',
+  source_project_invalid: '有効なプロジェクトデータが見つかりません。エディターを開き直してください',
   content_format_error: 'コンテンツ形式エラー',
   // ファイルアップロード
   only_support_json_file: '【JSON】形式のファイルのみサポートされています。再度アップロードしてください！',
@@ -127,4 +126,3 @@ export default {
   project,
   components
 }
-

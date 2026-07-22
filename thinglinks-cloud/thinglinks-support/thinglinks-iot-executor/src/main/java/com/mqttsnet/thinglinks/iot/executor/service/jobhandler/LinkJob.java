@@ -128,6 +128,28 @@ public class LinkJob extends AbstractTenantJob {
         });
     }
 
+    /**
+     * 全租户产品版本发布重试兜底调度任务 ── 独立于缓存预热,与之解耦:
+     * 故障互不影响、周期可单独加密(建议 2~5 分钟,确保 1h 兜底窗口内多次扫描)。
+     * 单租户异常被捕获不外抛,不中断其余租户。
+     */
+    @XxlJob("flushProductVersionPublishRetryJobHandler")
+    public void flushProductVersionPublishRetryJobHandler() {
+        XxlJobHelper.log("[产品发布重试兜底]开始全租户任务");
+        loadTenant((tenant, param) -> {
+            final Long tenantId = tenant.getId();
+            ContextUtil.setTenantId(tenantId);
+            long start = System.currentTimeMillis();
+            try {
+                linkJobHandlerApi.retryProductVersionPublish(tenantId);
+                XxlJobHelper.log("发布重试兜底完成 tenantId={} | cost={}ms", tenantId, System.currentTimeMillis() - start);
+            } catch (Exception e) {
+                log.error("发布重试兜底异常 tenantId={} | error={}", tenantId, e.getMessage(), e);
+                XxlJobHelper.log("发布重试兜底异常 tenantId={} | error={}", tenantId, e.getMessage());
+            }
+        });
+    }
+
 
     public void executeProductModelCacheRefresh(Long tenantId) {
         long tenantStart = System.currentTimeMillis();
@@ -282,56 +304,4 @@ public class LinkJob extends AbstractTenantJob {
             XxlJobHelper.log("[OTA升级]系统异常 tenantId={} | 错误={}", tenantId, e.getMessage());
         }
     }
-
-
-    /**
-     * 全租户设备ACL规则缓存刷新调度任务
-     */
-    @XxlJob("flushAllTenantDeviceAclRuleCacheJobHandler")
-    public void flushAllTenantDeviceAclRuleCacheJobHandler() {
-        XxlJobHelper.log("[设备ACL规则缓存刷新] 开始全租户任务");
-        try {
-            loadTenant((tenant, param) -> {
-                final Long tenantId = tenant.getId();
-
-                // 设置租户上下文
-                ContextUtil.setTenantId(tenantId);
-
-                // 执行ACL规则缓存刷新
-                executeDeviceAclRuleCacheRefresh(tenantId);
-            });
-            XxlJobHelper.log("[设备ACL规则缓存刷新] 全租户任务执行完成");
-        } catch (Exception e) {
-            log.error("全租户ACL规则缓存刷新任务执行失败", e);
-            XxlJobHelper.log("[设备ACL规则缓存刷新] 任务失败: {}", e.getMessage());
-        }
-    }
-
-
-    /**
-     * 执行指定租户的设备ACL规则缓存刷新
-     *
-     * @param tenantId 需要刷新缓存的租户ID
-     */
-    public void executeDeviceAclRuleCacheRefresh(Long tenantId) {
-        final long startTime = System.currentTimeMillis();
-        final String tenantLog = "租户ID: " + tenantId;
-
-        try {
-            log.info("开始刷新设备ACL规则缓存 {}", tenantLog);
-            XxlJobHelper.log("开始刷新设备ACL规则缓存 {}", tenantLog);
-
-            // 执行ACL规则缓存刷新
-            linkJobHandlerApi.refreshDeviceAclCache(tenantId);
-
-            final long cost = System.currentTimeMillis() - startTime;
-            log.info("设备ACL规则缓存刷新完成 {} | 耗时: {}ms", tenantLog, cost);
-            XxlJobHelper.log("设备ACL规则缓存刷新完成 {} | 耗时: {}ms", tenantLog, cost);
-        } catch (Exception e) {
-            final long cost = System.currentTimeMillis() - startTime;
-            log.error("设备ACL规则缓存刷新失败 {} | 耗时: {}ms | 错误: {}", tenantLog, cost, e.getMessage(), e);
-            XxlJobHelper.log("设备ACL规则缓存刷新失败 {} | 耗时: {}ms | 错误: {}", tenantLog, cost, e.getMessage());
-        }
-    }
-
 }

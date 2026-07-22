@@ -92,7 +92,7 @@ export default {
   customClass: '实现类',
   customClassHelpMsg: [
     '1. 自行创建一个类，并实现DataScopeProvider接口',
-    '2. 在实现类上标记注解：@Component("DATA_SCOPE_XXXX")',
+    "2. 在实现类上标记注解：＠Component(\"DATA_SCOPE_XXXX\")",
     '3. 在此参数上配置：DATA_SCOPE_XXXX',
   ],
   customClassPlaceHolder: '以"DATA_SCOPE_"为前缀的自定义实现类',
@@ -113,7 +113,7 @@ export default {
   cannotMoveToDescendant: '(不能移动到他的子孙节点)',
   pleaseSelectNode: '请选择需要移动的节点',
   confirmMoveToRoot: '确定要将【{name}】移动到【根节点】',
-  confirmMoveToNode: '确定要将【{name}】移动到【{targetName}】',
+  confirmMoveToNode: '确定要将【{name}】移动到【[targetName]】',
   rootNode: '根节点',
   moveSuccess: '移动成功',
   keyHelpMsg: '新增key的选项后，同时也需要后端在RouterMeta实体类中新增字段',

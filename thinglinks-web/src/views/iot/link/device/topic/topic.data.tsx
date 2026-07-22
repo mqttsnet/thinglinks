@@ -344,7 +344,6 @@ export const editFormSchema = (_type: Ref<ActionEnum>): FormSchema[] => {
       show: false,
       rules: [{ required: true }],
       componentProps: {
-        type: 'number',
         disabled: false,
         // placeholder: `请输入${t('iot.link.device.device.gatewayId')}`,
       },

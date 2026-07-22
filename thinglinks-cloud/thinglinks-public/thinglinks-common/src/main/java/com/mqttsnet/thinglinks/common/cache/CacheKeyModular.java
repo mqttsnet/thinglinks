@@ -18,6 +18,11 @@ public class CacheKeyModular {
      */
     public static final String MQS = "mqs";
     /**
+     * 仅 broker 服务使用的缓存(协议接入层 ── ws / mqtt / coap / lwm2m / tcp 等)。
+     * 跨节点协调状态走此命名空间。
+     */
+    public static final String BROKER = "broker";
+    /**
      * 仅card服务使用的缓存
      */
     public static final String CARD = "card";
