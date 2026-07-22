@@ -184,12 +184,12 @@ mvn clean package -f thinglinks-job/pom.xml -DskipTests
 
 ### Maven 仓库
 
-| 类型 | 地址 |
-|------|------|
-| Release | 环境变量 `THINGLINKS_MAVEN_RELEASE_URL` |
-| Snapshot | 环境变量 `THINGLINKS_MAVEN_SNAPSHOT_URL` |
+| 组件 | 类型 | 配置位置 |
+|------|------|----------|
+| Cloud | Release、Snapshot | `thinglinks-cloud/pom.xml` 与 `thinglinks-cloud/thinglinks-dependencies-parent/pom.xml` 的 `distributionManagement` |
+| Job | Release、Snapshot | `thinglinks-job/pom.xml` 的 `distributionManagement` |
 
-发布制品时由运行环境注入仓库地址；仓库不保存私有制品库 URL 或访问凭据。普通本地编译不需要设置这两个变量。
+Cloud 和 Job 的发布仓库地址直接由各自 POM 管理，本地导入和构建不需要额外设置仓库地址变量。
 
 ---
 

@@ -9,12 +9,11 @@ DEPENDENCIES_POM="$PROJECT_ROOT/thinglinks-dependencies-parent/pom.xml"
 SDK_POM="$PROJECT_ROOT/thinglinks-sdk/pom.xml"
 MQ_CONSTANT_FILE="$PROJECT_ROOT/thinglinks-public/thinglinks-common/src/main/java/com/mqttsnet/thinglinks/common/mq/ConsumerGroupConstant.java"
 MQ_ROUTE_FILE="$PROJECT_ROOT/thinglinks-public/thinglinks-common/src/main/java/com/mqttsnet/thinglinks/common/mq/BizMqRouteConstant.java"
-PRODUCT_LOCK_REF='refs/thinglinks/product-config-lock/thinglinks-cloud'
+PRODUCT_LOCK_REF='refs/thinglinks/product-config-lock'
 PRODUCT_LOCK_OWNER=''
 PRODUCT_LOCK_TOKEN=''
 PRODUCT_LOCK_OID=''
 PRODUCT_LOCK_HELD=false
-MARKER_SCAN_EXCLUDED_PATHS=()
 
 # Kafka 消费组业务后缀清单，与 ConsumerGroupConstant 中的前缀组合使用。
 KAFKA_CONSUMER_GROUP_BINDINGS=(
@@ -43,7 +42,6 @@ MANIFEST_KEYS=(
   THINGLINKS_MQ_NAMESPACE
   THINGLINKS_PRODUCT_MANIFEST_VERSION
   THINGLINKS_SYNC_PROTECTED_PATHS
-  THINGLINKS_MARKER_SCAN_EXCLUDED_PATHS
 )
 
 STATE_FILES=(
@@ -314,18 +312,6 @@ split_protected_paths() {
   [ "$had_noglob" = true ] || set +f
 }
 
-is_protected_path() {
-  local relative_path="${1#./}"
-  local protected
-  for protected in "${PROTECTED_PATHS[@]}"; do
-    protected="${protected#./}"
-    if [ "$relative_path" = "$protected" ] || [ "${relative_path#"$protected"/}" != "$relative_path" ]; then
-      return 0
-    fi
-  done
-  return 1
-}
-
 has_exact_protected_path() {
   local relative_path="$1"
   local protected
@@ -333,26 +319,6 @@ has_exact_protected_path() {
     [ "$protected" = "$relative_path" ] && return 0
   done
   return 1
-}
-
-canonical_repository_path() {
-  local relative_path="$1"
-  local target_path="$PROJECT_ROOT/$relative_path"
-  local canonical_parent canonical_path git_root
-
-  [ -e "$target_path" ] || fail "同步保护路径不存在：$relative_path"
-  [ ! -L "$target_path" ] || fail "同步保护路径不得是符号链接：$relative_path"
-  canonical_parent="$(cd "$(dirname "$target_path")" && pwd -P)" \
-    || fail "同步保护路径父目录无法解析：$relative_path"
-  canonical_path="$canonical_parent/$(basename "$target_path")"
-  git_root="$(git -C "$PROJECT_ROOT" rev-parse --show-toplevel 2>/dev/null)" \
-    || fail "同步保护路径校验必须在 Git 工作区内执行"
-  git_root="$(cd "$git_root" && pwd -P)" \
-    || fail "Git 工作区根目录无法解析"
-  case "$canonical_path" in
-    "$git_root"/*) printf '%s\n' "$canonical_path" ;;
-    *) fail "同步保护路径超出 Git 工作区：$relative_path" ;;
-  esac
 }
 
 check_protected_paths() {
@@ -364,7 +330,8 @@ check_protected_paths() {
   for protected in "${PROTECTED_PATHS[@]}"; do
     [ -n "$protected" ] || fail "同步保护路径不能包含空项"
     case "$protected" in
-      /*|.|..|./*|*/.|*/./*|../../*|*/..|*'/../'*|*//*|*/|*'*'*|*'?'*|*'['*|*']'*|*'\'*|*[[:space:]]*)
+      ../LICENSE) ;;
+      /*|.|..|./*|*/.|*/./*|../*|*/..|*'/../'*|*//*|*/|*'*'*|*'?'*|*'['*|*']'*|*'\'*|*[[:space:]]*)
         fail "同步保护路径必须是明确的仓库相对路径：$protected"
         ;;
     esac
@@ -374,7 +341,7 @@ check_protected_paths() {
       *$'\n'"$protected"$'\n'*) fail "同步保护路径重复：$protected" ;;
     esac
     seen_paths="${seen_paths}${protected}"$'\n'
-    canonical_repository_path "$protected" >/dev/null
+    [ -e "$PROJECT_ROOT/$protected" ] || fail "同步保护路径不存在：$protected"
   done
 
   has_exact_protected_path '.thinglinks-product.env' \
@@ -385,55 +352,6 @@ check_protected_paths() {
   fi
   has_exact_protected_path "$THINGLINKS_LICENSE_FILE" \
     || fail "同步保护路径必须包含附加授权文件：$THINGLINKS_LICENSE_FILE"
-}
-
-split_marker_scan_excluded_paths() {
-  local old_ifs="$IFS"
-  local had_noglob=false
-  case "$THINGLINKS_MARKER_SCAN_EXCLUDED_PATHS" in
-    ,*|*,|*,,*) fail "发行标识扫描忽略路径不能包含空项" ;;
-  esac
-  case "$-" in
-    *f*) had_noglob=true ;;
-  esac
-  set -f
-  IFS=','
-  read -r -a MARKER_SCAN_EXCLUDED_PATHS <<< "$THINGLINKS_MARKER_SCAN_EXCLUDED_PATHS" \
-    || fail "发行标识扫描忽略路径无法解析"
-  IFS="$old_ifs"
-  [ "$had_noglob" = true ] || set +f
-}
-
-is_marker_scan_excluded_path() {
-  local relative_path="$1"
-  local excluded
-  for excluded in "${MARKER_SCAN_EXCLUDED_PATHS[@]}"; do
-    [ "$relative_path" = "$excluded" ] && return 0
-  done
-  return 1
-}
-
-check_marker_scan_excluded_paths() {
-  split_marker_scan_excluded_paths
-  [ "${#MARKER_SCAN_EXCLUDED_PATHS[@]}" -gt 0 ] || fail "发行标识扫描忽略路径不能为空"
-
-  local excluded seen_paths
-  seen_paths=$'\n'
-  for excluded in "${MARKER_SCAN_EXCLUDED_PATHS[@]}"; do
-    case "$excluded" in
-      /*|.|..|./*|*/.|*/./*|../*|*/..|*'/../'*|*//*|*/|*'*'*|*'?'*|*'['*|*']'*|*'\'*|*[[:space:]]*)
-        fail "发行标识扫描忽略路径必须是明确的组件相对文件路径：$excluded"
-        ;;
-    esac
-    [[ "$excluded" =~ ^[A-Za-z0-9._/-]+$ ]] \
-      || fail "发行标识扫描忽略路径包含不安全字符：$excluded"
-    case "$seen_paths" in
-      *$'\n'"$excluded"$'\n'*) fail "发行标识扫描忽略路径重复：$excluded" ;;
-    esac
-    seen_paths="${seen_paths}${excluded}"$'\n'
-    [ -f "$PROJECT_ROOT/$excluded" ] || fail "发行标识扫描忽略路径不是普通文件：$excluded"
-    canonical_repository_path "$excluded" >/dev/null
-  done
 }
 
 check_required_values() {
@@ -460,13 +378,13 @@ check_required_values() {
     community:open-source|commercial:commercial|commercial:dual-license|enterprise:commercial|enterprise:dual-license) ;;
     *) fail "发行版本与授权模型不匹配：${THINGLINKS_EDITION_CODE}/${THINGLINKS_LICENSE_MODEL}" ;;
   esac
-  [[ "$THINGLINKS_LICENSE_FILE" =~ ^(\.\./)?[A-Za-z0-9._/-]+$ ]] || fail "授权文件路径格式不正确"
+  [ "$THINGLINKS_LICENSE_FILE" = '../LICENSE' ] \
+    || [[ "$THINGLINKS_LICENSE_FILE" =~ ^[A-Za-z0-9._/-]+$ ]] \
+    || fail "授权文件路径格式不正确"
   [ -f "$PROJECT_ROOT/$THINGLINKS_LICENSE_FILE" ] || fail "授权文件不存在：$THINGLINKS_LICENSE_FILE"
-  canonical_repository_path "$THINGLINKS_LICENSE_FILE" >/dev/null
   validate_stable_slug "消息队列命名空间" "$THINGLINKS_MQ_NAMESPACE"
   [ "$THINGLINKS_PRODUCT_MANIFEST_VERSION" = "1" ] || fail "当前脚本仅支持清单格式版本 1"
   check_protected_paths
-  check_marker_scan_excluded_paths
 }
 
 install_atomically() {
@@ -607,70 +525,6 @@ assert_dependencies_parent_version() {
   ' "$DEPENDENCIES_POM" || fail "$DEPENDENCIES_POM 的 thinglinks-parent 版本未精确同步为 $THINGLINKS_UTIL_VERSION"
 }
 
-check_forbidden_markers() {
-  git -C "$PROJECT_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1 || fail "发行标识检查必须在 Git 工作区内执行"
-  split_protected_paths
-  split_marker_scan_excluded_paths
-
-  local release_word camel_release_word flagship_word commercial_word community_word open_source_word
-  local separated_pattern camel_suffix_pattern camel_pattern matches_file scan_list relative_path nocase_was_set
-  release_word='p''ro'
-  camel_release_word='P''ro'
-  flagship_word='旗''舰版'
-  commercial_word='商''业版'
-  community_word='社''区版'
-  open_source_word='开''源版'
-  separated_pattern="thinglinks[-_[:space:]]+[[:alnum:]_]+([-_[:space:]]+[[:alnum:]_]+)*[-_[:space:]]+${release_word}([^[:alnum:]]|$)|bifromq[-_[:space:]]+plugin[-_[:space:]]+${release_word}([^[:alnum:]]|$)|bifromqplugin${release_word}([^[:alnum:]]|$)|(util|cloud|web)[-_[:space:]]+${release_word}([^[:alnum:]]|$)|(util|cloud|web|plugin)${release_word}([^[:alnum:]]|$)|thinglinks[[:alnum:]_]*${release_word}([^[:alnum:]]|$)|template_web_${release_word}([^[:alnum:]]|$)|thinglinks[-_]${release_word}([^[:alnum:]-]|$)|${flagship_word}|${commercial_word}|${community_word}|${open_source_word}|${release_word}[[:space:]_-]+edition|professional[[:space:]_-]+edition|open[[:space:]_-]+source[[:space:]_-]+edition|enterprise[[:space:]_-]+edition|commercial[[:space:]_-]+edition|community[[:space:]_-]+edition"
-  camel_suffix_pattern="([A-Z0-9][[:alnum:]_]*)?([^[:alnum:]]|_|$)"
-  camel_pattern="([Ww]eb|[Cc]loud|[Uu]til)${camel_release_word}${camel_suffix_pattern}|[Tt]hing[Ll]inks[[:alnum:]_]*${camel_release_word}${camel_suffix_pattern}|[Bb]ifro[Mm][Qq][Pp]lugin${camel_release_word}${camel_suffix_pattern}|([Ww]eb|[Cc]loud|[Uu]til|[Pp]lugin)${release_word}[A-Z0-9][[:alnum:]_]*|[Tt]hing[Ll]inks[[:alnum:]_]*${release_word}[A-Z0-9][[:alnum:]_]*|[Bb]ifro[Mm][Qq][Pp]lugin${release_word}[A-Z0-9][[:alnum:]_]*"
-  matches_file="$(mktemp "${TMPDIR:-/tmp}/thinglinks-product-markers.XXXXXX")" || fail "无法创建发行标识检查结果文件"
-  if ! scan_list="$(mktemp "${TMPDIR:-/tmp}/thinglinks-product-files.XXXXXX")"; then
-    rm -f "$matches_file"
-    fail "无法创建发行标识扫描清单"
-  fi
-
-  nocase_was_set=false
-  shopt -q nocasematch && nocase_was_set=true
-  shopt -s nocasematch
-  while IFS= read -r -d '' relative_path; do
-    [ -f "$PROJECT_ROOT/$relative_path" ] || continue
-    is_protected_path "$relative_path" && continue
-    is_marker_scan_excluded_path "$relative_path" && continue
-
-    if [[ "$relative_path" =~ $separated_pattern ]]; then
-      printf '%s: 文件路径包含发行版本标识\n' "$relative_path" >> "$matches_file"
-    fi
-    printf '%s\0' "$relative_path" >> "$scan_list"
-  done < <(git -C "$PROJECT_ROOT" ls-files -c -o --exclude-standard -z)
-
-  # CamelCase 扫描采用大小写敏感匹配，用于区分 ProFeature 与 Product/Protocol 等普通单词。
-  shopt -u nocasematch
-  while IFS= read -r -d '' relative_path; do
-    if [[ "$relative_path" =~ $camel_pattern ]]; then
-      printf '%s: 文件路径包含发行版本标识\n' "$relative_path" >> "$matches_file"
-    fi
-  done < "$scan_list"
-  if [ "$nocase_was_set" = true ]; then
-    shopt -s nocasematch
-  else
-    shopt -u nocasematch
-  fi
-
-  if [ -s "$scan_list" ]; then
-    (cd "$PROJECT_ROOT" && xargs -0 grep -IHinE "$separated_pattern" -- < "$scan_list" || true) >> "$matches_file"
-    (cd "$PROJECT_ROOT" && xargs -0 grep -IHnE "$camel_pattern" -- < "$scan_list" || true) >> "$matches_file"
-  fi
-  rm -f "$scan_list"
-
-  if [ -s "$matches_file" ]; then
-    printf '发现不应散落维护的发行版本标识：\n' >&2
-    cat "$matches_file" >&2
-    rm -f "$matches_file"
-    return 1
-  fi
-  rm -f "$matches_file"
-}
-
 check_kafka_consumer_groups() {
   local binding relative_path suffix file expected
   for binding in "${KAFKA_CONSUMER_GROUP_BINDINGS[@]}"; do
@@ -704,8 +558,7 @@ check() {
   assert_contains "$MQ_ROUTE_FILE" 'String TOPIC_PREFIX = ConsumerGroupConstant.THINGLINKS_MQ_NAMESPACE + "-";'
   assert_contains "$MQ_ROUTE_FILE" 'String CONSUMER_GROUP_PREFIX = ConsumerGroupConstant.THINGLINKS_CONSUMER_GROUP_PREFIX;'
   check_kafka_consumer_groups
-  check_forbidden_markers || return 1
-  printf '产品配置、生成引用和发行边界检查通过。\n'
+  printf '产品配置和生成引用检查通过。\n'
 }
 
 set_manifest_value_atomically() {

@@ -4,7 +4,8 @@ set -euo pipefail
 
 SOURCE_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FIXTURE_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/thinglinks-product-config-test.XXXXXX")"
-trap 'rm -rf "$FIXTURE_ROOT"' EXIT
+SOURCE_ARCHIVE_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/thinglinks-product-config-archive-test.XXXXXX")"
+trap 'rm -rf "$FIXTURE_ROOT" "$SOURCE_ARCHIVE_ROOT"' EXIT
 
 copy_file() {
   local relative_path="$1"
@@ -84,8 +85,6 @@ cp -R "$SOURCE_ROOT/changelogs/." "$FIXTURE_ROOT/changelogs/"
 replace_manifest_value THINGLINKS_LICENSE_FILE LICENSE-COMMERCIAL
 replace_manifest_value THINGLINKS_SYNC_PROTECTED_PATHS \
   '.thinglinks-product.env,LICENSE,LICENSE-COMMERCIAL,CHANGELOG.md,changelogs'
-replace_manifest_value THINGLINKS_MARKER_SCAN_EXCLUDED_PATHS \
-  'changelogs/product-config-migration.md'
 chmod +x "$FIXTURE_ROOT/scripts/product-config.sh"
 
 git -C "$FIXTURE_ROOT" init -q
@@ -96,16 +95,26 @@ git -C "$FIXTURE_ROOT" commit -qm 'fixture'
 
 "$FIXTURE_ROOT/scripts/product-config.sh" check >/dev/null
 
+SOURCE_ARCHIVE_COMPONENT_ROOT="$SOURCE_ARCHIVE_ROOT/thinglinks-cloud"
+mkdir -p "$SOURCE_ARCHIVE_COMPONENT_ROOT"
+git -C "$FIXTURE_ROOT" archive HEAD | tar -x -C "$SOURCE_ARCHIVE_COMPONENT_ROOT"
+mv "$SOURCE_ARCHIVE_COMPONENT_ROOT/LICENSE" "$SOURCE_ARCHIVE_ROOT/LICENSE"
+perl -0pi -e '
+  s{^THINGLINKS_LICENSE_FILE=.*$}{THINGLINKS_LICENSE_FILE=../LICENSE}m;
+  s{^THINGLINKS_SYNC_PROTECTED_PATHS=.*$}{THINGLINKS_SYNC_PROTECTED_PATHS=.thinglinks-product.env,../LICENSE,CHANGELOG.md,changelogs}m;
+' "$SOURCE_ARCHIVE_COMPONENT_ROOT/.thinglinks-product.env"
+"$SOURCE_ARCHIVE_COMPONENT_ROOT/scripts/product-config.sh" check >/dev/null \
+  || fail_test "不含 Git 元数据的源码归档必须能够执行产品配置检查"
+
 BASELINE_COMPONENT_VERSION="$(read_manifest_value THINGLINKS_COMPONENT_VERSION)"
 BASELINE_UTIL_VERSION="$(read_manifest_value THINGLINKS_UTIL_VERSION)"
 BASELINE_ARTIFACT_ID="$(read_manifest_value THINGLINKS_MAVEN_ARTIFACT_ID)"
 BASELINE_COMPONENT_NAME="$(read_manifest_value THINGLINKS_COMPONENT_NAME)"
 TEST_NEW_COMPONENT_VERSION='9.8.7.6'
-TEST_ROLLBACK_COMPONENT_VERSION='9.8.7.7'
 TEST_LOCK_LOSS_COMPONENT_VERSION='9.8.7.8'
 TEST_MID_LOCK_LOSS_COMPONENT_VERSION='9.8.7.9'
 
-PRODUCT_LOCK_REF='refs/thinglinks/product-config-lock/thinglinks-cloud'
+PRODUCT_LOCK_REF='refs/thinglinks/product-config-lock'
 
 create_product_lock_owner() {
   printf '%s\n' "$1" | git -C "$FIXTURE_ROOT" hash-object -w --stdin
@@ -294,181 +303,14 @@ fi
 after_invalid="$(managed_fingerprint)"
 [ "$before_invalid" = "$after_invalid" ] || fail_test "非法版本号污染了清单或生成文件"
 
-marker_suffix='p''ro'
 camel_marker_suffix='P''ro'
 mkdir -p "$FIXTURE_ROOT/notes"
 untracked_marker="$FIXTURE_ROOT/notes/version-marker.md"
 camel_marker="Web${camel_marker_suffix}Config"
 printf 'temporary %s marker\n' "$camel_marker" > "$untracked_marker"
-if "$FIXTURE_ROOT/scripts/product-config.sh" check >/dev/null 2>&1; then
-  fail_test "未跟踪文件中的驼峰发行标识必须被识别"
-fi
-
-before_failed_render="$(managed_fingerprint)"
-if "$FIXTURE_ROOT/scripts/product-config.sh" set-component-version "$TEST_ROLLBACK_COMPONENT_VERSION" >/dev/null 2>&1; then
-  fail_test "发行边界检查失败时版本更新必须失败"
-fi
-after_failed_render="$(managed_fingerprint)"
-[ "$before_failed_render" = "$after_failed_render" ] || fail_test "渲染后检查失败时没有完整回滚"
-if product_lock_ref_exists; then
-  fail_test "失败的版本写操作不得残留写锁引用"
-fi
+"$FIXTURE_ROOT/scripts/product-config.sh" check >/dev/null \
+  || fail_test "普通源码文件中的版本字样不得影响产品配置检查"
 rm -f "$untracked_marker"
-
-tracked_marker="$FIXTURE_ROOT/notes/tracked-version-marker.md"
-flagship_marker='旗''舰版'
-commercial_marker='商''业版'
-community_marker='社''区版'
-open_source_marker='开''源版'
-printf '%s\n' \
-  "thinglinks-job-${marker_suffix}" \
-  "getWeb${camel_marker_suffix}Config" \
-  "cloud${camel_marker_suffix}Datasource" \
-  "$flagship_marker" \
-  "$commercial_marker" \
-  "$community_marker" \
-  "$open_source_marker" \
-  "Commercial Ed"'ition' \
-  "Enterprise Ed"'ition' \
-  "Community Ed"'ition' \
-  "Pro Ed"'ition' \
-  "Professional Ed"'ition' \
-  "Open Source Ed"'ition' > "$tracked_marker"
-git -C "$FIXTURE_ROOT" add "$tracked_marker"
-if "$FIXTURE_ROOT/scripts/product-config.sh" check >/dev/null 2>&1; then
-  fail_test "已跟踪文件中的完整发行标识集合必须被识别"
-fi
-git -C "$FIXTURE_ROOT" rm -q -f "$tracked_marker"
-
-bare_web_marker="Web${camel_marker_suffix}"
-thinglinks_camel_marker="ThingLinksJob${camel_marker_suffix}"
-bifromq_camel_marker="BifromqPlugin${camel_marker_suffix}"
-camel_positive_markers=(
-  "Web${camel_marker_suffix}Feature"
-  "Web${camel_marker_suffix}2"
-  "Cloud${camel_marker_suffix}Service"
-  "Util${camel_marker_suffix}Starter"
-  "ThingLinks${camel_marker_suffix}Edition"
-  "ThingLinksJob${camel_marker_suffix}Feature"
-  "BifromqPlugin${camel_marker_suffix}Auth"
-  "$bare_web_marker"
-  "$thinglinks_camel_marker"
-  "$bifromq_camel_marker"
-)
-for boundary_marker in "${camel_positive_markers[@]}"; do
-  boundary_file="$FIXTURE_ROOT/notes/camel-boundary-marker.md"
-  mkdir -p "$(dirname "$boundary_file")"
-  printf '%s\n' "$boundary_marker" > "$boundary_file"
-  git -C "$FIXTURE_ROOT" add "$boundary_file"
-  if "$FIXTURE_ROOT/scripts/product-config.sh" check >/dev/null 2>&1; then
-    fail_test "驼峰发行标识边界必须被识别：$boundary_marker"
-  fi
-  git -C "$FIXTURE_ROOT" rm -q -f "$boundary_file"
-done
-
-lower_marker_suffix='p''ro'
-compact_positive_markers=(
-  "web${lower_marker_suffix}"
-  "cloud${lower_marker_suffix}"
-  "util${lower_marker_suffix}"
-  "thinglinkscloud${lower_marker_suffix}"
-  "Web${camel_marker_suffix}_config"
-  "Cloud${camel_marker_suffix}_service"
-  "thinglinks${camel_marker_suffix}Config"
-  "thinglinks${lower_marker_suffix}Config"
-  "thinglinksJob${camel_marker_suffix}Feature"
-  "web${lower_marker_suffix}Config"
-  "cloud${lower_marker_suffix}Config"
-  "util${lower_marker_suffix}Config"
-  "bifromqplugin${lower_marker_suffix}"
-  "bifromqplugin${lower_marker_suffix}Config"
-)
-for compact_marker in "${compact_positive_markers[@]}"; do
-  compact_marker_file="$FIXTURE_ROOT/notes/compact-boundary-marker.md"
-  mkdir -p "$(dirname "$compact_marker_file")"
-  printf '%s\n' "$compact_marker" > "$compact_marker_file"
-  git -C "$FIXTURE_ROOT" add "$compact_marker_file"
-  if "$FIXTURE_ROOT/scripts/product-config.sh" check >/dev/null 2>&1; then
-    fail_test "紧凑发行标识必须被识别：$compact_marker"
-  fi
-  git -C "$FIXTURE_ROOT" rm -q -f "$compact_marker_file"
-
-  compact_marker_path="$FIXTURE_ROOT/notes/${compact_marker}.md"
-  mkdir -p "$(dirname "$compact_marker_path")"
-  printf '%s\n' 'neutral marker path fixture' > "$compact_marker_path"
-  git -C "$FIXTURE_ROOT" add "$compact_marker_path"
-  if "$FIXTURE_ROOT/scripts/product-config.sh" check >/dev/null 2>&1; then
-    fail_test "文件路径中的紧凑发行标识必须被识别：$compact_marker"
-  fi
-  git -C "$FIXTURE_ROOT" rm -q -f "$compact_marker_path"
-done
-
-edition_marker_one="Pro Ed"'ition'
-edition_marker_two="Professional Ed"'ition'
-edition_marker_three="Open Source Ed"'ition'
-edition_positive_markers=(
-  "$edition_marker_one"
-  "$edition_marker_two"
-  "$edition_marker_three"
-)
-for edition_marker in "${edition_positive_markers[@]}"; do
-  edition_file="$FIXTURE_ROOT/notes/edition-boundary-marker.md"
-  mkdir -p "$(dirname "$edition_file")"
-  printf '%s\n' "$edition_marker" > "$edition_file"
-  git -C "$FIXTURE_ROOT" add "$edition_file"
-  if "$FIXTURE_ROOT/scripts/product-config.sh" check >/dev/null 2>&1; then
-    fail_test "英文发行版本名必须被识别：$edition_marker"
-  fi
-  git -C "$FIXTURE_ROOT" rm -q -f "$edition_file"
-done
-
-printf '\n%s\n' "$edition_marker_two" >> "$FIXTURE_ROOT/LICENSE-COMMERCIAL"
-"$FIXTURE_ROOT/scripts/product-config.sh" check >/dev/null \
-  || fail_test "同步保护路径中的授权文本不得触发发行标识扫描"
-
-protocol_marker="$FIXTURE_ROOT/notes/product-professional-protocol-project-process-properties.md"
-mkdir -p "$(dirname "$protocol_marker")"
-printf '%s\n' \
-  'thinglinks-protocol' \
-  'WebProduct' \
-  'WebProfessional' \
-  'WebProtocol' \
-  'WebProject' \
-  'WebProcess' \
-  'WebProperties' \
-  'CloudProduct' \
-  'CloudProfessional' \
-  'CloudProtocol' \
-  'CloudProject' \
-  'CloudProcess' \
-  'CloudProperties' \
-  'UtilProduct' \
-  'UtilProfessional' \
-  'UtilProtocol' \
-  'UtilProject' \
-  'UtilProcess' \
-  'UtilProperties' \
-  'ThingLinksProduct' \
-  'ThingLinksProfessional' \
-  'ThingLinksProtocol' \
-  'ThingLinksProject' \
-  'ThingLinksProcess' \
-  'ThingLinksProperties' \
-  'ThingLinksJobProduct' \
-  'ThingLinksJobProfessional' \
-  'ThingLinksJobProtocol' \
-  'ThingLinksJobProject' \
-  'ThingLinksJobProcess' \
-  'ThingLinksJobProperties' \
-  'BifromqPluginProduct' \
-  'BifromqPluginProfessional' \
-  'BifromqPluginProtocol' \
-  'BifromqPluginProject' \
-  'BifromqPluginProcess' \
-  'BifromqPluginProperties' > "$protocol_marker"
-git -C "$FIXTURE_ROOT" add "$protocol_marker"
-"$FIXTURE_ROOT/scripts/product-config.sh" check >/dev/null \
-  || fail_test "Product、Professional、Protocol、Project、Process、Properties 不得被误判为发行标识"
 
 allowed_identity_names=(
   'ThingLinks Professional Platform'
@@ -483,6 +325,7 @@ for allowed_identity_name in "${allowed_identity_names[@]}"; do
   mv "$manifest_backup" "$FIXTURE_ROOT/.thinglinks-product.env"
 done
 
+lower_marker_suffix='p''ro'
 compact_identity_values=(
   "THINGLINKS_PRODUCT_CODE:thinglinks${lower_marker_suffix}"
   'THINGLINKS_MQ_NAMESPACE:cloudcommunity'
@@ -554,6 +397,8 @@ for edition_license_pair in "${invalid_edition_license_pairs[@]}"; do
   mv "$manifest_backup" "$FIXTURE_ROOT/.thinglinks-product.env"
 done
 
+edition_marker_two="Professional Ed"'ition'
+edition_marker_three="Open Source Ed"'ition'
 for stable_edition_marker in "$edition_marker_two" "$edition_marker_three"; do
   cp "$FIXTURE_ROOT/.thinglinks-product.env" "$manifest_backup"
   replace_manifest_value THINGLINKS_PRODUCT_NAME "\"ThingLinks $stable_edition_marker\""
