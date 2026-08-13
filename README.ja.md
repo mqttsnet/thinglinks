@@ -300,11 +300,11 @@ npx skills add mqttsnet/thinglinks-skills@bifromq-plugin -g      # BifroMQ broke
 
 ## Star 推移
 
-<a href="https://star-history.com/#mqttsnet/thinglinks&Date">
+<a href="https://star-history.dera.page/#mqttsnet/thinglinks&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=mqttsnet/thinglinks&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=mqttsnet/thinglinks&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=mqttsnet/thinglinks&type=Date" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=mqttsnet/thinglinks&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=mqttsnet/thinglinks&type=Date" />
+    <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=mqttsnet/thinglinks&type=Date" />
   </picture>
 </a>
 
